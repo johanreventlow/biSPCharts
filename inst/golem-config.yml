@@ -168,6 +168,7 @@ development:
 
   # AI configuration (development overrides)
   ai:
+    enabled: true                   # Enable AI in development
     timeout_seconds: 15            # Longer timeout for debugging
 
   # Migration and experimental features (inherited from default, can override)
@@ -243,6 +244,10 @@ production:
     save_session_on_exit: true
     enable_session_debugging: false
     cleanup_on_disconnect: false    # Preserve user work
+
+  # AI configuration (production settings)
+  ai:
+    enabled: true                   # Enable AI in production
 
 
 # TESTING CONFIGURATION ======================================================

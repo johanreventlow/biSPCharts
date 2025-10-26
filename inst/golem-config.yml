@@ -77,6 +77,20 @@ default:
     enable_session_debugging: false
     cleanup_on_disconnect: true
 
+  # AI-powered improvement suggestions
+  ai:
+    enabled: true
+    provider: "gemini"
+    model: "gemini-2.0-flash-exp"
+    timeout_seconds: 10
+    max_response_chars: 350
+    cache_ttl_seconds: 3600
+    circuit_breaker:
+      failure_threshold: 5
+      reset_timeout_seconds: 300
+    rate_limit:
+      max_requests_per_minute: 20
+
 
 # DEVELOPMENT CONFIGURATION ==================================================
 # Optimized for developer productivity and debugging
@@ -151,6 +165,10 @@ development:
     save_session_on_exit: false
     enable_session_debugging: true
     cleanup_on_disconnect: true
+
+  # AI configuration (development overrides)
+  ai:
+    timeout_seconds: 15            # Longer timeout for debugging
 
   # Migration and experimental features (inherited from default, can override)
   features:
@@ -301,4 +319,8 @@ testing:
     save_session_on_exit: false
     enable_session_debugging: true
     cleanup_on_disconnect: true     # Clean up after tests
+
+  # AI configuration (testing overrides)
+  ai:
+    enabled: false                   # Disabled - use mocks in tests
 

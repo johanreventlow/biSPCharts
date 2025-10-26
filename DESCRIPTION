@@ -36,6 +36,8 @@ Imports:
     later (>= 1.3.0),
     yaml (>= 2.3.0),
     digest,
+    ellmer (>= 0.2.0),
+    withr,
     jsonlite (>= 1.8.0),
     shinylogs (>= 0.2.0),
     tools,

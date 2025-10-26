@@ -11,13 +11,13 @@ classify_error_source(error)
 }
 \value{
 List with classification metadata:
-  \describe{
-    \item{source}{Character. Error source: "BFHcharts", "SPCify", "User Data", "Unknown"}
-    \item{component}{Character. Log component tag (e.g., "[BFH_INTEGRATION]")}
-    \item{actionable_by}{Character. Who can fix this error}
-    \item{escalate}{Logical. Should this be escalated externally?}
-    \item{user_message}{Character. User-friendly error message}
-  }
+\describe{
+\item{source}{Character. Error source: "BFHcharts", "SPCify", "User Data", "Unknown"}
+\item{component}{Character. Log component tag (e.g., "\link{BFH_INTEGRATION}")}
+\item{actionable_by}{Character. Who can fix this error}
+\item{escalate}{Logical. Should this be escalated externally?}
+\item{user_message}{Character. User-friendly error message}
+}
 }
 \description{
 Analyzes error messages and stack traces to attribute errors to the correct

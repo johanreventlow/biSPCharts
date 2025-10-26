@@ -26,9 +26,9 @@ Bruger 5\% tolerance for "ved målet" klassifikation.
 }
 \examples{
 \dontrun{
-determine_target_comparison(12.5, 10)  # "over målet"
-determine_target_comparison(10.3, 10)  # "ved målet" (within 5\%)
-determine_target_comparison(8.5, 10)   # "under målet"
+determine_target_comparison(12.5, 10) # "over målet"
+determine_target_comparison(10.3, 10) # "ved målet" (within 5\%)
+determine_target_comparison(8.5, 10) # "under målet"
 determine_target_comparison(12.5, NULL) # "ikke angivet"
 }
 }

@@ -60,7 +60,8 @@ context <- list(
   target_value = 30
 )
 suggestion <- generate_improvement_suggestion(
-  spc_result, context, session, max_chars = 350
+  spc_result, context, session,
+  max_chars = 350
 )
 # Returns: "Ventetiden til operation varierer mellem... [suggestion text]"
 }

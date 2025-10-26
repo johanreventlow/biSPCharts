@@ -195,6 +195,213 @@ mod_export_server <- function(id, app_state) {
       message = "Export module initialized"
     )
 
+    # AI SUGGESTION INTEGRATION ===============================================
+
+    # Initialize AI cache for session
+    initialize_ai_cache(session)
+
+    # Manage AI button state based on data and API key availability
+    shiny::observe({
+      # Check prerequisites
+      has_data <- !is.null(app_state$data$current_data) &&
+        nrow(app_state$data$current_data) > 0
+      has_columns <- !is.null(app_state$columns$mappings$x_column) &&
+        !is.null(app_state$columns$mappings$y_column)
+      has_spc_data <- has_data && has_columns
+
+      # Validate Gemini API setup
+      api_ready <- validate_gemini_setup()
+
+      # Button enabled only when both prerequisites met
+      can_use_ai <- has_spc_data && api_ready
+
+      # Toggle button state
+      shinyjs::toggleState("ai_generate_suggestion", can_use_ai)
+
+      # Update tooltip based on state
+      tooltip_js <- if (!has_spc_data) {
+        sprintf(
+          "$('#%s').attr('title', 'Generér først en SPC-graf for at bruge AI-forslag');",
+          session$ns("ai_generate_suggestion")
+        )
+      } else if (!api_ready) {
+        sprintf(
+          "$('#%s').attr('title', 'AI-funktionalitet kræver Google API-nøgle. Kontakt administrator.');",
+          session$ns("ai_generate_suggestion")
+        )
+      } else {
+        sprintf(
+          "$('#%s').attr('title', 'Klik for at generere et forbedringsmål med AI');",
+          session$ns("ai_generate_suggestion")
+        )
+      }
+
+      shinyjs::runjs(tooltip_js)
+
+      log_debug(
+        component = "[EXPORT_MODULE]",
+        message = "AI button state updated",
+        details = list(
+          has_spc_data = has_spc_data,
+          api_ready = api_ready,
+          button_enabled = can_use_ai
+        )
+      )
+    }) |> shiny::bindEvent(
+      app_state$data$current_data,
+      app_state$columns$mappings$x_column,
+      app_state$columns$mappings$y_column
+    )
+
+    # Main AI suggestion handler
+    shiny::observeEvent(input$ai_generate_suggestion,
+      {
+        # Require SPC data
+        shiny::req(
+          app_state$data$current_data,
+          app_state$columns$mappings$x_column,
+          app_state$columns$mappings$y_column
+        )
+
+        # Disable button and show loading
+        shinyjs::disable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI({
+          shiny::div(
+            class = "text-muted",
+            style = "margin-top: 5px;",
+            shiny::icon("spinner", class = "fa-spin"),
+            " Genererer forslag..."
+          )
+        })
+
+        log_info(
+          component = "[EXPORT_MODULE]",
+          message = "AI suggestion requested by user"
+        )
+
+        # Generate SPC result for AI analysis
+        # We need the full SPC result (metadata + qic_data) for AI suggestion
+        chart_type <- app_state$columns$mappings$chart_type %||% "run"
+
+        spc_result <- safe_operation(
+          operation_name = "Generate SPC result for AI",
+          code = {
+            # Prepare config
+            config <- list(
+              x_col = app_state$columns$mappings$x_column,
+              y_col = app_state$columns$mappings$y_column,
+              n_col = normalize_mapping(app_state$columns$mappings$n_column)
+            )
+
+            # Call generateSPCPlot to get full SPC result
+            result <- generateSPCPlot(
+              data = app_state$data$current_data,
+              config = config,
+              chart_type = chart_type,
+              target_value = normalize_mapping(app_state$columns$mappings$target_value),
+              target_text = normalize_mapping(app_state$columns$mappings$target_text),
+              centerline_value = normalize_mapping(app_state$columns$mappings$centerline_value),
+              show_phases = !is.null(app_state$columns$mappings$skift_column),
+              skift_column = normalize_mapping(app_state$columns$mappings$skift_column),
+              frys_column = normalize_mapping(app_state$columns$mappings$frys_column),
+              chart_title_reactive = input$export_title %||% "",
+              y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
+              kommentar_column = normalize_mapping(app_state$columns$mappings$kommentar_column),
+              base_size = 14,
+              plot_context = "ai_analysis"
+            )
+
+            return(result)
+          },
+          fallback = function(e) {
+            log_error(
+              component = "[EXPORT_MODULE]",
+              message = "Failed to generate SPC result for AI",
+              details = list(error = e$message)
+            )
+            return(NULL)
+          },
+          error_type = "processing"
+        )
+
+        # Check if SPC generation succeeded
+        if (is.null(spc_result)) {
+          shiny::showNotification(
+            "Kunne ikke analysere SPC-data. Prøv igen.",
+            type = "error",
+            duration = 5
+          )
+
+          # Re-enable button and clear loading
+          shinyjs::enable("ai_generate_suggestion")
+          output$ai_loading_feedback <- shiny::renderUI(NULL)
+
+          return()
+        }
+
+        # Gather context from inputs
+        context <- list(
+          data_definition = input$pdf_description %||% "",
+          chart_title = input$export_title %||% "",
+          y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
+          target_value = normalize_mapping(app_state$columns$mappings$target_value)
+        )
+
+        log_debug(
+          component = "[EXPORT_MODULE]",
+          message = "AI context prepared",
+          details = list(
+            has_data_definition = !is.null(context$data_definition) && nchar(context$data_definition) > 0,
+            has_target = !is.null(context$target_value),
+            chart_type = chart_type
+          )
+        )
+
+        # Generate suggestion
+        suggestion <- generate_improvement_suggestion(
+          spc_result = spc_result,
+          context = context,
+          session = session,
+          max_chars = 350
+        )
+
+        # Update UI based on result
+        if (!is.null(suggestion)) {
+          # Success: Insert suggestion
+          shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
+
+          shiny::showNotification(
+            "✓ Forslag genereret. Du kan nu redigere forslaget efter behov.",
+            type = "message",
+            duration = 3
+          )
+
+          log_info(
+            component = "[EXPORT_MODULE]",
+            message = "AI suggestion inserted successfully",
+            details = list(suggestion_length = nchar(suggestion))
+          )
+        } else {
+          # Failure: Show error
+          shiny::showNotification(
+            "Kunne ikke generere forslag. Prøv igen eller skriv forbedringsmålet manuelt. Hvis problemet fortsætter, kontakt support.",
+            type = "error",
+            duration = 5
+          )
+
+          log_warn(
+            component = "[EXPORT_MODULE]",
+            message = "AI suggestion generation failed"
+          )
+        }
+
+        # Re-enable button and clear loading
+        shinyjs::enable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI(NULL)
+      },
+      priority = OBSERVER_PRIORITIES$HIGH
+    )
+
     # PREVIEW GENERATION ======================================================
 
     # Export plot reactive - regenerates plot with export-specific dimensions

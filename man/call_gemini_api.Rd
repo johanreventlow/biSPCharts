@@ -4,12 +4,12 @@
 \alias{call_gemini_api}
 \title{Call Gemini API with Error Handling}
 \usage{
-call_gemini_api(prompt, model = "gemini-2.0-flash-exp", timeout = 10)
+call_gemini_api(prompt, model = "gemini-2.5-flash-lite", timeout = 10)
 }
 \arguments{
 \item{prompt}{Character string with the prompt to send to Gemini}
 
-\item{model}{Character string with model name. Default: "gemini-2.0-flash-exp"}
+\item{model}{Character string with model name. Default: "gemini-2.5-flash-lite"}
 
 \item{timeout}{Numeric timeout in seconds. Default: 10}
 }

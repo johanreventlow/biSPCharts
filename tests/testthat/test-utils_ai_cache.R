@@ -1,7 +1,11 @@
 # test-utils_ai_cache.R
 # Unit tests for AI response caching system (Task #74)
 
-# Test helper: Create mock Shiny session
+# Enable reactive context for console testing
+# This allows reactiveVal() and isolate() to work in tests
+shiny::reactiveConsole(TRUE)
+
+# Test helper: Create mock Shiny session with reactive support
 # Must properly support reactiveVal for session$userData$ai_cache
 create_mock_session <- function() {
   # Create environment (not list) for proper by-reference behavior

@@ -111,7 +111,8 @@ extract_spc_metadata <- function(spc_result) {
     "naturligt"
   }
 
-  log_debug("SPC metadata extracted", .context = "AI_METADATA",
+  log_debug("SPC metadata extracted",
+    .context = "AI_METADATA",
     details = list(
       chart_type = metadata$chart_type,
       n_points = metadata$n_points,

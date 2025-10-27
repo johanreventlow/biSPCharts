@@ -55,7 +55,7 @@ test_that("validate_gemini_setup detects AI disabled in config", {
 
   mockery::stub(
     validate_gemini_setup,
-    "golem::get_golem_options",
+    "get_ai_config",
     list(enabled = FALSE)
   )
 
@@ -76,7 +76,7 @@ test_that("validate_gemini_setup succeeds with valid configuration", {
 
   mockery::stub(
     validate_gemini_setup,
-    "golem::get_golem_options",
+    "get_ai_config",
     list(enabled = TRUE)
   )
 

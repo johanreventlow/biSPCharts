@@ -16,38 +16,8 @@
 # ==============================================================================
 
 # AI CONFIGURATION GETTERS ================================
-
-#' Get AI Configuration from Golem Config
-#'
-#' Henter AI-konfiguration fra golem config. Hvis konfiguration mangler,
-#' returneres fornuftige standardværdier.
-#'
-#' @return List med AI configuration settings (enabled, model, timeout, etc.)
-#' @examples
-#' config <- get_ai_config()
-#' if (config$enabled) {
-#'   # Call Gemini API
-#' }
-#' @export
-get_ai_config <- function() {
-  ai_config <- golem::get_golem_options("ai")
-
-  if (is.null(ai_config)) {
-    log_warn(
-      message = "AI config not found, using defaults",
-      .context = "AI_CONFIG"
-    )
-    return(list(
-      enabled = FALSE,
-      model = "gemini-2.0-flash-exp",
-      timeout_seconds = 10,
-      max_response_chars = 350,
-      cache_ttl_seconds = 3600
-    ))
-  }
-
-  return(ai_config)
-}
+# NOTE: get_ai_config() er defineret i utils_ai_cache.R for at undgå duplikering
+# Den version har bedre error handling og korrekte defaults (enabled = TRUE)
 
 # CHART TYPE MAPPING ================================
 

@@ -458,9 +458,9 @@ mod_export_server <- function(id, app_state) {
         } else {
           # Failure: Show error
           shiny::showNotification(
-            "Kunne ikke generere forslag. Prøv igen eller skriv forbedringsmålet manuelt. Hvis problemet fortsætter, kontakt support.",
+            "Kunne ikke generere AI-forslag. Tjek internetforbindelse og prøv igen, eller skriv forbedringsmålet manuelt.",
             type = "error",
-            duration = 5
+            duration = 8
           )
 
           log_warn(

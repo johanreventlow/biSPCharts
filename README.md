@@ -64,11 +64,22 @@ SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af G
 *Problem:* "AI-funktionalitet kræver Google API-nøgle"
 - *Løsning:* Sæt `GOOGLE_API_KEY` i `.Renviron` (se setup ovenfor)
 
-*Problem:* "Forbindelsen til AI-tjenesten tog for lang tid"
-- *Løsning:* Tjek internet-forbindelse. Prøv igen. Hvis det fortsætter, skriv manuelt.
+*Problem:* "Appen hænger i 30-60 sekunder når AI-knappen klikkes"
+- *Årsag:* Manglende eller ustabil internetforbindelse. AI-funktionen kræver aktiv internet.
+- *Løsning:*
+  - Tjek internetforbindelse (ping google.com)
+  - Prøv igen når forbindelsen er stabil
+  - Alternativt: Skriv forbedringsmålet manuelt
+- *Note:* Dette er en kendt limitation i upstream HTTP-klient. Timeout forbedringer er under udvikling.
 
 *Problem:* "For mange forespørgsler"
 - *Løsning:* Vent 1 minut og prøv igen. Rate limit er midlertidig.
+
+**Known Limitations:**
+
+- **Network Timeout:** Ved ustabil/manglende internet kan AI-knappen hænge i 30-60 sekunder før timeout. Dette er en upstream limitation i ellmer HTTP-klient. Sørg for stabil forbindelse før brug.
+- **Rate Limits:** Gemini free tier har 1500 requests/dag. Ved overskridelse, vent til næste dag.
+- **Response Quality:** AI-forslag er vejledende og skal altid reviewes før brug.
 
 **Privacy:**
 

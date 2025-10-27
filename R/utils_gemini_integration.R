@@ -32,7 +32,7 @@ validate_gemini_setup <- function() {
   if (!requireNamespace("ellmer", quietly = TRUE)) {
     log_warn(
       message = "Ellmer package not installed",
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
     return(FALSE)
   }
@@ -42,22 +42,22 @@ validate_gemini_setup <- function() {
   if (api_key == "" || api_key == "your_api_key_here") {
     log_warn(
       message = "GOOGLE_API_KEY not set or invalid",
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
     return(FALSE)
   }
 
-  # Check 3: AI enabled in config
-  ai_config <- golem::get_golem_options("ai")
-  if (is.null(ai_config) || !isTRUE(ai_config$enabled)) {
+  # Check 3: AI enabled in config (use get_ai_config with fallback logic)
+  ai_config <- get_ai_config()
+  if (!isTRUE(ai_config$enabled)) {
     log_info(
       message = "AI feature disabled in config",
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
     return(FALSE)
   }
 
-  log_debug("Gemini setup validated successfully", .context = "[AI]")
+  log_debug("Gemini setup validated successfully", .context = "GEMINI_API")
   return(TRUE)
 }
 
@@ -69,7 +69,7 @@ validate_gemini_setup <- function() {
 #' handling, timeout management, and circuit breaker protection.
 #'
 #' @param prompt Character string with the prompt to send to Gemini
-#' @param model Character string with model name. Default: "gemini-2.0-flash-exp"
+#' @param model Character string with model name. Default: "gemini-2.5-flash-lite"
 #' @param timeout Numeric timeout in seconds. Default: 10
 #'
 #' @return Character string with response text, or NULL on error
@@ -82,7 +82,7 @@ validate_gemini_setup <- function() {
 #' )
 #' }
 call_gemini_api <- function(prompt,
-                            model = "gemini-2.0-flash-exp",
+                            model = "gemini-2.5-flash-lite",
                             timeout = 10) {
   safe_operation(
     operation_name = "Gemini API call",
@@ -97,12 +97,31 @@ call_gemini_api <- function(prompt,
         stop("Circuit breaker open - too many recent failures. Try again later.")
       }
 
+      # Pre-flight connectivity check (fail fast if no network)
+      if (requireNamespace("curl", quietly = TRUE)) {
+        log_debug("Checking network connectivity to Gemini API", .context = "GEMINI_API")
+
+        # Quick DNS lookup to fail fast if no connectivity
+        dns_result <- tryCatch(
+          {
+            curl::nslookup("generativelanguage.googleapis.com", error = FALSE)
+          },
+          error = function(e) NULL
+        )
+
+        if (is.null(dns_result) || length(dns_result) == 0) {
+          stop("No network connectivity to Gemini API. Check internet connection.")
+        }
+
+        log_debug("Network connectivity OK", .context = "GEMINI_API")
+      }
+
       # Initialize chat
       log_debug(
         "Initializing Gemini chat",
         "model:", model,
         "prompt_length:", nchar(prompt),
-        .context = "[AI]"
+        .context = "GEMINI_API"
       )
 
       chat <- ellmer::chat_google_gemini(
@@ -110,7 +129,9 @@ call_gemini_api <- function(prompt,
         api_key = Sys.getenv("GOOGLE_API_KEY")
       )
 
-      # Call with timeout (using setTimeLimit for R-native timeout)
+      # Call with timeout wrapper
+      # NOTE: setTimeLimit doesn't interrupt C-level network calls,
+      # but provides a backup timeout mechanism
       response <- NULL
       tryCatch(
         {
@@ -127,13 +148,19 @@ call_gemini_api <- function(prompt,
         }
       )
 
-      # Extract text
-      text <- response$text
+      # Extract text (handle different ellmer response formats)
+      text <- if (is.character(response)) {
+        response # ellmer 0.2.0+ returns character vector directly
+      } else if (is.list(response) && !is.null(response$text)) {
+        response$text # Older ellmer versions return list with $text
+      } else {
+        stop("Unexpected response format from ellmer")
+      }
 
       # Log success
       log_info(
         message = "Gemini API success",
-        .context = "[AI]",
+        .context = "GEMINI_API",
         details = list(
           prompt_length = nchar(prompt),
           response_length = nchar(text),
@@ -159,13 +186,15 @@ call_gemini_api <- function(prompt,
         "invalid_key"
       } else if (grepl("circuit breaker", tolower(e$message))) {
         "circuit_breaker"
+      } else if (grepl("network|connectivity|dns|nslookup", tolower(e$message))) {
+        "network_error"
       } else {
         "api_error"
       }
 
       log_error(
         message = "Gemini API failed",
-        .context = "[AI]",
+        .context = "GEMINI_API",
         details = list(
           error_type = error_type,
           error_message = e$message,
@@ -207,7 +236,7 @@ validate_gemini_response <- function(text, max_chars = 350) {
   if (is.null(text) || !is.character(text) || nchar(text) == 0) {
     log_warn(
       message = "Empty or invalid response from Gemini",
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
     return(NULL)
   }
@@ -223,29 +252,49 @@ validate_gemini_response <- function(text, max_chars = 350) {
   if (nchar(text) == 0) {
     log_warn(
       message = "Response empty after sanitization",
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
     return(NULL)
   }
 
-  # Trim if needed
+  # Trim if needed (preserve word boundaries and markdown structure)
   if (nchar(text) > max_chars) {
     log_warn(
       message = "Response too long, trimming",
-      .context = "[AI]",
+      .context = "GEMINI_API",
       details = list(
         original_length = nchar(text),
         max_chars = max_chars
       )
     )
+
+    # Trim to max_chars - 3 (reserve space for "...")
     text <- substr(text, 1, max_chars - 3)
+
+    # Find last space to avoid cutting mid-word
+    last_space <- regexpr("\\s[^\\s]*$", text)
+    if (last_space > 0) {
+      text <- substr(text, 1, last_space)
+    }
+
+    # Trim trailing whitespace after word boundary cut
+    text <- trimws(text)
+
+    # Balance markdown asterisks (remove trailing * if odd count)
+    asterisk_count <- lengths(regmatches(text, gregexpr("\\*", text)))
+    if (asterisk_count %% 2 == 1) {
+      # Odd number of asterisks - remove last one to balance
+      text <- sub("\\*([^*]*)$", "\\1", text)
+      text <- trimws(text)
+    }
+
     text <- paste0(text, "...")
   }
 
   log_debug(
     "Response validated",
     "final_length:", nchar(text),
-    .context = "[AI]"
+    .context = "GEMINI_API"
   )
 
   return(text)
@@ -284,7 +333,7 @@ circuit_breaker_is_open <- function() {
     if (elapsed > reset_timeout) {
       log_info(
         message = "Circuit breaker reset after timeout",
-        .context = "[AI]",
+        .context = "GEMINI_API",
         details = list(
           elapsed_seconds = round(elapsed, 1),
           reset_timeout_seconds = reset_timeout
@@ -317,7 +366,7 @@ circuit_breaker_record_failure <- function() {
     .circuit_breaker_state$is_open <- TRUE
     log_error(
       message = "Circuit breaker opened",
-      .context = "[AI]",
+      .context = "GEMINI_API",
       details = list(
         failures = .circuit_breaker_state$failures,
         threshold = threshold
@@ -328,7 +377,7 @@ circuit_breaker_record_failure <- function() {
       "Circuit breaker failure recorded",
       "failures:", .circuit_breaker_state$failures,
       "threshold:", threshold,
-      .context = "[AI]"
+      .context = "GEMINI_API"
     )
   }
 
@@ -345,7 +394,7 @@ circuit_breaker_record_success <- function() {
   .circuit_breaker_state$failures <- 0L
   .circuit_breaker_state$is_open <- FALSE
 
-  log_debug("Circuit breaker reset (success)", .context = "[AI]")
+  log_debug("Circuit breaker reset (success)", .context = "GEMINI_API")
 
   invisible(NULL)
 }
@@ -364,7 +413,7 @@ circuit_breaker_reset <- function() {
 
   log_info(
     message = "Circuit breaker manually reset",
-    .context = "[AI]"
+    .context = "GEMINI_API"
   )
 
   invisible(NULL)

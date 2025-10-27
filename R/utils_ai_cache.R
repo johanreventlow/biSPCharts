@@ -64,7 +64,7 @@ get_ai_config <- function() {
         ai_config <- list(
           enabled = golem::get_golem_options("ai.enabled") %||% TRUE,
           provider = golem::get_golem_options("ai.provider") %||% "gemini",
-          model = golem::get_golem_options("ai.model") %||% "gemini-2.0-flash-exp",
+          model = golem::get_golem_options("ai.model") %||% "gemini-2.5-flash-lite",
           timeout_seconds = golem::get_golem_options("ai.timeout_seconds") %||% 10,
           max_response_chars = golem::get_golem_options("ai.max_response_chars") %||% 350,
           cache_ttl_seconds = golem::get_golem_options("ai.cache_ttl_seconds") %||% 3600

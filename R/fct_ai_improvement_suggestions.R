@@ -46,7 +46,7 @@
 extract_spc_metadata <- function(spc_result) {
   # Validate input
   if (is.null(spc_result) || !is.list(spc_result)) {
-    log_warn("[AI_METADATA]", "Invalid spc_result: NULL or not a list")
+    log_warn("Invalid spc_result: NULL or not a list", .context = "AI_METADATA")
     return(NULL)
   }
 
@@ -74,7 +74,7 @@ extract_spc_metadata <- function(spc_result) {
       metadata$n_crossings_min <- 0
     }
   } else {
-    log_warn("[AI_METADATA]", "Missing metadata component in spc_result")
+    log_warn("Missing metadata component in spc_result", .context = "AI_METADATA")
     return(NULL)
   }
 
@@ -98,7 +98,7 @@ extract_spc_metadata <- function(spc_result) {
       metadata$end_date <- "Ikke angivet"
     }
   } else {
-    log_warn("[AI_METADATA]", "Missing or empty qic_data in spc_result")
+    log_warn("Missing or empty qic_data in spc_result", .context = "AI_METADATA")
     metadata$centerline <- NA_real_
     metadata$start_date <- "Ikke angivet"
     metadata$end_date <- "Ikke angivet"
@@ -111,7 +111,7 @@ extract_spc_metadata <- function(spc_result) {
     "naturligt"
   }
 
-  log_debug("[AI_METADATA]", "SPC metadata extracted",
+  log_debug("SPC metadata extracted", .context = "AI_METADATA",
     details = list(
       chart_type = metadata$chart_type,
       n_points = metadata$n_points,
@@ -208,7 +208,7 @@ determine_target_comparison <- function(centerline, target_value) {
 build_gemini_prompt <- function(metadata, context) {
   # Validate inputs
   if (is.null(metadata) || is.null(context)) {
-    log_error("[AI_PROMPT]", "Cannot build prompt: metadata or context is NULL")
+    log_error("Cannot build prompt: metadata or context is NULL", .context = "AI_PROMPT")
     return(NULL)
   }
 
@@ -216,7 +216,7 @@ build_gemini_prompt <- function(metadata, context) {
   template <- get_improvement_suggestion_template()
 
   if (is.null(template) || nchar(template) == 0) {
-    log_error("[AI_PROMPT]", "Failed to get prompt template")
+    log_error("Failed to get prompt template", .context = "AI_PROMPT")
     return(NULL)
   }
 
@@ -237,11 +237,11 @@ build_gemini_prompt <- function(metadata, context) {
   prompt <- interpolate_prompt(template, prompt_data)
 
   if (is.null(prompt)) {
-    log_error("[AI_PROMPT]", "Prompt interpolation failed")
+    log_error("Prompt interpolation failed", .context = "AI_PROMPT")
     return(NULL)
   }
 
-  log_debug("[AI_PROMPT]", "Prompt built successfully",
+  log_debug("Prompt built successfully",
     details = list(
       prompt_length = nchar(prompt),
       has_target = !is.null(context$target_value)
@@ -306,21 +306,21 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
     code = {
       # Step 0: Validate inputs
       if (is.null(spc_result)) {
-        log_error("[AI_SUGGESTION]", "spc_result is NULL")
+        log_error("spc_result is NULL", .context = "AI_SUGGESTION")
         return(NULL)
       }
 
       if (is.null(context)) {
-        log_error("[AI_SUGGESTION]", "context is NULL")
+        log_error("context is NULL", .context = "AI_SUGGESTION")
         return(NULL)
       }
 
       if (is.null(session)) {
-        log_error("[AI_SUGGESTION]", "session is NULL - cache cannot work")
+        log_error("session is NULL - cache cannot work", .context = "AI_SUGGESTION")
         return(NULL)
       }
 
-      log_info("[AI_SUGGESTION]", "Starting suggestion generation",
+      log_info("Starting suggestion generation",
         details = list(
           chart_type = spc_result$metadata$chart_type %||% "unknown",
           has_definition = !is.null(context$data_definition) && nchar(context$data_definition) > 0,
@@ -332,7 +332,7 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
       metadata <- extract_spc_metadata(spc_result)
 
       if (is.null(metadata)) {
-        log_error("[AI_SUGGESTION]", "Failed to extract SPC metadata")
+        log_error("Failed to extract SPC metadata", .context = "AI_SUGGESTION")
         return(NULL)
       }
 
@@ -341,47 +341,101 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
       cached <- get_cached_ai_response(cache_key, session)
 
       if (!is.null(cached)) {
-        log_info("[AI_SUGGESTION]", "Cache hit - returning cached suggestion",
+        log_info("Cache hit - returning cached suggestion",
           details = list(cache_key = substr(cache_key, 1, 16))
         )
         return(cached)
       }
 
-      log_debug("[AI_SUGGESTION]", "Cache miss - will call Gemini API")
+      log_debug("Cache miss - will call Gemini API", .context = "AI_SUGGESTION")
 
       # Step 3: Build prompt
       prompt <- build_gemini_prompt(metadata, context)
 
       if (is.null(prompt)) {
-        log_error("[AI_SUGGESTION]", "Failed to build prompt")
+        log_error("Failed to build prompt", .context = "AI_SUGGESTION")
         return(NULL)
       }
 
       # Step 4: Call Gemini API
       ai_config <- get_ai_config()
+
+      log_info("Calling Gemini API",
+        details = list(
+          model = ai_config$model,
+          timeout = ai_config$timeout_seconds,
+          prompt_length = nchar(prompt),
+          prompt_preview = substr(prompt, 1, 200)
+        )
+      )
+
+      # DEBUG: Log full prompt
+      cat("\n========== GEMINI API REQUEST ==========\n")
+      cat("PROMPT (", nchar(prompt), " chars):\n", sep = "")
+      cat(prompt, "\n")
+      cat("========================================\n\n")
+
       response <- call_gemini_api(
         prompt = prompt,
         model = ai_config$model,
         timeout = ai_config$timeout_seconds
       )
 
+      # DEBUG: Log full response
+      cat("\n========== GEMINI API RESPONSE ==========\n")
+      if (!is.null(response)) {
+        cat("RESPONSE (", nchar(response), " chars):\n", sep = "")
+        cat(response, "\n")
+      } else {
+        cat("RESPONSE: NULL\n")
+      }
+      cat("=========================================\n\n")
+
       if (is.null(response)) {
-        log_warn("[AI_SUGGESTION]", "Gemini API returned NULL - check logs for error details")
+        log_error("Gemini API returned NULL - check logs for error details", .context = "AI_SUGGESTION")
         return(NULL)
       }
+
+      log_info("Gemini API response received",
+        details = list(
+          response_length = nchar(response),
+          response_preview = substr(response, 1, 100)
+        )
+      )
 
       # Step 5: Validate response
+      log_debug("Validating response",
+        details = list(
+          response_length = nchar(response),
+          max_chars = max_chars
+        )
+      )
+
       validated <- validate_gemini_response(response, max_chars)
 
+      # DEBUG: Log validation result
+      cat("\n========== VALIDATION RESULT ==========\n")
+      if (!is.null(validated)) {
+        cat("VALIDATED (", nchar(validated), " chars):\n", sep = "")
+        cat(validated, "\n")
+      } else {
+        cat("VALIDATED: NULL (validation failed)\n")
+      }
+      cat("=======================================\n\n")
+
       if (is.null(validated)) {
-        log_warn("[AI_SUGGESTION]", "Response validation failed")
+        log_error("Response validation failed - returning NULL", .context = "AI_SUGGESTION")
         return(NULL)
       }
+
+      log_info("Response validated successfully",
+        details = list(validated_length = nchar(validated))
+      )
 
       # Step 6: Cache result
       cache_ai_response(cache_key, validated, session)
 
-      log_info("[AI_SUGGESTION]", "Suggestion generated successfully",
+      log_info("Suggestion generated successfully",
         details = list(
           cache_key = substr(cache_key, 1, 16),
           response_length = nchar(validated),

@@ -10,9 +10,10 @@
 #   set_debug_context(NULL)  # Reset to log everything (default)
 #
 # Example use cases:
+#   set_debug_context(c("AI_METADATA", "AI_SUGGESTION", "GEMINI_API"))  # Debug AI
+#   set_debug_context(c("EXPORT_MODULE"))  # Debug PDF export
 #   set_debug_context(c("UNIFIED_AUTODETECT", "AUTO_DETECT_CACHE", "COLUMN_SCORING"))
 #   set_debug_context(c("RENDER_PLOT", "Y_AXIS_SCALING", "VISUALIZATION"))
-#   set_debug_context(c("QIC_CALL", "QIC_RESULT", "CACHE_GENERATOR"))
 #
 # See docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md for complete list of all contexts
 # ==============================================================================
@@ -21,8 +22,8 @@
 devtools::load_all(reset = TRUE, recompile = FALSE, helpers = FALSE)
 
 # Optional: Show debug contexts and set filter before running app
-# show_debug_contexts()
-# set_debug_context(c("state", "data", "performance"))  # Uncomment to filter
+show_debug_contexts()
+set_debug_context(c("state", "data", "performance"))  # Uncomment to filter
 
 # Run app with test mode enabled for development
 run_app(enable_test_mode = TRUE, log_level = "DEBUG")

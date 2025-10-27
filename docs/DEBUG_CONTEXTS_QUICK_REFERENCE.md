@@ -4,6 +4,20 @@
 
 ## All Available Contexts by Category
 
+### AI (AI Improvement Suggestions)
+```
+AI_METADATA         - SPC metadata extraction for AI prompts
+AI_PROMPT           - Prompt building and template interpolation
+AI_SUGGESTION       - Main suggestion generation workflow
+AI_CACHE            - AI result caching operations
+GEMINI_API          - Gemini API integration and calls
+```
+
+### EXPORT (Export Module)
+```
+EXPORT_MODULE       - PDF export functionality and operations
+```
+
 ### DATA (Data Processing)
 ```
 DATA_PROCESS        - General data processing
@@ -164,7 +178,12 @@ PIPELINE            - General pipeline operations
 ### Debug AI Features
 ```r
 show_debug_contexts()  # See all contexts
-set_debug_context(c("QIC", "QIC_CALL", "QIC_RESULT", "CACHE_GENERATOR"))
+set_debug_context(c("AI_METADATA", "AI_PROMPT", "AI_SUGGESTION", "AI_CACHE", "GEMINI_API"))
+```
+
+### Debug PDF Export
+```r
+set_debug_context(c("EXPORT_MODULE"))
 ```
 
 ### Debug Auto-Detection

@@ -331,7 +331,7 @@ mod_export_server <- function(id, app_state) {
                 has_plot = !is.null(result$plot)
               )
             )
-            return(result)
+            result
           },
           fallback = function(e) {
             log_error(

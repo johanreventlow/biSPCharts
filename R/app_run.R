@@ -232,6 +232,15 @@ initialize_startup_performance_optimizations <- function() {
 #'   \item{ERROR}{Only error messages - minimal logging}
 #' }
 #'
+#' **Debug Context Filtering** (Reduce token usage when debugging):
+#'
+#' Use `set_debug_context()` to filter logging to specific areas:
+#' \describe{
+#'   \item{set_debug_context(c("state", "data"))}{Log only state and data contexts}
+#'   \item{show_debug_contexts()}{Show all available contexts organized by category}
+#'   \item{set_debug_context(NULL)}{Reset to log everything (default)}
+#' }
+#'
 #' @examples
 #' \dontrun{
 #' # Basic usage
@@ -240,8 +249,16 @@ initialize_startup_performance_optimizations <- function() {
 #' # Development with debug logging
 #' run_app(port = 4040, log_level = "DEBUG")
 #'
-#' # Troubleshooting with detailed logging
+#' # Troubleshooting specific areas - reduce token usage
+#' set_debug_context(c("state", "data", "ai"))
 #' run_app(log_level = "DEBUG", enable_test_mode = TRUE)
+#'
+#' # See all available contexts for filtering
+#' show_debug_contexts()
+#'
+#' # Example contexts to filter:
+#' # state, data, performance, qic, render_plot, auto_detect_cache, ai, etc.
+#' set_debug_context(c("render_plot", "y_axis_scaling"))
 #'
 #' # Production with minimal logging
 #' run_app(log_level = "WARN", launch_browser = TRUE)

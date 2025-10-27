@@ -669,10 +669,52 @@ list_available_log_contexts <- function() {
 
   for (category in names(LOG_CONTEXTS)) {
     category_contexts <- LOG_CONTEXTS[[category]]
-    all_contexts <- c(all_contexts, unlist(category_contexts, use.names = FALSE))
+    all_contexts <- c(
+      all_contexts,
+      unlist(category_contexts, use.names = FALSE)
+    )
   }
 
   return(unique(all_contexts))
+}
+
+#' Print all available debug contexts in organized table
+#'
+#' Viser alle tilgængelige log contexts organiseret efter kategori.
+#' Nyttigt til at finde de rigtige context-navne for `set_debug_context()`.
+#'
+#' @return Invisible NULL. Printer en organiseret tabel til konsolen.
+#'
+#' @examples
+#' \dontrun{
+#' show_debug_contexts()  # See all available contexts organized by category
+#' }
+#'
+#' @export
+show_debug_contexts <- function() {
+  cat("\n")
+  cat("=== AVAILABLE DEBUG CONTEXTS ===\n")
+  cat("Use with: set_debug_context(c(\"context1\", \"context2\"))\n")
+  cat("\n")
+
+  for (category in names(LOG_CONTEXTS)) {
+    category_contexts <- LOG_CONTEXTS[[category]]
+    contexts_list <- unlist(category_contexts, use.names = FALSE)
+
+    cat(sprintf("%-20s:", toupper(category)))
+    cat(" ")
+    cat(paste(contexts_list, collapse = ", "))
+    cat("\n")
+  }
+
+  cat("\n")
+  cat("Examples:\n")
+  cat("  set_debug_context(c(\"state\", \"data\", \"ai\"))\n")
+  cat("  set_debug_context(c(\"render_plot\", \"y_axis_scaling\"))\n")
+  cat("  set_debug_context(NULL)  # Reset to log everything\n")
+  cat("\n")
+
+  invisible(NULL)
 }
 
 #' Sanitize session token for logging

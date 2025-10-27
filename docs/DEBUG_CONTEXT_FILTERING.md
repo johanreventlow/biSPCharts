@@ -4,6 +4,13 @@
 
 ## Quick Start
 
+### Step 1: Se alle tilgængelige contexts
+```r
+# Vis alle contexts organiseret efter kategori
+show_debug_contexts()
+```
+
+### Step 2: Sæt filter baseret på hvad du vil debugge
 ```r
 # Log kun state og data-relateret debugging
 set_debug_context(c("state", "data", "performance"))
@@ -12,10 +19,10 @@ set_debug_context(c("state", "data", "performance"))
 log_debug("Processerer data", .context = "state")       # ✓ Logges
 log_debug("Rendrer plot", .context = "performance")     # ✓ Logges
 log_debug("Cache hit", .context = "cache")              # ✗ Udeladt (ikke i filterlisten)
+```
 
-# Log intet
-set_debug_context(character(0))
-
+### Step 3: Reset når du er færdig
+```r
 # Log alt igen (default behavior)
 set_debug_context(NULL)
 ```
@@ -168,6 +175,22 @@ Log contexts er organiseret i kategorier. Her er alle tilgængelige:
 
 ## Helper Functions
 
+### Show Debug Contexts (Recommended)
+
+```r
+# Se alle tilgængelige contexts organiseret efter kategori
+show_debug_contexts()
+
+# Output:
+# === AVAILABLE DEBUG CONTEXTS ===
+# Use with: set_debug_context(c("context1", "context2"))
+#
+# DATA                : DATA_PROCESS, DATA_PROC, DATA_VALIDATION, DATA_TABLE
+# AUTODETECT          : UNIFIED_AUTODETECT, AUTO_DETECT_CACHE, ...
+# PERFORMANCE         : PERFORMANCE, PERFORMANCE_BENCHMARK, ...
+# ... osv.
+```
+
 ### Set Debug Context
 
 ```r
@@ -175,7 +198,7 @@ Log contexts er organiseret i kategorier. Her er alle tilgængelige:
 set_debug_context(c("state", "data", "performance"))
 
 # Log intet
-set_debug_context(c())
+set_debug_context(character(0))
 
 # Log alt igen (default)
 set_debug_context(NULL)
@@ -195,10 +218,10 @@ if (is.null(current_filter)) {
 }
 ```
 
-### List Available Contexts
+### List Available Contexts (Programmatic)
 
 ```r
-# Se alle tilgængelige contexts
+# Se alle tilgængelige contexts som vektor
 all_contexts <- list_available_log_contexts()
 
 # Find alle state-relaterede contexts

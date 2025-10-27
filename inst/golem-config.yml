@@ -81,7 +81,7 @@ default:
   ai:
     enabled: true
     provider: "gemini"
-    model: "gemini-2.0-flash-exp"
+    model: "gemini-2.5-flash-lite"
     timeout_seconds: 10
     max_response_chars: 350
     cache_ttl_seconds: 3600

@@ -687,7 +687,7 @@ list_available_log_contexts <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' show_debug_contexts()  # See all available contexts organized by category
+#' show_debug_contexts() # See all available contexts organized by category
 #' }
 #'
 #' @export

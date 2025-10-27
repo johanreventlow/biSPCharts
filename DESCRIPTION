@@ -68,7 +68,8 @@ Suggests:
     microbenchmark (>= 1.4.0),
     covr (>= 3.6.0),
     qicharts2 (>= 0.7.0),
-    officer (>= 0.6.0)
+    officer (>= 0.6.0),
+    curl (>= 4.3.0)
 Config/testthat/edition: 3
 Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration
 VignetteBuilder: knitr

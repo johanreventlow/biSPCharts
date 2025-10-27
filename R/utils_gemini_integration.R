@@ -97,26 +97,12 @@ call_gemini_api <- function(prompt,
         stop("Circuit breaker open - too many recent failures. Try again later.")
       }
 
-      # Pre-flight connectivity check (fail fast if no network)
-      if (requireNamespace("curl", quietly = TRUE)) {
-        log_debug("Checking network connectivity to Gemini API", .context = "GEMINI_API")
-
-        # Quick DNS lookup to fail fast if no connectivity
-        dns_result <- tryCatch(
-          {
-            curl::nslookup("generativelanguage.googleapis.com", error = FALSE)
-          },
-          error = function(e) NULL
-        )
-
-        if (is.null(dns_result) || length(dns_result) == 0) {
-          stop("No network connectivity to Gemini API. Check internet connection.")
-        }
-
-        log_debug("Network connectivity OK", .context = "GEMINI_API")
-      }
-
       # Initialize chat
+      # NOTE: Network connectivity is validated by ellmer itself.
+      # LIMITATION: If network is unavailable, ellmer may hang for 30-60 seconds
+      # (system default timeout) before failing. This is an upstream limitation
+      # in ellmer's HTTP client. setTimeLimit() below may not interrupt C-level
+      # network calls. Users should ensure stable internet before using AI features.
       log_debug(
         "Initializing Gemini chat",
         "model:", model,
@@ -130,8 +116,8 @@ call_gemini_api <- function(prompt,
       )
 
       # Call with timeout wrapper
-      # NOTE: setTimeLimit doesn't interrupt C-level network calls,
-      # but provides a backup timeout mechanism
+      # NOTE: setTimeLimit may not interrupt all C-level network calls,
+      # but ellmer should handle its own timeouts. This provides a backup.
       response <- NULL
       tryCatch(
         {

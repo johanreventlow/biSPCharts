@@ -88,6 +88,29 @@ SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af G
 - Data bruges ikke til model-træning (per Google Gemini API policy)
 - Se `docs/adr/ADR-016-gemini-integration.md` for detaljer
 
+**RAG Knowledge Base:**
+
+SPCify bruger RAG (Retrieval-Augmented Generation) med Ragnar-pakken til at grunde AI-forslag i autoritativ SPC-metodologi:
+
+- **Knowledge base:** 3 markdown dokumenter med SPC fundamentals, Anhøj rules, og interpretation guidance
+- **Source:** Jacob Anhøj's "SPC for Healthcare" (https://anhoej.github.io/spc4hc/)
+- **Build:** Knowledge store bygges automatisk ved package installation (kræver `GOOGLE_API_KEY`)
+- **Fallback:** AI fungerer uden RAG hvis build fejler (bruger base prompt)
+
+*Manuel build (hvis nødvendigt):*
+```r
+# Ensure GOOGLE_API_KEY is set
+Sys.getenv("GOOGLE_API_KEY")
+
+# Run build script
+source("data-raw/build_ragnar_store.R")
+
+# Verify store created
+dir.exists("inst/ragnar_store")
+```
+
+Se `docs/CONFIGURATION.md` for detaljeret RAG setup og troubleshooting.
+
 ### Tekniske Highlights
 - **Modular Architecture**: Clean separation med event-driven design patterns
 - **Environment-Aware Config**: Development/production/testing specific behavior

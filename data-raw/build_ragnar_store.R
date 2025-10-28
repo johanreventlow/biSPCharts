@@ -34,21 +34,32 @@ chunk_overlap <- 200  # Overlap for context continuity
 
 cat("\n=== Ragnar Knowledge Store Build ===\n\n")
 
-# Check 1: Google API key
-api_key <- Sys.getenv("GOOGLE_API_KEY")
+# Check 1: Google/Gemini API key (Ragnar uses GEMINI_API_KEY)
+api_key <- Sys.getenv("GEMINI_API_KEY")
+if (api_key == "") {
+  # Fallback to GOOGLE_API_KEY for backwards compatibility
+  api_key <- Sys.getenv("GOOGLE_API_KEY")
+  if (api_key != "" && api_key != "your_api_key_here") {
+    # Set GEMINI_API_KEY from GOOGLE_API_KEY
+    Sys.setenv(GEMINI_API_KEY = api_key)
+    cat("✓ Using GOOGLE_API_KEY as GEMINI_API_KEY\n")
+  }
+}
+
 if (api_key == "" || api_key == "your_api_key_here") {
   stop(
-    "GOOGLE_API_KEY environment variable not set or invalid.\n",
+    "GEMINI_API_KEY or GOOGLE_API_KEY environment variable not set.\n",
     "Cannot build knowledge store without API key.\n\n",
     "Setup:\n",
     "1. Get API key: https://makersuite.google.com/app/apikey\n",
-    "2. Set in .Renviron: GOOGLE_API_KEY=your_actual_key\n",
+    "2. Set in .Renviron: GEMINI_API_KEY=your_actual_key\n",
+    "   (or GOOGLE_API_KEY for backwards compatibility)\n",
     "3. Restart R session\n",
     "4. Rerun this script\n"
   )
 }
 
-cat("✓ GOOGLE_API_KEY found\n")
+cat("✓ API key found\n")
 
 # Check 2: Documentation directory exists
 if (!dir.exists(docs_path)) {
@@ -74,16 +85,20 @@ cat("✓ Found", length(md_files), "documentation files\n\n")
 
 # Initialize Ragnar Store ------------------------------------------------------
 
-cat("Initializing Ragnar store with Google embeddings...\n")
+cat("Initializing Ragnar store with Google Gemini embeddings...\n")
 
 tryCatch(
   {
-    store <- ragnar::ragnar_store(
-      store_path = store_path,
-      embeddings_provider = ragnar::embeddings_google(
-        model = "text-embedding-004",
+    # Create store with Google Gemini embeddings
+    store <- ragnar::ragnar_store_create(
+      location = store_path,
+      embed = ragnar::embed_google_gemini(
+        model = "gemini-embedding-001",
         api_key = api_key
-      )
+      ),
+      overwrite = TRUE,  # Overwrite if exists
+      name = "spc_knowledge",
+      title = "SPC Methodology Knowledge Base"
     )
 
     cat("✓ Ragnar store initialized\n")
@@ -93,73 +108,41 @@ tryCatch(
       "Failed to initialize Ragnar store:\n",
       e$message, "\n\n",
       "Possible causes:\n",
-      "- Invalid GOOGLE_API_KEY\n",
+      "- Invalid API key (GEMINI_API_KEY or GOOGLE_API_KEY)\n",
       "- Network connectivity issues\n",
-      "- API rate limit exceeded\n"
+      "- API rate limit exceeded\n",
+      "- Insufficient disk space at: ", store_path, "\n"
     )
   }
 )
 
-# Prepare Documents ------------------------------------------------------------
+# Ingest Documents -------------------------------------------------------------
 
-cat("\nReading SPC methodology documentation...\n")
-
-documents <- lapply(md_files, function(file) {
-  cat("  -", fs::path_file(file), "\n")
-
-  content <- tryCatch(
-    {
-      readLines(file, warn = FALSE, encoding = "UTF-8")
-    },
-    error = function(e) {
-      warning("Failed to read ", file, ": ", e$message)
-      return(NULL)
-    }
-  )
-
-  if (is.null(content)) {
-    return(NULL)
-  }
-
-  list(
-    content = paste(content, collapse = "\n"),
-    source = fs::path_file(file),
-    type = "markdown"
-  )
-})
-
-# Remove any NULL entries (failed reads)
-documents <- Filter(Negate(is.null), documents)
-
-if (length(documents) == 0) {
-  stop("No documents could be read successfully")
-}
-
-cat("✓ Read", length(documents), "documents successfully\n\n")
-
-# Chunk and Insert Documents ---------------------------------------------------
-
-cat("Chunking and indexing documents...\n")
+cat("\nIngesting SPC methodology documentation...\n")
 cat("  Chunk size:", chunk_size, "characters\n")
-cat("  Overlap:", chunk_overlap, "characters\n\n")
+cat("  Files to process:", length(md_files), "\n\n")
 
 tryCatch(
   {
-    ragnar::ragnar_insert(
+    # Ingest all markdown files at once using high-level API
+    ragnar:::ragnar_store_ingest(
       store = store,
-      documents = documents,
-      chunk_size = chunk_size,
-      chunk_overlap = chunk_overlap
+      paths = as.character(md_files),
+      target_size = chunk_size,
+      target_overlap = chunk_overlap / chunk_size  # Convert to proportion
     )
 
-    cat("✓ Documents chunked and indexed successfully\n\n")
+    cat("✓ All documents ingested successfully\n")
+    doc_count <- length(md_files)
   },
   error = function(e) {
     stop(
-      "Failed to insert documents into store:\n",
+      "Failed to ingest documents:\n",
       e$message, "\n\n",
-      "The store may be partially built. ",
-      "Delete ", store_path, " and try again.\n"
+      "Check:\n",
+      "- Markdown files are valid\n",
+      "- API key has sufficient quota\n",
+      "- Network connectivity\n"
     )
   }
 )
@@ -168,9 +151,9 @@ tryCatch(
 
 cat("=== Knowledge Store Build Complete ===\n\n")
 cat("Store location:", normalizePath(store_path, mustWork = FALSE), "\n")
-cat("Documents indexed:", length(documents), "\n")
+cat("Documents indexed:", doc_count, "\n")
 cat("Source files:\n")
-for (doc in documents) {
-  cat("  -", doc$source, "\n")
+for (file in md_files) {
+  cat("  -", fs::path_file(file), "\n")
 }
 cat("\nThe knowledge store is ready for use with RAG-enhanced AI suggestions.\n")

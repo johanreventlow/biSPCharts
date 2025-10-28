@@ -73,7 +73,7 @@ load_ragnar_store <- function() {
   # Load store with error handling
   store <- tryCatch(
     {
-      ragnar::ragnar_store(store_path = store_path)
+      ragnar::ragnar_store_connect(location = store_path)
     },
     error = function(e) {
       log_error(
@@ -132,7 +132,6 @@ reset_ragnar_store_cache <- function() {
 #' @param target_comparison Character string ("over", "under", "ved") or NULL
 #' @param store ragnar_store object (default: load from package)
 #' @param n_results Number of relevant chunks to retrieve (default: 3)
-#' @param method Search method: "hybrid", "vector", or "keyword" (default: "hybrid")
 #'
 #' @return Character string with concatenated retrieved context, or NULL on error
 #' @keywords internal
@@ -149,8 +148,7 @@ query_spc_knowledge <- function(chart_type,
                                 signals,
                                 target_comparison = NULL,
                                 store = NULL,
-                                n_results = 3,
-                                method = "hybrid") {
+                                n_results = 3) {
   # Load store if not provided
   if (is.null(store)) {
     store <- load_ragnar_store()
@@ -182,7 +180,6 @@ query_spc_knowledge <- function(chart_type,
     "Querying knowledge store",
     "query:", query,
     "n_results:", n_results,
-    "method:", method,
     .context = "RAG"
   )
 
@@ -191,9 +188,8 @@ query_spc_knowledge <- function(chart_type,
     {
       ragnar::ragnar_retrieve(
         store = store,
-        query = query,
-        n = n_results,
-        method = method
+        text = query,
+        top_k = n_results
       )
     },
     error = function(e) {
@@ -202,8 +198,7 @@ query_spc_knowledge <- function(chart_type,
         .context = "RAG",
         details = list(
           error = e$message,
-          query = query,
-          method = method
+          query = query
         )
       )
       return(NULL)

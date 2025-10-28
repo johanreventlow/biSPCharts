@@ -78,9 +78,9 @@ map_chart_type_to_danish <- function(chart_type) {
 #' @export
 get_improvement_suggestion_template <- function() {
   template <- "
-Du er en ekspert i Statistical Process Control (SPC) og klinisk kvalitetsforbedring.
+Du er en ekspert i Statistical Process Control (SPC) og klinisk kvalitetsforbedring. Du vurderer SPC-processer efter Anhøj-reglerne.
 
-Baseret på følgende SPC-data, skal du generere et kort forbedringsmål (max 350 tegn) på dansk.
+Baseret på følgende SPC-data, skal du generere en kort positivt og handlingsorienteret analyse af et seriediagram (max 350 tegn) på dansk. Formater target_values i samme enhed som y_axis_unit.
 
 KONTEKST:
 - Indikator: {data_definition}
@@ -95,7 +95,7 @@ KONTEKST:
 SPC ANALYSE:
 - Proces varierer {process_variation}
 - Antal særligt afvigende punkter: {signals_detected}
-- Længste serie: {longest_run} punkter
+- Længste serie: {longest_run} punkter (forventet: {longest_run_max})
 - Antal krydsninger: {n_crossings} (forventet: {n_crossings_min})
 - Niveau vs. mål: {target_comparison}
 
@@ -103,22 +103,24 @@ STRUKTUR (følg dette format):
 1. Start med kontekst (fx \"Mere end X gange om måneden...\")
 2. Beskriv processens variation (naturlig/ikke-naturlig, særlige punkter)
 3. Forhold til mål (over/under/ved)
-4. Konkret forslag markeret med *kursiv* (fx \"*Identificér årsager...*\")
+4. Konkret forslag markeret med **fed** (fx \"**Identificér årsager...**\")
 
 EKSEMPEL:
-\"Mere end 35.000 gange om måneden administreres medicin ikke korrekt. Processen varierer ikke naturligt, og indeholder 3 særligt afvigende målepunkter. Niveauet er under målet. Forslag: *Identificér årsager bag de afvigende målepunkter*, og understøt faktorer der kan forbedre målopfyldelsen. Stabilisér processen når niveauet er tilfredsstillende.\"
+\"Mere end 35.000 gange om måneden administreres medicin ikke korrekt. Processen varierer ikke naturligt, og indeholder 3 særligt afvigende målepunkter. Niveauet er under målet. Forslag: **Identificér årsager bag de afvigende målepunkter**, og understøt faktorer der kan forbedre målopfyldelsen. Stabilisér processen når niveauet er tilfredsstillende.\"
+
 
 VIGTIGE REGLER:
 - Maksimalt 350 tegn
 - Dansk sprog
 - Konkret og handlingsorienteret
-- Brug kursiv (*tekst*) til forslag
+- Brug fed (**tekst**) til forslag, men vær selektiv - kun 1-2 forslag, max 3 i sjældnere tilfælde.
 - Fokusér på forbedringsmuligheder
-- Undgå teknisk jargon - skriv til klinikere
+- Undgå teknisk jargon - men hold professionel distance
 "
 
   return(template)
 }
+
 
 # PROMPT INTERPOLATION ================================
 

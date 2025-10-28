@@ -40,7 +40,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   # Validate required data
   if (is.null(app_state$data$current_data)) {
     log_warn(
-      component = "[EXPORT_MODULE]",
+      .context = "EXPORT_MODULE",
       message = "build_export_plot: No data available"
     )
     return(NULL)
@@ -49,7 +49,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   if (is.null(app_state$columns$mappings$x_column) ||
     is.null(app_state$columns$mappings$y_column)) {
     log_warn(
-      component = "[EXPORT_MODULE]",
+      .context = "EXPORT_MODULE",
       message = "build_export_plot: Missing required column mappings"
     )
     return(NULL)
@@ -143,7 +143,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
       export_plot <- spc_result$plot
 
       log_debug(
-        component = "[EXPORT_MODULE]",
+        .context = "EXPORT_MODULE",
         message = sprintf("Export plot generated for context: %s", plot_context),
         details = list(
           title = export_title,
@@ -160,7 +160,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
     },
     fallback = function(e) {
       log_error(
-        component = "[EXPORT_MODULE]",
+        .context = "EXPORT_MODULE",
         message = sprintf("Failed to generate %s plot", plot_context),
         details = list(error = e$message, context = plot_context)
       )
@@ -191,8 +191,289 @@ mod_export_server <- function(id, app_state) {
 
     # Log module initialization
     log_info(
-      component = "[EXPORT_MODULE]",
+      .context = "EXPORT_MODULE",
       message = "Export module initialized"
+    )
+
+    # AI SUGGESTION INTEGRATION ===============================================
+
+    # Initialize AI cache for session
+    initialize_ai_cache(session)
+
+    # Manage AI button state based on data and API key availability
+    shiny::observe({
+      # Check prerequisites
+      has_data <- !is.null(app_state$data$current_data) &&
+        nrow(app_state$data$current_data) > 0
+      has_columns <- !is.null(app_state$columns$mappings$x_column) &&
+        !is.null(app_state$columns$mappings$y_column)
+      has_spc_data <- has_data && has_columns
+
+      # Validate Gemini API setup
+      api_ready <- validate_gemini_setup()
+
+      # Button enabled only when both prerequisites met
+      can_use_ai <- has_spc_data && api_ready
+
+      # Toggle button state
+      shinyjs::toggleState("ai_generate_suggestion", can_use_ai)
+
+      # Update tooltip based on state
+      tooltip_js <- if (!has_spc_data) {
+        sprintf(
+          "$('#%s').attr('title', 'Generér først en SPC-graf for at bruge AI-forslag');",
+          session$ns("ai_generate_suggestion")
+        )
+      } else if (!api_ready) {
+        sprintf(
+          "$('#%s').attr('title', 'AI-funktionalitet kræver Google API-nøgle. Kontakt administrator.');",
+          session$ns("ai_generate_suggestion")
+        )
+      } else {
+        sprintf(
+          "$('#%s').attr('title', 'Klik for at generere et forbedringsmål med AI');",
+          session$ns("ai_generate_suggestion")
+        )
+      }
+
+      shinyjs::runjs(tooltip_js)
+
+      log_debug(
+        .context = "EXPORT_MODULE",
+        message = "AI button state updated",
+        details = list(
+          has_spc_data = has_spc_data,
+          api_ready = api_ready,
+          button_enabled = can_use_ai
+        )
+      )
+    }) |> shiny::bindEvent(
+      app_state$data$current_data,
+      app_state$columns$mappings$x_column,
+      app_state$columns$mappings$y_column
+    )
+
+    # Main AI suggestion handler
+    shiny::observeEvent(input$ai_generate_suggestion,
+      {
+        # Require SPC data
+        shiny::req(
+          app_state$data$current_data,
+          app_state$columns$mappings$x_column,
+          app_state$columns$mappings$y_column
+        )
+
+        # Disable button and show loading
+        shinyjs::disable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI({
+          shiny::div(
+            class = "text-muted",
+            style = "margin-top: 5px;",
+            shiny::icon("spinner", class = "fa-spin"),
+            " Genererer forslag..."
+          )
+        })
+
+        log_info(
+          .context = "EXPORT_MODULE",
+          message = "AI suggestion requested by user"
+        )
+
+        log_debug(
+          .context = "EXPORT_MODULE",
+          message = "Starting AI suggestion workflow",
+          details = list(
+            has_data = !is.null(app_state$data$current_data),
+            has_x_col = !is.null(app_state$columns$mappings$x_column),
+            has_y_col = !is.null(app_state$columns$mappings$y_column),
+            chart_type = app_state$columns$mappings$chart_type %||% "run"
+          )
+        )
+
+        # Generate SPC result for AI analysis
+        # We need the full SPC result (metadata + qic_data) for AI suggestion
+        chart_type <- app_state$columns$mappings$chart_type %||% "run"
+
+        spc_result <- safe_operation(
+          operation_name = "Generate SPC result for AI",
+          code = {
+            # Prepare config
+            config <- list(
+              x_col = app_state$columns$mappings$x_column,
+              y_col = app_state$columns$mappings$y_column,
+              n_col = normalize_mapping(app_state$columns$mappings$n_column)
+            )
+
+            # Call generateSPCPlot to get full SPC result
+            result <- generateSPCPlot(
+              data = app_state$data$current_data,
+              config = config,
+              chart_type = chart_type,
+              target_value = normalize_mapping(app_state$columns$mappings$target_value),
+              target_text = normalize_mapping(app_state$columns$mappings$target_text),
+              centerline_value = normalize_mapping(app_state$columns$mappings$centerline_value),
+              show_phases = !is.null(app_state$columns$mappings$skift_column),
+              skift_column = normalize_mapping(app_state$columns$mappings$skift_column),
+              frys_column = normalize_mapping(app_state$columns$mappings$frys_column),
+              chart_title_reactive = input$export_title %||% "",
+              y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
+              kommentar_column = normalize_mapping(app_state$columns$mappings$kommentar_column),
+              base_size = 14,
+              plot_context = "export_pdf" # Reuse PDF context for AI (Typst output, cache sharing)
+            )
+
+            log_debug(
+              .context = "EXPORT_MODULE",
+              message = "About to return SPC result from safe_operation",
+              details = list(
+                is_null = is.null(result),
+                has_metadata = !is.null(result$metadata),
+                has_plot = !is.null(result$plot)
+              )
+            )
+            result
+          },
+          fallback = function(e) {
+            log_error(
+              .context = "EXPORT_MODULE",
+              message = "Failed to generate SPC result for AI",
+              details = list(error = e$message)
+            )
+            return(NULL)
+          },
+          error_type = "processing"
+        )
+
+        log_debug(
+          .context = "EXPORT_MODULE",
+          message = "safe_operation() returned",
+          details = list(
+            is_null = is.null(spc_result),
+            class = class(spc_result)
+          )
+        )
+
+        # Check if SPC generation succeeded
+        if (is.null(spc_result)) {
+          log_error(
+            .context = "EXPORT_MODULE",
+            message = "SPC result generation failed - returning NULL"
+          )
+
+          shiny::showNotification(
+            "Kunne ikke analysere SPC-data. Prøv igen.",
+            type = "error",
+            duration = 5
+          )
+
+          # Re-enable button and clear loading
+          shinyjs::enable("ai_generate_suggestion")
+          output$ai_loading_feedback <- shiny::renderUI(NULL)
+
+          return()
+        }
+
+        log_info(
+          .context = "EXPORT_MODULE",
+          message = "SPC result generated successfully for AI",
+          details = list(
+            has_metadata = !is.null(spc_result$metadata),
+            has_plot = !is.null(spc_result$plot),
+            metadata_chart_type = spc_result$metadata$chart_type %||% "unknown"
+          )
+        )
+
+        # Gather context from inputs
+        log_debug(
+          .context = "EXPORT_MODULE",
+          message = "Starting context gathering from inputs"
+        )
+
+        context <- list(
+          data_definition = input$pdf_description %||% "",
+          chart_title = input$export_title %||% "",
+          y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
+          target_value = normalize_mapping(app_state$columns$mappings$target_value)
+        )
+
+        log_debug(
+          .context = "EXPORT_MODULE",
+          message = "AI context prepared",
+          details = list(
+            has_data_definition = !is.null(context$data_definition) && nchar(context$data_definition) > 0,
+            has_target = !is.null(context$target_value),
+            chart_type = chart_type,
+            data_def_length = nchar(context$data_definition %||% "")
+          )
+        )
+
+        # Generate suggestion
+        log_info(
+          .context = "EXPORT_MODULE",
+          message = "About to call generate_improvement_suggestion()",
+          details = list(
+            session_valid = !is.null(session),
+            spc_result_valid = !is.null(spc_result),
+            context_valid = !is.null(context)
+          )
+        )
+
+        suggestion <- generate_improvement_suggestion(
+          spc_result = spc_result,
+          context = context,
+          session = session,
+          max_chars = 350
+        )
+
+        log_info(
+          .context = "EXPORT_MODULE",
+          message = "generate_improvement_suggestion() returned",
+          details = list(
+            is_null = is.null(suggestion),
+            length = if (!is.null(suggestion)) nchar(suggestion) else NA
+          )
+        )
+
+        # Update UI based on result
+        if (!is.null(suggestion)) {
+          log_info(
+            .context = "EXPORT_MODULE",
+            message = "Updating UI with suggestion",
+            details = list(suggestion_length = nchar(suggestion))
+          )
+          # Success: Insert suggestion
+          shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
+
+          shiny::showNotification(
+            "✓ Forslag genereret. Du kan nu redigere forslaget efter behov.",
+            type = "message",
+            duration = 3
+          )
+
+          log_info(
+            .context = "EXPORT_MODULE",
+            message = "AI suggestion inserted successfully",
+            details = list(suggestion_length = nchar(suggestion))
+          )
+        } else {
+          # Failure: Show error
+          shiny::showNotification(
+            "Kunne ikke generere AI-forslag. Tjek internetforbindelse og prøv igen, eller skriv forbedringsmålet manuelt.",
+            type = "error",
+            duration = 8
+          )
+
+          log_warn(
+            .context = "EXPORT_MODULE",
+            message = "AI suggestion generation failed"
+          )
+        }
+
+        # Re-enable button and clear loading
+        shinyjs::enable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI(NULL)
+      },
+      priority = OBSERVER_PRIORITIES$HIGH
     )
 
     # PREVIEW GENERATION ======================================================
@@ -204,7 +485,7 @@ mod_export_server <- function(id, app_state) {
     export_plot <- shiny::reactive({
       # Log BEFORE req() checks to diagnose issues
       log_debug(
-        component = "[EXPORT_MODULE]",
+        .context = "EXPORT_MODULE",
         message = "export_plot() reactive called - checking prerequisites",
         details = list(
           has_app_state = !is.null(app_state),
@@ -239,7 +520,7 @@ mod_export_server <- function(id, app_state) {
       #    directly to Export-side before visiting Analyse-side
 
       log_debug(
-        component = "[EXPORT_MODULE]",
+        .context = "EXPORT_MODULE",
         message = "export_plot() reactive - all req() checks passed, generating plot"
       )
 
@@ -262,7 +543,7 @@ mod_export_server <- function(id, app_state) {
     pdf_export_plot <- shiny::reactive({
       # Log BEFORE req() checks to diagnose issues
       log_debug(
-        component = "[EXPORT_MODULE]",
+        .context = "EXPORT_MODULE",
         message = "pdf_export_plot() reactive called - checking prerequisites"
       )
 
@@ -289,14 +570,14 @@ mod_export_server <- function(id, app_state) {
     output$export_preview <- shiny::renderPlot(
       {
         log_debug(
-          component = "[EXPORT_MODULE]",
+          .context = "EXPORT_MODULE",
           message = "renderPlot for export_preview starting"
         )
 
         plot <- export_plot()
 
         log_debug(
-          component = "[EXPORT_MODULE]",
+          .context = "EXPORT_MODULE",
           message = "export_plot() returned",
           details = list(is_null = is.null(plot), has_data = !is.null(plot$data))
         )
@@ -399,7 +680,7 @@ mod_export_server <- function(id, app_state) {
           )
 
           log_debug(
-            component = "[EXPORT_MODULE]",
+            .context = "EXPORT_MODULE",
             message = "PDF preview PNG generated",
             details = list(
               preview_path = preview_path,
@@ -411,7 +692,7 @@ mod_export_server <- function(id, app_state) {
         },
         fallback = function(e) {
           log_error(
-            component = "[EXPORT_MODULE]",
+            .context = "EXPORT_MODULE",
             message = "Failed to generate PDF preview PNG",
             details = list(error = e$message)
           )
@@ -478,7 +759,7 @@ mod_export_server <- function(id, app_state) {
         )
 
         log_info(
-          component = "[EXPORT_MODULE]",
+          .context = "EXPORT_MODULE",
           message = "Download initiated",
           details = list(
             format = format,
@@ -520,7 +801,7 @@ mod_export_server <- function(id, app_state) {
 
               # PDF export via Typst/Quarto
               log_debug(
-                component = "[EXPORT_MODULE]",
+                .context = "EXPORT_MODULE",
                 message = "PDF export via Typst/Quarto"
               )
 
@@ -579,7 +860,7 @@ mod_export_server <- function(id, app_state) {
               # PNG export - full implementation with size presets and DPI
               # M13: Regenerate plot with export_png context for correct label placement
               log_debug(
-                component = "[EXPORT_MODULE]",
+                .context = "EXPORT_MODULE",
                 message = "PNG export with configurable size/DPI and context-aware generation"
               )
 
@@ -734,7 +1015,7 @@ mod_export_server <- function(id, app_state) {
               # PowerPoint export - full implementation using officer
               # M13: Regenerate plot with export_pptx context for correct label placement
               log_debug(
-                component = "[EXPORT_MODULE]",
+                .context = "EXPORT_MODULE",
                 message = "PowerPoint export with officer package and context-aware generation"
               )
 
@@ -860,14 +1141,14 @@ mod_export_server <- function(id, app_state) {
             }
 
             log_info(
-              component = "[EXPORT_MODULE]",
+              .context = "EXPORT_MODULE",
               message = "Export completed successfully",
               details = list(format = format, file = basename(file))
             )
           },
           fallback = function(e) {
             log_error(
-              component = "[EXPORT_MODULE]",
+              .context = "EXPORT_MODULE",
               message = "Export failed",
               details = list(
                 format = format,

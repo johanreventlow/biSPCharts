@@ -22,6 +22,10 @@ log_error(message = NULL, component = NULL, .context = NULL, details = NULL)
 Convenience-funktion til logging af ERROR-beskeder. Accepterer også en
 \code{condition} direkte (beskeden udtrækkes med \code{conditionMessage()}).
 }
+\details{
+\strong{Kontekst-filtrering:}
+Understøtter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
+}
 \examples{
 log_error("Kunne ikke læse fil", .context = "FILE_UPLOAD")
 log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))

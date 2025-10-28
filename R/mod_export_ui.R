@@ -127,6 +127,26 @@ mod_export_ui <- function(id) {
               class = "text-muted",
               sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
             )
+          ),
+          # AI Suggestion Button
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::actionButton(
+              ns("ai_generate_suggestion"),
+              label = "Generér forslag med AI",
+              icon = shiny::icon("sparkles"),
+              class = "btn-primary btn-sm",
+              style = "margin-top: 5px;"
+            ),
+            # Loading feedback (dynamic)
+            shiny::uiOutput(ns("ai_loading_feedback")),
+            # Help text
+            shiny::tags$p(
+              class = "text-muted",
+              style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
+              shiny::icon("info-circle"),
+              " AI kan hjælpe dig med at formulere forbedringsmål baseret på din SPC-analyse. Forslaget kan redigeres efter behov."
+            )
           )
         ),
 

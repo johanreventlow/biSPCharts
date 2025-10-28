@@ -1,0 +1,11 @@
+# Google Gemini API Key for AI-powered improvement suggestions
+# Get your key at: https://makersuite.google.com/app/apikey
+#
+# Setup instructions:
+# 1. Copy this file to .Renviron (in the project root directory)
+# 2. Replace 'your_api_key_here' with your actual Google API key
+# 3. Restart your R session for changes to take effect
+# 4. Verify setup: Sys.getenv("GOOGLE_API_KEY")
+#
+# Note: .Renviron is gitignored to keep your API key secure
+GOOGLE_API_KEY=your_api_key_here

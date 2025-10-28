@@ -69,6 +69,20 @@ LOG_CONTEXTS <- list(
     scoring = "COLUMN_SCORING"
   ),
 
+  # === AI Improvement Suggestions ===
+  ai = list(
+    metadata = "AI_METADATA",
+    prompt = "AI_PROMPT",
+    suggestion = "AI_SUGGESTION",
+    cache = "AI_CACHE",
+    gemini = "GEMINI_API"
+  ),
+
+  # === Export Module ===
+  export = list(
+    module = "EXPORT_MODULE"
+  ),
+
   # === Performance Monitoring ===
   performance = list(
     general = "PERFORMANCE",

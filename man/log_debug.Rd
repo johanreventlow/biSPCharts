@@ -19,7 +19,18 @@ Convenience-funktion til logging af DEBUG-beskeder.
 Accepterer vilkårligt antal argumenter (\code{...}) og formaterer dem robust
 (tåler lister, data.frames m.m.) uden at crashe i Shiny renderers.
 }
+\details{
+\strong{Kontekst-filtrering:}
+Når \code{spc.debug.context} option er sat, logges kun debug-beskeder hvis deres
+\code{.context} er i listen. Gør det muligt at filtrere debugging-output ned til
+relevante områder uden at øge token-forbrug.
+}
 \examples{
 log_debug("Status:", TRUE, .context = "RENDER_PLOT")
 log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
+
+# Kontekst-filtrering
+options(spc.debug.context = c("state", "data", "ai"))
+log_debug("Dette logges", .context = "state") # Log
+log_debug("Dette logges ikke", .context = "performance") # Skip
 }

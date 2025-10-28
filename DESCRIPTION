@@ -37,6 +37,7 @@ Imports:
     yaml (>= 2.3.0),
     digest,
     ellmer (>= 0.2.0),
+    ragnar (>= 0.1.0),
     withr,
     jsonlite (>= 1.8.0),
     shinylogs (>= 0.2.0),

@@ -1,10 +1,6 @@
 # Claude Instructions – SPCify
 
-> ## ⚠️ BOOTSTRAP REQUIRED
->
-> **Læs først:** `~/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md`
->
-> Denne fil instruerer hvilke globale standarder der skal læses baseret på projekttype.
+@~/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md
 
 ---
 

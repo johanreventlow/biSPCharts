@@ -82,12 +82,37 @@ ai:
   max_chars: 350
   rag:
     enabled: TRUE/FALSE  # Enable RAG knowledge base
-    n_results: 3         # Number of knowledge chunks to retrieve
+    n_results: 3         # Number of knowledge chunks to retrieve (1-10)
     method: "hybrid"     # "vector", "keyword", or "hybrid" search
   circuit_breaker:
     failure_threshold: 5
     reset_timeout_seconds: 300
 ```
+
+**Environment-Specific RAG Settings:**
+
+| Environment | RAG Enabled | Rationale |
+|-------------|-------------|-----------|
+| **default** | `true` | Base configuration with RAG enabled |
+| **development** | `true` | Enable RAG for development testing |
+| **production** | `true` | Grounded AI responses in production |
+| **testing** | `false` | Use mocks for deterministic tests |
+
+**RAG Configuration Parameters:**
+
+- **`enabled`** (Boolean): Feature flag to enable/disable RAG
+  - `true`: Query knowledge store for SPC methodology context
+  - `false`: Use base prompt without RAG augmentation
+
+- **`n_results`** (Integer, 1-10): Number of knowledge chunks to retrieve
+  - Lower values (1-2): Faster, less context
+  - Optimal (3): Balance mellem context og performance (anbefalet)
+  - Higher values (5-10): Richer context, slower retrieval
+
+- **`method`** (String): Search method for knowledge retrieval
+  - `"vector"`: Pure semantic similarity search
+  - `"keyword"`: Traditional keyword/BM25 search
+  - `"hybrid"`: Combined vector + keyword (anbefalet for SPC terminology)
 
 **Access configuration in code:**
 
@@ -101,8 +126,16 @@ if (isTRUE(ai_config$enabled)) {
 }
 
 # Get RAG settings
-rag_enabled <- ai_config$rag$enabled %||% TRUE
-n_results <- ai_config$rag$n_results %||% 3
+rag_config <- get_rag_config()
+if (isTRUE(rag_config$enabled)) {
+  spc_knowledge <- query_spc_knowledge(
+    chart_type = metadata$chart_type,
+    signals = signals,
+    target_comparison = target_comparison,
+    n_results = rag_config$n_results,
+    method = rag_config$method
+  )
+}
 ```
 
 ## Package Installation

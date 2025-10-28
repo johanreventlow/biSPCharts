@@ -70,6 +70,36 @@ get_log_level <- function() {
 }
 
 # intern hjælper (ikke-eksporteret)
+# Checker om et givet context skal logges baseret på spc.debug.context option
+.should_log_context <- function(context) {
+  # Hent den filtrerede context liste fra option
+  filtered_contexts <- getOption("spc.debug.context", default = NULL)
+
+  # Hvis option ikke er sat eller er NULL, log alt (default behavior)
+  if (is.null(filtered_contexts)) {
+    return(TRUE)
+  }
+
+  # Hvis der er "__EMPTY__" marker (tom liste), log intet
+  if (identical(filtered_contexts, "__EMPTY__")) {
+    return(FALSE)
+  }
+
+  # Hvis der er en tom vektor (c()), log intet (shouldn't happen due to R options behavior)
+  if (length(filtered_contexts) == 0) {
+    return(FALSE)
+  }
+
+  # Hvis context er NULL/UNSPECIFIED, log kun hvis det er eksplicit tilladt
+  if (is.null(context) || context == "UNSPECIFIED") {
+    return("UNSPECIFIED" %in% filtered_contexts)
+  }
+
+  # Check om context er i listen
+  context %in% filtered_contexts
+}
+
+# intern hjælper (ikke-eksporteret)
 .safe_format <- function(x) {
   # Direct tryCatch to avoid circular dependency with safe_operation
   tryCatch(
@@ -179,6 +209,11 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #' Accepterer vilkårligt antal argumenter (`...`) og formaterer dem robust
 #' (tåler lister, data.frames m.m.) uden at crashe i Shiny renderers.
 #'
+#' **Kontekst-filtrering:**
+#' Når `spc.debug.context` option er sat, logges kun debug-beskeder hvis deres
+#' `.context` er i listen. Gør det muligt at filtrere debugging-output ned til
+#' relevante områder uden at øge token-forbrug.
+#'
 #' @param ... Variable argumenter der sammenkædes til en debug-besked
 #' @param .context Valgfri kontekst-tag (f.eks. `"RENDER_PLOT"`, `"AUTO_DETECT"`)
 #'
@@ -186,9 +221,19 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #' @examples
 #' log_debug("Status:", TRUE, .context = "RENDER_PLOT")
 #' log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
+#'
+#' # Kontekst-filtrering
+#' options(spc.debug.context = c("state", "data", "ai"))
+#' log_debug("Dette logges", .context = "state") # Log
+#' log_debug("Dette logges ikke", .context = "performance") # Skip
 #' @export
 log_debug <- function(..., .context = NULL) {
   if (!.should_log("DEBUG")) {
+    return(invisible(NULL))
+  }
+
+  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
+  if (!.should_log_context(.context)) {
     return(invisible(NULL))
   }
 
@@ -225,6 +270,9 @@ log_debug <- function(..., .context = NULL) {
 #'
 #' Convenience-funktion til logging af INFO-beskeder.
 #'
+#' **Kontekst-filtrering:**
+#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#'
 #' @param message Besked der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"FILE_UPLOAD"`) - legacy parameter
 #' @param .context Valgfri kontekst-tag (f.eks. `"FILE_UPLOAD"`) - preferred parameter
@@ -238,6 +286,11 @@ log_debug <- function(..., .context = NULL) {
 log_info <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
+
+  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
+  if (!.should_log_context(context)) {
+    return(invisible(NULL))
+  }
 
   # If details are provided, format them as structured data
   if (!is.null(details)) {
@@ -260,6 +313,9 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #'
 #' Convenience-funktion til logging af WARN-beskeder.
 #'
+#' **Kontekst-filtrering:**
+#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#'
 #' @param message Besked der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"DATA_VALIDATION"`) - legacy parameter
 #' @param .context Valgfri kontekst-tag (f.eks. `"DATA_VALIDATION"`) - preferred parameter
@@ -273,6 +329,11 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 log_warn <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
+
+  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
+  if (!.should_log_context(context)) {
+    return(invisible(NULL))
+  }
 
   # If details are provided, format them as structured data
   if (!is.null(details)) {
@@ -296,6 +357,9 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #' Convenience-funktion til logging af ERROR-beskeder. Accepterer også en
 #' `condition` direkte (beskeden udtrækkes med `conditionMessage()`).
 #'
+#' **Kontekst-filtrering:**
+#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#'
 #' @param message Besked eller condition der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"ERROR_HANDLING"`) - legacy parameter
 #' @param .context Valgfri kontekst-tag (f.eks. `"ERROR_HANDLING"`) - preferred parameter
@@ -312,6 +376,12 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 log_error <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
+
+  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
+  if (!.should_log_context(context)) {
+    return(invisible(NULL))
+  }
+
   msg <- if (inherits(message, "condition")) conditionMessage(message) else message
 
   # If details are provided, format them as structured data
@@ -506,6 +576,145 @@ get_log_level_name <- function() {
   level_names <- c("DEBUG", "INFO", "WARN", "ERROR")
   current_numeric <- get_log_level()
   level_names[current_numeric]
+}
+
+#' Set debug context filtering
+#'
+#' Setter den `spc.debug.context` option til at filtrere logging baseret på context.
+#' Dette reducerer token-forbrug ved debugging ved kun at logge relevante områder.
+#'
+#' **Eksempler:**
+#' - `set_debug_context(c("state", "data"))` – log kun state og data contexts
+#' - `set_debug_context(NULL)` – log alt (default behavior)
+#' - `set_debug_context(character(0))` – log intet
+#'
+#' @param contexts Character vector af contexts som skal logges, eller `NULL` for at logge alt
+#'
+#' @return `invisible(NULL)`. Setter `spc.debug.context` option som en side effect.
+#'
+#' @examples
+#' \dontrun{
+#' # Log kun state og AI-relateret debugging
+#' set_debug_context(c("state", "ai"))
+#' log_debug("Dette logges", .context = "state") # ✓ Vises
+#' log_debug("Dette logges ikke", .context = "performance") # ✗ Skjult
+#'
+#' # Genop alle logninger
+#' set_debug_context(NULL)
+#' log_debug("Alt logges nu", .context = "performance") # ✓ Vises
+#' }
+#'
+#' @export
+set_debug_context <- function(contexts = NULL) {
+  if (is.null(contexts)) {
+    options(spc.debug.context = NULL)
+    message("[LOG_CONFIG] Debug context filtering disabled - logging all contexts")
+  } else if (length(contexts) == 0) {
+    # Use a special marker to represent "log nothing" since R options converts empty vector to NULL
+    options(spc.debug.context = "__EMPTY__")
+    message("[LOG_CONFIG] Debug context filtering enabled with empty context list - logging nothing")
+  } else {
+    # Validate that contexts are character
+    if (!is.character(contexts)) {
+      stop("contexts must be a character vector or NULL", call. = FALSE)
+    }
+    options(spc.debug.context = as.character(contexts))
+    message(sprintf(
+      "[LOG_CONFIG] Debug context filtering enabled - logging: %s",
+      paste(contexts, collapse = ", ")
+    ))
+  }
+  invisible(NULL)
+}
+
+#' Get current debug context filter
+#'
+#' Returnerer den nuværende `spc.debug.context` option værdi.
+#'
+#' @return Character vector af de filtrerede contexts, eller `NULL` hvis ingen filtrering er aktiv
+#'
+#' @examples
+#' \dontrun{
+#' get_debug_context() # NULL = logging alt
+#'
+#' set_debug_context(c("state", "data"))
+#' get_debug_context() # c("state", "data")
+#' }
+#'
+#' @export
+get_debug_context <- function() {
+  getOption("spc.debug.context", default = NULL)
+}
+
+#' List available log contexts
+#'
+#' Returnerer alle tilgængelige log context-værdier fra `LOG_CONTEXTS`.
+#' Nyttigt til at finde de rigtige context-navne for `set_debug_context()`.
+#'
+#' @return Character vector af alle tilgængelige log contexts
+#'
+#' @examples
+#' \dontrun{
+#' all_contexts <- list_available_log_contexts()
+#' head(all_contexts) # Se de første contexts
+#'
+#' # Brug til at sætte filtrering
+#' state_contexts <- grep("^state", all_contexts, value = TRUE)
+#' set_debug_context(state_contexts)
+#' }
+#'
+#' @export
+list_available_log_contexts <- function() {
+  all_contexts <- character()
+
+  for (category in names(LOG_CONTEXTS)) {
+    category_contexts <- LOG_CONTEXTS[[category]]
+    all_contexts <- c(
+      all_contexts,
+      unlist(category_contexts, use.names = FALSE)
+    )
+  }
+
+  return(unique(all_contexts))
+}
+
+#' Print all available debug contexts in organized table
+#'
+#' Viser alle tilgængelige log contexts organiseret efter kategori.
+#' Nyttigt til at finde de rigtige context-navne for `set_debug_context()`.
+#'
+#' @return Invisible NULL. Printer en organiseret tabel til konsolen.
+#'
+#' @examples
+#' \dontrun{
+#' show_debug_contexts() # See all available contexts organized by category
+#' }
+#'
+#' @export
+show_debug_contexts <- function() {
+  cat("\n")
+  cat("=== AVAILABLE DEBUG CONTEXTS ===\n")
+  cat("Use with: set_debug_context(c(\"context1\", \"context2\"))\n")
+  cat("\n")
+
+  for (category in names(LOG_CONTEXTS)) {
+    category_contexts <- LOG_CONTEXTS[[category]]
+    contexts_list <- unlist(category_contexts, use.names = FALSE)
+
+    cat(sprintf("%-20s:", toupper(category)))
+    cat(" ")
+    cat(paste(contexts_list, collapse = ", "))
+    cat("\n")
+  }
+
+  cat("\n")
+  cat("Examples:\n")
+  cat("  set_debug_context(c(\"state\", \"data\", \"ai\"))\n")
+  cat("  set_debug_context(c(\"render_plot\", \"y_axis_scaling\"))\n")
+  cat("  set_debug_context(NULL)  # Reset to log everything\n")
+  cat("\n")
+
+  invisible(NULL)
 }
 
 #' Sanitize session token for logging

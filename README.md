@@ -11,6 +11,83 @@ En professionel Shiny applikation til **Statistical Process Control (SPC)** anal
 - **Excel/CSV Import**: Robust file håndtering med metadata preservation
 - **Interactive UI**: Moderne Bootstrap interface med real-time feedback
 
+### AI-Assisteret Forbedringsmål
+
+SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af Google Gemini AI.
+
+**Features:**
+- Genererer konkrete, handlingsorienterede forslag på dansk (max 350 tegn)
+- Baseret på SPC-analyse (signaler, serielængde, målforhold)
+- Caching for hurtig respons (samme data → samme forslag)
+- Fejltolerant: AI-fejl crasher ikke appen
+- Fuldt editerbar output for brugertilpasning
+
+**Setup:**
+
+1. **Få en Google API-nøgle:**
+   - Gå til https://makersuite.google.com/app/apikey
+   - Opret en ny API-nøgle
+   - Kopier nøglen
+
+2. **Konfigurer environment variable:**
+   - Rediger `.Renviron` fil (brug `usethis::edit_r_environ()`)
+   - Tilføj: `GOOGLE_API_KEY=your_actual_api_key_here`
+   - Genstart R session
+
+3. **Verificer setup:**
+   ```r
+   Sys.getenv("GOOGLE_API_KEY")  # Should return your key
+   library(SPCify)
+   # AI button should be enabled in export panel
+   ```
+
+**Usage:**
+
+1. Upload data og generér SPC-graf
+2. Udfyld metadata i export-panel (datadefinition, titel, enhed)
+3. Klik "✨ Generér forslag med AI"
+4. Vent ~5-10 sekunder (første gang), derefter instant (cache)
+5. Redigér forslaget efter behov
+
+**Costs & Limits:**
+
+- **Model:** Gemini 2.0 Flash (gratis tier: 1500 requests/dag)
+- **Expected usage:** < 100 requests/dag per bruger
+- **Cache hit rate:** 70%+ (reducerer API calls)
+- **Cost:** Gratis for typisk brug
+
+**Troubleshooting:**
+
+*Problem:* "AI button er deaktiveret"
+- *Løsning:* Generér først en SPC-graf. Knappen aktiveres kun når data er tilgængelig.
+
+*Problem:* "AI-funktionalitet kræver Google API-nøgle"
+- *Løsning:* Sæt `GOOGLE_API_KEY` i `.Renviron` (se setup ovenfor)
+
+*Problem:* "Appen hænger i 30-60 sekunder når AI-knappen klikkes"
+- *Årsag:* Manglende eller ustabil internetforbindelse. AI-funktionen kræver aktiv internet.
+- *Løsning:*
+  - Tjek internetforbindelse (ping google.com)
+  - Prøv igen når forbindelsen er stabil
+  - Alternativt: Skriv forbedringsmålet manuelt
+- *Note:* Dette er en kendt limitation i upstream HTTP-klient. Timeout forbedringer er under udvikling.
+
+*Problem:* "For mange forespørgsler"
+- *Løsning:* Vent 1 minut og prøv igen. Rate limit er midlertidig.
+
+**Known Limitations:**
+
+- **Network Timeout:** Ved ustabil/manglende internet kan AI-knappen hænge i 30-60 sekunder før timeout. Dette er en upstream limitation i ellmer HTTP-klient. Sørg for stabil forbindelse før brug.
+- **Rate Limits:** Gemini free tier har 1500 requests/dag. Ved overskridelse, vent til næste dag.
+- **Response Quality:** AI-forslag er vejledende og skal altid reviewes før brug.
+
+**Privacy:**
+
+- Kun aggregerede SPC-statistikker sendes til Gemini (ingen rådata)
+- Ingen patient-identifikation sendes
+- Data bruges ikke til model-træning (per Google Gemini API policy)
+- Se `docs/adr/ADR-016-gemini-integration.md` for detaljer
+
 ### Tekniske Highlights
 - **Modular Architecture**: Clean separation med event-driven design patterns
 - **Environment-Aware Config**: Development/production/testing specific behavior
@@ -20,6 +97,7 @@ En professionel Shiny applikation til **Statistical Process Control (SPC)** anal
 - **Robust Error Handling**: Graceful degradation og centralized logging
 - **Performance Optimized**: Debounced operations, caching og memory management
 - **Danish Locale**: ISO-8859-1 encoding, komma decimal separator, danske labels
+- **AI Integration**: Google Gemini for automated improvement suggestions
 
 ## 🚀 Quick Start
 

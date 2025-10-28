@@ -20,8 +20,22 @@ generateSPCPlot(
   viewport_width = NULL,
   viewport_height = NULL,
   target_text = NULL,
-  qic_cache = NULL
+  qic_cache = NULL,
+  plot_context = "analysis",
+  override_dpi = NULL
 )
+}
+\arguments{
+\item{plot_context}{Character. Plot context identifier (default
+"analysis"). Valid contexts: "analysis", "export_preview",
+"export_pdf", "export_png", "export_pptx". Context determines cache
+isolation and enables context-aware label placement. Use PLOT_CONTEXTS
+constants from config_plot_contexts.R.}
+
+\item{override_dpi}{Numeric. Override DPI for dimension conversion
+(optional). Issue #64: Allows PNG export to use user-selected DPI
+instead of context default. If NULL, uses DPI from plot_context
+configuration.}
 }
 \description{
 Legacy alias for generateSPCPlot_with_backend(). Maintains backward

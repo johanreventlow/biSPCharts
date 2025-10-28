@@ -41,6 +41,9 @@ Log levels determine what messages are displayed:
 \item{WARN}{Warnings and errors only - standard production setting}
 \item{ERROR}{Only error messages - minimal logging}
 }
+
+For debug context filtering (to reduce token usage when debugging), see app.R
+and docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md.
 }
 \examples{
 \dontrun{
@@ -49,9 +52,6 @@ run_app()
 
 # Development with debug logging
 run_app(port = 4040, log_level = "DEBUG")
-
-# Troubleshooting with detailed logging
-run_app(log_level = "DEBUG", enable_test_mode = TRUE)
 
 # Production with minimal logging
 run_app(log_level = "WARN", launch_browser = TRUE)

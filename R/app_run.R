@@ -232,6 +232,9 @@ initialize_startup_performance_optimizations <- function() {
 #'   \item{ERROR}{Only error messages - minimal logging}
 #' }
 #'
+#' For debug context filtering (to reduce token usage when debugging), see app.R
+#' and docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md.
+#'
 #' @examples
 #' \dontrun{
 #' # Basic usage
@@ -239,9 +242,6 @@ initialize_startup_performance_optimizations <- function() {
 #'
 #' # Development with debug logging
 #' run_app(port = 4040, log_level = "DEBUG")
-#'
-#' # Troubleshooting with detailed logging
-#' run_app(log_level = "DEBUG", enable_test_mode = TRUE)
 #'
 #' # Production with minimal logging
 #' run_app(log_level = "WARN", launch_browser = TRUE)

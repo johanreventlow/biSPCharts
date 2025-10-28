@@ -109,6 +109,26 @@ source("data-raw/build_ragnar_store.R")
 dir.exists("inst/ragnar_store")
 ```
 
+**RAG Configuration:**
+
+RAG kan konfigureres via `inst/golem-config.yml`:
+
+```yaml
+ai:
+  rag:
+    enabled: true              # Enable/disable RAG
+    n_results: 3               # Antal knowledge chunks at hente (1-10)
+    method: "hybrid"           # Search method: "hybrid", "vector", "keyword"
+```
+
+**Environment-specific settings:**
+- **Development/Production:** RAG enabled (grounded AI responses)
+- **Testing:** RAG disabled (brug mocks for deterministic tests)
+
+**Performance tuning:**
+- `n_results: 3` er optimal balance (mere → bedre context, men langsommere)
+- `method: "hybrid"` kombinerer semantisk + keyword matching (anbefales)
+
 Se `docs/CONFIGURATION.md` for detaljeret RAG setup og troubleshooting.
 
 ### Tekniske Highlights

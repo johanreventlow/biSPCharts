@@ -53,19 +53,28 @@ load_ragnar_store <- function() {
     return(NULL)
   }
 
-  # Check 2: Store directory exists
+  # Check 2: Store file exists
+  # Try installed package location first, fallback to development mode
   store_path <- system.file("ragnar_store", package = "SPCify")
 
-  if (!dir.exists(store_path) || store_path == "") {
-    log_warn(
-      message = "Ragnar knowledge store not found",
-      .context = "RAG",
-      details = list(
-        expected_path = "inst/ragnar_store",
-        suggestion = "Run data-raw/build_ragnar_store.R to build store"
+  # Development mode fallback: check inst/ragnar_store directly
+  if (store_path == "" || !file.exists(store_path)) {
+    dev_store_path <- "inst/ragnar_store"
+    if (file.exists(dev_store_path)) {
+      store_path <- dev_store_path
+      log_debug("Using development mode store path", .context = "RAG")
+    } else {
+      log_warn(
+        message = "Ragnar knowledge store not found",
+        .context = "RAG",
+        details = list(
+          expected_installed = "inst/ragnar_store (in installed package)",
+          expected_dev = "inst/ragnar_store (in source directory)",
+          suggestion = "Run data-raw/build_ragnar_store.R to build store"
+        )
       )
-    )
-    return(NULL)
+      return(NULL)
+    }
   }
 
   log_debug("Loading Ragnar knowledge store", .context = "RAG")

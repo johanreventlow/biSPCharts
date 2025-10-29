@@ -131,6 +131,26 @@ ai:
 
 Se `docs/CONFIGURATION.md` for detaljeret RAG setup og troubleshooting.
 
+**Verificer RAG Virker:**
+
+```r
+# Kør verifikationsscript
+source("tests/manual/verify_rag.R")
+
+# Forventet output når RAG virker:
+# ✓ RAG enabled: TRUE
+# ✓ Ragnar store found at: inst/ragnar_store
+# ✓ Successfully connected to Ragnar store
+# ✓ Knowledge retrieved successfully
+# Chunks retrieved: 2
+# Context length: 4296 characters
+```
+
+**Ved problemer:**
+- Store ikke fundet → Kør `source("data-raw/build_ragnar_store.R")`
+- BM25 fejl → Store mangler index, rebuild med updated script
+- API key fejl → Sæt `GOOGLE_API_KEY` i `.Renviron`
+
 ### Tekniske Highlights
 - **Modular Architecture**: Clean separation med event-driven design patterns
 - **Environment-Aware Config**: Development/production/testing specific behavior

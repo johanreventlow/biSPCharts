@@ -29,9 +29,9 @@ mock_ragnar_store <- function(store_path, embeddings_provider = NULL) {
 }
 
 mock_ragnar_retrieve <- function(store, query, n = 3, method = "hybrid") {
-  # Return mock results
+  # Return mock results matching Ragnar's actual API (uses 'text' not 'content')
   data.frame(
-    content = c(
+    text = c(
       "SPC chart fundamentals: Common vs special cause variation",
       "Anhøj rules for detecting signals in run charts",
       "Target comparison and interpretation guidance"
@@ -258,7 +258,7 @@ test_that("query_spc_knowledge concatenates multiple results", {
 
   mockery::stub(query_spc_knowledge, "ragnar::ragnar_retrieve", function(store, query, n, method) {
     data.frame(
-      content = c("Result 1", "Result 2", "Result 3"),
+      text = c("Result 1", "Result 2", "Result 3"),
       score = c(0.9, 0.8, 0.7),
       stringsAsFactors = FALSE
     )

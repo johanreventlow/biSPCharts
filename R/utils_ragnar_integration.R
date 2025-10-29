@@ -223,8 +223,8 @@ query_spc_knowledge <- function(chart_type,
     return(NULL)
   }
 
-  # Extract and concatenate content
-  context <- paste(results$content, collapse = "\n\n")
+  # Extract and concatenate content (Ragnar returns 'text' column)
+  context <- paste(results$text, collapse = "\n\n")
 
   log_info(
     "Knowledge store query successful",

@@ -41,6 +41,25 @@ load_ragnar_store <- function() {
   # Mark load attempt
   .ragnar_store_cache$load_attempted <- TRUE
 
+  # API Key Setup: Ragnar requires GEMINI_API_KEY (not GOOGLE_API_KEY)
+  # Fallback from GOOGLE_API_KEY if GEMINI_API_KEY not set
+  if (Sys.getenv("GEMINI_API_KEY") == "") {
+    google_key <- Sys.getenv("GOOGLE_API_KEY")
+    if (google_key != "" && google_key != "your_api_key_here") {
+      Sys.setenv(GEMINI_API_KEY = google_key)
+      log_debug("Set GEMINI_API_KEY from GOOGLE_API_KEY for Ragnar", .context = "RAG")
+    } else {
+      log_warn(
+        message = "No API key found - RAG queries require GEMINI_API_KEY or GOOGLE_API_KEY",
+        .context = "RAG",
+        details = list(
+          suggestion = "Set GOOGLE_API_KEY in .Renviron or GEMINI_API_KEY directly"
+        )
+      )
+      # Don't return NULL here - store can still be loaded for inspection
+    }
+  }
+
   # Check 1: Ragnar package installed
   if (!requireNamespace("ragnar", quietly = TRUE)) {
     log_warn(
@@ -227,10 +246,12 @@ query_spc_knowledge <- function(chart_type,
   context <- paste(results$text, collapse = "\n\n")
 
   log_info(
-    "Knowledge store query successful",
-    "chunks_retrieved:", nrow(results),
-    "context_length:", nchar(context),
-    .context = "RAG"
+    message = "Knowledge store query successful",
+    .context = "RAG",
+    details = list(
+      chunks_retrieved = nrow(results),
+      context_length = nchar(context)
+    )
   )
 
   return(context)

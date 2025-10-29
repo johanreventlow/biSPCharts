@@ -25,6 +25,7 @@ devtools::load_all(reset = TRUE, recompile = FALSE, helpers = FALSE)
 # show_debug_contexts()
 # set_debug_context(c("data", "ai", "cache", "qic"))  # Uncomment to filter
 set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE"))
+# set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE"))
 # set_debug_context(NULL)
 
 # Run app with test mode enabled for development

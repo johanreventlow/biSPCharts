@@ -386,20 +386,31 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
           context$target_value
         )
 
-        spc_knowledge <- query_spc_knowledge(
-          chart_type = metadata$chart_type,
-          signals = signals,
-          target_comparison = target_comparison,
-          n_results = rag_config$n_results %||% 3,
-          method = rag_config$method %||% "hybrid"
+        # Graceful fallback: hvis RAG query fejler, fortsæt uden RAG
+        spc_knowledge <- tryCatch(
+          {
+            query_spc_knowledge(
+              chart_type = metadata$chart_type,
+              signals = signals,
+              target_comparison = target_comparison,
+              n_results = rag_config$n_results %||% 3
+            )
+          },
+          error = function(e) {
+            log_warn(
+              message = "RAG query failed - continuing without RAG context",
+              .context = "AI_SUGGESTION",
+              details = list(error = e$message)
+            )
+            return(NULL)
+          }
         )
 
         if (!is.null(spc_knowledge)) {
           log_info("RAG context retrieved",
             details = list(
               context_length = nchar(spc_knowledge),
-              n_results = rag_config$n_results,
-              method = rag_config$method
+              n_results = rag_config$n_results
             )
           )
         } else {

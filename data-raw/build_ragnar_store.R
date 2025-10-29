@@ -147,6 +147,24 @@ tryCatch(
   }
 )
 
+# Build Search Index -----------------------------------------------------------
+
+cat("\nBuilding search index for BM25 functionality...\n")
+
+tryCatch(
+  {
+    ragnar::ragnar_store_build_index(store = store)
+    cat("✓ Search index built successfully\n")
+  },
+  error = function(e) {
+    stop(
+      "Failed to build search index:\n",
+      e$message, "\n\n",
+      "BM25 search may not work without index.\n"
+    )
+  }
+)
+
 # Completion -------------------------------------------------------------------
 
 cat("=== Knowledge Store Build Complete ===\n\n")

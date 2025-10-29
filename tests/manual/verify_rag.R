@@ -79,7 +79,7 @@ if (!is.null(store) && requireNamespace("ragnar", quietly = TRUE)) {
   )
 
   if (!is.null(results) && nrow(results) > 0) {
-    context <- paste(results$content, collapse = "\n\n")
+    context <- paste(results$text, collapse = "\n\n")
     cat("   ✓ Knowledge retrieved successfully\n")
     cat("   Chunks retrieved:", nrow(results), "\n")
     cat("   Context length:", nchar(context), "characters\n")

@@ -88,6 +88,69 @@ SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af G
 - Data bruges ikke til model-træning (per Google Gemini API policy)
 - Se `docs/adr/ADR-016-gemini-integration.md` for detaljer
 
+**RAG Knowledge Base:**
+
+SPCify bruger RAG (Retrieval-Augmented Generation) med Ragnar-pakken til at grunde AI-forslag i autoritativ SPC-metodologi:
+
+- **Knowledge base:** 3 markdown dokumenter med SPC fundamentals, Anhøj rules, og interpretation guidance
+- **Source:** Jacob Anhøj's "SPC for Healthcare" (https://anhoej.github.io/spc4hc/)
+- **Build:** Knowledge store bygges automatisk ved package installation (kræver `GOOGLE_API_KEY`)
+- **Fallback:** AI fungerer uden RAG hvis build fejler (bruger base prompt)
+
+*Manuel build (hvis nødvendigt):*
+```r
+# Ensure GOOGLE_API_KEY is set
+Sys.getenv("GOOGLE_API_KEY")
+
+# Run build script
+source("data-raw/build_ragnar_store.R")
+
+# Verify store created
+dir.exists("inst/ragnar_store")
+```
+
+**RAG Configuration:**
+
+RAG kan konfigureres via `inst/golem-config.yml`:
+
+```yaml
+ai:
+  rag:
+    enabled: true              # Enable/disable RAG
+    n_results: 3               # Antal knowledge chunks at hente (1-10)
+    method: "hybrid"           # Search method: "hybrid", "vector", "keyword"
+```
+
+**Environment-specific settings:**
+- **Development/Production:** RAG enabled (grounded AI responses)
+- **Testing:** RAG disabled (brug mocks for deterministic tests)
+
+**Performance tuning:**
+- `n_results: 3` er optimal balance (mere → bedre context, men langsommere)
+- `method: "hybrid"` kombinerer semantisk + keyword matching (anbefales)
+
+Se `docs/CONFIGURATION.md` for detaljeret RAG setup og troubleshooting.
+
+**Verificer RAG Virker:**
+
+```r
+# Kør verifikationsscript
+source("tests/manual/verify_rag.R")
+
+# Forventet output når RAG virker:
+# ✓ RAG enabled: TRUE
+# ✓ Ragnar store found at: inst/ragnar_store
+# ✓ Successfully connected to Ragnar store
+# ✓ Knowledge retrieved successfully
+# Chunks retrieved: 2
+# Context length: 4296 characters
+```
+
+**Ved problemer:**
+- Store ikke fundet → Kør `source("data-raw/build_ragnar_store.R")`
+- BM25 fejl → Store mangler index, rebuild med updated script
+- API key fejl → Sæt `GOOGLE_API_KEY` i `.Renviron`
+
 ### Tekniske Highlights
 - **Modular Architecture**: Clean separation med event-driven design patterns
 - **Environment-Aware Config**: Development/production/testing specific behavior

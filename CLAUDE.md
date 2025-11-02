@@ -1,10 +1,25 @@
+<!-- OPENSPEC:START -->
+# OpenSpec Instructions
+
+These instructions are for AI assistants working in this project.
+
+Always open `@/openspec/AGENTS.md` when the request:
+- Mentions planning or proposals (words like proposal, spec, change, plan)
+- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
+- Sounds ambiguous and you need the authoritative spec before coding
+
+Use `@/openspec/AGENTS.md` to learn:
+- How to create and apply change proposals
+- Spec format and conventions
+- Project structure and guidelines
+
+Keep this managed block so 'openspec update' can refresh the instructions.
+
+<!-- OPENSPEC:END -->
+
 # Claude Instructions – SPCify
 
-> ## ⚠️ BOOTSTRAP REQUIRED
->
-> **Læs først:** `~/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md`
->
-> Denne fil instruerer hvilke globale standarder der skal læses baseret på projekttype.
+@~/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md
 
 ---
 
@@ -30,6 +45,8 @@
 - BFHcharts (SPC visualization engine)
 - BFHtheme (Hospital branding)
 - qicharts2 (Anhøj rules beregning)
+- Ragnar (RAG knowledge store for AI context enhancement)
+- Gemini API (LLM provider for AI improvement suggestions)
 
 ---
 
@@ -115,8 +132,9 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 
 - **BFHcharts** – SPC chart rendering og visualisering
 - **BFHtheme** – Hospital branding, themes og fonts
+- **Ragnar** – RAG knowledge store, embedding, retrieval algorithms
 
-❌ **ALDRIG implementer funktionalitet i SPCify som hører hjemme i BFHcharts eller BFHtheme**
+❌ **ALDRIG implementer funktionalitet i SPCify som hører hjemme i BFHcharts, BFHtheme eller Ragnar**
 
 ✅ **I STEDET:**
 1. Identificer manglende funktionalitet i ekstern pakke
@@ -130,12 +148,23 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 - Font fallback logic → BFHtheme ansvar
 - Hospital branding colors → BFHtheme ansvar
 - Chart styling defaults → BFHcharts ansvar
+- Embedding generation → Ragnar ansvar
+- BM25 search algorithms → Ragnar ansvar
+- Vector store operations → Ragnar ansvar
+- Chunking strategies → Ragnar ansvar
 
 ### Integration Pattern
 
-- SPCify: **Integration layer + business logic**
+- SPCify: **Integration layer + business logic + knowledge curation**
 - BFHcharts: **Visualization engine**
 - BFHtheme: **Styling framework**
+- Ragnar: **RAG knowledge store engine**
+
+**SPCify's RAG responsibilities:**
+- Knowledge content curation (`inst/spc_knowledge/`)
+- Integration layer (`R/utils_ragnar_integration.R`)
+- Application-specific query formulation
+- Store build scripts (`data-raw/build_ragnar_store.R`)
 
 ### Do NOT Modify
 
@@ -212,13 +241,20 @@ anhoej_metadata <- extract_anhoej_metadata(qic_result)
 | `config_chart_types.R` | SPC chart type definitions (DA→EN mappings) |
 | `config_observer_priorities.R` | Observer priorities (race condition prevention) |
 | `config_spc_config.R` | SPC-specifikke konstanter (validation, colors) |
-| `config_log_contexts.R` | Centraliserede log context strings |
+| `config_log_contexts.R` | Centraliserede log context strings (inkl. RAG contexts) |
 | `config_label_placement.R` | Intelligent label placement (collision avoidance) |
 | `config_system_config.R` | System constants (performance, timeouts, cache) |
 | `config_ui.R` | UI layout (widths, heights, font scaling) |
-| `inst/golem-config.yml` | Environment-based config (dev/prod/test) |
+| `inst/golem-config.yml` | Environment-based config (dev/prod/test, RAG settings) |
+| `.Renviron` | API keys og environment variables (GOOGLE_API_KEY, GEMINI_API_KEY) |
 
 **Detaljeret guide:** `docs/CONFIGURATION.md`
+
+**RAG Configuration:**
+- `inst/golem-config.yml` indeholder `rag:` section med RAG-specifikke settings
+- `.Renviron` skal indeholde `GOOGLE_API_KEY` (bruges automatisk som fallback til `GEMINI_API_KEY`)
+- Development mode: RAG store loading fra project root
+- Production mode: RAG store loading fra installed package
 
 ### Test Commands
 
@@ -231,7 +267,18 @@ R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 # Performance benchmark
 R -e "microbenchmark::microbenchmark(package = library(SPCify), source = source('global.R'), times = 5)"
+
+# Manual verification scripts (for external integrations)
+Rscript tests/manual/verify_rag.R
 ```
+
+**Manual Tests:**
+Manual tests bruges til scenarios hvor automatiseret testing ikke er praktisk:
+- **External API integrations** (Gemini API) - Kræver API keys og internet
+- **Development-only verification** - Interactive debugging og RAG store validation
+- **Cost-sensitive operations** - Undgå API costs i CI/CD pipeline
+
+Manual tests køres IKKE automatisk i CI/CD. De bruges under development og før production deployment.
 
 **Coverage targets:**
 - 100% kritiske paths (data load, plot generation, state sync)
@@ -278,6 +325,74 @@ gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 4. Dependency analysis før nye features
 5. Test coverage gaps identifikation
 
+### AI/LLM Integration Patterns
+
+**Architecture:**
+- **Primary function:** `R/fct_ai_improvement_suggestions.R` - AI suggestion generation
+- **RAG integration:** `R/utils_ragnar_integration.R` - Knowledge retrieval
+- **Caching layer:** `R/utils_ai_cache.R` - Response caching to reduce API calls
+
+**RAG-Enhanced vs Non-RAG Calls:**
+
+```r
+# RAG-enhanced (default for improvement suggestions)
+suggestion <- generate_ai_improvement_suggestion(
+  chart_data = data,
+  spc_metadata = metadata,
+  use_rag = TRUE  # Retrieves SPC knowledge context
+)
+
+# Non-RAG (fallback ved RAG fejl)
+suggestion <- generate_ai_improvement_suggestion(
+  chart_data = data,
+  spc_metadata = metadata,
+  use_rag = FALSE  # Kun chart data + metadata
+)
+```
+
+**Caching Strategy:**
+- **Cache key:** Baseret på chart data hash + metadata + RAG context
+- **Cache location:** Session-based (in-memory reactiveValues)
+- **Invalidation:** Automatic ved data updates (via events)
+- **Benefits:** Reducerer API calls, forbedrer response time, sænker costs
+
+**Graceful Degradation:**
+
+1. **RAG query fejl** → Fortsæt uden RAG context, log warning
+2. **API fejl** → Return informativ fejlbesked til bruger, log error
+3. **Cache miss** → Normal API call (ikke en fejl)
+
+**API Key Management:**
+
+```r
+# Runtime fallback pattern (implementeret i load_ragnar_store())
+if (Sys.getenv("GEMINI_API_KEY") == "") {
+  google_key <- Sys.getenv("GOOGLE_API_KEY")
+  if (google_key != "") {
+    Sys.setenv(GEMINI_API_KEY = google_key)
+  }
+}
+```
+
+- **Development:** `.Renviron` med `GOOGLE_API_KEY`
+- **Production:** Miljøvariabel management (containerized deployment)
+- **Fallback:** `GOOGLE_API_KEY` → `GEMINI_API_KEY` automatic
+
+**Prompt Construction Best Practices:**
+
+- **Structured context:** Chart type, metadata, Anhøj rules violations
+- **RAG context injection:** Top-k most relevant SPC knowledge chunks
+- **Language specification:** Dansk output explicit i prompt
+- **Output format:** Markdown med konkrete, handlingsorienterede anbefalinger
+- **Context window management:** Limit RAG chunks til top-5 for at undgå token overforbrug
+
+**Files involved:**
+- `R/fct_ai_improvement_suggestions.R` - Main AI logic
+- `R/utils_ragnar_integration.R` - RAG integration
+- `R/utils_ai_cache.R` - Cache implementation
+- `inst/golem-config.yml` - RAG configuration
+- `inst/spc_knowledge/` - Knowledge base content
+
 ### Danish Language
 
 - **UI text:** Dansk
@@ -289,6 +404,216 @@ gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 - Serieplot = SPC chart
 - Centrallinje = Center line
 - Kontrolgrænser = Control limits
+
+---
+
+## 7) RAG Integration Architecture
+
+### Overview
+
+SPCify bruger **Ragnar** (tidyverse RAG framework) til at forbedre AI-genererede forbedringsforslag med domæne-specifik SPC viden.
+
+**System Flow:**
+1. User anmoder om AI suggestion for SPC chart
+2. RAG query retriever relevante SPC knowledge chunks fra Ragnar store
+3. Retrieved context + chart data sendes til Gemini API
+4. AI genererer domæne-informeret forbedringsforslag på dansk
+
+### Architecture Components
+
+**Knowledge Base:**
+- **Location:** `inst/spc_knowledge/`
+- **Format:** Markdown files med SPC metodologi, best practices, Anhøj rules forklaringer
+- **Content:** SPC fundamentals, chart interpretation, special cause patterns
+
+**Ragnar Store:**
+- **Build script:** `data-raw/build_ragnar_store.R`
+- **Store location (dev):** `inst/ragnar_store/`
+- **Store location (prod):** Installed package path
+- **Embedding provider:** Gemini API (via `GOOGLE_API_KEY`)
+- **Search methods:** Semantic (embeddings) + BM25 (keyword)
+- **Chunks:** Markdown-based chunking med target size
+
+**Integration Layer:**
+- **Main file:** `R/utils_ragnar_integration.R`
+- **Key functions:**
+  - `load_ragnar_store()` - Loader store med API key fallback
+  - `query_spc_knowledge()` - Retriever relevante chunks
+  - `format_rag_context()` - Formatter context til prompt
+
+**AI Suggestion Flow:**
+- **Main file:** `R/fct_ai_improvement_suggestions.R`
+- **Integration point:** RAG query før Gemini API call
+- **Fallback:** Graceful degradation ved RAG fejl (fortsæt uden RAG context)
+
+### Build Process
+
+**Knowledge Store Build:**
+
+```r
+# Kør fra project root
+source("data-raw/build_ragnar_store.R")
+```
+
+**Build steps:**
+1. Initialize Ragnar store med Gemini embeddings
+2. Read markdown files fra `inst/spc_knowledge/`
+3. Chunk documents (markdown-aware)
+4. Generate embeddings via Gemini API
+5. Build BM25 search index
+6. Persist store til `inst/ragnar_store/`
+
+**Verification:**
+
+```r
+# Manual verification
+Rscript tests/manual/verify_rag.R
+```
+
+### Development vs Production Mode
+
+**Development Mode Detection:**
+
+```r
+# SPCify ikke installeret → development mode
+ragnar_store_path <- system.file("ragnar_store", package = "SPCify")
+if (ragnar_store_path == "") {
+  ragnar_store_path <- "inst/ragnar_store"  # Project root
+}
+```
+
+**Development:**
+- Store path: `inst/ragnar_store/` (relative til project root)
+- API key: `.Renviron` med `GOOGLE_API_KEY`
+- Rebuild: Manual via `data-raw/build_ragnar_store.R`
+
+**Production:**
+- Store path: Installed package `system.file("ragnar_store", package = "SPCify")`
+- API key: Environment variable (container/deployment config)
+- Rebuild: Package reinstall med updated knowledge base
+
+### Configuration
+
+**Golem Config (`inst/golem-config.yml`):**
+
+```yaml
+default:
+  rag:
+    enabled: TRUE
+    top_k: 5
+    min_similarity: 0.3
+
+test:
+  rag:
+    enabled: FALSE  # Skip RAG i automated tests
+```
+
+**API Keys:**
+- `GOOGLE_API_KEY` - Primary (bruges til både embeddings og generation)
+- `GEMINI_API_KEY` - Auto-populated som fallback fra `GOOGLE_API_KEY`
+
+### Modification Guidelines
+
+**When to Modify Knowledge Base:**
+- Nye SPC metodologier eller best practices
+- Opdaterede Anhøj rules fortolkninger
+- Feedback fra klinikere om manglende viden
+- Fejlagtige eller outdated information
+
+**Update Process:**
+1. Edit markdown files i `inst/spc_knowledge/`
+2. Rebuild Ragnar store: `source("data-raw/build_ragnar_store.R")`
+3. Verify via `Rscript tests/manual/verify_rag.R`
+4. Test AI suggestions med updated knowledge
+5. Commit både markdown source OG rebuilt store
+
+**When to Modify Integration Layer:**
+- Ændringer i RAG query strategi (top-k, similarity threshold)
+- Nye prompt engineering patterns
+- Performance optimization (caching, batching)
+- Graceful degradation improvements
+
+**When NOT to Modify (Escalate to Ragnar):**
+- Embedding generation algorithms
+- Vector search/retrieval algorithms
+- BM25 implementation
+- Store persistence format
+- Chunking algorithms (se External Package Ownership)
+
+### Performance Considerations
+
+**Embedding Generation:**
+- **Cost:** Gemini API call per chunk (one-time ved store build)
+- **Time:** ~1-2s per document (afhængig af size)
+- **Optimization:** Batch builds, incremental updates
+
+**Query Performance:**
+- **Retrieval:** <100ms for semantic + BM25 search
+- **Caching:** Session-based cache for identical queries
+- **Top-k limit:** Default 5 chunks (balance mellem context quality og token usage)
+
+**API Usage:**
+- **Store build:** One-time embedding cost (rebuild kun ved knowledge updates)
+- **Query time:** Kun Gemini generation call (embeddings reused fra store)
+- **Caching:** Reduces repeated API calls for samme chart data
+
+### Testing Strategy
+
+**Automated Tests:**
+- `tests/testthat/test-utils_ragnar_integration.R` - Integration layer logic
+- `tests/testthat/test-fct_ai_improvement_suggestions.R` - AI suggestion flow med RAG
+- Mocked Ragnar calls (no API dependency)
+
+**Manual Tests:**
+- `tests/manual/verify_rag.R` - End-to-end RAG verification
+- Requires: API key, internet, Ragnar store built
+- Use case: Pre-deployment verification
+
+**Coverage:**
+- Integration layer: 100% (critical path)
+- Fallback scenarios: Required (RAG fejl, API fejl)
+- Cache invalidation: Verified via events
+
+### Troubleshooting
+
+**Common Issues:**
+
+1. **"Ragnar store not found"**
+   - Check `inst/ragnar_store/` exists
+   - Run `source("data-raw/build_ragnar_store.R")`
+   - Verify development mode detection
+
+2. **"API key not configured"**
+   - Add `GOOGLE_API_KEY` til `.Renviron`
+   - Restart R session
+   - Check `Sys.getenv("GOOGLE_API_KEY")`
+
+3. **"No results from RAG query"**
+   - Check query formulation
+   - Verify store built successfully
+   - Check `min_similarity` threshold i config
+
+4. **"Poor suggestion quality"**
+   - Review RAG context chunks (are they relevant?)
+   - Check `top_k` setting (more/fewer chunks?)
+   - Update knowledge base content
+   - Rebuild store
+
+**Debug Logging:**
+
+```r
+# Enable RAG debug logs
+options(spc.log.level = "debug")
+
+# Check RAG context in logs
+# [RAG] - Context retrieval and formatting
+```
+
+### Related Documentation
+
+- **README.md** - RAG verification guide
+- **MCP Context** - Recent RAG implementation sessions
+- **Issues:** #82, #83, #87, #79 - Original RAG epic implementation
 
 ---
 

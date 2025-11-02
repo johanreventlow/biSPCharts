@@ -102,7 +102,7 @@ get_ai_config <- function() {
 
 #' Generate Cache Key for AI Response
 #'
-#' Creates deterministic hash from metadata and context to ensure
+#' Creates deterministic hash from metadata, context, and RAG knowledge to ensure
 #' same inputs always produce same cache key.
 #'
 #' Only includes stable fields in the hash to avoid cache misses from
@@ -110,6 +110,9 @@ get_ai_config <- function() {
 #'
 #' @param metadata List from extract_spc_metadata() containing SPC statistics
 #' @param context List with user context (data_definition, chart_title, etc.)
+#' @param spc_knowledge Character string with RAG-retrieved SPC methodology
+#'   context (optional, default NULL). Hvis inkluderet, sikrer det at
+#'   cache keys skelner mellem responses med og uden RAG context.
 #'
 #' @return Character string (hex hash using xxhash64 algorithm)
 #'
@@ -128,6 +131,9 @@ get_ai_config <- function() {
 #' - chart_title: Chart title
 #' - y_axis_unit: Y-axis unit (e.g., "%", "antal")
 #' - target_value: Target value if set
+#'
+#' **RAG knowledge field:**
+#' - spc_knowledge: RAG-retrieved SPC methodology context (empty string if NULL)
 #'
 #' **Fields EXCLUDED from hash:**
 #' - Timestamps (start_date, end_date)
@@ -153,12 +159,17 @@ get_ai_config <- function() {
 #'   target_value = 30
 #' )
 #'
-#' key <- generate_ai_cache_key(metadata, context)
-#' # Returns: "a1b2c3d4e5f6g7h8" (deterministic hash)
+#' # Without RAG
+#' key1 <- generate_ai_cache_key(metadata, context)
+#'
+#' # With RAG
+#' spc_knowledge <- query_spc_knowledge("run", c("Serielængde"), "over")
+#' key2 <- generate_ai_cache_key(metadata, context, spc_knowledge)
+#' # key1 != key2 (different RAG context produces different cache key)
 #' }
 #'
 #' @keywords internal
-generate_ai_cache_key <- function(metadata, context) {
+generate_ai_cache_key <- function(metadata, context, spc_knowledge = NULL) {
   # Normalize metadata (remove unstable fields like timestamps)
   stable_metadata <- list(
     chart_type = metadata$chart_type,
@@ -178,10 +189,11 @@ generate_ai_cache_key <- function(metadata, context) {
     target_value = as.character(context$target_value %||% "")
   )
 
-  # Combine and serialize
+  # Combine and serialize (include RAG knowledge if available)
   combined <- list(
     metadata = stable_metadata,
-    context = stable_context
+    context = stable_context,
+    spc_knowledge = spc_knowledge %||% "" # Empty string if NULL
   )
 
   # Generate hash (using digest package with xxhash64 - fast and collision-resistant)

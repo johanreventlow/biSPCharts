@@ -527,3 +527,120 @@ test_that("cache key collision is extremely unlikely", {
   # All keys should be unique
   expect_equal(length(unique(keys)), 100)
 })
+
+# ==============================================================================
+# TEST: generate_ai_cache_key() with RAG Context - Cache Key Differentiation
+# ==============================================================================
+
+test_that("generate_ai_cache_key includes RAG context in hash", {
+  metadata <- list(
+    chart_type = "run",
+    n_points = 24,
+    signals_detected = 2,
+    longest_run = 8,
+    n_crossings = 3,
+    centerline = 45.2,
+    process_variation = "stable"
+  )
+
+  context <- list(
+    data_definition = "Ventetid i minutter",
+    chart_title = "Akutmodtagelse ventetid",
+    y_axis_unit = "minutter",
+    target_value = 30
+  )
+
+  rag_context <- "SPC fundamentals: Common cause vs special cause variation."
+
+  # Key without RAG
+  key_no_rag <- generate_ai_cache_key(metadata, context, NULL)
+
+  # Key with RAG
+  key_with_rag <- generate_ai_cache_key(metadata, context, rag_context)
+
+  # Keys should be different
+  expect_false(key_no_rag == key_with_rag)
+})
+
+test_that("generate_ai_cache_key is deterministic with RAG context", {
+  metadata <- list(
+    chart_type = "run",
+    n_points = 24,
+    signals_detected = 2,
+    longest_run = 8,
+    n_crossings = 3,
+    centerline = 45.2,
+    process_variation = "stable"
+  )
+
+  context <- list(
+    data_definition = "Ventetid i minutter",
+    chart_title = "Akutmodtagelse ventetid",
+    y_axis_unit = "minutter",
+    target_value = 30
+  )
+
+  rag_context <- "SPC chart interpretation guidelines."
+
+  # Same inputs should produce same key
+  key1 <- generate_ai_cache_key(metadata, context, rag_context)
+  key2 <- generate_ai_cache_key(metadata, context, rag_context)
+
+  expect_identical(key1, key2)
+})
+
+test_that("generate_ai_cache_key treats NULL and empty string RAG differently", {
+  metadata <- list(
+    chart_type = "run",
+    n_points = 24,
+    signals_detected = 0,
+    longest_run = 0,
+    n_crossings = 10,
+    centerline = 50.0,
+    process_variation = "naturligt"
+  )
+
+  context <- list(
+    data_definition = "Test",
+    chart_title = "Test",
+    y_axis_unit = "antal",
+    target_value = 50
+  )
+
+  # Key with NULL RAG (default behavior)
+  key_null <- generate_ai_cache_key(metadata, context, NULL)
+
+  # Key with empty string RAG (explicit empty)
+  key_empty <- generate_ai_cache_key(metadata, context, "")
+
+  # Both should produce same key (NULL coalesced to "")
+  expect_identical(key_null, key_empty)
+})
+
+test_that("generate_ai_cache_key differentiates between different RAG contexts", {
+  metadata <- list(
+    chart_type = "run",
+    n_points = 24,
+    signals_detected = 1,
+    longest_run = 6,
+    n_crossings = 5,
+    centerline = 42.0,
+    process_variation = "ikke naturligt"
+  )
+
+  context <- list(
+    data_definition = "Ventetid",
+    chart_title = "Test chart",
+    y_axis_unit = "dage",
+    target_value = 40
+  )
+
+  rag_context_1 <- "Anhøj rules for detecting signals."
+  rag_context_2 <- "Target comparison interpretation guidance."
+
+  key1 <- generate_ai_cache_key(metadata, context, rag_context_1)
+  key2 <- generate_ai_cache_key(metadata, context, rag_context_2)
+
+  # Different RAG contexts should produce different keys
+  expect_false(key1 == key2)
+})

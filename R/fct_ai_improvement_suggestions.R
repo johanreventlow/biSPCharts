@@ -182,6 +182,7 @@ determine_target_comparison <- function(centerline, target_value) {
 #'
 #' Kombinerer SPC metadata med user context og interpolerer prompt template.
 #' Tilføjer target comparison baseret på centerline vs target.
+#' Kan inkludere RAG-hentet SPC metodologi kontekst for at grunde Gemini respons.
 #'
 #' @param metadata List from extract_spc_metadata()
 #' @param context List with user-provided context:
@@ -189,9 +190,12 @@ determine_target_comparison <- function(centerline, target_value) {
 #'   - chart_title: Character string graf titel
 #'   - y_axis_unit: Character string måleenhed
 #'   - target_value: Numeric target værdi (can be NULL)
+#' @param spc_knowledge Character string with RAG-retrieved SPC methodology
+#'   context (optional, default NULL). Hvis ikke-NULL, tilføjes som ekstra
+#'   reference section i prompten.
 #'
 #' @return Character string with complete Gemini prompt (1500+ chars)
-#'   med alle placeholders udfyldt
+#'   med alle placeholders udfyldt, inklusiv RAG context hvis tilgængelig
 #'
 #' @keywords internal
 #' @examples
@@ -203,10 +207,15 @@ determine_target_comparison <- function(centerline, target_value) {
 #'   y_axis_unit = "dage",
 #'   target_value = 30
 #' )
+#' # Without RAG
 #' prompt <- build_gemini_prompt(metadata, context)
-#' # Returns full prompt ready for Gemini API
+#'
+#' # With RAG
+#' spc_knowledge <- query_spc_knowledge("run", c("Serielængde"), "over")
+#' prompt <- build_gemini_prompt(metadata, context, spc_knowledge)
+#' # Returns full prompt ready for Gemini API with RAG context
 #' }
-build_gemini_prompt <- function(metadata, context) {
+build_gemini_prompt <- function(metadata, context, spc_knowledge = NULL) {
   # Validate inputs
   if (is.null(metadata) || is.null(context)) {
     log_error("Cannot build prompt: metadata or context is NULL", .context = "AI_PROMPT")
@@ -242,10 +251,28 @@ build_gemini_prompt <- function(metadata, context) {
     return(NULL)
   }
 
+  # Append RAG-retrieved SPC knowledge if available
+  if (!is.null(spc_knowledge) && nchar(spc_knowledge) > 0) {
+    rag_section <- sprintf(
+      "\n\n## SPC Metodologi Reference\n\nBrug følgende autoritativ SPC metodologi som reference til at grunde dit svar:\n\n%s\n",
+      spc_knowledge
+    )
+    prompt <- paste0(prompt, rag_section)
+
+    log_debug("RAG context appended to prompt",
+      .context = "AI_PROMPT",
+      details = list(
+        rag_context_length = nchar(spc_knowledge),
+        total_prompt_length = nchar(prompt)
+      )
+    )
+  }
+
   log_debug("Prompt built successfully",
     details = list(
       prompt_length = nchar(prompt),
-      has_target = !is.null(context$target_value)
+      has_target = !is.null(context$target_value),
+      has_rag = !is.null(spc_knowledge) && nchar(spc_knowledge) > 0
     )
   )
 
@@ -337,8 +364,64 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
         return(NULL)
       }
 
+      # Step 1.5: Query RAG knowledge store (hvis enabled)
+      spc_knowledge <- NULL
+      rag_config <- get_rag_config()
+
+      if (isTRUE(rag_config$enabled)) {
+        log_debug("RAG enabled - querying knowledge store", .context = "AI_SUGGESTION")
+
+        # Extract signals as character vector
+        signals <- if (!is.null(metadata$signals_detected) && metadata$signals_detected > 0) {
+          # TODO: Extract actual signal names from anhoej_rules
+          # For now, use generic signal indicator
+          c("Signaler detekteret")
+        } else {
+          NULL
+        }
+
+        # Determine target comparison for RAG query
+        target_comparison <- determine_target_comparison(
+          metadata$centerline,
+          context$target_value
+        )
+
+        # Graceful fallback: hvis RAG query fejler, fortsæt uden RAG
+        spc_knowledge <- tryCatch(
+          {
+            query_spc_knowledge(
+              chart_type = metadata$chart_type,
+              signals = signals,
+              target_comparison = target_comparison,
+              n_results = rag_config$n_results %||% 3
+            )
+          },
+          error = function(e) {
+            log_warn(
+              message = "RAG query failed - continuing without RAG context",
+              .context = "AI_SUGGESTION",
+              details = list(error = e$message)
+            )
+            return(NULL)
+          }
+        )
+
+        if (!is.null(spc_knowledge)) {
+          log_info("RAG context retrieved",
+            details = list(
+              context_length = nchar(spc_knowledge),
+              n_results = rag_config$n_results
+            )
+          )
+        } else {
+          log_debug("RAG query returned NULL - continuing without RAG context", .context = "AI_SUGGESTION")
+        }
+      } else {
+        log_debug("RAG disabled in config", .context = "AI_SUGGESTION")
+      }
+
       # Step 2: Check cache
-      cache_key <- generate_ai_cache_key(metadata, context)
+      cache_key <- generate_ai_cache_key(metadata, context, spc_knowledge)
       cached <- get_cached_ai_response(cache_key, session)
 
       if (!is.null(cached)) {
@@ -350,8 +433,8 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
 
       log_debug("Cache miss - will call Gemini API", .context = "AI_SUGGESTION")
 
-      # Step 3: Build prompt
-      prompt <- build_gemini_prompt(metadata, context)
+      # Step 3: Build prompt (with RAG context if available)
+      prompt <- build_gemini_prompt(metadata, context, spc_knowledge)
 
       if (is.null(prompt)) {
         log_error("Failed to build prompt", .context = "AI_SUGGESTION")

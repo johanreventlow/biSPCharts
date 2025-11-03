@@ -75,7 +75,8 @@ LOG_CONTEXTS <- list(
     prompt = "AI_PROMPT",
     suggestion = "AI_SUGGESTION",
     cache = "AI_CACHE",
-    gemini = "GEMINI_API"
+    gemini = "GEMINI_API",
+    rag = "RAG" # Ragnar RAG integration
   ),
 
   # === Export Module ===

@@ -90,6 +90,10 @@ default:
       reset_timeout_seconds: 300
     rate_limit:
       max_requests_per_minute: 20
+    rag:
+      enabled: true
+      n_results: 3              # Number of knowledge chunks to retrieve
+      method: "hybrid"          # Search method: "hybrid", "vector", "keyword"
 
 
 # DEVELOPMENT CONFIGURATION ==================================================
@@ -170,6 +174,10 @@ development:
   ai:
     enabled: true                   # Enable AI in development
     timeout_seconds: 15            # Longer timeout for debugging
+    rag:
+      enabled: true                 # Enable RAG for development testing
+      n_results: 3                  # Standard retrieval count
+      method: "hybrid"              # Hybrid search (vector + keyword)
 
   # Migration and experimental features (inherited from default, can override)
   features:
@@ -248,6 +256,10 @@ production:
   # AI configuration (production settings)
   ai:
     enabled: true                   # Enable AI in production
+    rag:
+      enabled: true                 # Enable RAG for grounded responses
+      n_results: 3                  # Balance between context and performance
+      method: "hybrid"              # Optimal search accuracy
 
 
 # TESTING CONFIGURATION ======================================================
@@ -328,4 +340,8 @@ testing:
   # AI configuration (testing overrides)
   ai:
     enabled: false                   # Disabled - use mocks in tests
+    rag:
+      enabled: false                # Disabled - use mocks for controlled tests
+      n_results: 3                  # Default for consistency
+      method: "hybrid"              # Standard method
 

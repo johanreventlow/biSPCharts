@@ -781,3 +781,277 @@ describe("generate_improvement_suggestion()", {
     expect_called(mock_cache, 0)
   })
 })
+
+# ==============================================================================
+# TEST: generate_improvement_suggestion() with RAG Integration
+# ==============================================================================
+
+test_that("generate_improvement_suggestion queries RAG when enabled", {
+  skip("RAG integration requires ragnar package - use mocks in actual implementation")
+
+  # This test documents expected behavior when RAG is integrated
+  # Actual test would use mocks for ragnar package functions
+})
+
+test_that("generate_improvement_suggestion includes RAG context in cache key", {
+  shiny::reactiveConsole(TRUE)
+
+  spc_result <- list(
+    metadata = list(
+      chart_type = "run",
+      n_points = 24,
+      signals_detected = 2,
+      anhoej_rules = list(
+        longest_run = 8,
+        n_crossings = 3,
+        n_crossings_min = 5
+      )
+    ),
+    qic_data = data.frame(
+      x = 1:24,
+      y = rnorm(24, 50, 5),
+      cl = rep(50, 24),
+      ucl = rep(60, 24),
+      lcl = rep(40, 24)
+    )
+  )
+
+  context <- list(
+    data_definition = "Ventetid i minutter",
+    chart_title = "Test",
+    y_axis_unit = "minutter",
+    target_value = 45
+  )
+
+  session <- create_mock_session()
+
+  # Mock RAG functions
+  rag_context <- "Mock RAG context: SPC interpretation guidance"
+  cache_key_captured <- NULL
+
+  stub(generate_improvement_suggestion, "get_rag_config", function() {
+    list(enabled = TRUE, n_results = 3, method = "hybrid")
+  })
+
+  stub(generate_improvement_suggestion, "query_spc_knowledge", function(...) {
+    rag_context
+  })
+
+  stub(generate_improvement_suggestion, "generate_ai_cache_key", function(m, c, rag) {
+    cache_key_captured <<- list(metadata = m, context = c, rag_context = rag)
+    "test_key_with_rag"
+  })
+
+  stub(generate_improvement_suggestion, "get_cached_ai_response", function(k, s) NULL)
+  stub(generate_improvement_suggestion, "build_gemini_prompt", function(m, c, rag) {
+    "Mock prompt with RAG"
+  })
+  stub(generate_improvement_suggestion, "call_gemini_api", function(...) {
+    "Mock response"
+  })
+  stub(generate_improvement_suggestion, "validate_gemini_response", function(r, m) r)
+  stub(generate_improvement_suggestion, "cache_ai_response", function(...) TRUE)
+
+  result <- generate_improvement_suggestion(spc_result, context, session)
+
+  # Verify RAG context was passed to cache key generation
+  expect_false(is.null(cache_key_captured))
+  expect_equal(cache_key_captured$rag_context, rag_context)
+})
+
+test_that("generate_improvement_suggestion gracefully handles RAG disabled", {
+  shiny::reactiveConsole(TRUE)
+
+  spc_result <- list(
+    metadata = list(
+      chart_type = "run",
+      n_points = 24,
+      signals_detected = 0,
+      anhoej_rules = list(
+        longest_run = 5,
+        n_crossings = 10,
+        n_crossings_min = 8
+      )
+    ),
+    qic_data = data.frame(
+      x = 1:24,
+      y = rnorm(24, 50, 5),
+      cl = rep(50, 24),
+      ucl = rep(60, 24),
+      lcl = rep(40, 24)
+    )
+  )
+
+  context <- list(
+    data_definition = "Test data",
+    chart_title = "Test",
+    y_axis_unit = "antal",
+    target_value = NULL
+  )
+
+  session <- create_mock_session()
+
+  cache_key_captured <- NULL
+
+  stub(generate_improvement_suggestion, "get_rag_config", function() {
+    list(enabled = FALSE, n_results = 3, method = "hybrid")
+  })
+
+  stub(generate_improvement_suggestion, "generate_ai_cache_key", function(m, c, rag) {
+    cache_key_captured <<- rag
+    "test_key_no_rag"
+  })
+
+  stub(generate_improvement_suggestion, "get_cached_ai_response", function(k, s) NULL)
+  stub(generate_improvement_suggestion, "build_gemini_prompt", function(m, c, rag) {
+    "Mock prompt without RAG"
+  })
+  stub(generate_improvement_suggestion, "call_gemini_api", function(...) {
+    "Mock response"
+  })
+  stub(generate_improvement_suggestion, "validate_gemini_response", function(r, m) r)
+  stub(generate_improvement_suggestion, "cache_ai_response", function(...) TRUE)
+
+  result <- generate_improvement_suggestion(spc_result, context, session)
+
+  # Verify RAG context is NULL when disabled
+  expect_null(cache_key_captured)
+})
+
+test_that("generate_improvement_suggestion continues when RAG query returns NULL", {
+  shiny::reactiveConsole(TRUE)
+
+  spc_result <- list(
+    metadata = list(
+      chart_type = "run",
+      n_points = 24,
+      signals_detected = 1,
+      anhoej_rules = list(
+        longest_run = 7,
+        n_crossings = 4,
+        n_crossings_min = 6
+      )
+    ),
+    qic_data = data.frame(
+      x = 1:24,
+      y = rnorm(24, 50, 5),
+      cl = rep(50, 24),
+      ucl = rep(60, 24),
+      lcl = rep(40, 24)
+    )
+  )
+
+  context <- list(
+    data_definition = "Test",
+    chart_title = "Test",
+    y_axis_unit = "procent",
+    target_value = 50
+  )
+
+  session <- create_mock_session()
+
+  stub(generate_improvement_suggestion, "get_rag_config", function() {
+    list(enabled = TRUE, n_results = 3, method = "hybrid")
+  })
+
+  stub(generate_improvement_suggestion, "query_spc_knowledge", function(...) {
+    NULL  # Simulate RAG query failure
+  })
+
+  stub(generate_improvement_suggestion, "generate_ai_cache_key", function(m, c, rag) {
+    "test_key"
+  })
+
+  stub(generate_improvement_suggestion, "get_cached_ai_response", function(k, s) NULL)
+  stub(generate_improvement_suggestion, "build_gemini_prompt", function(m, c, rag) {
+    "Mock prompt"
+  })
+  stub(generate_improvement_suggestion, "call_gemini_api", function(...) {
+    "Mock response"
+  })
+  stub(generate_improvement_suggestion, "validate_gemini_response", function(r, m) r)
+  stub(generate_improvement_suggestion, "cache_ai_response", function(...) TRUE)
+
+  # Should not error even when RAG query returns NULL
+  result <- generate_improvement_suggestion(spc_result, context, session)
+
+  expect_type(result, "character")
+})
+
+# ==============================================================================
+# TEST: build_gemini_prompt() with RAG Context
+# ==============================================================================
+
+test_that("build_gemini_prompt appends RAG context when provided", {
+  metadata <- list(
+    chart_type = "run",
+    chart_type_dansk = "Serieplot",
+    n_points = 24,
+    signals_detected = 2,
+    longest_run = 8,
+    n_crossings = 3,
+    centerline = 50.0,
+    process_variation = "ikke naturligt",
+    start_date = "2024-01-01",
+    end_date = "2024-12-31"
+  )
+
+  context <- list(
+    data_definition = "Ventetid",
+    chart_title = "Test chart",
+    y_axis_unit = "minutter",
+    target_value = 45
+  )
+
+  rag_context <- "SPC Methodology: Common cause vs special cause variation principles."
+
+  stub(build_gemini_prompt, "get_improvement_suggestion_template", function() {
+    "Mock template with {{chart_type}} and {{n_points}}"
+  })
+
+  stub(build_gemini_prompt, "interpolate_prompt", function(template, data) {
+    "Interpolated prompt without RAG"
+  })
+
+  prompt <- build_gemini_prompt(metadata, context, rag_context)
+
+  # Verify RAG section is appended
+  expect_true(grepl("SPC Metodologi Reference", prompt, fixed = TRUE))
+  expect_true(grepl(rag_context, prompt, fixed = TRUE))
+})
+
+test_that("build_gemini_prompt works without RAG context", {
+  metadata <- list(
+    chart_type = "run",
+    chart_type_dansk = "Serieplot",
+    n_points = 24,
+    signals_detected = 0,
+    longest_run = 5,
+    n_crossings = 10,
+    centerline = 50.0,
+    process_variation = "naturligt",
+    start_date = "2024-01-01",
+    end_date = "2024-12-31"
+  )
+
+  context <- list(
+    data_definition = "Test",
+    chart_title = "Test",
+    y_axis_unit = "antal",
+    target_value = NULL
+  )
+
+  stub(build_gemini_prompt, "get_improvement_suggestion_template", function() {
+    "Mock template"
+  })
+
+  stub(build_gemini_prompt, "interpolate_prompt", function(template, data) {
+    "Interpolated prompt"
+  })
+
+  # Without RAG context
+  prompt <- build_gemini_prompt(metadata, context, NULL)
+
+  expect_type(prompt, "character")
+  expect_false(grepl("SPC Metodologi Reference", prompt))
+})

@@ -42,13 +42,29 @@ BFHcharts::bfh_export_png(
 - Export UI and workflow unchanged for end users
 
 **Dependencies:**
-- **Requires:** `BFHcharts (>= 0.3.0)`
+- **Requires:** `BFHcharts (>= 0.4.0)`
 
 **Benefits:**
 - Single source of truth for export logic (no duplicate code)
 - Automatic feature updates from BFHcharts
 - Reduced maintenance burden
 - Consistent export behavior across BFH tools
+
+## Improvements
+
+### Migrated to BFHcharts Public API (Issue #98)
+
+* **Migrated from internal to public API:** SPCify now uses BFHcharts public API instead of internal functions accessed via `:::` operator
+* **What Changed:**
+  - `BFHcharts:::extract_spc_stats()` → `BFHcharts::bfh_extract_spc_stats()`
+  - `BFHcharts:::merge_metadata()` → `BFHcharts::bfh_merge_metadata()`
+* **Benefits:**
+  - ✅ Follows R package best practices (no `:::` usage)
+  - ✅ API stability guarantees via semantic versioning
+  - ✅ Better error messages (public API has parameter validation)
+  - ✅ No code duplication
+* **Impact:** Internal implementation detail - no user-visible changes
+* **Dependencies:** Requires `BFHcharts (>= 0.4.0)`
 
 ## New Features
 

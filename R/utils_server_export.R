@@ -374,11 +374,11 @@ generate_pdf_preview <- function(bfh_qic_result,
           device = "png"
         )
 
-        # 2. Extract SPC stats using BFHcharts internal function
-        spc_stats <- BFHcharts:::extract_spc_stats(bfh_qic_result$summary)
+        # 2. Extract SPC stats using BFHcharts public API
+        spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result$summary)
 
         # 3. Merge metadata with chart title
-        metadata_full <- BFHcharts:::merge_metadata(metadata, chart_title)
+        metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
 
         # 4. Create Typst document
         typst_file <- file.path(temp_dir, "document.typ")

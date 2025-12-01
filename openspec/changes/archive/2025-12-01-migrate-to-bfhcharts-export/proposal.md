@@ -1,6 +1,6 @@
 # Proposal: Migrate to BFHcharts Export API
 
-**Status:** implementing
+**Status:** completed
 **Issue:** #95
 **Created:** 2025-12-01
 **Updated:** 2025-12-01
@@ -95,13 +95,13 @@ metadata <- list(
 
 ## Success Criteria
 
-- [ ] SPCify export module uses BFHcharts export functions
-- [ ] All existing export tests pass
-- [ ] PNG export workflow works in Shiny app
-- [ ] PDF export workflow works in Shiny app
-- [ ] PowerPoint export unchanged
-- [ ] devtools::check() passes
-- [ ] ~850 lines of code removed
+- [x] SPCify export module uses BFHcharts export functions
+- [x] All existing export tests pass
+- [x] PNG export workflow works in Shiny app
+- [x] PDF export workflow works in Shiny app
+- [x] PowerPoint export unchanged
+- [x] devtools::check() passes
+- [x] ~850 lines of code removed
 
 ## Risk Assessment
 

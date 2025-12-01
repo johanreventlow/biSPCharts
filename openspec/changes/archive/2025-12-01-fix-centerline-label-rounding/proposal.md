@@ -2,9 +2,9 @@
 
 **ID:** fix-centerline-label-rounding
 **Type:** bugfix
-**Status:** escalated
+**Status:** completed
 **Priority:** medium
-**External Issue:** [BFHcharts #63](https://github.com/johanreventlow/BFHcharts/issues/63)
+**External Issue:** [BFHcharts #63](https://github.com/johanreventlow/BFHcharts/issues/63) (CLOSED)
 
 ## Problem Statement
 
@@ -67,8 +67,8 @@ Per SPCify's arkitekturprincipper:
 - [x] GitHub issue oprettet i BFHcharts repo
 - [x] BFHcharts issue indeholder reproduktion steps
 - [x] SPCify OpenSpec linker til BFHcharts issue
-- [ ] Fix released i BFHcharts (afventer)
-- [ ] SPCify opdateret til ny BFHcharts version (afventer)
+- [x] Fix released i BFHcharts (deployed in v0.4.0)
+- [x] SPCify opdateret til ny BFHcharts version (using v0.4.0)
 
 ## Related
 

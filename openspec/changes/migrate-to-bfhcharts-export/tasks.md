@@ -21,17 +21,17 @@
 - [x] 3.1 Update PNG download handler in `mod_export_server.R`
 - [x] 3.2 Replace `generate_png_export()` call with `BFHcharts::bfh_export_png()`
 - [x] 3.3 Add dimension conversion: `width_mm = width_inches * 25.4`
-- [ ] 3.4 Test PNG export with different size presets
-- [ ] 3.5 Test PNG export with custom dimensions
+- [x] 3.4 Test PNG export with different size presets
+- [x] 3.5 Test PNG export with custom dimensions
 
 ## Phase 4: PDF Export Migration
 
 - [x] 4.1 Update PDF download handler in `mod_export_server.R`
 - [x] 4.2 Replace `export_spc_to_typst_pdf()` with `BFHcharts::bfh_export_pdf()`
 - [x] 4.3 Map SPCify metadata to BFHcharts metadata format
-- [ ] 4.4 Test PDF export with full metadata
-- [ ] 4.5 Test PDF export with minimal metadata
-- [ ] 4.6 Verify hospital branding appears correctly
+- [ ] 4.4 Test PDF export with full metadata (requires manual Shiny testing)
+- [ ] 4.5 Test PDF export with minimal metadata (requires manual Shiny testing)
+- [ ] 4.6 Verify hospital branding appears correctly (requires manual Shiny testing)
 
 ## Phase 5: Code Cleanup
 
@@ -44,21 +44,21 @@
 
 ## Phase 6: Testing
 
-- [ ] 6.1 Update test files for removed functions
-- [ ] 6.2 Add integration tests for BFHcharts export calls
+- [x] 6.1 Update test files for removed functions
+- [x] 6.2 Add integration tests for BFHcharts export calls
 - [x] 6.3 Run `devtools::load_all()` to verify no syntax errors
-- [ ] 6.4 Manual testing: PNG export in Shiny app
-- [ ] 6.5 Manual testing: PDF export in Shiny app
-- [ ] 6.6 Manual testing: PDF preview generation
-- [ ] 6.7 Verify PowerPoint export unchanged
+- [ ] 6.4 Manual testing: PNG export in Shiny app (deferred to post-deploy)
+- [ ] 6.5 Manual testing: PDF export in Shiny app (deferred to post-deploy)
+- [ ] 6.6 Manual testing: PDF preview generation (deferred to post-deploy)
+- [ ] 6.7 Verify PowerPoint export unchanged (deferred to post-deploy)
 
 ## Phase 7: Release
 
-- [ ] 7.1 Update NEWS.md with migration notes
-- [ ] 7.2 Bump version in DESCRIPTION
+- [x] 7.1 Update NEWS.md with migration notes
+- [x] 7.2 Bump version in DESCRIPTION (0.1.9000 → 0.2.0)
 - [ ] 7.3 Create git commit with conventional format
 - [ ] 7.4 Run final `devtools::check()`
-- [ ] 7.5 Close GitHub issue
+- [ ] 7.5 Close GitHub issue #95
 
 ---
 

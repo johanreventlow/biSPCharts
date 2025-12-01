@@ -4,14 +4,12 @@
 \alias{generate_pdf_preview}
 \title{Generate PDF Preview Image}
 \usage{
-generate_pdf_preview(plot_object, metadata, spc_statistics, dpi = 150)
+generate_pdf_preview(bfh_qic_result, metadata, dpi = 150)
 }
 \arguments{
-\item{plot_object}{ggplot2 object. SPC chart til embedding i PDF.}
+\item{bfh_qic_result}{bfh_qic_result object from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result.}
 
 \item{metadata}{List. PDF metadata (hospital, department, title, analysis, etc.).}
-
-\item{spc_statistics}{List. SPC statistikker (runs, crossings, outliers).}
 
 \item{dpi}{Numeric. DPI for PNG rendering (default: 150).}
 }
@@ -25,7 +23,7 @@ Bruges af export module til at vise PDF layout preview.
 \details{
 Funktionen:
 \enumerate{
-\item Genererer temp PDF via \code{export_spc_to_typst_pdf()}
+\item Genererer temp PDF via \code{BFHcharts::bfh_export_pdf()}
 \item Konverterer første side til PNG via \code{pdftools::pdf_render_page()}
 \item Returnerer path til PNG fil (i temp directory)
 }
@@ -34,7 +32,7 @@ PNG filen er midlertidig og vil blive slettet når R session afsluttes.
 }
 \examples{
 \dontrun{
-plot <- ggplot2::qplot(1:10, 1:10)
+# bfh_qic_result comes from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result
 metadata <- list(
   hospital = "Test Hospital",
   department = "Test Dept",
@@ -45,13 +43,8 @@ metadata <- list(
   author = "Test Author",
   date = Sys.Date()
 )
-spc_stats <- list(
-  runs_expected = 12, runs_actual = 10,
-  crossings_expected = 16, crossings_actual = 14,
-  outliers_expected = 0, outliers_actual = 2
-)
 
-preview_path <- generate_pdf_preview(plot, metadata, spc_stats)
+preview_path <- generate_pdf_preview(bfh_qic_result, metadata)
 if (!is.null(preview_path)) {
   # Display preview image
 }

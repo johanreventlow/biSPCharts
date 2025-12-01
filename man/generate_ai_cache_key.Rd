@@ -4,18 +4,22 @@
 \alias{generate_ai_cache_key}
 \title{Generate Cache Key for AI Response}
 \usage{
-generate_ai_cache_key(metadata, context)
+generate_ai_cache_key(metadata, context, spc_knowledge = NULL)
 }
 \arguments{
 \item{metadata}{List from extract_spc_metadata() containing SPC statistics}
 
 \item{context}{List with user context (data_definition, chart_title, etc.)}
+
+\item{spc_knowledge}{Character string with RAG-retrieved SPC methodology
+context (optional, default NULL). Hvis inkluderet, sikrer det at
+cache keys skelner mellem responses med og uden RAG context.}
 }
 \value{
 Character string (hex hash using xxhash64 algorithm)
 }
 \description{
-Creates deterministic hash from metadata and context to ensure
+Creates deterministic hash from metadata, context, and RAG knowledge to ensure
 same inputs always produce same cache key.
 }
 \details{
@@ -39,6 +43,11 @@ irrelevant changes (timestamps, plot objects, reactive values).
 \item chart_title: Chart title
 \item y_axis_unit: Y-axis unit (e.g., "\%", "antal")
 \item target_value: Target value if set
+}
+
+\strong{RAG knowledge field:}
+\itemize{
+\item spc_knowledge: RAG-retrieved SPC methodology context (empty string if NULL)
 }
 
 \strong{Fields EXCLUDED from hash:}
@@ -67,8 +76,13 @@ context <- list(
   target_value = 30
 )
 
-key <- generate_ai_cache_key(metadata, context)
-# Returns: "a1b2c3d4e5f6g7h8" (deterministic hash)
+# Without RAG
+key1 <- generate_ai_cache_key(metadata, context)
+
+# With RAG
+spc_knowledge <- query_spc_knowledge("run", c("Serielængde"), "over")
+key2 <- generate_ai_cache_key(metadata, context, spc_knowledge)
+# key1 != key2 (different RAG context produces different cache key)
 }
 
 }

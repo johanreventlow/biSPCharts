@@ -15,7 +15,7 @@ Nyttigt til at finde de rigtige context-navne for \code{set_debug_context()}.
 }
 \examples{
 \dontrun{
-show_debug_contexts()  # See all available contexts organized by category
+show_debug_contexts() # See all available contexts organized by category
 }
 
 }

@@ -47,7 +47,7 @@ mapped to BFHcharts \code{notes} parameter as character vector. Default NULL.}
 }
 \value{
 list. Named list of BFHchart-compatible parameters ready for
-\code{do.call(BFHchart::create_spc_chart, bfh_params)}. Structure:
+\code{do.call(BFHcharts::bfh_qic, bfh_params)}. Structure:
 \describe{
 \item{data}{data.frame with \code{.original_row_id} column}
 \item{x}{Bare column name (NSE) for BFHchart}

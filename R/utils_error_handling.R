@@ -7,6 +7,41 @@
 #' fallback behavior. Designed to prevent crashes in reactive contexts
 #' and provide graceful degradation.
 #'
+#' @section CRITICAL - Return Value Semantics:
+#' **DO NOT use `return()` statements inside the code block!**
+#'
+#' R's `force()` evaluation does not correctly propagate `return()` values.
+#' Using `return(value)` inside the code block will return `NULL` instead
+#' of the expected value.
+#'
+#' **Correct pattern:** Let the last expression in the code block be the
+#' value you want to return.
+#'
+#' ```
+#' # WRONG - returns NULL:
+#' safe_operation("test", code = {
+#'   result <- compute()
+#'   return(result)  # BUG: returns NULL!
+#' })
+#'
+#' # CORRECT - returns result:
+#' safe_operation("test", code = {
+#'   result <- compute()
+#'   result  # Works correctly
+#' })
+#' ```
+#'
+#' For early exits, use conditional flow with a result variable instead:
+#' ```
+#' safe_operation("test", code = {
+#'   result <- default_value
+#'   if (condition) {
+#'     result <- compute_result()
+#'   }
+#'   result
+#' })
+#' ```
+#'
 #' @param operation_name Character string describing the operation for logging
 #' @param code Expression or code block to execute safely
 #' @param fallback Default value to return if operation fails. Default is NULL.

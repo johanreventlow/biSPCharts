@@ -199,8 +199,6 @@ create_ui_main_content <- function() {
 }
 
 
-
-
 create_chart_settings_card <- function() {
   bslib::navset_card_tab(
     title = shiny::span(shiny::icon("sliders-h"), " Indstillinger", ),

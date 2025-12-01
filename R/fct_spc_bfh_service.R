@@ -539,7 +539,9 @@ compute_spc_results_bfh <- function(
         )
       )
 
-      return(standardized)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # R's force() evaluation doesn't handle return() correctly
+      standardized
     },
     fallback = NULL,
     show_user = TRUE,
@@ -903,7 +905,8 @@ map_to_bfh_params <- function(
         .context = "BFH_SERVICE"
       )
 
-      return(params)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      params
     },
     fallback = NULL,
     error_type = "parameter_mapping"
@@ -914,39 +917,38 @@ resolve_bfh_chart_title <- function(title_candidate) {
   safe_operation(
     operation_name = "BFHchart chart title resolution",
     code = {
-      if (is.null(title_candidate)) {
-        return(NULL)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # Use conditional flow with result variable instead
+
+      result <- NULL
+
+      if (!is.null(title_candidate)) {
+        value <- title_candidate
+
+        if (is.function(value)) {
+          value <- value()
+        }
+
+        if (!is.null(value) && length(value) > 0) {
+          if (is.list(value) && !is.atomic(value)) {
+            value <- value[[1]]
+          } else {
+            value <- value[1]
+          }
+
+          if (!is.null(value)) {
+            if (!is.character(value)) {
+              value <- as.character(value)
+            }
+
+            if (length(value) > 0) {
+              result <- value[1]
+            }
+          }
+        }
       }
 
-      value <- title_candidate
-
-      if (is.function(value)) {
-        value <- value()
-      }
-
-      if (is.null(value) || length(value) == 0) {
-        return(NULL)
-      }
-
-      if (is.list(value) && !is.atomic(value)) {
-        value <- value[[1]]
-      } else {
-        value <- value[1]
-      }
-
-      if (is.null(value)) {
-        return(NULL)
-      }
-
-      if (!is.character(value)) {
-        value <- as.character(value)
-      }
-
-      if (length(value) == 0) {
-        return(NULL)
-      }
-
-      value[1]
+      result
     },
     fallback = NULL,
     error_type = "bfh_title_resolution"
@@ -1115,13 +1117,23 @@ call_bfh_chart <- function(bfh_params) {
 
       elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
-      # 5. Log success
+      # 5. Log success with debug info about result type
       log_debug(
         paste("BFHchart call succeeded in", round(elapsed, 3), "seconds"),
         .context = "BFH_SERVICE"
       )
+      log_debug(
+        paste(
+          "[DEBUG] bfh_qic result - class:",
+          paste(class(result), collapse = ", "),
+          "| names:", paste(names(result), collapse = ", "),
+          "| is_bfh_qic_result:", BFHcharts::is_bfh_qic_result(result)
+        ),
+        .context = "BFH_SERVICE"
+      )
 
-      return(result)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      result
     },
     fallback = NULL,
     show_user = TRUE,
@@ -1209,15 +1221,50 @@ transform_bfh_output <- function(
   safe_operation(
     operation_name = "BFHchart output transformation",
     code = {
+      # DEBUG: Log input type before validation
+      log_debug(
+        paste(
+          "[DEBUG] transform_bfh_output input - class:",
+          paste(class(bfh_result), collapse = ", "),
+          "| is.null:", is.null(bfh_result),
+          "| is.list:", is.list(bfh_result),
+          "| names:", if (is.list(bfh_result)) paste(names(bfh_result), collapse = ", ") else "N/A"
+        ),
+        .context = "BFH_SERVICE"
+      )
+
       # 1. Validate input - bfh_qic() returns bfh_qic_result S3 object
-      if (!BFHcharts::is_bfh_qic_result(bfh_result)) {
+      # Use robust check: either S3 class or duck-typing for list with required fields
+      is_valid <- BFHcharts::is_bfh_qic_result(bfh_result) ||
+        (is.list(bfh_result) && all(c("plot", "qic_data") %in% names(bfh_result)))
+
+      log_debug(
+        paste("[DEBUG] Validation result:", is_valid),
+        .context = "BFH_SERVICE"
+      )
+
+      if (!is_valid) {
         stop("bfh_result must be a bfh_qic_result object from BFHcharts::bfh_qic()")
       }
 
       # 2. Extract components from bfh_qic_result object
       # Structure: list(plot = ggplot, qic_data = tibble, summary = list, config = list)
-      plot_object <- BFHcharts::get_plot(bfh_result)
+      # Use get_plot() for S3 objects, direct access for plain lists
+      plot_object <- if (BFHcharts::is_bfh_qic_result(bfh_result)) {
+        BFHcharts::get_plot(bfh_result)
+      } else {
+        bfh_result$plot
+      }
       qic_data <- bfh_result$qic_data
+
+      log_debug(
+        paste(
+          "[DEBUG] Extracted - plot_object class:",
+          paste(class(plot_object), collapse = ", "),
+          "| qic_data rows:", if (!is.null(qic_data)) nrow(qic_data) else "NULL"
+        ),
+        .context = "BFH_SERVICE"
+      )
 
       if (is.null(qic_data) || nrow(qic_data) == 0) {
         stop("Could not extract qic_data from BFHcharts result")
@@ -1316,12 +1363,13 @@ transform_bfh_output <- function(
       }
 
       # 11. Return standardized structure with bfh_qic_result for exports
-      return(list(
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      list(
         plot = plot_object,
         qic_data = qic_data,
         metadata = metadata,
-        bfh_qic_result = bfh_result  # Full result for BFHcharts export functions
-      ))
+        bfh_qic_result = bfh_result # Full result for BFHcharts export functions
+      )
     },
     fallback = NULL,
     error_type = "output_transformation"
@@ -1430,110 +1478,117 @@ add_comment_annotations <- function(
   safe_operation(
     operation_name = "Comment annotations",
     code = {
-      # 1. Validate inputs
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # Use conditional assignment pattern instead for early exits
+
+      # 1. Validate inputs - use conditional flow instead of early returns
+      should_process <- TRUE
+
       if (is.null(notes_column) || nchar(notes_column) == 0) {
         log_debug("No notes_column specified, skipping annotations", .context = "BFH_SERVICE")
-        return(plot)
+        should_process <- FALSE
       }
 
-      if (!notes_column %in% names(original_data)) {
+      if (should_process && !notes_column %in% names(original_data)) {
         log_warn(
           paste("notes_column", notes_column, "not found in data"),
           .context = "BFH_SERVICE"
         )
-        return(plot)
+        should_process <- FALSE
       }
 
       # 2. Check for .original_row_id in qic_data
-      if (!".original_row_id" %in% names(qic_data)) {
+      if (should_process && !".original_row_id" %in% names(qic_data)) {
         log_warn(
           ".original_row_id column missing in qic_data, cannot map comments",
           .context = "BFH_SERVICE"
         )
-        return(plot)
+        should_process <- FALSE
       }
 
-      # 3. Extract and prepare comment data
-      comment_data <- original_data[, c(".original_row_id", notes_column), drop = FALSE]
-      names(comment_data)[2] <- "comment_text"
+      result_plot <- plot # Default: return original plot
 
-      # Filter to non-empty comments
-      comment_data <- comment_data[
-        !is.na(comment_data$comment_text) &
-          nzchar(trimws(comment_data$comment_text)),
-      ]
+      if (should_process) {
+        # 3. Extract and prepare comment data
+        comment_data <- original_data[, c(".original_row_id", notes_column), drop = FALSE]
+        names(comment_data)[2] <- "comment_text"
 
-      if (nrow(comment_data) == 0) {
-        log_debug("No non-empty comments found", .context = "BFH_SERVICE")
-        return(plot)
-      }
+        # Filter to non-empty comments
+        comment_data <- comment_data[
+          !is.na(comment_data$comment_text) &
+            nzchar(trimws(comment_data$comment_text)),
+        ]
 
-      # 4. Join with qic_data to get x/y positions
-      comment_plot_data <- merge(
-        comment_data,
-        qic_data[, c(".original_row_id", "x", "y")],
-        by = ".original_row_id",
-        all.x = TRUE
-      )
+        if (nrow(comment_data) > 0) {
+          # 4. Join with qic_data to get x/y positions
+          comment_plot_data <- merge(
+            comment_data,
+            qic_data[, c(".original_row_id", "x", "y")],
+            by = ".original_row_id",
+            all.x = TRUE
+          )
 
-      # Remove rows without position data
-      comment_plot_data <- comment_plot_data[
-        !is.na(comment_plot_data$x) & !is.na(comment_plot_data$y),
-      ]
+          # Remove rows without position data
+          comment_plot_data <- comment_plot_data[
+            !is.na(comment_plot_data$x) & !is.na(comment_plot_data$y),
+          ]
 
-      if (nrow(comment_plot_data) == 0) {
-        log_debug("No comments with valid positions", .context = "BFH_SERVICE")
-        return(plot)
-      }
+          if (nrow(comment_plot_data) > 0) {
+            # 5. Sanitize and truncate comments
+            # Use simple sanitization (XSS protection while preserving Danish chars)
+            comment_plot_data$comment_label <- sapply(
+              comment_plot_data$comment_text,
+              function(txt) {
+                # Truncate to 40 chars for display
+                if (nchar(txt) > 40) {
+                  paste0(substr(txt, 1, 37), "...")
+                } else {
+                  txt
+                }
+              }
+            )
 
-      # 5. Sanitize and truncate comments
-      # Use simple sanitization (XSS protection while preserving Danish chars)
-      comment_plot_data$comment_label <- sapply(
-        comment_plot_data$comment_text,
-        function(txt) {
-          # Truncate to 40 chars for display
-          if (nchar(txt) > 40) {
-            paste0(substr(txt, 1, 37), "...")
+            # 6. Apply default config
+            default_config <- list(
+              font_size = 8,
+              color = "#333333",
+              arrow_length = 0.015,
+              box_padding = 0.5,
+              point_padding = 0.5,
+              max_overlaps = Inf
+            )
+
+            if (!is.null(config)) {
+              default_config <- modifyList(default_config, config)
+            }
+
+            # 7. Add ggrepel layer
+            result_plot <- plot +
+              ggrepel::geom_text_repel(
+                data = comment_plot_data,
+                aes(x = x, y = y, label = comment_label),
+                size = default_config$font_size / .pt, # Convert to ggplot size
+                color = default_config$color,
+                box.padding = default_config$box_padding,
+                point.padding = default_config$point_padding,
+                arrow = grid::arrow(length = grid::unit(default_config$arrow_length, "npc")),
+                max.overlaps = default_config$max_overlaps,
+                inherit.aes = FALSE
+              )
+
+            log_debug(
+              paste("Added", nrow(comment_plot_data), "comment annotations"),
+              .context = "BFH_SERVICE"
+            )
           } else {
-            txt
+            log_debug("No comments with valid positions", .context = "BFH_SERVICE")
           }
+        } else {
+          log_debug("No non-empty comments found", .context = "BFH_SERVICE")
         }
-      )
-
-      # 6. Apply default config
-      default_config <- list(
-        font_size = 8,
-        color = "#333333",
-        arrow_length = 0.015,
-        box_padding = 0.5,
-        point_padding = 0.5,
-        max_overlaps = Inf
-      )
-
-      if (!is.null(config)) {
-        default_config <- modifyList(default_config, config)
       }
 
-      # 7. Add ggrepel layer
-      plot <- plot +
-        ggrepel::geom_text_repel(
-          data = comment_plot_data,
-          aes(x = x, y = y, label = comment_label),
-          size = default_config$font_size / .pt, # Convert to ggplot size
-          color = default_config$color,
-          box.padding = default_config$box_padding,
-          point.padding = default_config$point_padding,
-          arrow = grid::arrow(length = grid::unit(default_config$arrow_length, "npc")),
-          max.overlaps = default_config$max_overlaps,
-          inherit.aes = FALSE
-        )
-
-      log_debug(
-        paste("Added", nrow(comment_plot_data), "comment annotations"),
-        .context = "BFH_SERVICE"
-      )
-
-      return(plot)
+      result_plot
     },
     fallback = plot,
     error_type = "comment_annotations"
@@ -1580,7 +1635,8 @@ validate_chart_type_bfh <- function(chart_type) {
 
       log_debug(paste("Chart type validated:", chart_type), .context = "BFH_SERVICE")
 
-      return(chart_type)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      chart_type
     },
     fallback = NULL,
     error_type = "chart_type_validation"
@@ -1653,7 +1709,8 @@ calculate_combined_anhoej_signal <- function(
         .context = "BFH_SERVICE"
       )
 
-      return(signal)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      signal
     },
     fallback = rep(FALSE, nrow(data)),
     error_type = "signal_calculation"

@@ -29,57 +29,55 @@ extract_spc_statistics <- function(app_state) {
   safe_operation(
     operation_name = "Extract SPC statistics",
     code = {
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      result <- NULL
+
       # Validér app_state eksisterer
       if (is.null(app_state)) {
         log_warn(
           component = "[EXPORT]",
           message = "app_state er NULL - kan ikke udtrække SPC statistikker"
         )
-        return(NULL)
+      } else {
+        # Hent Anhøj results fra visualization state
+        anhoej <- app_state$visualization$anhoej_results
+
+        if (is.null(anhoej)) {
+          log_warn(
+            component = "[EXPORT]",
+            message = "Ingen Anhøj results tilgængelige"
+          )
+        } else if (!isTRUE(anhoej$has_valid_data)) {
+          # Check om vi har valid data
+          log_debug(
+            component = "[EXPORT]",
+            message = "Anhøj results ikke valid endnu",
+            details = list(message = anhoej$message %||% "Ingen besked")
+          )
+        } else {
+          # Udtræk statistikker
+          result <- list(
+            runs_expected = anhoej$longest_run_max,
+            runs_actual = anhoej$longest_run,
+            crossings_expected = anhoej$n_crossings_min,
+            crossings_actual = anhoej$n_crossings,
+            outliers_expected = 0, # Anhøj rules forventer 0 outliers normalt
+            outliers_actual = anhoej$out_of_control_count %||% 0
+          )
+
+          log_debug(
+            component = "[EXPORT]",
+            message = "SPC statistikker udtrukket succesfuldt",
+            details = list(
+              runs = sprintf("%s/%s", result$runs_actual, result$runs_expected),
+              crossings = sprintf("%s/%s", result$crossings_actual, result$crossings_expected),
+              outliers = result$outliers_actual
+            )
+          )
+        }
       }
 
-      # Hent Anhøj results fra visualization state
-      anhoej <- app_state$visualization$anhoej_results
-
-      if (is.null(anhoej)) {
-        log_warn(
-          component = "[EXPORT]",
-          message = "Ingen Anhøj results tilgængelige"
-        )
-        return(NULL)
-      }
-
-      # Check om vi har valid data
-      if (!isTRUE(anhoej$has_valid_data)) {
-        log_debug(
-          component = "[EXPORT]",
-          message = "Anhøj results ikke valid endnu",
-          details = list(message = anhoej$message %||% "Ingen besked")
-        )
-        return(NULL)
-      }
-
-      # Udtræk statistikker
-      stats <- list(
-        runs_expected = anhoej$longest_run_max,
-        runs_actual = anhoej$longest_run,
-        crossings_expected = anhoej$n_crossings_min,
-        crossings_actual = anhoej$n_crossings,
-        outliers_expected = 0, # Anhøj rules forventer 0 outliers normalt
-        outliers_actual = anhoej$out_of_control_count %||% 0
-      )
-
-      log_debug(
-        component = "[EXPORT]",
-        message = "SPC statistikker udtrukket succesfuldt",
-        details = list(
-          runs = sprintf("%s/%s", stats$runs_actual, stats$runs_expected),
-          crossings = sprintf("%s/%s", stats$crossings_actual, stats$crossings_expected),
-          outliers = stats$outliers_actual
-        )
-      )
-
-      return(stats)
+      result
     },
     fallback = function(e) {
       log_error(
@@ -87,7 +85,7 @@ extract_spc_statistics <- function(app_state) {
         message = "Fejl ved udtrækning af SPC statistikker",
         details = list(error = e$message)
       )
-      return(NULL)
+      NULL
     },
     error_type = "processing"
   )
@@ -119,87 +117,86 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
   safe_operation(
     operation_name = "Generate details string",
     code = {
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      result <- NULL
+
       # Validér app_state og data
       if (is.null(app_state) || is.null(app_state$data$current_data)) {
         log_warn(
           component = "[EXPORT]",
           message = "Ingen data tilgængelig for details string"
         )
-        return(NULL)
-      }
+      } else {
+        data <- app_state$data$current_data
+        x_col <- app_state$columns$mappings$x_column
+        y_col <- app_state$columns$mappings$y_column
 
-      data <- app_state$data$current_data
-      x_col <- app_state$columns$mappings$x_column
-      y_col <- app_state$columns$mappings$y_column
+        if (is.null(x_col) || is.null(y_col)) {
+          log_warn(
+            component = "[EXPORT]",
+            message = "x eller y kolonne ikke mappet"
+          )
+        } else {
+          # Udtræk værdier
+          x_values <- data[[x_col]]
+          y_values <- data[[y_col]]
 
-      if (is.null(x_col) || is.null(y_col)) {
-        log_warn(
-          component = "[EXPORT]",
-          message = "x eller y kolonne ikke mappet"
-        )
-        return(NULL)
-      }
+          # Validér at vi har data
+          if (length(y_values) > 0) {
+            # Beregn statistikker
+            mean_value <- mean(y_values, na.rm = TRUE)
+            latest_value <- tail(y_values[!is.na(y_values)], 1)
+            n_observations <- sum(!is.na(y_values))
 
-      # Udtræk værdier
-      x_values <- data[[x_col]]
-      y_values <- data[[y_col]]
+            # Periode info (hvis x er dato)
+            period_str <- NULL
+            if (inherits(x_values, "Date") || inherits(x_values, "POSIXt")) {
+              valid_dates <- x_values[!is.na(x_values)]
+              if (length(valid_dates) > 0) {
+                start_date <- min(valid_dates)
+                end_date <- max(valid_dates)
 
-      # Validér at vi har data
-      if (length(y_values) == 0) {
-        return(NULL)
-      }
+                # Dansk dato formatering
+                start_fmt <- format(start_date, "%b. %Y")
+                end_fmt <- format(end_date, "%b. %Y")
 
-      # Beregn statistikker
-      mean_value <- mean(y_values, na.rm = TRUE)
-      latest_value <- tail(y_values[!is.na(y_values)], 1)
-      n_observations <- sum(!is.na(y_values))
+                period_str <- sprintf("Periode: %s – %s", start_fmt, end_fmt)
+              }
+            }
 
-      # Periode info (hvis x er dato)
-      period_str <- NULL
-      if (inherits(x_values, "Date") || inherits(x_values, "POSIXt")) {
-        valid_dates <- x_values[!is.na(x_values)]
-        if (length(valid_dates) > 0) {
-          start_date <- min(valid_dates)
-          end_date <- max(valid_dates)
+            # Byg details string
+            parts <- c()
 
-          # Dansk dato formatering
-          start_fmt <- format(start_date, "%b. %Y")
-          end_fmt <- format(end_date, "%b. %Y")
+            if (!is.null(period_str)) {
+              parts <- c(parts, period_str)
+            }
 
-          period_str <- sprintf("Periode: %s – %s", start_fmt, end_fmt)
+            parts <- c(parts, sprintf("Antal obs.: %d", n_observations))
+
+            if (format == "full") {
+              parts <- c(parts, sprintf("Gennemsnit: %.1f", mean_value))
+
+              if (length(latest_value) > 0) {
+                parts <- c(parts, sprintf("Seneste: %.1f", latest_value))
+              }
+            }
+
+            result <- paste(parts, collapse = " • ")
+
+            log_debug(
+              component = "[EXPORT]",
+              message = "Details string genereret",
+              details = list(
+                format = format,
+                n_obs = n_observations,
+                output = result
+              )
+            )
+          }
         }
       }
 
-      # Byg details string
-      parts <- c()
-
-      if (!is.null(period_str)) {
-        parts <- c(parts, period_str)
-      }
-
-      parts <- c(parts, sprintf("Antal obs.: %d", n_observations))
-
-      if (format == "full") {
-        parts <- c(parts, sprintf("Gennemsnit: %.1f", mean_value))
-
-        if (length(latest_value) > 0) {
-          parts <- c(parts, sprintf("Seneste: %.1f", latest_value))
-        }
-      }
-
-      details <- paste(parts, collapse = " • ")
-
-      log_debug(
-        component = "[EXPORT]",
-        message = "Details string genereret",
-        details = list(
-          format = format,
-          n_obs = n_observations,
-          output = details
-        )
-      )
-
-      return(details)
+      result
     },
     fallback = function(e) {
       log_error(
@@ -207,7 +204,7 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
         message = "Fejl ved generering af details string",
         details = list(error = e$message)
       )
-      return(NULL)
+      NULL
     },
     error_type = "processing"
   )
@@ -283,20 +280,20 @@ get_hospital_name_for_export <- function() {
 
 #' Generate PDF Preview Image
 #'
-#' Kompilerer Typst til PDF og konverterer første side til PNG til preview.
-#' Bruges af export module til at vise PDF layout preview.
+#' Genererer PNG preview af PDF layout direkte fra Typst.
+#' Bruges af export module til at vise PDF layout preview i browseren.
 #'
 #' @param bfh_qic_result bfh_qic_result object from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result.
 #' @param metadata List. PDF metadata (hospital, department, title, analysis, etc.).
-#' @param dpi Numeric. DPI for PNG rendering (default: 150).
+#' @param dpi Numeric. DPI/PPI for PNG rendering (default: 150).
 #'
 #' @return Character path til PNG preview fil eller NULL ved fejl.
 #'
 #' @details
-#' Funktionen:
-#' 1. Genererer temp PDF via \code{BFHcharts::bfh_export_pdf()}
-#' 2. Konverterer første side til PNG via \code{pdftools::pdf_render_page()}
-#' 3. Returnerer path til PNG fil (i temp directory)
+#' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
+#' 1. Genererer chart PNG via \code{ggplot2::ggsave()}
+#' 2. Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
+#' 3. Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 #'
 #' PNG filen er midlertidig og vil blive slettet når R session afsluttes.
 #'
@@ -328,95 +325,136 @@ generate_pdf_preview <- function(bfh_qic_result,
   safe_operation(
     operation_name = "Generate PDF preview",
     code = {
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # Use conditional flow with result variable instead
+
+      result <- NULL
+
       # Validér inputs - must be bfh_qic_result object
-      if (is.null(bfh_qic_result) || !BFHcharts::is_bfh_qic_result(bfh_qic_result)) {
+      valid_input <- !is.null(bfh_qic_result) && BFHcharts::is_bfh_qic_result(bfh_qic_result)
+
+      if (!valid_input) {
         log_warn(
           component = "[EXPORT]",
           message = "Ingen valid bfh_qic_result til PDF preview"
         )
-        return(NULL)
-      }
-
-      # Check Quarto availability
-      if (!quarto_available()) {
+      } else if (!quarto_available()) {
+        # Check Quarto availability (includes Typst)
         log_warn(
           component = "[EXPORT]",
           message = "Quarto ikke tilgængelig - PDF preview kan ikke genereres"
         )
-        return(NULL)
-      }
+      } else {
+        # Create temp directory for Typst compilation
+        temp_dir <- tempfile("bfh_preview_")
+        dir.create(temp_dir, recursive = TRUE)
 
-      # Generer temp PDF
-      temp_pdf <- tempfile(fileext = ".pdf")
-
-      log_debug(
-        component = "[EXPORT]",
-        message = "Genererer temp PDF til preview",
-        details = list(temp_pdf = temp_pdf)
-      )
-
-      # Brug BFHcharts export function
-      BFHcharts::bfh_export_pdf(
-        x = bfh_qic_result,
-        output = temp_pdf,
-        metadata = metadata,
-        template = "bfh-diagram2"
-      )
-
-      # Validér PDF blev genereret
-      if (!file.exists(temp_pdf)) {
-        log_error(
+        log_debug(
           component = "[EXPORT]",
-          message = "Temp PDF blev ikke genereret"
+          message = "Genererer PDF preview via Typst PNG",
+          details = list(temp_dir = temp_dir, dpi = dpi)
         )
-        return(NULL)
+
+        # 1. Generate chart PNG (same as bfh_export_pdf does internally)
+        chart_title <- bfh_qic_result$config$chart_title
+        if (is.null(chart_title)) chart_title <- ""
+
+        plot_no_title <- bfh_qic_result$plot + ggplot2::labs(title = NULL, subtitle = NULL)
+        chart_png <- file.path(temp_dir, "chart.png")
+
+        # Use same dimensions as export_pdf config for consistency
+        # R/config_plot_contexts.R: export_pdf = 200×120mm @ 300 DPI
+        ggplot2::ggsave(
+          filename = chart_png,
+          plot = plot_no_title,
+          width = 200 / 25.4, # mm to inches (aligned with export_pdf config)
+          height = 120 / 25.4, # mm to inches (aligned with export_pdf config)
+          dpi = 300,
+          units = "in",
+          device = "png"
+        )
+
+        # 2. Extract SPC stats using BFHcharts internal function
+        spc_stats <- BFHcharts:::extract_spc_stats(bfh_qic_result$summary)
+
+        # 3. Merge metadata with chart title
+        metadata_full <- BFHcharts:::merge_metadata(metadata, chart_title)
+
+        # 4. Create Typst document
+        typst_file <- file.path(temp_dir, "document.typ")
+        BFHcharts::bfh_create_typst_document(
+          chart_image = chart_png,
+          output = typst_file,
+          metadata = metadata_full,
+          spc_stats = spc_stats,
+          template = "bfh-diagram2"
+        )
+
+        # 5. Compile Typst directly to PNG (more efficient than PDF→PNG)
+        temp_png <- tempfile(fileext = ".png")
+
+        # Register temp file for automatic cleanup when R session ends
+        # This prevents temp file accumulation during long sessions
+        reg.finalizer(
+          environment(),
+          function(e) {
+            if (exists("temp_png", envir = e) && file.exists(get("temp_png", envir = e))) {
+              unlink(get("temp_png", envir = e))
+            }
+          },
+          onexit = TRUE
+        )
+
+        # Use quarto typst compile with PNG format
+        compile_result <- system2(
+          "quarto",
+          args = c(
+            "typst", "compile",
+            typst_file,
+            temp_png,
+            "-f", "png",
+            "--ppi", as.character(dpi)
+          ),
+          stdout = TRUE,
+          stderr = TRUE
+        )
+
+        # Cleanup temp directory
+        unlink(temp_dir, recursive = TRUE)
+
+        # Check exit status and validate PNG
+        exit_status <- attr(compile_result, "status")
+        if (!is.null(exit_status) && exit_status != 0) {
+          log_error(
+            component = "[EXPORT]",
+            message = "Quarto Typst compilation failed",
+            details = list(
+              exit_code = exit_status,
+              stdout = paste(compile_result, collapse = "\n")
+            )
+          )
+        } else if (!file.exists(temp_png)) {
+          log_error(
+            component = "[EXPORT]",
+            message = "PNG preview compilation failed - file not generated",
+            details = list(output = paste(compile_result, collapse = "\n"))
+          )
+        } else {
+          log_info(
+            component = "[EXPORT]",
+            message = "PDF preview genereret succesfuldt (Typst→PNG)",
+            details = list(
+              png = temp_png,
+              size_kb = round(file.size(temp_png) / 1024, 1),
+              dpi = dpi
+            )
+          )
+
+          result <- temp_png
+        }
       }
 
-      # Konverter første side til PNG
-      temp_png <- tempfile(fileext = ".png")
-
-      log_debug(
-        component = "[EXPORT]",
-        message = "Konverterer PDF til PNG preview",
-        details = list(
-          pdf = temp_pdf,
-          png = temp_png,
-          dpi = dpi
-        )
-      )
-
-      # pdf_render_page() returnerer raw bitmap data, ikke fil
-      bitmap <- pdftools::pdf_render_page(
-        pdf = temp_pdf,
-        page = 1,
-        dpi = dpi
-      )
-
-      # Gem bitmap som PNG fil
-      png::writePNG(bitmap, target = temp_png)
-
-      # Validér PNG blev genereret
-      if (!file.exists(temp_png)) {
-        log_error(
-          component = "[EXPORT]",
-          message = "PNG preview blev ikke genereret"
-        )
-        return(NULL)
-      }
-
-      # Cleanup temp PDF (behold kun PNG)
-      unlink(temp_pdf)
-
-      log_info(
-        component = "[EXPORT]",
-        message = "PDF preview genereret succesfuldt",
-        details = list(
-          png = temp_png,
-          size_kb = round(file.size(temp_png) / 1024, 1)
-        )
-      )
-
-      return(temp_png)
+      result
     },
     fallback = function(e) {
       log_error(
@@ -424,7 +462,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         message = "PDF preview generation failed",
         details = list(error = e$message)
       )
-      return(NULL)
+      NULL
     },
     error_type = "processing"
   )

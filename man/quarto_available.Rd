@@ -12,6 +12,7 @@ Logical. TRUE hvis Quarto er tilgængelig, FALSE ellers.
 \description{
 Tjekker om Quarto CLI er tilgængelig på systemet.
 Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
+Delegerer til BFHcharts::quarto_available() for konsistent check.
 }
 \examples{
 \dontrun{

@@ -140,7 +140,20 @@ build_export_plot <- function(app_state, title_input, dept_input,
         plot_context = plot_context
       )
 
-      export_plot <- spc_result$plot
+      # DEBUG: Log what generateSPCPlot returned
+      log_debug(
+        .context = "EXPORT_MODULE",
+        message = paste(
+          "generateSPCPlot returned - is_null:",
+          is.null(spc_result),
+          "| has_plot:",
+          !is.null(spc_result$plot),
+          "| class:",
+          if (!is.null(spc_result)) paste(class(spc_result), collapse = ",") else "NULL",
+          "| names:",
+          if (!is.null(spc_result) && is.list(spc_result)) paste(names(spc_result), collapse = ",") else "N/A"
+        )
+      )
 
       log_debug(
         .context = "EXPORT_MODULE",
@@ -156,7 +169,10 @@ build_export_plot <- function(app_state, title_input, dept_input,
         )
       )
 
-      return(export_plot)
+      # Return full result including bfh_qic_result for exports
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # R's force() evaluation doesn't handle return() correctly - just use the value
+      spc_result
     },
     fallback = function(e) {
       log_error(
@@ -164,7 +180,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
         message = sprintf("Failed to generate %s plot", plot_context),
         details = list(error = e$message, context = plot_context)
       )
-      return(NULL)
+      NULL
     },
     error_type = "processing"
   )
@@ -574,15 +590,24 @@ mod_export_server <- function(id, app_state) {
           message = "renderPlot for export_preview starting"
         )
 
-        plot <- export_plot()
+        spc_result <- export_plot()
 
+        # DEBUG: Explicit logging of actual values
         log_debug(
           .context = "EXPORT_MODULE",
-          message = "export_plot() returned",
-          details = list(is_null = is.null(plot), has_data = !is.null(plot$data))
+          message = paste(
+            "export_plot() returned - is_null:",
+            is.null(spc_result),
+            "| has_plot:",
+            !is.null(spc_result$plot),
+            "| class:",
+            if (!is.null(spc_result)) paste(class(spc_result), collapse = ",") else "NULL",
+            "| names:",
+            if (!is.null(spc_result) && is.list(spc_result)) paste(names(spc_result), collapse = ",") else "N/A"
+          )
         )
 
-        if (is.null(plot)) {
+        if (is.null(spc_result) || is.null(spc_result$plot)) {
           # Display placeholder using ggplot2 for consistency
           return(
             ggplot2::ggplot() +
@@ -600,7 +625,7 @@ mod_export_server <- function(id, app_state) {
 
         # BFHcharts already includes hospital theme - just return plot directly
         # Add zero margin for tight display (matches main chart rendering)
-        plot + ggplot2::theme(plot.margin = ggplot2::margin(0, 0, 0, 0, "mm"))
+        spc_result$plot + ggplot2::theme(plot.margin = ggplot2::margin(0, 0, 0, 0, "mm"))
       },
       width = 800, # Fixed 16:9 aspect ratio
       height = 450,
@@ -636,10 +661,10 @@ mod_export_server <- function(id, app_state) {
       shiny::req(app_state$data$current_data)
       shiny::req(app_state$columns$mappings$y_column)
 
-      # Get plot regenerated with PDF export context (200×120mm @ 300 DPI)
+      # Get result regenerated with PDF export context (200×120mm @ 300 DPI)
       # This ensures correct label placement for high-res print output
-      base_plot <- pdf_export_plot()
-      shiny::req(base_plot)
+      pdf_result <- pdf_export_plot()
+      shiny::req(pdf_result, pdf_result$bfh_qic_result)
 
       # Read export metadata inputs (triggers reactive dependency)
       # Note: title and department are already embedded in pdf_export_plot()
@@ -660,22 +685,13 @@ mod_export_server <- function(id, app_state) {
         date = Sys.Date()
       )
 
-      # Extract SPC statistics
-      spc_stats <- extract_spc_statistics(app_state)
-
-      # NOTE: No need to update title or apply theme here
-      # - pdf_export_plot() already has title and department embedded
-      # - BFHcharts already applies theme via BFHtheme::theme_bfh()
-      preview_plot <- base_plot
-
-      # Generate PDF preview PNG
+      # Generate PDF preview PNG using BFHcharts
       safe_operation(
         operation_name = "Generate PDF preview PNG",
         code = {
           preview_path <- generate_pdf_preview(
-            plot_object = preview_plot,
+            bfh_qic_result = pdf_result$bfh_qic_result,
             metadata = metadata,
-            spc_statistics = spc_stats,
             dpi = 150
           )
 
@@ -688,7 +704,8 @@ mod_export_server <- function(id, app_state) {
             )
           )
 
-          return(preview_path)
+          # NOTE: Don't use return() inside safe_operation code blocks!
+          preview_path
         },
         fallback = function(e) {
           log_error(
@@ -696,7 +713,7 @@ mod_export_server <- function(id, app_state) {
             message = "Failed to generate PDF preview PNG",
             details = list(error = e$message)
           )
-          return(NULL)
+          NULL
         },
         error_type = "processing"
       )
@@ -781,32 +798,14 @@ mod_export_server <- function(id, app_state) {
           code = {
             # Export logic based on format
             if (format == "pdf") {
-              # Issue #65: Use shared helper for consistent plot generation
-              # Issue #67: Call undebounced helper directly for download (fresh data)
-              # Preview uses debounced reactive for performance
-              plot <- build_export_plot(
-                app_state = app_state,
-                title_input = input$export_title %||% "",
-                dept_input = input$export_department %||% "",
-                plot_context = "export_pdf"
-              )
-
-              # Validate plot exists
-              if (is.null(plot)) {
-                stop("Ingen plot tilgængeligt til eksport")
-              }
-
-              # NOTE: No need to apply theme - pdf_export_plot() already handles it
-              # BFHcharts applies theme via BFHtheme::theme_bfh()
-
-              # PDF export via Typst/Quarto
+              # PDF export via BFHcharts (requires bfh_qic_result)
               log_debug(
                 .context = "EXPORT_MODULE",
-                message = "PDF export via Typst/Quarto"
+                message = "PDF export via BFHcharts::bfh_export_pdf"
               )
 
-              # Check Quarto availability
-              if (!quarto_available()) {
+              # Check Quarto availability (BFHcharts uses Quarto for Typst compilation)
+              if (!BFHcharts::quarto_available()) {
                 shiny::showNotification(
                   "PDF export kræver Quarto installation. Download fra https://quarto.org",
                   type = "warning",
@@ -815,7 +814,68 @@ mod_export_server <- function(id, app_state) {
                 stop("Quarto CLI ikke tilgængelig. Installér fra https://quarto.org")
               }
 
-              # Udtræk metadata fra UI inputs
+              # Validate required mappings exist
+              if (is.null(app_state$columns$mappings$chart_type) ||
+                length(app_state$columns$mappings$chart_type) == 0) {
+                stop("Chart type er ikke defineret. Gå til Analyse-siden og vælg charttype.")
+              }
+
+              # Normalize mappings (Issue #68)
+              config <- list(
+                x_col = app_state$columns$mappings$x_column,
+                y_col = app_state$columns$mappings$y_column,
+                n_col = normalize_mapping(app_state$columns$mappings$n_column)
+              )
+
+              # Build export title from inputs
+              title_parts <- c()
+              if (!is.null(input$export_title) && nchar(input$export_title) > 0) {
+                title_processed <- gsub("\n", "\\\n", input$export_title, fixed = TRUE)
+                title_parts <- c(title_parts, title_processed)
+              }
+              if (!is.null(input$export_department) && nchar(trimws(input$export_department)) > 0) {
+                title_parts <- c(title_parts, paste0("(", trimws(input$export_department), ")"))
+              }
+              export_title <- if (length(title_parts) > 0) paste(title_parts, collapse = " ") else NULL
+
+              # Normalize mappings
+              norm_skift <- normalize_mapping(app_state$columns$mappings$skift_column)
+              norm_frys <- normalize_mapping(app_state$columns$mappings$frys_column)
+              norm_kommentar <- normalize_mapping(app_state$columns$mappings$kommentar_column)
+              norm_target_value <- normalize_mapping(app_state$columns$mappings$target_value)
+              norm_target_text <- normalize_mapping(app_state$columns$mappings$target_text)
+              norm_centerline_value <- normalize_mapping(app_state$columns$mappings$centerline_value)
+              norm_y_axis_unit <- normalize_mapping(app_state$columns$mappings$y_axis_unit)
+
+              # Get PDF context dimensions
+              pdf_dims <- get_context_dimensions("export_pdf")
+
+              # Generate SPC result with PDF export context
+              pdf_plot_result <- generateSPCPlot(
+                data = app_state$data$current_data,
+                config = config,
+                chart_type = app_state$columns$mappings$chart_type,
+                target_value = norm_target_value,
+                target_text = norm_target_text,
+                centerline_value = norm_centerline_value,
+                show_phases = !is.null(norm_skift),
+                skift_column = norm_skift,
+                frys_column = norm_frys,
+                chart_title_reactive = export_title,
+                y_axis_unit = norm_y_axis_unit %||% "count",
+                kommentar_column = norm_kommentar,
+                base_size = 14,
+                viewport_width = pdf_dims$width_px,
+                viewport_height = pdf_dims$height_px,
+                plot_context = "export_pdf"
+              )
+
+              # Validate result exists
+              if (is.null(pdf_plot_result) || is.null(pdf_plot_result$bfh_qic_result)) {
+                stop("Ingen plot tilgængeligt til eksport")
+              }
+
+              # Udtræk metadata fra UI inputs for BFHcharts
               metadata <- list(
                 hospital = get_hospital_name_for_export(),
                 department = input$export_department,
@@ -827,9 +887,6 @@ mod_export_server <- function(id, app_state) {
                 date = Sys.Date()
               )
 
-              # Udtræk SPC statistikker fra app_state
-              spc_stats <- extract_spc_statistics(app_state)
-
               # Validate export inputs
               validate_export_inputs(
                 format = "pdf",
@@ -837,12 +894,12 @@ mod_export_server <- function(id, app_state) {
                 department = input$export_department
               )
 
-              # Generate PDF using Typst export workflow
-              result <- export_spc_to_typst_pdf(
-                plot_object = plot,
+              # Generate PDF using BFHcharts export function
+              result <- BFHcharts::bfh_export_pdf(
+                x = pdf_plot_result$bfh_qic_result,
+                output = file,
                 metadata = metadata,
-                spc_statistics = spc_stats,
-                output_path = file
+                template = "bfh-diagram2"
               )
 
               # Verify successful generation
@@ -852,7 +909,7 @@ mod_export_server <- function(id, app_state) {
 
               # Success notification
               shiny::showNotification(
-                "PDF genereret og downloadet via Typst",
+                "PDF genereret og downloadet via BFHcharts",
                 type = "message",
                 duration = 3
               )
@@ -917,7 +974,7 @@ mod_export_server <- function(id, app_state) {
                 title = input$export_title,
                 department = input$export_department,
                 width = round(width_inches * dpi),
-                height = round(width_inches * dpi)
+                height = round(height_inches * dpi) # Fixed: was width_inches
               )
 
               # M13: Regenerate plot with export_png context and actual export dimensions
@@ -991,13 +1048,17 @@ mod_export_server <- function(id, app_state) {
                 override_dpi = dpi # Issue #64: User-selected DPI
               )
 
-              # Generate PNG using dedicated export function
-              result <- generate_png_export(
-                plot_object = png_plot_result$plot,
-                width_inches = width_inches,
-                height_inches = height_inches,
-                dpi = dpi,
-                output_path = file
+              # Generate PNG using BFHcharts export function (requires bfh_qic_result)
+              # Convert inches to mm (BFHcharts uses mm)
+              width_mm <- width_inches * 25.4
+              height_mm <- height_inches * 25.4
+
+              result <- BFHcharts::bfh_export_png(
+                x = png_plot_result$bfh_qic_result,
+                output = file,
+                width_mm = width_mm,
+                height_mm = height_mm,
+                dpi = dpi
               )
 
               # Verify successful generation
@@ -1007,7 +1068,7 @@ mod_export_server <- function(id, app_state) {
 
               # Success notification
               shiny::showNotification(
-                "PNG genereret og downloadet",
+                "PNG genereret og downloadet via BFHcharts",
                 type = "message",
                 duration = 3
               )
@@ -1173,7 +1234,8 @@ mod_export_server <- function(id, app_state) {
       list(
         # Export preview ready indicator
         preview_ready = shiny::reactive({
-          !is.null(export_plot())
+          result <- export_plot()
+          !is.null(result) && !is.null(result$plot)
         })
       )
     )

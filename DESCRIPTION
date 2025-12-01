@@ -1,6 +1,6 @@
 Package: SPCify
 Title: SPCify - Kvalitetsudvikling på Bispebjerg og Frederiksberg Hospital
-Version: 0.1.9000
+Version: 0.2.0
 Authors@R:
     person("Johan", "Reventlow", , "noreply@example.com", role = c("aut", "cre"))
 Author: Johan Reventlow <noreply@example.com>

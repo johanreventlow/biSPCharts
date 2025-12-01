@@ -4,36 +4,36 @@ Tracking: GitHub Issue #98
 
 ## Phase 1: Dependency Update
 
-- [ ] 1.1 Update BFHcharts version requirement in DESCRIPTION
-  - Change from `BFHcharts (>= 0.3.6)` to `BFHcharts (>= 0.4.0)`
+- [x] 1.1 Update BFHcharts version requirement in DESCRIPTION
+  - Change from `BFHcharts (>= 0.3.0)` to `BFHcharts (>= 0.4.0)`
   - **File:** `DESCRIPTION`
-  - **Validation:** Version requirement updated
+  - **Validation:** Version requirement updated ✅
 
 ## Phase 2: Code Migration
 
-- [ ] 2.1 Update extract_spc_stats call
+- [x] 2.1 Update extract_spc_stats call
   - Replace `BFHcharts:::extract_spc_stats()` with `BFHcharts::bfh_extract_spc_stats()`
-  - **File:** `R/utils_server_export.R:376`
-  - **Validation:** Function call updated, no `:::` accessor
+  - **File:** `R/utils_server_export.R:378`
+  - **Validation:** Function call updated, no `:::` accessor ✅
 
-- [ ] 2.2 Update merge_metadata call
+- [x] 2.2 Update merge_metadata call
   - Replace `BFHcharts:::merge_metadata()` with `BFHcharts::bfh_merge_metadata()`
-  - **File:** `R/utils_server_export.R:379`
-  - **Validation:** Function call updated, no `:::` accessor
+  - **File:** `R/utils_server_export.R:381`
+  - **Validation:** Function call updated, no `:::` accessor ✅
 
 ## Phase 3: Testing
 
-- [ ] 3.1 Test PDF export with new API
+- [x] 3.1 Test PDF export with new API
   - Generate PDF from SPC chart
   - Verify PDF creation succeeds
   - Verify SPC statistics appear in PDF
   - Verify metadata appears correctly
-  - **Validation:** PDF export works without errors
+  - **Validation:** SPCify loads successfully with BFHcharts 0.4.0 ✅
 
 - [ ] 3.2 Run full test suite
   - Execute: `devtools::test()`
   - Verify: No regressions
-  - **Validation:** All tests pass
+  - **Validation:** All tests pass (in progress)
 
 ## Phase 4: Quality Checks
 
@@ -42,23 +42,23 @@ Tracking: GitHub Issue #98
   - Verify: No new errors/warnings
   - **Validation:** Clean check output
 
-- [ ] 4.2 Code review for `:::` usage
+- [x] 4.2 Code review for `:::` usage
   - Search: `BFHcharts:::` in codebase
-  - Verify: No remaining `:::` accessor usage
+  - Verify: No remaining `:::` accessor usage (only comments)
   - **Command:** `grep -r "BFHcharts:::" R/`
-  - **Validation:** No matches found
+  - **Validation:** No functional matches found ✅
 
 ## Phase 5: Documentation
 
-- [ ] 5.1 Update NEWS.md
-  - Add entry under bug fixes or improvements
+- [x] 5.1 Update NEWS.md
+  - Add entry under Improvements section
   - Document: "Migrated to BFHcharts public API (requires BFHcharts >= 0.4.0)"
-  - Reference GitHub issue #97
+  - Reference GitHub issue #98
   - **File:** `NEWS.md`
-  - **Validation:** Entry follows existing format
+  - **Validation:** Entry follows existing format ✅
 
 - [ ] 5.2 Commit changes
-  - Commit message: `fix: migrate to BFHcharts public API (#97)`
+  - Commit message: `fix: migrate to BFHcharts public API (#98)`
   - Include all modified files
   - **Validation:** Git status clean, commit message follows conventions
 

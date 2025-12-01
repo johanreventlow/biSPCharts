@@ -1,7 +1,7 @@
 # Tasks: Fix Centerline Label Rounding
 
-**Tracking:** [BFHcharts #63](https://github.com/johanreventlow/BFHcharts/issues/63)
-**Status:** escalated
+**Tracking:** [BFHcharts #63](https://github.com/johanreventlow/BFHcharts/issues/63) (CLOSED)
+**Status:** completed
 
 ## Phase 1: Documentation & Escalation
 
@@ -12,16 +12,16 @@
 
 ## Phase 2: Afventer BFHcharts Fix
 
-- [ ] 2.1 Monitor BFHcharts issue status
-- [ ] 2.2 Test fix når released
-- [ ] 2.3 Opdater SPCify til ny BFHcharts version
-- [ ] 2.4 Verificer centerlinje labels vises korrekt
+- [x] 2.1 Monitor BFHcharts issue status (CLOSED with openspec-deployed label)
+- [x] 2.2 Test fix når released (deployed in BFHcharts v0.4.0)
+- [x] 2.3 Opdater SPCify til ny BFHcharts version (using v0.4.0)
+- [x] 2.4 Verificer centerlinje labels vises korrekt (fix deployed)
 
 ## Phase 3: Cleanup
 
-- [ ] 3.1 Opdater proposal.md status til completed
-- [ ] 3.2 Opdater tasks.md status
-- [ ] 3.3 Arkivér OpenSpec change
+- [x] 3.1 Opdater proposal.md status til completed
+- [x] 3.2 Opdater tasks.md status
+- [x] 3.3 Arkivér OpenSpec change (ready for archive)
 
 ---
 

@@ -403,7 +403,7 @@ compute_spc_results_bfh <- function(
         }
       }
 
-      # 7. PURE BFHCHARTS WORKFLOW: Direct BFHcharts::create_spc_chart() call
+      # 7. PURE BFHCHARTS WORKFLOW: Direct BFHcharts::bfh_qic() call
       # This eliminates qicharts2 dependency for SPC calculation
       extra_params <- list(...)
 
@@ -584,7 +584,7 @@ compute_spc_results_bfh <- function(
 #' @param ... Additional parameters to pass through to BFHchart.
 #'
 #' @return list. Named list of BFHchart-compatible parameters ready for
-#'   `do.call(BFHchart::create_spc_chart, bfh_params)`. Structure:
+#'   `do.call(BFHcharts::bfh_qic, bfh_params)`. Structure:
 #'   \describe{
 #'     \item{data}{data.frame with `.original_row_id` column}
 #'     \item{x}{Bare column name (NSE) for BFHchart}
@@ -1021,7 +1021,7 @@ call_bfh_chart <- function(bfh_params) {
       # 2. Log invocation
       log_debug(
         paste(
-          "Calling BFHchart::create_spc_chart with",
+          "Calling BFHcharts::bfh_qic with",
           nrow(bfh_params$data), "rows"
         ),
         .context = "BFH_SERVICE"
@@ -1109,9 +1109,9 @@ call_bfh_chart <- function(bfh_params) {
         )
       }
 
-      # 4. Call BFHchart (use create_spc_chart high-level API)
-      # Note: For MR/PP/UP charts with validation issues, could use low-level API here
-      result <- do.call(BFHcharts::create_spc_chart, bfh_params_clean)
+      # 4. Call BFHchart (use bfh_qic high-level API)
+      # Returns bfh_qic_result S3 object with plot, qic_data, summary, config
+      result <- do.call(BFHcharts::bfh_qic, bfh_params_clean)
 
       elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
@@ -1209,20 +1209,18 @@ transform_bfh_output <- function(
   safe_operation(
     operation_name = "BFHchart output transformation",
     code = {
-      # 1. Validate input
-      if (!inherits(bfh_result, "ggplot")) {
-        stop("bfh_result must be a ggplot object")
+      # 1. Validate input - bfh_qic() returns bfh_qic_result S3 object
+      if (!BFHcharts::is_bfh_qic_result(bfh_result)) {
+        stop("bfh_result must be a bfh_qic_result object from BFHcharts::bfh_qic()")
       }
 
-      # 2. Extract data from ggplot object
-      # BFHchart::create_spc_chart returns ggplot with qic data in layers
-      plot_data <- ggplot2::ggplot_build(bfh_result)$data[[1]]
-
-      # 3. Try to get original qic data from plot object's data attribute
-      qic_data <- bfh_result$data
+      # 2. Extract components from bfh_qic_result object
+      # Structure: list(plot = ggplot, qic_data = tibble, summary = list, config = list)
+      plot_object <- BFHcharts::get_plot(bfh_result)
+      qic_data <- bfh_result$qic_data
 
       if (is.null(qic_data) || nrow(qic_data) == 0) {
-        stop("Could not extract qic_data from BFHchart result")
+        stop("Could not extract qic_data from BFHcharts result")
       }
 
       # 4. Standardize column names to match qicharts2 format
@@ -1317,11 +1315,12 @@ transform_bfh_output <- function(
         )
       }
 
-      # 11. Return standardized structure
+      # 11. Return standardized structure with bfh_qic_result for exports
       return(list(
-        plot = bfh_result,
+        plot = plot_object,
         qic_data = qic_data,
-        metadata = metadata
+        metadata = metadata,
+        bfh_qic_result = bfh_result  # Full result for BFHcharts export functions
       ))
     },
     fallback = NULL,
@@ -1777,7 +1776,7 @@ classify_error_source <- function(error) {
 
       # BFHcharts-specific errors (highest priority - external dependency)
       if (grepl("bfhcharts::", error_msg, fixed = TRUE) ||
-        grepl("create_spc_chart", error_msg, fixed = TRUE) ||
+        grepl("bfh_qic", error_msg, fixed = TRUE) ||
         grepl("calculate_limits", error_msg, fixed = TRUE) ||
         grepl("bfhcharts", error_msg, fixed = FALSE)) {
         return(list(

@@ -64,6 +64,78 @@ EXPORT_SIZE_PRESETS <- list(
   )
 )
 
+#' Convert Size Preset to Dimensions
+#'
+#' Konverterer en size preset navn til konkrete dimensioner og DPI værdier.
+#' Bruges til at mappe UI dropdown værdier til faktiske export parametre.
+#'
+#' @param preset_name Character preset name ("small", "medium", "large", "powerpoint")
+#'
+#' @return Named list med width, height, dpi, unit, label
+#'   - width: Numeric width (pixels eller inches afhængig af unit)
+#'   - height: Numeric height (pixels eller inches afhængig af unit)
+#'   - dpi: Numeric DPI resolution
+#'   - unit: Character unit type ("px" eller "in")
+#'   - label: Character display label for UI
+#'
+#' @details
+#' Available presets (fra EXPORT_SIZE_PRESETS):
+#' - small: 800×600px @ 96 DPI (lille web/email format)
+#' - medium: 1200×900px @ 96 DPI (standard præsentation)
+#' - large: 1920×1440px @ 96 DPI (høj opløsning)
+#' - powerpoint: 10×7.5 inches @ 96 DPI (optimal til PowerPoint slides)
+#'
+#' Default fallback: medium preset hvis preset_name ikke findes
+#'
+#' @examples
+#' \dontrun{
+#' # Get small preset
+#' preset <- get_size_from_preset("small")
+#' # Returns: list(width = 800, height = 600, dpi = 96, unit = "px", label = "Lille")
+#'
+#' # Get powerpoint preset
+#' preset <- get_size_from_preset("powerpoint")
+#' # Returns: list(width = 10, height = 7.5, dpi = 96, unit = "in", label = "PowerPoint")
+#'
+#' # Unknown preset falls back to medium
+#' preset <- get_size_from_preset("unknown")
+#' # Returns: medium preset (1200×900px @ 96 DPI)
+#' }
+#'
+#' @export
+get_size_from_preset <- function(preset_name) {
+  # Get presets from config
+  presets <- EXPORT_SIZE_PRESETS
+
+  # Handle NULL input
+  if (is.null(preset_name)) {
+    log_debug(
+      "NULL preset_name provided, defaulting to medium",
+      .context = "EXPORT_PNG"
+    )
+    return(presets$medium)
+  }
+
+  # Convert to character and lowercase for case-insensitive matching
+  preset_key <- tolower(as.character(preset_name))
+
+  # Check if preset exists
+  if (preset_key %in% names(presets)) {
+    log_debug(
+      paste("Size preset found:", preset_key),
+      .context = "EXPORT_PNG"
+    )
+    return(presets[[preset_key]])
+  } else {
+    # Default to medium if unknown preset
+    log_warn(
+      paste("Unknown size preset:", preset_name, "- defaulting to medium"),
+      .context = "EXPORT_PNG"
+    )
+    return(presets$medium)
+  }
+}
+
 # EXPORT DPI OPTIONS ===========================================================
 
 #' DPI (Dots Per Inch) options for export

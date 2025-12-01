@@ -219,6 +219,7 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
 #'
 #' Tjekker om Quarto CLI er tilgængelig på systemet.
 #' Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
+#' Delegerer til BFHcharts::quarto_available() for konsistent check.
 #'
 #' @return Logical. TRUE hvis Quarto er tilgængelig, FALSE ellers.
 #'
@@ -234,33 +235,7 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
 #' @family export_helpers
 #' @export
 quarto_available <- function() {
-  quarto_path <- Sys.which("quarto")
-  available <- nzchar(quarto_path)
-
-  # Fallback: Check for RStudio bundled Quarto (macOS)
-  if (!available && file.exists("/Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto")) {
-    available <- TRUE
-  }
-
-  # Fallback: Check for RStudio bundled Quarto (Windows)
-  if (!available && .Platform$OS.type == "windows") {
-    rstudio_quarto <- file.path(
-      Sys.getenv("PROGRAMFILES"),
-      "RStudio/resources/app/quarto/bin/quarto.cmd"
-    )
-    if (file.exists(rstudio_quarto)) {
-      available <- TRUE
-    }
-  }
-
-  if (!available) {
-    log_debug(
-      component = "[EXPORT]",
-      message = "Quarto CLI ikke fundet - PDF export ikke tilgængelig"
-    )
-  }
-
-  return(available)
+  BFHcharts::quarto_available()
 }
 
 # GET HOSPITAL NAME ===========================================================
@@ -311,16 +286,15 @@ get_hospital_name_for_export <- function() {
 #' Kompilerer Typst til PDF og konverterer første side til PNG til preview.
 #' Bruges af export module til at vise PDF layout preview.
 #'
-#' @param plot_object ggplot2 object. SPC chart til embedding i PDF.
+#' @param bfh_qic_result bfh_qic_result object from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result.
 #' @param metadata List. PDF metadata (hospital, department, title, analysis, etc.).
-#' @param spc_statistics List. SPC statistikker (runs, crossings, outliers).
 #' @param dpi Numeric. DPI for PNG rendering (default: 150).
 #'
 #' @return Character path til PNG preview fil eller NULL ved fejl.
 #'
 #' @details
 #' Funktionen:
-#' 1. Genererer temp PDF via \code{export_spc_to_typst_pdf()}
+#' 1. Genererer temp PDF via \code{BFHcharts::bfh_export_pdf()}
 #' 2. Konverterer første side til PNG via \code{pdftools::pdf_render_page()}
 #' 3. Returnerer path til PNG fil (i temp directory)
 #'
@@ -328,7 +302,7 @@ get_hospital_name_for_export <- function() {
 #'
 #' @examples
 #' \dontrun{
-#' plot <- ggplot2::qplot(1:10, 1:10)
+#' # bfh_qic_result comes from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result
 #' metadata <- list(
 #'   hospital = "Test Hospital",
 #'   department = "Test Dept",
@@ -339,13 +313,8 @@ get_hospital_name_for_export <- function() {
 #'   author = "Test Author",
 #'   date = Sys.Date()
 #' )
-#' spc_stats <- list(
-#'   runs_expected = 12, runs_actual = 10,
-#'   crossings_expected = 16, crossings_actual = 14,
-#'   outliers_expected = 0, outliers_actual = 2
-#' )
 #'
-#' preview_path <- generate_pdf_preview(plot, metadata, spc_stats)
+#' preview_path <- generate_pdf_preview(bfh_qic_result, metadata)
 #' if (!is.null(preview_path)) {
 #'   # Display preview image
 #' }
@@ -353,18 +322,17 @@ get_hospital_name_for_export <- function() {
 #'
 #' @family export_helpers
 #' @export
-generate_pdf_preview <- function(plot_object,
+generate_pdf_preview <- function(bfh_qic_result,
                                  metadata,
-                                 spc_statistics,
                                  dpi = 150) {
   safe_operation(
     operation_name = "Generate PDF preview",
     code = {
-      # Validér inputs
-      if (is.null(plot_object)) {
+      # Validér inputs - must be bfh_qic_result object
+      if (is.null(bfh_qic_result) || !BFHcharts::is_bfh_qic_result(bfh_qic_result)) {
         log_warn(
           component = "[EXPORT]",
-          message = "Ingen plot object til PDF preview"
+          message = "Ingen valid bfh_qic_result til PDF preview"
         )
         return(NULL)
       }
@@ -387,12 +355,12 @@ generate_pdf_preview <- function(plot_object,
         details = list(temp_pdf = temp_pdf)
       )
 
-      # Brug eksisterende Typst export
-      export_spc_to_typst_pdf(
-        plot_object = plot_object,
+      # Brug BFHcharts export function
+      BFHcharts::bfh_export_pdf(
+        x = bfh_qic_result,
+        output = temp_pdf,
         metadata = metadata,
-        spc_statistics = spc_statistics,
-        output_path = temp_pdf
+        template = "bfh-diagram2"
       )
 
       # Validér PDF blev genereret

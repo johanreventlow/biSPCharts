@@ -4,7 +4,7 @@
 \alias{build_gemini_prompt}
 \title{Build Gemini Prompt from Metadata and Context}
 \usage{
-build_gemini_prompt(metadata, context)
+build_gemini_prompt(metadata, context, spc_knowledge = NULL)
 }
 \arguments{
 \item{metadata}{List from extract_spc_metadata()}
@@ -16,14 +16,19 @@ build_gemini_prompt(metadata, context)
 \item y_axis_unit: Character string måleenhed
 \item target_value: Numeric target værdi (can be NULL)
 }}
+
+\item{spc_knowledge}{Character string with RAG-retrieved SPC methodology
+context (optional, default NULL). Hvis ikke-NULL, tilføjes som ekstra
+reference section i prompten.}
 }
 \value{
 Character string with complete Gemini prompt (1500+ chars)
-med alle placeholders udfyldt
+med alle placeholders udfyldt, inklusiv RAG context hvis tilgængelig
 }
 \description{
 Kombinerer SPC metadata med user context og interpolerer prompt template.
 Tilføjer target comparison baseret på centerline vs target.
+Kan inkludere RAG-hentet SPC metodologi kontekst for at grunde Gemini respons.
 }
 \examples{
 \dontrun{
@@ -34,8 +39,13 @@ context <- list(
   y_axis_unit = "dage",
   target_value = 30
 )
+# Without RAG
 prompt <- build_gemini_prompt(metadata, context)
-# Returns full prompt ready for Gemini API
+
+# With RAG
+spc_knowledge <- query_spc_knowledge("run", c("Serielængde"), "over")
+prompt <- build_gemini_prompt(metadata, context, spc_knowledge)
+# Returns full prompt ready for Gemini API with RAG context
 }
 }
 \keyword{internal}

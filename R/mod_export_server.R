@@ -140,6 +140,21 @@ build_export_plot <- function(app_state, title_input, dept_input,
         plot_context = plot_context
       )
 
+      # DEBUG: Log what generateSPCPlot returned
+      log_debug(
+        .context = "EXPORT_MODULE",
+        message = paste(
+          "generateSPCPlot returned - is_null:",
+          is.null(spc_result),
+          "| has_plot:",
+          !is.null(spc_result$plot),
+          "| class:",
+          if (!is.null(spc_result)) paste(class(spc_result), collapse = ",") else "NULL",
+          "| names:",
+          if (!is.null(spc_result) && is.list(spc_result)) paste(names(spc_result), collapse = ",") else "N/A"
+        )
+      )
+
       log_debug(
         .context = "EXPORT_MODULE",
         message = sprintf("Export plot generated for context: %s", plot_context),
@@ -155,7 +170,9 @@ build_export_plot <- function(app_state, title_input, dept_input,
       )
 
       # Return full result including bfh_qic_result for exports
-      return(spc_result)
+      # NOTE: Don't use return() inside safe_operation code blocks!
+      # R's force() evaluation doesn't handle return() correctly - just use the value
+      spc_result
     },
     fallback = function(e) {
       log_error(
@@ -163,7 +180,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
         message = sprintf("Failed to generate %s plot", plot_context),
         details = list(error = e$message, context = plot_context)
       )
-      return(NULL)
+      NULL
     },
     error_type = "processing"
   )
@@ -575,12 +592,18 @@ mod_export_server <- function(id, app_state) {
 
         spc_result <- export_plot()
 
+        # DEBUG: Explicit logging of actual values
         log_debug(
           .context = "EXPORT_MODULE",
-          message = "export_plot() returned",
-          details = list(
-            is_null = is.null(spc_result),
-            has_plot = !is.null(spc_result$plot)
+          message = paste(
+            "export_plot() returned - is_null:",
+            is.null(spc_result),
+            "| has_plot:",
+            !is.null(spc_result$plot),
+            "| class:",
+            if (!is.null(spc_result)) paste(class(spc_result), collapse = ",") else "NULL",
+            "| names:",
+            if (!is.null(spc_result) && is.list(spc_result)) paste(names(spc_result), collapse = ",") else "N/A"
           )
         )
 
@@ -681,7 +704,8 @@ mod_export_server <- function(id, app_state) {
             )
           )
 
-          return(preview_path)
+          # NOTE: Don't use return() inside safe_operation code blocks!
+          preview_path
         },
         fallback = function(e) {
           log_error(
@@ -689,7 +713,7 @@ mod_export_server <- function(id, app_state) {
             message = "Failed to generate PDF preview PNG",
             details = list(error = e$message)
           )
-          return(NULL)
+          NULL
         },
         error_type = "processing"
       )
@@ -950,7 +974,7 @@ mod_export_server <- function(id, app_state) {
                 title = input$export_title,
                 department = input$export_department,
                 width = round(width_inches * dpi),
-                height = round(width_inches * dpi)
+                height = round(height_inches * dpi) # Fixed: was width_inches
               )
 
               # M13: Regenerate plot with export_png context and actual export dimensions

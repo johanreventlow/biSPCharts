@@ -45,9 +45,6 @@ Both functions have comprehensive documentation, parameter validation, and seman
 
 ## Impact
 
-**Affected specs:**
-- `export-api` (PDF export functionality uses these functions)
-
 **Affected code:**
 - `DESCRIPTION` - BFHcharts version requirement
 - `R/utils_server_export.R` - Function calls in `generate_pdf_preview()`

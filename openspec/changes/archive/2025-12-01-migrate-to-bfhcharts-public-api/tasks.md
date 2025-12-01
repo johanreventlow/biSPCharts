@@ -30,17 +30,17 @@ Tracking: GitHub Issue #98
   - Verify metadata appears correctly
   - **Validation:** SPCify loads successfully with BFHcharts 0.4.0 ✅
 
-- [ ] 3.2 Run full test suite
+- [x] 3.2 Run full test suite
   - Execute: `devtools::test()`
   - Verify: No regressions
-  - **Validation:** All tests pass (in progress)
+  - **Validation:** All tests pass ✅
 
 ## Phase 4: Quality Checks
 
-- [ ] 4.1 Run R CMD check
+- [x] 4.1 Run R CMD check
   - Execute: `devtools::check()`
   - Verify: No new errors/warnings
-  - **Validation:** Clean check output
+  - **Validation:** Clean check output ✅
 
 - [x] 4.2 Code review for `:::` usage
   - Search: `BFHcharts:::` in codebase
@@ -57,36 +57,36 @@ Tracking: GitHub Issue #98
   - **File:** `NEWS.md`
   - **Validation:** Entry follows existing format ✅
 
-- [ ] 5.2 Commit changes
+- [x] 5.2 Commit changes
   - Commit message: `fix: migrate to BFHcharts public API (#98)`
   - Include all modified files
-  - **Validation:** Git status clean, commit message follows conventions
+  - **Validation:** Git status clean, commit message follows conventions ✅
 
 ## Phase 6: Deployment
 
-- [ ] 6.1 Deploy BFHcharts 0.4.0 (if not already deployed)
+- [x] 6.1 Deploy BFHcharts 0.4.0 (if not already deployed)
   - Verify: BFHcharts 0.4.0 is available
-  - **Validation:** `library(BFHcharts)` loads v0.4.0
+  - **Validation:** `library(BFHcharts)` loads v0.4.0 ✅
 
-- [ ] 6.2 Restart Shiny app
+- [x] 6.2 Restart Shiny app
   - Reload: SPCify application
   - Verify: App starts without errors
-  - **Validation:** No startup errors
+  - **Validation:** No startup errors ✅
 
-- [ ] 6.3 Integration test in production
+- [x] 6.3 Integration test in production
   - Test: Generate PDF from live SPC chart
   - Verify: PDF generation works
   - Verify: Metadata and stats correct
-  - **Validation:** Production PDF export functional
+  - **Validation:** Production PDF export functional ✅
 
-- [ ] 6.4 Update GitHub issue #97
+- [x] 6.4 Update GitHub issue #98
   - Add label: `openspec-deployed`
   - Close with comment referencing commit
-  - **Validation:** Issue closed and labeled
+  - **Validation:** Issue closed and labeled ✅
 
-- [ ] 6.5 Archive OpenSpec change
+- [x] 6.5 Archive OpenSpec change
   - Execute: `openspec archive migrate-to-bfhcharts-public-api --yes`
-  - **Validation:** Change moved to archive
+  - **Validation:** Change moved to archive ✅
 
 ## Dependencies
 

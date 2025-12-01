@@ -1,8 +1,9 @@
 # Proposal: Migrate to BFHcharts Export API
 
-**Status:** proposed
+**Status:** implementing
 **Issue:** #95
 **Created:** 2025-12-01
+**Updated:** 2025-12-01
 **Author:** Claude
 
 ## Why

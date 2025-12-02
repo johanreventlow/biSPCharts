@@ -11,21 +11,21 @@ generate_pdf_preview(bfh_qic_result, metadata, dpi = 150)
 
 \item{metadata}{List. PDF metadata (hospital, department, title, analysis, etc.).}
 
-\item{dpi}{Numeric. DPI for PNG rendering (default: 150).}
+\item{dpi}{Numeric. DPI/PPI for PNG rendering (default: 150).}
 }
 \value{
 Character path til PNG preview fil eller NULL ved fejl.
 }
 \description{
-Kompilerer Typst til PDF og konverterer første side til PNG til preview.
-Bruges af export module til at vise PDF layout preview.
+Genererer PNG preview af PDF layout direkte fra Typst.
+Bruges af export module til at vise PDF layout preview i browseren.
 }
 \details{
-Funktionen:
+Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
 \enumerate{
-\item Genererer temp PDF via \code{BFHcharts::bfh_export_pdf()}
-\item Konverterer første side til PNG via \code{pdftools::pdf_render_page()}
-\item Returnerer path til PNG fil (i temp directory)
+\item Genererer chart PNG via \code{ggplot2::ggsave()}
+\item Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
+\item Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 }
 
 PNG filen er midlertidig og vil blive slettet når R session afsluttes.

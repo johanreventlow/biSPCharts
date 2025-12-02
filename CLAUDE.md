@@ -328,73 +328,90 @@ gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 4. Dependency analysis før nye features
 5. Test coverage gaps identifikation
 
-### AI/LLM Integration Patterns
+### AI/LLM Integration Patterns (BFHllm Package)
 
-**Architecture:**
-- **Primary function:** `R/fct_ai_improvement_suggestions.R` - AI suggestion generation
-- **RAG integration:** `R/utils_ragnar_integration.R` - Knowledge retrieval
-- **Caching layer:** `R/utils_ai_cache.R` - Response caching to reduce API calls
+**Architecture (efter BFHllm migration):**
+- **SPCify facade:** `R/fct_ai_improvement_suggestions.R` - Thin wrapper
+- **Integration layer:** `R/utils_bfhllm_integration.R` - SPCify-specific config
+- **Core AI logic:** Delegeret til `BFHllm` package (v0.1.0+)
 
-**RAG-Enhanced vs Non-RAG Calls:**
+**SPCify API (unchanged for users):**
 
 ```r
-# RAG-enhanced (default for improvement suggestions)
-suggestion <- generate_ai_improvement_suggestion(
-  chart_data = data,
-  spc_metadata = metadata,
-  use_rag = TRUE  # Retrieves SPC knowledge context
-)
-
-# Non-RAG (fallback ved RAG fejl)
-suggestion <- generate_ai_improvement_suggestion(
-  chart_data = data,
-  spc_metadata = metadata,
-  use_rag = FALSE  # Kun chart data + metadata
+# Generate AI improvement suggestion
+suggestion <- generate_improvement_suggestion(
+  spc_result = spc_result,  # BFHcharts result object
+  context = list(
+    data_definition = "Ventetid til operation",
+    chart_title = "Ventetid 2024",
+    y_axis_unit = "dage",
+    target_value = 30
+  ),
+  session = session,        # Shiny session (required for caching)
+  max_chars = 350
 )
 ```
 
-**Caching Strategy:**
-- **Cache key:** Baseret på chart data hash + metadata + RAG context
-- **Cache location:** Session-based (in-memory reactiveValues)
-- **Invalidation:** Automatic ved data updates (via events)
-- **Benefits:** Reducerer API calls, forbedrer response time, sænker costs
+**BFHllm Integration:**
+
+```r
+# SPCify initialization (global.R eller run_app.R)
+initialize_bfhllm(
+  ai_config = get_ai_config(),
+  rag_config = get_rag_config()
+)
+
+# Check availability
+if (is_bfhllm_available()) {
+  # BFHllm is configured and ready
+}
+
+# Direct BFHllm usage (advanced)
+library(BFHllm)
+BFHllm::bfhllm_spc_suggestion(
+  spc_result = spc_result,
+  context = context,
+  max_chars = 350,
+  use_rag = TRUE,
+  cache = BFHllm::bfhllm_cache_shiny(session)
+)
+```
 
 **Graceful Degradation:**
 
-1. **RAG query fejl** → Fortsæt uden RAG context, log warning
-2. **API fejl** → Return informativ fejlbesked til bruger, log error
-3. **Cache miss** → Normal API call (ikke en fejl)
+1. **BFHllm unavailable** → Suggestion returns NULL, log warning
+2. **RAG query fejl** → BFHllm fortsætter uden RAG context
+3. **API fejl** → Return NULL, log error via `safe_operation`
+4. **Cache miss** → Normal API call via BFHllm
 
 **API Key Management:**
 
-```r
-# Runtime fallback pattern (implementeret i load_ragnar_store())
-if (Sys.getenv("GEMINI_API_KEY") == "") {
-  google_key <- Sys.getenv("GOOGLE_API_KEY")
-  if (google_key != "") {
-    Sys.setenv(GEMINI_API_KEY = google_key)
-  }
-}
+- **Development:** `.Renviron` med `GOOGLE_API_KEY` eller `GEMINI_API_KEY`
+- **Production:** Environment variables (container deployment)
+- **Fallback:** BFHllm handles `GOOGLE_API_KEY` → `GEMINI_API_KEY` fallback
+
+**Configuration:**
+
+```yaml
+# inst/golem-config.yml
+default:
+  ai:
+    model: "gemini-2.0-flash-exp"
+    timeout_seconds: 10
+    max_response_chars: 350
+  rag:
+    enabled: TRUE
+    top_k: 5
+    min_similarity: 0.3
 ```
 
-- **Development:** `.Renviron` med `GOOGLE_API_KEY`
-- **Production:** Miljøvariabel management (containerized deployment)
-- **Fallback:** `GOOGLE_API_KEY` → `GEMINI_API_KEY` automatic
-
-**Prompt Construction Best Practices:**
-
-- **Structured context:** Chart type, metadata, Anhøj rules violations
-- **RAG context injection:** Top-k most relevant SPC knowledge chunks
-- **Language specification:** Dansk output explicit i prompt
-- **Output format:** Markdown med konkrete, handlingsorienterede anbefalinger
-- **Context window management:** Limit RAG chunks til top-5 for at undgå token overforbrug
-
 **Files involved:**
-- `R/fct_ai_improvement_suggestions.R` - Main AI logic
-- `R/utils_ragnar_integration.R` - RAG integration
-- `R/utils_ai_cache.R` - Cache implementation
-- `inst/golem-config.yml` - RAG configuration
-- `inst/spc_knowledge/` - Knowledge base content
+- `R/fct_ai_improvement_suggestions.R` - SPCify facade (thin wrapper)
+- `R/utils_bfhllm_integration.R` - Integration layer
+- `inst/golem-config.yml` - AI/RAG configuration
+- **BFHllm package:** Core AI logic, RAG, caching, prompts, knowledge base
+
+**See Also:** BFHllm package documentation for advanced usage, RAG configuration, and knowledge base management
 
 ### Danish Language
 
@@ -410,213 +427,132 @@ if (Sys.getenv("GEMINI_API_KEY") == "") {
 
 ---
 
-## 7) RAG Integration Architecture
+## 7) AI/LLM Integration via BFHllm Package
 
-### Overview
+### Overview (Post-Migration)
 
-SPCify bruger **Ragnar** (tidyverse RAG framework) til at forbedre AI-genererede forbedringsforslag med domæne-specifik SPC viden.
+**VIGTIGT:** Efter Issue #100 (Phase 2) er al AI/LLM funktionalitet migreret til **BFHllm** package (v0.1.0+). SPCify delegerer nu til BFHllm for RAG, LLM calls, caching, og prompt building.
 
 **System Flow:**
-1. User anmoder om AI suggestion for SPC chart
-2. RAG query retriever relevante SPC knowledge chunks fra Ragnar store
-3. Retrieved context + chart data sendes til Gemini API
-4. AI genererer domæne-informeret forbedringsforslag på dansk
+1. User anmoder om AI suggestion via SPCify UI
+2. SPCify kalder `generate_improvement_suggestion()` (thin wrapper)
+3. Wrapper delegerer til `BFHllm::bfhllm_spc_suggestion()`
+4. BFHllm performer RAG query, prompt building, LLM call, caching
+5. AI suggestion returneres til SPCify og vises i UI
 
-### Architecture Components
+### SPCify Integration Layer
 
-**Knowledge Base:**
-- **Location:** `inst/spc_knowledge/`
-- **Format:** Markdown files med SPC metodologi, best practices, Anhøj rules forklaringer
-- **Content:** SPC fundamentals, chart interpretation, special cause patterns
+**Files i SPCify:**
+- `R/fct_ai_improvement_suggestions.R` - Thin facade, input validation
+- `R/utils_bfhllm_integration.R` - SPCify-specific BFHllm configuration
+- `inst/golem-config.yml` - AI/RAG configuration settings
 
-**Ragnar Store:**
-- **Build script:** `data-raw/build_ragnar_store.R`
-- **Store location (dev):** `inst/ragnar_store/`
-- **Store location (prod):** Installed package path
-- **Embedding provider:** Gemini API (via `GOOGLE_API_KEY`)
-- **Search methods:** Semantic (embeddings) + BM25 (keyword)
-- **Chunks:** Markdown-based chunking med target size
-
-**Integration Layer:**
-- **Main file:** `R/utils_ragnar_integration.R`
-- **Key functions:**
-  - `load_ragnar_store()` - Loader store med API key fallback
-  - `query_spc_knowledge()` - Retriever relevante chunks
-  - `format_rag_context()` - Formatter context til prompt
-
-**AI Suggestion Flow:**
-- **Main file:** `R/fct_ai_improvement_suggestions.R`
-- **Integration point:** RAG query før Gemini API call
-- **Fallback:** Graceful degradation ved RAG fejl (fortsæt uden RAG context)
-
-### Build Process
-
-**Knowledge Store Build:**
-
-```r
-# Kør fra project root
-source("data-raw/build_ragnar_store.R")
-```
-
-**Build steps:**
-1. Initialize Ragnar store med Gemini embeddings
-2. Read markdown files fra `inst/spc_knowledge/`
-3. Chunk documents (markdown-aware)
-4. Generate embeddings via Gemini API
-5. Build BM25 search index
-6. Persist store til `inst/ragnar_store/`
-
-**Verification:**
-
-```r
-# Manual verification
-Rscript tests/manual/verify_rag.R
-```
-
-### Development vs Production Mode
-
-**Development Mode Detection:**
-
-```r
-# SPCify ikke installeret → development mode
-ragnar_store_path <- system.file("ragnar_store", package = "SPCify")
-if (ragnar_store_path == "") {
-  ragnar_store_path <- "inst/ragnar_store"  # Project root
-}
-```
-
-**Development:**
-- Store path: `inst/ragnar_store/` (relative til project root)
-- API key: `.Renviron` med `GOOGLE_API_KEY`
-- Rebuild: Manual via `data-raw/build_ragnar_store.R`
-
-**Production:**
-- Store path: Installed package `system.file("ragnar_store", package = "SPCify")`
-- API key: Environment variable (container/deployment config)
-- Rebuild: Package reinstall med updated knowledge base
+**BFHllm Package Responsibilities:**
+- RAG knowledge store management (`inst/spc_knowledge/`, `inst/ragnar_store/`)
+- Ragnar integration (`bfhllm_query_knowledge`, `bfhllm_load_knowledge_store`)
+- LLM provider abstraction (`bfhllm_chat`, `bfhllm_configure`)
+- Prompt templates og building (`bfhllm_build_prompt`, `bfhllm_create_structured_prompt`)
+- Session-scoped caching (`bfhllm_cache_shiny`)
+- SPC-specific suggestion logic (`bfhllm_spc_suggestion`, `bfhllm_extract_spc_metadata`)
 
 ### Configuration
 
-**Golem Config (`inst/golem-config.yml`):**
+**SPCify Configuration (`inst/golem-config.yml`):**
 
 ```yaml
 default:
+  ai:
+    model: "gemini-2.0-flash-exp"
+    timeout_seconds: 10
+    max_response_chars: 350
   rag:
     enabled: TRUE
     top_k: 5
     min_similarity: 0.3
-
-test:
-  rag:
-    enabled: FALSE  # Skip RAG i automated tests
 ```
 
-**API Keys:**
-- `GOOGLE_API_KEY` - Primary (bruges til både embeddings og generation)
-- `GEMINI_API_KEY` - Auto-populated som fallback fra `GOOGLE_API_KEY`
+**Initialization (global.R eller run_app.R):**
 
-### Modification Guidelines
+```r
+# Configure BFHllm with SPCify settings
+initialize_bfhllm(
+  ai_config = get_ai_config(),
+  rag_config = get_rag_config()
+)
+```
 
-**When to Modify Knowledge Base:**
-- Nye SPC metodologier eller best practices
-- Opdaterede Anhøj rules fortolkninger
-- Feedback fra klinikere om manglende viden
-- Fejlagtige eller outdated information
+### API Key Management
+
+- **Development:** `.Renviron` med `GOOGLE_API_KEY` eller `GEMINI_API_KEY`
+- **Production:** Environment variables via deployment config
+- **Fallback:** BFHllm automatically uses `GOOGLE_API_KEY` → `GEMINI_API_KEY`
+
+### Knowledge Base Management
+
+**Location:** Knowledge base er nu i **BFHllm package**
 
 **Update Process:**
-1. Edit markdown files i `inst/spc_knowledge/`
-2. Rebuild Ragnar store: `source("data-raw/build_ragnar_store.R")`
-3. Verify via `Rscript tests/manual/verify_rag.R`
-4. Test AI suggestions med updated knowledge
-5. Commit både markdown source OG rebuilt store
+1. Clone BFHllm repository: `git clone https://github.com/johanreventlow/BFHllm`
+2. Edit markdown files: `inst/spc_knowledge/*.md`
+3. Rebuild Ragnar store: `source("data-raw/build_ragnar_store.R")`
+4. Test locally: `devtools::install("path/to/BFHllm")`
+5. Commit og push til BFHllm repo
+6. Update SPCify DESCRIPTION: `BFHllm (>= new_version)`
 
-**When to Modify Integration Layer:**
-- Ændringer i RAG query strategi (top-k, similarity threshold)
-- Nye prompt engineering patterns
-- Performance optimization (caching, batching)
-- Graceful degradation improvements
+**Benefits of Extraction:**
+- Single source of truth for SPC knowledge
+- Independent versioning og updates
+- Reusable across multiple R packages
+- Reduced SPCify maintenance burden
 
-**When NOT to Modify (Escalate to Ragnar):**
-- Embedding generation algorithms
-- Vector search/retrieval algorithms
-- BM25 implementation
-- Store persistence format
-- Chunking algorithms (se External Package Ownership)
+### Testing
 
-### Performance Considerations
+**SPCify Tests:**
+- `tests/testthat/test-fct_ai_improvement_suggestions.R` - Facade behavior (delegation, validation)
+- Mocked BFHllm calls (no API dependency)
 
-**Embedding Generation:**
-- **Cost:** Gemini API call per chunk (one-time ved store build)
-- **Time:** ~1-2s per document (afhængig af size)
-- **Optimization:** Batch builds, incremental updates
+**BFHllm Tests:**
+- Se BFHllm package documentation for RAG, caching, og LLM integration tests
 
-**Query Performance:**
-- **Retrieval:** <100ms for semantic + BM25 search
-- **Caching:** Session-based cache for identical queries
-- **Top-k limit:** Default 5 chunks (balance mellem context quality og token usage)
-
-**API Usage:**
-- **Store build:** One-time embedding cost (rebuild kun ved knowledge updates)
-- **Query time:** Kun Gemini generation call (embeddings reused fra store)
-- **Caching:** Reduces repeated API calls for samme chart data
-
-### Testing Strategy
-
-**Automated Tests:**
-- `tests/testthat/test-utils_ragnar_integration.R` - Integration layer logic
-- `tests/testthat/test-fct_ai_improvement_suggestions.R` - AI suggestion flow med RAG
-- Mocked Ragnar calls (no API dependency)
-
-**Manual Tests:**
-- `tests/manual/verify_rag.R` - End-to-end RAG verification
-- Requires: API key, internet, Ragnar store built
-- Use case: Pre-deployment verification
-
-**Coverage:**
-- Integration layer: 100% (critical path)
-- Fallback scenarios: Required (RAG fejl, API fejl)
-- Cache invalidation: Verified via events
+**Manual Verification:**
+1. Install BFHllm: `devtools::install_github("johanreventlow/BFHllm")`
+2. Verify SPCify integration: `devtools::load_all()` i SPCify project
+3. Test AI suggestions via Shiny app
 
 ### Troubleshooting
 
 **Common Issues:**
 
-1. **"Ragnar store not found"**
-   - Check `inst/ragnar_store/` exists
-   - Run `source("data-raw/build_ragnar_store.R")`
-   - Verify development mode detection
+1. **"BFHllm package not found"**
+   - Install BFHllm: `devtools::install_github("johanreventlow/BFHllm")`
+   - Check DESCRIPTION: `BFHllm (>= 0.1.0)` listed in Imports
 
-2. **"API key not configured"**
-   - Add `GOOGLE_API_KEY` til `.Renviron`
-   - Restart R session
-   - Check `Sys.getenv("GOOGLE_API_KEY")`
+2. **"AI suggestions return NULL"**
+   - Check `is_bfhllm_available()` returns TRUE
+   - Verify API key: `Sys.getenv("GOOGLE_API_KEY")` or `Sys.getenv("GEMINI_API_KEY")`
+   - Check logs for BFHllm errors
 
-3. **"No results from RAG query"**
-   - Check query formulation
-   - Verify store built successfully
-   - Check `min_similarity` threshold i config
-
-4. **"Poor suggestion quality"**
-   - Review RAG context chunks (are they relevant?)
-   - Check `top_k` setting (more/fewer chunks?)
-   - Update knowledge base content
-   - Rebuild store
+3. **"RAG not working"**
+   - Verify BFHllm ragnar store built: Check BFHllm package installation
+   - Check RAG enabled: `get_rag_config()$enabled == TRUE`
+   - See BFHllm troubleshooting documentation
 
 **Debug Logging:**
 
 ```r
-# Enable RAG debug logs
+# Enable debug logs
 options(spc.log.level = "debug")
 
-# Check RAG context in logs
-# [RAG] - Context retrieval and formatting
+# Check for AI_SUGGESTION context logs
+# [AI_SUGGESTION] - SPCify wrapper behavior
+# [BFHllm] - See BFHllm package logs (if enabled)
 ```
 
 ### Related Documentation
 
-- **README.md** - RAG verification guide
-- **MCP Context** - Recent RAG implementation sessions
-- **Issues:** #82, #83, #87, #79 - Original RAG epic implementation
+- **BFHllm Package:** `https://github.com/johanreventlow/BFHllm` - Full RAG/LLM documentation
+- **NEWS.md:** Migration notes for Issue #100 (Phase 2)
+- **Issues:** #100 - BFHllm extraction tracking issue
 
 ---
 

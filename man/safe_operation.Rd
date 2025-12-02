@@ -35,6 +35,42 @@ Provides a standardized way to execute code with error handling and
 fallback behavior. Designed to prevent crashes in reactive contexts
 and provide graceful degradation.
 }
+\section{CRITICAL - Return Value Semantics}{
+
+\strong{DO NOT use \code{return()} statements inside the code block!}
+
+R's \code{force()} evaluation does not correctly propagate \code{return()} values.
+Using \code{return(value)} inside the code block will return \code{NULL} instead
+of the expected value.
+
+\strong{Correct pattern:} Let the last expression in the code block be the
+value you want to return.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# WRONG - returns NULL:
+safe_operation("test", code = \{
+  result <- compute()
+  return(result)  # BUG: returns NULL!
+\})
+
+# CORRECT - returns result:
+safe_operation("test", code = \{
+  result <- compute()
+  result  # Works correctly
+\})
+}\if{html}{\out{</div>}}
+
+For early exits, use conditional flow with a result variable instead:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{safe_operation("test", code = \{
+  result <- default_value
+  if (condition) \{
+    result <- compute_result()
+  \}
+  result
+\})
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 \dontrun{
 # Basic usage

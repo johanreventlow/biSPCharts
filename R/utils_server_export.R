@@ -283,7 +283,7 @@ get_hospital_name_for_export <- function() {
 
 #' Generate PDF Preview Image
 #'
-#' Genererer PNG preview af PDF layout direkte fra Typst.
+#' Genererer PNG preview af PDF layout via BFHcharts export funktioner.
 #' Bruges af export module til at vise PDF layout preview i browseren.
 #'
 #' @param bfh_qic_result bfh_qic_result object from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result.
@@ -293,10 +293,9 @@ get_hospital_name_for_export <- function() {
 #' @return Character path til PNG preview fil eller NULL ved fejl.
 #'
 #' @details
-#' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
-#' 1. Genererer chart PNG via \code{ggplot2::ggsave()}
-#' 2. Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
-#' 3. Kompilerer direkte til PNG via \code{quarto typst compile -f png}
+#' Funktionen bruger BFHcharts::bfh_export_pdf() til at generere PDF,
+#' derefter konverterer til PNG via pdftools for preview.
+#' Fallback til simpel chart PNG hvis pdftools ikke er tilgængelig.
 #'
 #' PNG filen er midlertidig og vil blive slettet når R session afsluttes.
 #'
@@ -341,119 +340,118 @@ generate_pdf_preview <- function(bfh_qic_result,
           component = "[EXPORT]",
           message = "Ingen valid bfh_qic_result til PDF preview"
         )
-      } else if (!quarto_available()) {
-        # Check Quarto availability (includes Typst)
-        log_warn(
-          component = "[EXPORT]",
-          message = "Quarto ikke tilgængelig - PDF preview kan ikke genereres"
-        )
       } else {
-        # Create temp directory for Typst compilation
-        temp_dir <- tempfile("bfh_preview_")
-        dir.create(temp_dir, recursive = TRUE)
+        # Use BFHcharts::bfh_export_pdf() to generate PDF, then convert to PNG
+        temp_pdf <- tempfile(fileext = ".pdf")
+        temp_png <- tempfile(fileext = ".png")
 
         log_debug(
           component = "[EXPORT]",
-          message = "Genererer PDF preview via Typst PNG",
-          details = list(temp_dir = temp_dir, dpi = dpi)
+          message = "Genererer PDF preview via bfh_export_pdf",
+          details = list(temp_pdf = temp_pdf, dpi = dpi)
         )
 
-        # 1. Generate chart PNG (same as bfh_export_pdf does internally)
-        chart_title <- bfh_qic_result$config$chart_title
-        if (is.null(chart_title)) chart_title <- ""
-
-        plot_no_title <- bfh_qic_result$plot + ggplot2::labs(title = NULL, subtitle = NULL)
-        chart_png <- file.path(temp_dir, "chart.png")
-
-        # Use same dimensions as export_pdf config for consistency
-        # R/config_plot_contexts.R: export_pdf = 200×120mm @ 300 DPI
-        ggplot2::ggsave(
-          filename = chart_png,
-          plot = plot_no_title,
-          width = 200 / 25.4, # mm to inches (aligned with export_pdf config)
-          height = 120 / 25.4, # mm to inches (aligned with export_pdf config)
-          dpi = 300,
-          units = "in",
-          device = "png"
-        )
-
-        # 2. Extract SPC stats using BFHcharts public API
-        spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result$summary)
-
-        # 3. Merge metadata with chart title
-        metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
-
-        # 4. Create Typst document
-        typst_file <- file.path(temp_dir, "document.typ")
-        BFHcharts::bfh_create_typst_document(
-          chart_image = chart_png,
-          output = typst_file,
-          metadata = metadata_full,
-          spc_stats = spc_stats,
-          template = "bfh-diagram2"
-        )
-
-        # 5. Compile Typst directly to PNG (more efficient than PDF→PNG)
-        temp_png <- tempfile(fileext = ".png")
-
-        # Register temp file for automatic cleanup when R session ends
-        # This prevents temp file accumulation during long sessions
-        reg.finalizer(
-          environment(),
-          function(e) {
-            if (exists("temp_png", envir = e) && file.exists(get("temp_png", envir = e))) {
-              unlink(get("temp_png", envir = e))
-            }
+        # Generate PDF using BFHcharts public API
+        pdf_success <- tryCatch(
+          {
+            BFHcharts::bfh_export_pdf(
+              bfh_qic_result = bfh_qic_result,
+              output = temp_pdf,
+              metadata = metadata
+            )
+            file.exists(temp_pdf)
           },
-          onexit = TRUE
+          error = function(e) {
+            log_warn(
+              component = "[EXPORT]",
+              message = "bfh_export_pdf fejlede",
+              details = list(error = e$message)
+            )
+            FALSE
+          }
         )
 
-        # Use quarto typst compile with PNG format
-        compile_result <- system2(
-          "quarto",
-          args = c(
-            "typst", "compile",
-            typst_file,
-            temp_png,
-            "-f", "png",
-            "--ppi", as.character(dpi)
-          ),
-          stdout = TRUE,
-          stderr = TRUE
-        )
+        if (pdf_success) {
+          # Convert PDF to PNG using pdftools if available
+          png_success <- tryCatch(
+            {
+              if (requireNamespace("pdftools", quietly = TRUE)) {
+                # Render first page of PDF to PNG
+                bitmap <- pdftools::pdf_render_page(temp_pdf, page = 1, dpi = dpi)
+                png::writePNG(bitmap, temp_png)
+                TRUE
+              } else {
+                log_warn(
+                  component = "[EXPORT]",
+                  message = "pdftools ikke tilgængelig - bruger fallback preview"
+                )
+                FALSE
+              }
+            },
+            error = function(e) {
+              log_warn(
+                component = "[EXPORT]",
+                message = "PDF til PNG konvertering fejlede",
+                details = list(error = e$message)
+              )
+              FALSE
+            }
+          )
 
-        # Cleanup temp directory
-        unlink(temp_dir, recursive = TRUE)
+          # Cleanup temp PDF
+          unlink(temp_pdf)
 
-        # Check exit status and validate PNG
-        exit_status <- attr(compile_result, "status")
-        if (!is.null(exit_status) && exit_status != 0) {
-          log_error(
-            component = "[EXPORT]",
-            message = "Quarto Typst compilation failed",
-            details = list(
-              exit_code = exit_status,
-              stdout = paste(compile_result, collapse = "\n")
+          if (png_success && file.exists(temp_png)) {
+            log_info(
+              component = "[EXPORT]",
+              message = "PDF preview genereret succesfuldt",
+              details = list(
+                png = temp_png,
+                size_kb = round(file.size(temp_png) / 1024, 1),
+                dpi = dpi
+              )
             )
-          )
-        } else if (!file.exists(temp_png)) {
-          log_error(
+            result <- temp_png
+          }
+        }
+
+        # Fallback: Generate simple chart PNG if PDF workflow failed
+        if (is.null(result)) {
+          log_debug(
             component = "[EXPORT]",
-            message = "PNG preview compilation failed - file not generated",
-            details = list(output = paste(compile_result, collapse = "\n"))
-          )
-        } else {
-          log_info(
-            component = "[EXPORT]",
-            message = "PDF preview genereret succesfuldt (Typst→PNG)",
-            details = list(
-              png = temp_png,
-              size_kb = round(file.size(temp_png) / 1024, 1),
-              dpi = dpi
-            )
+            message = "Bruger fallback chart PNG preview"
           )
 
-          result <- temp_png
+          chart_title <- bfh_qic_result$config$chart_title
+          if (is.null(chart_title)) chart_title <- ""
+
+          # Use plot with title for fallback preview
+          plot_with_title <- bfh_qic_result$plot +
+            ggplot2::labs(title = chart_title)
+
+          fallback_png <- tempfile(fileext = ".png")
+
+          ggplot2::ggsave(
+            filename = fallback_png,
+            plot = plot_with_title,
+            width = 200 / 25.4,
+            height = 120 / 25.4,
+            dpi = dpi,
+            units = "in",
+            device = "png"
+          )
+
+          if (file.exists(fallback_png)) {
+            log_info(
+              component = "[EXPORT]",
+              message = "Fallback chart preview genereret",
+              details = list(
+                png = fallback_png,
+                size_kb = round(file.size(fallback_png) / 1024, 1)
+              )
+            )
+            result <- fallback_png
+          }
         }
       }
 

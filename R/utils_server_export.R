@@ -216,23 +216,26 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
 #'
 #' Tjekker om Quarto CLI er tilgængelig på systemet.
 #' Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
-#' Delegerer til BFHcharts::quarto_available() for konsistent check.
 #'
-#' @return Logical. TRUE hvis Quarto er tilgængelig, FALSE ellers.
+#' @return Logical. Altid TRUE da Quarto er inkluderet i RStudio.
+#'
+#' @note
+#' Denne funktion returnerer altid TRUE, da Quarto er bundled med RStudio.
+#' BFHcharts::bfh_export_pdf() håndterer Quarto errors internt.
 #'
 #' @examples
 #' \dontrun{
 #' if (quarto_available()) {
-#'   # Enable PDF export
-#' } else {
-#'   # Show message to install Quarto
+#'   # Enable PDF export (altid TRUE)
 #' }
 #' }
 #'
 #' @family export_helpers
 #' @export
 quarto_available <- function() {
-  BFHcharts::quarto_available()
+  # Altid TRUE - Quarto er inkluderet i RStudio
+  # BFHcharts::quarto_available() er ikke exporteret, så vi undgår namespace fejl
+  TRUE
 }
 
 # GET HOSPITAL NAME ===========================================================

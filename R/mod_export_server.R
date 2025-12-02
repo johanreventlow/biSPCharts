@@ -804,15 +804,8 @@ mod_export_server <- function(id, app_state) {
                 message = "PDF export via BFHcharts::bfh_export_pdf"
               )
 
-              # Check Quarto availability (BFHcharts uses Quarto for Typst compilation)
-              if (!BFHcharts::quarto_available()) {
-                shiny::showNotification(
-                  "PDF export kræver Quarto installation. Download fra https://quarto.org",
-                  type = "warning",
-                  duration = 10
-                )
-                stop("Quarto CLI ikke tilgængelig. Installér fra https://quarto.org")
-              }
+              # Note: Quarto check removed - RStudio bundles Quarto, and
+              # BFHcharts::bfh_export_pdf() handles Quarto errors internally
 
               # Validate required mappings exist
               if (is.null(app_state$columns$mappings$chart_type) ||

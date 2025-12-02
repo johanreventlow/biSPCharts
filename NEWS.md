@@ -2,6 +2,50 @@
 
 ## Breaking Changes
 
+### Migration to BFHllm Package (Issue #100, Phase 2)
+
+**BREAKING:** SPCify now delegates all AI/LLM functionality to the standalone BFHllm package (v0.1.0+). This migration eliminates ~600 lines of embedded AI code and establishes BFHllm as the single source of truth for LLM integration and RAG functionality.
+
+**What Changed:**
+- AI functionality extracted to `BFHllm` package
+- New integration layer: `R/utils_bfhllm_integration.R`
+- `generate_improvement_suggestion()` now a thin wrapper delegating to BFHllm
+- Removed files:
+  - `R/utils_gemini_integration.R` → `BFHllm::bfhllm_chat()`
+  - `R/utils_ai_cache.R` → `BFHllm::bfhllm_cache_shiny()`
+  - `R/utils_ragnar_integration.R` → `BFHllm::bfhllm_query_knowledge()`
+  - `R/config_ai_prompts.R` → `BFHllm::bfhllm_build_prompt()`
+  - `inst/spc_knowledge/` → moved to BFHllm package
+  - `inst/ragnar_store` → moved to BFHllm package
+  - `data-raw/build_ragnar_store.R` → moved to BFHllm package
+
+**Migration Guide:**
+
+SPCify users: No changes needed - `generate_improvement_suggestion()` API remains the same.
+
+For direct AI functionality usage:
+```r
+# OLD (SPCify v0.1.x)
+# Direct calls to internal functions not supported
+
+# NEW (SPCify v0.2.0+)
+# Use BFHllm package directly for advanced use cases
+library(BFHllm)
+bfhllm_configure(provider = "gemini", model = "gemini-2.0-flash-exp")
+suggestion <- bfhllm_spc_suggestion(spc_result, context, max_chars = 350)
+```
+
+**Dependencies:**
+- **Requires:** `BFHllm (>= 0.1.0)`
+- **Removed:** `ellmer`, `ragnar` (now indirect dependencies via BFHllm)
+
+**Benefits:**
+- Reusable AI infrastructure across multiple R packages
+- Single source of truth for LLM/RAG integration
+- Cleaner separation of concerns (SPCify focuses on SPC, BFHllm on AI)
+- Independent versioning and testing of AI components
+- Reduced SPCify maintenance burden (~600 lines removed)
+
 ### Migration to BFHcharts v0.3.0 Export API (Issue #95)
 
 **BREAKING:** SPCify now delegates all PNG and PDF export to BFHcharts v0.3.0+ export functions. This migration eliminates ~850 lines of duplicate code and establishes BFHcharts as the single source of truth for export functionality.

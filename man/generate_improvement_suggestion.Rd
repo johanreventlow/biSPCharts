@@ -4,7 +4,7 @@
 \alias{generate_improvement_suggestion}
 \title{Generate AI-Powered Improvement Suggestion}
 \usage{
-generate_improvement_suggestion(spc_result, context, session, max_chars = 350)
+generate_improvement_suggestion(spc_result, context, session, max_chars = NULL)
 }
 \arguments{
 \item{spc_result}{List returned by compute_spc_results_bfh()
@@ -20,8 +20,7 @@ Skal indeholde metadata og qic_data components}
 
 \item{session}{Shiny session object for cache access. Required.}
 
-\item{max_chars}{Maximum characters in response (default 350).
-Typst template constraint.}
+\item{max_chars}{Maximum characters in response (default from config)}
 }
 \value{
 Character string with AI-generated improvement suggestion (max 350 chars)
@@ -30,20 +29,14 @@ formatted in Danish with structure:
 \item Context (indicator description)
 \item Process variation status
 \item Target comparison
-\item Concrete suggestions (in italic)
+\item Concrete suggestions (in bold)
 Returns NULL on error (logged with context).
 }
 }
 \description{
-Main facade function der orkestrerer hele AI suggestion flowet:
-\enumerate{
-\item Extract SPC metadata fra BFHcharts output
-\item Check cache for existing suggestion
-\item Build Gemini prompt med metadata + user context
-\item Call Gemini API via integration layer
-\item Validate og sanitize response
-\item Cache result for future requests
-}
+Main facade function der orkestrerer hele AI suggestion flowet via
+BFHllm package. Delegerer metadata extraction, RAG query, prompt building,
+og LLM call til BFHllm::bfhllm_spc_suggestion().
 }
 \details{
 Funktionen bruger safe_operation() pattern og structured logging.

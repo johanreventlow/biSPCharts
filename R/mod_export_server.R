@@ -213,8 +213,8 @@ mod_export_server <- function(id, app_state) {
 
     # AI SUGGESTION INTEGRATION ===============================================
 
-    # Initialize AI cache for session
-    initialize_ai_cache(session)
+    # Note: BFHllm cache is now created on-demand in generate_bfhllm_suggestion()
+    # No separate initialization needed after BFHllm migration
 
     # Manage AI button state based on data and API key availability
     shiny::observe({
@@ -225,8 +225,8 @@ mod_export_server <- function(id, app_state) {
         !is.null(app_state$columns$mappings$y_column)
       has_spc_data <- has_data && has_columns
 
-      # Validate Gemini API setup
-      api_ready <- validate_gemini_setup()
+      # Validate BFHllm API setup
+      api_ready <- is_bfhllm_available()
 
       # Button enabled only when both prerequisites met
       can_use_ai <- has_spc_data && api_ready

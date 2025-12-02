@@ -4,6 +4,102 @@
 # Thin wrapper providing SPCify-specific configuration and helpers for
 # BFHllm package integration. Delegates actual LLM/RAG work to BFHllm.
 
+# CONFIG HELPERS ================================================================
+
+#' Get AI Configuration from golem-config.yml
+#'
+#' Reads AI configuration settings from golem-config.yml.
+#' Returns default values if config section is missing.
+#'
+#' @return Named list with AI configuration:
+#'   - model: LLM model identifier
+#'   - timeout_seconds: API call timeout
+#'   - max_response_chars: Maximum response length
+#'   - enabled: Whether AI is enabled
+#'
+#' @keywords internal
+get_ai_config <- function() {
+  # Try to get from golem config
+  ai_config <- tryCatch(
+    {
+      golem::get_golem_options("ai")
+    },
+    error = function(e) NULL
+  )
+
+  # Default values
+  defaults <- list(
+    enabled = TRUE,
+    provider = "gemini",
+    model = "gemini-2.5-flash-lite",
+    timeout_seconds = 10,
+    max_response_chars = 350,
+    cache_ttl_seconds = 3600
+  )
+
+  if (is.null(ai_config)) {
+    return(defaults)
+  }
+
+  # Merge with defaults (ai_config overrides defaults)
+  result <- modifyList(defaults, ai_config)
+  return(result)
+}
+
+#' Get RAG Configuration from golem-config.yml
+#'
+#' Reads RAG configuration settings from golem-config.yml.
+#' Returns default values if config section is missing.
+#'
+#' @return Named list with RAG configuration:
+#'   - enabled: Whether RAG is enabled
+#'   - n_results: Number of knowledge chunks to retrieve
+#'   - method: Search method (hybrid, vector, keyword)
+#'
+#' @keywords internal
+get_rag_config <- function() {
+  # Try to get from golem config (nested under ai.rag)
+  ai_config <- tryCatch(
+    {
+      golem::get_golem_options("ai")
+    },
+    error = function(e) NULL
+  )
+
+  # Default values
+  defaults <- list(
+    enabled = TRUE,
+    n_results = 3,
+    method = "hybrid"
+  )
+
+  if (is.null(ai_config) || is.null(ai_config$rag)) {
+    return(defaults)
+  }
+
+  # Merge with defaults
+  result <- modifyList(defaults, ai_config$rag)
+  return(result)
+}
+
+#' Get System Configuration
+#'
+#' Returns system-level configuration values.
+#' Falls back to constants from config_system_config.R.
+#'
+#' @return Named list with system configuration
+#'
+#' @keywords internal
+get_system_config <- function() {
+  # Use values from CACHE_CONFIG constant
+  list(
+    cache_ttl_seconds = CACHE_CONFIG$default_timeout_seconds %||% 300,
+    cache_size_limit = CACHE_CONFIG$size_limit_entries %||% 50
+  )
+}
+
+# INITIALIZATION ================================================================
+
 #' Initialize BFHllm for SPCify
 #'
 #' Configures BFHllm package with SPCify-specific defaults. Called during

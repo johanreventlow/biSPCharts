@@ -18,8 +18,7 @@ validate_safe_file_path <- function(uploaded_path) {
       details = list(
         input_type = typeof(uploaded_path),
         input_length = length(uploaded_path)
-      ),
-      show_user = FALSE
+      )
     )
     stop("Sikkerhedsfejl: Ugyldig fil input")
   }
@@ -36,8 +35,7 @@ validate_safe_file_path <- function(uploaded_path) {
         details = list(
           attempted_path = uploaded_path,
           error = e$message
-        ),
-        show_user = FALSE
+        )
       )
       stop("Sikkerhedsfejl: Kunne ikke validere fil sti")
     }
@@ -57,10 +55,18 @@ validate_safe_file_path <- function(uploaded_path) {
   }
 
   # Validate path is within allowed directories with enhanced checking
+  # Normalize paths to forward slashes for consistent cross-platform comparison
   safe_path <- any(vapply(allowed_bases, function(base) {
-    # Ensure base path ends with file separator for accurate comparison
-    base_with_sep <- paste0(base, .Platform$file.sep)
-    startsWith(file_path, base_with_sep) || identical(file_path, base)
+    # Normalize both paths to forward slashes for comparison
+    base_norm <- gsub("\\\\", "/", base)
+    file_norm <- gsub("\\\\", "/", file_path)
+
+    # Remove trailing slashes for consistent comparison
+    base_norm <- sub("/$", "", base_norm)
+    file_norm <- sub("/$", "", file_norm)
+
+    # Check if file is under base directory or is the base itself
+    startsWith(file_norm, paste0(base_norm, "/")) || identical(file_norm, base_norm)
   }, logical(1)))
 
   if (!safe_path) {
@@ -72,8 +78,7 @@ validate_safe_file_path <- function(uploaded_path) {
         normalized_path = file_path,
         allowed_bases = allowed_bases,
         session_id = "REDACTED" # Don't log actual session ID
-      ),
-      show_user = FALSE
+      )
     )
     stop("Sikkerhedsfejl: Ugyldig fil sti")
   }

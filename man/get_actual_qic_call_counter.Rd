@@ -12,3 +12,4 @@ Integer counter value
 \description{
 Returns current value of actual qicharts2::qic() calls for performance monitoring.
 }
+\keyword{internal}

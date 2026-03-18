@@ -536,7 +536,7 @@ create_data_table_card <- function() {
 
 
 # Modal dialog for column mapping
-#' @export
+#' @keywords internal
 create_column_mapping_modal <- function() {
   shiny::modalDialog(
     title = shiny::div(
@@ -813,7 +813,7 @@ create_ui_sidebar <- function() {
 
 ## Hovedfunktion for velkomstside
 # Opretter komplet velkomstside med hero sektion og handlingsknapper
-#' @export
+#' @keywords internal
 create_welcome_page <- function() {
   # Get hospital colors using the proper package function
   hospital_colors <- get_hospital_colors()

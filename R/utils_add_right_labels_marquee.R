@@ -21,7 +21,7 @@
 #' @param debug_mode logical add visual debug annotations
 #' @return ggplot object med marquee labels
 #'
-#' @export
+#' @keywords internal
 add_right_labels_marquee <- function(
   p,
   yA,

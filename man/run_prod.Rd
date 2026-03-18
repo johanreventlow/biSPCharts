@@ -19,3 +19,4 @@ Shiny app object
 \description{
 Production-ready app runner med optimerede settings for deployment.
 }
+\keyword{internal}

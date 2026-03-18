@@ -11,3 +11,4 @@ cleanup_old_cache()
 Clean up old cache files
 Remove cache files that are older than their TTL or if cache size exceeds limit
 }
+\keyword{internal}

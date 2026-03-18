@@ -32,7 +32,7 @@
 #' - large: 1920x1440px ved 96 DPI (høj opløsning)
 #' - powerpoint: 10x7.5 tommer ved 96 DPI (optimal til PowerPoint slides)
 #'
-#' @export
+#' @keywords internal
 EXPORT_SIZE_PRESETS <- list(
   small = list(
     width = 800,
@@ -102,7 +102,7 @@ EXPORT_SIZE_PRESETS <- list(
 #' # Returns: medium preset (1200×900px @ 96 DPI)
 #' }
 #'
-#' @export
+#' @keywords internal
 get_size_from_preset <- function(preset_name) {
   # Get presets from config
   presets <- EXPORT_SIZE_PRESETS
@@ -149,7 +149,7 @@ get_size_from_preset <- function(preset_name) {
 #' - 150 DPI: Medium print quality
 #' - 300 DPI: High print quality (publicering)
 #'
-#' @export
+#' @keywords internal
 EXPORT_DPI_OPTIONS <- c(72, 96, 150, 300)
 
 # EXPORT ASPECT RATIO CONSTRAINTS ==============================================
@@ -158,14 +158,14 @@ EXPORT_DPI_OPTIONS <- c(72, 96, 150, 300)
 #'
 #' Forhindrer alt for smalle plots (width/height < 0.5).
 #'
-#' @export
+#' @keywords internal
 EXPORT_ASPECT_RATIO_MIN <- 0.5
 
 #' Maximum aspect ratio for custom export dimensions
 #'
 #' Forhindrer alt for brede plots (width/height > 2.0).
 #'
-#' @export
+#' @keywords internal
 EXPORT_ASPECT_RATIO_MAX <- 2.0
 
 # METADATA CHARACTER LIMITS ====================================================
@@ -174,21 +174,21 @@ EXPORT_ASPECT_RATIO_MAX <- 2.0
 #'
 #' Begrænser titel længde til 200 karakterer for at undgå layout problemer.
 #'
-#' @export
+#' @keywords internal
 EXPORT_TITLE_MAX_LENGTH <- 200
 
 #' Maximum character length for export description
 #'
 #' Begrænser beskrivelse længde til 2000 karakterer for PDF metadata.
 #'
-#' @export
+#' @keywords internal
 EXPORT_DESCRIPTION_MAX_LENGTH <- 2000
 
 #' Maximum character length for department name
 #'
 #' Begrænser afdeling/afsnit navn til 100 karakterer.
 #'
-#' @export
+#' @keywords internal
 EXPORT_DEPARTMENT_MAX_LENGTH <- 100
 
 # FILENAME GENERATION CONSTANTS ================================================
@@ -197,14 +197,14 @@ EXPORT_DEPARTMENT_MAX_LENGTH <- 100
 #'
 #' Alle eksporterede filer starter med denne prefix.
 #'
-#' @export
+#' @keywords internal
 EXPORT_FILENAME_PREFIX <- "SPC"
 
 #' Separator character for filename components
 #'
 #' Bruges til at separere prefix, titel og timestamp i filnavne.
 #'
-#' @export
+#' @keywords internal
 EXPORT_FILENAME_SEPARATOR <- "_"
 
 # EXPORT FORMAT CONFIGURATION ==================================================
@@ -214,7 +214,7 @@ EXPORT_FILENAME_SEPARATOR <- "_"
 #' Tilgængelige eksport formater med display labels.
 #'
 #' @format Named character vector med format labels
-#' @export
+#' @keywords internal
 EXPORT_FORMAT_OPTIONS <- c(
   "PDF" = "pdf",
   "PNG" = "png",
@@ -228,7 +228,7 @@ EXPORT_FORMAT_OPTIONS <- c(
 #' Standard indstillinger for PDF eksport.
 #'
 #' @format Named list med PDF settings
-#' @export
+#' @keywords internal
 EXPORT_PDF_CONFIG <- list(
   # Default papir størrelse
   paper = "a4",
@@ -256,7 +256,7 @@ EXPORT_PDF_CONFIG <- list(
 #' Standard indstillinger for PNG eksport.
 #'
 #' @format Named list med PNG settings
-#' @export
+#' @keywords internal
 EXPORT_PNG_CONFIG <- list(
   # Background color
   bg = "white",
@@ -275,7 +275,7 @@ EXPORT_PNG_CONFIG <- list(
 #' Standard indstillinger for PowerPoint eksport.
 #'
 #' @format Named list med PowerPoint settings
-#' @export
+#' @keywords internal
 EXPORT_POWERPOINT_CONFIG <- list(
   # Slide layout type
   layout = "Title and Content",
@@ -302,7 +302,7 @@ EXPORT_POWERPOINT_CONFIG <- list(
 #' Regler til validering af export inputs før generering.
 #'
 #' @format Named list med validation parameters
-#' @export
+#' @keywords internal
 EXPORT_VALIDATION_RULES <- list(
   # Minimum custom width i pixels
   min_width_px = 400,

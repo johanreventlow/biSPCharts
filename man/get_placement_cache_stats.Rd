@@ -23,3 +23,4 @@ cat(
   round(stats$grob_cache$hit_rate * 100, 1), "\% hit rate\n"
 )
 }
+\keyword{internal}

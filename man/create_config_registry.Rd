@@ -15,3 +15,4 @@ Dette system erstatter direct læsning fra multiple config-filer med
 en ensartet konfigurationshandling. Alle konfigurationer loads on-demand
 og caches for performance.
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ one of {"count","percent","rate","time"}
 \description{
 Map diagramtype til Y-akse UI-type
 }
+\keyword{internal}

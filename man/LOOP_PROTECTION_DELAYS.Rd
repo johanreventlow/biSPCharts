@@ -13,4 +13,4 @@ LOOP_PROTECTION_DELAYS
 \description{
 Loop protection delays for UI updates (milliseconds)
 }
-\keyword{datasets}
+\keyword{internal}

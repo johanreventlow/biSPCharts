@@ -13,4 +13,4 @@ EXPORT_DEPARTMENT_MAX_LENGTH
 \description{
 Begrænser afdeling/afsnit navn til 100 karakterer.
 }
-\keyword{datasets}
+\keyword{internal}

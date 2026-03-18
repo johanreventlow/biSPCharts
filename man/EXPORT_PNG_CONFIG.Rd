@@ -13,4 +13,4 @@ EXPORT_PNG_CONFIG
 \description{
 Standard indstillinger for PNG eksport.
 }
-\keyword{datasets}
+\keyword{internal}

@@ -34,3 +34,4 @@ options(spc.debug.context = c("state", "data", "ai"))
 log_debug("Dette logges", .context = "state") # Log
 log_debug("Dette logges ikke", .context = "performance") # Skip
 }
+\keyword{internal}

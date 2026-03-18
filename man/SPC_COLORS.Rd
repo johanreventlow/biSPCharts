@@ -13,4 +13,4 @@ SPC_COLORS
 \description{
 Farve palette for SPC charts
 }
-\keyword{datasets}
+\keyword{internal}

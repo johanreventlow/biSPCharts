@@ -27,3 +27,4 @@ invisible(NULL)
 Logger alle resultater fra qicharts2::qic() kald inklusiv anhoej-rules.
 Kun aktiv ved DEBUG log niveau.
 }
+\keyword{internal}

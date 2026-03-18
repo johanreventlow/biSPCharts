@@ -21,4 +21,4 @@ Standard DPI værdier til forskellige export kvaliteter.
 \item 300 DPI: High print quality (publicering)
 }
 }
-\keyword{datasets}
+\keyword{internal}

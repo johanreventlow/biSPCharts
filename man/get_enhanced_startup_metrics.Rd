@@ -12,3 +12,4 @@ List with all performance metrics
 \description{
 Get enhanced startup metrics
 }
+\keyword{internal}

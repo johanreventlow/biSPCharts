@@ -13,3 +13,4 @@ process_ui_update_queue(app_state)
 Processes queued UI updates in order, ensuring only one update runs at a time.
 This function is called by later::later() after current UI update completes.
 }
+\keyword{internal}

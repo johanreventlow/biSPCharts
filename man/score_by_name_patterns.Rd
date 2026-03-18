@@ -19,3 +19,4 @@ Score between 0 and 1
 \description{
 Scores column names based on pattern matching for specific roles.
 }
+\keyword{internal}

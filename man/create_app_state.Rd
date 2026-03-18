@@ -64,3 +64,4 @@ app_state$columns$mappings$x_column <- "Dato"
 \item test-phase4-centralized-state.R for eksempler
 }
 }
+\keyword{internal}

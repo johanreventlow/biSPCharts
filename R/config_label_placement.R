@@ -41,7 +41,7 @@
 #'   \item{height_fallback_npc}{Fallback højde hvis måling fejler (NPC)}
 #' }
 #'
-#' @export
+#' @keywords internal
 LABEL_PLACEMENT_CONFIG <- list(
   # === Gap Configuration (relative til label_height_npc) ===
   # Disse værdier balancerer "tæt placering" med "ingen overlap"
@@ -141,7 +141,7 @@ LABEL_PLACEMENT_CONFIG <- list(
 #' custom_value <- get_label_placement_param("nonexistent_key", default = 0.5)
 #' # Returns: 0.5
 #'
-#' @export
+#' @keywords internal
 get_label_placement_param <- function(key, default = NULL) {
   # Hent konfiguration
   config <- LABEL_PLACEMENT_CONFIG
@@ -174,7 +174,7 @@ get_label_placement_param <- function(key, default = NULL) {
 #' gap_line <- config$relative_gap_line * label_height_npc
 #' gap_labels <- config$relative_gap_labels * label_height_npc
 #'
-#' @export
+#' @keywords internal
 get_label_placement_config <- function() {
   # Returner en kopi for at undgå utilsigtet modification
   as.list(LABEL_PLACEMENT_CONFIG)

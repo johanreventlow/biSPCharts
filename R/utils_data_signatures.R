@@ -46,7 +46,7 @@
 #' autodetect_key <- paste0("autodetect_", sig)
 #' }
 #'
-#' @export
+#' @keywords internal
 generate_shared_data_signature <- function(data, include_structure = TRUE) {
   # Handle NULL/empty data
   if (is.null(data) || nrow(data) == 0) {
@@ -150,7 +150,7 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
 #' key <- generate_qic_cache_key_optimized(data, params)
 #' }
 #'
-#' @export
+#' @keywords internal
 generate_qic_cache_key_optimized <- function(data, params) {
   # Use shared signature instead of rehashing
   data_signature <- generate_shared_data_signature(data, include_structure = FALSE)
@@ -173,7 +173,7 @@ generate_qic_cache_key_optimized <- function(data, params) {
 #' Uses same shared signature as QIC cache, ensuring consistency and
 #' avoiding redundant hashing when both systems cache same data.
 #'
-#' @export
+#' @keywords internal
 generate_autodetect_cache_key_optimized <- function(data) {
   # Use shared signature with structure info
   data_signature <- generate_shared_data_signature(data, include_structure = TRUE)
@@ -186,7 +186,7 @@ generate_autodetect_cache_key_optimized <- function(data) {
 #' Clears the session-level signature cache.
 #' Typically called on session end or when memory needs to be freed.
 #'
-#' @export
+#' @keywords internal
 clear_data_signature_cache <- function() {
   rm(list = ls(envir = .data_signature_cache), envir = .data_signature_cache)
   log_debug("Data signature cache cleared", .context = "DATA_SIGNATURE")
@@ -198,7 +198,7 @@ clear_data_signature_cache <- function() {
 #'
 #' @return List with cache statistics
 #'
-#' @export
+#' @keywords internal
 get_data_signature_cache_stats <- function() {
   cache_keys <- ls(envir = .data_signature_cache)
 

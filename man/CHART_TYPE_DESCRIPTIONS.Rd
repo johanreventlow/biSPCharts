@@ -13,4 +13,4 @@ CHART_TYPE_DESCRIPTIONS
 \description{
 Danske beskrivelser af hver chart type til UI help-tekst.
 }
-\keyword{datasets}
+\keyword{internal}

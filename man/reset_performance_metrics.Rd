@@ -12,3 +12,4 @@ reset_performance_metrics(app_state)
 \description{
 Resets all performance counters while preserving current system state.
 }
+\keyword{internal}

@@ -13,4 +13,4 @@ LOG_COMPONENTS
 \description{
 Logging komponenter for organiseret fejlfinding
 }
-\keyword{datasets}
+\keyword{internal}

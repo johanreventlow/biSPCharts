@@ -16,3 +16,4 @@ List med data management funktioner
 Helper for managing module-level data with caching and reactive safety.
 Ekstraeret fra mod_spc_chart_server.R for bedre separation.
 }
+\keyword{internal}

@@ -50,3 +50,4 @@ zero changes required in mod_spc_chart_server.R.
 for Anhøj rules metadata extraction (internal). No fallback to qicharts2
 visualization occurs.
 }
+\keyword{internal}

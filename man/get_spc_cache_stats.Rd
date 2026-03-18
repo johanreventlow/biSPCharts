@@ -33,3 +33,4 @@ cat("Cache size:", stats$size, "/", stats$max_size, "\n")
 }
 
 }
+\keyword{internal}

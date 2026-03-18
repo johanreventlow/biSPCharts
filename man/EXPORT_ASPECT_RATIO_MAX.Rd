@@ -13,4 +13,4 @@ EXPORT_ASPECT_RATIO_MAX
 \description{
 Forhindrer alt for brede plots (width/height > 2.0).
 }
-\keyword{datasets}
+\keyword{internal}

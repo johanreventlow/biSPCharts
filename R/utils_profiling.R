@@ -190,7 +190,7 @@ benchmark_reactives <- function(..., times = 10, check = FALSE) {
 #' })
 #' }
 #'
-#' @export
+#' @keywords internal
 track_memory_usage <- function(session, interval_seconds = 60, max_samples = 100) {
   # Initialize reactive log
   memory_log <- shiny::reactiveVal(data.frame(
@@ -318,7 +318,7 @@ track_memory_usage <- function(session, interval_seconds = 60, max_samples = 100
 #' print(summary$trend)
 #' }
 #'
-#' @export
+#' @keywords internal
 get_memory_summary <- function(memory_log) {
   log_data <- shiny::isolate(memory_log())
 

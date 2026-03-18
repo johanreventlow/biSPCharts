@@ -45,3 +45,4 @@ qicharts2 plot object
 This is the main entry point that prevents 100×-mismatch by ensuring
 all inputs are prepared consistently before calling qicharts2::qic().
 }
+\keyword{internal}

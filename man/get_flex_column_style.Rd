@@ -12,3 +12,4 @@ Karakter string med CSS styles
 \description{
 Returnerer standard CSS flex container style for kolonnelayout
 }
+\keyword{internal}

@@ -16,7 +16,7 @@
 #' meta$title <- "Updated Chart"
 #' hash2 <- calculate_plot_metadata_hash(meta)
 #' identical(hash1, hash2) # FALSE - metadata changed
-#' @export
+#' @keywords internal
 calculate_plot_metadata_hash <- function(metadata) {
   # Extract relevant metadata fields for hashing
   relevant_fields <- c(
@@ -53,7 +53,7 @@ calculate_plot_metadata_hash <- function(metadata) {
 #' data <- data.frame(x = 1:10, y = rnorm(10))
 #' config <- list(x_col = "x", y_col = "y")
 #' hash1 <- calculate_plot_data_hash(data, config)
-#' @export
+#' @keywords internal
 calculate_plot_data_hash <- function(data, config) {
   if (is.null(data) || nrow(data) == 0) {
     return("EMPTY_DATA")
@@ -108,7 +108,7 @@ calculate_plot_data_hash <- function(data, config) {
 #' diff <- detect_plot_update_type(current, previous)
 #' diff$update_type # "metadata_only"
 #' diff$changed_fields # c("title")
-#' @export
+#' @keywords internal
 detect_plot_update_type <- function(current_state, previous_state) {
   # Handle missing previous state
   if (is.null(previous_state)) {
@@ -245,7 +245,7 @@ identify_changed_metadata_fields <- function(current_meta, previous_meta) {
 #' # Update only title
 #' new_meta <- list(title = "Updated Title")
 #' plot <- apply_metadata_update(plot, new_meta, changed_fields = "title")
-#' @export
+#' @keywords internal
 apply_metadata_update <- function(plot, metadata, changed_fields) {
   if (is.null(plot) || length(changed_fields) == 0) {
     return(plot)
@@ -303,7 +303,7 @@ apply_metadata_update <- function(plot, metadata, changed_fields) {
 #' snapshot <- create_plot_state_snapshot(data, metadata, config)
 #' snapshot$data_hash
 #' snapshot$metadata_hash
-#' @export
+#' @keywords internal
 create_plot_state_snapshot <- function(data, metadata, config) {
   safe_operation(
     "Create plot state snapshot",

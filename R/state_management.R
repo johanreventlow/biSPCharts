@@ -51,7 +51,7 @@
 #' @seealso
 #' - ARCHITECTURE_OVERVIEW.md for Phase 4 detaljer
 #' - test-phase4-centralized-state.R for eksempler
-#' @export
+#' @keywords internal
 create_app_state <- function() {
   # Create environment-based state for by-reference sharing
   # CRITICAL FIX: Environment passes by reference, solving scope isolation
@@ -330,7 +330,7 @@ create_app_state <- function() {
 #'
 
 # Data helper (simplified)
-#' @export
+#' @keywords internal
 set_current_data <- function(app_state, value) {
   shiny::isolate({
     app_state$data$current_data <- value
@@ -374,7 +374,7 @@ get_current_data <- function(app_state) {
 #' emit <- create_emit_api(app_state)
 #' emit$data_loaded() # Triggers shiny::observeEvent(app_state$events$data_loaded, ...)
 #' }
-#' @export
+#' @keywords internal
 create_emit_api <- function(app_state) {
   list(
     # Data lifecycle events (CONSOLIDATED - FASE 2.2)
@@ -617,7 +617,7 @@ create_emit_api <- function(app_state) {
 }
 
 ## Dato kolonnevalidering -----
-#' @export
+#' @keywords internal
 validate_date_column <- function(data, column_name) {
   if (!column_name %in% names(data)) {
     return(paste("Kolonne", column_name, "ikke fundet"))

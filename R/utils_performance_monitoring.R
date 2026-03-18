@@ -10,7 +10,7 @@
 #' Resets performance counters used to track QIC calculation calls
 #' M1: Updated to use package environment instead of .GlobalEnv
 #'
-#' @export
+#' @keywords internal
 reset_qic_counters <- function() {
   reset_qic_performance_counters()
   log_debug("QIC performance counters reset", .context = "PERFORMANCE_MONITOR")
@@ -22,7 +22,7 @@ reset_qic_counters <- function() {
 #' M1: Updated to use package environment instead of .GlobalEnv
 #'
 #' @return List with generateSPCPlot_calls and actual_qic_calls counts
-#' @export
+#' @keywords internal
 get_qic_call_counts <- function() {
   generateSPCPlot_calls <- get_qic_call_counter()
   actual_qic_calls <- get_actual_qic_call_counter()
@@ -47,7 +47,7 @@ get_qic_call_counts <- function() {
 #'
 #' @param timeout_seconds Maximum time to wait for startup (default: 30)
 #' @return List with startup metrics
-#' @export
+#' @keywords internal
 monitor_startup_performance <- function(timeout_seconds = 30) {
   log_info("Starting app startup performance monitoring", .context = "PERFORMANCE_MONITOR")
 
@@ -98,7 +98,7 @@ monitor_startup_performance <- function(timeout_seconds = 30) {
 #'
 #' Resets all counters and starts timing for a new startup sequence
 #'
-#' @export
+#' @keywords internal
 init_startup_metrics <- function() {
   .startup_metrics$start_time <- Sys.time()
   .startup_metrics$phase_times <- list()
@@ -122,7 +122,7 @@ init_startup_metrics <- function() {
 #' utils_profiling.R instead.
 #'
 #' @param context Character. Context where memory is being tracked
-#' @export
+#' @keywords internal
 track_startup_memory <- function(context = "unknown") {
   if (!exists("start_time", envir = .startup_metrics)) {
     init_startup_metrics()
@@ -151,14 +151,14 @@ track_startup_memory <- function(context = "unknown") {
 }
 
 #' @rdname track_startup_memory
-#' @export
+#' @keywords internal
 track_memory_usage <- track_startup_memory
 
 #' Track QIC function call with context
 #'
 #' @param context Character. Context where QIC was called
 #' @param details List. Additional context information
-#' @export
+#' @keywords internal
 track_qic_call <- function(context = "unknown", details = list()) {
   if (!exists("start_time", envir = .startup_metrics)) {
     init_startup_metrics()
@@ -190,7 +190,7 @@ track_qic_call <- function(context = "unknown", details = list()) {
 #'
 #' @param context Character. Context where generateSPCPlot was called
 #' @param details List. Additional context information
-#' @export
+#' @keywords internal
 track_generateSPCPlot_call <- function(context = "unknown", details = list()) {
   if (!exists("start_time", envir = .startup_metrics)) {
     init_startup_metrics()
@@ -222,7 +222,7 @@ track_generateSPCPlot_call <- function(context = "unknown", details = list()) {
 #'
 #' @param event_name Character. Name of the event
 #' @param context Character. Context where event was fired
-#' @export
+#' @keywords internal
 track_event <- function(event_name, context = "unknown") {
   if (!exists("start_time", envir = .startup_metrics)) {
     init_startup_metrics()
@@ -255,7 +255,7 @@ track_event <- function(event_name, context = "unknown") {
 #' Set startup phase
 #'
 #' @param phase Character. Current startup phase
-#' @export
+#' @keywords internal
 set_startup_phase <- function(phase) {
   if (!exists("start_time", envir = .startup_metrics)) {
     init_startup_metrics()
@@ -280,7 +280,7 @@ set_startup_phase <- function(phase) {
 #' Get enhanced startup metrics
 #'
 #' @return List with all performance metrics
-#' @export
+#' @keywords internal
 get_enhanced_startup_metrics <- function() {
   if (!exists("start_time", envir = .startup_metrics)) {
     return(list(
@@ -401,7 +401,7 @@ format_enhanced_startup_summary <- function(metrics) {
 #'
 #' Formats and displays startup performance metrics using structured logging.
 #'
-#' @export
+#' @keywords internal
 print_enhanced_startup_summary <- function() {
   metrics <- get_enhanced_startup_metrics()
   summary_text <- format_enhanced_startup_summary(metrics)

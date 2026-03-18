@@ -59,3 +59,4 @@ suggestion <- generate_improvement_suggestion(
 # Returns: "Ventetiden til operation varierer mellem... [suggestion text]"
 }
 }
+\keyword{internal}

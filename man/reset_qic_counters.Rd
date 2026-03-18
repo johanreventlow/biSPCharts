@@ -10,3 +10,4 @@ reset_qic_counters()
 Resets performance counters used to track QIC calculation calls
 M1: Updated to use package environment instead of .GlobalEnv
 }
+\keyword{internal}

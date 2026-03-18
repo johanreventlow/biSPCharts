@@ -43,3 +43,4 @@ format_y_value(120, "time", y_range = c(0, 200))
 }
 
 }
+\keyword{internal}

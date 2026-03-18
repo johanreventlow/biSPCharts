@@ -9,7 +9,7 @@
 #'
 #' @param app_state Application state object
 #' @return List med state management funktioner
-#' @export
+#' @keywords internal
 create_chart_state_manager <- function(app_state) {
   # ARCHITECTURE FIX (2025-01-07): Visualization state centraliseret i state_management.R
   # Fjernet scattered reactiveValues creation - følger centralized state pattern
@@ -100,7 +100,7 @@ create_chart_state_manager <- function(app_state) {
 #'
 #' @param app_state Application state object
 #' @return List med data management funktioner
-#' @export
+#' @keywords internal
 create_module_data_manager <- function(app_state) {
   list(
     # Get module data with reactive safety
@@ -186,7 +186,7 @@ create_module_data_manager <- function(app_state) {
 #' Processer SPC beregninger og ekstraherer relevante metrics.
 #' Ekstraeret fra mod_spc_chart_server.R for bedre testability.
 #'
-#' @export
+#' @keywords internal
 create_spc_results_processor <- function() {
   list(
     # Extract QIC results from plot data
@@ -329,7 +329,7 @@ create_spc_results_processor <- function() {
 #' Validering af chart data og konfiguration før plot generation.
 #' Ekstraeret fra mod_spc_chart_server.R for genbrug.
 #'
-#' @export
+#' @keywords internal
 create_chart_validator <- function() {
   list(
     # Validate data and configuration for chart generation

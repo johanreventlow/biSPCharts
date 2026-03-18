@@ -20,3 +20,4 @@ Standardised priority access function for safe retrieval of priority values.
 get_priority("STATE_MANAGEMENT") # Returns 2000
 }
 }
+\keyword{internal}

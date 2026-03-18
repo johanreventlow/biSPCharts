@@ -72,7 +72,7 @@
 #'   show_user = TRUE
 #' )
 #' }
-#' @export
+#' @keywords internal
 safe_operation <- function(operation_name, code, fallback = NULL, session = NULL, show_user = FALSE, error_type = "general", ...) {
   tryCatch(
     {
@@ -190,7 +190,7 @@ safe_operation <- function(operation_name, code, fallback = NULL, session = NULL
 #'   error_message = "Required objects missing for data processing"
 #' )
 #' }
-#' @export
+#' @keywords internal
 validate_exists <- function(..., error_message = "Required objects not found") {
   args <- list(...)
 
@@ -217,7 +217,7 @@ validate_exists <- function(..., error_message = "Required objects not found") {
 #' @examples
 #' safe_getenv("DEBUG_MODE", FALSE, "logical")
 #' safe_getenv("MAX_ROWS", 1000, "numeric")
-#' @export
+#' @keywords internal
 safe_getenv <- function(var_name, default = "", type = "character") {
   value <- Sys.getenv(var_name, unset = default)
 

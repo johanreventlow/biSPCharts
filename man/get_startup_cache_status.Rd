@@ -14,3 +14,4 @@ List with cache status information
 Get startup cache status
 Get information about the current startup cache state
 }
+\keyword{internal}

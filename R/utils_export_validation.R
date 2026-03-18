@@ -52,7 +52,7 @@
 #' )
 #' }
 #'
-#' @export
+#' @keywords internal
 validate_export_inputs <- function(format,
                                    title = "",
                                    department = "",
@@ -185,7 +185,7 @@ validate_export_inputs <- function(format,
 #' # "København Sygehus "
 #' }
 #'
-#' @export
+#' @keywords internal
 sanitize_user_input <- function(input_value,
                                 max_length = NULL,
                                 allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?*_",
@@ -260,7 +260,7 @@ sanitize_user_input <- function(input_value,
 #' validate_aspect_ratio(2000, 800, warn_only = FALSE) # Error (2.5 - too wide)
 #' }
 #'
-#' @export
+#' @keywords internal
 validate_aspect_ratio <- function(width, height, warn_only = TRUE) {
   # Handle invalid inputs
   if (is.null(width) || is.null(height) ||

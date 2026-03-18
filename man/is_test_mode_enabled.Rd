@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if test mode is enabled.
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ debug_level <- get_app_option("debug_level", "INFO")
 is_test_mode <- get_app_option("test_mode", FALSE)
 }
 }
+\keyword{internal}

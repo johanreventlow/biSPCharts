@@ -14,3 +14,4 @@ set_plot_warnings(app_state, warnings)
 \description{
 Safely sets plot warnings.
 }
+\keyword{internal}

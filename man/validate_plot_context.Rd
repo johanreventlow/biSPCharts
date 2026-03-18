@@ -25,3 +25,4 @@ validate_plot_context("invalid", stop_on_invalid = FALSE) # Returns FALSE
 }
 
 }
+\keyword{internal}

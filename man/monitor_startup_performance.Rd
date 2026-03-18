@@ -15,3 +15,4 @@ List with startup metrics
 \description{
 Measures QIC calculations during app startup sequence
 }
+\keyword{internal}

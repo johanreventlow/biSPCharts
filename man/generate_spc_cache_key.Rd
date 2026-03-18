@@ -99,3 +99,4 @@ key <- generate_spc_cache_key(data, config)
 \code{\link{cache_spc_result}} for caching SPC results
 \code{\link{get_cached_spc_result}} for retrieving cached results
 }
+\keyword{internal}

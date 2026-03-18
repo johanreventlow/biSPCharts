@@ -34,7 +34,7 @@ ABSOLUTE_CHART_TYPES <- c("c", "u", "up", "i", "mr", "g")
 #' @return List with elements:
 #'   - value: Numeric value as written (80% → 80, not 0.8)
 #'   - symbol: One of "percent", "permille", "none"
-#' @export
+#' @keywords internal
 parse_number_da <- function(x) {
   if (is.null(x) || length(x) == 0) {
     return(list(value = numeric(0), symbol = character(0)))
@@ -86,7 +86,7 @@ parse_number_da <- function(x) {
 #'
 #' @param chart_type Character. QIC chart type (e.g., "p", "run", "c", "u")
 #' @return Character. Internal unit: "proportion" for [0,1] charts, "absolute" for count charts
-#' @export
+#' @keywords internal
 determine_internal_unit_by_chart_type <- function(chart_type) {
   if (is.null(chart_type) || chart_type == "") {
     log_debug("No chart type specified, defaulting to proportion internal unit", .context = "Y_AXIS_SCALING")
@@ -118,7 +118,7 @@ determine_internal_unit_by_chart_type <- function(chart_type) {
 #' @param col_unit Character. Unit from column metadata (optional)
 #' @param y_sample Numeric vector. Sample of Y data for heuristics
 #' @return Character. One of "proportion", "percent", "permille", "absolute"
-#' @export
+#' @keywords internal
 resolve_y_unit <- function(user_unit = NULL, col_unit = NULL, y_sample = NULL) {
   # Priority 1: User explicit choice
   if (!is.null(user_unit) && user_unit %in% VALID_UNITS) {
@@ -244,7 +244,7 @@ detect_unit_from_data <- function(y_data) {
 #' @param parsed List from parse_number_da() with value and symbol
 #' @param target_unit Character. Target unit to convert to
 #' @return Numeric value in target unit
-#' @export
+#' @keywords internal
 coerce_to_target_unit <- function(parsed, target_unit) {
   if (is.na(parsed$value) || parsed$symbol == "invalid") {
     log_debug("Invalid parsed input - returning NA", .context = "Y_AXIS_SCALING")
@@ -322,7 +322,7 @@ coerce_to_target_unit <- function(parsed, target_unit) {
 #' @param target_unit Character. The unit value is currently in
 #' @param internal_unit Character. Internal canonical unit (e.g., "proportion")
 #' @return Numeric value in internal unit
-#' @export
+#' @keywords internal
 to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) {
   if (is.na(value_in_target_unit)) {
     log_debug("NA value in to_internal_scale", .context = "Y_AXIS_SCALING")
@@ -394,7 +394,7 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
 #' @param internal_unit Character. Internal canonical unit for this plot type (if not using chart_type)
 #' @param chart_type Character. QIC chart type - if provided, determines internal_unit automatically
 #' @return Numeric value in internal unit, ready for qicharts2
-#' @export
+#' @keywords internal
 normalize_axis_value <- function(x, user_unit = NULL, col_unit = NULL,
                                  y_sample = NULL, internal_unit = "proportion", chart_type = NULL) {
   # CRITICAL: If chart_type is provided, determine internal_unit from it (prevents 100×-mismatch)
@@ -473,7 +473,7 @@ validate_axis_value <- function(value, internal_unit) {
 #' @param y_data Numeric vector. Y data for context
 #' @param y_axis_unit Character. Unit specification
 #' @return Numeric value (legacy format)
-#' @export
+#' @keywords internal
 parse_danish_target <- function(target_input, y_data = NULL, y_axis_unit = NULL) {
   # Determine internal unit based on y_data characteristics
   # For now, use proportion as default (matches most existing behavior)

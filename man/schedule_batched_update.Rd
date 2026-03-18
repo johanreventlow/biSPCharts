@@ -70,3 +70,4 @@ handle_column_input <- function(col_name, new_value, app_state, emit) \{
 }\if{html}{\out{</div>}}
 }
 }
+\keyword{internal}

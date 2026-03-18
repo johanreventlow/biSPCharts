@@ -26,3 +26,4 @@ cat(
 # Force purge (clears all caches)
 purged <- purge_expired_cache_entries(force = TRUE)
 }
+\keyword{internal}

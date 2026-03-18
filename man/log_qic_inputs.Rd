@@ -20,3 +20,4 @@ invisible(NULL)
 Logger alle input parametre til qicharts2::qic() kald for debugging.
 Kun aktiv ved DEBUG log niveau for at undgå performance impact.
 }
+\keyword{internal}

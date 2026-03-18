@@ -12,3 +12,4 @@ Karakter string med CSS styles for højre side positioning
 \description{
 Opret CSS style for absolute positioning (logo/brand)
 }
+\keyword{internal}

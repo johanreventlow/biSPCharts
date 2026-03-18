@@ -51,3 +51,4 @@ ggplot object med marquee labels
 Anvender marquee::geom_marquee for at placere to-linje labels ved højre kant
 med intelligent collision avoidance.
 }
+\keyword{internal}

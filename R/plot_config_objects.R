@@ -76,7 +76,7 @@ NULL
 #' - `y_axis_unit` must be one of: count, percent, rate, time
 #' - `target_value` must be numeric if provided
 #'
-#' @export
+#' @keywords internal
 spc_plot_config <- function(
   chart_type = "run",
   y_axis_unit = "count",
@@ -138,7 +138,7 @@ spc_plot_config <- function(
 #' @param x SPC plot configuration object
 #' @param ... Additional arguments (ignored)
 #'
-#' @export
+#' @keywords internal
 print.spc_plot_config <- function(x, ...) {
   cat("SPC Plot Configuration:\n")
   cat("  Chart Type:", x$chart_type, "\n")
@@ -171,7 +171,7 @@ print.spc_plot_config <- function(x, ...) {
 #' - base_size controls responsive scaling of geoms and text
 #' - Reference: base_size 14 provides original sizing
 #'
-#' @export
+#' @keywords internal
 viewport_dims <- function(
   width = NULL,
   height = NULL,
@@ -223,7 +223,7 @@ viewport_dims <- function(
 #' @param x Viewport dimensions object
 #' @param ... Additional arguments (ignored)
 #'
-#' @export
+#' @keywords internal
 print.viewport_dims <- function(x, ...) {
   cat("Viewport Dimensions:\n")
   cat("  Width:", if (is.null(x$width)) "Auto" else paste(x$width, "px"), "\n")
@@ -254,7 +254,7 @@ print.viewport_dims <- function(x, ...) {
 #' - `skift_column` identifies which column marks phase changes
 #' - `frys_column` identifies freeze points for control limits
 #'
-#' @export
+#' @keywords internal
 phase_config <- function(
   show_phases = FALSE,
   skift_column = NULL,
@@ -306,7 +306,7 @@ phase_config <- function(
 #' @param x Phase configuration object
 #' @param ... Additional arguments (ignored)
 #'
-#' @export
+#' @keywords internal
 print.phase_config <- function(x, ...) {
   cat("Phase Configuration:\n")
   cat("  Show Phases:", x$show_phases, "\n")
@@ -453,7 +453,7 @@ build_configs_from_params <- function(
 #' plot <- generateSPCPlot_v2(data, config, plot_cfg, viewport, phases)
 #' ```
 #'
-#' @export
+#' @keywords internal
 generateSPCPlot_v2 <- function(data, config, plot_cfg, viewport, phases) {
   # Validate parameter objects
   if (!inherits(plot_cfg, "spc_plot_config")) {

@@ -24,7 +24,7 @@
 #' }
 #'
 #' @family export_helpers
-#' @export
+#' @keywords internal
 extract_spc_statistics <- function(app_state) {
   safe_operation(
     operation_name = "Extract SPC statistics",
@@ -110,7 +110,7 @@ extract_spc_statistics <- function(app_state) {
 #' }
 #'
 #' @family export_helpers
-#' @export
+#' @keywords internal
 generate_details_string <- function(app_state, format = c("full", "short")) {
   format <- match.arg(format)
 
@@ -231,7 +231,7 @@ generate_details_string <- function(app_state, format = c("full", "short")) {
 #' }
 #'
 #' @family export_helpers
-#' @export
+#' @keywords internal
 quarto_available <- function() {
   # Altid TRUE - Quarto er inkluderet i RStudio
   # BFHcharts::quarto_available() er ikke exporteret, så vi undgår namespace fejl
@@ -253,7 +253,7 @@ quarto_available <- function() {
 #' }
 #'
 #' @family export_helpers
-#' @export
+#' @keywords internal
 get_hospital_name_for_export <- function() {
   # Prøv at hente fra branding config
   if (exists("get_hospital_name") && is.function(get_hospital_name)) {
@@ -321,7 +321,7 @@ get_hospital_name_for_export <- function() {
 #' }
 #'
 #' @family export_helpers
-#' @export
+#' @keywords internal
 generate_pdf_preview <- function(bfh_qic_result,
                                  metadata,
                                  dpi = 150) {

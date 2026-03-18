@@ -9,3 +9,4 @@ reset_qic_performance_counters()
 \description{
 Resets both QIC call counters to zero.
 }
+\keyword{internal}

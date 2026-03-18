@@ -13,4 +13,4 @@ EXPORT_TITLE_MAX_LENGTH
 \description{
 Begrænser titel længde til 200 karakterer for at undgå layout problemer.
 }
-\keyword{datasets}
+\keyword{internal}

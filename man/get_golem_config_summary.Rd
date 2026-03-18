@@ -12,3 +12,4 @@ Character vector with configuration summary
 \description{
 Get human-readable summary af current golem configuration.
 }
+\keyword{internal}

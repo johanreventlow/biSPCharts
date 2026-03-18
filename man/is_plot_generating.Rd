@@ -15,3 +15,4 @@ Logical
 \description{
 Checks the circuit breaker flag for overlapping plot generations.
 }
+\keyword{internal}

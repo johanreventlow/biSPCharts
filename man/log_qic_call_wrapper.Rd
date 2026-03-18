@@ -44,3 +44,4 @@ target = 0.1,          # Scalar værdier OK
 cl = 0.08              # Scalar værdier OK
 )
 }
+\keyword{internal}

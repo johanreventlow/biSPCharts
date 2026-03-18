@@ -41,3 +41,4 @@ Other ui_components:
 \code{\link{create_text_input}()}
 }
 \concept{ui_components}
+\keyword{internal}

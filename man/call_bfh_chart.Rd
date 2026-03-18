@@ -57,3 +57,4 @@ log_info(paste("BFHchart call completed in", elapsed, "seconds"))
 \code{\link{map_to_bfh_params}} for parameter preparation
 \code{\link{transform_bfh_output}} for output processing
 }
+\keyword{internal}

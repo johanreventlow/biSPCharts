@@ -13,4 +13,4 @@ UI_SPACING
 \description{
 Standard spacing konstanter for UI
 }
-\keyword{datasets}
+\keyword{internal}

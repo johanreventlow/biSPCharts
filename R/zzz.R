@@ -32,7 +32,7 @@ get_claudespc_environment <- function() {
 #' @param key Configuration key to retrieve
 #' @param default Default value if key not found
 #' @return Configuration value or default
-#' @export
+#' @keywords internal
 get_package_config <- function(key, default = NULL) {
   claudespc_env <- get_claudespc_environment()
   if (exists(key, envir = claudespc_env)) {
@@ -45,7 +45,7 @@ get_package_config <- function(key, default = NULL) {
 #' Get the complete runtime configuration
 #'
 #' @return Runtime configuration list or NULL
-#' @export
+#' @keywords internal
 get_runtime_config <- function() {
   get_package_config("runtime_config", default = NULL)
 }
@@ -53,7 +53,7 @@ get_runtime_config <- function() {
 #' Get test mode auto load setting
 #'
 #' @return Boolean indicating if test mode auto load is enabled
-#' @export
+#' @keywords internal
 get_test_mode_auto_load <- function() {
   get_package_config("TEST_MODE_AUTO_LOAD", default = FALSE)
 }
@@ -61,7 +61,7 @@ get_test_mode_auto_load <- function() {
 #' Get auto restore enabled setting
 #'
 #' @return Boolean indicating if auto restore is enabled
-#' @export
+#' @keywords internal
 get_auto_restore_enabled <- function() {
   get_package_config("AUTO_RESTORE_ENABLED", default = FALSE)
 }
@@ -69,7 +69,7 @@ get_auto_restore_enabled <- function() {
 #' Get hospital name from package environment
 #'
 #' @return Hospital name string
-#' @export
+#' @keywords internal
 get_package_hospital_name <- function() {
   get_package_config("HOSPITAL_NAME", default = "Unknown Hospital")
 }
@@ -77,7 +77,7 @@ get_package_hospital_name <- function() {
 #' Get hospital theme from package environment
 #'
 #' @return Bootstrap theme object
-#' @export
+#' @keywords internal
 get_package_theme <- function() {
   get_package_config("my_theme", default = NULL)
 }
@@ -85,7 +85,7 @@ get_package_theme <- function() {
 #' Get test mode file path
 #'
 #' @return Test file path string
-#' @export
+#' @keywords internal
 get_test_mode_file_path <- function() {
   get_package_config("TEST_MODE_FILE_PATH", default = NULL)
 }
@@ -95,7 +95,7 @@ get_test_mode_file_path <- function() {
 #' Returns current value of the QIC call counter for performance monitoring.
 #'
 #' @return Integer counter value
-#' @export
+#' @keywords internal
 get_qic_call_counter <- function() {
   claudespc_env <- get_claudespc_environment()
   if (exists("qic_call_counter", envir = claudespc_env)) {
@@ -110,7 +110,7 @@ get_qic_call_counter <- function() {
 #' Increments the QIC call counter and returns new value.
 #'
 #' @return New counter value
-#' @export
+#' @keywords internal
 increment_qic_call_counter <- function() {
   claudespc_env <- get_claudespc_environment()
   if (!exists("qic_call_counter", envir = claudespc_env)) {
@@ -125,7 +125,7 @@ increment_qic_call_counter <- function() {
 #' Returns current value of actual qicharts2::qic() calls for performance monitoring.
 #'
 #' @return Integer counter value
-#' @export
+#' @keywords internal
 get_actual_qic_call_counter <- function() {
   claudespc_env <- get_claudespc_environment()
   if (exists("actual_qic_call_counter", envir = claudespc_env)) {
@@ -140,7 +140,7 @@ get_actual_qic_call_counter <- function() {
 #' Increments the actual qicharts2::qic() call counter and returns new value.
 #'
 #' @return New counter value
-#' @export
+#' @keywords internal
 increment_actual_qic_call_counter <- function() {
   claudespc_env <- get_claudespc_environment()
   if (!exists("actual_qic_call_counter", envir = claudespc_env)) {
@@ -154,7 +154,7 @@ increment_actual_qic_call_counter <- function() {
 #'
 #' Resets both QIC call counters to zero.
 #'
-#' @export
+#' @keywords internal
 reset_qic_performance_counters <- function() {
   claudespc_env <- get_claudespc_environment()
   claudespc_env$qic_call_counter <- 0L

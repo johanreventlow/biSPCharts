@@ -35,3 +35,4 @@ print(summary$trend)
 }
 
 }
+\keyword{internal}

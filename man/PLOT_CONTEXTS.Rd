@@ -24,4 +24,4 @@ Kontekster:
 \item \strong{export_pptx:} PowerPoint export (9×6.5 inches @ 96 DPI)
 }
 }
-\keyword{datasets}
+\keyword{internal}

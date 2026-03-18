@@ -20,3 +20,4 @@ M10: Centralized viewport state management
 
 Returns VIEWPORT_DEFAULTS if dimensions haven't been set yet.
 }
+\keyword{internal}

@@ -97,7 +97,7 @@
 #' pptx_path <- generate_powerpoint_export(plot, "Titel")
 #' }
 #'
-#' @export
+#' @keywords internal
 generate_powerpoint_export <- function(plot_object,
                                        title = "",
                                        template_path = NULL,
@@ -369,7 +369,7 @@ generate_powerpoint_export <- function(plot_object,
 #' }
 #' }
 #'
-#' @export
+#' @keywords internal
 detect_pptx_placeholders <- function(pptx_doc) {
   # Initialize result
   result <- list(

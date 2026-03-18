@@ -30,7 +30,7 @@
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_column_selectize <- function(inputId, label, choices = NULL, selected = NULL,
                                     placeholder = "Vælg kolonne...", multiple = FALSE,
                                     width = UI_INPUT_WIDTHS$full) {
@@ -74,7 +74,7 @@ create_column_selectize <- function(inputId, label, choices = NULL, selected = N
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_text_input <- function(inputId, label, value = "", placeholder = "",
                               width = UI_INPUT_WIDTHS$full, pattern = NULL) {
   input_elem <- shiny::textInput(
@@ -118,7 +118,7 @@ create_text_input <- function(inputId, label, value = "", placeholder = "",
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_numeric_input <- function(inputId, label, value = NULL, min = NA, max = NA,
                                  step = 1, width = UI_INPUT_WIDTHS$full) {
   shiny::numericInput(
@@ -156,7 +156,7 @@ create_numeric_input <- function(inputId, label, value = NULL, min = NA, max = N
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_checkbox <- function(inputId, label, value = FALSE, help_text = NULL) {
   checkbox_elem <- shiny::checkboxInput(
     inputId = inputId,
@@ -198,7 +198,7 @@ create_checkbox <- function(inputId, label, value = FALSE, help_text = NULL) {
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_action_button <- function(inputId, label, style = "primary", icon = NULL,
                                  disabled = FALSE, width = "auto") {
   # Map styles til Bootstrap klasser
@@ -244,7 +244,7 @@ create_action_button <- function(inputId, label, style = "primary", icon = NULL,
 #' }
 #'
 #' @family ui_components
-#' @export
+#' @keywords internal
 create_info_panel <- function(content, type = "info", dismissible = FALSE, icon = NULL) {
   # Map types til Bootstrap alert klasser
   class_map <- list(

@@ -49,3 +49,4 @@ key <- generate_qic_cache_key_optimized(data, params)
 }
 
 }
+\keyword{internal}

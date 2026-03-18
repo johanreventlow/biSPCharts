@@ -12,3 +12,4 @@ List with chart types configuration
 \description{
 Extract chart types configuration that can be cached
 }
+\keyword{internal}

@@ -23,3 +23,4 @@ clear_spc_cache(qic_cache)
 }
 
 }
+\keyword{internal}

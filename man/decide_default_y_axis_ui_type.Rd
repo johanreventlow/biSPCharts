@@ -22,3 +22,4 @@ Særligt for run chart ønsker vi:
 Brugeren kan altid overskrive.
 }
 }
+\keyword{internal}

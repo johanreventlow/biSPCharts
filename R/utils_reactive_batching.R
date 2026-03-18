@@ -70,7 +70,7 @@ NULL
 #' }
 #' ```
 #'
-#' @export
+#' @keywords internal
 schedule_batched_update <- function(update_fn, delay_ms = 50, app_state = NULL, batch_key = "default") {
   # Input validation
   if (!is.function(update_fn)) {
@@ -160,7 +160,7 @@ schedule_batched_update <- function(update_fn, delay_ms = 50, app_state = NULL, 
 #'
 #' @return Logical. TRUE if batch is pending, FALSE otherwise
 #'
-#' @export
+#' @keywords internal
 is_batch_pending <- function(app_state, batch_key = "default") {
   if (is.null(app_state)) {
     return(FALSE)
@@ -186,7 +186,7 @@ is_batch_pending <- function(app_state, batch_key = "default") {
 #'
 #' @return NULL (invisibly)
 #'
-#' @export
+#' @keywords internal
 clear_all_batches <- function(app_state) {
   if (!is.null(app_state) && exists("batching", envir = app_state, inherits = FALSE)) {
     if (exists("pending_batches", envir = app_state$batching, inherits = FALSE)) {

@@ -43,7 +43,7 @@ NULL
 #' - Cache hit rate >80% (from ~40%)
 #' - Faster UX for comment updates and table edits
 #'
-#' @export
+#' @keywords internal
 invalidate_qic_cache_smart <- function(app_state, update_context = NULL) {
   # Guard: Cache must exist
   if (is.null(app_state$cache) || is.null(app_state$cache$qic)) {

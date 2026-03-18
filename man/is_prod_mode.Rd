@@ -12,3 +12,4 @@ Boolean indicating production mode
 \description{
 Golem-style production mode detection.
 }
+\keyword{internal}

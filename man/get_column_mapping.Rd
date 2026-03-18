@@ -17,3 +17,4 @@ Column value or NULL
 \description{
 Retrieves a specific column mapping value.
 }
+\keyword{internal}

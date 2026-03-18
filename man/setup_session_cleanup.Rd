@@ -20,3 +20,4 @@ Other memory_management:
 \code{\link{start_memory_monitoring}()}
 }
 \concept{memory_management}
+\keyword{internal}

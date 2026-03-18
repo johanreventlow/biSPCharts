@@ -16,3 +16,4 @@ List med state management funktioner
 Factory for managing chart module state with consistent patterns.
 Ekstraeret fra mod_spc_chart_server.R for bedre testability.
 }
+\keyword{internal}

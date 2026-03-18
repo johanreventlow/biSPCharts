@@ -58,3 +58,4 @@ observeEvent(input$show_memory, {
 }
 
 }
+\keyword{internal}

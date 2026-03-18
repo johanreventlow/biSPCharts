@@ -38,4 +38,4 @@ observeEvent(input$data, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
 })
 }
 }
-\keyword{datasets}
+\keyword{internal}

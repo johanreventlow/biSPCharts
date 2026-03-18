@@ -17,3 +17,4 @@ Karakter string med CSS calc() stil
 \description{
 Opret responsive chart container stil
 }
+\keyword{internal}

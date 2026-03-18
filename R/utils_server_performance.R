@@ -155,7 +155,7 @@ parse_danish_date_vectorized <- function(x) {
 #'
 #' @param data Data frame to standardize
 #' @return Standardized data frame
-#' @export
+#' @keywords internal
 ensure_standard_columns <- function(data) {
   if (is.null(data) || nrow(data) == 0) {
     return(data)
@@ -177,7 +177,7 @@ ensure_standard_columns <- function(data) {
 #' @param data Data frame to check
 #' @param column_name Name of column to validate
 #' @return NULL if valid, error message if invalid
-#' @export
+#' @keywords internal
 validate_numeric_column <- function(data, column_name) {
   if (!column_name %in% names(data)) {
     return(paste("Column", column_name, "not found"))
@@ -209,7 +209,7 @@ validate_numeric_column <- function(data, column_name) {
 #'
 #' @param date_vector Vector of dates to parse
 #' @return Parsed dates or original vector if parsing fails
-#' @export
+#' @keywords internal
 safe_date_parse <- function(date_vector) {
   if (is.null(date_vector) || length(date_vector) == 0) {
     return(date_vector)

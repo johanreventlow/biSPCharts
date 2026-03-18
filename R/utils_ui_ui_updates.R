@@ -17,7 +17,7 @@
 #' ui_service$update_column_choices()
 #' }
 #'
-#' @export
+#' @keywords internal
 create_ui_update_service <- function(session, app_state) {
   # Update Column Choices
   #
@@ -551,7 +551,7 @@ add_ui_update_emit_functions <- function(emit, app_state) {
 #' }, delay_ms = LOOP_PROTECTION_DELAYS$conservative)
 #' }
 #'
-#' @export
+#' @keywords internal
 safe_programmatic_ui_update <- function(session, app_state, update_function, delay_ms = NULL) {
   if (is.null(delay_ms)) {
     delay_ms <- LOOP_PROTECTION_DELAYS$default
@@ -710,7 +710,7 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
 #' @param queue_entry Queue entry to add
 #' @return Invisibly returns success status
 #'
-#' @export
+#' @keywords internal
 enqueue_ui_update <- function(app_state, queue_entry) {
   # Add to queue (already done in calling function, but kept for API completeness)
   # This function focuses on starting processor if needed
@@ -733,7 +733,7 @@ enqueue_ui_update <- function(app_state, queue_entry) {
 #'
 #' @param app_state The centralized app state object
 #'
-#' @export
+#' @keywords internal
 process_ui_update_queue <- function(app_state) {
   # Set processing flag and ensure cleanup
   shiny::isolate(app_state$ui$queue_processing <- TRUE)
@@ -799,7 +799,7 @@ process_ui_update_queue <- function(app_state) {
 #' @param app_state The centralized app state object
 #' @param max_age_seconds Maximum age of queue entries in seconds (default: 30)
 #'
-#' @export
+#' @keywords internal
 cleanup_expired_queue_updates <- function(app_state, max_age_seconds = 30) {
   current_queue <- shiny::isolate(app_state$ui$queued_updates)
 
@@ -842,7 +842,7 @@ cleanup_expired_queue_updates <- function(app_state, max_age_seconds = 30) {
 #' @param app_state The centralized app state object
 #' @param max_age_seconds Maximum age of tokens in seconds (default: 300)
 #'
-#' @export
+#' @keywords internal
 cleanup_expired_tokens <- function(app_state, max_age_seconds = 300) {
   current_tokens <- shiny::isolate(app_state$ui$pending_programmatic_inputs)
 
@@ -875,7 +875,7 @@ cleanup_expired_tokens <- function(app_state, max_age_seconds = 300) {
 #'
 #' @param app_state The centralized app state object
 #'
-#' @export
+#' @keywords internal
 comprehensive_system_cleanup <- function(app_state) {
   cleanup_start <- Sys.time()
 
@@ -913,7 +913,7 @@ comprehensive_system_cleanup <- function(app_state) {
 #' @param app_state The centralized app state object
 #' @return List with performance metrics and formatted report
 #'
-#' @export
+#' @keywords internal
 get_performance_report <- function(app_state) {
   metrics <- shiny::isolate(app_state$ui$performance_metrics)
   limits <- shiny::isolate(app_state$ui$memory_limits)
@@ -971,7 +971,7 @@ get_performance_report <- function(app_state) {
 #'
 #' @param app_state The centralized app state object
 #'
-#' @export
+#' @keywords internal
 reset_performance_metrics <- function(app_state) {
   shiny::isolate({
     app_state$ui$performance_metrics$total_updates <- 0L

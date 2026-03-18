@@ -12,3 +12,4 @@ List with observer priorities
 \description{
 Extract observer priorities that can be cached
 }
+\keyword{internal}

@@ -33,3 +33,4 @@ key <- generate_qic_cache_key(my_data, params)
 }
 
 }
+\keyword{internal}

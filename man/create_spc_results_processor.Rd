@@ -10,3 +10,4 @@ create_spc_results_processor()
 Processer SPC beregninger og ekstraherer relevante metrics.
 Ekstraeret fra mod_spc_chart_server.R for bedre testability.
 }
+\keyword{internal}

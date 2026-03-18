@@ -13,4 +13,4 @@ UI_COLUMN_WIDTHS
 \description{
 Prædefinerede kolonne bredde kombinationer til bslib layout systemer.
 }
-\keyword{datasets}
+\keyword{internal}

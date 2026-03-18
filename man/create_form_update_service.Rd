@@ -16,3 +16,4 @@ List med form update funktioner
 Factory for creating form field update functions with standardized patterns.
 Ekstraeret fra utils_ui_ui_updates.R for bedre testability og genbrug.
 }
+\keyword{internal}

@@ -13,3 +13,4 @@ List with generateSPCPlot_calls and actual_qic_calls counts
 Returns the current state of QIC calculation counters
 M1: Updated to use package environment instead of .GlobalEnv
 }
+\keyword{internal}

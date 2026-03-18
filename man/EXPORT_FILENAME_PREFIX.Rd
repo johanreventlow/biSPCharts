@@ -13,4 +13,4 @@ EXPORT_FILENAME_PREFIX
 \description{
 Alle eksporterede filer starter med denne prefix.
 }
-\keyword{datasets}
+\keyword{internal}

@@ -16,7 +16,7 @@
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element
 #' @family visualization_modules
-#' @export
+#' @keywords internal
 visualizationModuleUI <- function(id) {
   ns <- shiny::NS(id)
 
@@ -42,7 +42,7 @@ visualizationModuleUI <- function(id) {
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element med value boxes
 #' @family visualization_modules
-#' @export
+#' @keywords internal
 visualizationStatusUI <- function(id) {
   ns <- shiny::NS(id)
 

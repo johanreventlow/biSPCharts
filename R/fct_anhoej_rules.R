@@ -74,7 +74,7 @@
 #' @seealso
 #' \code{\link{validate_anhoej_columns}} for input validation
 #' \code{\link{compute_spc_results_bfh}} for integration in service layer
-#' @export
+#' @keywords internal
 extract_anhoej_metadata <- function(qic_data) {
   # 1. Validate input
   if (is.null(qic_data) || !is.data.frame(qic_data)) {
@@ -268,7 +268,7 @@ calculate_combined_anhoej_signal <- function(qic_data) {
 #' message(format_anhoej_metadata(anhoej_meta))
 #' # Output: "Runs: Ja (8 punkter), Crossings: Nej (9/13)"
 #' }
-#' @export
+#' @keywords internal
 format_anhoej_metadata <- function(anhoej_meta) {
   if (is.null(anhoej_meta)) {
     return("Anhøj metadata ikke tilgængelig")

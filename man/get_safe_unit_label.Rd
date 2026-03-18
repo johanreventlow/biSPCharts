@@ -18,3 +18,4 @@ Unit label string
 Henter unit label fra konfiguration med robust fallback.
 Helper function til Y-axis label generation.
 }
+\keyword{internal}

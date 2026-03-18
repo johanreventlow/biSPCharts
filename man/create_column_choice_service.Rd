@@ -18,3 +18,4 @@ List med column choice update funktioner
 Specialized service for updating column choice inputs with data-driven choices.
 Ekstraeret fra utils_ui_ui_updates.R for better separation og testability.
 }
+\keyword{internal}

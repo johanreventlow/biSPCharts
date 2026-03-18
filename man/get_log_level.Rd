@@ -21,3 +21,4 @@ get_log_level()
 Sys.setenv(SPC_LOG_LEVEL = "1")
 get_log_level()
 }
+\keyword{internal}

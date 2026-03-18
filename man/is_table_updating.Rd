@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if a table operation is in progress.
 }
+\keyword{internal}

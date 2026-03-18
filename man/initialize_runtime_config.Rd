@@ -21,3 +21,4 @@ List with complete runtime configuration
 Centraliseret runtime konfiguration som erstatter spredte konstanter i global.R
 og integrerer med golem-style options og environment profiles for environment-aware configuration.
 }
+\keyword{internal}

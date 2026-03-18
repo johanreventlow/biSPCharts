@@ -14,3 +14,4 @@ set_y_axis_autoset_done(app_state, value)
 \description{
 Safely sets the Y-axis auto-set done flag.
 }
+\keyword{internal}

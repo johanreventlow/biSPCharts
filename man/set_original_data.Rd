@@ -14,3 +14,4 @@ set_original_data(app_state, value)
 \description{
 Safely sets the original (backup) data in app_state.
 }
+\keyword{internal}

@@ -20,3 +20,4 @@ Processed Y-axis data ready for plotting
 Beregner Y-axis data baseret på chart type og tilgængelige data.
 Ekstraeret fra generateSPCPlot for bedre modularity.
 }
+\keyword{internal}

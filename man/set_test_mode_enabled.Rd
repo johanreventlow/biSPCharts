@@ -14,3 +14,4 @@ set_test_mode_enabled(app_state, value)
 \description{
 Safely sets the test mode enabled flag.
 }
+\keyword{internal}

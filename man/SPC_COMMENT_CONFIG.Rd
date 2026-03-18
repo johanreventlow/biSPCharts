@@ -15,4 +15,4 @@ SPC_COMMENT_CONFIG
 Kommentar behandling konfiguration
 M3: Centraliseret magic numbers for kommentar længdebegrænsninger
 }
-\keyword{datasets}
+\keyword{internal}

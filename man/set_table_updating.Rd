@@ -14,3 +14,4 @@ set_table_updating(app_state, value)
 \description{
 Safely sets the table updating flag.
 }
+\keyword{internal}

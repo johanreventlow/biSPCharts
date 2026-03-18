@@ -13,4 +13,4 @@ DEFAULT_PORT
 \description{
 Port number brugt til udvikling af Shiny applikationen.
 }
-\keyword{datasets}
+\keyword{internal}

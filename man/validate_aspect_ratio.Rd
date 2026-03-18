@@ -35,3 +35,4 @@ validate_aspect_ratio(2000, 800, warn_only = FALSE) # Error (2.5 - too wide)
 }
 
 }
+\keyword{internal}

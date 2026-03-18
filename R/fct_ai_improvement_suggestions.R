@@ -34,7 +34,7 @@
 #'   - Concrete suggestions (in bold)
 #'   Returns NULL on error (logged with context).
 #'
-#' @export
+#' @keywords internal
 #' @examples
 #' \dontrun{
 #' # Generate suggestion for run chart

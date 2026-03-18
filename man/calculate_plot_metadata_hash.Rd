@@ -24,3 +24,4 @@ meta$title <- "Updated Chart"
 hash2 <- calculate_plot_metadata_hash(meta)
 identical(hash1, hash2) # FALSE - metadata changed
 }
+\keyword{internal}

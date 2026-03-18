@@ -58,7 +58,7 @@
 #' # "SPC_Hæmatologi_Ø.pptx"
 #' }
 #'
-#' @export
+#' @keywords internal
 generate_export_filename <- function(format, title = "", department = "") {
   # Initialize with prefix
   parts <- c(EXPORT_FILENAME_PREFIX)
@@ -142,7 +142,7 @@ generate_export_filename <- function(format, title = "", department = "") {
 #' # "Multiple_Spaces"
 #' }
 #'
-#' @export
+#' @keywords internal
 sanitize_filename <- function(text) {
   # Handle NULL input
   if (is.null(text)) {

@@ -40,3 +40,4 @@ sanitize_selection("valid") # → "valid"
 
 }
 \concept{input_validation}
+\keyword{internal}

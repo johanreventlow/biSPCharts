@@ -22,3 +22,4 @@ Y-axis label string
 Genererer Y-axis label baseret på chart type, enheder og kolonnenavne.
 Ekstraeret fra generateSPCPlot for consistency og testability.
 }
+\keyword{internal}

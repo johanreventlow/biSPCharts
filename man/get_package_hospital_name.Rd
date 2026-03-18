@@ -12,3 +12,4 @@ Hospital name string
 \description{
 Get hospital name from package environment
 }
+\keyword{internal}

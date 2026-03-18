@@ -9,7 +9,7 @@
 #'
 #' @param config App configuration from initialize_runtime_config()
 #' @return List with dependency loading results
-#' @export
+#' @keywords internal
 manage_app_dependencies <- function(config = NULL) {
   # Dependency operation completed
 

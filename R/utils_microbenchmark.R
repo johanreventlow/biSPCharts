@@ -96,7 +96,7 @@ safe_eval_benchmark <- function(expr, operation_name = "unknown") {
 #'   }
 #' ), operation_name = "implementation_comparison")
 #' }
-#' @export
+#' @keywords internal
 benchmark_spc_operation <- function(expr, times = 100, operation_name = "unknown_operation",
                                     log_results = TRUE, return_full_results = FALSE,
                                     capture_result = FALSE) {
@@ -263,7 +263,7 @@ log_performance_results <- function(results, warn_threshold = 500) {
 #' @param times Number of iterations per test (default: 10 for expensive operations)
 #'
 #' @return Data frame with comparative benchmark results
-#' @export
+#' @keywords internal
 benchmark_autodetect_comprehensive <- function(data_list = NULL,
                                                trigger_types = c("file_upload", "manual"),
                                                app_state, emit, times = 10) {
@@ -381,7 +381,7 @@ benchmark_autodetect_comprehensive <- function(data_list = NULL,
 #' @param times Number of iterations (default: 5 for plot generation)
 #'
 #' @return Data frame with QIC benchmark results
-#' @export
+#' @keywords internal
 benchmark_qic_generation <- function(data_list = NULL,
                                      chart_types = c("run", "p", "u"),
                                      times = 5) {
@@ -490,7 +490,7 @@ benchmark_qic_generation <- function(data_list = NULL,
 #' @param regression_threshold Threshold for detecting regressions (default: 1.2 = 20% slower)
 #'
 #' @return List with comparison analysis
-#' @export
+#' @keywords internal
 analyze_performance_comparison <- function(baseline_results, current_results, regression_threshold = 1.2) {
   if (!is.data.frame(baseline_results) || !is.data.frame(current_results)) {
     log_warn("Performance comparison requires data frame inputs", .context = "MICROBENCHMARK")
@@ -590,7 +590,7 @@ analyze_performance_comparison <- function(baseline_results, current_results, re
 #' @param include_metadata Include system metadata (default: TRUE)
 #'
 #' @return Path to exported file
-#' @export
+#' @keywords internal
 export_benchmark_results <- function(results, filename = NULL, include_metadata = TRUE) {
   if (is.null(filename)) {
     timestamp <- format(Sys.time(), "%Y%m%d_%H%M%S")

@@ -34,3 +34,4 @@ Main entry point that combines parsing, unit resolution, and conversion.
 This replaces parse_danish_target() with cleaner separation of concerns.
 Now includes chart-type awareness to prevent 100×-mismatch.
 }
+\keyword{internal}

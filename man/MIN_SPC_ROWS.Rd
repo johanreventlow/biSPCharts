@@ -13,4 +13,4 @@ MIN_SPC_ROWS
 \description{
 Minimum antal rækker for SPC analyse
 }
-\keyword{datasets}
+\keyword{internal}

@@ -13,4 +13,4 @@ EXPORT_DESCRIPTION_MAX_LENGTH
 \description{
 Begrænser beskrivelse længde til 2000 karakterer for PDF metadata.
 }
-\keyword{datasets}
+\keyword{internal}

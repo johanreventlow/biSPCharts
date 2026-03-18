@@ -23,13 +23,13 @@
 #' Standard port for development server
 #'
 #' Port number brugt til udvikling af Shiny applikationen.
-#' @export
+#' @keywords internal
 DEFAULT_PORT <- 3838
 
 #' Auto restore funktion
 #'
 #' Bestemmer om session data automatisk skal gendannes ved app start.
-#' @export
+#' @keywords internal
 AUTO_RESTORE_ENABLED <- FALSE
 
 # FILE PROCESSING CONSTANTS ===================================================
@@ -38,20 +38,20 @@ AUTO_RESTORE_ENABLED <- FALSE
 #'
 #' ISO-8859-1 encoding bruges for at sikre kompatibilitet med Windows systemer
 #' og danske specialtegn i CSV filer.
-#' @export
+#' @keywords internal
 DEFAULT_ENCODING <- "ISO-8859-1"
 
 #' Alternative encoding for UTF-8 filer
 #'
 #' UTF-8 encoding til moderne tekst filer og internationale tegnsæt.
-#' @export
+#' @keywords internal
 UTF8_ENCODING <- "UTF-8"
 
 #' Standard CSV separators
 #'
 #' Liste over understøttede kolonne separatorer til CSV fil parsing.
 #' @format Named list med separator karakterer
-#' @export
+#' @keywords internal
 CSV_SEPARATORS <- list(
   semicolon = ";",
   comma = ",",
@@ -62,7 +62,7 @@ CSV_SEPARATORS <- list(
 #'
 #' Liste over understøttede decimal separatorer til numerisk parsing.
 #' @format Named list med decimal separator karakterer
-#' @export
+#' @keywords internal
 DECIMAL_SEPARATORS <- list(
   comma = ",",
   period = "."
@@ -75,7 +75,7 @@ DECIMAL_SEPARATORS <- list(
 # LOGGING CONSTANTS =============================================================
 
 #' Logging komponenter for organiseret fejlfinding
-#' @export
+#' @keywords internal
 LOG_COMPONENTS <- list(
   DATA_PROC = "DATA_PROC",
   AUTO_DETECT = "AUTO_DETECT",
@@ -91,7 +91,7 @@ LOG_COMPONENTS <- list(
 # PERFORMANCE CONSTANTS =========================================================
 
 #' Timeout værdier for forskellige operationer (millisekunder)
-#' @export
+#' @keywords internal
 OPERATION_TIMEOUTS <- list(
   file_read = 30000, # 30 sekunder
   chart_render = 10000, # 10 sekunder
@@ -109,7 +109,7 @@ OPERATION_TIMEOUTS <- list(
 #'
 #' FORVENTET IMPACT: 30-40% forbedring i perceived responsiveness
 #'
-#' @export
+#' @keywords internal
 DEBOUNCE_DELAYS <- list(
   input_change = 150, # 150ms - rapid user input (dropdown, typing) - OPTIMIZED
   file_select = 500, # 500ms - file selection and complex inputs
@@ -118,7 +118,7 @@ DEBOUNCE_DELAYS <- list(
 )
 
 #' Loop protection delays for UI updates (milliseconds)
-#' @export
+#' @keywords internal
 LOOP_PROTECTION_DELAYS <- list(
   default = 500, # Standard delay for programmatic UI updates
   conservative = 800, # Conservative delay for slower browsers
@@ -127,7 +127,7 @@ LOOP_PROTECTION_DELAYS <- list(
 )
 
 #' Performance monitoring thresholds
-#' @export
+#' @keywords internal
 PERFORMANCE_THRESHOLDS <- list(
   reactive_warning = 0.5, # 500ms for reactive expressions
   debounce_warning = 1.0, # 1 second for debounced operations
@@ -137,7 +137,7 @@ PERFORMANCE_THRESHOLDS <- list(
 )
 
 #' Rate limiting thresholds for security
-#' @export
+#' @keywords internal
 RATE_LIMITS <- list(
   file_upload_seconds = 2, # Minimum seconds between file uploads (DoS protection)
   api_call_seconds = 1, # Minimum seconds between API calls
@@ -145,7 +145,7 @@ RATE_LIMITS <- list(
 )
 
 #' Auto-save debounce delays (milliseconds)
-#' @export
+#' @keywords internal
 AUTOSAVE_DELAYS <- list(
   data_save = 2000, # 2 seconds debounce for data auto-save
   settings_save = 1000 # 1 second debounce for settings auto-save (faster response)
@@ -155,7 +155,7 @@ AUTOSAVE_DELAYS <- list(
 #'
 #' SPRINT 3: Extracted magic numbers for test mode operations
 #'
-#' @export
+#' @keywords internal
 TEST_MODE_CONFIG <- list(
   ready_event_delay_seconds = 1.5, # Delay before emitting test_mode_ready event
   startup_debounce_ms = 300, # Debounce for test data auto-load
@@ -167,7 +167,7 @@ TEST_MODE_CONFIG <- list(
 #'
 #' SPRINT 3: Centralized cache timeout settings
 #'
-#' @export
+#' @keywords internal
 CACHE_CONFIG <- list(
   default_timeout_seconds = 300, # 5 minutes - standard cache lifetime
   extended_timeout_seconds = 600, # 10 minutes - for expensive computations
@@ -181,7 +181,7 @@ CACHE_CONFIG <- list(
 #' SPRINT 3: Extracted UI update timing constants
 #'
 #' @name UI_UPDATE_CONFIG
-#' @export
+#' @keywords internal
 UI_UPDATE_CONFIG <- list(
   immediate_delay = 0, # No delay - process immediately
   fast_update_delay = 50, # Fast updates for responsive UI (50ms)

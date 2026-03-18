@@ -26,3 +26,4 @@ automatic fallback handling and type conversion.
 get_config("charts.default_chart", "i")
 get_config("system.observer_priorities.HIGH", 1000, "numeric")
 }
+\keyword{internal}

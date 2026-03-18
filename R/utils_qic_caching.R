@@ -19,7 +19,7 @@
 #' qic_cache <- get_or_init_qic_cache(app_state)
 #' }
 #'
-#' @export
+#' @keywords internal
 get_or_init_qic_cache <- function(app_state) {
   if (is.null(app_state$cache$qic)) {
     app_state$cache$qic <- create_qic_cache()
@@ -65,7 +65,7 @@ get_or_init_qic_cache <- function(app_state) {
 #' qic_cache$clear()
 #' }
 #'
-#' @export
+#' @keywords internal
 create_qic_cache <- function(max_size = 50) {
   cache <- new.env(parent = emptyenv())
   metrics <- list(
@@ -184,7 +184,7 @@ create_qic_cache <- function(max_size = 50) {
 #' key <- generate_qic_cache_key(my_data, params)
 #' }
 #'
-#' @export
+#' @keywords internal
 generate_qic_cache_key <- function(data, params) {
   # H14: Use shared data signatures to avoid redundant hashing
   # Falls back to direct hashing if shared signature system unavailable
@@ -231,7 +231,7 @@ generate_qic_cache_key <- function(data, params) {
 #' cat("Evictions:", stats$evictions, "\n")
 #' }
 #'
-#' @export
+#' @keywords internal
 get_qic_cache_stats <- function(cache) {
   cache$stats()
 }

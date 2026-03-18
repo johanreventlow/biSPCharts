@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if the user has actively started the session.
 }
+\keyword{internal}

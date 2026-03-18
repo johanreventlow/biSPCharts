@@ -38,3 +38,4 @@ frozen_state <- validate_reactive_value(
   default = FALSE
 )
 }
+\keyword{internal}

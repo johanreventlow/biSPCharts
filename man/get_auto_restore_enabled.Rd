@@ -12,3 +12,4 @@ Boolean indicating if auto restore is enabled
 \description{
 Get auto restore enabled setting
 }
+\keyword{internal}

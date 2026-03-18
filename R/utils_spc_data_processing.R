@@ -9,7 +9,7 @@
 #'
 #' @param config List med konfigurationsværdier (x_col, y_col, n_col)
 #' @return Sanitized configuration list
-#' @export
+#' @keywords internal
 sanitize_spc_config <- function(config) {
   safe_operation(
     "SPC config sanitization",
@@ -50,7 +50,7 @@ sanitize_spc_config <- function(config) {
 #' @param n_col Optional N-column name (for ratio charts)
 #' @param x_col Optional X-column name for type preservation
 #' @return Filtered data frame with preserved types
-#' @export
+#' @keywords internal
 filter_complete_spc_data <- function(data, y_col, n_col = NULL, x_col = NULL) {
   safe_operation(
     "SPC data filtering",
@@ -115,7 +115,7 @@ filter_complete_spc_data <- function(data, y_col, n_col = NULL, x_col = NULL) {
 #' @param y_col Column name for error messages
 #' @param n_col Optional N-column name for error messages
 #' @return List with parsed y_data and n_data (if provided)
-#' @export
+#' @keywords internal
 parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_col = "N") {
   safe_operation(
     "SPC data parsing and validation",
@@ -163,7 +163,7 @@ parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_co
 #' @param y_data Parsed Y-column data
 #' @param n_data Optional parsed N-column data
 #' @return Processed Y-axis data ready for plotting
-#' @export
+#' @keywords internal
 calculate_y_axis_data <- function(chart_type, y_data, n_data = NULL) {
   safe_operation(
     "Y-axis data calculation",
@@ -197,7 +197,7 @@ calculate_y_axis_data <- function(chart_type, y_data, n_data = NULL) {
 #' @param y_col Y-column name
 #' @param n_col Optional N-column name
 #' @return Y-axis label string
-#' @export
+#' @keywords internal
 generate_y_axis_label <- function(chart_type, y_unit_label, y_col, n_col = NULL) {
   safe_operation(
     "Y-axis label generation",
@@ -240,7 +240,7 @@ generate_y_axis_label <- function(chart_type, y_unit_label, y_col, n_col = NULL)
 #' @param y_axis_unit Unit specification
 #' @param units_config Units configuration (e.g., Y_AXIS_UNITS_DA)
 #' @return Unit label string
-#' @export
+#' @keywords internal
 get_safe_unit_label <- function(y_axis_unit, units_config = NULL) {
   safe_operation(
     "Unit label retrieval",
@@ -273,7 +273,7 @@ get_safe_unit_label <- function(y_axis_unit, units_config = NULL) {
 #' @param data Data frame
 #' @param x_col X-column name
 #' @return X-axis data or NULL if not available
-#' @export
+#' @keywords internal
 extract_x_axis_data <- function(data, x_col) {
   safe_operation(
     "X-axis data extraction",

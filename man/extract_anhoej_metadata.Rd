@@ -74,3 +74,4 @@ signal_indices <- which(anhoej_meta$signal_points)
 \code{\link{validate_anhoej_columns}} for input validation
 \code{\link{compute_spc_results_bfh}} for integration in service layer
 }
+\keyword{internal}

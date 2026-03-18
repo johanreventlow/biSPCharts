@@ -14,3 +14,4 @@ set_autodetect_in_progress(app_state, value)
 \description{
 Safely sets the auto-detection in_progress flag.
 }
+\keyword{internal}

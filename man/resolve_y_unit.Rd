@@ -24,3 +24,4 @@ Determines which unit to work in based on explicit priorities.
 \item Data heuristics (with visible decision logging)
 }
 }
+\keyword{internal}

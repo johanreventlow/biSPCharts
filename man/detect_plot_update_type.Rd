@@ -40,3 +40,4 @@ diff <- detect_plot_update_type(current, previous)
 diff$update_type # "metadata_only"
 diff$changed_fields # c("title")
 }
+\keyword{internal}

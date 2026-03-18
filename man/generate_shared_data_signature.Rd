@@ -48,3 +48,4 @@ autodetect_key <- paste0("autodetect_", sig)
 }
 
 }
+\keyword{internal}

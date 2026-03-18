@@ -13,4 +13,4 @@ EXPORT_PDF_CONFIG
 \description{
 Standard indstillinger for PDF eksport.
 }
-\keyword{datasets}
+\keyword{internal}

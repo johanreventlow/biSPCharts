@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if a file has been uploaded this session.
 }
+\keyword{internal}

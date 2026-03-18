@@ -44,3 +44,4 @@ phases <- phase_config(show_phases = FALSE)
 plot <- generateSPCPlot_v2(data, config, plot_cfg, viewport, phases)
 }\if{html}{\out{</div>}}
 }
+\keyword{internal}

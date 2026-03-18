@@ -17,3 +17,4 @@ stats <- get_cache_stats()
 print(stats)
 
 }
+\keyword{internal}

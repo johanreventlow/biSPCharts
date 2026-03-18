@@ -17,7 +17,7 @@ INTERNAL_CLASSES <- list(
 #' @param y Numeric vector (kan være heltal eller decimaltal)
 #' @param n_present Logical – om N-kolonne er valgt (bruges som n/exposure)
 #' @return Character – intern klasse
-#' @export
+#' @keywords internal
 determine_internal_class <- function(ui_type, y, n_present = FALSE) {
   ui <- tolower(ui_type %||% "count")
 
@@ -49,7 +49,7 @@ determine_internal_class <- function(ui_type, y, n_present = FALSE) {
 #' @param n_present Logical – om N-kolonne er valgt (for P/U)
 #' @param n_points Antal datapunkter (run chart fallback for små serier)
 #' @return qicharts2-kode for korttype ("i", "c", "p", "u", "t", "g", "run")
-#' @export
+#' @keywords internal
 suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_integer_) {
   if (!is.na(n_points) && n_points < 12) {
     return("run")
@@ -87,7 +87,7 @@ suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_
 #' @param chart_type qicharts2-kode for korttype (fx "run")
 #' @param n_present Logical – om N-kolonne er valgt
 #' @return "percent" eller "count"
-#' @export
+#' @keywords internal
 decide_default_y_axis_ui_type <- function(chart_type, n_present) {
   ct <- get_qic_chart_type(chart_type)
   if (identical(ct, "run") && isTRUE(n_present)) {
@@ -100,7 +100,7 @@ decide_default_y_axis_ui_type <- function(chart_type, n_present) {
 #'
 #' @param chart_type qicharts2-kode eller dansk label
 #' @return one of {"count","percent","rate","time"}
-#' @export
+#' @keywords internal
 chart_type_to_ui_type <- function(chart_type) {
   ct <- get_qic_chart_type(chart_type)
   if (ct %in% c("p", "pp")) {

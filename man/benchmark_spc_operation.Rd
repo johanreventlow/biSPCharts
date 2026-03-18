@@ -55,3 +55,4 @@ results <- benchmark_spc_operation(list(
 ), operation_name = "implementation_comparison")
 }
 }
+\keyword{internal}

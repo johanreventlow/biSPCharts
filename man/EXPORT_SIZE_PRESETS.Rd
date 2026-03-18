@@ -23,4 +23,4 @@ Presets inkluderer:
 \item powerpoint: 10x7.5 tommer ved 96 DPI (optimal til PowerPoint slides)
 }
 }
-\keyword{datasets}
+\keyword{internal}

@@ -15,3 +15,4 @@ List with performance metrics and formatted report
 \description{
 Returns a formatted performance report for monitoring system health.
 }
+\keyword{internal}

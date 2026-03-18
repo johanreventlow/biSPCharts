@@ -13,4 +13,4 @@ SPC_LINE_TYPES
 \description{
 Linje typer for SPC charts
 }
-\keyword{datasets}
+\keyword{internal}

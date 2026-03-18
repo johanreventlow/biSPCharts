@@ -8,7 +8,7 @@
 #' sessioner/tests.
 #'
 #' @return Liste med funktionerne `add()`, `remove()`, `cleanup_all()` og `count()`
-#' @export
+#' @keywords internal
 observer_manager <- function() {
   observers <- list()
 

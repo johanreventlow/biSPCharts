@@ -13,3 +13,4 @@ comprehensive_system_cleanup(app_state)
 Performs full cleanup of all token and queue systems.
 Should be called periodically to maintain system health.
 }
+\keyword{internal}

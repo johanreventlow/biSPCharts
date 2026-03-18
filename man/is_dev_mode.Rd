@@ -13,3 +13,4 @@ Boolean indicating development mode
 Golem-style development mode detection combining explicit options
 with environment detection.
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ cleanup_expired_queue_updates(app_state, max_age_seconds = 30)
 Removes old queue entries that are likely no longer relevant.
 This prevents the queue from growing indefinitely with stale updates.
 }
+\keyword{internal}

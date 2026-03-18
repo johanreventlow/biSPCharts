@@ -18,3 +18,4 @@ all_contexts <- list_all_log_contexts()
 length(all_contexts) # Total number of contexts
 
 }
+\keyword{internal}

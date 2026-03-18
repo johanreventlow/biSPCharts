@@ -19,3 +19,4 @@ Creates cache key for auto-detection results using shared signatures.
 Uses same shared signature as QIC cache, ensuring consistency and
 avoiding redundant hashing when both systems cache same data.
 }
+\keyword{internal}

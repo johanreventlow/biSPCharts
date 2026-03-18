@@ -15,3 +15,4 @@ Character: "initializing", "data_ready", "ui_ready", "complete"
 \description{
 Retrieves the current test mode startup phase.
 }
+\keyword{internal}

@@ -13,4 +13,4 @@ UI_HEIGHTS
 \description{
 CSS højde værdier til konsistent UI layout på tværs af komponenter.
 }
-\keyword{datasets}
+\keyword{internal}

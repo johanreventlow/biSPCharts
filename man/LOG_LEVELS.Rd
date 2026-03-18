@@ -23,4 +23,4 @@ Log levels:
 \item ERROR (4): Fejlbeskeder
 }
 }
-\keyword{datasets}
+\keyword{internal}

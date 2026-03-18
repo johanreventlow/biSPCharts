@@ -19,3 +19,4 @@ Score between 0 and 1
 \description{
 Scores columns based on data type and range characteristics.
 }
+\keyword{internal}

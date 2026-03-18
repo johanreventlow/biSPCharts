@@ -15,3 +15,4 @@ cleanup_expired_tokens(app_state, max_age_seconds = 300)
 Removes old pending tokens that are likely no longer relevant.
 This prevents memory leaks from accumulated token state.
 }
+\keyword{internal}

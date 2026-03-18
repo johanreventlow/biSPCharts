@@ -77,3 +77,4 @@ plot_with_labels <- add_spc_labels(
 }
 
 }
+\keyword{internal}

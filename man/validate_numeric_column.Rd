@@ -17,3 +17,4 @@ NULL if valid, error message if invalid
 \description{
 Check if a column contains valid numeric data
 }
+\keyword{internal}

@@ -21,3 +21,4 @@ Safely updates viewport dimensions and triggers visualization update.
 \details{
 M10: Centralized viewport state management
 }
+\keyword{internal}

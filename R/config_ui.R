@@ -23,7 +23,7 @@
 #'
 #' Prædefinerede kolonne bredde kombinationer til bslib layout systemer.
 #' @format Named list med numeriske vektorer for kolonne bredder
-#' @export
+#' @keywords internal
 UI_COLUMN_WIDTHS <- list(
   quarter = c(6, 6, 6, 6),
   half = c(6, 6),
@@ -35,7 +35,7 @@ UI_COLUMN_WIDTHS <- list(
 #'
 #' CSS højde værdier til konsistent UI layout på tværs af komponenter.
 #' @format Named list med CSS højde strings
-#' @export
+#' @keywords internal
 UI_HEIGHTS <- list(
   logo = "40px",
   modal_content = "300px",
@@ -48,7 +48,7 @@ UI_HEIGHTS <- list(
 #'
 #' Genbrugelige CSS style strings til konsistent styling.
 #' @format Named list med CSS style strings
-#' @export
+#' @keywords internal
 UI_STYLES <- list(
   flex_column = "display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;",
   scroll_auto = "max-height: 300px; overflow-y: auto;",
@@ -59,7 +59,7 @@ UI_STYLES <- list(
 )
 
 #' Standard UI input widths
-#' @export
+#' @keywords internal
 UI_INPUT_WIDTHS <- list(
   full = "100%",
   half = "50%",
@@ -69,7 +69,7 @@ UI_INPUT_WIDTHS <- list(
 )
 
 #' Layout proportions for consistent UI
-#' @export
+#' @keywords internal
 UI_LAYOUT_PROPORTIONS <- list(
   half = 1 / 2,
   third = 1 / 3,
@@ -106,7 +106,7 @@ UI_LAYOUT_PROPORTIONS <- list(
 #' - 1400×900px viewport: diagonal = 1668px → base_size = 29.8pt
 #'
 #' @format Named list med scaling parametre
-#' @export
+#' @keywords internal
 FONT_SCALING_CONFIG <- list(
   divisor = 42, # Viewport diagonal divisor (lower = larger fonts)
   min_size = 8, # Minimum base_size i points
@@ -127,7 +127,7 @@ FONT_SCALING_CONFIG <- list(
 #' M10: Centraliseret fra hardcoded magic numbers i mod_spc_chart_server.R
 #'
 #' @format Named list med viewport parametre
-#' @export
+#' @keywords internal
 VIEWPORT_DEFAULTS <- list(
   width = 800, # Default width i pixels
   height = 600, # Default height i pixels

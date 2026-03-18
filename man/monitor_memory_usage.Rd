@@ -26,3 +26,4 @@ Other performance:
 \code{\link{measure_reactive_performance}()}
 }
 \concept{performance}
+\keyword{internal}

@@ -14,3 +14,4 @@ set_plot_ready(app_state, value)
 \description{
 Safely sets the plot ready flag.
 }
+\keyword{internal}

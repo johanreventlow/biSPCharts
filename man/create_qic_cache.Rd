@@ -50,3 +50,4 @@ qic_cache$clear()
 }
 
 }
+\keyword{internal}

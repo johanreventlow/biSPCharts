@@ -14,3 +14,4 @@ set_user_session_started(app_state, value)
 \description{
 Safely sets the user session started flag.
 }
+\keyword{internal}

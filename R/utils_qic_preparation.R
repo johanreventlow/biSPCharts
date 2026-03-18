@@ -16,7 +16,7 @@
 #' @param chart_type Character. QIC chart type (e.g., "p", "run", "c")
 #' @param user_unit Character. User's explicit unit choice
 #' @return List with prepared qic inputs and normalization function
-#' @export
+#' @keywords internal
 prepare_qic_inputs <- function(y_raw, n_raw = NULL, chart_type, user_unit = NULL) {
   internal_unit <- determine_internal_unit_by_chart_type(chart_type)
 
@@ -117,7 +117,7 @@ normalize_proportions_to_internal <- function(y_raw, y_sample, user_unit) {
 #' @param title Character. Plot title
 #' @param ... Additional arguments passed to qicharts2::qic()
 #' @return qicharts2 plot object
-#' @export
+#' @keywords internal
 create_qic_plot_safe <- function(data, x_col, y_col, n_col = NULL, chart_type,
                                  user_unit = NULL, target_input = NULL,
                                  centerline_input = NULL, title = NULL, ...) {

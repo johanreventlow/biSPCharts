@@ -15,3 +15,4 @@ Data frame or NULL
 \description{
 Safely retrieves the current data from app_state.
 }
+\keyword{internal}

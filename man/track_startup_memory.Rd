@@ -17,3 +17,4 @@ Records a point-in-time memory snapshot for startup performance monitoring.
 For continuous session-based memory tracking, use track_memory_usage() from
 utils_profiling.R instead.
 }
+\keyword{internal}

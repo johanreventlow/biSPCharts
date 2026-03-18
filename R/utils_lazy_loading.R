@@ -61,7 +61,7 @@ LAZY_LOADING_CONFIG <- list(
 #' @param module_name Name of the module from LAZY_LOADING_CONFIG
 #' @param force_reload Force reload even if already loaded
 #' @return TRUE if loaded successfully, FALSE otherwise
-#' @export
+#' @keywords internal
 lazy_load_module <- function(module_name, force_reload = FALSE) {
   if (!module_name %in% names(LAZY_LOADING_CONFIG$heavy_modules)) {
     log_warn(paste("Unknown lazy module:", module_name), "LAZY_LOADING")
@@ -145,7 +145,7 @@ lazy_load_module <- function(module_name, force_reload = FALSE) {
 #'
 #' @param force_all Force load all modules regardless of conditions
 #' @return List of successfully loaded modules
-#' @export
+#' @keywords internal
 lazy_load_modules <- function(force_all = FALSE) {
   log_info("Starting lazy module loading", .context = "LAZY_LOADING")
 
@@ -173,7 +173,7 @@ lazy_load_modules <- function(force_all = FALSE) {
 #' Get current status of all lazy loaded modules
 #'
 #' @return List with module loading status
-#' @export
+#' @keywords internal
 get_lazy_loading_status <- function() {
   status <- list()
 
@@ -196,7 +196,7 @@ get_lazy_loading_status <- function() {
 #'
 #' @param module_name Name of the module to ensure is loaded
 #' @return TRUE if module is available, FALSE otherwise
-#' @export
+#' @keywords internal
 ensure_module_loaded <- function(module_name) {
   module_config <- LAZY_LOADING_CONFIG$heavy_modules[[module_name]]
 

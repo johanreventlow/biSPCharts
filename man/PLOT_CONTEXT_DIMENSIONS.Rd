@@ -33,4 +33,4 @@ Faktiske dimensioner kommer fra:
 \item PPTX: PowerPoint slide dimensions (9×6.5 inches @ 96 DPI)
 }
 }
-\keyword{datasets}
+\keyword{internal}

@@ -20,3 +20,4 @@ List with elements:
 Pure parsing function that extracts numeric value and symbol without scaling.
 Idempotent - calling multiple times returns same result.
 }
+\keyword{internal}

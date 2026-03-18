@@ -14,3 +14,4 @@ set_test_mode_startup_phase(app_state, phase)
 \description{
 Safely sets the test mode startup phase.
 }
+\keyword{internal}

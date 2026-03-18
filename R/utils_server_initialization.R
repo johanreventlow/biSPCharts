@@ -44,7 +44,7 @@
 #' emit$auto_detection_started()
 #' }
 #'
-#' @export
+#' @keywords internal
 initialize_app_infrastructure <- function(session, hashed_token, session_debugger) {
   log_debug("Initializing app infrastructure", .context = "APP_INIT")
 
@@ -163,7 +163,7 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
 #' # - Both stop when session$onSessionEnded triggers
 #' }
 #'
-#' @export
+#' @keywords internal
 setup_background_tasks <- function(session, app_state, emit) {
   log_debug("Setting up background tasks", .context = "BACKGROUND_TASKS")
 
@@ -322,7 +322,7 @@ setup_background_tasks <- function(session, app_state, emit) {
 #' # 4. Trigger auto-detection workflow
 #' }
 #'
-#' @export
+#' @keywords internal
 initialize_test_mode <- function(app_state, emit, session, hashed_token, session_debugger) {
   # TEST MODE: Auto-indlæs eksempel data hvis aktiveret
   test_mode_auto_load <- get_test_mode_auto_load()

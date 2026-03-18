@@ -15,3 +15,4 @@ Named list with x_column, y_column, n_column, etc.
 \description{
 Retrieves all current column mappings.
 }
+\keyword{internal}

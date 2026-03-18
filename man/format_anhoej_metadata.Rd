@@ -25,3 +25,4 @@ message(format_anhoej_metadata(anhoej_meta))
 # Output: "Runs: Ja (8 punkter), Crossings: Nej (9/13)"
 }
 }
+\keyword{internal}

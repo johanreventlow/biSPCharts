@@ -13,4 +13,4 @@ UI_INPUT_WIDTHS
 \description{
 Standard UI input widths
 }
-\keyword{datasets}
+\keyword{internal}

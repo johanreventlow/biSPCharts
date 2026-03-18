@@ -14,3 +14,4 @@ set_plot_generating(app_state, value)
 \description{
 Sets the circuit breaker flag for plot generation.
 }
+\keyword{internal}

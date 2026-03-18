@@ -23,3 +23,4 @@ data <- data.frame(x = 1:10, y = rnorm(10))
 config <- list(x_col = "x", y_col = "y")
 hash1 <- calculate_plot_data_hash(data, config)
 }
+\keyword{internal}

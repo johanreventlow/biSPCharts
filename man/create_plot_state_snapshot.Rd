@@ -28,3 +28,4 @@ snapshot <- create_plot_state_snapshot(data, metadata, config)
 snapshot$data_hash
 snapshot$metadata_hash
 }
+\keyword{internal}

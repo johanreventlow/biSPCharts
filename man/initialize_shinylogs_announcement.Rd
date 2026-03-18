@@ -10,3 +10,4 @@ initialize_shinylogs_announcement()
 Displays shinylogs status information during application initialization.
 This function should be called explicitly during server startup, not at parse-time.
 }
+\keyword{internal}

@@ -13,4 +13,4 @@ EXPORT_FORMAT_OPTIONS
 \description{
 Tilgængelige eksport formater med display labels.
 }
-\keyword{datasets}
+\keyword{internal}

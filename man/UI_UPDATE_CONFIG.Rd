@@ -13,4 +13,4 @@ UI_UPDATE_CONFIG
 \description{
 SPRINT 3: Extracted UI update timing constants
 }
-\keyword{datasets}
+\keyword{internal}

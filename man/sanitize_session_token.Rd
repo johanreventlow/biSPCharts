@@ -26,3 +26,4 @@ sanitize_session_token(NULL)
 # Returns: "NO_SESSION"
 }
 }
+\keyword{internal}

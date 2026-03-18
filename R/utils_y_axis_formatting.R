@@ -44,7 +44,7 @@
 #' plot <- apply_y_axis_formatting(plot, "percent", qic_data)
 #' }
 #'
-#' @export
+#' @keywords internal
 apply_y_axis_formatting <- function(plot, y_axis_unit = "count", qic_data = NULL) {
   # Validate inputs
   if (!inherits(plot, "ggplot")) {

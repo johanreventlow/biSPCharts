@@ -53,7 +53,7 @@ STARTUP_CACHE_CONFIG <- list(
 #' Create cache directory if it doesn't exist and clean up old cache files
 #'
 #' @return TRUE if successful, FALSE otherwise
-#' @export
+#' @keywords internal
 init_startup_cache <- function() {
   cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
 
@@ -82,7 +82,7 @@ init_startup_cache <- function() {
 #' Clean up old cache files
 #' Remove cache files that are older than their TTL or if cache size exceeds limit
 #'
-#' @export
+#' @keywords internal
 cleanup_old_cache <- function() {
   cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
 
@@ -154,7 +154,7 @@ cleanup_old_cache <- function() {
 #' Cache all configured static artifacts for faster subsequent startups
 #'
 #' @return List of successfully cached artifacts
-#' @export
+#' @keywords internal
 cache_startup_data <- function() {
   if (!init_startup_cache()) {
     log_warn("Cannot cache startup data - cache initialization failed", .context = "STARTUP_CACHE")
@@ -224,7 +224,7 @@ cache_startup_data <- function() {
 #' Load cached static artifacts to speed up startup
 #'
 #' @return List of successfully loaded artifacts with their data
-#' @export
+#' @keywords internal
 load_cached_startup_data <- function() {
   cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
 
@@ -281,7 +281,7 @@ load_cached_startup_data <- function() {
 #' Get information about the current startup cache state
 #'
 #' @return List with cache status information
-#' @export
+#' @keywords internal
 get_startup_cache_status <- function() {
   cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
 

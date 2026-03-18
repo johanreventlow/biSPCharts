@@ -13,4 +13,4 @@ AUTO_RESTORE_ENABLED
 \description{
 Bestemmer om session data automatisk skal gendannes ved app start.
 }
-\keyword{datasets}
+\keyword{internal}

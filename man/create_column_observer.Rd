@@ -37,3 +37,4 @@ observers$x_column <- create_column_observer("x_column", input, app_state, emit)
 }
 
 }
+\keyword{internal}

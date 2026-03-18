@@ -14,3 +14,4 @@ set_autodetect_frozen(app_state, value)
 \description{
 Safely sets the frozen_until_next_trigger flag.
 }
+\keyword{internal}

@@ -13,4 +13,4 @@ PERFORMANCE_THRESHOLDS
 \description{
 Performance monitoring thresholds
 }
-\keyword{datasets}
+\keyword{internal}

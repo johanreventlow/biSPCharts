@@ -41,3 +41,4 @@ plot <- ggplot(mtcars, aes(x = wt, y = mpg)) +
 new_meta <- list(title = "Updated Title")
 plot <- apply_metadata_update(plot, new_meta, changed_fields = "title")
 }
+\keyword{internal}

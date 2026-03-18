@@ -45,3 +45,4 @@ plot <- apply_y_axis_formatting(plot, "percent", qic_data)
 }
 
 }
+\keyword{internal}

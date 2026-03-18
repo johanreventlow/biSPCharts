@@ -16,3 +16,4 @@ Invisible TRUE
 Apply loaded golem configuration til application runtime.
 Bridges between YAML config og eksisterende systems.
 }
+\keyword{internal}

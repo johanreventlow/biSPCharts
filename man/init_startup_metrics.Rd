@@ -9,3 +9,4 @@ init_startup_metrics()
 \description{
 Resets all counters and starts timing for a new startup sequence
 }
+\keyword{internal}

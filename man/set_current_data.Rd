@@ -18,3 +18,4 @@ Helper functions for consistent state access patterns
 
 Safely sets the current data in app_state.
 }
+\keyword{internal}

@@ -13,4 +13,4 @@ UTF8_ENCODING
 \description{
 UTF-8 encoding til moderne tekst filer og internationale tegnsæt.
 }
-\keyword{datasets}
+\keyword{internal}

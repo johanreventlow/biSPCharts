@@ -17,3 +17,4 @@ Configuration value or default
 \description{
 Get configuration value from package environment
 }
+\keyword{internal}

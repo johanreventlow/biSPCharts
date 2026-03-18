@@ -12,3 +12,4 @@ List with cache statistics
 \description{
 Returns statistics about signature cache usage.
 }
+\keyword{internal}

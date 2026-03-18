@@ -423,7 +423,7 @@ npc_mapper_from_plot <- function(p, panel = 1) {
 #' get_grob_cache_stats() # cache_size skal være 0
 #' }
 #'
-#' @export
+#' @keywords internal
 clear_grob_height_cache <- function() {
   # Clear all data entries (preserve metadata)
   all_keys <- ls(.grob_height_cache)
@@ -615,7 +615,7 @@ auto_purge_grob_cache <- function() {
 #' @param max_cache_size Maximum number of cache entries (default 100)
 #' @param purge_check_interval Operations between purge checks (default 50)
 #' @return Invisible: Previous configuration
-#' @export
+#' @keywords internal
 configure_grob_cache <- function(
   enabled = NULL,
   ttl_seconds = NULL,
@@ -834,7 +834,7 @@ auto_purge_panel_cache <- function() {
 #' @param max_cache_size Maximum number of cache entries (default 100)
 #' @param purge_check_interval Operations between purge checks (default 50)
 #' @return Invisible: Previous configuration
-#' @export
+#' @keywords internal
 configure_panel_cache <- function(
   enabled = NULL,
   ttl_seconds = NULL,
@@ -885,7 +885,7 @@ configure_panel_cache <- function(
 #' get re-locked.
 #'
 #' @return Invisible: TRUE if successful, FALSE otherwise
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' # In tests:
@@ -927,7 +927,7 @@ unlock_placement_cache_bindings <- function(ns = NULL) {
 #' Returns statistics from both panel height and grob height caches in a unified format.
 #'
 #' @return List with panel_cache and grob_cache statistics
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' stats <- get_placement_cache_stats()
@@ -954,7 +954,7 @@ get_placement_cache_stats <- function() {
 #'
 #' @param force Logical: If TRUE, purge all entries regardless of TTL
 #' @return Named list with purge counts for each cache
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' # TTL-based purge (removes only expired entries)
@@ -978,7 +978,7 @@ purge_expired_cache_entries <- function(force = FALSE) {
 #' Removes all cached entries and resets statistics for both panel height
 #' and grob height caches. Use for testing or troubleshooting.
 #'
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' clear_all_placement_caches()
@@ -997,7 +997,7 @@ clear_all_placement_caches <- function() {
 #' @param max_cache_size Maximum number of cache entries per cache (default 100)
 #' @param purge_check_interval Operations between purge checks (default 50)
 #' @return Invisible: Named list with previous configurations
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' # Configure for short-lived Shiny sessions (1 minute TTL)

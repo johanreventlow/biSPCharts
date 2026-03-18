@@ -15,3 +15,4 @@ Karakter string med CSS styles
 \description{
 Opret scrollbar container style med maksimal højde
 }
+\keyword{internal}

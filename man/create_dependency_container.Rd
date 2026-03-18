@@ -48,3 +48,4 @@ Other dependency_injection:
 \code{\link{inject_dependencies}()}
 }
 \concept{dependency_injection}
+\keyword{internal}

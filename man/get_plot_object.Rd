@@ -15,3 +15,4 @@ ggplot object or NULL
 \description{
 Retrieves the current plot object.
 }
+\keyword{internal}

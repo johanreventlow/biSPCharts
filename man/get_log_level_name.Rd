@@ -20,3 +20,4 @@ cat("Current log level:", current_level)
 }
 
 }
+\keyword{internal}

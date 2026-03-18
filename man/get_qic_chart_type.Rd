@@ -17,3 +17,4 @@ get_qic_chart_type("i") # Returns "i" (already English)
 \description{
 Konverterer danske displaynavne til engelske qicharts2-koder for plot generation.
 }
+\keyword{internal}

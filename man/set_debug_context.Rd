@@ -37,3 +37,4 @@ log_debug("Alt logges nu", .context = "performance") # ✓ Vises
 }
 
 }
+\keyword{internal}

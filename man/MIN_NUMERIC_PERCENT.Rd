@@ -13,4 +13,4 @@ MIN_NUMERIC_PERCENT
 \description{
 Minimum procent numeriske værdier for kolonne detection
 }
-\keyword{datasets}
+\keyword{internal}

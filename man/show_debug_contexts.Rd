@@ -19,3 +19,4 @@ show_debug_contexts() # See all available contexts organized by category
 }
 
 }
+\keyword{internal}

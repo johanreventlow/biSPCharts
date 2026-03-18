@@ -41,3 +41,4 @@ configuration.}
 Legacy alias for generateSPCPlot_with_backend(). Maintains backward
 compatibility with existing code while enabling feature flag switching.
 }
+\keyword{internal}

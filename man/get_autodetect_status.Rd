@@ -15,3 +15,4 @@ Named list with in_progress, completed, results, frozen
 \description{
 Retrieves the current auto-detection status.
 }
+\keyword{internal}

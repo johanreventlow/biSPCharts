@@ -20,7 +20,7 @@
 #' @param lineheight numeric lineheight værdi (default 0.9)
 #' @return marquee style object
 #' @keywords internal
-#' @export
+#' @keywords internal
 get_right_aligned_marquee_style <- function(lineheight = 0.9) {
   cache_key <- paste0("right_aligned_", lineheight)
 
@@ -43,7 +43,7 @@ get_right_aligned_marquee_style <- function(lineheight = 0.9) {
 #' Clear marquee style cache (for testing or memory management)
 #'
 #' @keywords internal
-#' @export
+#' @keywords internal
 clear_marquee_style_cache <- function() {
   rm(list = ls(envir = .marquee_style_cache), envir = .marquee_style_cache)
   invisible(NULL)
@@ -61,7 +61,7 @@ clear_marquee_style_cache <- function() {
 #' @param text Character string to sanitize
 #' @return Sanitized character string
 #' @keywords internal
-#' @export
+#' @keywords internal
 sanitize_marquee_text <- function(text) {
   if (is.null(text) || length(text) == 0) {
     return("")
@@ -114,7 +114,7 @@ sanitize_marquee_text <- function(text) {
 #' @param text character string to check
 #' @return logical TRUE hvis pil-symbol detekteret, FALSE ellers
 #' @keywords internal
-#' @export
+#' @keywords internal
 has_arrow_symbol <- function(text) {
   if (is.null(text) || length(text) == 0 || !is.character(text)) {
     return(FALSE)
@@ -151,7 +151,7 @@ has_arrow_symbol <- function(text) {
 #' format_target_prefix("80") # → "80"
 #' }
 #'
-#' @export
+#' @keywords internal
 format_target_prefix <- function(target_text) {
   # Håndter NULL og tomme strenge
   if (is.null(target_text) || length(target_text) == 0) {
@@ -248,7 +248,7 @@ format_target_prefix <- function(target_text) {
 #' create_responsive_label("MÅL", ">= 90%", label_size = 6)
 #' }
 #'
-#' @export
+#' @keywords internal
 create_responsive_label <- function(header, value, label_size = 6, header_pt = 10, value_pt = 30) {
   # Input validation
   if (!is.numeric(label_size) || length(label_size) != 1 || label_size <= 0) {

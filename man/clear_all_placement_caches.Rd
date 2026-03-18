@@ -13,3 +13,4 @@ and grob height caches. Use for testing or troubleshooting.
 \examples{
 clear_all_placement_caches()
 }
+\keyword{internal}

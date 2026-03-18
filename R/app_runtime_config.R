@@ -10,7 +10,7 @@
 #' @param override_options Optional list to override default configuration
 #' @param use_environment_profiles Whether to use new environment profiles (default: TRUE)
 #' @return List with complete runtime configuration
-#' @export
+#' @keywords internal
 initialize_runtime_config <- function(override_options = list(), use_environment_profiles = TRUE) {
   # Note: No logging during package initialization to avoid dependency issues
 

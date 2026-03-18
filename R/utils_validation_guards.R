@@ -18,7 +18,7 @@
 #'
 #' # Custom thresholds
 #' validated_data <- validate_data_or_return(input_data, min_rows = 10, min_cols = 3)
-#' @export
+#' @keywords internal
 validate_data_or_return <- function(data,
                                     fallback = NULL,
                                     min_rows = 1,
@@ -53,7 +53,7 @@ validate_data_or_return <- function(data,
 #'
 #' # With type checking
 #' safe_numeric <- value_or_default(input$number, default = 0, allowed_types = "numeric")
-#' @export
+#' @keywords internal
 value_or_default <- function(value,
                              default = "",
                              allowed_types = NULL) {
@@ -98,7 +98,7 @@ value_or_default <- function(value,
 #'
 #' # Get column data if exists
 #' column_data <- validate_column_exists(data, "Dato", return_column = TRUE, fallback = numeric(0))
-#' @export
+#' @keywords internal
 validate_column_exists <- function(data,
                                    column_name,
                                    return_column = FALSE,
@@ -139,7 +139,7 @@ validate_column_exists <- function(data,
 #' if (validate_function_exists("emit$data_loaded")) {
 #'   emit$data_loaded()
 #' }
-#' @export
+#' @keywords internal
 validate_function_exists <- function(func_name, envir = .GlobalEnv) {
   if (is.null(func_name) || !is.character(func_name) || trimws(func_name) == "") {
     return(FALSE)
@@ -161,7 +161,7 @@ validate_function_exists <- function(func_name, envir = .GlobalEnv) {
 #' @examples
 #' x_col <- validate_config_value(config, "x_col", default = "Dato")
 #' y_unit <- validate_config_value(config, "y_axis_unit", default = "count")
-#' @export
+#' @keywords internal
 validate_config_value <- function(config,
                                   field,
                                   default = NULL,
@@ -218,7 +218,7 @@ validate_config_value <- function(config,
 #'   field = "frozen_until_next_trigger",
 #'   default = FALSE
 #' )
-#' @export
+#' @keywords internal
 validate_reactive_value <- function(reactive_value,
                                     field = NULL,
                                     default = NULL,
@@ -275,7 +275,7 @@ validate_reactive_value <- function(reactive_value,
 #' if (validation$valid) {
 #'   # Proceed with operation
 #' }
-#' @export
+#' @keywords internal
 validate_state_transition <- function(app_state,
                                       checks,
                                       operation_name = "State transition",

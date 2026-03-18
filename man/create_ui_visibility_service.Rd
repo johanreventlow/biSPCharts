@@ -16,3 +16,4 @@ List med visibility control funktioner
 Utility for managing UI element visibility with consistent patterns.
 Ekstraeret fra utils_ui_ui_updates.R for bedre separation of concerns.
 }
+\keyword{internal}

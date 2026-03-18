@@ -13,4 +13,4 @@ EXPORT_ASPECT_RATIO_MIN
 \description{
 Forhindrer alt for smalle plots (width/height < 0.5).
 }
-\keyword{datasets}
+\keyword{internal}

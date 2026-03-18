@@ -52,3 +52,4 @@ Other ui_components:
 \code{\link{create_numeric_input}()}
 }
 \concept{ui_components}
+\keyword{internal}

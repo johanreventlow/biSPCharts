@@ -38,3 +38,4 @@ Other font_registration:
 \code{\link{is_roboto_available}()}
 }
 \concept{font_registration}
+\keyword{internal}

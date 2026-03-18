@@ -15,3 +15,4 @@ Parsed dates or original vector if parsing fails
 \description{
 Safely parse dates with multiple format attempts
 }
+\keyword{internal}

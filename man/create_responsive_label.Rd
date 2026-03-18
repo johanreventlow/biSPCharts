@@ -39,3 +39,4 @@ create_responsive_label("MÅL", ">= 90\%", label_size = 6)
 }
 
 }
+\keyword{internal}

@@ -16,3 +16,4 @@ NULL (invisibly)
 Emergency function to clear all pending batch flags. Use sparingly,
 typically only needed during session cleanup or testing.
 }
+\keyword{internal}

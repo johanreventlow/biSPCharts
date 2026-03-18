@@ -26,3 +26,4 @@ Other font_registration:
 \code{\link{register_roboto_font}()}
 }
 \concept{font_registration}
+\keyword{internal}

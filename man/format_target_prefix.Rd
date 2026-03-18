@@ -40,3 +40,4 @@ format_target_prefix("80") # → "80"
 }
 
 }
+\keyword{internal}

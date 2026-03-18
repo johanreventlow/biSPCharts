@@ -21,3 +21,4 @@ about when scaling occurs and when it doesn't.
 \details{
 KEY RULE: Only symbols (\%, ‰) trigger scaling. No symbols = no implicit scaling.
 }
+\keyword{internal}

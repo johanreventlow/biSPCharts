@@ -366,9 +366,10 @@ should_gc <- function() {
   total_mb <- sum(mem_info[, "used"]) * 1.048576 # Convert to MB
 
   # Run GC if memory usage is high (> 500MB) or every 10th call
-  static_gc_counter <- get("gc_counter", envir = .GlobalEnv, inherits = FALSE)
-  if (is.null(static_gc_counter)) {
-    static_gc_counter <- 0
+  static_gc_counter <- if (exists("gc_counter", envir = .GlobalEnv, inherits = FALSE)) {
+    get("gc_counter", envir = .GlobalEnv, inherits = FALSE)
+  } else {
+    0L
   }
 
   static_gc_counter <- static_gc_counter + 1
@@ -408,20 +409,16 @@ end_perf_timer <- function(start_time, operation_name) {
 #' Get statistics about cache usage
 #'
 get_cache_statistics <- function() {
-  # Count cache entries
-  data_cache_count <- length(ls(envir = .cache_env))
+  # Count cache entries (kun plot cache eksisterer)
   plot_cache_count <- length(ls(envir = .plot_cache_env))
 
   # Calculate cache sizes (approximate)
-  data_cache_size <- object.size(.cache_env)
   plot_cache_size <- object.size(.plot_cache_env)
 
   list(
-    data_cache_entries = data_cache_count,
     plot_cache_entries = plot_cache_count,
-    data_cache_size_mb = as.numeric(data_cache_size) / 1024^2,
     plot_cache_size_mb = as.numeric(plot_cache_size) / 1024^2,
-    total_cache_size_mb = as.numeric(data_cache_size + plot_cache_size) / 1024^2
+    total_cache_size_mb = as.numeric(plot_cache_size) / 1024^2
   )
 }
 
@@ -430,14 +427,9 @@ get_cache_statistics <- function() {
 #' Clear all performance caches to free memory
 #'
 clear_performance_caches <- function() {
-  # Clear data cache
-  rm(list = ls(envir = .cache_env), envir = .cache_env)
-
   # Clear plot cache
   rm(list = ls(envir = .plot_cache_env), envir = .plot_cache_env)
 
   # Run garbage collection
   gc(verbose = FALSE)
-
-  # log_debug("Performance caches cleared", .context = "PERFORMANCE")
 }

@@ -302,9 +302,4 @@ validate_aspect_ratio <- function(width, height, warn_only = TRUE) {
 
 # HELPER: NULL coalescing operator ============================================
 
-#' NULL Coalescing Operator
-#'
-#' @keywords internal
-`%||%` <- function(x, y) {
-  if (is.null(x)) y else x
-}
+# %||% operatoren er defineret i golem_utils.R (fjernet duplikat, se #102)

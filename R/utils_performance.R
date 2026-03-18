@@ -73,6 +73,8 @@ measure_reactive_performance <- function(expr, operation_name = "unknown") {
 #' @family performance
 #' @export
 create_cached_reactive <- function(expr, cache_key, cache_timeout = 300, session = NULL) {
+  # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
+  # Denne version beholdes midlertidigt for backward-compatibility
   # FAILSAFE: Robust cache key validation to handle NULL, character(0), and malformed keys
   safe_cache_key <- safe_operation(
     "Validate cache key",
@@ -260,6 +262,7 @@ create_cached_reactive <- function(expr, cache_key, cache_timeout = 300, session
 #' @family performance
 #' @export
 create_performance_debounced <- function(r, millis, operation_name = "debounced") {
+  # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
   # Track debounce statistics
   stats_key <- paste0("debounce_stats_", operation_name)
 
@@ -356,6 +359,7 @@ create_performance_debounced <- function(r, millis, operation_name = "debounced"
 #' @family performance
 #' @export
 clear_performance_cache <- function(cache_pattern = NULL, session = NULL) {
+  # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
   # Auto-detect session if not provided
   if (is.null(session)) {
     session <- safe_operation(

@@ -621,12 +621,18 @@ generateSPCPlot <- generateSPCPlot_with_backend
 
 ## Y-akse Skalering
 # Automatisk detektering af passende Y-akse format (decimal, procent, heltal)
+# Y-akse skalering konstanter
+YAXIS_DECIMAL_MAX <- 1.0 # Værdier under denne → decimal skala
+YAXIS_PERCENT_MAX <- 200 # Øvre grænse for mulig procent-skala
+YAXIS_PERCENT_RANGE <- c(0, 100) # Forventet procent-interval
+YAXIS_PERCENT_THRESHOLD <- 0.7 # 70% af værdier skal ligne procent
+
 detectYAxisScale <- function(y_data) {
   if (is.null(y_data) || length(y_data) == 0) {
     return("integer")
   }
 
-  # Remove NA values
+  # Fjern NA-værdier
   y_clean <- y_data[!is.na(y_data)]
 
   if (length(y_clean) == 0) {
@@ -636,20 +642,19 @@ detectYAxisScale <- function(y_data) {
   max_val <- max(y_clean)
   min_val <- min(y_clean)
 
-  # Rule 1: Decimal scale (0-1)
-  if (max_val <= 1.0) {
+  # Rule 1: Decimal skala (0-1)
+  if (max_val <= YAXIS_DECIMAL_MAX) {
     return("decimal")
   }
 
-  # Rule 2: Percent scale (0-100+ with most values looking like percentages)
-  if (min_val >= 0 && max_val <= 200) {
-    # Check if most values look like percentages (0-100 range)
-    percent_like_count <- sum(y_clean >= 0 & y_clean <= 100)
-    if (percent_like_count / length(y_clean) >= 0.7) { # 70% threshold
+  # Rule 2: Procent skala (0-100+ med flertallet af værdier i procent-intervallet)
+  if (min_val >= 0 && max_val <= YAXIS_PERCENT_MAX) {
+    percent_like_count <- sum(y_clean >= YAXIS_PERCENT_RANGE[1] & y_clean <= YAXIS_PERCENT_RANGE[2])
+    if (percent_like_count / length(y_clean) >= YAXIS_PERCENT_THRESHOLD) {
       return("percent")
     }
   }
 
-  # Rule 3: Integer/rate scale
+  # Rule 3: Heltal/rate skala
   return("integer")
 }

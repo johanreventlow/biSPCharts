@@ -37,7 +37,6 @@
 #' - LOGGING (100): Monitoring og logging
 #'
 #' Compatibility aliases: HIGH, MEDIUM, LOW, LOWEST
-#' Legacy aliases (deprecated): highest, high, medium, low, lowest
 #'
 #' @examples
 #' \dontrun{
@@ -68,13 +67,6 @@ OBSERVER_PRIORITIES <- list(
   MEDIUM = 1250, # Maps to DATA_PROCESSING
   LOW = 750, # Maps to UI_SYNC
   LOWEST = 200, # Maps to CLEANUP
-
-  # Legacy aliases (deprecated but supported for backward compatibility)
-  highest = 2000, # Use HIGH instead
-  high = 1500, # Use AUTO_DETECT instead
-  medium = 1000, # Use MEDIUM instead
-  low = 500, # Use LOW instead
-  lowest = 100 # Use LOWEST instead
 )
 
 ## Observer Priority Helpers -----

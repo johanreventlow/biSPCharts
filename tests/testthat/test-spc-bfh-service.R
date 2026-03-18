@@ -43,7 +43,7 @@ create_test_data <- function(n_rows = 20, chart_type = "run") {
 
 # Unit Tests: compute_spc_results_bfh() =======================================
 
-context("Unit Tests - compute_spc_results_bfh()")
+#"Unit Tests - compute_spc_results_bfh()")
 
 test_that("compute_spc_results_bfh() exists and is callable", {
   # RED PHASE: Function doesn't exist yet
@@ -387,7 +387,7 @@ test_that("compute_spc_results_bfh() resolves reactive chart title before BFHcha
 
 # Integration Tests: Validator Integration ====================================
 
-context("Integration Tests - Validator Integration")
+#"Integration Tests - Validator Integration")
 
 test_that("compute_spc_results_bfh() integrates with filter_complete_spc_data()", {
   set.seed(20251015)
@@ -445,7 +445,7 @@ test_that("compute_spc_results_bfh() handles validation errors gracefully", {
 
 # Integration Tests: Output Compatibility =====================================
 
-context("Integration Tests - Output Compatibility")
+#"Integration Tests - Output Compatibility")
 
 test_that("compute_spc_results_bfh() output is compatible with existing plot functions", {
   set.seed(20251015)
@@ -490,7 +490,7 @@ test_that("compute_spc_results_bfh() qic_data has correct column types", {
 
 # Error Handling Tests ========================================================
 
-context("Error Handling Tests")
+#"Error Handling Tests")
 
 test_that("compute_spc_results_bfh() handles empty data", {
   empty_data <- tibble::tibble(
@@ -563,7 +563,7 @@ test_that("compute_spc_results_bfh() handles missing columns", {
 
 # Edge Cases Tests ============================================================
 
-context("Edge Cases")
+#"Edge Cases")
 
 test_that("compute_spc_results_bfh() handles very small datasets (n=3)", {
   set.seed(20251015)
@@ -647,7 +647,7 @@ test_that("compute_spc_results_bfh() handles constant values", {
 
 # Comments/Notes Column Tests =================================================
 
-context("Comments/Notes Integration")
+#"Comments/Notes Integration")
 
 test_that("compute_spc_results_bfh() handles notes_column parameter", {
   set.seed(20251015)
@@ -668,7 +668,7 @@ test_that("compute_spc_results_bfh() handles notes_column parameter", {
 
 # Baseline Tests Using Task #29 Fixtures ======================================
 
-context("Baseline Regression Tests")
+#"Baseline Regression Tests")
 
 test_that("compute_spc_results_bfh() baseline: run-basic", {
   # Load qicharts2 baseline from Task #29
@@ -719,7 +719,7 @@ test_that("compute_spc_results_bfh() baseline: p-anhoej", {
 
 # Performance Tests ===========================================================
 
-context("Performance Tests")
+#"Performance Tests")
 
 test_that("compute_spc_results_bfh() completes within reasonable time", {
   set.seed(20251015)

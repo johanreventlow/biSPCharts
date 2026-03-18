@@ -467,11 +467,6 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
         paste(preprocessing_result$cleaning_log$empty_rows_removed, "empty rows removed")
       )
     }
-    # DISABLED: empty columns removal is no longer performed
-    # if (!is.null(preprocessing_result$cleaning_log$empty_columns_removed)) {
-    #   cleaning_messages <- c(cleaning_messages,
-    #     paste(preprocessing_result$cleaning_log$empty_columns_removed, "empty columns removed"))
-    # }
     if (!is.null(preprocessing_result$cleaning_log$column_names_cleaned)) {
       cleaning_messages <- c(cleaning_messages, "column names cleaned")
     }
@@ -1163,10 +1158,6 @@ preprocess_uploaded_data <- function(data, file_info, session_id = NULL) {
       cleaning_log$empty_rows_removed <- empty_rows_count
     }
   }
-
-  # DISABLED: Handle columns with only missing values
-  # Previously automatically removed empty columns, but users want to preserve them
-  # Tomme kolonner bevares nu som ønsket af brugerne
 
   # Clean column names
   if (ncol(data) > 0) {

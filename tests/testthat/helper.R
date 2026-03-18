@@ -34,8 +34,7 @@ if (!requireNamespace("microbenchmark", quietly = TRUE)) {
     )
   }
 
-  # Assign to microbenchmark namespace
-  assign("microbenchmark", mock_microbenchmark, envir = .GlobalEnv)
+  # Assign mock til test environment (undgår .GlobalEnv forurening)
   microbenchmark <- list(microbenchmark = mock_microbenchmark)
 }
 

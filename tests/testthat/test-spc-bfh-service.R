@@ -561,56 +561,6 @@ test_that("compute_spc_results_bfh() handles missing columns", {
   )
 })
 
-test_that("compute_spc_results_bfh() wraps BFHchart errors in safe_operation", {
-  set.seed(20251015)
-  data <- create_test_data(n_rows = 20)
-
-  # Mock BFHchart to throw error
-  # This tests that safe_operation wrapping is in place
-  # In RED phase, this documents expected error handling behavior
-
-  # When BFHchart fails, expect NULL fallback or informative error
-  # Implementation should use safe_operation() wrapper
-
-  # Test will be implemented with proper mocking in Stream D
-  skip("Requires mockery implementation in Stream D")
-})
-
-# Mock Tests ==================================================================
-
-context("Mock Tests - BFHchart Integration")
-
-test_that("compute_spc_results_bfh() calls BFHchart with correct parameters", {
-  skip("Requires mockery implementation in Stream D")
-
-  # This test documents expected BFHchart call structure
-  # Implementation should:
-  # 1. Map SPCify parameters to BFHchart API
-  # 2. Call BFHchart::bfh_chart() or equivalent
-  # 3. Transform output to standardized format
-
-  # Expected mock behavior:
-  # mock_stub(compute_spc_results_bfh, "BFHchart::bfh_chart", mock_bfh_output)
-})
-
-test_that("compute_spc_results_bfh() transforms BFHchart output correctly", {
-  skip("Requires mockery implementation in Stream D")
-
-  # This test documents expected output transformation
-  # BFHchart output → Standardized format
-  # - plot: ggplot object
-  # - qic_data: tibble with x, y, cl, lcl, ucl, signal
-  # - metadata: list with chart configuration
-})
-
-test_that("compute_spc_results_bfh() handles BFHchart API changes gracefully", {
-  skip("Requires mockery implementation in Stream D")
-
-  # This test documents facade pattern resilience
-  # If BFHchart API changes, facade should adapt
-  # Tests will verify fallback behavior
-})
-
 # Edge Cases Tests ============================================================
 
 context("Edge Cases")

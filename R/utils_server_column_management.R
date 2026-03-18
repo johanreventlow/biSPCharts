@@ -415,8 +415,8 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
       on.exit(
         {
-          # Use unified state management
           app_state$data$updating_table <- FALSE
+          app_state$data$table_operation_in_progress <- FALSE
         },
         add = TRUE
       )

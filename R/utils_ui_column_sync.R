@@ -47,12 +47,12 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
         # Use centralized UI service with detected selections for all 6 columns
         col_choices <- setNames(c("", col_names), c("Vælg kolonne...", col_names))
         selected_columns <- list(
-          x_column = shiny::isolate(columns_state$x_column) %||% "",
-          y_column = shiny::isolate(columns_state$y_column) %||% "",
-          n_column = shiny::isolate(columns_state$n_column) %||% "",
-          skift_column = shiny::isolate(columns_state$skift_column) %||% "",
-          frys_column = shiny::isolate(columns_state$frys_column) %||% "",
-          kommentar_column = shiny::isolate(columns_state$kommentar_column) %||% ""
+          x_column = shiny::isolate(columns_state$mappings$x_column) %||% "",
+          y_column = shiny::isolate(columns_state$mappings$y_column) %||% "",
+          n_column = shiny::isolate(columns_state$mappings$n_column) %||% "",
+          skift_column = shiny::isolate(columns_state$mappings$skift_column) %||% "",
+          frys_column = shiny::isolate(columns_state$mappings$frys_column) %||% "",
+          kommentar_column = shiny::isolate(columns_state$mappings$kommentar_column) %||% ""
         )
 
         ui_service$update_column_choices(

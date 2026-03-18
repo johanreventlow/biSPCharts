@@ -37,39 +37,8 @@ sanitize_spc_config <- function(config) {
 #' Processor chart titel med robust reactive værdi håndtering.
 #' Ekstraeret fra generateSPCPlot for bedre separation of concerns.
 #'
-#' @param chart_title_reactive Reactive title value or static string
-#' @param config Configuration list with fallback information
-#' @return Processed title string
-#' @export
-process_chart_title <- function(chart_title_reactive, config) {
-  safe_operation(
-    "Chart title processing",
-    code = {
-      title_text <- ""
-
-      if (is.function(chart_title_reactive)) {
-        # Handle reactive values safely
-        tryCatch(
-          {
-            title_text <- chart_title_reactive()
-          },
-          error = function(e) {
-            log_warn("Could not get reactive title, using fallback", .context = "TITLE_PROCESSING")
-            title_text <- paste("SPC Diagram -", config$y_col %||% "Data")
-          }
-        )
-      } else if (is.character(chart_title_reactive) && length(chart_title_reactive) > 0) {
-        title_text <- chart_title_reactive
-      } else {
-        title_text <- paste("SPC Diagram -", config$y_col %||% "Data")
-      }
-
-      return(title_text)
-    },
-    fallback = "SPC Diagram",
-    error_type = "title_processing"
-  )
-}
+# process_chart_title er defineret i fct_spc_helpers.R (med XSS-sanitering)
+# Fjernet duplikat uden sanitering (se issue #102)
 
 #' Filter data to complete rows with type preservation
 #'

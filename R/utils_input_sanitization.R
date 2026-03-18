@@ -6,72 +6,9 @@
 #' @name input_sanitization
 NULL
 
-#' Sanitize User Input
-#'
-#' Sikker validation og cleaning af bruger input for at forhindre XSS og injection.
-#'
-#' @param input_value Input værdi at sanitize (character, numeric, eller NULL)
-#' @param max_length Maksimum længde på output (default: 255)
-#' @param allowed_chars Regex pattern for tilladte karakterer
-#' @param html_escape Skal HTML karakterer escapes? (default: TRUE)
-#'
-#' @return Sanitized string, eller tom string hvis input er invalid
-#'
-#' @examples
-#' # Basic sanitization
-#' sanitize_user_input("Kolonne navn & data")
-#'
-#' # Column name sanitization
-#' sanitize_user_input("x_column<script>", max_length = 50)
-#'
-#' # Numeric input validation
-#' sanitize_user_input(123.45)
-#'
-#' @export
-sanitize_user_input <- function(input_value,
-                                max_length = 255,
-                                allowed_chars = "A-Za-z0-9_æøåÆØÅ .-",
-                                html_escape = TRUE) {
-  # Håndter NULL og missing values
-  if (is.null(input_value) || length(input_value) == 0) {
-    return("")
-  }
-
-  # Convert til character og håndter numeriske inputs
-  input_str <- if (is.numeric(input_value)) {
-    as.character(input_value)
-  } else {
-    trimws(as.character(input_value))
-  }
-
-  # Begræns længde første - undgå DoS via store strings
-  if (nchar(input_str) > max_length) {
-    input_str <- substr(input_str, 1, max_length)
-    log_warn(
-      message = "Input truncated due to length limit",
-      .context = "[INPUT_SANITIZATION]",
-      details = list(
-        original_length = nchar(as.character(input_value)),
-        max_length = max_length
-      )
-    )
-  }
-
-  # Fjern ikke-tilladte karakterer
-  cleaned_str <- gsub(paste0("[^", allowed_chars, "]"), "", input_str)
-
-  # HTML escape hvis requested (standard for UI output)
-  if (html_escape && nchar(cleaned_str) > 0) {
-    # Basis HTML escaping for XSS protection
-    cleaned_str <- gsub("&", "&amp;", cleaned_str)
-    cleaned_str <- gsub("<", "&lt;", cleaned_str)
-    cleaned_str <- gsub(">", "&gt;", cleaned_str)
-    cleaned_str <- gsub("\"", "&quot;", cleaned_str)
-    cleaned_str <- gsub("'", "&#39;", cleaned_str)
-  }
-
-  return(cleaned_str)
-}
+# sanitize_user_input er defineret i utils_export_validation.R
+# (mere robust: fixed=TRUE, newline-preservering, javascript protocol removal)
+# Fjernet duplikat med svagere implementation (se issue #102)
 
 #' Sanitize Column Names
 #'

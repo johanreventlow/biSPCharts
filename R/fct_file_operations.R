@@ -391,7 +391,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
 #' @details
 #' CSV læsning konfiguration:
 #' \itemize{
-#'   \item Encoding: ISO-8859-1 (danske karakterer)
+#'   \item Encoding: UTF-8 (danske karakterer)
 #'   \item Decimal mark: komma (,)
 #'   \item Grouping mark: punktum (.)
 #'   \item Separator: semikolon (;) - CSV2 format
@@ -434,7 +434,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     locale = readr::locale(
       decimal_mark = ",",
       grouping_mark = ".",
-      encoding = "ISO-8859-1"
+      encoding = UTF8_ENCODING
     ),
     show_col_types = FALSE
   )
@@ -886,7 +886,7 @@ validate_csv_file <- function(file_path) {
         locale = readr::locale(
           decimal_mark = ",",
           grouping_mark = ".",
-          encoding = "ISO-8859-1"
+          encoding = UTF8_ENCODING
         ),
         n_max = 5,
         show_col_types = FALSE

@@ -17,7 +17,8 @@
 autodetect_engine <- function(data = NULL,
                               trigger_type = c("session_start", "file_upload", "manual"),
                               app_state,
-                              emit) {
+                              emit,
+                              session = NULL) {
   # Input validation
   trigger_type <- match.arg(trigger_type)
   if (is.null(app_state)) {
@@ -31,8 +32,8 @@ autodetect_engine <- function(data = NULL,
   # State is handled by app_state$columns$auto_detect reactiveValues
 
   # Session ID for logging
-  session_id <- if (exists("session", envir = parent.frame())) {
-    get("session", envir = parent.frame())$token
+  session_id <- if (!is.null(session)) {
+    session$token
   } else {
     "unknown"
   }
@@ -367,16 +368,9 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
 update_all_column_mappings <- function(results, existing_columns = NULL, app_state = NULL) {
   log_debug_block("UPDATE_MAPPINGS", "Updating column mappings in unified state")
 
-  # SMART APP_STATE DETECTION: If app_state not provided, try to find it from parent environment
+  # app_state skal gives eksplicit som parameter
   if (is.null(app_state)) {
-    # Look for app_state in the calling environment chain
-    for (i in 1:10) {
-      env <- parent.frame(i)
-      if (exists("app_state", envir = env)) {
-        app_state <- get("app_state", envir = env)
-        break
-      }
-    }
+    log_warn("update_all_column_mappings kaldt uden app_state", .context = "UPDATE_MAPPINGS")
   }
 
   # DIRECT APP_STATE UPDATE: If app_state is provided, update it directly

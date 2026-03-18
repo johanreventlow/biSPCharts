@@ -390,7 +390,7 @@ generate_pdf_preview <- function(bfh_qic_result,
           output = typst_file,
           metadata = metadata_full,
           spc_stats = spc_stats,
-          template = "bfh-diagram2"
+          template = "bfh-diagram"
         )
 
         # 5. Compile Typst directly to PNG (more efficient than PDF→PNG)

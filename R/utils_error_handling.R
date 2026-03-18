@@ -227,19 +227,20 @@ safe_getenv <- function(var_name, default = "", type = "character") {
       switch(type,
         "character" = as.character(value),
         "logical" = {
-          if (is.logical(default)) {
-            if (value == "") {
-              return(default)
-            }
-            return(as.logical(value))
+          if (is.logical(default) && value == "") {
+            default
+          } else if (is.logical(default)) {
+            as.logical(value)
+          } else {
+            as.character(value)
           }
-          as.character(value)
         },
         "numeric" = {
           if (value == "") {
-            return(default)
+            default
+          } else {
+            as.numeric(value)
           }
-          as.numeric(value)
         },
         as.character(value)
       )

@@ -675,6 +675,7 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
       code = {
         # Count lines i file (approximation)
         con <- file(file_info$datapath, "r")
+        on.exit(close(con), add = TRUE)
         line_count <- 0
         while (length(readLines(con, n = 1)) > 0) {
           line_count <- line_count + 1
@@ -682,8 +683,6 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
             break
           }
         }
-        close(con)
-
         # Maximum 50k rows for reasonable performance
         if (line_count > 50000) {
           log_warn(

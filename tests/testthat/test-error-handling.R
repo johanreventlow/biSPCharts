@@ -46,6 +46,52 @@ test_that("safe_operation håndterer fejl korrekt", {
   expect_null(result)
 })
 
+test_that("safe_getenv returnerer korrekt værdi for character type", {
+  # Sæt test env var
+  Sys.setenv(TEST_SAFE_GETENV_CHAR = "hello")
+  on.exit(Sys.unsetenv("TEST_SAFE_GETENV_CHAR"), add = TRUE)
+
+  result <- safe_getenv("TEST_SAFE_GETENV_CHAR", "default", "character")
+  expect_equal(result, "hello")
+})
+
+test_that("safe_getenv returnerer default for usat variabel", {
+  Sys.unsetenv("TEST_SAFE_GETENV_UNSET")
+
+  result <- safe_getenv("TEST_SAFE_GETENV_UNSET", "fallback", "character")
+  expect_equal(result, "fallback")
+})
+
+test_that("safe_getenv konverterer logical korrekt", {
+  Sys.setenv(TEST_SAFE_GETENV_BOOL = "TRUE")
+  on.exit(Sys.unsetenv("TEST_SAFE_GETENV_BOOL"), add = TRUE)
+
+  result <- safe_getenv("TEST_SAFE_GETENV_BOOL", FALSE, "logical")
+  expect_true(result)
+})
+
+test_that("safe_getenv returnerer logical default for tom variabel", {
+  Sys.unsetenv("TEST_SAFE_GETENV_EMPTY")
+
+  result <- safe_getenv("TEST_SAFE_GETENV_EMPTY", FALSE, "logical")
+  expect_false(result)
+})
+
+test_that("safe_getenv konverterer numeric korrekt", {
+  Sys.setenv(TEST_SAFE_GETENV_NUM = "42")
+  on.exit(Sys.unsetenv("TEST_SAFE_GETENV_NUM"), add = TRUE)
+
+  result <- safe_getenv("TEST_SAFE_GETENV_NUM", 0, "numeric")
+  expect_equal(result, 42)
+})
+
+test_that("safe_getenv returnerer numeric default for tom variabel", {
+  Sys.unsetenv("TEST_SAFE_GETENV_NUM_EMPTY")
+
+  result <- safe_getenv("TEST_SAFE_GETENV_NUM_EMPTY", 99, "numeric")
+  expect_equal(result, 99)
+})
+
 test_that("observer_manager fungerer", {
   # Test observer manager creation
   manager <- observer_manager()

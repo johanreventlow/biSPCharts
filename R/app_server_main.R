@@ -27,11 +27,9 @@ main_app_server <- function(input, output, session) {
   session_token <- session$token %||% paste0("session_", Sys.time(), "_", sample(1000:9999, 1))
   hashed_token <- hash_session_token(session_token)
 
-  # Log server initialization with session details (using hashed token for security)
-  log_debug_kv(
-    message = "SPC App server initialization started",
-    session_id = hashed_token,
-    client_data = if (exists("clientData", envir = session)) length(session$clientData) else 0,
+  # Log server initialization (standardiseret til log_debug)
+  log_debug(
+    paste("SPC App server initialization started - Session ID:", hashed_token),
     .context = "APP_SERVER"
   )
 
@@ -41,12 +39,6 @@ main_app_server <- function(input, output, session) {
   # Start session lifecycle debugging (using hashed token)
   session_debugger <- debug_session_lifecycle(hashed_token, session)
   session_debugger$event("server_initialization")
-
-  log_debug(paste("Server starting - Session ID:", hashed_token), .context = "APP_SERVER")
-
-  debug_log("SPC App server initialization started", "SESSION_LIFECYCLE",
-    level = "INFO", session_id = hashed_token
-  )
 
   # SPRINT 1 REFACTORING: Initialize app infrastructure (extracted to helper)
   infrastructure <- initialize_app_infrastructure(session, hashed_token, session_debugger)
@@ -66,12 +58,9 @@ main_app_server <- function(input, output, session) {
   # TEST MODE: Auto-indlæs eksempel data hvis aktiveret
   test_mode_auto_load <- get_test_mode_auto_load()
 
-  debug_log("Checking TEST_MODE configuration", "SESSION_LIFECYCLE",
-    level = "TRACE",
-    context = list(
-      TEST_MODE_AUTO_LOAD = test_mode_auto_load
-    ),
-    session_id = hashed_token
+  log_debug(
+    paste("TEST_MODE configuration:", test_mode_auto_load),
+    .context = "SESSION_LIFECYCLE"
   )
 
   if (test_mode_auto_load) {
@@ -227,7 +216,7 @@ main_app_server <- function(input, output, session) {
   export_module_status <- mod_export_server("export", app_state)
 
   session_debugger$event("server_setup_complete")
-  debug_log("All server components setup completed", "SESSION_LIFECYCLE", level = "INFO", session_id = hashed_token)
+  log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")
 
   # FASE 3: Emit session_started event for name-only detection
   shiny::observeEvent(shiny::reactive(TRUE),
@@ -267,7 +256,7 @@ main_app_server <- function(input, output, session) {
   # Additional cleanup når session lukker
   session$onSessionEnded(function() {
     session_debugger$event("session_cleanup_started")
-    debug_log("Session cleanup initiated", "SESSION_LIFECYCLE", level = "INFO", session_id = hashed_token)
+    log_debug("Session cleanup initiated", .context = "SESSION_LIFECYCLE")
 
     # Stop background tasks immediately
     if (!is.null(app_state$infrastructure)) {
@@ -302,13 +291,9 @@ main_app_server <- function(input, output, session) {
 
     # Log session statistics
     log_info(paste("Session ended - Observer count:", obs_manager$count()), .context = "APP_SERVER")
-    debug_log("Session ended successfully", "SESSION_LIFECYCLE",
-      level = "INFO",
-      context = list(
-        session_duration = round(session_lifecycle_result$total_duration, 3),
-        events_tracked = length(session_lifecycle_result$events)
-      ),
-      session_id = hashed_token
+    log_debug(
+      paste("Session ended - duration:", round(session_lifecycle_result$total_duration, 3), "s"),
+      .context = "SESSION_LIFECYCLE"
     )
   })
 }

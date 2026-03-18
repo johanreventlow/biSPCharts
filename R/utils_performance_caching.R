@@ -7,7 +7,9 @@
 #' @name performance_caching
 NULL
 
-# Global cache environment for session-wide caching
+# Module-level cache environment - brugt som fallback når session ikke er tilgængelig.
+# BEMÆRK: Denne cache deles mellem sessions i samme R-process.
+# Session-scoped caching foretrækkes via session$userData$performance_cache.
 .performance_cache <- new.env(parent = emptyenv())
 
 #' Create Cached Reactive
@@ -133,8 +135,8 @@ generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE
     return(paste0(prefix, "_empty"))
   }
 
-  # Basic data digest
-  data_digest <- digest::digest(data, algo = "md5")
+  # Standardiseret hashing: xxhash64 (hurtigere end md5, konsistent med resten af codebase)
+  data_digest <- digest::digest(data, algo = "xxhash64")
 
   # Include structure information for better cache invalidation
   structure_info <- paste0(
@@ -144,7 +146,7 @@ generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE
 
   # Include names if requested (for column-dependent operations)
   names_part <- if (include_names && !is.null(names(data))) {
-    digest::digest(names(data), algo = "md5")
+    digest::digest(names(data), algo = "xxhash64")
   } else {
     ""
   }
@@ -153,7 +155,7 @@ generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE
 
   # Ensure key is not too long
   if (nchar(cache_key) > 200) {
-    cache_key <- paste0(prefix, "_", digest::digest(cache_key, algo = "md5"))
+    cache_key <- paste0(prefix, "_", digest::digest(cache_key, algo = "xxhash64"))
   }
 
   return(cache_key)

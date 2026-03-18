@@ -192,9 +192,9 @@ generate_qic_cache_key <- function(data, params) {
     return(generate_qic_cache_key_optimized(data, params))
   }
 
-  # Legacy fallback (pre-H14)
-  data_digest <- digest::digest(data, algo = "md5")
-  param_digest <- digest::digest(params, algo = "md5")
+  # Legacy fallback (pre-H14) - standardiseret til xxhash64
+  data_digest <- digest::digest(data, algo = "xxhash64")
+  param_digest <- digest::digest(params, algo = "xxhash64")
 
   paste0("qic_", data_digest, "_", param_digest)
 }

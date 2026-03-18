@@ -165,7 +165,7 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
 
     # State hash for change detection
     if (include_hash) {
-      snapshot$state_hash <- digest::digest(app_state, algo = "md5")
+      snapshot$state_hash <- digest::digest(app_state, algo = "xxhash64")
     }
 
     # Data summary - safe reactive access

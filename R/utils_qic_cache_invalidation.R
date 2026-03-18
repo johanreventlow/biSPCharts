@@ -109,13 +109,12 @@ invalidate_qic_cache_smart <- function(app_state, update_context = NULL) {
           error = function(e) "run"
         )
 
-        # Invalidate entries matching current chart type pattern
-        # Note: Actual pattern-based invalidation depends on cache implementation
-        # For now, we do a full clear but log it as selective
+        # Full cache clear ved data value changes
+        # (selektiv invalidation kræver cache key pattern matching som ikke er implementeret)
         app_state$cache$qic$clear()
 
         log_info(
-          paste("Selective QIC cache invalidation:", context, "chart_type:", chart_type),
+          paste("QIC cache cleared (value change):", context, "chart_type:", chart_type),
           .context = "QIC_CACHE"
         )
       },

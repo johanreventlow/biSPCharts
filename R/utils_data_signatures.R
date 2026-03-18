@@ -53,23 +53,16 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
     return("empty_data")
   }
 
-  # Create quick lookup key for cache based on object identity
-  # Use pryr::address if available, otherwise use object structure
-  data_ptr <- if (requireNamespace("pryr", quietly = TRUE)) {
-    digest::digest(list(
-      ptr = pryr::address(data),
-      nrow = nrow(data),
-      ncol = ncol(data)
-    ), algo = "xxhash64")
-  } else {
-    # Fallback: Use first row + structure as proxy for identity
-    digest::digest(list(
-      first_row = if (nrow(data) > 0) as.list(data[1, , drop = FALSE]) else list(),
-      nrow = nrow(data),
-      ncol = ncol(data),
-      names = names(data)
-    ), algo = "xxhash64")
-  }
+  # Content-based lookup key (stabil på tværs af GC og sessions)
+  # Bruger struktur + sample af data for hurtig identifikation
+  data_ptr <- digest::digest(list(
+    nrow = nrow(data),
+    ncol = ncol(data),
+    names = names(data),
+    col_types = vapply(data, function(x) class(x)[1], character(1)),
+    first_row = if (nrow(data) > 0) as.list(data[1, , drop = FALSE]) else list(),
+    last_row = if (nrow(data) > 1) as.list(data[nrow(data), , drop = FALSE]) else list()
+  ), algo = "xxhash64")
 
   # Check if signature already cached
   if (exists(data_ptr, envir = .data_signature_cache)) {

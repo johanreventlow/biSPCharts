@@ -28,4 +28,4 @@ LABEL_PLACEMENT_CONFIG
 Centraliseret konfiguration for label placement system.
 Alle relative værdier er procent af label_height_npc for konsistent skalering.
 }
-\keyword{datasets}
+\keyword{internal}

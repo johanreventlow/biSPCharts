@@ -13,4 +13,4 @@ CHART_TYPES_DA
 \description{
 Mapping mellem danske UI labels og engelske qicharts2 koder.
 }
-\keyword{datasets}
+\keyword{internal}

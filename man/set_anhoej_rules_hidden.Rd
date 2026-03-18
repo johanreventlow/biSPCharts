@@ -14,3 +14,4 @@ set_anhoej_rules_hidden(app_state, value)
 \description{
 Safely sets the hide Anhoej rules flag.
 }
+\keyword{internal}

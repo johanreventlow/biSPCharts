@@ -6,7 +6,7 @@
 #' Extract all hospital branding data that can be cached for faster startup
 #'
 #' @return List with hospital branding configuration
-#' @export
+#' @keywords internal
 get_hospital_branding_config <- function() {
   safe_operation(
     operation_name = "Generate hospital branding cache",
@@ -58,7 +58,7 @@ get_hospital_branding_config <- function() {
 #' Extract observer priorities that can be cached
 #'
 #' @return List with observer priorities
-#' @export
+#' @keywords internal
 get_observer_priorities_config <- function() {
   safe_operation(
     operation_name = "Generate observer priorities cache",
@@ -105,7 +105,7 @@ get_observer_priorities_config <- function() {
 #' Extract chart types configuration that can be cached
 #'
 #' @return List with chart types configuration
-#' @export
+#' @keywords internal
 get_chart_types_config <- function() {
   safe_operation(
     operation_name = "Generate chart types cache",
@@ -172,7 +172,7 @@ get_chart_types_config <- function() {
 #' Create a snapshot of system configuration that can be cached
 #'
 #' @return List with system configuration
-#' @export
+#' @keywords internal
 get_system_config_snapshot <- function() {
   safe_operation(
     operation_name = "Generate system config cache",

@@ -15,3 +15,4 @@ Character. Internal unit: "proportion" for \link{0,1} charts, "absolute" for cou
 \description{
 Determine internal unit based on chart type (eliminates 100× mismatch)
 }
+\keyword{internal}

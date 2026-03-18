@@ -25,3 +25,4 @@ are prepared consistently, regardless of chart type or user input format.
 \details{
 Key principle: Either use counts+n OR use proportions \verb{[0,1]}, never mix both.
 }
+\keyword{internal}

@@ -23,3 +23,4 @@ Data frame with QIC benchmark results
 \description{
 Specialized benchmarking for QIC plot generation with different chart types and data sizes.
 }
+\keyword{internal}

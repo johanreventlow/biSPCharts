@@ -43,3 +43,4 @@ if (!is.null(placeholders$title_location)) {
 }
 
 }
+\keyword{internal}

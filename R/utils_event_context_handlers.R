@@ -64,7 +64,7 @@ NULL
 #' # Returns: "table_edit"
 #' }
 #'
-#' @export
+#' @keywords internal
 classify_update_context <- function(update_context) {
   if (is.null(update_context) || is.null(update_context$context)) {
     return("general")
@@ -109,7 +109,7 @@ classify_update_context <- function(update_context) {
 #' resolve_column_update_reason("table_cells_edited") # Returns: "edit"
 #' }
 #'
-#' @export
+#' @keywords internal
 resolve_column_update_reason <- function(context) {
   if (is.null(context)) {
     return("manual")
@@ -356,7 +356,7 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
 #' ```
 #' **Complexity**: ~3
 #'
-#' @export
+#' @keywords internal
 handle_data_update_by_context <- function(
   update_context,
   app_state,

@@ -13,7 +13,7 @@
 #' @param emit Event emission functions list
 #' @return Invisibly returns detection results, primarily works via state updates
 #' @family autodetect_functions
-#' @export
+#' @keywords internal
 autodetect_engine <- function(data = NULL,
                               trigger_type = c("session_start", "file_upload", "manual"),
                               app_state,
@@ -200,7 +200,7 @@ autodetect_engine <- function(data = NULL,
 #' @param col_names Character vector of column names
 #' @param app_state Centralized app state (optional for logging)
 #' @return List with detected column mappings
-#' @export
+#' @keywords internal
 detect_columns_name_based <- function(col_names, app_state = NULL) {
   log_debug_block("NAME_BASED_DETECT", "Starting name-based column detection")
 

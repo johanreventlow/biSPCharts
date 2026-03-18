@@ -28,3 +28,4 @@ Central function for all autodetection scenarios in SPC app.
 Handles session start, file upload, and manual triggers with frozen state management.
 }
 \concept{autodetect_functions}
+\keyword{internal}

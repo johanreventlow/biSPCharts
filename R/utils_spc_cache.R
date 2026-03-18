@@ -85,7 +85,7 @@
 #' \code{\link{generate_shared_data_signature}} for data signature generation
 #' \code{\link{cache_spc_result}} for caching SPC results
 #' \code{\link{get_cached_spc_result}} for retrieving cached results
-#' @export
+#' @keywords internal
 generate_spc_cache_key <- function(data, config) {
   safe_operation(
     operation_name = "SPC cache key generation",
@@ -225,7 +225,7 @@ generate_spc_cache_key <- function(data, config) {
 #' }
 #' }
 #'
-#' @export
+#' @keywords internal
 get_cached_spc_result <- function(cache_key, cache) {
   safe_operation(
     operation_name = "Retrieve cached SPC result",
@@ -276,7 +276,7 @@ get_cached_spc_result <- function(cache_key, cache) {
 #' cache_spc_result(cache_key, result, qic_cache, ttl = 3600)
 #' }
 #'
-#' @export
+#' @keywords internal
 cache_spc_result <- function(cache_key, result, cache, ttl = 3600) {
   safe_operation(
     operation_name = "Cache SPC result",
@@ -331,7 +331,7 @@ cache_spc_result <- function(cache_key, result, cache, ttl = 3600) {
 #' clear_spc_cache(qic_cache)
 #' }
 #'
-#' @export
+#' @keywords internal
 clear_spc_cache <- function(cache) {
   safe_operation(
     operation_name = "Clear SPC cache",
@@ -378,7 +378,7 @@ clear_spc_cache <- function(cache) {
 #' cat("Cache size:", stats$size, "/", stats$max_size, "\n")
 #' }
 #'
-#' @export
+#' @keywords internal
 get_spc_cache_stats <- function(cache) {
   safe_operation(
     operation_name = "Get SPC cache statistics",

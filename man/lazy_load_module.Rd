@@ -19,3 +19,4 @@ TRUE if loaded successfully, FALSE otherwise
 Load module lazily
 Load a specific module only when needed, with caching to prevent reloading
 }
+\keyword{internal}

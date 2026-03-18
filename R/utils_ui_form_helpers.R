@@ -10,7 +10,7 @@
 #'
 #' @param session Shiny session object
 #' @return List med form update funktioner
-#' @export
+#' @keywords internal
 create_form_update_service <- function(session) {
   # Update individual form field based on type
   # field_id: Field identifier
@@ -135,7 +135,7 @@ create_form_update_service <- function(session) {
 #'
 #' @param session Shiny session object
 #' @return List med visibility control funktioner
-#' @export
+#' @keywords internal
 create_ui_visibility_service <- function(session) {
   list(
     # Toggle single UI element visibility
@@ -197,7 +197,7 @@ create_ui_visibility_service <- function(session) {
 #' @param session Shiny session object
 #' @param app_state Application state for data access
 #' @return List med column choice update funktioner
-#' @export
+#' @keywords internal
 create_column_choice_service <- function(session, app_state) {
   # Standard column input IDs
   .standard_columns <- c("x_column", "y_column", "n_column", "skift_column", "frys_column", "kommentar_column")

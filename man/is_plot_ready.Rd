@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if the plot is ready to display.
 }
+\keyword{internal}

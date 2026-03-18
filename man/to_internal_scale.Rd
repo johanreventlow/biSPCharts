@@ -20,3 +20,4 @@ Numeric value in internal unit
 Enhanced internal conversion that prevents 100×-mismatch with better logging
 and more explicit error handling for incompatible conversions.
 }
+\keyword{internal}

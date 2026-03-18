@@ -12,3 +12,4 @@ New counter value
 \description{
 Increments the QIC call counter and returns new value.
 }
+\keyword{internal}

@@ -25,3 +25,4 @@ results <- cache_auto_detection_results(data, app_state)
 fresh_results <- cache_auto_detection_results(data, app_state, TRUE)
 
 }
+\keyword{internal}

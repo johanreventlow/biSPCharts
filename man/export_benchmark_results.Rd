@@ -19,3 +19,4 @@ Path to exported file
 \description{
 Exports benchmark results to CSV for external analysis and reporting.
 }
+\keyword{internal}

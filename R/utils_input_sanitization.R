@@ -23,7 +23,7 @@ NULL
 #' sanitize_column_name("Dato & tid") # Returns "Dato  tid"
 #' sanitize_column_name("Y-værdi_1") # Returns "Y-værdi_1"
 #'
-#' @export
+#' @keywords internal
 sanitize_column_name <- function(column_name) {
   sanitize_user_input(
     input_value = column_name,
@@ -47,7 +47,7 @@ sanitize_column_name <- function(column_name) {
 #' validate_file_extension(".xlsx") # TRUE
 #' validate_file_extension("exe") # FALSE
 #'
-#' @export
+#' @keywords internal
 validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xlsx", "xls")) {
   if (is.null(file_ext) || length(file_ext) == 0) {
     return(FALSE)
@@ -97,7 +97,7 @@ validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xls
 #' create_security_warning("Kolonne navn", "invalid_chars")
 #' create_security_warning("Fil navn", "too_long", "Maksimum 100 karakterer")
 #'
-#' @export
+#' @keywords internal
 create_security_warning <- function(field_name, issue_type, additional_info = NULL) {
   # Sanitize field_name først for at undgå XSS i error messages
   safe_field_name <- sanitize_user_input(field_name, max_length = 50)
@@ -152,7 +152,7 @@ create_security_warning <- function(field_name, issue_type, additional_info = NU
 #' # dangerous kolonne bliver: c("'=SUM(A1:A10)", "'@WEBSERVICE('evil.com')")
 #' }
 #'
-#' @export
+#' @keywords internal
 sanitize_csv_output <- function(data) {
   if (!is.data.frame(data)) {
     stop("Input skal være en data frame")

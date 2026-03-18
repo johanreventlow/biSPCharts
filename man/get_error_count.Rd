@@ -15,3 +15,4 @@ Integer count
 \description{
 Retrieves the total error count for this session.
 }
+\keyword{internal}

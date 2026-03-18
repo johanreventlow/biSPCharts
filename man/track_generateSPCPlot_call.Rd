@@ -14,3 +14,4 @@ track_generateSPCPlot_call(context = "unknown", details = list())
 \description{
 Track generateSPCPlot function call
 }
+\keyword{internal}

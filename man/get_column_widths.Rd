@@ -15,3 +15,4 @@ Numerisk vektor med kolonne bredder
 \description{
 Standard UI kolonne bredder
 }
+\keyword{internal}

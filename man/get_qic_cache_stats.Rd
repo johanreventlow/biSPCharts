@@ -38,3 +38,4 @@ cat("Evictions:", stats$evictions, "\n")
 }
 
 }
+\keyword{internal}

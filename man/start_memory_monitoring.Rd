@@ -41,3 +41,4 @@ Other memory_management:
 \code{\link{setup_session_cleanup}()}
 }
 \concept{memory_management}
+\keyword{internal}

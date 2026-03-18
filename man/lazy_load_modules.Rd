@@ -19,3 +19,4 @@ Load all modules based on configuration
 Load all heavy modules that meet their loading conditions.
 Used during startup to load only necessary modules.
 }
+\keyword{internal}

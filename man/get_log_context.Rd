@@ -22,3 +22,4 @@ get_log_context("data", "process") # Returns "DATA_PROCESS"
 get_log_context("qic", "input") # Returns "QIC_INPUT"
 
 }
+\keyword{internal}

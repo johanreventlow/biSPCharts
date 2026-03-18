@@ -12,3 +12,4 @@ Test file path string
 \description{
 Get test mode file path
 }
+\keyword{internal}

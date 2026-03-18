@@ -12,3 +12,4 @@ List with hospital branding configuration
 \description{
 Extract all hospital branding data that can be cached for faster startup
 }
+\keyword{internal}

@@ -14,3 +14,4 @@ List with system configuration
 Get system configuration snapshot for caching
 Create a snapshot of system configuration that can be cached
 }
+\keyword{internal}

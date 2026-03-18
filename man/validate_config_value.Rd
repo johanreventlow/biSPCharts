@@ -26,3 +26,4 @@ Erstatter mønstret: if (!is.null(config$field) && config$field != "") { ... }
 x_col <- validate_config_value(config, "x_col", default = "Dato")
 y_unit <- validate_config_value(config, "y_axis_unit", default = "count")
 }
+\keyword{internal}

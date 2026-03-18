@@ -34,3 +34,4 @@ if (!is.null(cached_result)) {
 }
 
 }
+\keyword{internal}

@@ -34,3 +34,4 @@ has_column <- validate_column_exists(data, "Dato")
 # Get column data if exists
 column_data <- validate_column_exists(data, "Dato", return_column = TRUE, fallback = numeric(0))
 }
+\keyword{internal}

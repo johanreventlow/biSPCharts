@@ -15,3 +15,4 @@ Logical
 \description{
 Safely checks if Anhoej rules should be hidden in UI.
 }
+\keyword{internal}

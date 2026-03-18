@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_spc_data_processing.R
 \name{filter_complete_spc_data}
 \alias{filter_complete_spc_data}
-\title{Filter data to complete rows with type preservation}
+\title{Process chart title with reactive handling}
 \usage{
 filter_complete_spc_data(data, y_col, n_col = NULL, x_col = NULL)
 }
@@ -19,6 +19,13 @@ filter_complete_spc_data(data, y_col, n_col = NULL, x_col = NULL)
 Filtered data frame with preserved types
 }
 \description{
+Processor chart titel med robust reactive værdi håndtering.
+Ekstraeret fra generateSPCPlot for bedre separation of concerns.
+}
+\details{
+Filter data to complete rows with type preservation
+
 Filtrerer data til komplette rækker mens POSIXct/Date formats bevares.
 Ekstraeret fra generateSPCPlot for genbrug og testability.
 }
+\keyword{internal}

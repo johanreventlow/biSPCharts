@@ -37,4 +37,4 @@ Eksempler ved divisor = 56:
 \item 1400×900px viewport: diagonal = 1668px → base_size = 29.8pt
 }
 }
-\keyword{datasets}
+\keyword{internal}

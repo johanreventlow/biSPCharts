@@ -19,3 +19,4 @@ Liste med kort konfiguration
 \description{
 Opret standard kort (card) configuration
 }
+\keyword{internal}

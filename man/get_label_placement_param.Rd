@@ -25,3 +25,4 @@ custom_value <- get_label_placement_param("nonexistent_key", default = 0.5)
 # Returns: 0.5
 
 }
+\keyword{internal}

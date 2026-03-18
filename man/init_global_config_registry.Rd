@@ -13,3 +13,4 @@ Should be called once during app initialization.
 \examples{
 init_global_config_registry()
 }
+\keyword{internal}

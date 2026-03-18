@@ -22,4 +22,4 @@ Disse værdier bruges som fallback når viewport dimensioner ikke er tilgængeli
 
 M10: Centraliseret fra hardcoded magic numbers i mod_spc_chart_server.R
 }
-\keyword{datasets}
+\keyword{internal}

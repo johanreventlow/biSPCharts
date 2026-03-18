@@ -321,7 +321,7 @@ score_column_candidates <- function(data, numeric_candidates, role = c("y_column
 #' @param role Target role ("y_column" or "n_column") - optional, defaults to "y_column"
 #' @param type Legacy parameter for compatibility ("x", "y", etc.) - maps to role
 #' @return Score between 0 and 1
-#' @export
+#' @keywords internal
 score_by_name_patterns <- function(col_name, role = NULL, type = NULL) {
   # Handle legacy type parameter and default role
   if (!is.null(type)) {
@@ -395,7 +395,7 @@ score_by_name_patterns <- function(col_name, role = NULL, type = NULL) {
 #' @param role Target role ("y_column" or "n_column") - optional, defaults to "y_column"
 #' @param type Legacy parameter for compatibility ("x", "y", etc.) - maps to role
 #' @return Score between 0 and 1
-#' @export
+#' @keywords internal
 score_by_data_characteristics <- function(col_data, role = NULL, type = NULL) {
   # Handle legacy type parameter and default role
   if (!is.null(type)) {
@@ -475,7 +475,7 @@ score_by_data_characteristics <- function(col_data, role = NULL, type = NULL) {
 #' @param role Target role ("y_column" or "n_column") - optional, defaults to "y_column"
 #' @param type Legacy parameter for compatibility ("x", "y", etc.) - maps to role
 #' @return Score between 0 and 1
-#' @export
+#' @keywords internal
 score_by_statistical_properties <- function(col_data, role = NULL, type = NULL) {
   # Handle legacy type parameter and default role
   if (!is.null(type)) {

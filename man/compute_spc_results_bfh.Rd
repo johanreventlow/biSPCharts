@@ -170,3 +170,4 @@ print(result$metadata$signals_detected)
 \code{\link{transform_bfh_output}} for output standardization
 \code{\link{add_comment_annotations}} for notes column handling
 }
+\keyword{internal}

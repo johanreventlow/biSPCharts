@@ -13,4 +13,4 @@ MAX_MISSING_PERCENT
 \description{
 Maximum missing values procent før advarsel
 }
-\keyword{datasets}
+\keyword{internal}

@@ -20,3 +20,4 @@ Numeric value (legacy format)
 Maintains backwards compatibility while transitioning to new API.
 This function should be replaced with normalize_axis_value() calls.
 }
+\keyword{internal}

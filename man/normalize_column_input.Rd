@@ -37,3 +37,4 @@ normalize_column_input("dato") # "dato"
 normalize_column_input(c("dato", "x")) # "dato"
 
 }
+\keyword{internal}

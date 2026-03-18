@@ -478,7 +478,7 @@ execute_qic_call <- function(qic_args, chart_type, config, qic_cache = NULL) {
 #'   instead of context default. If NULL, uses DPI from plot_context
 #'   configuration.
 #' @return List with plot and qic_data (from BFHcharts backend)
-#' @export
+#' @keywords internal
 generateSPCPlot_with_backend <- function(data, config, chart_type,
                                          target_value = NULL,
                                          centerline_value = NULL,
@@ -616,7 +616,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
 #' compatibility with existing code while enabling feature flag switching.
 #'
 #' @inheritParams generateSPCPlot_with_backend
-#' @export
+#' @keywords internal
 generateSPCPlot <- generateSPCPlot_with_backend
 
 ## Y-akse Skalering

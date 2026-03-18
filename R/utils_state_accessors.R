@@ -41,7 +41,7 @@ NULL
 #'
 #' @return Data frame or NULL
 #'
-#' @export
+#' @keywords internal
 get_current_data <- function(app_state) {
   shiny::isolate(app_state$data$current_data)
 }
@@ -53,7 +53,7 @@ get_current_data <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Data frame to set
 #'
-#' @export
+#' @keywords internal
 set_current_data <- function(app_state, value) {
   shiny::isolate({
     app_state$data$current_data <- value
@@ -68,7 +68,7 @@ set_current_data <- function(app_state, value) {
 #'
 #' @return Data frame or NULL
 #'
-#' @export
+#' @keywords internal
 get_original_data <- function(app_state) {
   shiny::isolate(app_state$data$original_data)
 }
@@ -80,7 +80,7 @@ get_original_data <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Data frame to set
 #'
-#' @export
+#' @keywords internal
 set_original_data <- function(app_state, value) {
   shiny::isolate({
     app_state$data$original_data <- value
@@ -95,7 +95,7 @@ set_original_data <- function(app_state, value) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_table_updating <- function(app_state) {
   shiny::isolate(app_state$data$updating_table %||% FALSE)
 }
@@ -107,7 +107,7 @@ is_table_updating <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_table_updating <- function(app_state, value) {
   shiny::isolate({
     app_state$data$updating_table <- value
@@ -126,7 +126,7 @@ set_table_updating <- function(app_state, value) {
 #'
 #' @return Named list with in_progress, completed, results, frozen
 #'
-#' @export
+#' @keywords internal
 get_autodetect_status <- function(app_state) {
   shiny::isolate({
     list(
@@ -145,7 +145,7 @@ get_autodetect_status <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_autodetect_in_progress <- function(app_state, value) {
   shiny::isolate({
     app_state$columns$auto_detect$in_progress <- value
@@ -159,7 +159,7 @@ set_autodetect_in_progress <- function(app_state, value) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_autodetect_completed <- function(app_state, value) {
   shiny::isolate({
     app_state$columns$auto_detect$completed <- value
@@ -173,7 +173,7 @@ set_autodetect_completed <- function(app_state, value) {
 #' @param app_state Centralized app state
 #' @param results Auto-detection results (named list)
 #'
-#' @export
+#' @keywords internal
 set_autodetect_results <- function(app_state, results) {
   shiny::isolate({
     app_state$columns$auto_detect$results <- results
@@ -188,7 +188,7 @@ set_autodetect_results <- function(app_state, results) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_autodetect_frozen <- function(app_state, value) {
   shiny::isolate({
     app_state$columns$auto_detect$frozen_until_next_trigger <- value
@@ -203,7 +203,7 @@ set_autodetect_frozen <- function(app_state, value) {
 #'
 #' @return Named list with x_column, y_column, n_column, etc.
 #'
-#' @export
+#' @keywords internal
 get_column_mappings <- function(app_state) {
   shiny::isolate({
     list(
@@ -227,7 +227,7 @@ get_column_mappings <- function(app_state) {
 #'
 #' @return Column value or NULL
 #'
-#' @export
+#' @keywords internal
 get_column_mapping <- function(app_state, column) {
   shiny::isolate({
     switch(column,
@@ -255,7 +255,7 @@ get_column_mapping <- function(app_state, column) {
 #' Validates that the column name is one of the recognized mapping types
 #' before updating. Invalid column names are silently ignored with a warning.
 #'
-#' @export
+#' @keywords internal
 update_column_mapping <- function(app_state, column, value) {
   valid_columns <- c(
     "x_column", "y_column", "n_column", "cl_column",
@@ -284,7 +284,7 @@ update_column_mapping <- function(app_state, column, value) {
 #' @param app_state Centralized app state
 #' @param mappings Named list of column mappings
 #'
-#' @export
+#' @keywords internal
 update_column_mappings <- function(app_state, mappings) {
   valid_columns <- c(
     "x_column", "y_column", "n_column", "cl_column",
@@ -312,7 +312,7 @@ update_column_mappings <- function(app_state, mappings) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_plot_ready <- function(app_state) {
   shiny::isolate(app_state$visualization$plot_ready %||% FALSE)
 }
@@ -324,7 +324,7 @@ is_plot_ready <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_plot_ready <- function(app_state, value) {
   shiny::isolate({
     app_state$visualization$plot_ready <- value
@@ -339,7 +339,7 @@ set_plot_ready <- function(app_state, value) {
 #'
 #' @return Character vector of warnings
 #'
-#' @export
+#' @keywords internal
 get_plot_warnings <- function(app_state) {
   shiny::isolate(app_state$visualization$plot_warnings %||% character(0))
 }
@@ -351,7 +351,7 @@ get_plot_warnings <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param warnings Character vector of warnings
 #'
-#' @export
+#' @keywords internal
 set_plot_warnings <- function(app_state, warnings) {
   shiny::isolate({
     app_state$visualization$plot_warnings <- warnings
@@ -366,7 +366,7 @@ set_plot_warnings <- function(app_state, warnings) {
 #'
 #' @return ggplot object or NULL
 #'
-#' @export
+#' @keywords internal
 get_plot_object <- function(app_state) {
   shiny::isolate(app_state$visualization$plot_object)
 }
@@ -378,7 +378,7 @@ get_plot_object <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param plot ggplot object
 #'
-#' @export
+#' @keywords internal
 set_plot_object <- function(app_state, plot) {
   shiny::isolate({
     app_state$visualization$plot_object <- plot
@@ -393,7 +393,7 @@ set_plot_object <- function(app_state, plot) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_plot_generating <- function(app_state) {
   shiny::isolate(
     app_state$visualization$plot_generation_in_progress %||% FALSE
@@ -407,7 +407,7 @@ is_plot_generating <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_plot_generating <- function(app_state, value) {
   shiny::isolate({
     app_state$visualization$plot_generation_in_progress <- value
@@ -427,7 +427,7 @@ set_plot_generating <- function(app_state, value) {
 #' @details
 #' Returns VIEWPORT_DEFAULTS if dimensions haven't been set yet.
 #'
-#' @export
+#' @keywords internal
 get_viewport_dims <- function(app_state) {
   shiny::isolate({
     dims <- app_state$visualization$viewport_dims
@@ -456,7 +456,7 @@ get_viewport_dims <- function(app_state) {
 #' @param height Viewport height in pixels
 #' @param emit Emit API (optional) for triggering visualization_update_needed
 #'
-#' @export
+#' @keywords internal
 set_viewport_dims <- function(app_state, width, height, emit = NULL) {
   shiny::isolate({
     app_state$visualization$viewport_dims <- list(
@@ -484,7 +484,7 @@ set_viewport_dims <- function(app_state, width, height, emit = NULL) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_file_uploaded <- function(app_state) {
   shiny::isolate(app_state$session$file_uploaded %||% FALSE)
 }
@@ -496,7 +496,7 @@ is_file_uploaded <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_file_uploaded <- function(app_state, value) {
   shiny::isolate({
     app_state$session$file_uploaded <- value
@@ -511,7 +511,7 @@ set_file_uploaded <- function(app_state, value) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_user_session_started <- function(app_state) {
   shiny::isolate(app_state$session$user_started_session %||% FALSE)
 }
@@ -523,7 +523,7 @@ is_user_session_started <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_user_session_started <- function(app_state, value) {
   shiny::isolate({
     app_state$session$user_started_session <- value
@@ -542,7 +542,7 @@ set_user_session_started <- function(app_state, value) {
 #'
 #' @return List with error details or NULL
 #'
-#' @export
+#' @keywords internal
 get_last_error <- function(app_state) {
   shiny::isolate(app_state$errors$last_error)
 }
@@ -554,7 +554,7 @@ get_last_error <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param error_info List with type, context, message, timestamp
 #'
-#' @export
+#' @keywords internal
 set_last_error <- function(app_state, error_info) {
   shiny::isolate({
     app_state$errors$last_error <- error_info
@@ -570,7 +570,7 @@ set_last_error <- function(app_state, error_info) {
 #'
 #' @return Integer count
 #'
-#' @export
+#' @keywords internal
 get_error_count <- function(app_state) {
   shiny::isolate(app_state$errors$error_count %||% 0L)
 }
@@ -587,7 +587,7 @@ get_error_count <- function(app_state) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_test_mode_enabled <- function(app_state) {
   shiny::isolate(app_state$test_mode$enabled %||% FALSE)
 }
@@ -599,7 +599,7 @@ is_test_mode_enabled <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_test_mode_enabled <- function(app_state, value) {
   shiny::isolate({
     app_state$test_mode$enabled <- value
@@ -614,7 +614,7 @@ set_test_mode_enabled <- function(app_state, value) {
 #'
 #' @return Character: "initializing", "data_ready", "ui_ready", "complete"
 #'
-#' @export
+#' @keywords internal
 get_test_mode_startup_phase <- function(app_state) {
   shiny::isolate(app_state$test_mode$startup_phase %||% "initializing")
 }
@@ -626,7 +626,7 @@ get_test_mode_startup_phase <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param phase Character phase name
 #'
-#' @export
+#' @keywords internal
 set_test_mode_startup_phase <- function(app_state, phase) {
   valid_phases <- c("initializing", "data_ready", "ui_ready", "complete")
 
@@ -657,7 +657,7 @@ set_test_mode_startup_phase <- function(app_state, phase) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_anhoej_rules_hidden <- function(app_state) {
   shiny::isolate(app_state$ui$hide_anhoej_rules %||% FALSE)
 }
@@ -669,7 +669,7 @@ is_anhoej_rules_hidden <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_anhoej_rules_hidden <- function(app_state, value) {
   shiny::isolate({
     app_state$ui$hide_anhoej_rules <- value
@@ -684,7 +684,7 @@ set_anhoej_rules_hidden <- function(app_state, value) {
 #'
 #' @return Logical
 #'
-#' @export
+#' @keywords internal
 is_y_axis_autoset_done <- function(app_state) {
   shiny::isolate(app_state$ui$y_axis_unit_autoset_done %||% FALSE)
 }
@@ -696,7 +696,7 @@ is_y_axis_autoset_done <- function(app_state) {
 #' @param app_state Centralized app state
 #' @param value Logical value
 #'
-#' @export
+#' @keywords internal
 set_y_axis_autoset_done <- function(app_state, value) {
   shiny::isolate({
     app_state$ui$y_axis_unit_autoset_done <- value

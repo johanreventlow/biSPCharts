@@ -12,3 +12,4 @@ Karakter string med CSS styles
 \description{
 Opret CSS style for fuld bredde elementer
 }
+\keyword{internal}

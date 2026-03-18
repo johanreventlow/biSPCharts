@@ -14,3 +14,4 @@ set_file_uploaded(app_state, value)
 \description{
 Safely sets the file uploaded flag.
 }
+\keyword{internal}

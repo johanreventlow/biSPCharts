@@ -13,4 +13,4 @@ CSV_SEPARATORS
 \description{
 Liste over understøttede kolonne separatorer til CSV fil parsing.
 }
-\keyword{datasets}
+\keyword{internal}

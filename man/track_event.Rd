@@ -14,3 +14,4 @@ track_event(event_name, context = "unknown")
 \description{
 Track event firing
 }
+\keyword{internal}

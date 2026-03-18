@@ -18,3 +18,4 @@ X-axis data or NULL if not available
 Ekstraherer X-axis data fra data frame med type safety.
 Helper function for plot generation.
 }
+\keyword{internal}

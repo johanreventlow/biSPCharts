@@ -21,3 +21,4 @@ set_log_level("invalid") # Shows available options
 }
 
 }
+\keyword{internal}

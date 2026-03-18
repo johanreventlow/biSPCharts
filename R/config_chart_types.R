@@ -25,7 +25,7 @@
 #' Mapping mellem danske UI labels og engelske qicharts2 koder.
 #'
 #' @format Named list med dansk label → engelsk kode
-#' @export
+#' @keywords internal
 CHART_TYPES_DA <- list(
   "Seriediagram m SPC (Run Chart)" = "run",
   "I-kort (Individuelle værdier)" = "i",
@@ -61,7 +61,7 @@ CHART_TYPES_EN <- list(
 #' @return Engelsk qicharts2 kode (fx "i", "run", "p")
 #' get_qic_chart_type("I-kort (Individuelle værdier)") # Returns "i"
 #' get_qic_chart_type("i") # Returns "i" (already English)
-#' @export
+#' @keywords internal
 get_qic_chart_type <- function(danish_selection) {
   if (is.null(danish_selection) || danish_selection == "") {
     return("run") # standard
@@ -90,7 +90,7 @@ get_qic_chart_type <- function(danish_selection) {
 #' Danske beskrivelser af hver chart type til UI help-tekst.
 #'
 #' @format Named list med engelsk kode → dansk beskrivelse
-#' @export
+#' @keywords internal
 CHART_TYPE_DESCRIPTIONS <- list(
   "run" = "Seriediagram der viser data over tid med median centerlinje",
   "i" = "I-kort til individuelle målinger",

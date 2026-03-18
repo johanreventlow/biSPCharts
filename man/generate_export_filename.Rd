@@ -49,3 +49,4 @@ generate_export_filename("pptx", "", "Hæmatologi Ø")
 }
 
 }
+\keyword{internal}

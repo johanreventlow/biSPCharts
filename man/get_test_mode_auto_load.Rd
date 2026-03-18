@@ -12,3 +12,4 @@ Boolean indicating if test mode auto load is enabled
 \description{
 Get test mode auto load setting
 }
+\keyword{internal}

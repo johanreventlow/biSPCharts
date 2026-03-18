@@ -16,3 +16,4 @@ List with dependency loading results
 Centraliseret dependency management som kan erstatte library() kald i global.R.
 Inkluderer environment-aware loading og fallback-strategier.
 }
+\keyword{internal}

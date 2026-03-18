@@ -25,3 +25,4 @@ Værdier formatteres robust (tåler komplekse objekter) uden at crashe i Shiny.
 log_debug_kv(trigger_value = 1, status = "active", .context = "DATA_TABLE")
 log_debug_kv(.list_data = list(rows = 100, cols = 5), .context = "DATA_PROC")
 }
+\keyword{internal}

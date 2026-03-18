@@ -11,7 +11,7 @@
 #' @param force_reload Boolean indicating if forced reload is needed (legacy parameter)
 #' @param config_override Optional configuration override
 #' @return List containing initialization results
-#' @export
+#' @keywords internal
 initialize_app <- function(force_reload = FALSE, config_override = NULL) {
   log_debug("Starting package-based app initialization", .context = "APP_INIT")
 
@@ -151,7 +151,7 @@ verify_branding_setup <- function() {
 #'
 #' @param config App configuration
 #' @return List with optimization results
-#' @export
+#' @keywords internal
 setup_performance_optimizations <- function(config) {
   optimizations <- list()
 
@@ -241,7 +241,7 @@ verify_initialization_completeness <- function() {
 #'
 #' @param init_results Results from initialize_app()
 #' @return Data frame with initialization status
-#' @export
+#' @keywords internal
 get_initialization_status_report <- function(init_results) {
   if (is.null(init_results)) {
     return(data.frame(

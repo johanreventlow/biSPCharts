@@ -14,3 +14,4 @@
 \description{
 Print SPC Plot Configuration
 }
+\keyword{internal}

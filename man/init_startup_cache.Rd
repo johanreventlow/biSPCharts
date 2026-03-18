@@ -14,3 +14,4 @@ TRUE if successful, FALSE otherwise
 Initialize startup cache directory
 Create cache directory if it doesn't exist and clean up old cache files
 }
+\keyword{internal}

@@ -14,7 +14,7 @@
 #' - ERROR (4): Fejlbeskeder
 #'
 #' @format Liste med 4 elementer
-#' @export
+#' @keywords internal
 LOG_LEVELS <- list(
   DEBUG = 1L,
   INFO  = 2L,
@@ -44,7 +44,7 @@ LOG_LEVELS <- list(
 #' get_log_level()
 #' Sys.setenv(SPC_LOG_LEVEL = "1")
 #' get_log_level()
-#' @export
+#' @keywords internal
 get_log_level <- function() {
   env_raw <- safe_getenv("SPC_LOG_LEVEL", "INFO", "character")
   env_val <- trimws(toupper(as.character(env_raw)))
@@ -183,7 +183,7 @@ get_log_level <- function() {
 #' log_msg("Data læst", "INFO", "FILE_UPLOAD")
 #' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 #' log_msg("Detaljer", "DEBUG", "DATA_PROC")
-#' @export
+#' @keywords internal
 log_msg <- function(message, level = "INFO", component = NULL) {
   if (!.should_log(level)) {
     return(invisible(NULL))
@@ -226,7 +226,7 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #' options(spc.debug.context = c("state", "data", "ai"))
 #' log_debug("Dette logges", .context = "state") # Log
 #' log_debug("Dette logges ikke", .context = "performance") # Skip
-#' @export
+#' @keywords internal
 log_debug <- function(..., .context = NULL) {
   if (!.should_log("DEBUG")) {
     return(invisible(NULL))
@@ -282,7 +282,7 @@ log_debug <- function(..., .context = NULL) {
 #' @examples
 #' log_info("Fil uploaded succesfuldt", .context = "FILE_UPLOAD")
 #' log_info(message = "Data processeret", component = "[DATA_PROCESSING]", details = list(rows = 100))
-#' @export
+#' @keywords internal
 log_info <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
@@ -325,7 +325,7 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #' @examples
 #' log_warn("Manglende data i kolonne", .context = "DATA_VALIDATION")
 #' log_warn(message = "Input sanitized", component = "[INPUT_SANITIZATION]", details = list(original_length = 100))
-#' @export
+#' @keywords internal
 log_warn <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
@@ -372,7 +372,7 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #' \dontrun{
 #' tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 #' }
-#' @export
+#' @keywords internal
 log_error <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
@@ -415,7 +415,7 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
 #' log_debug_block("COLUMN_MGMT", "Starting column detection")
 #' # ... kode ...
 #' log_debug_block("COLUMN_MGMT", "Column detection completed", type = "stop")
-#' @export
+#' @keywords internal
 log_debug_block <- function(context, action, type = "start") {
   if (!.should_log("DEBUG")) {
     return(invisible(NULL))
@@ -452,7 +452,7 @@ log_debug_block <- function(context, action, type = "start") {
 #' @examples
 #' log_debug_kv(trigger_value = 1, status = "active", .context = "DATA_TABLE")
 #' log_debug_kv(.list_data = list(rows = 100, cols = 5), .context = "DATA_PROC")
-#' @export
+#' @keywords internal
 log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
   if (!.should_log("DEBUG")) {
     return(invisible(NULL))
@@ -493,7 +493,7 @@ log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
 #' set_log_level_development() # Enables all DEBUG messages
 #' set_log_level_production() # Only WARN and ERROR in production
 #' set_log_level_quiet() # Only ERROR messages
-#' @export
+#' @keywords internal
 set_log_level_development <- function() {
   Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
   message("[LOG_CONFIG] Log level set to DEBUG (development mode)")
@@ -501,7 +501,7 @@ set_log_level_development <- function() {
 }
 
 #' @rdname set_log_level_development
-#' @export
+#' @keywords internal
 set_log_level_production <- function() {
   Sys.setenv(SPC_LOG_LEVEL = "WARN")
   message("[LOG_CONFIG] Log level set to WARN (production mode)")
@@ -509,7 +509,7 @@ set_log_level_production <- function() {
 }
 
 #' @rdname set_log_level_development
-#' @export
+#' @keywords internal
 set_log_level_quiet <- function() {
   Sys.setenv(SPC_LOG_LEVEL = "ERROR")
   message("[LOG_CONFIG] Log level set to ERROR (quiet mode)")
@@ -517,7 +517,7 @@ set_log_level_quiet <- function() {
 }
 
 #' @rdname set_log_level_development
-#' @export
+#' @keywords internal
 set_log_level_info <- function() {
   Sys.setenv(SPC_LOG_LEVEL = "INFO")
   message("[LOG_CONFIG] Log level set to INFO (standard mode)")
@@ -538,7 +538,7 @@ set_log_level_info <- function() {
 #' set_log_level("invalid") # Shows available options
 #' }
 #'
-#' @export
+#' @keywords internal
 set_log_level <- function(level) {
   valid_levels <- c("DEBUG", "INFO", "WARN", "ERROR")
   level <- toupper(trimws(level))
@@ -571,7 +571,7 @@ set_log_level <- function(level) {
 #' cat("Current log level:", current_level)
 #' }
 #'
-#' @export
+#' @keywords internal
 get_log_level_name <- function() {
   level_names <- c("DEBUG", "INFO", "WARN", "ERROR")
   current_numeric <- get_log_level()
@@ -604,7 +604,7 @@ get_log_level_name <- function() {
 #' log_debug("Alt logges nu", .context = "performance") # ✓ Vises
 #' }
 #'
-#' @export
+#' @keywords internal
 set_debug_context <- function(contexts = NULL) {
   if (is.null(contexts)) {
     options(spc.debug.context = NULL)
@@ -641,7 +641,7 @@ set_debug_context <- function(contexts = NULL) {
 #' get_debug_context() # c("state", "data")
 #' }
 #'
-#' @export
+#' @keywords internal
 get_debug_context <- function() {
   getOption("spc.debug.context", default = NULL)
 }
@@ -663,7 +663,7 @@ get_debug_context <- function() {
 #' set_debug_context(state_contexts)
 #' }
 #'
-#' @export
+#' @keywords internal
 list_available_log_contexts <- function() {
   all_contexts <- character()
 
@@ -690,7 +690,7 @@ list_available_log_contexts <- function() {
 #' show_debug_contexts() # See all available contexts organized by category
 #' }
 #'
-#' @export
+#' @keywords internal
 show_debug_contexts <- function() {
   cat("\n")
   cat("=== AVAILABLE DEBUG CONTEXTS ===\n")
@@ -734,7 +734,7 @@ show_debug_contexts <- function() {
 #' sanitize_session_token(NULL)
 #' # Returns: "NO_SESSION"
 #' }
-#' @export
+#' @keywords internal
 sanitize_session_token <- function(session_token) {
   # Handle NULL or empty tokens
   if (is.null(session_token) || !is.character(session_token) || length(session_token) == 0) {

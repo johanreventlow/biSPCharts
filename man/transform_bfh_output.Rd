@@ -92,3 +92,4 @@ export_plot(customized_plot, filename = "spc_chart.png")
 \code{\link{call_bfh_chart}} for BFHchart invocation
 \code{\link{add_comment_annotations}} for comment layer
 }
+\keyword{internal}

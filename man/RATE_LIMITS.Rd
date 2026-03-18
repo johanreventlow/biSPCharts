@@ -13,4 +13,4 @@ RATE_LIMITS
 \description{
 Rate limiting thresholds for security
 }
-\keyword{datasets}
+\keyword{internal}

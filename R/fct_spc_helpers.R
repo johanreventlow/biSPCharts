@@ -12,7 +12,7 @@
 #' @param unit_list Named list. Mapping mellem enheder og koder
 #' @return Character. Dansk label for enheden
 #' @family spc_helpers
-#' @export
+#' @keywords internal
 get_unit_label <- function(unit_code, unit_list) {
   if (is.null(unit_code) || unit_code == "") {
     return("")
@@ -428,7 +428,7 @@ validate_spc_inputs <- function(data, config) {
 #' @param data Data frame with uploaded data to validate
 #' @return List with validation results containing valid, errors, warnings, potential columns
 #'
-#' @export
+#' @keywords internal
 validate_data_structure <- function(data) {
   errors <- character(0)
   warnings <- character(0)

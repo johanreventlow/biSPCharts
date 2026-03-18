@@ -21,3 +21,4 @@ Other visualization_modules:
 \code{\link{visualizationStatusUI}()}
 }
 \concept{visualization_modules}
+\keyword{internal}

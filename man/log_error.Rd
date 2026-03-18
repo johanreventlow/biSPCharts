@@ -33,3 +33,4 @@ log_error(message = "File validation failed", component = "[FILE_VALIDATION]", d
 tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 }
 }
+\keyword{internal}

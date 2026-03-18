@@ -17,3 +17,4 @@ Invisibly returns success status
 \description{
 Clean API for enqueueing UI updates with automatic processor start
 }
+\keyword{internal}

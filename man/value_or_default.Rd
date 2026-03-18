@@ -27,3 +27,4 @@ safe_value <- value_or_default(input$field, default = "")
 # With type checking
 safe_numeric <- value_or_default(input$number, default = 0, allowed_types = "numeric")
 }
+\keyword{internal}

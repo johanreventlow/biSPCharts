@@ -45,7 +45,7 @@
 #'   \item{misc}{Miscellaneous contexts}
 #' }
 #'
-#' @export
+#' @keywords internal
 LOG_CONTEXTS <- list(
   # === Data Processing ===
   data = list(
@@ -230,7 +230,7 @@ LOG_CONTEXTS <- list(
 #' get_log_context("data", "process") # Returns "DATA_PROCESS"
 #' get_log_context("qic", "input") # Returns "QIC_INPUT"
 #'
-#' @export
+#' @keywords internal
 get_log_context <- function(category, context) {
   if (!category %in% names(LOG_CONTEXTS)) {
     stop(
@@ -262,7 +262,7 @@ get_log_context <- function(category, context) {
 #' all_contexts <- list_all_log_contexts()
 #' length(all_contexts) # Total number of contexts
 #'
-#' @export
+#' @keywords internal
 list_all_log_contexts <- function() {
   all_contexts <- character()
 

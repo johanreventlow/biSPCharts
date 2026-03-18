@@ -31,7 +31,7 @@
 #' - **export_png:** PNG export (variable dimensions, configurable DPI)
 #' - **export_pptx:** PowerPoint export (9×6.5 inches @ 96 DPI)
 #'
-#' @export
+#' @keywords internal
 PLOT_CONTEXTS <- list(
   ANALYSIS = "analysis",
   EXPORT_PREVIEW = "export_preview",
@@ -61,7 +61,7 @@ PLOT_CONTEXTS <- list(
 #' - PNG: User-valgte presets eller custom dimensions
 #' - PPTX: PowerPoint slide dimensions (9×6.5 inches @ 96 DPI)
 #'
-#' @export
+#' @keywords internal
 PLOT_CONTEXT_DIMENSIONS <- list(
   analysis = list(
     width_px = 800,
@@ -141,7 +141,7 @@ PLOT_CONTEXT_DIMENSIONS <- list(
 #' )
 #' }
 #'
-#' @export
+#' @keywords internal
 get_context_dimensions <- function(context,
                                    override_width = NULL,
                                    override_height = NULL,
@@ -217,7 +217,7 @@ get_context_dimensions <- function(context,
 #' validate_plot_context("invalid", stop_on_invalid = FALSE) # Returns FALSE
 #' }
 #'
-#' @export
+#' @keywords internal
 validate_plot_context <- function(context, stop_on_invalid = TRUE) {
   is_valid <- context %in% unlist(PLOT_CONTEXTS, use.names = FALSE)
 

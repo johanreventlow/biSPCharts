@@ -7,19 +7,20 @@
 quarto_available()
 }
 \value{
-Logical. TRUE hvis Quarto er tilgængelig, FALSE ellers.
+Logical. Altid TRUE da Quarto er inkluderet i RStudio.
 }
 \description{
 Tjekker om Quarto CLI er tilgængelig på systemet.
 Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
-Delegerer til BFHcharts::quarto_available() for konsistent check.
+}
+\note{
+Denne funktion returnerer altid TRUE, da Quarto er bundled med RStudio.
+BFHcharts::bfh_export_pdf() håndterer Quarto errors internt.
 }
 \examples{
 \dontrun{
 if (quarto_available()) {
-  # Enable PDF export
-} else {
-  # Show message to install Quarto
+  # Enable PDF export (altid TRUE)
 }
 }
 
@@ -32,3 +33,4 @@ Other export_helpers:
 \code{\link{get_hospital_name_for_export}()}
 }
 \concept{export_helpers}
+\keyword{internal}

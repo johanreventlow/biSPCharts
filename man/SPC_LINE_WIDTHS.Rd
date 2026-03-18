@@ -13,4 +13,4 @@ SPC_LINE_WIDTHS
 \description{
 Standard linje bredder
 }
-\keyword{datasets}
+\keyword{internal}

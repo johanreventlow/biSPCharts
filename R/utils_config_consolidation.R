@@ -12,7 +12,7 @@
 #' en ensartet konfigurationshandling. Alle konfigurationer loads on-demand
 #' og caches for performance.
 #'
-#' @export
+#' @keywords internal
 create_config_registry <- function() {
   # Private storage for cached config values
   .config_cache <- new.env(parent = emptyenv())
@@ -230,7 +230,7 @@ create_config_registry <- function() {
 #' @examples
 #' get_config("charts.default_chart", "i")
 #' get_config("system.observer_priorities.HIGH", 1000, "numeric")
-#' @export
+#' @keywords internal
 get_config <- function(path, default = NULL, type = "character", config_registry = NULL) {
   if (is.null(config_registry)) {
     # Use global registry if available
@@ -276,7 +276,7 @@ get_config <- function(path, default = NULL, type = "character", config_registry
 #'
 #' @examples
 #' init_global_config_registry()
-#' @export
+#' @keywords internal
 init_global_config_registry <- function() {
   .spc_config_registry <- create_config_registry()
   assign(".spc_config_registry", .spc_config_registry, envir = .GlobalEnv)

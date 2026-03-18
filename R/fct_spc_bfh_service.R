@@ -139,7 +139,7 @@
 #' \code{\link{map_to_bfh_params}} for parameter transformation logic
 #' \code{\link{transform_bfh_output}} for output standardization
 #' \code{\link{add_comment_annotations}} for notes column handling
-#' @export
+#' @keywords internal
 compute_spc_results_bfh <- function(
   data,
   x_var,
@@ -634,7 +634,7 @@ compute_spc_results_bfh <- function(
 #' @seealso
 #' \code{\link{compute_spc_results_bfh}} for facade interface
 #' \code{\link{call_bfh_chart}} for BFHchart invocation
-#' @export
+#' @keywords internal
 map_to_bfh_params <- function(
   data,
   x_var,
@@ -1001,7 +1001,7 @@ resolve_bfh_chart_title <- function(title_candidate) {
 #' \code{\link{compute_spc_results_bfh}} for facade interface
 #' \code{\link{map_to_bfh_params}} for parameter preparation
 #' \code{\link{transform_bfh_output}} for output processing
-#' @export
+#' @keywords internal
 call_bfh_chart <- function(bfh_params) {
   safe_operation(
     operation_name = "BFHchart API call",
@@ -1210,7 +1210,7 @@ call_bfh_chart <- function(bfh_params) {
 #' \code{\link{compute_spc_results_bfh}} for facade interface
 #' \code{\link{call_bfh_chart}} for BFHchart invocation
 #' \code{\link{add_comment_annotations}} for comment layer
-#' @export
+#' @keywords internal
 transform_bfh_output <- function(
   bfh_result,
   multiply = 1,
@@ -1467,7 +1467,7 @@ transform_bfh_output <- function(
 #' @seealso
 #' \code{\link{compute_spc_results_bfh}} for facade interface with integrated comments
 #' \code{\link{transform_bfh_output}} for output standardization
-#' @export
+#' @keywords internal
 add_comment_annotations <- function(
   plot,
   qic_data,
@@ -1824,7 +1824,7 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
 #'   }
 #' )
 #' }
-#' @export
+#' @keywords internal
 classify_error_source <- function(error) {
   safe_operation(
     operation_name = "Error source classification",
@@ -1962,7 +1962,7 @@ classify_error_source <- function(error) {
 #' print(metadata$runs_signal)
 #' }
 #'
-#' @export
+#' @keywords internal
 compute_anhoej_metadata_local <- function(data, config) {
   safe_operation(
     operation_name = "Anhøj metadata local computation",

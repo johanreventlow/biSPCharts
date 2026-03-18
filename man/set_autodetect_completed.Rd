@@ -14,3 +14,4 @@ set_autodetect_completed(app_state, value)
 \description{
 Safely sets the auto-detection completed flag.
 }
+\keyword{internal}

@@ -12,3 +12,4 @@ set_startup_phase(phase)
 \description{
 Set startup phase
 }
+\keyword{internal}

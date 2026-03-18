@@ -94,3 +94,4 @@ result <- safe_operation(
 )
 }
 }
+\keyword{internal}

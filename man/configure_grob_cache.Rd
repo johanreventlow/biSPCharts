@@ -24,3 +24,4 @@ Invisible: Previous configuration
 \description{
 Configure grob height cache TTL and limits
 }
+\keyword{internal}

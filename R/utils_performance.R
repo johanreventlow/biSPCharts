@@ -18,7 +18,7 @@
 #' }
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 measure_reactive_performance <- function(expr, operation_name = "unknown") {
   start_time <- Sys.time()
   result <- expr
@@ -71,7 +71,7 @@ measure_reactive_performance <- function(expr, operation_name = "unknown") {
 #' }
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 create_cached_reactive <- function(expr, cache_key, cache_timeout = 300, session = NULL) {
   # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
   # Denne version beholdes midlertidigt for backward-compatibility
@@ -260,7 +260,7 @@ create_cached_reactive <- function(expr, cache_key, cache_timeout = 300, session
 #' @return Debounced reactive expression eller function (context-afhængig)
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 create_performance_debounced <- function(r, millis, operation_name = "debounced") {
   # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
   # Track debounce statistics
@@ -357,7 +357,7 @@ create_performance_debounced <- function(r, millis, operation_name = "debounced"
 #' @param session Shiny session object (optional - auto-detected if available)
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 clear_performance_cache <- function(cache_pattern = NULL, session = NULL) {
   # DEPRECATED: Kanonisk version i utils_performance_caching.R (se issue #102)
   # Auto-detect session if not provided
@@ -414,7 +414,7 @@ clear_performance_cache <- function(cache_pattern = NULL, session = NULL) {
 #' @return List med performance statistik
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 get_performance_stats <- function() {
   stats <- list()
 
@@ -450,7 +450,7 @@ get_performance_stats <- function() {
 #' @return List med memory statistics
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 monitor_memory_usage <- function(operation_name = "unknown") {
   # Get memory info using gc()
   gc_before <- gc(reset = TRUE)
@@ -516,7 +516,7 @@ PERFORMANCE_THRESHOLDS <- list(
 #' }
 #'
 #' @family performance
-#' @export
+#' @keywords internal
 evaluate_data_content_cached <- function(data, cache_key = NULL, session = NULL, invalidate_events = c("data_loaded", "session_reset")) {
   # Null data check først
   if (is.null(data) || !is.data.frame(data) || nrow(data) == 0) {

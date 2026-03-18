@@ -13,4 +13,4 @@ EXPORT_POWERPOINT_CONFIG
 \description{
 Standard indstillinger for PowerPoint eksport.
 }
-\keyword{datasets}
+\keyword{internal}

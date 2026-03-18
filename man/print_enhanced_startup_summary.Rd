@@ -9,3 +9,4 @@ print_enhanced_startup_summary()
 \description{
 Formats and displays startup performance metrics using structured logging.
 }
+\keyword{internal}

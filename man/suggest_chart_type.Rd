@@ -19,3 +19,4 @@ qicharts2-kode for korttype ("i", "c", "p", "u", "t", "g", "run")
 \description{
 Foreslå korttype ud fra intern klasse
 }
+\keyword{internal}

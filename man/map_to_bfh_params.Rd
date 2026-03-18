@@ -122,3 +122,4 @@ bfh_params <- map_to_bfh_params(
 \code{\link{compute_spc_results_bfh}} for facade interface
 \code{\link{call_bfh_chart}} for BFHchart invocation
 }
+\keyword{internal}

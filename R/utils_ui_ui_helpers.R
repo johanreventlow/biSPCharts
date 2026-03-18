@@ -6,7 +6,7 @@
 #' Returnerer standard CSS flex container style for kolonnelayout
 #'
 #' @return Karakter string med CSS styles
-#' @export
+#' @keywords internal
 get_flex_column_style <- function() {
   UI_STYLES$flex_column
 }
@@ -15,7 +15,7 @@ get_flex_column_style <- function() {
 #'
 #' @param max_height Maksimal højde (default bruger konstant)
 #' @return Karakter string med CSS styles
-#' @export
+#' @keywords internal
 get_scroll_container_style <- function(max_height = UI_HEIGHTS$modal_content) {
   paste0("max-height: ", max_height, "; overflow-y: auto;")
 }
@@ -24,7 +24,7 @@ get_scroll_container_style <- function(max_height = UI_HEIGHTS$modal_content) {
 #'
 #' @param layout Type af layout ("quarter", "half", "thirds", "sidebar")
 #' @return Numerisk vektor med kolonne bredder
-#' @export
+#' @keywords internal
 get_column_widths <- function(layout = "quarter") {
   UI_COLUMN_WIDTHS[[layout]]
 }
@@ -32,7 +32,7 @@ get_column_widths <- function(layout = "quarter") {
 #' Opret CSS style for absolute positioning (logo/brand)
 #'
 #' @return Karakter string med CSS styles for højre side positioning
-#' @export
+#' @keywords internal
 get_absolute_right_style <- function() {
   UI_STYLES$position_absolute_right
 }
@@ -40,7 +40,7 @@ get_absolute_right_style <- function() {
 #' Opret CSS style for fuld bredde elementer
 #'
 #' @return Karakter string med CSS styles
-#' @export
+#' @keywords internal
 get_full_width_style <- function() {
   UI_STYLES$full_width
 }
@@ -49,7 +49,7 @@ get_full_width_style <- function() {
 #'
 #' @param component Type af komponent ("logo", "modal_content", "chart_container", etc.)
 #' @return Karakter string med højde
-#' @export
+#' @keywords internal
 get_ui_height <- function(component) {
   UI_HEIGHTS[[component]]
 }
@@ -59,14 +59,14 @@ get_ui_height <- function(component) {
 #' @param base_height Grundlæggende højde (default: "50vh")
 #' @param offset Offset fra toppen (default: "60px")
 #' @return Karakter string med CSS calc() stil
-#' @export
+#' @keywords internal
 get_chart_container_style <- function(base_height = "50vh", offset = "60px") {
   paste0("height: calc(", base_height, " - ", offset, ");")
 }
 
 #' Standard spacing konstanter for UI
 #'
-#' @export
+#' @keywords internal
 UI_SPACING <- list(
   small = "10px",
   medium = "20px",
@@ -80,7 +80,7 @@ UI_SPACING <- list(
 #' @param height Højde af kortet (valgfri)
 #' @param full_screen Om kortet skal være fuld skærm
 #' @return Liste med kort konfiguration
-#' @export
+#' @keywords internal
 create_card_config <- function(title, height = NULL, full_screen = FALSE) {
   config <- list(title = title)
 
@@ -128,7 +128,7 @@ create_card_config <- function(title, height = NULL, full_screen = FALSE) {
 #' sanitize_selection("valid") # → "valid"
 #'
 #' @family input_validation
-#' @export
+#' @keywords internal
 sanitize_selection <- function(input_value) {
   if (is.null(input_value) || length(input_value) == 0 || identical(input_value, character(0))) {
     return(NULL)

@@ -13,4 +13,4 @@ Y_AXIS_UI_TYPES_DA
 \description{
 UI-typer for Y-akse (simpel valg)
 }
-\keyword{datasets}
+\keyword{internal}

@@ -19,3 +19,4 @@ get re-locked.
 unlock_placement_cache_bindings()
 configure_panel_cache(enabled = FALSE)
 }
+\keyword{internal}

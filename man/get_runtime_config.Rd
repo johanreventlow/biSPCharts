@@ -12,3 +12,4 @@ Runtime configuration list or NULL
 \description{
 Get the complete runtime configuration
 }
+\keyword{internal}

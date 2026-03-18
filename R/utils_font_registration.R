@@ -27,7 +27,7 @@
 #' }
 #'
 #' @family font_registration
-#' @export
+#' @keywords internal
 register_roboto_font <- function() {
   # Guard: Only register once per session
   # Check if already registered to prevent duplicate registrations
@@ -167,7 +167,7 @@ register_roboto_font <- function() {
 #' }
 #'
 #' @family font_registration
-#' @export
+#' @keywords internal
 is_roboto_available <- function() {
   if (!requireNamespace("systemfonts", quietly = TRUE)) {
     return(FALSE)
@@ -199,7 +199,7 @@ is_roboto_available <- function() {
 #' }
 #'
 #' @family font_registration
-#' @export
+#' @keywords internal
 get_font_status <- function() {
   # Check if systemfonts is available
   systemfonts_available <- requireNamespace("systemfonts", quietly = TRUE)

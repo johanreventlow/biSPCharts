@@ -15,3 +15,4 @@ Karakter string med højde
 \description{
 Standard højder for forskellige UI komponenter
 }
+\keyword{internal}

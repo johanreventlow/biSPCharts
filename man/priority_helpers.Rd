@@ -27,3 +27,4 @@ Quick access functions for commonly used priority levels.
 observeEvent(input$data, priority = priority_high(), {})
 }
 }
+\keyword{internal}

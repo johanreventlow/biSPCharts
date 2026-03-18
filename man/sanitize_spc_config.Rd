@@ -16,3 +16,4 @@ Sanitized configuration list
 Validerer input-konfiguration for SPC plot generation.
 Ekstraeret fra generateSPCPlot for bedre testability.
 }
+\keyword{internal}

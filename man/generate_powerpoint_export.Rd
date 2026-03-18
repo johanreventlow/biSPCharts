@@ -94,3 +94,4 @@ pptx_path <- generate_powerpoint_export(plot, "Titel")
 }
 
 }
+\keyword{internal}

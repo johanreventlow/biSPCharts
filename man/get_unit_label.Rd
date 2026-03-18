@@ -18,3 +18,4 @@ Character. Dansk label for enheden
 Konverter enheds-kode til dansk label
 }
 \concept{spc_helpers}
+\keyword{internal}

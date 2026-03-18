@@ -14,3 +14,4 @@ set_plot_object(app_state, plot)
 \description{
 Safely stores the plot object.
 }
+\keyword{internal}

@@ -25,3 +25,4 @@ log_debug_block("COLUMN_MGMT", "Starting column detection")
 # ... kode ...
 log_debug_block("COLUMN_MGMT", "Column detection completed", type = "stop")
 }
+\keyword{internal}

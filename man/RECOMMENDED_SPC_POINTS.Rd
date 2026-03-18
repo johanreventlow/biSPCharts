@@ -13,4 +13,4 @@ RECOMMENDED_SPC_POINTS
 \description{
 Anbefalet minimum antal punkter for SPC
 }
-\keyword{datasets}
+\keyword{internal}

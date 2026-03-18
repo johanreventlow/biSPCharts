@@ -29,3 +29,4 @@ This object controls phase separation and control limit freezing.
 \item \code{frys_column} identifies freeze points for control limits
 }
 }
+\keyword{internal}

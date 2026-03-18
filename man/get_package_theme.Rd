@@ -12,3 +12,4 @@ Bootstrap theme object
 \description{
 Get hospital theme from package environment
 }
+\keyword{internal}

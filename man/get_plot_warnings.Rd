@@ -15,3 +15,4 @@ Character vector of warnings
 \description{
 Retrieves current plot warnings.
 }
+\keyword{internal}

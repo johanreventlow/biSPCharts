@@ -7,7 +7,7 @@
 #' når session afsluttes eller reset. Del af Fase 5 performance optimization.
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 setup_session_cleanup <- function(session, app_state = NULL, observers = NULL) {
   # Register cleanup på session end
   session$onSessionEnded(function() {
@@ -43,7 +43,7 @@ setup_session_cleanup <- function(session, app_state = NULL, observers = NULL) {
 #' @param values ReactiveValues object der skal cleanes
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 cleanup_reactive_values <- function(values) {
   if (is.null(values) || length(values) == 0) {
     return()
@@ -128,7 +128,7 @@ cleanup_reactive_values <- function(values) {
 #' @param app_state App state object der skal cleanes
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 cleanup_app_state <- function(app_state, emit = NULL) {
   if (is.null(app_state)) {
     return()
@@ -185,7 +185,7 @@ cleanup_app_state <- function(app_state, emit = NULL) {
 #' @param observers List eller single observer object
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 cleanup_observers <- function(observers) {
   if (is.null(observers)) {
     return()
@@ -244,7 +244,7 @@ cleanup_observers <- function(observers) {
 #' }
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 start_memory_monitoring <- function(operation_name = "unknown", warn_threshold = 50) {
   # Baseline memory usage
   baseline_gc <- gc(reset = TRUE)
@@ -296,7 +296,7 @@ start_memory_monitoring <- function(operation_name = "unknown", warn_threshold =
 #' @param max_age_hours Numeric - maximum age i timer før deletion (default 24)
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 cleanup_temp_files <- function(temp_dir = tempdir(), pattern = NULL, max_age_hours = 24) {
   if (!dir.exists(temp_dir)) {
     log_debug("Temp directory does not exist", .context = "MEMORY_MGMT")
@@ -368,7 +368,7 @@ cleanup_temp_files <- function(temp_dir = tempdir(), pattern = NULL, max_age_hou
 #' @param emit Event emission API (optional)
 #'
 #' @family memory_management
-#' @export
+#' @keywords internal
 reset_app_to_clean_state <- function(app_state, session = NULL, emit = NULL) {
   log_info("Resetting app to clean state", .context = "MEMORY_MGMT")
 

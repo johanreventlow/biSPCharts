@@ -30,3 +30,4 @@ Data frame with comparative benchmark results
 Specialized benchmarking for autodetect engine with different trigger types.
 Tests performance across multiple scenarios and data sizes.
 }
+\keyword{internal}

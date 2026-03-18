@@ -10,3 +10,4 @@ clear_data_signature_cache()
 Clears the session-level signature cache.
 Typically called on session end or when memory needs to be freed.
 }
+\keyword{internal}

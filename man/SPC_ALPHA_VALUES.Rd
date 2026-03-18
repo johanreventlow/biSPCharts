@@ -13,4 +13,4 @@ SPC_ALPHA_VALUES
 \description{
 Alpha værdier for gennemsigtighed
 }
-\keyword{datasets}
+\keyword{internal}

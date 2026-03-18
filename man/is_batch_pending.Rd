@@ -18,3 +18,4 @@ Logical. TRUE if batch is pending, FALSE otherwise
 Helper function to check if a specific batch is currently pending execution.
 Useful for debugging and monitoring batch behavior.
 }
+\keyword{internal}

@@ -45,7 +45,7 @@
 #' )
 #' }
 #'
-#' @export
+#' @keywords internal
 add_spc_labels <- function(
   plot,
   qic_data,

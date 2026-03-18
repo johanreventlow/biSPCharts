@@ -60,7 +60,7 @@ NULL
 #' })
 #' }
 #'
-#' @export
+#' @keywords internal
 handle_column_input <- function(col_name, new_value, app_state, emit) {
   # Timestamp for performance tracking (optional)
   input_received_time <- Sys.time()
@@ -184,7 +184,7 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
 #' normalize_column_input("dato") # "dato"
 #' normalize_column_input(c("dato", "x")) # "dato"
 #'
-#' @export
+#' @keywords internal
 normalize_column_input <- function(value) {
   # Handle NULL or empty vector
   if (is.null(value) || length(value) == 0) {
@@ -238,7 +238,7 @@ normalize_column_input <- function(value) {
 #' observers$x_column <- create_column_observer("x_column", input, app_state, emit)
 #' }
 #'
-#' @export
+#' @keywords internal
 create_column_observer <- function(col_name, input, app_state, emit) {
   shiny::observeEvent(input[[col_name]],
     {

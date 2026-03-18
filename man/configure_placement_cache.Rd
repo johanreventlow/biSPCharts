@@ -31,3 +31,4 @@ configure_placement_cache(ttl_seconds = 60, max_cache_size = 50)
 # Configure for long-running sessions (10 minutes TTL, larger cache)
 configure_placement_cache(ttl_seconds = 600, max_cache_size = 200)
 }
+\keyword{internal}

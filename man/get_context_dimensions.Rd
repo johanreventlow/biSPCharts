@@ -54,3 +54,4 @@ dims <- get_context_dimensions("export_png",
 }
 
 }
+\keyword{internal}

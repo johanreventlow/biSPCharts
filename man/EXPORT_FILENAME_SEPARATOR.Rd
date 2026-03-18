@@ -13,4 +13,4 @@ EXPORT_FILENAME_SEPARATOR
 \description{
 Bruges til at separere prefix, titel og timestamp i filnavne.
 }
-\keyword{datasets}
+\keyword{internal}

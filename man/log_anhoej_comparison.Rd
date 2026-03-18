@@ -27,3 +27,4 @@ invisible(NULL)
 Hjælpefunktion til debugging af anhoej-rules diskrepanser.
 Sammenligner forventede værdier med faktiske qic() output.
 }
+\keyword{internal}

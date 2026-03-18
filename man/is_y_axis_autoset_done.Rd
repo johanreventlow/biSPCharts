@@ -15,3 +15,4 @@ Logical
 \description{
 Checks if the Y-axis unit has been auto-set for this data load.
 }
+\keyword{internal}

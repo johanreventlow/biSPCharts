@@ -41,7 +41,7 @@ NULL
 #'   CACHE_CONFIG$default_timeout_seconds
 #' )
 #'
-#' @export
+#' @keywords internal
 create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CACHE_CONFIG$default_timeout_seconds, cache_size_limit = CACHE_CONFIG$size_limit_entries) {
   # FIX BUG #3: Capture expression lazily using substitute()
   # This allows reactive dependencies to trigger re-evaluation
@@ -127,7 +127,7 @@ create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CAC
 #' key <- generate_data_cache_key(my_data, "autodetect")
 #' key_detailed <- generate_data_cache_key(my_data, "processing", TRUE)
 #'
-#' @export
+#' @keywords internal
 generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE) {
   if (is.null(data) || length(data) == 0) {
     return(paste0(prefix, "_empty"))
@@ -174,7 +174,7 @@ generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE
 #' results <- cache_auto_detection_results(data, app_state)
 #' fresh_results <- cache_auto_detection_results(data, app_state, TRUE)
 #'
-#' @export
+#' @keywords internal
 cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE) {
   # Generate comprehensive cache key for auto-detection
   cache_key <- generate_data_cache_key(data, "autodetect", include_names = TRUE)
@@ -337,7 +337,7 @@ manage_cache_size <- function(max_entries) {
 #' clear_performance_cache() # Clear alt
 #' clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
 #'
-#' @export
+#' @keywords internal
 clear_performance_cache <- function(pattern = NULL) {
   cache_keys <- ls(envir = .performance_cache)
 
@@ -367,7 +367,7 @@ clear_performance_cache <- function(pattern = NULL) {
 #' stats <- get_cache_stats()
 #' print(stats)
 #'
-#' @export
+#' @keywords internal
 get_cache_stats <- function() {
   cache_keys <- ls(envir = .performance_cache)
 
@@ -425,7 +425,7 @@ get_cache_stats <- function() {
 #'   cache_timeout = CACHE_CONFIG$default_timeout_seconds
 #' )
 #'
-#' @export
+#' @keywords internal
 create_performance_debounced <- function(reactive_expr, cache_key, debounce_millis = 500, cache_timeout = CACHE_CONFIG$default_timeout_seconds) {
   # First apply caching
   cached_reactive <- create_cached_reactive(reactive_expr, cache_key, cache_timeout)

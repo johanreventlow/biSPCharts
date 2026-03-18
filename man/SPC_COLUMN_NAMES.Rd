@@ -13,4 +13,4 @@ SPC_COLUMN_NAMES
 \description{
 Standard kolonne navne for SPC analyse
 }
-\keyword{datasets}
+\keyword{internal}

@@ -10,3 +10,4 @@ create_chart_validator()
 Validering af chart data og konfiguration før plot generation.
 Ekstraeret fra mod_spc_chart_server.R for genbrug.
 }
+\keyword{internal}

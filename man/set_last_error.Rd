@@ -14,3 +14,4 @@ set_last_error(app_state, error_info)
 \description{
 Safely records error details.
 }
+\keyword{internal}

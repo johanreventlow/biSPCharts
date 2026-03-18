@@ -13,4 +13,4 @@ CACHE_CONFIG
 \description{
 SPRINT 3: Centralized cache timeout settings
 }
-\keyword{datasets}
+\keyword{internal}

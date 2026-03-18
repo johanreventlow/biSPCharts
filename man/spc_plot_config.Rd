@@ -49,3 +49,4 @@ the appearance and behavior of the SPC chart.
 \item \code{target_value} must be numeric if provided
 }
 }
+\keyword{internal}

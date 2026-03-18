@@ -22,4 +22,4 @@ Reduced delays baseret på agent performance analysis:
 \details{
 FORVENTET IMPACT: 30-40\% forbedring i perceived responsiveness
 }
-\keyword{datasets}
+\keyword{internal}

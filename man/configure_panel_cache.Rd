@@ -26,3 +26,4 @@ Invisible: Previous configuration
 \description{
 Configure panel height cache TTL and limits
 }
+\keyword{internal}

@@ -19,3 +19,4 @@ Character – intern klasse
 \description{
 Afgør intern klasse ud fra UI-type og data
 }
+\keyword{internal}

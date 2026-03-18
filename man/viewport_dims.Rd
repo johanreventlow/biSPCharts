@@ -29,3 +29,4 @@ This object controls the physical dimensions and scaling of the plot.
 \item Reference: base_size 14 provides original sizing
 }
 }
+\keyword{internal}

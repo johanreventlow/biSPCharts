@@ -32,4 +32,4 @@ LOG_CONTEXTS
 Centraliseret konfiguration for log context strings.
 Organiseret i logiske kategorier for nem navigation.
 }
-\keyword{datasets}
+\keyword{internal}

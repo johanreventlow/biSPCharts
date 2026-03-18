@@ -19,3 +19,4 @@ gap_line <- config$relative_gap_line * label_height_npc
 gap_labels <- config$relative_gap_labels * label_height_npc
 
 }
+\keyword{internal}

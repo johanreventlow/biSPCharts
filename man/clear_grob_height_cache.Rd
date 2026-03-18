@@ -29,3 +29,4 @@ get_grob_cache_stats() # cache_size skal være 0
 }
 
 }
+\keyword{internal}

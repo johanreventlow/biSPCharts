@@ -12,3 +12,4 @@ List with application information
 \description{
 Retrieve information about the current application configuration.
 }
+\keyword{internal}

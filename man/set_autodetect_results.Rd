@@ -14,3 +14,4 @@ set_autodetect_results(app_state, results)
 \description{
 Safely stores auto-detection results.
 }
+\keyword{internal}

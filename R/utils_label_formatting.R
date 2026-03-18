@@ -33,7 +33,7 @@
 #' # Returns: "2 timer"
 #' }
 #'
-#' @export
+#' @keywords internal
 format_y_value <- function(val, y_unit, y_range = NULL) {
   # Input validation
   if (is.na(val)) {

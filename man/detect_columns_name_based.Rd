@@ -18,3 +18,4 @@ List with detected column mappings
 Name-based column detection for scenarios without data content.
 Renamed and improved version of detect_columns_name_only.
 }
+\keyword{internal}

@@ -26,3 +26,4 @@ qic_cache <- get_or_init_qic_cache(app_state)
 }
 
 }
+\keyword{internal}

@@ -19,3 +19,4 @@ Ensure module is loaded
 Ensure a specific module is loaded before use. This is the main function
 to call before using functionality from a lazy-loaded module.
 }
+\keyword{internal}

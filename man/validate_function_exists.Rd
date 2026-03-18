@@ -23,3 +23,4 @@ if (validate_function_exists("emit$data_loaded")) {
   emit$data_loaded()
 }
 }
+\keyword{internal}

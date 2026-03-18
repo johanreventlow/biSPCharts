@@ -45,7 +45,7 @@
 #'   # Critical state update
 #' })
 #' }
-#' @export
+#' @keywords internal
 OBSERVER_PRIORITIES <- list(
   # Høj prioritet - kritisk state management
   STATE_MANAGEMENT = 2000, # Critical state operations
@@ -89,7 +89,7 @@ OBSERVER_PRIORITIES <- list(
 #' \dontrun{
 #' get_priority("STATE_MANAGEMENT") # Returns 2000
 #' }
-#' @export
+#' @keywords internal
 get_priority <- function(priority_name) {
   priority_value <- OBSERVER_PRIORITIES[[priority_name]]
   if (is.null(priority_value)) {
@@ -109,17 +109,17 @@ get_priority <- function(priority_name) {
 #' \dontrun{
 #' observeEvent(input$data, priority = priority_high(), {})
 #' }
-#' @export
+#' @keywords internal
 priority_high <- function() OBSERVER_PRIORITIES$STATE_MANAGEMENT
 
 #' @rdname priority_helpers
-#' @export
+#' @keywords internal
 priority_medium <- function() OBSERVER_PRIORITIES$DATA_PROCESSING
 
 #' @rdname priority_helpers
-#' @export
+#' @keywords internal
 priority_low <- function() OBSERVER_PRIORITIES$UI_SYNC
 
 #' @rdname priority_helpers
-#' @export
+#' @keywords internal
 priority_cleanup <- function() OBSERVER_PRIORITIES$CLEANUP

@@ -12,7 +12,7 @@
 #' @param call_number Valgfrit kald nummer for sporing
 #'
 #' @return invisible(NULL)
-#' @export
+#' @keywords internal
 log_qic_inputs <- function(qic_args, call_context = "UNKNOWN", call_number = NULL) {
   if (!.should_log("DEBUG")) {
     return(invisible(NULL))
@@ -145,7 +145,7 @@ log_qic_inputs <- function(qic_args, call_context = "UNKNOWN", call_number = NUL
 #' @param success Logical indicating if qic call succeeded
 #'
 #' @return invisible(NULL)
-#' @export
+#' @keywords internal
 log_qic_results <- function(qic_result, call_context = "UNKNOWN", call_number = NULL, success = TRUE) {
   if (!.should_log("DEBUG")) {
     return(invisible(NULL))
@@ -348,7 +348,7 @@ log_qic_results <- function(qic_result, call_context = "UNKNOWN", call_number = 
 #' @param ... Ekstra argumenter (ikke brugt)
 #'
 #' @return Resultat fra qic() kaldet
-#' @export
+#' @keywords internal
 log_qic_call_wrapper <- function(qic_args, call_context = "UNKNOWN", call_number = NULL, qic_cache = NULL, ...) {
   # SPRINT 4: Check if caching is enabled and available
   use_cache <- !is.null(qic_cache) && !is.null(qic_args$data)
@@ -455,7 +455,7 @@ log_qic_call_wrapper <- function(qic_args, call_context = "UNKNOWN", call_number
 #' @param context Kontekst for sammenligningen
 #'
 #' @return invisible(NULL)
-#' @export
+#' @keywords internal
 log_anhoej_comparison <- function(qic_data, expected_longest_run = NULL,
                                   expected_n_crossings = NULL, context = "COMPARISON") {
   if (!.should_log("DEBUG") || is.null(qic_data)) {

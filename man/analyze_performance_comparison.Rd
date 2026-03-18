@@ -23,3 +23,4 @@ List with comparison analysis
 \description{
 Compares benchmark results and identifies performance regressions or improvements.
 }
+\keyword{internal}

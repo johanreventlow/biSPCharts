@@ -30,3 +30,4 @@ cache_spc_result(cache_key, result, qic_cache, ttl = 3600)
 }
 
 }
+\keyword{internal}

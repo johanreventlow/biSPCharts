@@ -29,3 +29,4 @@ validated_data <- validate_data_or_return(input_data, fallback = data.frame())
 # Custom thresholds
 validated_data <- validate_data_or_return(input_data, min_rows = 10, min_cols = 3)
 }
+\keyword{internal}

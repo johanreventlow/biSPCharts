@@ -37,7 +37,7 @@
 #'   auto_restore = TRUE
 #' ))
 #' }
-#' @export
+#' @keywords internal
 set_app_options <- function(options = list()) {
   if (length(options) == 0) {
     return(invisible(NULL))
@@ -84,7 +84,7 @@ set_app_options <- function(options = list()) {
 #' # Check if in test mode
 #' is_test_mode <- get_app_option("test_mode", FALSE)
 #' }
-#' @export
+#' @keywords internal
 get_app_option <- function(option_name, default = NULL) {
   option_key <- paste0("claudespc.", option_name)
   return(getOption(option_key, default))
@@ -96,7 +96,7 @@ get_app_option <- function(option_name, default = NULL) {
 #' with environment detection.
 #'
 #' @return Boolean indicating development mode
-#' @export
+#' @keywords internal
 is_dev_mode <- function() {
   # Check explicit option first
   explicit_dev <- get_app_option("production_mode", NULL)
@@ -118,7 +118,7 @@ is_dev_mode <- function() {
 #' Golem-style production mode detection.
 #'
 #' @return Boolean indicating production mode
-#' @export
+#' @keywords internal
 is_prod_mode <- function() {
   # Check explicit option first
   explicit_prod <- get_app_option("production_mode", NULL)
@@ -154,7 +154,7 @@ is_prod_mode <- function() {
 #' # Development with specific settings
 #' run_dev(port = 5050, debug_level = "DEBUG")
 #' }
-#' @export
+#' @keywords internal
 run_dev <- function(port = 4040,
                     host = "127.0.0.1",
                     reload = FALSE,
@@ -200,7 +200,7 @@ run_dev <- function(port = 4040,
 #' @param host Host address (default: 0.0.0.0 for production)
 #' @param ... Additional arguments passed to run_app()
 #' @return Shiny app object
-#' @export
+#' @keywords internal
 run_prod <- function(port = NULL,
                      host = "0.0.0.0",
                      ...) {
@@ -237,7 +237,7 @@ run_prod <- function(port = NULL,
 #' Retrieve information about the current application configuration.
 #'
 #' @return List with application information
-#' @export
+#' @keywords internal
 get_app_info <- function() {
   # Try to get version from DESCRIPTION file or default
   version <- tryCatch(
@@ -490,7 +490,7 @@ get_fallback_golem_config <- function(env) {
 #'
 #' @param golem_config Configuration from get_golem_config()
 #' @return Invisible TRUE
-#' @export
+#' @keywords internal
 apply_golem_config <- function(golem_config) {
   log_debug("Applying golem configuration to runtime", .context = "GOLEM_APPLY")
 
@@ -538,7 +538,7 @@ apply_golem_config <- function(golem_config) {
 #' Get human-readable summary af current golem configuration.
 #'
 #' @return Character vector with configuration summary
-#' @export
+#' @keywords internal
 get_golem_config_summary <- function() {
   env <- detect_golem_environment()
 

@@ -14,3 +14,4 @@ update_column_mappings(app_state, mappings)
 \description{
 Safely updates multiple column mappings at once.
 }
+\keyword{internal}

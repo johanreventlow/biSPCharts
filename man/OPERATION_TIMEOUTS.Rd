@@ -13,4 +13,4 @@ OPERATION_TIMEOUTS
 \description{
 Timeout værdier for forskellige operationer (millisekunder)
 }
-\keyword{datasets}
+\keyword{internal}

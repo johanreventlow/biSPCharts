@@ -23,3 +23,4 @@ Other performance:
 \code{\link{monitor_memory_usage}()}
 }
 \concept{performance}
+\keyword{internal}

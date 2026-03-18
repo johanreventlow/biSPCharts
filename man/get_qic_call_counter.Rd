@@ -12,3 +12,4 @@ Integer counter value
 \description{
 Returns current value of the QIC call counter for performance monitoring.
 }
+\keyword{internal}

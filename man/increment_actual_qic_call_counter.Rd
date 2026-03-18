@@ -12,3 +12,4 @@ New counter value
 \description{
 Increments the actual qicharts2::qic() call counter and returns new value.
 }
+\keyword{internal}

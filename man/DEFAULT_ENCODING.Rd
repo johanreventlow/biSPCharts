@@ -14,4 +14,4 @@ DEFAULT_ENCODING
 ISO-8859-1 encoding bruges for at sikre kompatibilitet med Windows systemer
 og danske specialtegn i CSV filer.
 }
-\keyword{datasets}
+\keyword{internal}

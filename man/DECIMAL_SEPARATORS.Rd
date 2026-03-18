@@ -13,4 +13,4 @@ DECIMAL_SEPARATORS
 \description{
 Liste over understøttede decimal separatorer til numerisk parsing.
 }
-\keyword{datasets}
+\keyword{internal}

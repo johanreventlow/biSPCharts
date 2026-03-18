@@ -14,3 +14,4 @@ List with module loading status
 Get lazy loading status
 Get current status of all lazy loaded modules
 }
+\keyword{internal}

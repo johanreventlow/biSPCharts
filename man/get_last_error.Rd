@@ -15,3 +15,4 @@ List with error details or NULL
 \description{
 Retrieves the last error details.
 }
+\keyword{internal}

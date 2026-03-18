@@ -13,4 +13,4 @@ UI_LAYOUT_PROPORTIONS
 \description{
 Layout proportions for consistent UI
 }
-\keyword{datasets}
+\keyword{internal}

@@ -13,4 +13,4 @@ UI_STYLES
 \description{
 Genbrugelige CSS style strings til konsistent styling.
 }
-\keyword{datasets}
+\keyword{internal}

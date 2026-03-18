@@ -20,3 +20,4 @@ Safely updates a single column mapping.
 Validates that the column name is one of the recognized mapping types
 before updating. Invalid column names are silently ignored with a warning.
 }
+\keyword{internal}

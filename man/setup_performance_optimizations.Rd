@@ -16,3 +16,4 @@ List with optimization results
 Configure performance-related settings based on app configuration.
 Simplified for package-based loading.
 }
+\keyword{internal}

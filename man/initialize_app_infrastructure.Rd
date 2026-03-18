@@ -54,3 +54,4 @@ emit$auto_detection_started()
 }
 
 }
+\keyword{internal}

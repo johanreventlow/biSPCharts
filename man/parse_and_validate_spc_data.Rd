@@ -22,3 +22,4 @@ List with parsed y_data and n_data (if provided)
 Parser og validerer numeriske data med dansk locale support.
 Ekstraeret fra generateSPCPlot for bedre error handling.
 }
+\keyword{internal}

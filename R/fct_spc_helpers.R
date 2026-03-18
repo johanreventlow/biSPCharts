@@ -387,15 +387,13 @@ process_chart_title <- function(chart_title_reactive, config) {
     paste("SPC Diagram -", config$y_col)
   }
 
-  # Apply sanitization to final title
-  if (exists("sanitize_user_input") && is.function(sanitize_user_input)) {
-    title_result <- sanitize_user_input(
-      input_value = title_result,
-      max_length = 200,
-      allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?/",
-      html_escape = TRUE
-    )
-  }
+  # Sanitize titel mod XSS
+  title_result <- sanitize_user_input(
+    input_value = title_result,
+    max_length = 200,
+    allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?/",
+    html_escape = TRUE
+  )
 
   return(title_result)
 }

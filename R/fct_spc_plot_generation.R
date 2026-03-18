@@ -88,17 +88,15 @@ extract_comment_data <- function(data, kommentar_column, qic_data) {
 
   # SPRINT 3: Sanitize comments for XSS protection
   if (nrow(comment_data) > 0) {
-    # Apply XSS sanitization to all comments
-    if (exists("sanitize_user_input") && is.function(sanitize_user_input)) {
-      comment_data$comment <- sapply(comment_data$comment, function(cmt) {
-        sanitize_user_input(
-          input_value = cmt,
-          max_length = SPC_COMMENT_CONFIG$max_length, # M3: Using config constant
-          allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?",
-          html_escape = TRUE
-        )
-      }, USE.NAMES = FALSE)
-    }
+    # Sanitize kommentarer mod XSS
+    comment_data$comment <- sapply(comment_data$comment, function(cmt) {
+      sanitize_user_input(
+        input_value = cmt,
+        max_length = SPC_COMMENT_CONFIG$max_length,
+        allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?",
+        html_escape = TRUE
+      )
+    }, USE.NAMES = FALSE)
 
     # Afkort meget lange kommentarer efter sanitization (M3: Using config constants)
     comment_data$comment <- dplyr::if_else(

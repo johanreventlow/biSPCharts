@@ -106,26 +106,38 @@ verify_branding_setup <- function() {
     colors_available = FALSE
   )
 
-  # Check if global branding variables are available (set by .onLoad)
-  if (exists("HOSPITAL_NAME") && !is.null(HOSPITAL_NAME)) {
-    results$hospital_name_available <- TRUE
-    results$hospital_name <- HOSPITAL_NAME
-  }
+  # Brug getter funktioner i stedet for at checke globale variabler
+  tryCatch({
+    hospital_name <- get_hospital_name()
+    if (!is.null(hospital_name) && nchar(hospital_name) > 0) {
+      results$hospital_name_available <- TRUE
+      results$hospital_name <- hospital_name
+    }
+  }, error = function(e) NULL)
 
-  if (exists("my_theme") && !is.null(my_theme)) {
-    results$theme_available <- TRUE
-    results$theme_class <- class(my_theme)
-  }
+  tryCatch({
+    theme <- get_bootstrap_theme()
+    if (!is.null(theme)) {
+      results$theme_available <- TRUE
+      results$theme_class <- class(theme)
+    }
+  }, error = function(e) NULL)
 
-  if (exists("HOSPITAL_LOGO_PATH") && !is.null(HOSPITAL_LOGO_PATH)) {
-    results$logo_path_available <- TRUE
-    results$logo_path <- HOSPITAL_LOGO_PATH
-  }
+  tryCatch({
+    logo_path <- get_hospital_logo_path()
+    if (!is.null(logo_path) && nchar(logo_path) > 0) {
+      results$logo_path_available <- TRUE
+      results$logo_path <- logo_path
+    }
+  }, error = function(e) NULL)
 
-  if (exists("HOSPITAL_COLORS") && !is.null(HOSPITAL_COLORS)) {
-    results$colors_available <- TRUE
-    results$color_count <- length(HOSPITAL_COLORS)
-  }
+  tryCatch({
+    colors <- get_hospital_colors()
+    if (!is.null(colors) && length(colors) > 0) {
+      results$colors_available <- TRUE
+      results$color_count <- length(colors)
+    }
+  }, error = function(e) NULL)
 
   results$complete <- all(
     results$hospital_name_available,

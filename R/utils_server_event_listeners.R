@@ -597,30 +597,6 @@ register_navigation_events <- function(app_state, emit, session, register_observ
     )
   )
 
-  # Form reset needed
-  observers$form_reset_needed <- register_observer(
-    "form_reset_needed",
-    shiny::observeEvent(app_state$events$form_reset_needed,
-      ignoreInit = TRUE,
-      priority = OBSERVER_PRIORITIES$LOW,
-      {
-        # NOTE: ui_service not available in this scope - will be handled at call site
-      }
-    )
-  )
-
-  # Form restore needed
-  observers$form_restore_needed <- register_observer(
-    "form_restore_needed",
-    shiny::observeEvent(app_state$events$form_restore_needed,
-      ignoreInit = TRUE,
-      priority = OBSERVER_PRIORITIES$LOW,
-      {
-        # NOTE: ui_service not available in this scope - will be handled at call site
-      }
-    )
-  )
-
   return(observers)
 }
 

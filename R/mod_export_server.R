@@ -892,7 +892,7 @@ mod_export_server <- function(id, app_state) {
                 x = pdf_plot_result$bfh_qic_result,
                 output = file,
                 metadata = metadata,
-                template = "bfh-diagram2"
+                template = "bfh-diagram"
               )
 
               # Verify successful generation

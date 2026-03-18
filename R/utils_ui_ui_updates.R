@@ -595,48 +595,13 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
       format(execution_start, "%H%M%S_%f")
     )
 
-    is_real_session <- inherits(session, "ShinySession") && !is.null(session$sendCustomMessage)
-
-    if (is_real_session) {
-      original_updateSelectizeInput <- if (exists("updateSelectizeInput", envir = .GlobalEnv, inherits = FALSE)) {
-        get("updateSelectizeInput", envir = .GlobalEnv)
-      } else {
-        shiny::updateSelectizeInput
-      }
-
-      assign(
-        "updateSelectizeInput",
-        function(session, inputId, choices = NULL, selected = NULL, ...) {
-          # Operation completed
-
-          if (!is.null(choices) && length(choices) > 0) {}
-
-          if (!is.null(selected)) {
-            input_token <- paste0(session_token, "_", inputId)
-            shiny::isolate({
-              app_state$ui$pending_programmatic_inputs[[inputId]] <- list(
-                token = input_token,
-                value = selected,
-                timestamp = Sys.time(),
-                session_token = session_token
-              )
-            })
-            # Token operation completed
-          }
-
-          result <- original_updateSelectizeInput(session, inputId, choices = choices, selected = selected, ...)
-
-          # Dropdown update completed
-          return(result)
-        },
-        envir = .GlobalEnv
-      )
-
-      on.exit(
-        assign("updateSelectizeInput", original_updateSelectizeInput, envir = .GlobalEnv),
-        add = TRUE
-      )
-    }
+    # Registrer session token for programmatisk update-tracking
+    # Token-registrering sker via updating_programmatically flag (sat ovenfor).
+    # Tidligere var der en .GlobalEnv override af updateSelectizeInput her,
+    # men den havde ingen effekt da alle call sites bruger shiny:: prefix.
+    shiny::isolate({
+      app_state$ui$current_programmatic_token <- session_token
+    })
 
     safe_operation(
       "Execute update function",

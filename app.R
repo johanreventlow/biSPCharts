@@ -30,5 +30,5 @@ devtools::load_all(reset = TRUE, recompile = FALSE, helpers = FALSE)
 set_debug_context(NULL)
 
 # Run app with test mode enabled for development
-run_app(enable_test_mode = TRUE, log_level = "DEBUG")
-# run_app(enable_test_mode = FALSE, log_level = "INFO")
+# run_app(enable_test_mode = TRUE, log_level = "DEBUG")
+run_app(enable_test_mode = FALSE, log_level = "INFO")

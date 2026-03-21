@@ -61,3 +61,6 @@ candidates_for_deletion
 
 # Superpowers brainstorming
 .superpowers/
+
+# Git worktrees
+.worktrees/

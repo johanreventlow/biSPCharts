@@ -73,4 +73,3 @@ Suggests:
 Config/testthat/edition: 3
 Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration
 VignetteBuilder: knitr
-URL: https://github.com/johanreventlow/claude_spc

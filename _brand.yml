@@ -4,8 +4,8 @@ meta:
   link: "https://bfh.dk"
 
 logo:
-  image: "www/SPCify.png"
-  alt: "SPCify Logo"
+  images:
+    small: "www/SPCify.png"
 
 # RegionH Hospitalsfarver
 # --celestial-blue: #009ce8ff;

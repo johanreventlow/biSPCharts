@@ -58,3 +58,6 @@ candidates_for_deletion
 
 # CCPM (Claude Code PM) - local workspace
 .claude/epics/
+
+# Superpowers brainstorming
+.superpowers/

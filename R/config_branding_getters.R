@@ -36,7 +36,7 @@ get_brand_config_path <- function() {
     # TIDYVERSE: Use purrr::detect to find first matching path (80% code reduction)
     found_path <- purrr::detect(fallback_paths, file.exists)
     if (!is.null(found_path)) {
-      return(found_path)
+      return(normalizePath(found_path, mustWork = TRUE))
     }
 
     # If no brand file found, return NULL and use defaults
@@ -112,8 +112,8 @@ create_brand_theme <- function() {
 
   tryCatch(
     {
-      # Use bslib's brand parameter with the config file
-      bslib::bs_theme(brand = brand_path)
+      # Brug absolut sti saa bslib kan finde brand filen korrekt
+      bslib::bs_theme(brand = normalizePath(brand_path, mustWork = TRUE))
     },
     error = function(e) {
       warning(paste("Failed to create theme from brand file:", e$message, ". Using default theme."))
@@ -138,7 +138,7 @@ initialize_branding <- function() {
   claudespc_branding$config <- brand_config
   claudespc_branding$theme <- create_brand_theme()
   claudespc_branding$hospital_name <- brand_config$meta$name
-  claudespc_branding$logo_path <- brand_config$logo$image
+  claudespc_branding$logo_path <- brand_config$logo$images$small %||% brand_config$logo$image
 
   # Build hospital colors
   claudespc_branding$colors <- list(

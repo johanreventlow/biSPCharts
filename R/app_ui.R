@@ -26,20 +26,24 @@ app_ui <- function(request) {
       # Header-komponenter
       header = create_ui_header(),
 
-      # Sidebar
-      sidebar = create_ui_sidebar(),
-
       # Navigation tabs
+      # Upload tab - fil upload og session management
+      bslib::nav_panel(
+        title = "Upload",
+        icon = shiny::icon("upload"),
+        create_ui_upload_page()
+      ),
+
       # Hovedindhold - SPC Chart arbejdsområde
       bslib::nav_panel(
-        title = "Analyse",
+        title = "Analysér",
         icon = shiny::icon("chart-line"),
         create_ui_main_content()
       ),
 
       # Eksport tab - SPC Chart eksport modul
       bslib::nav_panel(
-        title = "Eksport",
+        title = "Eksportér",
         icon = shiny::icon("file-export"),
         mod_export_ui("export")
       )

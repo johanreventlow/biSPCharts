@@ -18,7 +18,34 @@
 # See docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md for complete list of all contexts
 # ==============================================================================
 
-# Load package
+# ==============================================================================
+# DEV-LOADING AF SIBLING-PAKKER
+# ==============================================================================
+# Indlaeser BFHtheme, BFHcharts og BFHllm fra kildekode (sibling-mapper)
+# saa vi altid tester nyeste version under udvikling.
+# Raekkefoelge: BFHtheme -> BFHcharts -> BFHllm -> SPCify (dependency order)
+# ==============================================================================
+dev_load_siblings <- function(base_path = dirname(getwd())) {
+  siblings <- list(
+    BFHtheme  = file.path(base_path, "BFHtheme"),
+    BFHcharts = file.path(base_path, "BFHcharts"),
+    BFHllm    = file.path(base_path, "BFHllm")
+  )
+  
+  for (pkg_name in names(siblings)) {
+    pkg_path <- siblings[[pkg_name]]
+    if (dir.exists(pkg_path)) {
+      message(sprintf("[DEV] Indlaeser %s fra %s", pkg_name, pkg_path))
+      devtools::load_all(pkg_path, quiet = TRUE)
+    } else {
+      message(sprintf("[DEV] %s ikke fundet i %s - bruger installeret version", pkg_name, pkg_path))
+    }
+  }
+}
+
+dev_load_siblings()
+
+# Load SPCify
 devtools::load_all(reset = TRUE, recompile = FALSE, helpers = FALSE)
 
 # Optional: Show debug contexts and set filter before running app
@@ -31,4 +58,5 @@ set_debug_context(NULL)
 
 # Run app with test mode enabled for development
 # run_app(enable_test_mode = TRUE, log_level = "DEBUG")
+options(shiny.launch.browser = TRUE)
 run_app(enable_test_mode = FALSE, log_level = "INFO")

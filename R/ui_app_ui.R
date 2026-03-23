@@ -180,20 +180,38 @@ create_ui_header <- function() {
 #' @export
 create_ui_main_content <- function() {
   shiny::tagList(
-    # Welcome page when no meaningful data is loaded - DISABLED FOR DEVELOPMENT
-    # shiny::conditionalPanel(condition = "output.dataLoaded != 'TRUE'", create_welcome_page()),
-
-    # Main content in 8-4-8-4 grid layout
-    # Top row: SPC Preview (8), ValueBoxes (4)
-    # Bottom row: Data table (8), Empty (4)
+    # Layout: 6-6 grid
+    # Venstre: Datatabel (fuld hoejde)
+    # Hoejre top: SPC Preview
+    # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
-      col_widths = c(8, 4, 8, 4),
-      height = "auto",
-      max_height = "100%",
-      create_plot_only_card(),
-      create_status_value_boxes(),
+      col_widths = c(6, 6),
+      height = "calc(100vh - 80px)",
+
+      # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),
-      shiny::div() # Empty space (4/12)
+
+      # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
+      shiny::div(
+        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
+
+        # Oeverste halvdel: SPC Preview
+        shiny::div(
+          style = "flex: 1 1 50%; min-height: 0;",
+          create_plot_only_card()
+        ),
+
+        # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
+        shiny::div(
+          style = "flex: 1 1 50%; min-height: 0;",
+          bslib::layout_columns(
+            col_widths = c(6, 6),
+            height = "100%",
+            create_chart_settings_card_compact(),
+            create_status_value_boxes()
+          )
+        )
+      )
     )
   )
 }
@@ -424,52 +442,56 @@ create_plot_only_card <- function() {
   bslib::card(
     full_screen = TRUE,
     fillable = TRUE,
-    max_height = "100%",
-    min_height = "calc(50vh - 60px)",
+    height = "100%",
     bslib::card_header(
       shiny::div(shiny::icon("chart-line"), " SPC Preview")
     ),
-    bslib::layout_sidebar(
-      sidebar = bslib::sidebar(
-        width = "350px",
-        position = "right",
-        shiny::selectizeInput(
-          "chart_type",
-          "Diagram type:",
-          choices = CHART_TYPES_DA,
-          selected = "run",
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "y_axis_unit",
-          "Y-akse enhed:",
-          choices = Y_AXIS_UI_TYPES_DA,
-          selected = "count",
-          width = "100%"
-        ),
-        # Detaljer fields from accordion
-        shiny::textInput(
-          "target_value",
-          "Udviklingsmål:",
-          value = "",
-          placeholder = "fx >=90%, <25 eller >",
-          width = "100%"
-        ),
-        shiny::textInput(
-          "centerline_value",
-          "Evt. baseline:",
-          value = "",
-          placeholder = "fx 68%, 0,7 el. 22",
-          width = "100%"
-        )
-      ),
-
-      # bslib::card_body(
-      #   fill = TRUE,
+    bslib::card_body(
+      fill = TRUE,
       shiny::div(
         style = "height: 100%",
         visualizationModuleUI("visualization")
-        # )
+      )
+    )
+  )
+}
+
+#' Kompakt indstillings-card til hoejre side
+#' @export
+create_chart_settings_card_compact <- function() {
+  bslib::card(
+    height = "100%",
+    bslib::card_header(
+      shiny::div(shiny::icon("sliders-h"), " Indstillinger")
+    ),
+    bslib::card_body(
+      shiny::selectizeInput(
+        "chart_type",
+        "Diagram type:",
+        choices = CHART_TYPES_DA,
+        selected = "run",
+        width = "100%"
+      ),
+      shiny::selectizeInput(
+        "y_axis_unit",
+        "Y-akse enhed:",
+        choices = Y_AXIS_UI_TYPES_DA,
+        selected = "count",
+        width = "100%"
+      ),
+      shiny::textInput(
+        "target_value",
+        "Udviklingsmål:",
+        value = "",
+        placeholder = "fx >=90%, <25 eller >",
+        width = "100%"
+      ),
+      shiny::textInput(
+        "centerline_value",
+        "Evt. baseline:",
+        value = "",
+        placeholder = "fx 68%, 0,7 el. 22",
+        width = "100%"
       )
     )
   )
@@ -478,30 +500,44 @@ create_plot_only_card <- function() {
 create_data_table_card <- function() {
   bslib::card(
     full_screen = TRUE,
-    min_height = "calc(50vh - 60px)",
+    height = "100%",
     bslib::card_header(
       shiny::div(
-        style = "display: flex; justify-content: space-between; align-items: center;",
-        shiny::div(shiny::icon("table"), " Data", ),
+        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;",
+        shiny::div(shiny::icon("table"), " Data"),
         shiny::div(
           class = "btn-group-sm",
           shiny::actionButton(
+            "auto_detect_columns",
+            label = "Auto-detektér",
+            icon = shiny::icon("magic"),
+            title = "Auto-detektér kolonner",
+            class = "btn-primary btn-sm"
+          ),
+          shiny::actionButton(
+            "show_column_mapping_modal",
+            label = "Kolonner",
+            icon = shiny::icon("columns"),
+            title = "Angiv kolonner manuelt",
+            class = "btn-secondary btn-sm"
+          ),
+          shiny::actionButton(
             "edit_column_names",
-            label = "Redigér kolonnenavne",
+            label = "Omdøb",
             icon = shiny::icon("edit"),
             title = "Redigér kolonnenavne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_column",
-            label = "Tilføj kolonne",
+            label = NULL,
             icon = shiny::icon("plus"),
             title = "Tilføj kolonne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_row",
-            label = "Tilføj række",
+            label = NULL,
             icon = shiny::icon("plus-square"),
             title = "Tilføj række",
             class = "btn-secondary btn-sm"
@@ -509,26 +545,8 @@ create_data_table_card <- function() {
         )
       )
     ),
-    bslib::layout_sidebar(
-      sidebar = bslib::sidebar(
-        width = "350px",
-        position = "right",
-
-        # Knapper til kolonnematch
-        shiny::actionButton(
-          "show_column_mapping_modal",
-          "Angiv kolonner manuelt",
-          icon = shiny::icon("columns"),
-          class = "btn-primary w-100 mb-2"
-        ),
-        shiny::actionButton(
-          "auto_detect_columns",
-          "Auto-detektér kolonner",
-          icon = shiny::icon("magic"),
-          class = "btn-secondary w-100"
-        )
-      ),
-      # Data table using excelR
+    bslib::card_body(
+      fill = TRUE,
       excelR::excelOutput("main_data_table", height = "auto")
     )
   )
@@ -804,6 +822,49 @@ create_ui_sidebar <- function() {
     # )
   )
 }
+
+# UI UPLOAD PAGE KOMPONENTER ===================================================
+
+#' Upload-side med session management
+#'
+#' Opretter upload-siden med knapper til at starte ny session og uploade data.
+#' Erstatter den tidligere sidebar.
+#' @export
+create_ui_upload_page <- function() {
+  shiny::div(
+    class = "container-fluid",
+    style = "max-width: 600px; margin: 0 auto; padding-top: 40px;",
+    bslib::card(
+      bslib::card_header(
+        shiny::div(shiny::icon("upload"), " Upload data")
+      ),
+      bslib::card_body(
+        shiny::p("Upload en datafil for at komme i gang med SPC-analyse."),
+
+        # Upload fil knap
+        shiny::actionButton(
+          "show_upload_modal",
+          "Upload datafil",
+          icon = shiny::icon("file-arrow-up"),
+          class = "btn-primary w-100 mb-3",
+          title = "Upload Excel eller CSV fil"
+        ),
+
+        shiny::hr(),
+
+        # Start ny session knap
+        shiny::actionButton(
+          "clear_saved",
+          "Start ny session",
+          icon = shiny::icon("rotate"),
+          class = "btn-secondary w-100",
+          title = "Start med tom standardtabel"
+        )
+      )
+    )
+  )
+}
+
 # ui_welcome_page.R
 # UI komponenter for velkomstside
 

@@ -66,7 +66,7 @@ OBSERVER_PRIORITIES <- list(
   HIGH = 2000, # Maps to STATE_MANAGEMENT
   MEDIUM = 1250, # Maps to DATA_PROCESSING
   LOW = 750, # Maps to UI_SYNC
-  LOWEST = 200, # Maps to CLEANUP
+  LOWEST = 200 # Maps to CLEANUP
 )
 
 ## Observer Priority Helpers -----

@@ -857,85 +857,138 @@ create_ui_sidebar <- function() {
 
 # UI UPLOAD PAGE KOMPONENTER ===================================================
 
-#' Upload-side med paste-felt og handlingsknapper
+#' Upload-side med kvadratiske handlingsknapper og paste-felt
 #'
-#' Datawrapper-inspireret layout: handlinger (venstre), paste-felt (hoejre).
+#' Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (højre).
+#' Ingen cards — rent, fladt layout.
 #' @export
 create_ui_upload_page <- function() {
-  sample_csv <- paste(
-    "Dato;Vaerdi;Kommentar",
-    "2024-01-01;42;",
-    "2024-02-01;38;",
-    "2024-03-01;45;Ny procedure",
-    "2024-04-01;41;",
-    "2024-05-01;39;",
-    "2024-06-01;44;",
-    sep = "\n"
-  )
-
-  shiny::div(
-    class = "container-fluid",
-    style = "max-width: 1000px; margin: 0 auto; padding-top: 30px;",
-    bslib::layout_columns(
-      col_widths = c(4, 8),
-
-      # Venstre kolonne: handlingsknapper
-      bslib::card(
-        height = "100%",
-        bslib::card_header(
-          shiny::div(shiny::icon("folder-open"), " Datakilde")
-        ),
-        bslib::card_body(
-          shiny::actionButton(
-            "show_upload_modal",
-            "Upload datafil",
-            icon = shiny::icon("file-arrow-up"),
-            class = "btn-primary w-100 mb-3",
-            title = "Upload Excel eller CSV fil"
-          ),
-          shiny::actionButton(
-            "clear_saved",
-            "Start ny session",
-            icon = shiny::icon("rotate"),
-            class = "btn-outline-secondary w-100 mb-3",
-            title = "Start med tom standardtabel"
-          ),
-          shiny::hr(),
-          shiny::actionButton(
-            "load_sample_data",
-            "Proev med eksempeldata",
-            icon = shiny::icon("flask"),
-            class = "btn-link w-100",
-            title = "Indlaes et SPC-eksempeldatasaet"
-          )
-        )
+  # Hjælpefunktion: kvadratisk knap med ikon og tekst
+  # Alle knapper har samme base-styling. CSS class "upload-btn-active" styrer valgt-tilstand.
+  square_button <- function(id, label, icon_name, title_text) {
+    shiny::actionButton(
+      id,
+      label = shiny::div(
+        shiny::icon(icon_name, class = "fa-2x"),
+        shiny::tags$br(),
+        shiny::tags$span(label, style = "font-size: 0.85rem; font-weight: 600;")
       ),
+      class = "btn btn-outline-secondary upload-source-btn w-100 d-flex flex-column align-items-center justify-content-center",
+      style = "aspect-ratio: 1; padding: 12px; min-height: 110px;",
+      title = title_text
+    )
+  }
 
-      # Hoejre kolonne: paste-felt
-      bslib::card(
-        height = "100%",
-        bslib::card_header(
-          shiny::div(shiny::icon("paste"), " Indsaet data")
+  shiny::tagList(
+    # CSS for upload-knap active/hover tilstande
+    shiny::tags$style(htmltools::HTML("
+      /* Alle upload-source knapper: normal tilstand */
+      .upload-source-btn {
+        transition: all 0.15s ease;
+      }
+
+      /* Hover: kun mørkere ramme, ingen farve/baggrund ændring */
+      .upload-source-btn:hover {
+        border-color: #495057 !important;
+        border-width: 2px !important;
+        background-color: transparent !important;
+        color: #95a5a6 !important;
+      }
+
+      /* Hover på valgt knap: behold valgt-farver + mørk ramme */
+      .upload-source-btn.upload-btn-active:hover {
+        background-color: #95a5a6 !important;
+        color: #fff !important;
+        border-color: #495057 !important;
+      }
+
+      /* Valgt knap: præcis Flatly btn-outline-secondary:hover (permanent) */
+      .upload-source-btn.upload-btn-active {
+        background-color: #95a5a6 !important;
+        border-color: #95a5a6 !important;
+        color: #fff !important;
+      }
+      .upload-source-btn.upload-btn-active .fa-2x,
+      .upload-source-btn.upload-btn-active span {
+        color: #fff !important;
+      }
+    ")),
+
+    shiny::div(
+      class = "container-fluid d-flex align-items-center justify-content-center",
+      style = "max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 120px);",
+
+      # Flexbox-row: knapper (fast bredde) + paste-felt (fylder resten)
+      shiny::div(
+        style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
+
+        # Knap 1: Kopiér & Indsæt data (default valgt via JS)
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "show_paste_area", "Kopiér &\nIndsæt data", "clipboard",
+            "Indsæt data fra Excel eller CSV"
+          )
         ),
-        bslib::card_body(
+
+        # Knap 2: Indlæs XLS/CSV
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          # Skjult fileInput
+          shiny::div(
+            style = "display: none;",
+            shiny::fileInput(
+              "direct_file_upload",
+              label = NULL,
+              accept = c(".csv", ".xlsx", ".xls"),
+              buttonLabel = "Vælg fil"
+            )
+          ),
+          square_button(
+            "trigger_file_upload", "Indlæs\nXLS/CSV", "file-csv",
+            "Vælg Excel eller CSV fil"
+          )
+        ),
+
+        # Knap 3: Prøv med eksempeldata
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "load_sample_data", "Prøv med\neksempeldata", "flask",
+            "Indlæs et SPC-eksempeldatasæt"
+          )
+        ),
+
+        # Knap 4: Blank session
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "clear_saved", "Blank\nsession", "file-circle-plus",
+            "Start med tomt datasæt"
+          )
+        ),
+
+        # Paste-felt (fylder resten af pladsen)
+        shiny::div(
+          style = "flex: 1 1 auto; display: flex; flex-direction: column;",
           shiny::textAreaInput(
             "paste_data_input",
             label = NULL,
-            value = sample_csv,
-            rows = 15,
+            value = "",
+            rows = 6,
             width = "100%",
-            placeholder = "Indsaet data fra Excel eller CSV her..."
+            placeholder = "Indsæt data fra Excel eller CSV her..."
           ),
           shiny::tags$small(
-            class = "text-muted d-block mb-3",
+            class = "text-muted d-block mb-2",
             "Kolonner adskilles automatisk (tab, semikolon eller komma)"
           ),
           shiny::actionButton(
             "load_paste_data",
-            "Indlaes data",
+            "Fortsæt",
             icon = shiny::icon("arrow-right"),
             class = "btn-primary",
-            title = "Parser og indlaeser det indsatte data"
+            title = "Indlæs data og gå til analyse"
           )
         )
       )

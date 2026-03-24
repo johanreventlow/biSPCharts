@@ -184,11 +184,11 @@ create_ui_header <- function() {
       flex-shrink: 0;
     }
 
-    /* Aktiv tab: filled cirkel */
+    /* Aktiv tab: filled cirkel, arver tab-tekstens farve */
     .navbar-nav .nav-link.active[data-step]::before {
-      background-color: #375a7f;
+      background-color: currentColor;
       color: white;
-      border-color: #375a7f;
+      border-color: currentColor;
     }
 
     /* Locked tab styling */

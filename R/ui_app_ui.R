@@ -211,33 +211,18 @@ create_ui_header <- function() {
 
 #' @export
 create_ui_main_content <- function() {
-  shiny::tagList(
-    # Layout: 6-6 grid
+  shiny::div(
+    style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
+    # Layout: 6-6 grid (fylder det meste, men ikke helt til bunden)
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
       col_widths = c(6, 6),
-      height = "calc(100vh - 80px)",
+      height = "calc(100vh - 160px)",
 
-      # Venstre kolonne: Datatabel (75% hoejde) + Fortsæt-knap
-      shiny::div(
-        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
-        shiny::div(
-          style = "flex: 0 0 75%; min-height: 0;",
-          create_data_table_card()
-        ),
-        shiny::div(
-          style = "display: flex; justify-content: flex-end;",
-          shiny::actionButton(
-            "continue_to_export",
-            shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
-            class = "btn-primary",
-            style = "width: 200px;",
-            title = "Gå til eksport"
-          )
-        )
-      ),
+      # Venstre kolonne: Datatabel (fuld hoejde)
+      create_data_table_card(),
 
       # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
       shiny::div(
@@ -259,6 +244,24 @@ create_ui_main_content <- function() {
             create_status_value_boxes()
           )
         )
+      )
+    ),
+    # Tilbage/Fortsæt knapper under cards
+    shiny::div(
+      style = "display: flex; justify-content: space-between;",
+      shiny::actionButton(
+        "back_to_upload",
+        shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
+        class = "btn-secondary",
+        style = "width: 200px;",
+        title = "Gå tilbage til upload"
+      ),
+      shiny::actionButton(
+        "continue_to_export",
+        shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+        class = "btn-primary",
+        style = "width: 200px;",
+        title = "Gå til eksport"
       )
     )
   )

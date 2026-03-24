@@ -1190,6 +1190,11 @@ setup_wizard_gates <- function(input, app_state, session) {
     }
   })
 
+  # Tilbage-knap: Trin 2 -> Trin 1
+  shiny::observeEvent(input$back_to_upload, {
+    bslib::nav_select("main_navbar", selected = "upload", session = session)
+  })
+
   # Fortsæt-knap: Trin 2 -> Trin 3
   shiny::observeEvent(input$continue_to_export, {
     bslib::nav_select("main_navbar", selected = "eksporter", session = session)

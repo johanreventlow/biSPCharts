@@ -78,8 +78,8 @@ classify_update_context <- function(update_context) {
     return("table_edit")
   }
 
-  # Load contexts (upload, file, new data)
-  if (grepl("load|upload|file|new", ctx_lower, ignore.case = TRUE)) {
+  # Load contexts (upload, file, paste, new data)
+  if (grepl("load|upload|file|paste|new", ctx_lower, ignore.case = TRUE)) {
     return("load")
   }
 

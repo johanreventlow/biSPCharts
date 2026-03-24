@@ -1195,8 +1195,15 @@ setup_wizard_gates <- function(input, app_state, session) {
     bslib::nav_select("main_navbar", selected = "upload", session = session)
   })
 
-  # Fortsæt-knap: Trin 2 -> Trin 3
+  # Fortsæt-knap: Trin 2 -> Trin 3 (kun hvis plot er klar)
   shiny::observeEvent(input$continue_to_export, {
+    if (!isTRUE(shiny::isolate(app_state$visualization$plot_ready))) {
+      shiny::showNotification(
+        "Vælg kolonner og generer et diagram først",
+        type = "warning", duration = 3
+      )
+      return()
+    }
     bslib::nav_select("main_navbar", selected = "eksporter", session = session)
   })
 }
@@ -1250,26 +1257,32 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
     shinyjs::click("direct_file_upload")
   })
 
-  # Observer: Direkte fil-upload — vis data i tekstfeltet, vent på "Fortsæt"
+  # Observer: Direkte fil-upload — validér og behandl via eksisterende upload-logik
   shiny::observeEvent(input$direct_file_upload, {
     req(input$direct_file_upload)
     file_info <- input$direct_file_upload
 
-    safe_operation("Vis uploadet fil i paste-felt", {
+    # Filvalidering (rate limiting, størrelse, MIME, korruption)
+    validation_result <- validate_uploaded_file(
+      file_info, sanitize_session_token(session$token)
+    )
+    if (!validation_result$valid) {
+      shiny::showNotification(
+        paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
+        type = "error", duration = 5
+      )
+      return()
+    }
+
+    safe_operation("Behandl uploadet fil", {
       ext <- tolower(tools::file_ext(file_info$name))
-      text_content <- NULL
 
-      if (ext %in% c("csv", "txt")) {
+      if (ext %in% c("xlsx", "xls")) {
+        # Excel: brug eksisterende handler (bevarer Metadata-sheet og typer)
+        handle_excel_upload(file_info$datapath, session, app_state, emit)
+      } else if (ext %in% c("csv", "txt")) {
+        # CSV: vis i paste-felt så brugeren kan reviewe før "Fortsæt"
         text_content <- readLines(file_info$datapath, warn = FALSE, encoding = "UTF-8")
-      } else if (ext %in% c("xlsx", "xls")) {
-        data <- readxl::read_excel(file_info$datapath)
-        # Konverter til semikolon-separeret tekst (dansk standard)
-        header <- paste(names(data), collapse = ";")
-        rows <- apply(data, 1, function(row) paste(row, collapse = ";"))
-        text_content <- c(header, rows)
-      }
-
-      if (!is.null(text_content)) {
         shiny::updateTextAreaInput(
           session, "paste_data_input",
           value = paste(text_content, collapse = "\n")

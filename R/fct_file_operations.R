@@ -207,7 +207,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
       )
 
       shiny::showNotification(
-        paste("File validation failed:", paste(validation_result$errors, collapse = "; ")),
+        paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
         type = "error",
         duration = 8
       )
@@ -473,7 +473,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
 
     if (length(cleaning_messages) > 0) {
       shiny::showNotification(
-        paste("Data cleaned:", paste(cleaning_messages, collapse = ", ")),
+        paste("Data renset:", paste(cleaning_messages, collapse = ", ")),
         type = "message",
         duration = 5
       )
@@ -562,7 +562,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
 handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NULL) {
   # Valider input
   if (is.null(text_data) || !nzchar(trimws(text_data))) {
-    shiny::showNotification("Indsaet data foerst", type = "warning", duration = 3)
+    shiny::showNotification("Indsæt data først", type = "warning", duration = 3)
     return(invisible(NULL))
   }
 
@@ -595,7 +595,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   # Valider resultat
   if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
     shiny::showNotification(
-      "Kunne ikke parse data. Kontroller at data har mindst 2 kolonner og 1 raekke.",
+      "Kunne ikke parse data. Kontrollér at data har mindst 2 kolonner og 1 række.",
       type = "error", duration = 5
     )
     return(invisible(NULL))
@@ -622,7 +622,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   emit$navigation_changed()
 
   shiny::showNotification(
-    paste("Data indlaest:", nrow(data), "raekker,", ncol(data), "kolonner"),
+    paste("Data indlæst:", nrow(data), "rækker,", ncol(data), "kolonner"),
     type = "message", duration = 3
   )
 

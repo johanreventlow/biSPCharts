@@ -11,6 +11,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     bslib::page_navbar(
+      id = "main_navbar",
       title = shiny::tagList(
         shiny::img(
           src = get_hospital_logo_path(),
@@ -31,22 +32,25 @@ app_ui <- function(request) {
       bslib::nav_panel(
         title = "Upload",
         icon = shiny::icon("upload"),
+        value = "upload",
         create_ui_upload_page()
-      ),
+      ) |> shiny::tagAppendAttributes(`data-step` = "1", .cssSelector = "a.nav-link"),
 
       # Hovedindhold - SPC Chart arbejdsområde
       bslib::nav_panel(
         title = "Analysér",
         icon = shiny::icon("chart-line"),
+        value = "analyser",
         create_ui_main_content()
-      ),
+      ) |> shiny::tagAppendAttributes(`data-step` = "2", .cssSelector = "a.nav-link"),
 
       # Eksport tab - SPC Chart eksport modul
       bslib::nav_panel(
         title = "Eksportér",
         icon = shiny::icon("file-export"),
+        value = "eksporter",
         mod_export_ui("export")
-      )
+      ) |> shiny::tagAppendAttributes(`data-step` = "3", .cssSelector = "a.nav-link")
     )
   )
 }

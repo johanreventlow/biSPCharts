@@ -1196,7 +1196,7 @@ setup_wizard_gates <- function(app_state, session) {
 #' @param emit Event emit API
 #' @keywords internal
 setup_paste_data_observers <- function(input, app_state, session, emit) {
-  # Observer: Indlaes pasted data
+  # Observer: "Fortsæt" knap — indlæs pasted data
   shiny::observeEvent(input$load_paste_data, {
     handle_paste_data(
       text_data = input$paste_data_input,
@@ -1206,32 +1206,69 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
     )
   })
 
-  # Observer: Indlaes sample datasaet
+  # Observer: "Prøv med eksempeldata" — paste sample data ind i textArea
   shiny::observeEvent(input$load_sample_data, {
     sample_path <- system.file("extdata", "sample_spc_data.csv", package = "SPCify")
-
-    # Fallback for dev mode
     if (sample_path == "" || !file.exists(sample_path)) {
       sample_path <- "inst/extdata/sample_spc_data.csv"
     }
 
     if (file.exists(sample_path)) {
-      handle_csv_upload(
-        file_path = sample_path,
-        app_state = app_state,
-        session_id = sanitize_session_token(session$token),
-        emit = emit
+      sample_text <- readLines(sample_path, warn = FALSE, encoding = "UTF-8")
+      shiny::updateTextAreaInput(
+        session, "paste_data_input",
+        value = paste(sample_text, collapse = "\n")
       )
       shiny::showNotification(
-        "Eksempeldata indlaest - proev at analysere!",
+        "Eksempeldata indsat — tryk Fortsæt for at analysere",
         type = "message", duration = 3
       )
     } else {
       shiny::showNotification(
-        "Kunne ikke finde eksempeldatasaet",
+        "Kunne ikke finde eksempeldatasæt",
         type = "error", duration = 3
       )
     }
+  })
+
+  # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
+  shiny::observeEvent(input$trigger_file_upload, {
+    # Klik på det skjulte fileInput via JS
+    shinyjs::click("direct_file_upload")
+  })
+
+  # Observer: Direkte fil-upload — vis data i tekstfeltet, vent på "Fortsæt"
+  shiny::observeEvent(input$direct_file_upload, {
+    req(input$direct_file_upload)
+    file_info <- input$direct_file_upload
+
+    safe_operation("Vis uploadet fil i paste-felt", {
+      ext <- tolower(tools::file_ext(file_info$name))
+      text_content <- NULL
+
+      if (ext %in% c("csv", "txt")) {
+        text_content <- readLines(file_info$datapath, warn = FALSE, encoding = "UTF-8")
+      } else if (ext %in% c("xlsx", "xls")) {
+        data <- readxl::read_excel(file_info$datapath)
+        # Konverter til semikolon-separeret tekst (dansk standard)
+        header <- paste(names(data), collapse = ";")
+        rows <- apply(data, 1, function(row) paste(row, collapse = ";"))
+        text_content <- c(header, rows)
+      }
+
+      if (!is.null(text_content)) {
+        shiny::updateTextAreaInput(
+          session, "paste_data_input",
+          value = paste(text_content, collapse = "\n")
+        )
+        shiny::showNotification(
+          paste0("\"", file_info$name, "\" indlæst — tryk Fortsæt for at analysere"),
+          type = "message", duration = 3
+        )
+      } else {
+        shiny::showNotification("Kun xlsx, xls og csv filer understøttes", type = "error")
+      }
+    })
   })
 }
 

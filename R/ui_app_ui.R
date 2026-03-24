@@ -23,6 +23,7 @@ create_ui_header <- function() {
       shiny::tags$script(src = "local-storage.js"),
       shiny::tags$script(src = "ui-helpers.js"),
       shiny::tags$script(src = "shiny-handlers.js"),
+      shiny::tags$script(src = "wizard-nav.js"),
       # Inline CSS styles
       shiny::tags$style(htmltools::HTML(paste0("
 
@@ -167,8 +168,39 @@ create_ui_header <- function() {
     .status-error { background-color: ", hospital_colors$danger, "; }
     .status-processing { background-color: ", hospital_colors$primary, "; }
 
+    /* Wizard nummererede trin */
+    .navbar-nav .nav-link[data-step]::before {
+      content: attr(data-step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
 
+    /* Aktiv tab: filled cirkel */
+    .navbar-nav .nav-link.active[data-step]::before {
+      background-color: #375a7f;
+      color: white;
+      border-color: #375a7f;
+    }
 
+    /* Locked tab styling */
+    .navbar-nav .nav-link.wizard-locked {
+      opacity: 0.4 !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+    }
+
+    .navbar-nav .nav-link.wizard-locked:hover {
+      opacity: 0.4 !important;
+    }
 
         ")))
     )

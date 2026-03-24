@@ -31,7 +31,7 @@ dev_load_siblings <- function(base_path = dirname(getwd())) {
     BFHcharts = file.path(base_path, "BFHcharts"),
     BFHllm    = file.path(base_path, "BFHllm")
   )
-  
+
   for (pkg_name in names(siblings)) {
     pkg_path <- siblings[[pkg_name]]
     if (dir.exists(pkg_path)) {

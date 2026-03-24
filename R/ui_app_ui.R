@@ -912,7 +912,6 @@ create_ui_upload_page <- function() {
         color: #fff !important;
       }
     ")),
-
     shiny::div(
       class = "container-fluid d-flex align-items-center justify-content-center",
       style = "max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 120px);",

@@ -535,20 +535,20 @@ create_data_table_card <- function() {
     height = "100%",
     bslib::card_header(
       shiny::div(
-        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;",
+        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; width: 100%;",
         shiny::div(shiny::icon("table"), " Data"),
         shiny::div(
           class = "btn-group-sm",
           shiny::actionButton(
             "auto_detect_columns",
-            label = "Auto-detektér",
+            label = "Auto-detektér kolonner",
             icon = shiny::icon("magic"),
             title = "Auto-detektér kolonner",
             class = "btn-primary btn-sm"
           ),
           shiny::actionButton(
             "show_column_mapping_modal",
-            label = "Kolonner",
+            label = "Angiv kolonner manuelt",
             icon = shiny::icon("columns"),
             title = "Angiv kolonner manuelt",
             class = "btn-secondary btn-sm"
@@ -562,14 +562,14 @@ create_data_table_card <- function() {
           ),
           shiny::actionButton(
             "add_column",
-            label = NULL,
+            label = "Kolonne",
             icon = shiny::icon("plus"),
             title = "Tilføj kolonne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_row",
-            label = NULL,
+            label = "Række",
             icon = shiny::icon("plus-square"),
             title = "Tilføj række",
             class = "btn-secondary btn-sm"
@@ -887,19 +887,18 @@ create_ui_upload_page <- function() {
         transition: all 0.15s ease;
       }
 
-      /* Hover: kun mørkere ramme, ingen farve/baggrund ændring */
+      /* Hover ikke-valgt: hvid baggrund, mørkere tekst */
       .upload-source-btn:hover {
-        border-color: #495057 !important;
-        border-width: 2px !important;
-        background-color: transparent !important;
-        color: #95a5a6 !important;
+        background-color: #fff !important;
+        border-color: #828c8d !important;
+        color: #828c8d !important;
       }
 
-      /* Hover på valgt knap: behold valgt-farver + mørk ramme */
+      /* Hover valgt knap: mørkere baggrund, hvid tekst */
       .upload-source-btn.upload-btn-active:hover {
-        background-color: #95a5a6 !important;
+        background-color: #828c8d !important;
+        border-color: #828c8d !important;
         color: #fff !important;
-        border-color: #495057 !important;
       }
 
       /* Valgt knap: præcis Flatly btn-outline-secondary:hover (permanent) */
@@ -979,16 +978,15 @@ create_ui_upload_page <- function() {
             width = "100%",
             placeholder = "Indsæt data fra Excel eller CSV her..."
           ),
-          shiny::tags$small(
-            class = "text-muted d-block mb-2",
-            "Kolonner adskilles automatisk (tab, semikolon eller komma)"
-          ),
-          shiny::actionButton(
-            "load_paste_data",
-            "Fortsæt",
-            icon = shiny::icon("arrow-right"),
-            class = "btn-primary",
-            title = "Indlæs data og gå til analyse"
+          shiny::div(
+            style = "display: flex; justify-content: flex-end;",
+            shiny::actionButton(
+              "load_paste_data",
+              shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+              class = "btn-primary",
+              style = "width: 200px;",
+              title = "Indlæs data og gå til analyse"
+            )
           )
         )
       )

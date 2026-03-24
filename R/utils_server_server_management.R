@@ -428,6 +428,7 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
   reset_to_empty_session(session, app_state, emit, ui_service)
+  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
 }

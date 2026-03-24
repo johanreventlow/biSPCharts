@@ -1164,18 +1164,21 @@ setup_wizard_gates <- function(app_state, session) {
   session$sendCustomMessage("wizard-lock-step", 3)
 
   # Gate: Data loaded -> unlock trin 2, auto-navigér
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE,
-    priority = OBSERVER_PRIORITIES$UI_SYNC, {
-    has_data <- !is.null(shiny::isolate(app_state$data$current_data))
-    if (has_data) {
-      session$sendCustomMessage("wizard-unlock-step", 2)
-      bslib::nav_select("main_navbar", selected = "analyser", session = session)
-    } else {
-      session$sendCustomMessage("wizard-lock-step", 2)
-      session$sendCustomMessage("wizard-lock-step", 3)
-      bslib::nav_select("main_navbar", selected = "upload", session = session)
+  shiny::observeEvent(app_state$events$data_updated,
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$UI_SYNC,
+    {
+      has_data <- !is.null(shiny::isolate(app_state$data$current_data))
+      if (has_data) {
+        session$sendCustomMessage("wizard-unlock-step", 2)
+        bslib::nav_select("main_navbar", selected = "analyser", session = session)
+      } else {
+        session$sendCustomMessage("wizard-lock-step", 2)
+        session$sendCustomMessage("wizard-lock-step", 3)
+        bslib::nav_select("main_navbar", selected = "upload", session = session)
+      }
     }
-  })
+  )
 
   # Gate: Plot renderet -> unlock trin 3
   shiny::observe({

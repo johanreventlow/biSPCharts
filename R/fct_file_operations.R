@@ -567,30 +567,38 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   }
 
   # Parser med auto-detected separator
-  data <- tryCatch({
-    readr::read_delim(
-      I(text_data),
-      delim = NULL,
-      locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
-      show_col_types = FALSE,
-      trim_ws = TRUE
-    )
-  }, error = function(e) {
-    # Fallback: proev eksplicit tab, semikolon, komma
-    for (sep in c("\t", ";", ",")) {
-      result <- tryCatch({
-        readr::read_delim(
-          I(text_data),
-          delim = sep,
-          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
-          show_col_types = FALSE,
-          trim_ws = TRUE
+  data <- tryCatch(
+    {
+      readr::read_delim(
+        I(text_data),
+        delim = NULL,
+        locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+        show_col_types = FALSE,
+        trim_ws = TRUE
+      )
+    },
+    error = function(e) {
+      # Fallback: proev eksplicit tab, semikolon, komma
+      for (sep in c("\t", ";", ",")) {
+        result <- tryCatch(
+          {
+            readr::read_delim(
+              I(text_data),
+              delim = sep,
+              locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+              show_col_types = FALSE,
+              trim_ws = TRUE
+            )
+          },
+          error = function(e2) NULL
         )
-      }, error = function(e2) NULL)
-      if (!is.null(result) && ncol(result) >= 2) return(result)
+        if (!is.null(result) && ncol(result) >= 2) {
+          return(result)
+        }
+      }
+      return(NULL)
     }
-    return(NULL)
-  })
+  )
 
   # Valider resultat
   if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {

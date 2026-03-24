@@ -27,30 +27,33 @@ app_ui <- function(request) {
       # Header-komponenter
       header = create_ui_header(),
 
-      # Navigation tabs
-      # Upload tab - fil upload og session management
+      # Navigation tabs (wizard trin)
+      # data-step attributter tilføjes via JS (wizard-nav.js) da bslib
+      # genererer nav-links dynamisk. value param bruges til identifikation.
+
+      # Trin 1: Upload
       bslib::nav_panel(
         title = "Upload",
         icon = shiny::icon("upload"),
         value = "upload",
         create_ui_upload_page()
-      ) |> shiny::tagAppendAttributes(`data-step` = "1", .cssSelector = "a.nav-link"),
+      ),
 
-      # Hovedindhold - SPC Chart arbejdsområde
+      # Trin 2: Analysér
       bslib::nav_panel(
         title = "Analysér",
         icon = shiny::icon("chart-line"),
         value = "analyser",
         create_ui_main_content()
-      ) |> shiny::tagAppendAttributes(`data-step` = "2", .cssSelector = "a.nav-link"),
+      ),
 
-      # Eksport tab - SPC Chart eksport modul
+      # Trin 3: Eksportér
       bslib::nav_panel(
         title = "Eksportér",
         icon = shiny::icon("file-export"),
         value = "eksporter",
         mod_export_ui("export")
-      ) |> shiny::tagAppendAttributes(`data-step` = "3", .cssSelector = "a.nav-link")
+      )
     )
   )
 }

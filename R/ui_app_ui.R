@@ -857,40 +857,86 @@ create_ui_sidebar <- function() {
 
 # UI UPLOAD PAGE KOMPONENTER ===================================================
 
-#' Upload-side med session management
+#' Upload-side med paste-felt og handlingsknapper
 #'
-#' Opretter upload-siden med knapper til at starte ny session og uploade data.
-#' Erstatter den tidligere sidebar.
+#' Datawrapper-inspireret layout: handlinger (venstre), paste-felt (hoejre).
 #' @export
 create_ui_upload_page <- function() {
+  sample_csv <- paste(
+    "Dato;Vaerdi;Kommentar",
+    "2024-01-01;42;",
+    "2024-02-01;38;",
+    "2024-03-01;45;Ny procedure",
+    "2024-04-01;41;",
+    "2024-05-01;39;",
+    "2024-06-01;44;",
+    sep = "\n"
+  )
+
   shiny::div(
     class = "container-fluid",
-    style = "max-width: 600px; margin: 0 auto; padding-top: 40px;",
-    bslib::card(
-      bslib::card_header(
-        shiny::div(shiny::icon("upload"), " Upload data")
-      ),
-      bslib::card_body(
-        shiny::p("Upload en datafil for at komme i gang med SPC-analyse."),
+    style = "max-width: 1000px; margin: 0 auto; padding-top: 30px;",
+    bslib::layout_columns(
+      col_widths = c(4, 8),
 
-        # Upload fil knap
-        shiny::actionButton(
-          "show_upload_modal",
-          "Upload datafil",
-          icon = shiny::icon("file-arrow-up"),
-          class = "btn-primary w-100 mb-3",
-          title = "Upload Excel eller CSV fil"
+      # Venstre kolonne: handlingsknapper
+      bslib::card(
+        height = "100%",
+        bslib::card_header(
+          shiny::div(shiny::icon("folder-open"), " Datakilde")
         ),
+        bslib::card_body(
+          shiny::actionButton(
+            "show_upload_modal",
+            "Upload datafil",
+            icon = shiny::icon("file-arrow-up"),
+            class = "btn-primary w-100 mb-3",
+            title = "Upload Excel eller CSV fil"
+          ),
+          shiny::actionButton(
+            "clear_saved",
+            "Start ny session",
+            icon = shiny::icon("rotate"),
+            class = "btn-outline-secondary w-100 mb-3",
+            title = "Start med tom standardtabel"
+          ),
+          shiny::hr(),
+          shiny::actionButton(
+            "load_sample_data",
+            "Proev med eksempeldata",
+            icon = shiny::icon("flask"),
+            class = "btn-link w-100",
+            title = "Indlaes et SPC-eksempeldatasaet"
+          )
+        )
+      ),
 
-        shiny::hr(),
-
-        # Start ny session knap
-        shiny::actionButton(
-          "clear_saved",
-          "Start ny session",
-          icon = shiny::icon("rotate"),
-          class = "btn-secondary w-100",
-          title = "Start med tom standardtabel"
+      # Hoejre kolonne: paste-felt
+      bslib::card(
+        height = "100%",
+        bslib::card_header(
+          shiny::div(shiny::icon("paste"), " Indsaet data")
+        ),
+        bslib::card_body(
+          shiny::textAreaInput(
+            "paste_data_input",
+            label = NULL,
+            value = sample_csv,
+            rows = 15,
+            width = "100%",
+            placeholder = "Indsaet data fra Excel eller CSV her..."
+          ),
+          shiny::tags$small(
+            class = "text-muted d-block mb-3",
+            "Kolonner adskilles automatisk (tab, semikolon eller komma)"
+          ),
+          shiny::actionButton(
+            "load_paste_data",
+            "Indlaes data",
+            icon = shiny::icon("arrow-right"),
+            class = "btn-primary",
+            title = "Parser og indlaeser det indsatte data"
+          )
         )
       )
     )

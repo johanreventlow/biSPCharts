@@ -1188,6 +1188,53 @@ setup_wizard_gates <- function(app_state, session) {
   })
 }
 
+#' Setup observers for paste data og sample data loading
+#'
+#' @param input Shiny input
+#' @param app_state Centraliseret app state
+#' @param session Shiny session
+#' @param emit Event emit API
+#' @keywords internal
+setup_paste_data_observers <- function(input, app_state, session, emit) {
+  # Observer: Indlaes pasted data
+  shiny::observeEvent(input$load_paste_data, {
+    handle_paste_data(
+      text_data = input$paste_data_input,
+      app_state = app_state,
+      session_id = sanitize_session_token(session$token),
+      emit = emit
+    )
+  })
+
+  # Observer: Indlaes sample datasaet
+  shiny::observeEvent(input$load_sample_data, {
+    sample_path <- system.file("extdata", "sample_spc_data.csv", package = "SPCify")
+
+    # Fallback for dev mode
+    if (sample_path == "" || !file.exists(sample_path)) {
+      sample_path <- "inst/extdata/sample_spc_data.csv"
+    }
+
+    if (file.exists(sample_path)) {
+      handle_csv_upload(
+        file_path = sample_path,
+        app_state = app_state,
+        session_id = sanitize_session_token(session$token),
+        emit = emit
+      )
+      shiny::showNotification(
+        "Eksempeldata indlaest - proev at analysere!",
+        type = "message", duration = 3
+      )
+    } else {
+      shiny::showNotification(
+        "Kunne ikke finde eksempeldatasaet",
+        type = "error", duration = 3
+      )
+    }
+  })
+}
+
 setup_event_listeners <- function(app_state, emit, input, output, session, ui_service = NULL) {
   # DUPLICATE PREVENTION: Check if optimized listeners are already active
   if (exists("optimized_listeners_active", envir = app_state) && app_state$optimized_listeners_active) {
@@ -1282,6 +1329,9 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
 
   # Wizard navigation gates
   setup_wizard_gates(app_state, session)
+
+  # Paste data og sample data observers
+  setup_paste_data_observers(input, app_state, session, emit)
 
   # ============================================================================
   # OBSERVER CLEANUP ON SESSION END

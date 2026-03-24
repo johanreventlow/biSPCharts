@@ -1148,6 +1148,46 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' All observers use ignoreInit = TRUE to prevent firing at startup
 #' unless explicitly designed for initialization (chart_type observer).
 #'
+
+#' Setup wizard navigation gates
+#'
+#' Locks/unlocks navbar wizard steps based on app state.
+#' Trin 1 (Upload) altid tilgaengelig. Trin 2 (Analyser) kraever data.
+#' Trin 3 (Eksporter) kraever renderet plot.
+#'
+#' @param app_state Centraliseret app state
+#' @param session Shiny session
+#' @keywords internal
+setup_wizard_gates <- function(app_state, session) {
+  # Lock trin 2+3 ved startup
+  session$sendCustomMessage("wizard-lock-step", 2)
+  session$sendCustomMessage("wizard-lock-step", 3)
+
+  # Gate: Data loaded -> unlock trin 2, auto-navigér
+  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$UI_SYNC, {
+    has_data <- !is.null(shiny::isolate(app_state$data$current_data))
+    if (has_data) {
+      session$sendCustomMessage("wizard-unlock-step", 2)
+      bslib::nav_select("main_navbar", selected = "analyser", session = session)
+    } else {
+      session$sendCustomMessage("wizard-lock-step", 2)
+      session$sendCustomMessage("wizard-lock-step", 3)
+      bslib::nav_select("main_navbar", selected = "upload", session = session)
+    }
+  })
+
+  # Gate: Plot renderet -> unlock trin 3
+  shiny::observe({
+    plot_ready <- app_state$visualization$plot_ready
+    if (isTRUE(plot_ready)) {
+      session$sendCustomMessage("wizard-unlock-step", 3)
+    } else {
+      session$sendCustomMessage("wizard-lock-step", 3)
+    }
+  })
+}
+
 setup_event_listeners <- function(app_state, emit, input, output, session, ui_service = NULL) {
   # DUPLICATE PREVENTION: Check if optimized listeners are already active
   if (exists("optimized_listeners_active", envir = app_state) && app_state$optimized_listeners_active) {
@@ -1240,6 +1280,8 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # All event listeners are now registered via helper functions.
   # Centralized cleanup is maintained below.
 
+  # Wizard navigation gates
+  setup_wizard_gates(app_state, session)
 
   # ============================================================================
   # OBSERVER CLEANUP ON SESSION END

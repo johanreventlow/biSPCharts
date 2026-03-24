@@ -220,8 +220,24 @@ create_ui_main_content <- function() {
       col_widths = c(6, 6),
       height = "calc(100vh - 80px)",
 
-      # Venstre kolonne: Datatabel (fuld hoejde)
-      create_data_table_card(),
+      # Venstre kolonne: Datatabel (75% hoejde) + Fortsæt-knap
+      shiny::div(
+        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
+        shiny::div(
+          style = "flex: 0 0 75%; min-height: 0;",
+          create_data_table_card()
+        ),
+        shiny::div(
+          style = "display: flex; justify-content: flex-end;",
+          shiny::actionButton(
+            "continue_to_export",
+            shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+            class = "btn-primary",
+            style = "width: 200px;",
+            title = "Gå til eksport"
+          )
+        )
+      ),
 
       # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
       shiny::div(
@@ -968,7 +984,7 @@ create_ui_upload_page <- function() {
 
         # Paste-felt (fylder resten af pladsen)
         shiny::div(
-          style = "flex: 1 1 auto; display: flex; flex-direction: column;",
+          style = "flex: 1 1 auto; display: flex; flex-direction: column; margin-left: 20px;",
           shiny::textAreaInput(
             "paste_data_input",
             label = NULL,

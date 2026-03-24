@@ -1158,7 +1158,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' @param app_state Centraliseret app state
 #' @param session Shiny session
 #' @keywords internal
-setup_wizard_gates <- function(app_state, session) {
+setup_wizard_gates <- function(input, app_state, session) {
   # Lock trin 2+3 ved startup
   session$sendCustomMessage("wizard-lock-step", 2)
   session$sendCustomMessage("wizard-lock-step", 3)
@@ -1188,6 +1188,11 @@ setup_wizard_gates <- function(app_state, session) {
     } else {
       session$sendCustomMessage("wizard-lock-step", 3)
     }
+  })
+
+  # Fortsæt-knap: Trin 2 -> Trin 3
+  shiny::observeEvent(input$continue_to_export, {
+    bslib::nav_select("main_navbar", selected = "eksporter", session = session)
   })
 }
 
@@ -1368,7 +1373,7 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # Centralized cleanup is maintained below.
 
   # Wizard navigation gates
-  setup_wizard_gates(app_state, session)
+  setup_wizard_gates(input, app_state, session)
 
   # Paste data og sample data observers
   setup_paste_data_observers(input, app_state, session, emit)

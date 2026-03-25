@@ -286,13 +286,32 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       if (!is.null(metadata$chart_type)) {
         shiny::updateSelectizeInput(session, "chart_type", selected = metadata$chart_type)
       }
-      # SPRINT 2: Use ui_service for metadata column restoration
-      if (!is.null(metadata$x_column) || !is.null(metadata$y_column) || !is.null(metadata$n_column)) {
-        # Use existing update_form_fields which handles column selection
-        ui_service$update_form_fields(
-          metadata = metadata,
-          fields = c("x_column", "y_column", "n_column")
-        )
+      # Kolonne-mappings (inkl. avancerede: skift, frys, kommentar)
+      column_fields <- c(
+        "x_column", "y_column", "n_column",
+        "skift_column", "frys_column", "kommentar_column"
+      )
+      has_columns <- any(vapply(
+        column_fields,
+        function(f) !is.null(metadata[[f]]),
+        logical(1)
+      ))
+      if (has_columns) {
+        if (!is.null(ui_service)) {
+          ui_service$update_form_fields(
+            metadata = metadata,
+            fields = column_fields
+          )
+        } else {
+          for (f in column_fields) {
+            if (!is.null(metadata[[f]])) {
+              shiny::updateSelectizeInput(
+                session, f,
+                selected = metadata[[f]]
+              )
+            }
+          }
+        }
       }
       if (!is.null(metadata$target_value)) {
         shiny::updateTextInput(session, "target_value", value = metadata$target_value)
@@ -319,6 +338,7 @@ collect_metadata <- function(input) {
       y_column = if (is.null(input$y_column) || input$y_column == "") "" else input$y_column,
       n_column = if (is.null(input$n_column) || input$n_column == "") "" else input$n_column,
       skift_column = if (is.null(input$skift_column) || input$skift_column == "") "" else input$skift_column,
+      frys_column = if (is.null(input$frys_column) || input$frys_column == "") "" else input$frys_column,
       kommentar_column = if (is.null(input$kommentar_column) || input$kommentar_column == "") "" else input$kommentar_column,
       chart_type = input$chart_type,
       target_value = input$target_value,

@@ -221,53 +221,6 @@ EXPORT_FORMAT_OPTIONS <- c(
   "PowerPoint" = "pptx"
 )
 
-# PDF-SPECIFIC CONFIGURATION ===================================================
-
-#' PDF export configuration
-#'
-#' Standard indstillinger for PDF eksport.
-#'
-#' @format Named list med PDF settings
-#' @keywords internal
-EXPORT_PDF_CONFIG <- list(
-  # Default papir størrelse
-  paper = "a4",
-
-  # Default orientation
-  orientation = "landscape",
-
-  # Margin i inches
-  margin_top = 0.75,
-  margin_bottom = 0.75,
-  margin_left = 0.75,
-  margin_right = 0.75,
-
-  # Metadata encoding
-  encoding = "UTF-8",
-
-  # PDF version
-  version = "1.4"
-)
-
-# PNG-SPECIFIC CONFIGURATION ===================================================
-
-#' PNG export configuration
-#'
-#' Standard indstillinger for PNG eksport.
-#'
-#' @format Named list med PNG settings
-#' @keywords internal
-EXPORT_PNG_CONFIG <- list(
-  # Background color
-  bg = "white",
-
-  # Anti-aliasing type
-  type = "cairo",
-
-  # Compression level (0-9)
-  compression = 6
-)
-
 # POWERPOINT-SPECIFIC CONFIGURATION ============================================
 
 #' PowerPoint export configuration

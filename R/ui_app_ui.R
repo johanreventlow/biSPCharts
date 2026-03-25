@@ -521,43 +521,6 @@ create_status_value_boxes <- function() {
   visualizationStatusUI("visualization")
 }
 
-create_export_card <- function() {
-  shiny::conditionalPanel(condition = "output.plot_ready == 'true'", bslib::card(
-    bslib::card_header(shiny::div(shiny::icon("download"), " Eksport", )),
-    bslib::card_body(
-      # KOMPLET EXPORT - Excel version
-      shiny::div(
-        shiny::downloadButton(
-          "download_complete_excel",
-          "📋 Komplet Export (Excel)",
-          icon = shiny::icon("file-excel"),
-          title = "Download hele sessionen som Excel fil med data og konfiguration",
-          class = "btn-success w-100 mb-2"
-        ),
-
-        # Hjælpe-tekst for komplet export
-        shiny::div(
-          style = "font-size: 0.75rem; color: #666; text-align: center; margin-bottom: 8px; font-style: italic;",
-          "Data + metadata i 2 Excel sheets - klar til brug og re-import"
-        )
-      ),
-      shiny::hr(style = "margin: 15px 0;"),
-      shiny::div(style = "text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 10px;", shiny::strong("Graf eksporter:")),
-      shiny::downloadButton(
-        "download_png",
-        "Download PNG",
-        icon = shiny::icon("image"),
-        class = "btn-outline-primary w-100 mb-2"
-      ),
-      shiny::downloadButton(
-        "download_pdf",
-        "Download PDF Rapport",
-        icon = shiny::icon("file-pdf"),
-        class = "btn-outline-primary w-100"
-      )
-    )
-  ))
-}
 # ui_sidebar.R
 # UI UPLOAD PAGE KOMPONENTER ===================================================
 

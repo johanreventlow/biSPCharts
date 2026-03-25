@@ -280,54 +280,6 @@ cache_result <- function(cache_key, value, timeout_seconds) {
   assign(cache_key, cached_entry, envir = .performance_cache)
 }
 
-#' Manage Cache Size
-#'
-#' Håndterer cache size ved at fjerne gamle entries (LRU eviction).
-#'
-#' @param max_entries Maximum antal entries i cache
-#'
-manage_cache_size <- function(max_entries) {
-  cache_keys <- ls(envir = .performance_cache)
-
-  if (length(cache_keys) <= max_entries) {
-    return()
-  }
-
-  # Get all cache entries med access times
-  cache_entries <- purrr::map(cache_keys, ~ {
-    entry <- get(.x, envir = .performance_cache)
-    list(
-      key = .x,
-      last_access = entry$last_access,
-      size_estimate = entry$size_estimate
-    )
-  })
-
-  # Sort by last access time (LRU)
-  sorted_entries <- cache_entries |>
-    purrr::map_dfr(~ tibble::tibble(
-      key = .x$key,
-      last_access = .x$last_access,
-      size_estimate = as.numeric(.x$size_estimate)
-    )) |>
-    dplyr::arrange(last_access)
-
-  # Remove oldest entries
-  entries_to_remove <- nrow(sorted_entries) - max_entries
-  if (entries_to_remove > 0) {
-    keys_to_remove <- sorted_entries$key[1:entries_to_remove]
-
-    rm(list = keys_to_remove, envir = .performance_cache)
-
-    log_debug_kv(
-      message = "Cache size managed - removed old entries",
-      removed_count = entries_to_remove,
-      remaining_entries = length(cache_keys) - entries_to_remove,
-      .context = "[PERFORMANCE_CACHE]"
-    )
-  }
-}
-
 #' Clear Performance Cache
 #'
 #' Rydder hele performance cache. Bruges ved session cleanup
@@ -357,52 +309,6 @@ clear_performance_cache <- function(pattern = NULL) {
       .context = "[PERFORMANCE_CACHE]"
     )
   }
-}
-
-#' Cache Performance Statistics
-#'
-#' Returnerer statistikker omkring cache performance til monitoring.
-#'
-#' @return List med cache statistikker
-#'
-#' @examples
-#' stats <- get_cache_stats()
-#' print(stats)
-#'
-#' @keywords internal
-get_cache_stats <- function() {
-  cache_keys <- ls(envir = .performance_cache)
-
-  if (length(cache_keys) == 0) {
-    return(list(
-      total_entries = 0,
-      total_size_mb = 0,
-      oldest_entry = NULL,
-      newest_entry = NULL
-    ))
-  }
-
-  # Collect cache metadata
-  cache_metadata <- purrr::map(cache_keys, ~ {
-    entry <- get(.x, envir = .performance_cache)
-    list(
-      key = .x,
-      created_at = entry$created_at,
-      last_access = entry$last_access,
-      size_estimate = as.numeric(entry$size_estimate)
-    )
-  })
-
-  total_size <- sum(purrr::map_dbl(cache_metadata, ~ .x$size_estimate))
-  access_times <- purrr::map(cache_metadata, ~ .x$last_access)
-
-  return(list(
-    total_entries = length(cache_keys),
-    total_size_mb = round(total_size / (1024 * 1024), 2),
-    oldest_entry = min(purrr::map(access_times, as.POSIXct)),
-    newest_entry = max(purrr::map(access_times, as.POSIXct)),
-    keys = cache_keys
-  ))
 }
 
 #' Create Performance-Debounced Reactive

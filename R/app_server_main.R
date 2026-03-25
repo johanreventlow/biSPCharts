@@ -189,9 +189,6 @@ main_app_server <- function(input, output, session) {
   # Server Setup ------------------------------------------------------------
   # Opsæt alle server-komponenter
 
-  ## Velkomstside interaktioner
-  setup_welcome_page_handlers(input, output, session, app_state, emit, ui_service)
-
   ## Session management logik
   setup_session_management(input, output, session, app_state, emit, ui_service)
 

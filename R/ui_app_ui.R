@@ -16,12 +16,8 @@ create_ui_header <- function() {
     # Aktivér shinyjs
     shinyjs::useShinyjs(),
     shiny::tags$head(
-      # CSS files for plot debugging
-      shiny::tags$link(rel = "stylesheet", type = "text/css", href = "plot-debug.css"),
-
       # JavaScript files
       shiny::tags$script(src = "local-storage.js"),
-      shiny::tags$script(src = "ui-helpers.js"),
       shiny::tags$script(src = "shiny-handlers.js"),
       shiny::tags$script(src = "wizard-nav.js"),
       # Inline CSS styles
@@ -136,26 +132,6 @@ create_ui_header <- function() {
       flex-direction: column !important;
     }
 
-    /* Selectize dropup styling */
-    .selectize-dropup .selectize-control .selectize-dropdown {
-      position: absolute !important;
-      top: auto !important;
-      bottom: 100% !important;
-      border-top: 1px solid #d0d7de !important;
-      border-bottom: none !important;
-      border-radius: 4px 4px 0 0 !important;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
-      margin-bottom: 2px !important;
-    }
-
-    .selectize-dropup {
-      position: relative !important;
-    }
-
-    .selectize-dropup .selectize-control {
-      position: relative !important;
-    }
-
     .selectize-dropdown {
       max-height: 200px !important;
       overflow-y: auto !important;
@@ -205,8 +181,8 @@ create_ui_header <- function() {
     /* Gennemfoert wizard-trin: checkmark med tema-farve */
     .navbar-nav .nav-link.wizard-completed[data-step]::before {
       content: '\\2713';
-      background-color: currentColor;
-      border-color: currentColor;
+      background-color: #58B99E;
+      border-color: #58B99E;
       -webkit-text-fill-color: white;
       color: white;
     }

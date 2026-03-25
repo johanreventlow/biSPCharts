@@ -148,17 +148,55 @@ notify_autodetect_results <- function(results, session) {
     return(invisible(NULL))
   }
 
+  # Dato-format info
+  date_hint <- NULL
+  dfi <- results$date_format_info
+  if (!is.null(dfi) && !is.null(dfi$format)) {
+    # Oversæt R date-format til menneskelæseligt
+    fmt_label <- switch(dfi$format,
+      "%d-%m-%Y" = "dd-mm-\u00e5\u00e5\u00e5\u00e5",
+      "%d/%m/%Y" = "dd/mm/\u00e5\u00e5\u00e5\u00e5",
+      "%d.%m.%Y" = "dd.mm.\u00e5\u00e5\u00e5\u00e5",
+      "%Y-%m-%d" = "\u00e5\u00e5\u00e5\u00e5-mm-dd",
+      "%d-%m-%y" = "dd-mm-\u00e5\u00e5",
+      dfi$format
+    )
+    if (!is.null(dfi$confidence) && dfi$confidence < 0.9) {
+      date_hint <- paste0(
+        " \u26a0 Datoformat usikkert (", fmt_label,
+        ") \u2014 kontroll\u00e9r venligst."
+      )
+    } else {
+      date_hint <- paste0(
+        " Datoformat: ", fmt_label
+      )
+    }
+  }
+
   msg <- paste0(
     "Kolonner detekteret: ",
     paste(detected, collapse = ", "),
-    ". Kontroll\u00e9r i Kolonnematch-fanen."
+    ".",
+    if (!is.null(date_hint)) date_hint else ""
   )
 
   tryCatch(
     shiny::showNotification(
       shiny::tags$span(shiny::icon("magic"), " ", msg),
-      type = "message",
-      duration = 6
+      type = if (!is.null(dfi) &&
+        !is.null(dfi$confidence) &&
+        dfi$confidence < 0.9) {
+        "warning"
+      } else {
+        "message"
+      },
+      duration = if (!is.null(dfi) &&
+        !is.null(dfi$confidence) &&
+        dfi$confidence < 0.9) {
+        10
+      } else {
+        6
+      }
     ),
     error = function(e) invisible(NULL)
   )

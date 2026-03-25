@@ -57,6 +57,3 @@ result <- validate_x_column_format(data_num, "Obs", "observation")
 }
 
 }
-\seealso{
-\code{\link{detect_date_interval}}, \code{\link{get_optimal_formatting}}
-}

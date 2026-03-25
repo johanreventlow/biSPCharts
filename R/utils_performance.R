@@ -1,49 +1,6 @@
 # utils_performance.R
 # Performance utilities for Fase 5 optimization
 
-#' Performance monitoring utilities for reactive operations
-#'
-#' Tools til at måle og optimere reactive chain performance.
-#' Implementeret som del af Fase 5: Performance & Cleanup.
-#'
-#' @examples
-#' \dontrun{
-#' # Monitor reactive execution
-#' result <- measure_reactive_performance(
-#'   {
-#'     expensive_calculation()
-#'   },
-#'   "calculation_name"
-#' )
-#' }
-#'
-#' @family performance
-#' @keywords internal
-measure_reactive_performance <- function(expr, operation_name = "unknown") {
-  start_time <- Sys.time()
-  result <- expr
-  end_time <- Sys.time()
-
-  execution_time <- as.numeric(end_time - start_time)
-
-  # Log performance hvis over threshold
-  if (execution_time > PERFORMANCE_THRESHOLDS$reactive_warning) {
-    log_warn(
-      paste(
-        "Slow reactive operation:", operation_name,
-        "took", round(execution_time, 3), "seconds"
-      ),
-      "PERFORMANCE"
-    )
-  }
-
-  return(list(
-    result = result,
-    execution_time = execution_time,
-    operation_name = operation_name
-  ))
-}
-
 #' Create cached reactive expression with session-local cache
 #'
 #' Wrapper omkring shiny::reactive() der tilføjer intelligent caching
@@ -382,81 +339,6 @@ clear_performance_cache <- function(cache_pattern = NULL, session = NULL) {
   } else {
     log_debug("No performance cache found to clear", .context = "PERFORMANCE")
   }
-}
-
-#' Get performance statistics
-#'
-#' Hent performance statistik for monitoring og debugging.
-#' Returnerer data om cache hits, execution times etc.
-#'
-#' @return List med performance statistik
-#'
-#' @family performance
-#' @keywords internal
-get_performance_stats <- function() {
-  stats <- list()
-
-  # Cache statistics
-  if (exists(".performance_cache", envir = .GlobalEnv)) {
-    cache_env <- get(".performance_cache", envir = .GlobalEnv)
-    cache_keys <- ls(cache_env)
-    stats$cache_entries <- length(cache_keys)
-    stats$cache_keys <- cache_keys
-  } else {
-    stats$cache_entries <- 0
-    stats$cache_keys <- character(0)
-  }
-
-  # Execution statistics
-  if (exists(".performance_stats", envir = .GlobalEnv)) {
-    stats_env <- get(".performance_stats", envir = .GlobalEnv)
-    stats$execution_stats <- as.list(stats_env)
-  } else {
-    stats$execution_stats <- list()
-  }
-
-  return(stats)
-}
-
-#' Memory usage monitoring
-#'
-#' Monitor memory usage patterns for reactive expressions
-#' og identificer memory leaks eller excessive memory usage.
-#'
-#' @param operation_name Character string med operation navn
-#'
-#' @return List med memory statistics
-#'
-#' @family performance
-#' @keywords internal
-monitor_memory_usage <- function(operation_name = "unknown") {
-  # Get memory info using gc()
-  gc_before <- gc(reset = TRUE)
-  memory_before <- sum(gc_before[, "used"])
-
-  return(function() {
-    gc_after <- gc()
-    memory_after <- sum(gc_after[, "used"])
-    memory_diff <- memory_after - memory_before
-
-    # Log memory usage hvis significant
-    if (abs(memory_diff) > PERFORMANCE_THRESHOLDS$memory_warning) {
-      log_info(
-        paste(
-          "Memory change for", operation_name, ":",
-          ifelse(memory_diff > 0, "+", ""), round(memory_diff, 2), "MB"
-        ),
-        "PERFORMANCE"
-      )
-    }
-
-    return(list(
-      operation_name = operation_name,
-      memory_before = memory_before,
-      memory_after = memory_after,
-      memory_diff = memory_diff
-    ))
-  })
 }
 
 # Performance thresholds (kan konfigureres)

@@ -40,71 +40,6 @@ PLOT_CONTEXTS <- list(
   EXPORT_PPTX = "export_pptx"
 )
 
-#' Plot Context Dimensions
-#'
-#' Standard dimensioner for hver plot context.
-#' Bruges som fallback når eksplicitte dimensioner ikke er tilgængelige.
-#'
-#' @format Named list med dimension specifications per context
-#' @details
-#' Hver context har:
-#' - width_px/width_inches: Bredde (afhængig af unit)
-#' - height_px/height_inches: Højde (afhængig af unit)
-#' - dpi: Opløsning
-#' - unit: "px" (pixels) eller "in" (inches)
-#' - description: Kort beskrivelse af use case
-#'
-#' **Vigtig note om export contexts:**
-#' For export contexts (PDF, PNG, PPTX) er disse dimensioner **defaults**.
-#' Faktiske dimensioner kommer fra:
-#' - PDF: Typst template settings (200×120mm @ 300 DPI)
-#' - PNG: User-valgte presets eller custom dimensions
-#' - PPTX: PowerPoint slide dimensions (9×6.5 inches @ 96 DPI)
-#'
-#' @keywords internal
-PLOT_CONTEXT_DIMENSIONS <- list(
-  analysis = list(
-    width_px = 800,
-    height_px = 600,
-    dpi = 96,
-    unit = "px",
-    description = "Interactive display on Analyse-side (responsive viewport)",
-    responsive = TRUE # Actual dimensions from clientData
-  ),
-  export_preview = list(
-    width_px = 800,
-    height_px = 450,
-    dpi = 96,
-    unit = "px",
-    description = "Live preview on Export-side (16:9 aspect ratio)",
-    responsive = FALSE # Fixed dimensions
-  ),
-  export_pdf = list(
-    width_mm = 200,
-    height_mm = 120,
-    dpi = 300,
-    unit = "mm",
-    description = "PDF export via Typst (A4 landscape optimized, high-res)",
-    responsive = FALSE # Fixed dimensions from Typst template
-  ),
-  export_png = list(
-    width_px = 1200,
-    height_px = 900,
-    dpi = 96,
-    unit = "px",
-    description = "PNG export default (medium preset, user-configurable)",
-    responsive = FALSE # User-selectable dimensions
-  ),
-  export_pptx = list(
-    width_inches = 9,
-    height_inches = 6.5,
-    dpi = 96,
-    unit = "in",
-    description = "PowerPoint export (slide-optimized dimensions)",
-    responsive = FALSE # Fixed dimensions for slide embedding
-  )
-)
-
 #' Get Dimensions for Plot Context
 #'
 #' Henter standard dimensioner for en given plot context.
@@ -147,19 +82,28 @@ get_context_dimensions <- function(context,
                                    override_height = NULL,
                                    override_dpi = NULL) {
   # Validate context
-  if (!context %in% names(PLOT_CONTEXT_DIMENSIONS)) {
+  # Validate context - PLOT_CONTEXT_DIMENSIONS removed, use hardcoded defaults
+  context_defaults <- list(
+    analysis = list(width_px = 800, height_px = 600, dpi = 96, unit = "px", responsive = TRUE),
+    export_preview = list(width_px = 800, height_px = 450, dpi = 96, unit = "px", responsive = FALSE),
+    export_pdf = list(width_mm = 200, height_mm = 120, dpi = 300, unit = "mm", responsive = FALSE),
+    export_png = list(width_px = 1200, height_px = 900, dpi = 96, unit = "px", responsive = FALSE),
+    export_pptx = list(width_inches = 9, height_inches = 6.5, dpi = 96, unit = "in", responsive = FALSE)
+  )
+
+  if (!context %in% names(context_defaults)) {
     stop(
       sprintf(
         "Unknown plot context: '%s'. Valid contexts: %s",
         context,
-        paste(names(PLOT_CONTEXT_DIMENSIONS), collapse = ", ")
+        paste(names(context_defaults), collapse = ", ")
       ),
       call. = FALSE
     )
   }
 
   # Get context config
-  config <- PLOT_CONTEXT_DIMENSIONS[[context]]
+  config <- context_defaults[[context]]
 
   # Extract dimensions based on unit
   if (config$unit == "px") {

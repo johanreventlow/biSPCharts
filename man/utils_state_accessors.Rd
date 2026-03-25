@@ -26,11 +26,9 @@ this module provides \strong{accessor functions} that:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# Before (inconsistent, error-prone):
 data <- isolate(app_state$data$current_data)
-app_state$columns$mappings$x_column <- "Dato"  # Missing isolate!
 
 # After (consistent, safe):
 data <- get_current_data(app_state)
-set_column_mapping(app_state, "x_column", "Dato")
 }\if{html}{\out{</div>}}
 }
 }

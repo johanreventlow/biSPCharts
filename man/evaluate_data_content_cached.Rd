@@ -46,10 +46,7 @@ has_content <- evaluate_data_content_cached(
 Other performance: 
 \code{\link{clear_performance_cache}()},
 \code{\link{create_cached_reactive}()},
-\code{\link{create_performance_debounced}()},
-\code{\link{get_performance_stats}()},
-\code{\link{measure_reactive_performance}()},
-\code{\link{monitor_memory_usage}()}
+\code{\link{create_performance_debounced}()}
 }
 \concept{performance}
 \keyword{internal}

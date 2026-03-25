@@ -1,92 +1,80 @@
 # lint_and_style.R
-# Development script til code quality checking og formatting
-# Kan køres med specifikke filer som argumenter (brugt af pre-commit hook)
-# eller uden argumenter for at checke hele projektet
+# Pre-commit code quality: lint + style kun staged R-filer
+# Exit codes: 0 = OK, 1 = kritiske fejl, 2 = warnings
 
 library(lintr)
 library(styler)
 
-# Bestem hvilke filer der skal checkes
 args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) > 0) {
-  # Pre-commit mode: kun staged filer
-  paths_to_check <- args
-  cat("🔍 Kører lintr code quality check på staged filer...\n")
+  paths_to_check <- args[file.exists(args)]
+  cat("Kører lintr code quality check på staged filer...\n")
 } else {
-  # Manuel mode: hele projektet
-  paths_to_check <- c(
-    "global.R",
-    "app.R",
-    "R/"
-  )
-  cat("🔍 Kører lintr code quality check på hele projektet...\n")
+  paths_to_check <- list.files("R/", pattern = "\\.R$",
+    full.names = TRUE, recursive = TRUE)
+  paths_to_check <- c(paths_to_check,
+    intersect(c("global.R", "app.R"), list.files(".")))
+  cat("Kører lintr code quality check på hele projektet...\n")
 }
 
-# LINTING ======================================================================
+if (length(paths_to_check) == 0) {
+  cat("Ingen R-filer at checke.\n")
+  quit(save = "no", status = 0)
+}
 
-# Kør lintr på specifikke filer og mapper
+# LINTING ====================================================================
+
 lint_results <- list()
-
 for (path in paths_to_check) {
-  if (file.exists(path)) {
-    cat("Checker:", path, "\n")
-    if (dir.exists(path)) {
-      # For mapper: scan alle .R filer
-      r_files <- list.files(path, pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
-      for (file in r_files) {
-        lint_results[[file]] <- lint(file)
-      }
-    } else {
-      # For enkelte filer
-      lint_results[[path]] <- lint(path)
+  cat("Checker:", path, "\n")
+  lint_results[[path]] <- tryCatch(
+    lint(path),
+    error = function(e) {
+      cat("  Lint fejl:", e$message, "\n")
+      list()
     }
-  }
+  )
 }
 
-# Vis resultater
-total_issues <- sum(sapply(lint_results, length))
-cat("\n📊 Lintr resultater:\n")
-cat("Total issues fundet:", total_issues, "\n")
+total_issues <- sum(vapply(lint_results, length, integer(1)))
+cat("\nLintr resultater: ", total_issues, " issues\n")
+
+has_errors <- FALSE
+has_warnings <- FALSE
 
 if (total_issues > 0) {
-  cat("\n⚠️  Issues fundet:\n")
   for (file in names(lint_results)) {
     issues <- lint_results[[file]]
     if (length(issues) > 0) {
       cat("\n", file, ":\n")
       print(issues)
+      for (issue in issues) {
+        if (issue$type == "error") has_errors <- TRUE
+        if (issue$type %in% c("warning", "style")) has_warnings <- TRUE
+      }
     }
   }
-} else {
-  cat("✅ Ingen linting issues fundet!\n")
 }
 
-# STYLING ======================================================================
+# STYLING ====================================================================
 
-cat("\n🎨 Kører styler code formatting...\n")
+cat("\nKører styler code formatting...\n")
 
 for (path in paths_to_check) {
-  if (file.exists(path)) {
-    cat("Styling:", path, "\n")
-    if (dir.exists(path)) {
-      style_dir(path, recursive = TRUE)
-    } else {
-      style_file(path)
-    }
+  if (file.exists(path) && !dir.exists(path)) {
+    style_file(path)
   }
 }
 
-cat("✅ Code styling færdig!\n")
+cat("Styling færdig.\n")
 
-# SUMMARY ======================================================================
+# EXIT =======================================================================
 
-cat("\n📋 SAMMENFATNING:\n")
-cat("- Lintr issues:", total_issues, "\n")
-cat("- Styling: Komplet\n")
-
-if (total_issues > 0) {
-  cat("\n🔧 Næste trin: Ret lintr issues manuelt\n")
+if (has_errors) {
+  quit(save = "no", status = 1)
+} else if (has_warnings) {
+  quit(save = "no", status = 2)
 } else {
-  cat("\n🎉 Code quality check bestået!\n")
+  quit(save = "no", status = 0)
 }

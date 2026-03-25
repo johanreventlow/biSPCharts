@@ -338,14 +338,25 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
   y_candidates <- score_column_candidates(data, numeric_candidates, role = "y_column")
   n_candidates <- score_column_candidates(data, numeric_candidates, role = "n_column")
 
+  # Bevar dato-format info til brugernotifikation
+  date_format_info <- NULL
+  if (!is.null(best_date_col) && length(date_candidates) > 0) {
+    best_info <- date_candidates[[best_date_col]]
+    date_format_info <- list(
+      format = best_info$suggested_format,
+      confidence = best_info$score
+    )
+  }
+
   # 3. COMBINE RESULTS with preference for data-driven detection
   results <- list(
     x_col = best_date_col %||% name_based_results$x_col,
     y_col = if (length(y_candidates) > 0) names(y_candidates)[1] else name_based_results$y_col,
     n_col = if (length(n_candidates) > 0) names(n_candidates)[1] else name_based_results$n_col,
-    skift_col = name_based_results$skift_col, # These remain name-based
+    skift_col = name_based_results$skift_col,
     frys_col = name_based_results$frys_col,
-    kommentar_col = name_based_results$kommentar_col
+    kommentar_col = name_based_results$kommentar_col,
+    date_format_info = date_format_info
   )
 
   log_debug_kv(

@@ -27,15 +27,15 @@
 #' @format Named list med dansk label → engelsk kode
 #' @keywords internal
 CHART_TYPES_DA <- list(
-  "Seriediagram m SPC (Run Chart)" = "run",
-  "I-kort (Individuelle værdier)" = "i",
-  "MR-kort (Moving Range)" = "mr",
-  "P-kort (Andele)" = "p",
-  "P'-kort (Andele, standardiseret)" = "pp",
-  "U-kort (Rater)" = "u",
-  "U'-kort (Rater, standardiseret)" = "up",
-  "C-kort (Tællinger)" = "c",
-  "G-kort (Tid mellem hændelser)" = "g"
+  "Run \u2014 seriediagram over tid" = "run",
+  "I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)" = "i",
+  "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
+  "P-kort \u2014 andele/procenter (fx infektionsrate)" = "p",
+  "P\u2032-kort \u2014 andele, standardiseret" = "pp",
+  "U-kort \u2014 rater (fx komplikationer pr. 1000)" = "u",
+  "U\u2032-kort \u2014 rater, standardiseret" = "up",
+  "C-kort \u2014 t\u00e6llinger (fx antal fald)" = "c",
+  "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g"
 )
 
 ## Omvendt mapping til engelske koder -----
@@ -59,7 +59,7 @@ CHART_TYPES_EN <- list(
 #'
 #' @param danish_selection Valgt chart type (dansk label eller engelsk kode)
 #' @return Engelsk qicharts2 kode (fx "i", "run", "p")
-#' get_qic_chart_type("I-kort (Individuelle værdier)") # Returns "i"
+#' get_qic_chart_type("I-kort \u2014 enkelte m\u00e5linger") # Returns "i"
 #' get_qic_chart_type("i") # Returns "i" (already English)
 #' @keywords internal
 get_qic_chart_type <- function(danish_selection) {

@@ -72,14 +72,27 @@ golem_add_external_resources <- function() {
     "www", app_sys("app/www")
   )
 
-  shiny::tags$head(
-    golem::favicon(),
-    golem::bundle_resources(
-      path = app_sys("app/www"),
-      app_title = "SPCify"
+  shiny::tagList(
+    shiny::tags$head(
+      golem::favicon(),
+      golem::bundle_resources(
+        path = app_sys("app/www"),
+        app_title = "SPCify"
+      ),
+      # Accessibility: aria-live på Shinys notification-panel
+      shiny::tags$script(htmltools::HTML(
+        "$(function(){
+          var p = document.getElementById('shiny-notification-panel');
+          if (!p) {
+            p = document.createElement('div');
+            p.id = 'shiny-notification-panel';
+            document.body.appendChild(p);
+          }
+          p.setAttribute('aria-live', 'polite');
+          p.setAttribute('role', 'status');
+        });"
+      ))
     )
-    # Add here other external resources
-    # for example, you can add shinyalert::useShinyalert()
   )
 }
 

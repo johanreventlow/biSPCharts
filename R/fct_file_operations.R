@@ -4,6 +4,34 @@
 # Dependencies ----------------------------------------------------------------
 # Bruger readxl og readr til fil-import
 
+#' Upload-successnotifikation med kolonnenavne
+#' @param source_label Kildelabel (fx "CSV", "Excel", "Indsatte data")
+#' @param data Data frame der blev indlæst
+#' @noRd
+notify_upload_success <- function(source_label, data) {
+  col_names <- names(data)
+  col_preview <- if (length(col_names) <= 6) {
+    paste(col_names, collapse = ", ")
+  } else {
+    paste0(
+      paste(col_names[1:5], collapse = ", "),
+      " (+", length(col_names) - 5, " mere)"
+    )
+  }
+
+  msg <- paste0(
+    source_label, " indl\u00e6st: ",
+    nrow(data), " r\u00e6kker, ",
+    ncol(data), " kolonner (",
+    col_preview, ")"
+  )
+
+  tryCatch(
+    shiny::showNotification(msg, type = "message", duration = 4),
+    error = function(e) invisible(NULL)
+  )
+}
+
 #' Validate safe file path for uploads
 #' Enhanced path traversal protection for file uploads
 #' @param uploaded_path Path from file upload input
@@ -147,7 +175,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
       if (time_since_upload < min_upload_interval) {
         shiny::showNotification(
-          paste0("Vent venligst mindst ", min_upload_interval, " sekunder mellem fil-uploads (sikkerhedsbeskyttelse)"),
+          "Vent venligst et \u00f8jeblik, f\u00f8r du uploader en ny fil.",
           type = "warning",
           duration = 3
         )
@@ -371,11 +399,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     emit$navigation_changed()
 
 
-    shiny::showNotification(
-      paste("Excel fil uploadet:", nrow(data), "rækker,", ncol(data), "kolonner"),
-      type = "message",
-      duration = 3
-    )
+    notify_upload_success("Excel", data)
   }
 }
 
@@ -541,11 +565,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     debug_state_snapshot("after_csv_upload_complete", app_state, session_id = session_id)
   }
 
-  shiny::showNotification(
-    paste("CSV fil uploadet:", nrow(data), "rækker,", ncol(data), "kolonner"),
-    type = "message",
-    duration = 3
-  )
+  notify_upload_success("CSV", data)
 }
 
 #' Haandter indsatte (pasted) data fra textAreaInput
@@ -629,10 +649,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   app_state$ui$hide_anhoej_rules <- FALSE
   emit$navigation_changed()
 
-  shiny::showNotification(
-    paste("Data indlæst:", nrow(data), "rækker,", ncol(data), "kolonner"),
-    type = "message", duration = 3
-  )
+  notify_upload_success("Indsatte data", data)
 
   invisible(NULL)
 }
@@ -715,6 +732,57 @@ parse_session_metadata <- function(session_lines, data_cols) {
     n_text <- gsub("^• Nævner: ", "", n_line[1])
     if (n_text %in% data_cols) {
       metadata$n_column <- n_text
+    }
+  }
+
+  # Avancerede kolonnemappings
+  skift_line <- session_lines[grepl("^• Skift:", session_lines)]
+  if (length(skift_line) > 0) {
+    skift_text <- gsub("^• Skift: ", "", skift_line[1])
+    if (skift_text %in% data_cols) {
+      metadata$skift_column <- skift_text
+    }
+  }
+
+  frys_line <- session_lines[grepl("^• Frys:", session_lines)]
+  if (length(frys_line) > 0) {
+    frys_text <- gsub("^• Frys: ", "", frys_line[1])
+    if (frys_text %in% data_cols) {
+      metadata$frys_column <- frys_text
+    }
+  }
+
+  kommentar_line <- session_lines[grepl("^• Kommentar:", session_lines)]
+  if (length(kommentar_line) > 0) {
+    kommentar_text <- gsub("^• Kommentar: ", "", kommentar_line[1])
+    if (kommentar_text %in% data_cols) {
+      metadata$kommentar_column <- kommentar_text
+    }
+  }
+
+  # Analyseindstillinger
+  target_line <- session_lines[grepl("^• Target:", session_lines)]
+  if (length(target_line) > 0) {
+    target_text <- gsub("^• Target: ", "", target_line[1])
+    if (nzchar(target_text) && target_text != "Ikke angivet") {
+      metadata$target_value <- target_text
+    }
+  }
+
+  baseline_line <- session_lines[grepl("^• Baseline:", session_lines)]
+  if (length(baseline_line) > 0) {
+    baseline_text <- gsub("^• Baseline: ", "", baseline_line[1])
+    if (nzchar(baseline_text) && baseline_text != "Ikke angivet") {
+      metadata$centerline_value <- baseline_text
+    }
+  }
+
+  unit_type_line <- session_lines[grepl("^• Y-akse enhed:", session_lines)]
+  if (length(unit_type_line) > 0) {
+    unit_type_text <- gsub("^• Y-akse enhed: ", "", unit_type_line[1])
+    valid_units <- c("count", "percent", "rate", "time")
+    if (unit_type_text %in% valid_units) {
+      metadata$y_axis_unit <- unit_type_text
     }
   }
 
@@ -982,26 +1050,41 @@ validate_csv_file <- function(file_path) {
       )
 
       if (ncol(sample_data) == 0) {
-        errors <- c(errors, "CSV fil indeholder ingen kolonner")
+        errors <- c(errors, paste0(
+          "Filen ser ud til at v\u00e6re tom eller har ingen kolonner. ",
+          "Kontroll\u00e9r at filen indeholder data med overskrifter."
+        ))
       }
 
       if (nrow(sample_data) == 0) {
-        errors <- c(errors, "CSV fil indeholder ingen datarækker")
+        errors <- c(errors, paste0(
+          "Filen indeholder kun overskrifter men ingen data. ",
+          "Kontroll\u00e9r at der er r\u00e6kker med data under overskriftsrækken."
+        ))
       }
 
-      # Check for proper column separation
+      # Tjek om data bruger forkert kolonneadskiller
       if (ncol(sample_data) == 1 && nrow(sample_data) > 0) {
         first_value <- as.character(sample_data[1, 1])
         if (grepl("[,;\\t]", first_value)) {
-          errors <- c(errors, "CSV fil har muligvis forkert separator. Forventet semikolon (;) separerede værdier")
+          errors <- c(errors, paste0(
+            "Din CSV-fil bruger muligvis komma eller tabulator som ",
+            "kolonneadskiller. SPCify forventer semikolon (;), som ",
+            "er standarden i dansk Excel. Pr\u00f8v at eksportere ",
+            "filen igen som 'CSV (semikolon-separeret)' fra Excel."
+          ))
         }
       }
     },
     fallback = function(e) {
       if (grepl("invalid", tolower(e$message)) || grepl("encoding", tolower(e$message))) {
-        errors <<- c(errors, "CSV fil har encoding problemer. Prøv at gemme som UTF-8 eller ISO-8859-1")
+        errors <<- c(errors, paste0(
+          "Filen har et tegnkodningsproblem. Pr\u00f8v at gemme ",
+          "filen som UTF-8 i Excel: Gem som \u2192 ",
+          "'CSV UTF-8 (kommasepareret)'."
+        ))
       } else {
-        errors <<- c(errors, paste("Kan ikke læse CSV-fil:", e$message))
+        errors <<- c(errors, paste("Kan ikke l\u00e6se CSV-filen:", e$message))
       }
     },
     error_type = "processing"
@@ -1019,49 +1102,53 @@ validate_csv_file <- function(file_path) {
 handle_upload_error <- function(error, file_info, session_id = NULL) {
   error_message <- as.character(error$message)
   error_type <- "unknown"
-  user_message <- "An unexpected error occurred during file upload"
+  user_message <- paste0(
+    "En uventet fejl opstod under filupload. ",
+    "Kontakt Dataenheden: dataenheden.bispebjerg-frederiksberg-hospitaler@regionh.dk"
+  )
   suggestions <- character(0)
 
-  # Categorize error types and provide specific guidance
-  if (grepl("encoding|locale|character", error_message, ignore.case = TRUE)) {
+  # Kategoriser fejltyper og giv specifik vejledning
+
+  if (grepl("encoding|locale|character|multibyte|utf", error_message, ignore.case = TRUE)) {
     error_type <- "encoding"
-    user_message <- "File encoding issue detected"
+    user_message <- "Filens tegnkodning kunne ikke l\u00e6ses korrekt"
     suggestions <- c(
-      "Try saving your file with UTF-8 or ISO-8859-1 encoding",
-      "Ensure Danish characters (æ, ø, å) are properly encoded",
-      "For Excel files: Save as 'Excel Workbook (.xlsx)' format"
+      "Gem filen som UTF-8 i Excel: Gem som \u2192 'CSV UTF-8 (kommasepareret)'",
+      "Kontroll\u00e9r at danske tegn (\u00e6, \u00f8, \u00e5) vises korrekt i filen",
+      "For Excel-filer: Gem som 'Excel-projektmappe (.xlsx)' i stedet for CSV"
     )
   } else if (grepl("permission|access|locked", error_message, ignore.case = TRUE)) {
     error_type <- "permission"
-    user_message <- "File access permission issue"
+    user_message <- "Filen kunne ikke \u00e5bnes"
     suggestions <- c(
-      "Close the file in other applications (Excel, etc.)",
-      "Check that the file is not read-only",
-      "Try copying the file to a different location"
+      "Luk filen i andre programmer (fx Excel) og pr\u00f8v igen",
+      "Kontroll\u00e9r at filen ikke er skrivebeskyttet",
+      "Pr\u00f8v at kopiere filen til en anden mappe og upload den derfra"
     )
   } else if (grepl("memory|size|allocation", error_message, ignore.case = TRUE)) {
     error_type <- "memory"
-    user_message <- "File too large or memory issue"
+    user_message <- "Filen er for stor til at behandle"
     suggestions <- c(
-      "Try uploading a smaller file",
-      "Remove unnecessary columns or rows",
-      "Split large datasets into smaller files"
+      "Pr\u00f8v at uploade en mindre fil",
+      "Fjern un\u00f8dvendige kolonner eller r\u00e6kker f\u00f8r upload",
+      "Opdel store datas\u00e6t i mindre filer"
     )
   } else if (grepl("column|header|sheet", error_message, ignore.case = TRUE)) {
     error_type <- "structure"
-    user_message <- "File structure issue"
+    user_message <- "Filens struktur kunne ikke fortolkes"
     suggestions <- c(
-      "Ensure your file has proper column headers",
-      "Check that data is properly organized in rows and columns",
-      "For Excel files: Ensure data is in the first sheet or 'Data' sheet"
+      "Kontroll\u00e9r at filen har kolonneoverskrifter i f\u00f8rste r\u00e6kke",
+      "Kontroll\u00e9r at data er organiseret i r\u00e6kker og kolonner",
+      "For Excel-filer: S\u00f8rg for at data ligger i det f\u00f8rste ark eller i et ark kaldet 'Data'"
     )
   } else if (grepl("corrupt|invalid|damaged", error_message, ignore.case = TRUE)) {
     error_type <- "corruption"
-    user_message <- "File appears to be corrupted"
+    user_message <- "Filen ser ud til at v\u00e6re beskadiget"
     suggestions <- c(
-      "Try re-saving the file from the original application",
-      "Check if the file opens correctly in Excel or other applications",
-      "Try exporting data to a new file"
+      "Pr\u00f8v at gemme filen igen fra det oprindelige program",
+      "Kontroll\u00e9r at filen kan \u00e5bnes normalt i Excel",
+      "Pr\u00f8v at eksportere data til en ny fil"
     )
   }
 
@@ -1083,11 +1170,11 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
   notification_html <- shiny::tags$div(
     shiny::tags$strong(user_message),
     shiny::tags$br(),
-    shiny::tags$em(paste("Technical details:", error_message)),
+    shiny::tags$em(paste("Tekniske detaljer:", error_message)),
     if (length(suggestions) > 0) {
       shiny::tags$div(
         shiny::tags$br(),
-        shiny::tags$strong("Suggestions:"),
+        shiny::tags$strong("Forslag til l\u00f8sning:"),
         shiny::tags$ul(
           purrr::map(suggestions, ~ shiny::tags$li(.x))
         )
@@ -1095,10 +1182,16 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
     }
   )
 
-  shiny::showNotification(
-    notification_html,
-    type = "error",
-    duration = 15
+  tryCatch(
+    shiny::showNotification(
+      notification_html,
+      type = "error",
+      duration = 15
+    ),
+    error = function(e) {
+      # showNotification fejler uden aktiv Shiny-session (fx i unit tests)
+      invisible(NULL)
+    }
   )
 
   return(list(

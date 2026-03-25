@@ -202,6 +202,78 @@ create_ui_header <- function() {
       opacity: 0.4 !important;
     }
 
+    /* Gennemfoert wizard-trin: groent checkmark i stedet for nummer */
+    .navbar-nav .nav-link.wizard-completed[data-step]::before {
+      content: '\\2713';
+      background-color: #28a745;
+      border-color: #28a745;
+      -webkit-text-fill-color: white;
+      color: white;
+    }
+
+    /* Loading overlay på SPC plot under genberegning */
+    .spc-plot-container.input-pending .shiny-plot-output,
+    .spc-plot-container .recalculating {
+      opacity: 0.35 !important;
+      transition: opacity 0.15s ease-in-out;
+    }
+    .spc-plot-container::after {
+      content: '';
+      display: none;
+    }
+    .spc-plot-container:has(.recalculating)::after {
+      content: 'Opdaterer...';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      inset: 0;
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Sync-badge: vises når plot IKKE genberegner */
+    .spc-sync-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 0.72rem;
+      color: #28a745;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 5;
+      transition: opacity 0.2s;
+    }
+    .spc-plot-container:has(.recalculating) .spc-sync-badge {
+      opacity: 0;
+    }
+
+    /* Export preview loading spinner */
+    .export-preview-container .recalculating {
+      opacity: 0.3 !important;
+      transition: opacity 0.15s ease-in-out;
+    }
+    .export-preview-container::after {
+      content: '';
+      display: none;
+    }
+    .export-preview-container:has(.recalculating)::after {
+      content: 'Genererer preview...';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      inset: 0;
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 10;
+    }
+
         ")))
     )
   )
@@ -268,226 +340,11 @@ create_ui_main_content <- function() {
 }
 
 
-create_chart_settings_card <- function() {
-  bslib::navset_card_tab(
-    title = shiny::span(shiny::icon("sliders-h"), " Indstillinger", ),
-    full_screen = TRUE,
-    height = "calc(50vh - 60px)",
-    # Tab 1: Detaljer ----
-    bslib::nav_panel(
-      max_height = "100%",
-      min_height = "100%",
-      title = "Detaljer",
-      icon = shiny::icon("pen-to-square"),
-      # Chart type and target value side by side
-      bslib::layout_column_wrap(
-        width = 1 / 2,
-        shiny::div(
-          id = "indicator_div",
-          # Indikator metadata
-          shiny::textInput(
-            "indicator_title",
-            "Titel på indikator:",
-            width = UI_INPUT_WIDTHS$full,
-            value = "",
-            placeholder = "F.eks. 'Infektioner pr. 1000 sengedage'"
-          ),
-          bslib::layout_column_wrap(
-            width = UI_LAYOUT_PROPORTIONS$half,
+# Fjernet død kode: create_chart_settings_card() (med tabs: Detaljer,
+# Organisatorisk, Avanceret) og create_unit_selection().
+# Erstattet af create_chart_settings_card_compact(). Se git historie.
 
-            # Target value input
-            shiny::textInput(
-              "target_value",
-              "Udviklingsmål:",
-              value = "",
-              placeholder = "fx >=90%, <25 eller >",
-              width = UI_INPUT_WIDTHS$full
-            ),
-
-            # Centerline input
-            shiny::textInput(
-              "centerline_value",
-              "Evt. baseline:",
-              value = "",
-              placeholder = "fx 68%, 0,7 el. 22",
-              width = UI_INPUT_WIDTHS$full
-            )
-          ),
-
-          # Beskrivelse
-          shiny::div(
-            id = "indicator-description-wrapper",
-            style = "display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;",
-            shiny::textAreaInput(
-              "indicator_description",
-              "Datadefinition:",
-              value = "",
-              placeholder = "Angiv kort, hvad indikatoren udtrykker, og hvordan data opgøres – fx beregning af tæller og nævner.",
-              resize = "none",
-              width = UI_INPUT_WIDTHS$full,
-            )
-          ),
-        ),
-        shiny::div(
-          # Chart type selection
-          shiny::selectizeInput(
-            "chart_type",
-            "Diagram type:",
-            choices = CHART_TYPES_DA,
-            selected = "run"
-          ),
-
-
-          # Y-axis UI type (simpel datamodel)
-          shiny::selectizeInput(
-            "y_axis_unit",
-            "Y-akse enhed:",
-            choices = Y_AXIS_UI_TYPES_DA,
-            selected = "count"
-          )
-        )
-      )
-    ),
-
-    # Tab 2: Column mapping -----
-    bslib::nav_panel(
-      "Kolonnematch",
-      icon = shiny::icon("columns"),
-      bslib::layout_column_wrap(
-        width = 1 / 2,
-        shiny::div(
-          # X-axis column
-          shiny::selectizeInput(
-            "x_column",
-            "X-akse (vandret tids-/observationsakse):",
-            choices = NULL,
-            selected = NULL
-          ),
-
-          # Y-axis column
-          shiny::selectizeInput(
-            "y_column",
-            "Y-akse (lodret værdiakse):",
-            choices = NULL,
-            selected = NULL
-          ),
-
-          # N column - wrapped for dropup behavior
-          shiny::div(
-            class = "selectize-dropup",
-            shiny::selectizeInput(
-              "n_column",
-              shiny::span(
-                "Nævner (n):",
-                shiny::icon("info-circle"),
-                shiny::span(
-                  id = "n_column_ignore_tt",
-                  style = "display: none; margin-left: 6px; color: #6c757d;",
-                  shiny::icon("circle-info")
-                ) |>
-                  bslib::tooltip("Ignoreres for denne type")
-              ),
-              choices = NULL,
-              selected = NULL
-            ) |>
-              bslib::tooltip("Run: valgfri nævner. P, P′, U, U′: kræver nævner. I, MR, C, G: nævner ignoreres.")
-          ),
-          # Hint vises når diagramtype ikke anvender nævner
-          shiny::div(
-            id = "n_column_hint",
-            class = "text-muted",
-            style = "display: none; font-size: 0.85rem; margin-top: 4px;",
-            shiny::icon("circle-info"),
-            shiny::HTML("&nbsp;Nævner ignoreres for den valgte diagramtype.")
-          )
-        ),
-        shiny::div(
-          # Skift column
-          shiny::selectizeInput(
-            "skift_column",
-            shiny::span("Opdel proces:", shiny::icon("info-circle")),
-            choices = NULL,
-            selected = NULL
-          ),
-
-          # Frys column
-          shiny::selectizeInput(
-            "frys_column",
-            shiny::span("Fastfrys niveau:", shiny::icon("info-circle")),
-            choices = NULL,
-            selected = NULL
-          ),
-
-          # Kommentar column
-          shiny::div(
-            class = "selectize-dropup",
-            shiny::selectizeInput(
-              "kommentar_column",
-              shiny::span("Kommentar (noter):", shiny::icon("info-circle")),
-              choices = NULL,
-              selected = NULL
-            ) |>
-              bslib::tooltip("Valgfri: Kolonne med kommentarer eller noter til datapunkter")
-          ),
-          shiny::div(
-            style = "padding: 10px 0;",
-            shiny::div(
-              class = "text-center",
-              # Auto-detect button
-              shiny::actionButton(
-                "auto_detect_columns",
-                "Auto-detektér kolonner",
-                icon = shiny::icon("magic"),
-                class = "btn-secondary btn-sm w-100",
-                style = "margin-top: 25px;"
-              )
-            ),
-          )
-        ),
-
-        # Column validation feedback
-        # shiny::div(
-        #   id = "column_validation",
-        #   style = "margin-top: 10px;",
-        #   shiny::uiOutput("column_validation_messages")
-        # )
-      )
-    ),
-
-    # Tab 3: Organisatorisk enhed ----
-    bslib::nav_panel(
-      "Organisatorisk",
-      icon = shiny::icon("building"),
-      max_height = "100%",
-      min_height = "100%",
-      shiny::div(
-        style = "padding: 10px 0;",
-        # Organisatorisk enhed selection
-        create_unit_selection()
-      )
-    ),
-
-    # Tab 4: Additional settings (placeholder) ----
-    # bslib::nav_panel(
-    #   "Avanceret",
-    #   icon = shiny::icon("cogs"),
-    #   max_height = "100%",
-    #   min_height = "100%",
-    #
-    #   shiny::div(
-    #     style = "padding: 20px; text-align: center; color: #666;",
-    #     shiny::icon("wrench", style = "font-size: 2rem; margin-bottom: 10px;"),
-    #     shiny::br(),
-    #     "Yderligere indstillinger kommer her",
-    #     shiny::br(),
-    #     shiny::tags$small("Denne tab er reserveret til fremtidige features")
-    #   )
-    # ) # bslib::nav_panel(Avanceret)
-  ) # navset_card_tab
-}
-
-
-# New function for plot-only card
+# Plot-only card
 
 create_plot_only_card <- function() {
   bslib::card(
@@ -554,43 +411,40 @@ create_data_table_card <- function() {
     height = "100%",
     bslib::card_header(
       shiny::div(
-        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; width: 100%;",
+        style = paste0(
+          "display: flex; justify-content: space-between; ",
+          "align-items: center; flex-wrap: wrap; ",
+          "gap: 4px; width: 100%;"
+        ),
         shiny::div(shiny::icon("table"), " Data"),
         shiny::div(
           class = "btn-group-sm",
           shiny::actionButton(
             "auto_detect_columns",
-            label = "Auto-detektér kolonner",
+            label = "Auto-detekt\u00e9r kolonner",
             icon = shiny::icon("magic"),
-            title = "Auto-detektér kolonner",
+            title = "Auto-detekt\u00e9r kolonner",
             class = "btn-primary btn-sm"
           ),
           shiny::actionButton(
-            "show_column_mapping_modal",
-            label = "Angiv kolonner manuelt",
-            icon = shiny::icon("columns"),
-            title = "Angiv kolonner manuelt",
-            class = "btn-secondary btn-sm"
-          ),
-          shiny::actionButton(
             "edit_column_names",
-            label = "Omdøb",
+            label = "Omd\u00f8b",
             icon = shiny::icon("edit"),
-            title = "Redigér kolonnenavne",
+            title = "Redig\u00e9r kolonnenavne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_column",
             label = "Kolonne",
             icon = shiny::icon("plus"),
-            title = "Tilføj kolonne",
+            title = "Tilf\u00f8j kolonne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_row",
-            label = "Række",
+            label = "R\u00e6kke",
             icon = shiny::icon("plus-square"),
-            title = "Tilføj række",
+            title = "Tilf\u00f8j r\u00e6kke",
             class = "btn-secondary btn-sm"
           )
         )
@@ -598,125 +452,73 @@ create_data_table_card <- function() {
     ),
     bslib::card_body(
       fill = TRUE,
+      # Inline kolonnemapping over datatabellen
+      create_inline_column_mapping(),
       excelR::excelOutput("main_data_table", height = "auto")
     )
   )
 }
 
-
-# Modal dialog for column mapping
-#' @keywords internal
-create_column_mapping_modal <- function() {
-  shiny::modalDialog(
-    title = shiny::div(
-      shiny::icon("columns"),
-      " Kolonnematch - Angiv kolonner manuelt"
-    ),
-    size = "l",
-    easyClose = TRUE,
-    footer = shiny::modalButton("Luk", icon = shiny::icon("times")),
-
-    # Column mapping fields in two columns
-    bslib::layout_column_wrap(
-      width = 1 / 2,
-
-      # Left column
-      shiny::div(
-        shiny::selectizeInput(
-          "x_column",
-          "X-akse (tidsakse):",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "y_column",
-          "Y-akse (værdiakse):",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "n_column",
-          "Nævner (n):",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ) |>
-          bslib::tooltip("Run: valgfri. P, P′, U, U′: kræver nævner. I, MR, C, G: ignoreres.")
-      ),
-
-      # Right column
-      shiny::div(
-        shiny::selectizeInput(
-          "skift_column",
-          "Opdel proces:",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "frys_column",
-          "Fastfrys niveau:",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "kommentar_column",
-          "Kommentar (noter):",
-          choices = NULL,
-          selected = NULL,
-          width = "100%"
-        ) |>
-          bslib::tooltip("Valgfri: Kolonne med kommentarer")
+#' Inline kolonnemapping — 6 dropdowns i \u00e9n r\u00e6kke over datatabellen
+#' @noRd
+create_inline_column_mapping <- function() {
+  # Compact selectize med forkortet label
+  compact_select <- function(id, label, tooltip_text = NULL) {
+    el <- shiny::div(
+      style = "flex: 1 1 0; min-width: 100px;",
+      shiny::selectizeInput(
+        id, label,
+        choices = NULL, selected = NULL,
+        width = "100%",
+        options = list(placeholder = "V\u00e6lg...")
       )
+    )
+    if (!is.null(tooltip_text)) {
+      el <- el |> bslib::tooltip(tooltip_text)
+    }
+    el
+  }
+
+  shiny::div(
+    style = paste0(
+      "display: flex; gap: 6px; padding: 4px 0 8px 0; ",
+      "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;"
+    ),
+    compact_select(
+      "x_column", "X-akse",
+      "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned)"
+    ),
+    compact_select(
+      "y_column", "Y-akse",
+      "Kolonne med den v\u00e6rdi der skal f\u00f8lges (fx antal, ventetid, score)"
+    ),
+    compact_select(
+      "n_column", "N\u00e6vner (n)",
+      paste0(
+        "V\u00e6lg en n\u00e6vner-kolonne hvis du arbejder med ",
+        "andele eller rater (fx infektioner pr. 100 patienter). ",
+        "Ellers kan du springe dette felt over."
+      )
+    ),
+    compact_select(
+      "skift_column", "Skift",
+      "Valgfri: Kolonne der markerer hvor processen opdeles i faser"
+    ),
+    compact_select(
+      "frys_column", "Frys",
+      "Valgfri: Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne"
+    ),
+    compact_select(
+      "kommentar_column", "Kommentar",
+      "Valgfri: Kolonne med kommentarer eller noter"
     )
   )
 }
+
 
 # New function for status value boxes
 create_status_value_boxes <- function() {
   visualizationStatusUI("visualization")
-}
-
-create_unit_selection <- function() {
-  shiny::div(
-    style = "margin-bottom: 15px;",
-    shiny::tags$label("Afdeling eller afsnit", style = "font-weight: 500;"),
-    shiny::div(
-      style = "margin-top: 5px;",
-      shiny::radioButtons(
-        "unit_type",
-        NULL,
-        choices = list("Vælg fra liste" = "select", "Indtast selv" = "custom"),
-        selected = "select",
-        inline = TRUE
-      )
-    ),
-
-    # Dropdown for standard enheder
-    shiny::conditionalPanel(condition = "input.unit_type == 'select'", shiny::selectizeInput(
-      "unit_select",
-      NULL,
-      choices = list(
-        "Vælg enhed..." = "",
-        "Medicinsk Afdeling" = "med",
-        "Kirurgisk Afdeling" = "kir",
-        "Intensiv Afdeling" = "icu",
-        "Ambulatorie" = "amb",
-        "Akutmodtagelse" = "akut",
-        "Pædiatrisk Afdeling" = "paed",
-        "Gynækologi/Obstetrik" = "gyn"
-      )
-    )),
-
-    # Custom input
-    shiny::conditionalPanel(
-      condition = "input.unit_type == 'custom'",
-      shiny::textInput("unit_custom", NULL, placeholder = "Indtast enhedsnavn...")
-    )
-  )
 }
 
 create_export_card <- function() {
@@ -757,123 +559,6 @@ create_export_card <- function() {
   ))
 }
 # ui_sidebar.R
-# UI sidebar komponenter
-
-# Dependencies ----------------------------------------------------------------
-
-# UI SIDEBAR KOMPONENTER ======================================================
-
-## Hovedfunktion for UI sidebar
-# Opretter komplet sidebar med data upload og konfiguration
-#' @export
-create_ui_sidebar <- function() {
-  bslib::sidebar(
-    width = "200px",
-    position = "left",
-    open = "always",
-    # collapsible = FALSE,
-
-    # Action buttons section
-    shiny::div(
-      style = "margin-bottom: 20px;",
-      # Start ny session knap
-      shiny::actionButton(
-        "clear_saved",
-        "Start ny session",
-        icon = shiny::icon("refresh"),
-        class = "btn-primary w-100 mb-2",
-        title = "Start med tom standardtabel"
-      ),
-
-      # Upload fil knap - åbner modal
-      shiny::actionButton(
-        "show_upload_modal",
-        "Upload datafil",
-        icon = shiny::icon("upload"),
-        class = "btn-secondary w-100",
-        title = "Upload Excel eller CSV fil"
-      )
-    ),
-    shiny::hr(),
-
-    # Vertical accordion with settings panels
-    # bslib::accordion(
-    #   id = "sidebar_accordion",
-    #   open = "detaljer",
-    #   multiple = FALSE,
-    #
-    #   # Panel 1: Detaljer
-    #   # BEMÆRK: Detaljer-felter flyttet til SPC Preview card sidebar
-    #   bslib::accordion_panel(
-    #     title = shiny::tagList(shiny::icon("pen-to-square"), " Detaljer"),
-    #     value = "detaljer",
-    #
-    #     # MIDLERTIDIG SKJULT: Indikator metadata (flyttes til anden side senere)
-    #     # shiny::textInput(
-    #     #   "indicator_title",
-    #     #   "Titel på indikator:",
-    #     #   width = "100%",
-    #     #   value = "",
-    #     #   placeholder = "F.eks. 'Infektioner pr. 1000 sengedage'"
-    #     # ),
-    #
-    #     # FLYTTET: Detaljer-felter nu i SPC Preview card sidebar (se create_plot_only_card)
-    #     # - target_value (Udviklingsmål)
-    #     # - centerline_value (Evt. baseline)
-    #     # - chart_type (Diagram type)
-    #     # - y_axis_unit (Y-akse enhed)
-    #
-    #     # MIDLERTIDIG SKJULT: Beskrivelse (flyttes til anden side senere)
-    #     # shiny::textAreaInput(
-    #     #   "indicator_description",
-    #     #   "Datadefinition:",
-    #     #   value = "",
-    #     #   placeholder = "Angiv kort, hvad indikatoren udtrykker",
-    #     #   resize = "vertical",
-    #     #   width = "100%",
-    #     #   rows = 4
-    #     # )
-    #
-    #     # Placeholder - panel er nu tom, alle felter flyttet til SPC Preview card sidebar
-    #     shiny::p(
-    #       style = "color: #999; font-style: italic; text-align: center; padding: 20px;",
-    #       "Detaljer-felter vises nu i SPC Preview card sidebar"
-    #     )
-    #   ),
-    #
-    #   # Panel 2: Kolonnematch
-    #   # BEMÆRK: Kolonnematch-felter flyttet til Data card sidebar
-    #   bslib::accordion_panel(
-    #     title = shiny::tagList(shiny::icon("columns"), " Kolonnematch"),
-    #     value = "kolonnematch",
-    #
-    #     # FLYTTET: Kolonnematch-felter nu i Data card sidebar (se create_data_table_card)
-    #     # - x_column (X-akse)
-    #     # - y_column (Y-akse)
-    #     # - n_column (Nævner)
-    #     # - skift_column (Opdel proces)
-    #     # - frys_column (Fastfrys niveau)
-    #     # - kommentar_column (Kommentar)
-    #     # - auto_detect_columns button
-    #
-    #     # Placeholder - panel er nu tom, alle felter flyttet til Data card sidebar
-    #     shiny::p(
-    #       style = "color: #999; font-style: italic; text-align: center; padding: 20px;",
-    #       "Kolonnematch-felter vises nu i Data card sidebar"
-    #     )
-    #   ),
-    #
-    #   # Panel 3: Organisatorisk
-    #   # MIDLERTIDIG SKJULT: Organisatorisk panel flyttes til anden side senere
-    #   # bslib::accordion_panel(
-    #   #   title = shiny::tagList(shiny::icon("building"), " Organisatorisk"),
-    #   #   value = "organisatorisk",
-    #   #   create_unit_selection()
-    #   # )
-    # )
-  )
-}
-
 # UI UPLOAD PAGE KOMPONENTER ===================================================
 
 #' Upload-side med kvadratiske handlingsknapper og paste-felt
@@ -962,7 +647,7 @@ create_ui_upload_page <- function() {
             )
           ),
           square_button(
-            "trigger_file_upload", "Indlæs\nXLS/CSV", "file-csv",
+            "trigger_file_upload", "Indlæs\nXLS/CSV", "table",
             "Vælg Excel eller CSV fil"
           )
         ),
@@ -1012,309 +697,7 @@ create_ui_upload_page <- function() {
   )
 }
 
-# ui_welcome_page.R
-# UI komponenter for velkomstside
-
-# Dependencies ----------------------------------------------------------------
-
-# UI VELKOMSTSIDE KOMPONENTER =================================================
-
-## Hovedfunktion for velkomstside
-# Opretter komplet velkomstside med hero sektion og handlingsknapper
-#' @keywords internal
-create_welcome_page <- function() {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-
-  shiny::div(
-    class = "welcome-page",
-    style = "min-height: 100vh; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);",
-
-    # Hero Sektion
-    shiny::div(
-      class = "hero-section py-5",
-      shiny::div(
-        class = "container-fluid",
-        shiny::div(
-          class = "row align-items-center mb-5",
-          shiny::div(
-            class = "col-12 text-center",
-            shiny::h1(
-              class = "display-4 fw-bold",
-              style = paste0("color: ", hospital_colors$primary, "; margin-bottom: 1rem;"),
-              "Velkommen til BFH SPC-værktøj"
-            ),
-            shiny::p(
-              class = "lead text-muted",
-              style = "font-size: 1.25rem; max-width: 800px; margin: 0 auto;",
-              "Transformér dine data til indsigter med Statistical Process Control. ",
-              "Identificer mønstre, spot trends og træf bedre beslutninger baseret på dine healthcare data."
-            )
-          )
-        )
-      )
-    ),
-
-    # Main Content - Two Column Layout
-    shiny::div(
-      class = "container-fluid px-4",
-      shiny::div(
-        class = "row g-4 mb-5",
-
-        # LEFT COLUMN - Getting Started Guide
-        shiny::div(
-          class = "col-lg-6",
-          create_getting_started_card()
-        ),
-
-        # RIGHT COLUMN - Understanding SPC
-        shiny::div(
-          class = "col-lg-6",
-          create_understanding_spc_card()
-        )
-      )
-    ),
-
-    # Call to Action Section
-    shiny::div(
-      class = "cta-section py-5",
-      style = paste0("background-color: ", hospital_colors$primary, "; color: white;"),
-      shiny::div(
-        class = "container text-center",
-        shiny::div(
-          class = "row",
-          shiny::div(
-            class = "col-lg-8 mx-auto",
-            shiny::h2(class = "mb-4", "Klar til at komme i gang?"),
-            shiny::p(class = "mb-4 fs-5", "Start din første SPC-analyse på under 5 minutter."),
-            shiny::div(
-              class = "d-grid gap-2 d-md-flex justify-content-md-center",
-              shiny::actionButton(
-                "start_new_session",
-                "🚀 Start ny analyse",
-                class = "btn btn-light btn-lg me-md-2",
-                style = "font-weight: 600; padding: 12px 30px;"
-              ),
-              shiny::actionButton(
-                "upload_data_welcome",
-                "Upload data",
-                class = "btn btn-outline-light btn-lg",
-                style = "font-weight: 600; padding: 12px 30px;"
-              )
-            )
-          )
-        )
-      )
-    )
-  )
-}
-
-# Left Column - Getting Started Guide
-create_getting_started_card <- function() {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-  bslib::card(
-    class = "h-100 shadow-sm",
-    style = "border: none; border-radius: 15px;",
-    bslib::card_header(
-      class = "bg-white border-0 pb-0",
-      style = "border-radius: 15px 15px 0 0;",
-      shiny::div(
-        class = "d-flex align-items-center",
-        shiny::div(
-          class = "me-3",
-          style = paste0("background: ", hospital_colors$primary, "; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;"),
-          shiny::icon("rocket", style = "color: white; font-size: 1.5rem;")
-        ),
-        shiny::div(
-          shiny::h3(class = "card-title mb-1", "Kom i gang på 3 trin"),
-          shiny::p(class = "text-muted mb-0", "Din vej fra data til indsigt")
-        )
-      )
-    ),
-    bslib::card_body(
-      class = "px-4 py-4",
-
-      # Step 1
-      create_step_item(
-        number = "1",
-        icon = "upload",
-        title = "Upload dine data",
-        description = "Excel (.xlsx/.xls) eller CSV-fil med kolonneoverskrifter. Vi understøtter danske tal og datoformater.",
-        example = "Eksempel: Dato, Tæller, Nævner, Kommentar"
-      ),
-
-      # Step 2
-      create_step_item(
-        number = "2",
-        icon = "sliders-h",
-        title = "Konfigurer din analyse",
-        description = "Automatisk kolonnedetektering eller manuel opsætning. Vælg chart type baseret på dine data.",
-        example = "Run chart, P-chart, U-chart, X̄-chart"
-      ),
-
-      # Step 3
-      create_step_item(
-        number = "3",
-        icon = "chart-line",
-        title = "Få dine insights",
-        description = "Interaktiv SPC-graf med centerlinjer, kontrolgrænser og specialle mønstre (Anhøj regler).",
-        example = "Eksporter som Excel, PDF eller PNG"
-      ),
-
-      # Quick Start Button
-      shiny::div(
-        class = "mt-4 pt-3 border-top",
-        shiny::div(
-          class = "d-grid",
-          shiny::actionButton(
-            "quick_start_demo",
-            "👆 Prøv med eksempel-data",
-            class = "btn btn-outline-primary btn-lg",
-            style = "border-radius: 10px; font-weight: 500;"
-          )
-        ),
-        shiny::p(
-          class = "text-center text-muted mt-2 mb-0",
-          style = "font-size: 0.9rem;",
-          "Eller upload dine egne data direkte"
-        )
-      )
-    )
-  )
-}
-
-# Right Column - Understanding SPC
-create_understanding_spc_card <- function() {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-  bslib::card(
-    class = "h-100 shadow-sm",
-    style = "border: none; border-radius: 15px;",
-    bslib::card_header(
-      class = "bg-white border-0 pb-0",
-      style = "border-radius: 15px 15px 0 0;",
-      shiny::div(
-        class = "d-flex align-items-center",
-        shiny::div(
-          class = "me-3",
-          style = paste0("background: ", hospital_colors$secondary, "; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;"),
-          shiny::icon("lightbulb", style = "color: white; font-size: 1.5rem;")
-        ),
-        shiny::div(
-          shiny::h3(class = "card-title mb-1", "Forstå SPC"),
-          shiny::p(class = "text-muted mb-0", "Værktøjet der transformerer data til handling")
-        )
-      )
-    ),
-    bslib::card_body(
-      class = "px-4 py-4",
-
-      # What is SPC?
-      create_info_section(
-        icon = "question-circle",
-        title = "Hvad er Statistical Process Control?",
-        content = "SPC hjælper dig med at skelne mellem normal variation og særlige årsager i dine processer. I sundhedsvæsenet betyder det bedre patientpleje gennem data-drevet beslutningstagning."
-      ),
-
-      # Why SPC in Healthcare?
-      create_info_section(
-        icon = "heartbeat",
-        title = "Hvorfor SPC i sundhedsvæsenet?",
-        content = htmltools::HTML("
-          <ul class='list-unstyled'>
-            <li><strong>🎯 Spot trends tidligt:</strong> Identificer problemer før de bliver kritiske</li>
-            <li><strong>Forstå variation:</strong> Normal udsving vs. særlige årsager</li>
-            <li><strong>💡 Træf bedre beslutninger:</strong> Baseret på statistisk evidens</li>
-            <li><strong>🚀 Forbedre kontinuerligt:</strong> Måle effekt af ændringer</li>
-          </ul>
-        ")
-      ),
-
-      # Healthcare Examples
-      create_info_section(
-        icon = "hospital",
-        title = "Konkrete eksempler fra BFH",
-        content = htmltools::HTML("
-          <div class='row g-2'>
-            <div class='col-6'>
-              <div class='example-item p-2 rounded' style='background: #f8f9fa;'>
-                <small class='fw-bold text-primary'>Infektionsrater</small><br>
-                <small class='text-muted'>Monitor og reducer HAI</small>
-              </div>
-            </div>
-            <div class='col-6'>
-              <div class='example-item p-2 rounded' style='background: #f8f9fa;'>
-                <small class='fw-bold text-primary'>Ventetider</small><br>
-                <small class='text-muted'>Optimér patientflow</small>
-              </div>
-            </div>
-            <div class='col-6'>
-              <div class='example-item p-2 rounded mt-2' style='background: #f8f9fa;'>
-                <small class='fw-bold text-primary'>Medicinfejl</small><br>
-                <small class='text-muted'>Forbedre patientsikkerhed</small>
-              </div>
-            </div>
-            <div class='col-6'>
-              <div class='example-item p-2 rounded mt-2' style='background: #f8f9fa;'>
-                <small class='fw-bold text-primary'>Genindlæggelser</small><br>
-                <small class='text-muted'>Kvalitetsindikatorer</small>
-              </div>
-            </div>
-          </div>
-        ")
-      )
-    )
-  )
-}
-
-# Helper function for step items
-create_step_item <- function(number, icon, title, description, example = NULL) {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-  shiny::div(
-    class = "step-item d-flex mb-4",
-    # Step Number Circle
-    shiny::div(
-      class = "step-number me-3 flex-shrink-0",
-      style = paste0("width: 40px; height: 40px; background: ", hospital_colors$primary, "; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem;"),
-      number
-    ),
-    # Step Content
-    shiny::div(
-      class = "step-content flex-grow-1",
-      shiny::div(
-        class = "d-flex align-items-center mb-2",
-        shiny::icon(icon, class = "text-primary me-2"),
-        shiny::h5(class = "mb-0 fw-semibold", title)
-      ),
-      shiny::p(class = "text-muted mb-1", description),
-      if (!is.null(example)) {
-        shiny::p(
-          class = "small text-primary mb-0",
-          style = "font-style: italic;",
-          example
-        )
-      }
-    )
-  )
-}
-
-# Helper function for info sections
-create_info_section <- function(icon, title, content) {
-  shiny::div(
-    class = "info-section mb-4",
-    shiny::div(
-      class = "d-flex align-items-start mb-2",
-      shiny::div(
-        class = "me-2 flex-shrink-0",
-        shiny::icon(icon, class = "text-secondary", style = "font-size: 1.2rem; margin-top: 2px;")
-      ),
-      shiny::div(
-        class = "flex-grow-1",
-        shiny::h5(class = "fw-semibold mb-2", title),
-        shiny::div(class = "text-muted", content)
-      )
-    )
-  )
-}
+# Fjernet død kode: create_ui_sidebar(), create_welcome_page(),
+# create_getting_started_card(), create_understanding_spc_card(),
+# create_step_item(), create_info_section()
+# Erstattet af wizard-baseret upload-flow. Se git historie.

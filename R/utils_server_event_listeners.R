@@ -117,6 +117,53 @@ register_data_lifecycle_events <- function(app_state, emit, input, output, sessi
 
 #' Register Auto-Detection Events
 #'
+#' Vis notifikation med auto-detekterede kolonner
+#'
+#' @param results Liste med x_col, y_col, n_col osv.
+#' @param session Shiny session
+#' @noRd
+notify_autodetect_results <- function(results, session) {
+  # Byg liste af fundne kolonner
+  mapping_labels <- c(
+    x_col = "X-akse",
+    y_col = "Y-akse",
+    n_col = "N\u00e6vner",
+    skift_col = "Skift",
+    frys_col = "Frys",
+    kommentar_col = "Kommentar"
+  )
+
+  detected <- vapply(names(mapping_labels), function(key) {
+    val <- results[[key]]
+    if (!is.null(val) && nzchar(val)) {
+      paste0(mapping_labels[[key]], ": ", val)
+    } else {
+      NA_character_
+    }
+  }, character(1))
+
+  detected <- detected[!is.na(detected)]
+
+  if (length(detected) == 0) {
+    return(invisible(NULL))
+  }
+
+  msg <- paste0(
+    "Kolonner detekteret: ",
+    paste(detected, collapse = ", "),
+    ". Kontroll\u00e9r i Kolonnematch-fanen."
+  )
+
+  tryCatch(
+    shiny::showNotification(
+      shiny::tags$span(shiny::icon("magic"), " ", msg),
+      type = "message",
+      duration = 6
+    ),
+    error = function(e) invisible(NULL)
+  )
+}
+
 #' Registers observers for auto-detection processing.
 #'
 #' @param app_state Centralized app state
@@ -189,6 +236,8 @@ register_autodetect_events <- function(app_state, emit, session, register_observ
         auto_detect_results <- shiny::isolate(app_state$columns$auto_detect$results)
 
         if (!is.null(auto_detect_results)) {
+          # Vis notifikation med detekterede kolonner
+          notify_autodetect_results(auto_detect_results, session)
           emit$ui_sync_needed()
         }
       }

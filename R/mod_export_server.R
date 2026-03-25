@@ -902,7 +902,7 @@ mod_export_server <- function(id, app_state) {
 
               # Success notification
               shiny::showNotification(
-                "PDF genereret og downloadet via BFHcharts",
+                "PDF genereret og downloadet",
                 type = "message",
                 duration = 3
               )
@@ -1061,7 +1061,7 @@ mod_export_server <- function(id, app_state) {
 
               # Success notification
               shiny::showNotification(
-                "PNG genereret og downloadet via BFHcharts",
+                "PNG genereret og downloadet",
                 type = "message",
                 duration = 3
               )
@@ -1209,9 +1209,12 @@ mod_export_server <- function(id, app_state) {
                 error = e$message
               )
             )
-            # Show error notification to user
+            # Vis fejlbesked til bruger (uden tekniske detaljer)
             shiny::showNotification(
-              paste("Eksport fejlede:", e$message),
+              paste0(
+                "Eksport fejlede. Pr\u00f8v igen, ",
+                "eller kontakt Dataenheden hvis problemet forts\u00e6tter."
+              ),
               type = "error",
               duration = 10
             )

@@ -982,26 +982,41 @@ validate_csv_file <- function(file_path) {
       )
 
       if (ncol(sample_data) == 0) {
-        errors <- c(errors, "CSV fil indeholder ingen kolonner")
+        errors <- c(errors, paste0(
+          "Filen ser ud til at v\u00e6re tom eller har ingen kolonner. ",
+          "Kontroll\u00e9r at filen indeholder data med overskrifter."
+        ))
       }
 
       if (nrow(sample_data) == 0) {
-        errors <- c(errors, "CSV fil indeholder ingen datarækker")
+        errors <- c(errors, paste0(
+          "Filen indeholder kun overskrifter men ingen data. ",
+          "Kontroll\u00e9r at der er r\u00e6kker med data under overskriftsrækken."
+        ))
       }
 
-      # Check for proper column separation
+      # Tjek om data bruger forkert kolonneadskiller
       if (ncol(sample_data) == 1 && nrow(sample_data) > 0) {
         first_value <- as.character(sample_data[1, 1])
         if (grepl("[,;\\t]", first_value)) {
-          errors <- c(errors, "CSV fil har muligvis forkert separator. Forventet semikolon (;) separerede værdier")
+          errors <- c(errors, paste0(
+            "Din CSV-fil bruger muligvis komma eller tabulator som ",
+            "kolonneadskiller. SPCify forventer semikolon (;), som ",
+            "er standarden i dansk Excel. Pr\u00f8v at eksportere ",
+            "filen igen som 'CSV (semikolon-separeret)' fra Excel."
+          ))
         }
       }
     },
     fallback = function(e) {
       if (grepl("invalid", tolower(e$message)) || grepl("encoding", tolower(e$message))) {
-        errors <<- c(errors, "CSV fil har encoding problemer. Prøv at gemme som UTF-8 eller ISO-8859-1")
+        errors <<- c(errors, paste0(
+          "Filen har et tegnkodningsproblem. Pr\u00f8v at gemme ",
+          "filen som UTF-8 i Excel: Gem som \u2192 ",
+          "'CSV UTF-8 (kommasepareret)'."
+        ))
       } else {
-        errors <<- c(errors, paste("Kan ikke læse CSV-fil:", e$message))
+        errors <<- c(errors, paste("Kan ikke l\u00e6se CSV-filen:", e$message))
       }
     },
     error_type = "processing"

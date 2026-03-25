@@ -1019,49 +1019,50 @@ validate_csv_file <- function(file_path) {
 handle_upload_error <- function(error, file_info, session_id = NULL) {
   error_message <- as.character(error$message)
   error_type <- "unknown"
-  user_message <- "An unexpected error occurred during file upload"
+  user_message <- "En uventet fejl opstod under filupload"
   suggestions <- character(0)
 
-  # Categorize error types and provide specific guidance
-  if (grepl("encoding|locale|character", error_message, ignore.case = TRUE)) {
+  # Kategoriser fejltyper og giv specifik vejledning
+
+  if (grepl("encoding|locale|character|multibyte|utf", error_message, ignore.case = TRUE)) {
     error_type <- "encoding"
-    user_message <- "File encoding issue detected"
+    user_message <- "Filens tegnkodning kunne ikke l\u00e6ses korrekt"
     suggestions <- c(
-      "Try saving your file with UTF-8 or ISO-8859-1 encoding",
-      "Ensure Danish characters (æ, ø, å) are properly encoded",
-      "For Excel files: Save as 'Excel Workbook (.xlsx)' format"
+      "Gem filen som UTF-8 i Excel: Gem som \u2192 'CSV UTF-8 (kommasepareret)'",
+      "Kontroll\u00e9r at danske tegn (\u00e6, \u00f8, \u00e5) vises korrekt i filen",
+      "For Excel-filer: Gem som 'Excel-projektmappe (.xlsx)' i stedet for CSV"
     )
   } else if (grepl("permission|access|locked", error_message, ignore.case = TRUE)) {
     error_type <- "permission"
-    user_message <- "File access permission issue"
+    user_message <- "Filen kunne ikke \u00e5bnes"
     suggestions <- c(
-      "Close the file in other applications (Excel, etc.)",
-      "Check that the file is not read-only",
-      "Try copying the file to a different location"
+      "Luk filen i andre programmer (fx Excel) og pr\u00f8v igen",
+      "Kontroll\u00e9r at filen ikke er skrivebeskyttet",
+      "Pr\u00f8v at kopiere filen til en anden mappe og upload den derfra"
     )
   } else if (grepl("memory|size|allocation", error_message, ignore.case = TRUE)) {
     error_type <- "memory"
-    user_message <- "File too large or memory issue"
+    user_message <- "Filen er for stor til at behandle"
     suggestions <- c(
-      "Try uploading a smaller file",
-      "Remove unnecessary columns or rows",
-      "Split large datasets into smaller files"
+      "Pr\u00f8v at uploade en mindre fil",
+      "Fjern un\u00f8dvendige kolonner eller r\u00e6kker f\u00f8r upload",
+      "Opdel store datas\u00e6t i mindre filer"
     )
   } else if (grepl("column|header|sheet", error_message, ignore.case = TRUE)) {
     error_type <- "structure"
-    user_message <- "File structure issue"
+    user_message <- "Filens struktur kunne ikke fortolkes"
     suggestions <- c(
-      "Ensure your file has proper column headers",
-      "Check that data is properly organized in rows and columns",
-      "For Excel files: Ensure data is in the first sheet or 'Data' sheet"
+      "Kontroll\u00e9r at filen har kolonneoverskrifter i f\u00f8rste r\u00e6kke",
+      "Kontroll\u00e9r at data er organiseret i r\u00e6kker og kolonner",
+      "For Excel-filer: S\u00f8rg for at data ligger i det f\u00f8rste ark eller i et ark kaldet 'Data'"
     )
   } else if (grepl("corrupt|invalid|damaged", error_message, ignore.case = TRUE)) {
     error_type <- "corruption"
-    user_message <- "File appears to be corrupted"
+    user_message <- "Filen ser ud til at v\u00e6re beskadiget"
     suggestions <- c(
-      "Try re-saving the file from the original application",
-      "Check if the file opens correctly in Excel or other applications",
-      "Try exporting data to a new file"
+      "Pr\u00f8v at gemme filen igen fra det oprindelige program",
+      "Kontroll\u00e9r at filen kan \u00e5bnes normalt i Excel",
+      "Pr\u00f8v at eksportere data til en ny fil"
     )
   }
 
@@ -1083,11 +1084,11 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
   notification_html <- shiny::tags$div(
     shiny::tags$strong(user_message),
     shiny::tags$br(),
-    shiny::tags$em(paste("Technical details:", error_message)),
+    shiny::tags$em(paste("Tekniske detaljer:", error_message)),
     if (length(suggestions) > 0) {
       shiny::tags$div(
         shiny::tags$br(),
-        shiny::tags$strong("Suggestions:"),
+        shiny::tags$strong("Forslag til l\u00f8sning:"),
         shiny::tags$ul(
           purrr::map(suggestions, ~ shiny::tags$li(.x))
         )
@@ -1095,10 +1096,16 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
     }
   )
 
-  shiny::showNotification(
-    notification_html,
-    type = "error",
-    duration = 15
+  tryCatch(
+    shiny::showNotification(
+      notification_html,
+      type = "error",
+      duration = 15
+    ),
+    error = function(e) {
+      # showNotification fejler uden aktiv Shiny-session (fx i unit tests)
+      invisible(NULL)
+    }
   )
 
   return(list(

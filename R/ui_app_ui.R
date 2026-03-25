@@ -225,6 +225,22 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
+    /* Sync-badge: vises når plot IKKE genberegner */
+    .spc-sync-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      font-size: 0.72rem;
+      color: #28a745;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 5;
+      transition: opacity 0.2s;
+    }
+    .spc-plot-container:has(.recalculating) .spc-sync-badge {
+      opacity: 0;
+    }
+
         ")))
     )
   )
@@ -865,7 +881,7 @@ create_ui_upload_page <- function() {
             )
           ),
           square_button(
-            "trigger_file_upload", "Indlæs\nXLS/CSV", "file-csv",
+            "trigger_file_upload", "Indlæs\nXLS/CSV", "table",
             "Vælg Excel eller CSV fil"
           )
         ),

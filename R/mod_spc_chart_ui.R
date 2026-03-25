@@ -23,7 +23,9 @@ visualizationModuleUI <- function(id) {
   shiny::div(
     class = "spc-plot-container",
     style = "position: relative; height: 100%;",
-    shiny::plotOutput(ns("spc_plot_actual"), width = "100%", height = "100%")
+    shiny::plotOutput(ns("spc_plot_actual"), width = "100%", height = "100%"),
+    # Sync-indikator — vises via CSS baseret på .recalculating tilstand
+    shiny::div(class = "spc-sync-badge", shiny::icon("check"), " Synkroniseret")
   )
 }
 

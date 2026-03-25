@@ -735,6 +735,57 @@ parse_session_metadata <- function(session_lines, data_cols) {
     }
   }
 
+  # Avancerede kolonnemappings
+  skift_line <- session_lines[grepl("^• Skift:", session_lines)]
+  if (length(skift_line) > 0) {
+    skift_text <- gsub("^• Skift: ", "", skift_line[1])
+    if (skift_text %in% data_cols) {
+      metadata$skift_column <- skift_text
+    }
+  }
+
+  frys_line <- session_lines[grepl("^• Frys:", session_lines)]
+  if (length(frys_line) > 0) {
+    frys_text <- gsub("^• Frys: ", "", frys_line[1])
+    if (frys_text %in% data_cols) {
+      metadata$frys_column <- frys_text
+    }
+  }
+
+  kommentar_line <- session_lines[grepl("^• Kommentar:", session_lines)]
+  if (length(kommentar_line) > 0) {
+    kommentar_text <- gsub("^• Kommentar: ", "", kommentar_line[1])
+    if (kommentar_text %in% data_cols) {
+      metadata$kommentar_column <- kommentar_text
+    }
+  }
+
+  # Analyseindstillinger
+  target_line <- session_lines[grepl("^• Target:", session_lines)]
+  if (length(target_line) > 0) {
+    target_text <- gsub("^• Target: ", "", target_line[1])
+    if (nzchar(target_text) && target_text != "Ikke angivet") {
+      metadata$target_value <- target_text
+    }
+  }
+
+  baseline_line <- session_lines[grepl("^• Baseline:", session_lines)]
+  if (length(baseline_line) > 0) {
+    baseline_text <- gsub("^• Baseline: ", "", baseline_line[1])
+    if (nzchar(baseline_text) && baseline_text != "Ikke angivet") {
+      metadata$centerline_value <- baseline_text
+    }
+  }
+
+  unit_type_line <- session_lines[grepl("^• Y-akse enhed:", session_lines)]
+  if (length(unit_type_line) > 0) {
+    unit_type_text <- gsub("^• Y-akse enhed: ", "", unit_type_line[1])
+    valid_units <- c("count", "percent", "rate", "time")
+    if (unit_type_text %in% valid_units) {
+      metadata$y_axis_unit <- unit_type_text
+    }
+  }
+
   return(metadata)
 }
 

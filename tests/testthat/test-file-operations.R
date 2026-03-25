@@ -347,6 +347,75 @@ describe("Session Metadata Parsing", {
     expect_null(metadata$y_column) # Not specified
   })
 
+  it("roundtrips all analysis fields through session metadata", {
+    skip_if_not(exists("parse_session_metadata", mode = "function"))
+
+    data_cols <- c("Dato", "Tæller", "Nævner", "Skift", "Frys", "Kommentar")
+
+    session_lines <- c(
+      "• Titel: Infektionsrate Q1",
+      "• Enhed: Kirurgisk Afdeling",
+      "• Beskrivelse: Antal infektioner pr. 1000 sengedage",
+      "• Chart Type: P-kort \u2014 andele/procenter (fx infektionsrate)",
+      "• X-akse: Dato (Tid)",
+      "• Y-akse: Tæller (Antal)",
+      "• Nævner: Nævner",
+      "• Skift: Skift",
+      "• Frys: Frys",
+      "• Kommentar: Kommentar",
+      "• Target: >=90%",
+      "• Baseline: 68%",
+      "• Y-akse enhed: percent"
+    )
+
+    metadata <- parse_session_metadata(session_lines, data_cols)
+
+    # Kernekonfiguration
+    expect_equal(metadata$title, "Infektionsrate Q1")
+    expect_equal(metadata$x_column, "Dato")
+    expect_equal(metadata$y_column, "Tæller")
+    expect_equal(metadata$n_column, "Nævner")
+
+    # Avancerede kolonner der tidligere manglede
+    expect_equal(metadata$skift_column, "Skift")
+    expect_equal(metadata$frys_column, "Frys")
+    expect_equal(metadata$kommentar_column, "Kommentar")
+
+    # Analyseindstillinger der tidligere manglede
+    expect_equal(metadata$target_value, ">=90%")
+    expect_equal(metadata$centerline_value, "68%")
+    expect_equal(metadata$y_axis_unit, "percent")
+  })
+
+  it("collect_metadata includes frys_column", {
+    skip_if_not(exists("collect_metadata", mode = "function"))
+
+    # Mock input med alle felter
+    mock_input <- list(
+      indicator_title = "Test",
+      unit_type = "select",
+      unit_select = "med",
+      unit_custom = "",
+      indicator_description = "Beskrivelse",
+      x_column = "Dato",
+      y_column = "Værdi",
+      n_column = "Nævner",
+      skift_column = "Skift",
+      frys_column = "Frys",
+      kommentar_column = "Kommentar",
+      chart_type = "p",
+      target_value = ">=90%",
+      centerline_value = "68%",
+      y_axis_unit = "percent"
+    )
+
+    metadata <- collect_metadata(mock_input)
+
+    expect_equal(metadata$frys_column, "Frys")
+    expect_equal(metadata$skift_column, "Skift")
+    expect_equal(metadata$kommentar_column, "Kommentar")
+  })
+
   it("sanitizes metadata input for security", {
     skip_if_not(exists("sanitize_session_metadata", mode = "function"))
 

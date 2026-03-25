@@ -4,6 +4,34 @@
 # Dependencies ----------------------------------------------------------------
 # Bruger readxl og readr til fil-import
 
+#' Upload-successnotifikation med kolonnenavne
+#' @param source_label Kildelabel (fx "CSV", "Excel", "Indsatte data")
+#' @param data Data frame der blev indlæst
+#' @noRd
+notify_upload_success <- function(source_label, data) {
+  col_names <- names(data)
+  col_preview <- if (length(col_names) <= 6) {
+    paste(col_names, collapse = ", ")
+  } else {
+    paste0(
+      paste(col_names[1:5], collapse = ", "),
+      " (+", length(col_names) - 5, " mere)"
+    )
+  }
+
+  msg <- paste0(
+    source_label, " indl\u00e6st: ",
+    nrow(data), " r\u00e6kker, ",
+    ncol(data), " kolonner (",
+    col_preview, ")"
+  )
+
+  tryCatch(
+    shiny::showNotification(msg, type = "message", duration = 4),
+    error = function(e) invisible(NULL)
+  )
+}
+
 #' Validate safe file path for uploads
 #' Enhanced path traversal protection for file uploads
 #' @param uploaded_path Path from file upload input
@@ -371,11 +399,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     emit$navigation_changed()
 
 
-    shiny::showNotification(
-      paste("Excel fil uploadet:", nrow(data), "rækker,", ncol(data), "kolonner"),
-      type = "message",
-      duration = 3
-    )
+    notify_upload_success("Excel", data)
   }
 }
 
@@ -541,11 +565,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     debug_state_snapshot("after_csv_upload_complete", app_state, session_id = session_id)
   }
 
-  shiny::showNotification(
-    paste("CSV fil uploadet:", nrow(data), "rækker,", ncol(data), "kolonner"),
-    type = "message",
-    duration = 3
-  )
+  notify_upload_success("CSV", data)
 }
 
 #' Haandter indsatte (pasted) data fra textAreaInput
@@ -629,10 +649,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   app_state$ui$hide_anhoej_rules <- FALSE
   emit$navigation_changed()
 
-  shiny::showNotification(
-    paste("Data indlæst:", nrow(data), "rækker,", ncol(data), "kolonner"),
-    type = "message", duration = 3
-  )
+  notify_upload_success("Indsatte data", data)
 
   invisible(NULL)
 }

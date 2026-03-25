@@ -202,6 +202,15 @@ create_ui_header <- function() {
       opacity: 0.4 !important;
     }
 
+    /* Gennemfoert wizard-trin: groent checkmark i stedet for nummer */
+    .navbar-nav .nav-link.wizard-completed[data-step]::before {
+      content: '\\2713';
+      background-color: #28a745;
+      border-color: #28a745;
+      -webkit-text-fill-color: white;
+      color: white;
+    }
+
     /* Loading overlay på SPC plot under genberegning */
     .spc-plot-container .recalculating {
       opacity: 0.35 !important;

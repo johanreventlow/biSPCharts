@@ -1219,12 +1219,21 @@ setup_wizard_gates <- function(input, app_state, session) {
     {
       has_data <- !is.null(shiny::isolate(app_state$data$current_data))
       if (has_data) {
+        session$sendCustomMessage("wizard-complete-step", 1)
         session$sendCustomMessage("wizard-unlock-step", 2)
-        bslib::nav_select("main_navbar", selected = "analyser", session = session)
+        bslib::nav_select(
+          "main_navbar",
+          selected = "analyser",
+          session = session
+        )
       } else {
         session$sendCustomMessage("wizard-lock-step", 2)
         session$sendCustomMessage("wizard-lock-step", 3)
-        bslib::nav_select("main_navbar", selected = "upload", session = session)
+        bslib::nav_select(
+          "main_navbar",
+          selected = "upload",
+          session = session
+        )
       }
     }
   )
@@ -1233,6 +1242,7 @@ setup_wizard_gates <- function(input, app_state, session) {
   shiny::observe({
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
+      session$sendCustomMessage("wizard-complete-step", 2)
       session$sendCustomMessage("wizard-unlock-step", 3)
     } else {
       session$sendCustomMessage("wizard-lock-step", 3)

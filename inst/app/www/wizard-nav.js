@@ -69,6 +69,14 @@
     applyStepClass(step, 'unlock');
   });
 
+  // Marker et wizard-trin som gennemfoert (groent checkmark)
+  Shiny.addCustomMessageHandler('wizard-complete-step', function(step) {
+    var links = document.querySelectorAll('[data-step="' + step + '"]');
+    links.forEach(function(link) {
+      link.classList.add('wizard-completed');
+    });
+  });
+
   // Intercept klik paa laaste tabs
   document.addEventListener('click', function(e) {
     var navLink = e.target.closest('.wizard-locked');

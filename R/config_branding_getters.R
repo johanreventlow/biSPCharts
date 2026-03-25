@@ -61,7 +61,7 @@ load_brand_config <- function() {
         description = "Statistical Process Control værktøj"
       ),
       logo = list(
-        image = "www/SPCify.png"
+        image = "www/BISPCHARTS.png"
       ),
       color = list(
         palette = list(
@@ -180,7 +180,7 @@ get_hospital_logo_path <- function() {
   if (is.null(claudespc_branding$logo_path)) {
     initialize_branding()
   }
-  claudespc_branding$logo_path %||% "www/SPCify.png"
+  claudespc_branding$logo_path %||% "www/BISPCHARTS.png"
 }
 
 #' Get Bootstrap Theme
@@ -209,17 +209,6 @@ get_hospital_colors <- function() {
   )
 }
 
-#' Get Full Brand Configuration
-#'
-#' @return Complete brand configuration list
-#' @noRd
-get_brand_config <- function() {
-  if (is.null(claudespc_branding$config)) {
-    initialize_branding()
-  }
-  claudespc_branding$config
-}
-
 #' Create Hospital ggplot2 Theme
 #'
 #' @return ggplot2 theme function
@@ -241,25 +230,6 @@ get_hospital_ggplot_theme <- function() {
         strip.text = ggplot2::element_text(color = colors$primary, face = "bold")
       )
   }
-}
-
-#' Create Plot Footer
-#'
-#' @param afdeling Department name (optional)
-#' @param data_kilde Data source (optional)
-#' @param dato Date (default: today)
-#' @return Character string with formatted footer
-#' @noRd
-create_plot_footer <- function(afdeling = "", data_kilde = "", dato = Sys.Date()) {
-  hospital_name <- get_hospital_name()
-
-  paste0(
-    hospital_name,
-    if (afdeling != "") paste0(" - ", afdeling) else "",
-    " | Datakilde: ", data_kilde,
-    " | Genereret: ", format(dato, "%d-%m-%Y"),
-    " | SPC analyse med Anhøj-regler"
-  )
 }
 
 # Null-coalescing operator is defined in utils_logging.R

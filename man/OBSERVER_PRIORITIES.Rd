@@ -29,7 +29,6 @@ Hierarki (højere tal = højere prioritet):
 }
 
 Compatibility aliases: HIGH, MEDIUM, LOW, LOWEST
-Legacy aliases (deprecated): highest, high, medium, low, lowest
 }
 \examples{
 \dontrun{

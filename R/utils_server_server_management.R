@@ -268,21 +268,6 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       ui_service$update_form_fields(metadata)
     } else {
       # Fallback to direct updates
-      if (!is.null(metadata$title)) {
-        shiny::updateTextInput(session, "indicator_title", value = metadata$title)
-      }
-      if (!is.null(metadata$unit_type)) {
-        shiny::updateRadioButtons(session, "unit_type", selected = metadata$unit_type)
-      }
-      if (!is.null(metadata$unit_select)) {
-        shiny::updateSelectizeInput(session, "unit_select", selected = metadata$unit_select)
-      }
-      if (!is.null(metadata$unit_custom)) {
-        shiny::updateTextInput(session, "unit_custom", value = metadata$unit_custom)
-      }
-      if (!is.null(metadata$description)) {
-        updateTextAreaInput(session, "indicator_description", value = metadata$description)
-      }
       if (!is.null(metadata$chart_type)) {
         shiny::updateSelectizeInput(session, "chart_type", selected = metadata$chart_type)
       }
@@ -329,11 +314,6 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
 collect_metadata <- function(input) {
   shiny::isolate({
     list(
-      title = input$indicator_title,
-      unit_type = input$unit_type,
-      unit_select = input$unit_select,
-      unit_custom = input$unit_custom,
-      description = input$indicator_description,
       x_column = if (is.null(input$x_column) || input$x_column == "") "" else input$x_column,
       y_column = if (is.null(input$y_column) || input$y_column == "") "" else input$y_column,
       n_column = if (is.null(input$n_column) || input$n_column == "") "" else input$n_column,
@@ -355,12 +335,7 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
     any(!is.na(current_data_check), na.rm = TRUE) &&
     nrow(current_data_check) > 0
 
-  has_settings <- (!is.null(input$indicator_title) && input$indicator_title != "") ||
-    (!is.null(input$indicator_description) && input$indicator_description != "") ||
-    (!is.null(input$unit_select) && input$unit_select != "") ||
-    (!is.null(input$unit_custom) && input$unit_custom != "") ||
-    # Unified state: Check centralized state for last save time
-    (!is.null(app_state$session$last_save_time))
+  has_settings <- !is.null(app_state$session$last_save_time)
 
   # If no data or settings, start new session directly
   if (!has_data && !has_settings) {
@@ -432,28 +407,20 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
       ui_service$reset_form_fields()
     } else {
       # Fallback to direct updates
-      shiny::updateTextInput(session, "indicator_title", value = "")
-      shiny::updateRadioButtons(session, "unit_type", selected = "select")
-      shiny::updateSelectizeInput(session, "unit_select", selected = "")
-      shiny::updateTextInput(session, "unit_custom", value = "")
-      updateTextAreaInput(session, "indicator_description", value = "")
       shiny::updateSelectizeInput(session, "chart_type", selected = "run")
       shiny::updateSelectizeInput(session, "y_axis_unit", selected = "count")
 
       # Opdater kolonnevalg med nye standardkolonner fra empty session data
-      # SPRINT 2: Use centralized update_all_columns helper
       if (!is.null(new_data) && ncol(new_data) > 0) {
         new_col_names <- names(new_data)
         col_choices <- setNames(new_col_names, new_col_names)
         col_choices <- c("Vælg kolonne" = "", col_choices)
 
-        # Replaces 6 individual updateSelectizeInput calls
         ui_service$update_all_columns(
           choices = col_choices,
-          selected = list() # Clear all selections
+          selected = list()
         )
       } else {
-        # Fallback til tomme choices - also uses centralized helper
         ui_service$update_all_columns(
           choices = c("Vælg kolonne" = ""),
           selected = list()
@@ -564,142 +531,4 @@ show_clear_confirmation_modal <- function(has_data, has_settings, app_state) {
     ),
     easyClose = FALSE
   ))
-}
-# server_welcome_page.R
-# Server logik for velkomstside interaktioner
-
-# Dependencies ----------------------------------------------------------------
-
-# VELKOMSTSIDE SETUP ==========================================================
-
-## Hovedfunktion for velkomstside
-# Opsætter alle handlers for velkomstside interaktioner
-setup_welcome_page_handlers <- function(input, output, session, app_state, emit, ui_service = NULL) {
-  # Håndtér "Start ny analyse" knap fra velkomstsiden
-  shiny::observeEvent(input$start_new_session, {
-    if (is.null(app_state)) {
-      log_error("app_state is NULL - navigation will not work properly", .context = "WELCOME_PAGE")
-      return()
-    }
-
-    # Samme logik som eksisterende start_new_session
-    # Unified state assignment only
-    empty_session_data <- create_empty_session_data()
-    app_state$data$current_data <- empty_session_data
-    app_state$data$original_data <- empty_session_data
-
-    # Emit consolidated event with context
-    emit$data_updated(context = "welcome_page")
-
-    # REACTIVE WRAPPER FIX: Increment version to trigger reactive navigation
-    old_version <- app_state$data$table_version
-    app_state$data$table_version <- app_state$data$table_version + 1
-    new_version <- app_state$data$table_version
-
-    # Unified state assignment only - FALSE for manual session
-    app_state$session$file_uploaded <- FALSE
-    # Set user_started_session to TRUE for proper navigation
-    app_state$session$user_started_session <- TRUE
-    # Unified state assignment only
-    app_state$ui$hide_anhoej_rules <- TRUE
-    # Unified state: Clear session file name
-    # Legacy session_file_name assignment removed - not used elsewhere
-    app_state$session$file_name <- NULL
-
-    # Nulstil konfigurationer
-    # Unified state: Reset auto detect for welcome page
-    # Using unified state management for auto-detect status
-    app_state$columns$auto_detect$completed <- FALSE
-
-    # Use centralized UI service for column resets
-    if (!is.null(ui_service)) {
-      ui_service$update_column_choices(clear_selections = TRUE)
-    } else {
-      # SPRINT 2: Fallback using update_all_columns helper
-      ui_service$update_all_columns(choices = colnames(empty_session_data), selected = list())
-    }
-
-    log_debug_kv(
-      current_data_rows = nrow(empty_session_data),
-      user_started_session = TRUE,
-      .context = "WELCOME_PAGE"
-    )
-  })
-
-  # Håndtér "Upload data" knap fra velkomstsiden
-  shiny::observeEvent(input$upload_data_welcome, {
-    # Fokusér på fil input eller åbn fil dialog
-    shinyjs::click("file_upload")
-  })
-
-  # Håndtér "Quick start demo" knap
-  shiny::observeEvent(input$quick_start_demo, {
-    # Indlæs eksempel data
-    test_file_path <- "inst/extdata/spc_exampledata.csv"
-
-    if (file.exists(test_file_path)) {
-      safe_operation(
-        "Load demo data for quick start",
-        code = {
-          demo_data <- readr::read_csv2(
-            test_file_path,
-            locale = readr::locale(
-              decimal_mark = ",",
-              grouping_mark = ".",
-              encoding = "ISO-8859-1"
-            ),
-            show_col_types = FALSE
-          )
-
-          if (is.null(demo_data) || nrow(demo_data) == 0) {
-            stop("No data loaded from file")
-          }
-
-          # Sikr at standard kolonner er til stede
-          demo_data <- ensure_standard_columns(demo_data)
-
-          # Sæt reaktive værdier
-          # Unified state assignment only
-          app_state$data$current_data <- demo_data
-          app_state$data$original_data <- demo_data
-
-          # Emit consolidated event with context
-          emit$data_updated(context = "demo_data")
-          # Unified state assignment only
-          app_state$session$file_uploaded <- TRUE
-          # Unified state: Set user started session for demo navigation
-          app_state$session$user_started_session <- TRUE
-          # Unified state: Reset auto detect for demo
-          # Using unified state management - will trigger auto-detect
-          app_state$columns$auto_detect$completed <- FALSE
-          # Using unified state management - reset for new data
-          # Unified state assignment only
-          app_state$ui$hide_anhoej_rules <- FALSE # Vis Anhøj regler for rigtige data
-          # Unified state: Set demo file name
-          # Legacy session_file_name assignment removed - not used elsewhere
-          app_state$session$file_name <- "Eksempel data (SPC demo)"
-
-          # Vis succes besked
-          shiny::showNotification(
-            "Eksempel data indlæst! Du kan nu se SPC analysen.",
-            type = "message",
-            duration = 3
-          )
-        },
-        fallback = {},
-        session = session,
-        error_type = "processing",
-        show_user = TRUE,
-        emit = emit,
-        app_state = app_state
-      )
-    } else {
-      log_warn("Demo data file not found at:", test_file_path, .context = "DEMO_DATA")
-      shiny::showNotification(
-        "Eksempel data ikke tilgængelig. Prøv at uploade dine egne data.",
-        type = "warning",
-        duration = 5
-      )
-    }
-  })
 }

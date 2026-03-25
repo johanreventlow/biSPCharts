@@ -81,10 +81,7 @@ cached_processing <- create_cached_reactive(
 Other performance: 
 \code{\link{clear_performance_cache}()},
 \code{\link{create_performance_debounced}()},
-\code{\link{evaluate_data_content_cached}()},
-\code{\link{get_performance_stats}()},
-\code{\link{measure_reactive_performance}()},
-\code{\link{monitor_memory_usage}()}
+\code{\link{evaluate_data_content_cached}()}
 }
 \concept{performance}
 \keyword{internal}

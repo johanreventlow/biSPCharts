@@ -16,12 +16,8 @@ create_ui_header <- function() {
     # Aktivér shinyjs
     shinyjs::useShinyjs(),
     shiny::tags$head(
-      # CSS files for plot debugging
-      shiny::tags$link(rel = "stylesheet", type = "text/css", href = "plot-debug.css"),
-
       # JavaScript files
       shiny::tags$script(src = "local-storage.js"),
-      shiny::tags$script(src = "ui-helpers.js"),
       shiny::tags$script(src = "shiny-handlers.js"),
       shiny::tags$script(src = "wizard-nav.js"),
       # Inline CSS styles
@@ -136,26 +132,6 @@ create_ui_header <- function() {
       flex-direction: column !important;
     }
 
-    /* Selectize dropup styling */
-    .selectize-dropup .selectize-control .selectize-dropdown {
-      position: absolute !important;
-      top: auto !important;
-      bottom: 100% !important;
-      border-top: 1px solid #d0d7de !important;
-      border-bottom: none !important;
-      border-radius: 4px 4px 0 0 !important;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
-      margin-bottom: 2px !important;
-    }
-
-    .selectize-dropup {
-      position: relative !important;
-    }
-
-    .selectize-dropup .selectize-control {
-      position: relative !important;
-    }
-
     .selectize-dropdown {
       max-height: 200px !important;
       overflow-y: auto !important;
@@ -202,11 +178,11 @@ create_ui_header <- function() {
       opacity: 0.4 !important;
     }
 
-    /* Gennemfoert wizard-trin: groent checkmark i stedet for nummer */
+    /* Gennemfoert wizard-trin: checkmark med tema-farve */
     .navbar-nav .nav-link.wizard-completed[data-step]::before {
       content: '\\2713';
-      background-color: #28a745;
-      border-color: #28a745;
+      background-color: var(--bs-success);
+      border-color: var(--bs-success);
       -webkit-text-fill-color: white;
       color: white;
     }
@@ -521,43 +497,6 @@ create_status_value_boxes <- function() {
   visualizationStatusUI("visualization")
 }
 
-create_export_card <- function() {
-  shiny::conditionalPanel(condition = "output.plot_ready == 'true'", bslib::card(
-    bslib::card_header(shiny::div(shiny::icon("download"), " Eksport", )),
-    bslib::card_body(
-      # KOMPLET EXPORT - Excel version
-      shiny::div(
-        shiny::downloadButton(
-          "download_complete_excel",
-          "📋 Komplet Export (Excel)",
-          icon = shiny::icon("file-excel"),
-          title = "Download hele sessionen som Excel fil med data og konfiguration",
-          class = "btn-success w-100 mb-2"
-        ),
-
-        # Hjælpe-tekst for komplet export
-        shiny::div(
-          style = "font-size: 0.75rem; color: #666; text-align: center; margin-bottom: 8px; font-style: italic;",
-          "Data + metadata i 2 Excel sheets - klar til brug og re-import"
-        )
-      ),
-      shiny::hr(style = "margin: 15px 0;"),
-      shiny::div(style = "text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 10px;", shiny::strong("Graf eksporter:")),
-      shiny::downloadButton(
-        "download_png",
-        "Download PNG",
-        icon = shiny::icon("image"),
-        class = "btn-outline-primary w-100 mb-2"
-      ),
-      shiny::downloadButton(
-        "download_pdf",
-        "Download PDF Rapport",
-        icon = shiny::icon("file-pdf"),
-        class = "btn-outline-primary w-100"
-      )
-    )
-  ))
-}
 # ui_sidebar.R
 # UI UPLOAD PAGE KOMPONENTER ===================================================
 

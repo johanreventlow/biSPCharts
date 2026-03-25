@@ -8,7 +8,8 @@ autodetect_engine(
   data = NULL,
   trigger_type = c("session_start", "file_upload", "manual"),
   app_state,
-  emit
+  emit,
+  session = NULL
 )
 }
 \arguments{

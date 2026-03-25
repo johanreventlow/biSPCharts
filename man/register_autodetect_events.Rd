@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_server_event_listeners.R
 \name{register_autodetect_events}
 \alias{register_autodetect_events}
-\title{Register Auto-Detection Events}
+\title{Registers observers for auto-detection processing.}
 \usage{
 register_autodetect_events(app_state, emit, session, register_observer)
 }

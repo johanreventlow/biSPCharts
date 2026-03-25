@@ -316,10 +316,11 @@ describe("wizard-nav.js", {
 describe("Modal close JS handler", {
   js_path <- resolve_inst_path("app", "www", "shiny-handlers.js")
 
-  it("shiny-handlers.js indeholder hidden.bs.modal handler", {
+  it("shiny-handlers.js eksisterer (modal handler fjernet i #171)", {
+    # modal_closed_event handleren blev fjernet i #171 (dead code oprydning).
+    # Hvis den genimplementeres (se #50), opdater denne test.
     skip_if(!file.exists(js_path))
     content <- paste(readLines(js_path, warn = FALSE), collapse = "\n")
-    expect_true(grepl("hidden.bs.modal", content))
-    expect_true(grepl("modal_closed_event", content))
+    expect_true(nchar(content) > 0)
   })
 })

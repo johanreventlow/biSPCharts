@@ -78,7 +78,7 @@ test_that("mod_export_ui generates valid Shiny UI", {
   expect_true(grepl("test-export_format", html))
   expect_true(grepl("test-export_title", html))
   expect_true(grepl("test-export_department", html))
-  expect_true(grepl("test-preview_plot", html))
+  expect_true(grepl("test-export_preview", html))
   expect_true(grepl("test-download_export", html))
 })
 

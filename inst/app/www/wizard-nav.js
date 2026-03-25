@@ -3,14 +3,27 @@
   // Tildel data-step attributter til navbar links efter DOM load.
   // bslib genererer nav-links dynamisk, saa vi kan ikke saette dem i R.
   // Tabs identificeres via deres data-value attribut (sat via nav_panel value param).
+  var stepMap = { upload: "1", analyser: "2", eksporter: "3" };
+  var wizardReady = false;
+
+  // Koe af lock/unlock-beskeder modtaget foer data-step attributter er sat
+  var pendingMessages = [];
+
   function initWizardSteps() {
-    var stepMap = { upload: "1", analyser: "2", eksporter: "3" };
     var navLinks = document.querySelectorAll('.navbar .nav-link[data-value]');
     navLinks.forEach(function(link) {
       var value = link.getAttribute('data-value');
       if (stepMap[value]) {
         link.setAttribute('data-step', stepMap[value]);
       }
+    });
+
+    // Marker som klar og afspil ventende beskeder (atomisk drain)
+    wizardReady = true;
+    var toApply = pendingMessages.slice();
+    pendingMessages = [];
+    toApply.forEach(function(msg) {
+      applyStepClass(msg.step, msg.action);
     });
   }
 
@@ -21,24 +34,39 @@
     initWizardSteps();
   }
   $(document).on('shiny:connected', function() {
-    // Re-init efter Shiny connection for at sikre attributter er sat
-    setTimeout(initWizardSteps, 100);
+    // Re-init efter reconnect (bslib kan re-rendere navbar)
+    if (!wizardReady) initWizardSteps();
   });
+
+  // Fælles funktion til at tilføje/fjerne wizard-locked klasse
+  function applyStepClass(step, action) {
+    var links = document.querySelectorAll('[data-step="' + step + '"]');
+    links.forEach(function(link) {
+      if (action === 'lock') {
+        link.classList.add('wizard-locked');
+      } else {
+        link.classList.remove('wizard-locked');
+      }
+    });
+  }
+
+  // Tilfoej besked til koe med deduplisering per step
+  function queueMessage(step, action) {
+    var idx = pendingMessages.findIndex(function(m) { return m.step === step; });
+    if (idx !== -1) pendingMessages.splice(idx, 1);
+    pendingMessages.push({ step: step, action: action });
+  }
 
   // Lock et wizard-trin (forhindr klik)
   Shiny.addCustomMessageHandler('wizard-lock-step', function(step) {
-    var links = document.querySelectorAll('[data-step="' + step + '"]');
-    links.forEach(function(link) {
-      link.classList.add('wizard-locked');
-    });
+    if (!wizardReady) { queueMessage(step, 'lock'); return; }
+    applyStepClass(step, 'lock');
   });
 
   // Unlock et wizard-trin (tillad klik)
   Shiny.addCustomMessageHandler('wizard-unlock-step', function(step) {
-    var links = document.querySelectorAll('[data-step="' + step + '"]');
-    links.forEach(function(link) {
-      link.classList.remove('wizard-locked');
-    });
+    if (!wizardReady) { queueMessage(step, 'unlock'); return; }
+    applyStepClass(step, 'unlock');
   });
 
   // Intercept klik paa laaste tabs

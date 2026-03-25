@@ -2,20 +2,26 @@
 % Please edit documentation in R/state_management.R
 \name{create_emit_api}
 \alias{create_emit_api}
-\title{Create Event Emit API}
+\title{Simplified State Access Helpers}
 \usage{
 create_emit_api(app_state)
 }
 \arguments{
 \item{app_state}{The app state object with reactive event bus}
+
+\item{value}{The value to set
+
+Create Event Emit API
+
+Creates a clean API for emitting events to the app_state event bus.
+This function returns a list of emit functions that can be called
+to trigger specific events throughout the application.}
 }
 \value{
 List of emit functions
 }
 \description{
-Creates a clean API for emitting events to the app_state event bus.
-This function returns a list of emit functions that can be called
-to trigger specific events throughout the application.
+Helper functions for consistent state access patterns
 }
 \details{
 Each emit function increments the corresponding event counter in

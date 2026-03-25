@@ -52,10 +52,6 @@ visualizationStatusUI <- function(id) {
     ## Anhøj Rules Value Boxes
     # Hovedmetrics: Serielængde og Antal Kryds for alle chart typer
     shiny::uiOutput(ns("anhoej_rules_boxes")),
-
-    ## Data Summary Box
-    # Data oversigt og fejl kontrol (udkommenteret)
-    # shiny::uiOutput(ns("data_summary_box"))
   )
 }
 # R/modules/visualization_module_server.R

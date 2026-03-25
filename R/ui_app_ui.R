@@ -251,6 +251,29 @@ create_ui_header <- function() {
       opacity: 0;
     }
 
+    /* Export preview loading spinner */
+    .export-preview-container .recalculating {
+      opacity: 0.3 !important;
+      transition: opacity 0.15s ease-in-out;
+    }
+    .export-preview-container::after {
+      content: '';
+      display: none;
+    }
+    .export-preview-container:has(.recalculating)::after {
+      content: 'Genererer preview...';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      inset: 0;
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 10;
+    }
+
         ")))
     )
   )

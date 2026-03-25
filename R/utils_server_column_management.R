@@ -133,12 +133,18 @@ setup_column_management <- function(input, output, session, app_state, emit) {
       }
     }
 
-    # Tjek om samme kolonne er valgt flere gange
-    selected_cols <- c(input$x_column, input$y_column, input$n_column)
-    selected_cols <- selected_cols[!is.null(selected_cols) & selected_cols != ""]
+    # Tjek om samme kolonne er valgt til flere formål (alle 6 felter)
+    all_selections <- c(
+      input$x_column, input$y_column, input$n_column,
+      input$skift_column, input$frys_column, input$kommentar_column
+    )
+    all_selections <- all_selections[!is.null(all_selections) & all_selections != ""]
 
-    if (length(selected_cols) != length(unique(selected_cols))) {
-      warnings <- c(warnings, "Samme kolonne kan ikke bruges til flere formål")
+    if (length(all_selections) != length(unique(all_selections))) {
+      warnings <- c(
+        warnings,
+        "Samme kolonne kan ikke bruges til flere form\u00e5l"
+      )
     }
 
     # Vis resultater
@@ -151,12 +157,11 @@ setup_column_management <- function(input, output, session, app_state, emit) {
         shiny::tags$ul(
           style = "margin: 5px 0; padding-left: 20px;",
           lapply(warnings, function(warn) {
-            # HTML escape warning content for XSS protection
             shiny::tags$li(htmltools::htmlEscape(warn))
           })
         )
       )
-    } else if (length(selected_cols) >= 2) {
+    } else if (length(all_selections) >= 2) {
       shiny::div(
         class = "alert alert-success",
         style = "font-size: 0.85rem; padding: 8px; margin: 5px 0;",

@@ -546,8 +546,14 @@ create_inline_column_mapping <- function() {
       "display: flex; gap: 6px; padding: 4px 0 8px 0; ",
       "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;"
     ),
-    compact_select("x_column", "X-akse"),
-    compact_select("y_column", "Y-akse"),
+    compact_select(
+      "x_column", "X-akse",
+      "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned)"
+    ),
+    compact_select(
+      "y_column", "Y-akse",
+      "Kolonne med den v\u00e6rdi der skal f\u00f8lges (fx antal, ventetid, score)"
+    ),
     compact_select(
       "n_column", "N\u00e6vner (n)",
       paste0(
@@ -556,8 +562,14 @@ create_inline_column_mapping <- function() {
         "Ellers kan du springe dette felt over."
       )
     ),
-    compact_select("skift_column", "Skift"),
-    compact_select("frys_column", "Frys"),
+    compact_select(
+      "skift_column", "Skift",
+      "Valgfri: Kolonne der markerer hvor processen opdeles i faser"
+    ),
+    compact_select(
+      "frys_column", "Frys",
+      "Valgfri: Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne"
+    ),
     compact_select(
       "kommentar_column", "Kommentar",
       "Valgfri: Kolonne med kommentarer eller noter"

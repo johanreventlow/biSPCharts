@@ -1032,10 +1032,10 @@ call_bfh_chart <- function(bfh_params) {
       # 3. Measure execution time
       start_time <- Sys.time()
 
-      # 3b. CONSERVATIVE APPROACH: Only send core parameters to BFHcharts
-      # Testing shows BFHcharts may not accept all documented parameters
-      # Keep only: data, x, y, n, chart_type, freeze, part, multiply, target_value, cl, notes, y_axis_unit
-      # TODO(#51): Investigate BFHcharts version compatibility for: chart_title, target_text
+      # 3b. CONSERVATIVE APPROACH: Only send core params
+      # BFHcharts accepterer kun et subset — chart_title
+      # og target_text ikke supporteret endnu.
+      # Se: docs/BFHCHARTS_LIMITATIONS.md
       # NOTE: target_value added for target line rendering (feat/target-line-rendering)
       # NOTE: cl (centerline) added for baseline rendering (fix/bfhcharts-core-features)
       # NOTE: notes added for comment annotations (fix/kommentarer-notes-mapping)

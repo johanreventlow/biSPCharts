@@ -1277,6 +1277,23 @@ setup_wizard_gates <- function(input, app_state, session) {
 setup_paste_data_observers <- function(input, app_state, session, emit) {
   # Observer: "Fortsæt" knap — indlæs pasted data
   shiny::observeEvent(input$load_paste_data, {
+    shinyjs::disable("load_paste_data")
+    shinyjs::html(
+      "load_paste_data",
+      as.character(shiny::tagList(
+        shiny::icon("spinner", class = "fa-spin"),
+        " Indl\u00e6ser..."
+      ))
+    )
+    on.exit({
+      shinyjs::enable("load_paste_data")
+      shinyjs::html(
+        "load_paste_data",
+        as.character(shiny::tagList(
+          "Forts\u00e6t ", shiny::icon("arrow-right")
+        ))
+      )
+    })
     handle_paste_data(
       text_data = input$paste_data_input,
       app_state = app_state,

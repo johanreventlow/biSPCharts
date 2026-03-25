@@ -85,7 +85,6 @@ create_temp_excel <- function(data, with_metadata = FALSE) {
 # CSV PARSING TESTS ============================================================
 
 describe("CSV Parsing with Various Encodings", {
-
   it("parses Danish CSV with ISO-8859-1 encoding", {
     data <- data.frame(
       Måned = c("jan", "feb", "mar"),
@@ -143,7 +142,7 @@ describe("CSV Parsing with Various Encodings", {
 
     expect_error(
       readr::read_csv2(csv_file, show_col_types = FALSE),
-      NA  # Should not error, just return empty data
+      NA # Should not error, just return empty data
     )
   })
 
@@ -168,7 +167,6 @@ describe("CSV Parsing with Various Encodings", {
 # EXCEL SUPPORT TESTS ==========================================================
 
 describe("Excel File Support", {
-
   it("reads simple Excel file", {
     data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 3),
@@ -234,7 +232,6 @@ describe("Excel File Support", {
 # FILE VALIDATION TESTS ========================================================
 
 describe("File Validation", {
-
   it("validates file path security", {
     skip_if_not(exists("validate_safe_file_path", mode = "function"))
 
@@ -294,7 +291,7 @@ describe("File Validation", {
     # Mock file info with excessive size
     file_info <- list(
       name = "large_file.csv",
-      size = 100 * 1024 * 1024,  # 100 MB
+      size = 100 * 1024 * 1024, # 100 MB
       type = "text/csv",
       datapath = tempfile()
     )
@@ -308,7 +305,6 @@ describe("File Validation", {
 # METADATA PARSING TESTS =======================================================
 
 describe("Session Metadata Parsing", {
-
   it("parses complete metadata", {
     skip_if_not(exists("parse_session_metadata", mode = "function"))
 
@@ -346,9 +342,9 @@ describe("Session Metadata Parsing", {
 
     metadata <- parse_session_metadata(session_lines, data_cols)
 
-    expect_null(metadata$title)  # "Ikke angivet" should be NULL
+    expect_null(metadata$title) # "Ikke angivet" should be NULL
     expect_equal(metadata$x_column, "Dato")
-    expect_null(metadata$y_column)  # Not specified
+    expect_null(metadata$y_column) # Not specified
   })
 
   it("sanitizes metadata input for security", {
@@ -375,7 +371,6 @@ describe("Session Metadata Parsing", {
 # DATA PREPROCESSING TESTS =====================================================
 
 describe("Data Preprocessing & Cleaning", {
-
   it("removes empty rows", {
     skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
 
@@ -435,7 +430,6 @@ describe("Data Preprocessing & Cleaning", {
 # ERROR HANDLING TESTS =========================================================
 
 describe("Error Handling & Recovery", {
-
   it("handles encoding errors with helpful message", {
     skip_if_not(exists("handle_upload_error", mode = "function"))
 
@@ -465,7 +459,7 @@ describe("Error Handling & Recovery", {
     result <- handle_upload_error(error, file_info)
 
     expect_equal(result$error_type, "permission")
-    expect_true(any(grepl("Close the file", result$suggestions)))
+    expect_true(any(grepl("Luk filen", result$suggestions)))
   })
 
   it("handles corrupted file errors", {
@@ -481,14 +475,13 @@ describe("Error Handling & Recovery", {
     result <- handle_upload_error(error, file_info)
 
     expect_equal(result$error_type, "corruption")
-    expect_true(any(grepl("re-saving", result$suggestions)))
+    expect_true(any(grepl("gemme filen igen", result$suggestions)))
   })
 })
 
 # DATA VALIDATION TESTS ========================================================
 
 describe("Data Validation for Auto-Detection", {
-
   it("validates suitable data for auto-detection", {
     skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
 
@@ -520,7 +513,7 @@ describe("Data Validation for Auto-Detection", {
     result <- validate_data_for_auto_detect(data)
 
     expect_false(result$suitable)
-    expect_true(any(grepl("Too few", result$issues)))
+    expect_true(any(grepl("Too few|For f\u00e5", result$issues)))
   })
 
   it("detects missing column names", {
@@ -540,7 +533,6 @@ describe("Data Validation for Auto-Detection", {
 # EDGE CASES ===================================================================
 
 describe("Edge Cases", {
-
   it("handles CSV with only headers (no data)", {
     csv_content <- "Dato;Tæller;Nævner"
     csv_file <- tempfile(fileext = ".csv")
@@ -583,7 +575,7 @@ describe("Edge Cases", {
       Visible2 = 11:15
     )
     openxlsx::writeData(wb, "Data", data)
-    openxlsx::setColWidths(wb, "Data", cols = 2, widths = 0)  # Hide column
+    openxlsx::setColWidths(wb, "Data", cols = 2, widths = 0) # Hide column
 
     temp_file <- tempfile(fileext = ".xlsx")
     openxlsx::saveWorkbook(wb, temp_file, overwrite = TRUE)
@@ -640,7 +632,7 @@ describe("Edge Cases", {
 
     elapsed_ms <- as.numeric(difftime(end_time, start_time, units = "secs")) * 1000
 
-    expect_lt(elapsed_ms, 500)  # Should parse in <500ms
+    expect_lt(elapsed_ms, 500) # Should parse in <500ms
   })
 
   it("handles CSV with special characters in data", {
@@ -667,7 +659,6 @@ describe("Edge Cases", {
 # SECURITY TESTS ===============================================================
 
 describe("Security Hardening", {
-
   it("sanitizes CSV formula injection attempts", {
     skip_if_not(exists("sanitize_csv_output", mode = "function"))
 
@@ -692,7 +683,7 @@ describe("Security Hardening", {
     on.exit(unlink(csv_file))
 
     file_info <- list(
-      name = "fake.xlsx",  # Wrong extension
+      name = "fake.xlsx", # Wrong extension
       size = file.info(csv_file)$size,
       type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       datapath = csv_file

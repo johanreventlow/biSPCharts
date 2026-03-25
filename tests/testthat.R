@@ -3,10 +3,9 @@
 
 library(testthat)
 
-# Conditional loading af shinytest2 for at undgå ubetingede dependencies
-if (requireNamespace("shinytest2", quietly = TRUE)) {
-  library(shinytest2)
-}
+# NOTE: shinytest2 must NOT be loaded here — library(shinytest2) initializes
+# a chromote session that hangs in non-interactive Rscript environments.
+# Tests that need shinytest2 should load it inside their own test blocks.
 
 # Test directory
 test_check("claude_spc")

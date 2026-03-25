@@ -527,7 +527,11 @@ create_inline_column_mapping <- function() {
     compact_select("y_column", "Y-akse"),
     compact_select(
       "n_column", "N\u00e6vner (n)",
-      "Run: valgfri. P, P\u2032, U, U\u2032: kr\u00e6ver n\u00e6vner. I, MR, C, G: ignoreres."
+      paste0(
+        "V\u00e6lg en n\u00e6vner-kolonne hvis du arbejder med ",
+        "andele eller rater (fx infektioner pr. 100 patienter). ",
+        "Ellers kan du springe dette felt over."
+      )
     ),
     compact_select("skift_column", "Skift"),
     compact_select("frys_column", "Frys"),

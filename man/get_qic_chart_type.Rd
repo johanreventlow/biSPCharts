@@ -11,7 +11,7 @@ get_qic_chart_type(danish_selection)
 }
 \value{
 Engelsk qicharts2 kode (fx "i", "run", "p")
-get_qic_chart_type("I-kort (Individuelle værdier)") # Returns "i"
+get_qic_chart_type("I-kort \u2014 enkelte m\u00e5linger") # Returns "i"
 get_qic_chart_type("i") # Returns "i" (already English)
 }
 \description{

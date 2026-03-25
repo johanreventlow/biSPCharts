@@ -22,7 +22,7 @@ håndterer fejl robust og opdaterer app state accordingly.
 \details{
 CSV læsning konfiguration:
 \itemize{
-\item Encoding: ISO-8859-1 (danske karakterer)
+\item Encoding: UTF-8 (danske karakterer)
 \item Decimal mark: komma (,)
 \item Grouping mark: punktum (.)
 \item Separator: semikolon (;) - CSV2 format

@@ -202,6 +202,29 @@ create_ui_header <- function() {
       opacity: 0.4 !important;
     }
 
+    /* Loading overlay på SPC plot under genberegning */
+    .spc-plot-container .recalculating {
+      opacity: 0.35 !important;
+      transition: opacity 0.15s ease-in-out;
+    }
+    .spc-plot-container::after {
+      content: '';
+      display: none;
+    }
+    .spc-plot-container:has(.recalculating)::after {
+      content: 'Opdaterer...';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      inset: 0;
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 10;
+    }
+
         ")))
     )
   )

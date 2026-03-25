@@ -1238,14 +1238,17 @@ setup_wizard_gates <- function(input, app_state, session) {
     }
   )
 
-  # Gate: Plot renderet -> unlock trin 3
+  # Gate: Plot renderet -> unlock trin 3, enable Fortsæt-knap
   shiny::observe({
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
       session$sendCustomMessage("wizard-complete-step", 2)
       session$sendCustomMessage("wizard-unlock-step", 3)
+      shinyjs::enable("continue_to_export")
     } else {
+      session$sendCustomMessage("wizard-uncomplete-step", 2)
       session$sendCustomMessage("wizard-lock-step", 3)
+      shinyjs::disable("continue_to_export")
     }
   })
 

@@ -316,122 +316,11 @@ create_ui_main_content <- function() {
 }
 
 
-create_chart_settings_card <- function() {
-  bslib::navset_card_tab(
-    title = shiny::span(shiny::icon("sliders-h"), " Indstillinger", ),
-    full_screen = TRUE,
-    height = "calc(50vh - 60px)",
-    # Tab 1: Detaljer ----
-    bslib::nav_panel(
-      max_height = "100%",
-      min_height = "100%",
-      title = "Detaljer",
-      icon = shiny::icon("pen-to-square"),
-      # Chart type and target value side by side
-      bslib::layout_column_wrap(
-        width = 1 / 2,
-        shiny::div(
-          id = "indicator_div",
-          # Indikator metadata
-          shiny::textInput(
-            "indicator_title",
-            "Titel på indikator:",
-            width = UI_INPUT_WIDTHS$full,
-            value = "",
-            placeholder = "F.eks. 'Infektioner pr. 1000 sengedage'"
-          ),
-          bslib::layout_column_wrap(
-            width = UI_LAYOUT_PROPORTIONS$half,
+# Fjernet død kode: create_chart_settings_card() (med tabs: Detaljer,
+# Organisatorisk, Avanceret) og create_unit_selection().
+# Erstattet af create_chart_settings_card_compact(). Se git historie.
 
-            # Target value input
-            shiny::textInput(
-              "target_value",
-              "Udviklingsmål:",
-              value = "",
-              placeholder = "fx >=90%, <25 eller >",
-              width = UI_INPUT_WIDTHS$full
-            ),
-
-            # Centerline input
-            shiny::textInput(
-              "centerline_value",
-              "Evt. baseline:",
-              value = "",
-              placeholder = "fx 68%, 0,7 el. 22",
-              width = UI_INPUT_WIDTHS$full
-            )
-          ),
-
-          # Beskrivelse
-          shiny::div(
-            id = "indicator-description-wrapper",
-            style = "display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;",
-            shiny::textAreaInput(
-              "indicator_description",
-              "Datadefinition:",
-              value = "",
-              placeholder = "Angiv kort, hvad indikatoren udtrykker, og hvordan data opgøres – fx beregning af tæller og nævner.",
-              resize = "none",
-              width = UI_INPUT_WIDTHS$full,
-            )
-          ),
-        ),
-        shiny::div(
-          # Chart type selection
-          shiny::selectizeInput(
-            "chart_type",
-            "Diagram type:",
-            choices = CHART_TYPES_DA,
-            selected = "run"
-          ),
-
-
-          # Y-axis UI type (simpel datamodel)
-          shiny::selectizeInput(
-            "y_axis_unit",
-            "Y-akse enhed:",
-            choices = Y_AXIS_UI_TYPES_DA,
-            selected = "count"
-          )
-        )
-      )
-    ),
-
-    # Tab 2: Organisatorisk enhed ----
-    # (Kolonnematch-tab fjernet — felterne er nu inline over datatabellen)
-    bslib::nav_panel(
-      "Organisatorisk",
-      icon = shiny::icon("building"),
-      max_height = "100%",
-      min_height = "100%",
-      shiny::div(
-        style = "padding: 10px 0;",
-        # Organisatorisk enhed selection
-        create_unit_selection()
-      )
-    ),
-
-    # Tab 4: Additional settings (placeholder) ----
-    # bslib::nav_panel(
-    #   "Avanceret",
-    #   icon = shiny::icon("cogs"),
-    #   max_height = "100%",
-    #   min_height = "100%",
-    #
-    #   shiny::div(
-    #     style = "padding: 20px; text-align: center; color: #666;",
-    #     shiny::icon("wrench", style = "font-size: 2rem; margin-bottom: 10px;"),
-    #     shiny::br(),
-    #     "Yderligere indstillinger kommer her",
-    #     shiny::br(),
-    #     shiny::tags$small("Denne tab er reserveret til fremtidige features")
-    #   )
-    # ) # bslib::nav_panel(Avanceret)
-  ) # navset_card_tab
-}
-
-
-# New function for plot-only card
+# Plot-only card
 
 create_plot_only_card <- function() {
   bslib::card(
@@ -606,45 +495,6 @@ create_inline_column_mapping <- function() {
 # New function for status value boxes
 create_status_value_boxes <- function() {
   visualizationStatusUI("visualization")
-}
-
-create_unit_selection <- function() {
-  shiny::div(
-    style = "margin-bottom: 15px;",
-    shiny::tags$label("Afdeling eller afsnit", style = "font-weight: 500;"),
-    shiny::div(
-      style = "margin-top: 5px;",
-      shiny::radioButtons(
-        "unit_type",
-        NULL,
-        choices = list("Vælg fra liste" = "select", "Indtast selv" = "custom"),
-        selected = "select",
-        inline = TRUE
-      )
-    ),
-
-    # Dropdown for standard enheder
-    shiny::conditionalPanel(condition = "input.unit_type == 'select'", shiny::selectizeInput(
-      "unit_select",
-      NULL,
-      choices = list(
-        "Vælg enhed..." = "",
-        "Medicinsk Afdeling" = "med",
-        "Kirurgisk Afdeling" = "kir",
-        "Intensiv Afdeling" = "icu",
-        "Ambulatorie" = "amb",
-        "Akutmodtagelse" = "akut",
-        "Pædiatrisk Afdeling" = "paed",
-        "Gynækologi/Obstetrik" = "gyn"
-      )
-    )),
-
-    # Custom input
-    shiny::conditionalPanel(
-      condition = "input.unit_type == 'custom'",
-      shiny::textInput("unit_custom", NULL, placeholder = "Indtast enhedsnavn...")
-    )
-  )
 }
 
 create_export_card <- function() {

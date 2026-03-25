@@ -61,7 +61,7 @@ load_brand_config <- function() {
         description = "Statistical Process Control værktøj"
       ),
       logo = list(
-        image = "www/SPCify.png"
+        image = "www/BISPCHARTS.png"
       ),
       color = list(
         palette = list(
@@ -180,7 +180,7 @@ get_hospital_logo_path <- function() {
   if (is.null(claudespc_branding$logo_path)) {
     initialize_branding()
   }
-  claudespc_branding$logo_path %||% "www/SPCify.png"
+  claudespc_branding$logo_path %||% "www/BISPCHARTS.png"
 }
 
 #' Get Bootstrap Theme

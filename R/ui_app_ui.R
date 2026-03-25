@@ -202,11 +202,11 @@ create_ui_header <- function() {
       opacity: 0.4 !important;
     }
 
-    /* Gennemfoert wizard-trin: groent checkmark i stedet for nummer */
+    /* Gennemfoert wizard-trin: checkmark med tema-farve */
     .navbar-nav .nav-link.wizard-completed[data-step]::before {
       content: '\\2713';
-      background-color: #28a745;
-      border-color: #28a745;
+      background-color: currentColor;
+      border-color: currentColor;
       -webkit-text-fill-color: white;
       color: white;
     }

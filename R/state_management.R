@@ -96,12 +96,7 @@ create_app_state <- function() {
 
     # FORM- OG STATEHÅNDTERING --------------------------------------------
     form_reset_needed = 0L,
-    form_restore_needed = 0L,
-    form_update_needed = 0L,
-
-    # MODAL LIFECYCLE (PHASE 1: Modal pause protection) ------------------
-    column_mapping_modal_opened = 0L,
-    column_mapping_modal_closed = 0L
+    form_restore_needed = 0L
   )
 
   # Data Management - Simplified unified structure
@@ -328,30 +323,6 @@ create_app_state <- function() {
 #' @param app_state The app state object
 #' @param value The value to set
 #'
-
-# Data helper (simplified)
-#' @keywords internal
-set_current_data <- function(app_state, value) {
-  shiny::isolate({
-    app_state$data$current_data <- value
-    # log_debug(paste("Data set with", if(is.null(value)) "NULL" else paste(nrow(value), "rows")), "STATE_MANAGEMENT")
-  })
-}
-
-# Original data helper (simplified)
-set_original_data <- function(app_state, value) {
-  shiny::isolate({
-    app_state$data$original_data <- value
-    # log_debug(paste("Original data set with", if(is.null(value)) "NULL" else paste(nrow(value), "rows")), "STATE_MANAGEMENT")
-  })
-}
-
-# Get data helper (simplified)
-get_current_data <- function(app_state) {
-  shiny::isolate({
-    return(app_state$data$current_data)
-  })
-}
 
 #' Create Event Emit API
 #'
@@ -598,38 +569,6 @@ create_emit_api <- function(app_state) {
       shiny::isolate({
         app_state$events$form_restore_needed <- app_state$events$form_restore_needed + 1L
       })
-    },
-
-    # Modal lifecycle events (PHASE 1: Modal pause protection)
-    column_mapping_modal_opened = function() {
-      shiny::isolate({
-        app_state$events$column_mapping_modal_opened <- app_state$events$column_mapping_modal_opened + 1L
-        app_state$ui$modal_column_mapping_active <- TRUE
-      })
-    },
-    column_mapping_modal_closed = function() {
-      shiny::isolate({
-        app_state$events$column_mapping_modal_closed <- app_state$events$column_mapping_modal_closed + 1L
-        app_state$ui$modal_column_mapping_active <- FALSE
-      })
-    }
-  )
-}
-
-## Dato kolonnevalidering -----
-#' @keywords internal
-validate_date_column <- function(data, column_name) {
-  if (!column_name %in% names(data)) {
-    return(paste("Kolonne", column_name, "ikke fundet"))
-  }
-  # Forsøg at konvertere til dato hvis det ikke allerede er det
-  tryCatch(
-    {
-      as.Date(data[[column_name]])
-      return(NULL)
-    },
-    error = function(e) {
-      return(paste("Kolonne", column_name, "kunne ikke konverteres til dato"))
     }
   )
 }

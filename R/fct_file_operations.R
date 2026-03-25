@@ -1051,7 +1051,10 @@ validate_csv_file <- function(file_path) {
 handle_upload_error <- function(error, file_info, session_id = NULL) {
   error_message <- as.character(error$message)
   error_type <- "unknown"
-  user_message <- "En uventet fejl opstod under filupload"
+  user_message <- paste0(
+    "En uventet fejl opstod under filupload. ",
+    "Kontakt Dataenheden: dataenheden.bispebjerg-frederiksberg-hospitaler@regionh.dk"
+  )
   suggestions <- character(0)
 
   # Kategoriser fejltyper og giv specifik vejledning

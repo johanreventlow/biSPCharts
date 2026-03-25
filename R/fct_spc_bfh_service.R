@@ -1841,7 +1841,7 @@ classify_error_source <- function(error) {
           component = "BFH_INTEGRATION",
           actionable_by = "BFHcharts package maintainer",
           escalate = TRUE,
-          user_message = "Fejl i SPC beregning. Kontakt support med fejldetaljerne."
+          user_message = "Fejl i SPC beregning. Kontakt Dataenheden: dataenheden.bispebjerg-frederiksberg-hospitaler@regionh.dk"
         ))
       }
 
@@ -1881,7 +1881,7 @@ classify_error_source <- function(error) {
         component = "BFH_SERVICE",
         actionable_by = "Developer investigation required",
         escalate = TRUE,
-        user_message = "En uventet fejl opstod. Kontakt support."
+        user_message = "En uventet fejl opstod. Kontakt Dataenheden: dataenheden.bispebjerg-frederiksberg-hospitaler@regionh.dk"
       ))
     },
     fallback = list(
@@ -1889,7 +1889,7 @@ classify_error_source <- function(error) {
       component = "BFH_SERVICE",
       actionable_by = "Developer investigation required",
       escalate = TRUE,
-      user_message = "En uventet fejl opstod. Kontakt support."
+      user_message = "En uventet fejl opstod. Kontakt Dataenheden: dataenheden.bispebjerg-frederiksberg-hospitaler@regionh.dk"
     ),
     error_type = "error_classification"
   )

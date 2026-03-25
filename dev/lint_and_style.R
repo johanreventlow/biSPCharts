@@ -1,19 +1,29 @@
 # lint_and_style.R
 # Development script til code quality checking og formatting
+# Kan køres med specifikke filer som argumenter (brugt af pre-commit hook)
+# eller uden argumenter for at checke hele projektet
 
 library(lintr)
 library(styler)
 
-# Paths til at analysere
-paths_to_check <- c(
-  "global.R",
-  "app.R",
-  "R/"
-)
+# Bestem hvilke filer der skal checkes
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) > 0) {
+  # Pre-commit mode: kun staged filer
+  paths_to_check <- args
+  cat("🔍 Kører lintr code quality check på staged filer...\n")
+} else {
+  # Manuel mode: hele projektet
+  paths_to_check <- c(
+    "global.R",
+    "app.R",
+    "R/"
+  )
+  cat("🔍 Kører lintr code quality check på hele projektet...\n")
+}
 
 # LINTING ======================================================================
-
-cat("🔍 Kører lintr code quality check...\n")
 
 # Kør lintr på specifikke filer og mapper
 lint_results <- list()
@@ -56,7 +66,6 @@ if (total_issues > 0) {
 
 cat("\n🎨 Kører styler code formatting...\n")
 
-# Style hele R/ mappen og hovedfiler
 for (path in paths_to_check) {
   if (file.exists(path)) {
     cat("Styling:", path, "\n")

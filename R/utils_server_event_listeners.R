@@ -1148,6 +1148,156 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' All observers use ignoreInit = TRUE to prevent firing at startup
 #' unless explicitly designed for initialization (chart_type observer).
 #'
+
+#' Setup wizard navigation gates
+#'
+#' Locks/unlocks navbar wizard steps based on app state.
+#' Trin 1 (Upload) altid tilgaengelig. Trin 2 (Analyser) kraever data.
+#' Trin 3 (Eksporter) kraever renderet plot.
+#'
+#' @param app_state Centraliseret app state
+#' @param session Shiny session
+#' @keywords internal
+setup_wizard_gates <- function(input, app_state, session) {
+  # Lock trin 2+3 ved startup
+  session$sendCustomMessage("wizard-lock-step", 2)
+  session$sendCustomMessage("wizard-lock-step", 3)
+
+  # Gate: Data loaded -> unlock trin 2, auto-navigér
+  shiny::observeEvent(app_state$events$data_updated,
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$UI_SYNC,
+    {
+      has_data <- !is.null(shiny::isolate(app_state$data$current_data))
+      if (has_data) {
+        session$sendCustomMessage("wizard-unlock-step", 2)
+        bslib::nav_select("main_navbar", selected = "analyser", session = session)
+      } else {
+        session$sendCustomMessage("wizard-lock-step", 2)
+        session$sendCustomMessage("wizard-lock-step", 3)
+        bslib::nav_select("main_navbar", selected = "upload", session = session)
+      }
+    }
+  )
+
+  # Gate: Plot renderet -> unlock trin 3
+  shiny::observe({
+    plot_ready <- app_state$visualization$plot_ready
+    if (isTRUE(plot_ready)) {
+      session$sendCustomMessage("wizard-unlock-step", 3)
+    } else {
+      session$sendCustomMessage("wizard-lock-step", 3)
+    }
+  })
+
+  # Tilbage-knap: Trin 2 -> Trin 1
+  shiny::observeEvent(input$back_to_upload, {
+    bslib::nav_select("main_navbar", selected = "upload", session = session)
+  })
+
+  # Fortsæt-knap: Trin 2 -> Trin 3 (kun hvis plot er klar)
+  shiny::observeEvent(input$continue_to_export, {
+    if (!isTRUE(shiny::isolate(app_state$visualization$plot_ready))) {
+      shiny::showNotification(
+        "Vælg kolonner og generer et diagram først",
+        type = "warning", duration = 3
+      )
+      return()
+    }
+    bslib::nav_select("main_navbar", selected = "eksporter", session = session)
+  })
+}
+
+#' Setup observers for paste data og sample data loading
+#'
+#' @param input Shiny input
+#' @param app_state Centraliseret app state
+#' @param session Shiny session
+#' @param emit Event emit API
+#' @keywords internal
+setup_paste_data_observers <- function(input, app_state, session, emit) {
+  # Observer: "Fortsæt" knap — indlæs pasted data
+  shiny::observeEvent(input$load_paste_data, {
+    handle_paste_data(
+      text_data = input$paste_data_input,
+      app_state = app_state,
+      session_id = sanitize_session_token(session$token),
+      emit = emit
+    )
+  })
+
+  # Observer: "Prøv med eksempeldata" — paste sample data ind i textArea
+  shiny::observeEvent(input$load_sample_data, {
+    sample_path <- system.file("extdata", "sample_spc_data.csv", package = "SPCify")
+    if (sample_path == "" || !file.exists(sample_path)) {
+      sample_path <- "inst/extdata/sample_spc_data.csv"
+    }
+
+    if (file.exists(sample_path)) {
+      sample_text <- readLines(sample_path, warn = FALSE, encoding = "UTF-8")
+      shiny::updateTextAreaInput(
+        session, "paste_data_input",
+        value = paste(sample_text, collapse = "\n")
+      )
+      shiny::showNotification(
+        "Eksempeldata indsat — tryk Fortsæt for at analysere",
+        type = "message", duration = 3
+      )
+    } else {
+      shiny::showNotification(
+        "Kunne ikke finde eksempeldatasæt",
+        type = "error", duration = 3
+      )
+    }
+  })
+
+  # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
+  shiny::observeEvent(input$trigger_file_upload, {
+    # Klik på det skjulte fileInput via JS
+    shinyjs::click("direct_file_upload")
+  })
+
+  # Observer: Direkte fil-upload — validér og behandl via eksisterende upload-logik
+  shiny::observeEvent(input$direct_file_upload, {
+    req(input$direct_file_upload)
+    file_info <- input$direct_file_upload
+
+    # Filvalidering (rate limiting, størrelse, MIME, korruption)
+    validation_result <- validate_uploaded_file(
+      file_info, sanitize_session_token(session$token)
+    )
+    if (!validation_result$valid) {
+      shiny::showNotification(
+        paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
+        type = "error", duration = 5
+      )
+      return()
+    }
+
+    safe_operation("Behandl uploadet fil", {
+      ext <- tolower(tools::file_ext(file_info$name))
+
+      if (ext %in% c("xlsx", "xls")) {
+        # Excel: brug eksisterende handler (bevarer Metadata-sheet og typer)
+        handle_excel_upload(file_info$datapath, session, app_state, emit)
+      } else if (ext %in% c("csv", "txt")) {
+        # CSV: vis i paste-felt så brugeren kan reviewe før "Fortsæt"
+        text_content <- readLines(file_info$datapath, warn = FALSE, encoding = "UTF-8")
+        shiny::updateTextAreaInput(
+          session, "paste_data_input",
+          value = paste(text_content, collapse = "\n")
+        )
+        shiny::showNotification(
+          paste0("\"", file_info$name, "\" indlæst — tryk Fortsæt for at analysere"),
+          type = "message", duration = 3
+        )
+      } else {
+        shiny::showNotification("Kun xlsx, xls og csv filer understøttes", type = "error")
+      }
+    })
+  })
+}
+
 setup_event_listeners <- function(app_state, emit, input, output, session, ui_service = NULL) {
   # DUPLICATE PREVENTION: Check if optimized listeners are already active
   if (exists("optimized_listeners_active", envir = app_state) && app_state$optimized_listeners_active) {
@@ -1240,6 +1390,11 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # All event listeners are now registered via helper functions.
   # Centralized cleanup is maintained below.
 
+  # Wizard navigation gates
+  setup_wizard_gates(input, app_state, session)
+
+  # Paste data og sample data observers
+  setup_paste_data_observers(input, app_state, session, emit)
 
   # ============================================================================
   # OBSERVER CLEANUP ON SESSION END

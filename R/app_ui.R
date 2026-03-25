@@ -11,6 +11,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     bslib::page_navbar(
+      id = "main_navbar",
       title = shiny::tagList(
         shiny::img(
           src = get_hospital_logo_path(),
@@ -26,21 +27,31 @@ app_ui <- function(request) {
       # Header-komponenter
       header = create_ui_header(),
 
-      # Sidebar
-      sidebar = create_ui_sidebar(),
+      # Navigation tabs (wizard trin)
+      # data-step attributter tilføjes via JS (wizard-nav.js) da bslib
+      # genererer nav-links dynamisk. value param bruges til identifikation.
 
-      # Navigation tabs
-      # Hovedindhold - SPC Chart arbejdsområde
+      # Trin 1: Upload
       bslib::nav_panel(
-        title = "Analyse",
+        title = "Upload",
+        icon = shiny::icon("upload"),
+        value = "upload",
+        create_ui_upload_page()
+      ),
+
+      # Trin 2: Analysér
+      bslib::nav_panel(
+        title = "Analysér",
         icon = shiny::icon("chart-line"),
+        value = "analyser",
         create_ui_main_content()
       ),
 
-      # Eksport tab - SPC Chart eksport modul
+      # Trin 3: Eksportér
       bslib::nav_panel(
-        title = "Eksport",
+        title = "Eksportér",
         icon = shiny::icon("file-export"),
+        value = "eksporter",
         mod_export_ui("export")
       )
     )

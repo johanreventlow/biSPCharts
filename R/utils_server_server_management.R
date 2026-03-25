@@ -282,14 +282,15 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
       })
     }
 
-    # PHASE 1: PRAGMATIC WORKAROUND - Emit modal close after 1 second
-    # This ensures observers resume even if user closes modal immediately
-    # TODO(#50): Replace with proper JavaScript hidden.bs.modal event handler
-    later::later(function() {
-      if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
-        emit$column_mapping_modal_closed()
-      }
-    }, delay = 1.0)
+    # Modal close detekteres via JS hidden.bs.modal event (shiny-handlers.js)
+    # som sender modal_closed_event input — se observer nedenfor
+  })
+
+  # Modal close handler — JS sender modal_closed_event via hidden.bs.modal
+  shiny::observeEvent(input$modal_closed_event, {
+    if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
+      emit$column_mapping_modal_closed()
+    }
   })
 
   # Confirm clear saved handler
@@ -428,6 +429,7 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
   reset_to_empty_session(session, app_state, emit, ui_service)
+  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
 }

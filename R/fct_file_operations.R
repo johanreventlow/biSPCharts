@@ -207,7 +207,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
       )
 
       shiny::showNotification(
-        paste("File validation failed:", paste(validation_result$errors, collapse = "; ")),
+        paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
         type = "error",
         duration = 8
       )
@@ -473,7 +473,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
 
     if (length(cleaning_messages) > 0) {
       shiny::showNotification(
-        paste("Data cleaned:", paste(cleaning_messages, collapse = ", ")),
+        paste("Data renset:", paste(cleaning_messages, collapse = ", ")),
         type = "message",
         duration = 5
       )
@@ -546,6 +546,95 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     type = "message",
     duration = 3
   )
+}
+
+#' Haandter indsatte (pasted) data fra textAreaInput
+#'
+#' Parser tekst-data med auto-detected separator (tab, semikolon, komma).
+#' Bruger readr::read_delim med delim = NULL for auto-detection.
+#'
+#' @param text_data Character string med indsatte data
+#' @param app_state Centraliseret app state
+#' @param session_id Hashed session token (valgfri)
+#' @param emit Event emit API
+#' @return Usynligt NULL, opdaterer app_state som side-effekt
+#' @keywords internal
+handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NULL) {
+  # Valider input
+  if (is.null(text_data) || !nzchar(trimws(text_data))) {
+    shiny::showNotification("Indsæt data først", type = "warning", duration = 3)
+    return(invisible(NULL))
+  }
+
+  # Parser med auto-detected separator
+  data <- tryCatch(
+    {
+      readr::read_delim(
+        I(text_data),
+        delim = NULL,
+        locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+        show_col_types = FALSE,
+        trim_ws = TRUE
+      )
+    },
+    error = function(e) {
+      # Fallback: proev eksplicit tab, semikolon, komma
+      for (sep in c("\t", ";", ",")) {
+        result <- tryCatch(
+          {
+            readr::read_delim(
+              I(text_data),
+              delim = sep,
+              locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+              show_col_types = FALSE,
+              trim_ws = TRUE
+            )
+          },
+          error = function(e2) NULL
+        )
+        if (!is.null(result) && ncol(result) >= 2) {
+          return(result)
+        }
+      }
+      return(NULL)
+    }
+  )
+
+  # Valider resultat
+  if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
+    shiny::showNotification(
+      "Kunne ikke parse data. Kontrollér at data har mindst 2 kolonner og 1 række.",
+      type = "error", duration = 5
+    )
+    return(invisible(NULL))
+  }
+
+  # Preprocessing (genbrug eksisterende)
+  preprocessing_result <- preprocess_uploaded_data(
+    data,
+    list(name = "pasted_data", size = nchar(text_data)),
+    session_id
+  )
+  data <- preprocessing_result$data
+
+  # Gem i app state (samme moenster som handle_csv_upload)
+  data_frame <- as.data.frame(data)
+  set_current_data(app_state, data_frame)
+  app_state$data$original_data <- data_frame
+
+  # Emit events
+  emit$data_updated(context = "paste_data")
+  app_state$session$file_uploaded <- TRUE
+  app_state$columns$auto_detect$completed <- FALSE
+  app_state$ui$hide_anhoej_rules <- FALSE
+  emit$navigation_changed()
+
+  shiny::showNotification(
+    paste("Data indlæst:", nrow(data), "rækker,", ncol(data), "kolonner"),
+    type = "message", duration = 3
+  )
+
+  invisible(NULL)
 }
 
 ## Parse session metadata fra importerede filer

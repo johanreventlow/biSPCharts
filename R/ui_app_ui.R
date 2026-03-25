@@ -23,6 +23,7 @@ create_ui_header <- function() {
       shiny::tags$script(src = "local-storage.js"),
       shiny::tags$script(src = "ui-helpers.js"),
       shiny::tags$script(src = "shiny-handlers.js"),
+      shiny::tags$script(src = "wizard-nav.js"),
       # Inline CSS styles
       shiny::tags$style(htmltools::HTML(paste0("
 
@@ -167,8 +168,39 @@ create_ui_header <- function() {
     .status-error { background-color: ", hospital_colors$danger, "; }
     .status-processing { background-color: ", hospital_colors$primary, "; }
 
+    /* Wizard nummererede trin */
+    .navbar-nav .nav-link[data-step]::before {
+      content: attr(data-step);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
 
+    /* Aktiv tab: filled cirkel med tab-farve som baggrund, hvidt tal */
+    .navbar-nav .nav-link.active[data-step]::before {
+      background-color: currentColor;
+      border-color: currentColor;
+      -webkit-text-fill-color: white;
+    }
 
+    /* Locked tab styling */
+    .navbar-nav .nav-link.wizard-locked {
+      opacity: 0.4 !important;
+      cursor: not-allowed !important;
+      pointer-events: auto !important;
+    }
+
+    .navbar-nav .nav-link.wizard-locked:hover {
+      opacity: 0.4 !important;
+    }
 
         ")))
     )
@@ -179,21 +211,58 @@ create_ui_header <- function() {
 
 #' @export
 create_ui_main_content <- function() {
-  shiny::tagList(
-    # Welcome page when no meaningful data is loaded - DISABLED FOR DEVELOPMENT
-    # shiny::conditionalPanel(condition = "output.dataLoaded != 'TRUE'", create_welcome_page()),
-
-    # Main content in 8-4-8-4 grid layout
-    # Top row: SPC Preview (8), ValueBoxes (4)
-    # Bottom row: Data table (8), Empty (4)
+  shiny::div(
+    style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
+    # Layout: 6-6 grid (fylder det meste, men ikke helt til bunden)
+    # Venstre: Datatabel (fuld hoejde)
+    # Hoejre top: SPC Preview
+    # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
-      col_widths = c(8, 4, 8, 4),
-      height = "auto",
-      max_height = "100%",
-      create_plot_only_card(),
-      create_status_value_boxes(),
+      col_widths = c(6, 6),
+      height = "calc(100vh - 160px)",
+
+      # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),
-      shiny::div() # Empty space (4/12)
+
+      # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
+      shiny::div(
+        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
+
+        # Oeverste halvdel: SPC Preview
+        shiny::div(
+          style = "flex: 1 1 50%; min-height: 0;",
+          create_plot_only_card()
+        ),
+
+        # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
+        shiny::div(
+          style = "flex: 1 1 50%; min-height: 0;",
+          bslib::layout_columns(
+            col_widths = c(6, 6),
+            height = "100%",
+            create_chart_settings_card_compact(),
+            create_status_value_boxes()
+          )
+        )
+      )
+    ),
+    # Tilbage/Fortsæt knapper under cards
+    shiny::div(
+      style = "display: flex; justify-content: space-between;",
+      shiny::actionButton(
+        "back_to_upload",
+        shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
+        class = "btn-secondary",
+        style = "width: 200px;",
+        title = "Gå tilbage til upload"
+      ),
+      shiny::actionButton(
+        "continue_to_export",
+        shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+        class = "btn-primary",
+        style = "width: 200px;",
+        title = "Gå til eksport"
+      )
     )
   )
 }
@@ -424,52 +493,56 @@ create_plot_only_card <- function() {
   bslib::card(
     full_screen = TRUE,
     fillable = TRUE,
-    max_height = "100%",
-    min_height = "calc(50vh - 60px)",
+    height = "100%",
     bslib::card_header(
       shiny::div(shiny::icon("chart-line"), " SPC Preview")
     ),
-    bslib::layout_sidebar(
-      sidebar = bslib::sidebar(
-        width = "350px",
-        position = "right",
-        shiny::selectizeInput(
-          "chart_type",
-          "Diagram type:",
-          choices = CHART_TYPES_DA,
-          selected = "run",
-          width = "100%"
-        ),
-        shiny::selectizeInput(
-          "y_axis_unit",
-          "Y-akse enhed:",
-          choices = Y_AXIS_UI_TYPES_DA,
-          selected = "count",
-          width = "100%"
-        ),
-        # Detaljer fields from accordion
-        shiny::textInput(
-          "target_value",
-          "Udviklingsmål:",
-          value = "",
-          placeholder = "fx >=90%, <25 eller >",
-          width = "100%"
-        ),
-        shiny::textInput(
-          "centerline_value",
-          "Evt. baseline:",
-          value = "",
-          placeholder = "fx 68%, 0,7 el. 22",
-          width = "100%"
-        )
-      ),
-
-      # bslib::card_body(
-      #   fill = TRUE,
+    bslib::card_body(
+      fill = TRUE,
       shiny::div(
         style = "height: 100%",
         visualizationModuleUI("visualization")
-        # )
+      )
+    )
+  )
+}
+
+#' Kompakt indstillings-card til hoejre side
+#' @export
+create_chart_settings_card_compact <- function() {
+  bslib::card(
+    height = "100%",
+    bslib::card_header(
+      shiny::div(shiny::icon("sliders-h"), " Indstillinger")
+    ),
+    bslib::card_body(
+      shiny::selectizeInput(
+        "chart_type",
+        "Diagram type:",
+        choices = CHART_TYPES_DA,
+        selected = "run",
+        width = "100%"
+      ),
+      shiny::selectizeInput(
+        "y_axis_unit",
+        "Y-akse enhed:",
+        choices = Y_AXIS_UI_TYPES_DA,
+        selected = "count",
+        width = "100%"
+      ),
+      shiny::textInput(
+        "target_value",
+        "Udviklingsmål:",
+        value = "",
+        placeholder = "fx >=90%, <25 eller >",
+        width = "100%"
+      ),
+      shiny::textInput(
+        "centerline_value",
+        "Evt. baseline:",
+        value = "",
+        placeholder = "fx 68%, 0,7 el. 22",
+        width = "100%"
       )
     )
   )
@@ -478,30 +551,44 @@ create_plot_only_card <- function() {
 create_data_table_card <- function() {
   bslib::card(
     full_screen = TRUE,
-    min_height = "calc(50vh - 60px)",
+    height = "100%",
     bslib::card_header(
       shiny::div(
-        style = "display: flex; justify-content: space-between; align-items: center;",
-        shiny::div(shiny::icon("table"), " Data", ),
+        style = "display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; width: 100%;",
+        shiny::div(shiny::icon("table"), " Data"),
         shiny::div(
           class = "btn-group-sm",
           shiny::actionButton(
+            "auto_detect_columns",
+            label = "Auto-detektér kolonner",
+            icon = shiny::icon("magic"),
+            title = "Auto-detektér kolonner",
+            class = "btn-primary btn-sm"
+          ),
+          shiny::actionButton(
+            "show_column_mapping_modal",
+            label = "Angiv kolonner manuelt",
+            icon = shiny::icon("columns"),
+            title = "Angiv kolonner manuelt",
+            class = "btn-secondary btn-sm"
+          ),
+          shiny::actionButton(
             "edit_column_names",
-            label = "Redigér kolonnenavne",
+            label = "Omdøb",
             icon = shiny::icon("edit"),
             title = "Redigér kolonnenavne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_column",
-            label = "Tilføj kolonne",
+            label = "Kolonne",
             icon = shiny::icon("plus"),
             title = "Tilføj kolonne",
             class = "btn-secondary btn-sm"
           ),
           shiny::actionButton(
             "add_row",
-            label = "Tilføj række",
+            label = "Række",
             icon = shiny::icon("plus-square"),
             title = "Tilføj række",
             class = "btn-secondary btn-sm"
@@ -509,26 +596,8 @@ create_data_table_card <- function() {
         )
       )
     ),
-    bslib::layout_sidebar(
-      sidebar = bslib::sidebar(
-        width = "350px",
-        position = "right",
-
-        # Knapper til kolonnematch
-        shiny::actionButton(
-          "show_column_mapping_modal",
-          "Angiv kolonner manuelt",
-          icon = shiny::icon("columns"),
-          class = "btn-primary w-100 mb-2"
-        ),
-        shiny::actionButton(
-          "auto_detect_columns",
-          "Auto-detektér kolonner",
-          icon = shiny::icon("magic"),
-          class = "btn-secondary w-100"
-        )
-      ),
-      # Data table using excelR
+    bslib::card_body(
+      fill = TRUE,
       excelR::excelOutput("main_data_table", height = "auto")
     )
   )
@@ -804,6 +873,145 @@ create_ui_sidebar <- function() {
     # )
   )
 }
+
+# UI UPLOAD PAGE KOMPONENTER ===================================================
+
+#' Upload-side med kvadratiske handlingsknapper og paste-felt
+#'
+#' Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (højre).
+#' Ingen cards — rent, fladt layout.
+#' @export
+create_ui_upload_page <- function() {
+  # Hjælpefunktion: kvadratisk knap med ikon og tekst
+  # Alle knapper har samme base-styling. CSS class "upload-btn-active" styrer valgt-tilstand.
+  square_button <- function(id, label, icon_name, title_text) {
+    shiny::actionButton(
+      id,
+      label = shiny::div(
+        shiny::icon(icon_name, class = "fa-2x"),
+        shiny::tags$br(),
+        shiny::tags$span(label, style = "font-size: 0.85rem; font-weight: 600;")
+      ),
+      class = "btn btn-outline-secondary upload-source-btn w-100 d-flex flex-column align-items-center justify-content-center",
+      style = "aspect-ratio: 1; padding: 12px; min-height: 110px;",
+      title = title_text
+    )
+  }
+
+  shiny::tagList(
+    # CSS for upload-knap active/hover tilstande
+    shiny::tags$style(htmltools::HTML("
+      /* Alle upload-source knapper: normal tilstand */
+      .upload-source-btn {
+        transition: all 0.15s ease;
+      }
+
+      /* Hover ikke-valgt: hvid baggrund, mørkere tekst */
+      .upload-source-btn:hover {
+        background-color: #fff !important;
+        border-color: #828c8d !important;
+        color: #828c8d !important;
+      }
+
+      /* Hover valgt knap: mørkere baggrund, hvid tekst */
+      .upload-source-btn.upload-btn-active:hover {
+        background-color: #828c8d !important;
+        border-color: #828c8d !important;
+        color: #fff !important;
+      }
+
+      /* Valgt knap: præcis Flatly btn-outline-secondary:hover (permanent) */
+      .upload-source-btn.upload-btn-active {
+        background-color: #95a5a6 !important;
+        border-color: #95a5a6 !important;
+        color: #fff !important;
+      }
+      .upload-source-btn.upload-btn-active .fa-2x,
+      .upload-source-btn.upload-btn-active span {
+        color: #fff !important;
+      }
+    ")),
+    shiny::div(
+      class = "container-fluid d-flex align-items-center justify-content-center",
+      style = "max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 120px);",
+
+      # Flexbox-row: knapper (fast bredde) + paste-felt (fylder resten)
+      shiny::div(
+        style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
+
+        # Knap 1: Kopiér & Indsæt data (default valgt via JS)
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "show_paste_area", "Kopiér &\nIndsæt data", "clipboard",
+            "Indsæt data fra Excel eller CSV"
+          )
+        ),
+
+        # Knap 2: Indlæs XLS/CSV
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          # Skjult fileInput
+          shiny::div(
+            style = "display: none;",
+            shiny::fileInput(
+              "direct_file_upload",
+              label = NULL,
+              accept = c(".csv", ".xlsx", ".xls"),
+              buttonLabel = "Vælg fil"
+            )
+          ),
+          square_button(
+            "trigger_file_upload", "Indlæs\nXLS/CSV", "file-csv",
+            "Vælg Excel eller CSV fil"
+          )
+        ),
+
+        # Knap 3: Prøv med eksempeldata
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "load_sample_data", "Prøv med\neksempeldata", "flask",
+            "Indlæs et SPC-eksempeldatasæt"
+          )
+        ),
+
+        # Knap 4: Blank session
+        shiny::div(
+          style = "flex: 0 0 120px;",
+          square_button(
+            "clear_saved", "Blank\nsession", "file-circle-plus",
+            "Start med tomt datasæt"
+          )
+        ),
+
+        # Paste-felt (fylder resten af pladsen)
+        shiny::div(
+          style = "flex: 1 1 auto; display: flex; flex-direction: column; margin-left: 20px;",
+          shiny::textAreaInput(
+            "paste_data_input",
+            label = NULL,
+            value = "",
+            rows = 6,
+            width = "100%",
+            placeholder = "Indsæt data fra Excel eller CSV her..."
+          ),
+          shiny::div(
+            style = "display: flex; justify-content: flex-end;",
+            shiny::actionButton(
+              "load_paste_data",
+              shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+              class = "btn-primary",
+              style = "width: 200px;",
+              title = "Indlæs data og gå til analyse"
+            )
+          )
+        )
+      )
+    )
+  )
+}
+
 # ui_welcome_page.R
 # UI komponenter for velkomstside
 

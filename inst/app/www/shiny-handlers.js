@@ -34,6 +34,12 @@ Shiny.addCustomMessageHandler('showAppUI', function(message) {
   window.showAppUI();
 });
 
+// Modal close detection — send Shiny input naar Bootstrap modal lukkes
+// Erstatter later::later(1s) workaround i server_management.R
+$(document).on('hidden.bs.modal', '.modal', function() {
+  Shiny.setInputValue('modal_closed_event', Date.now(), {priority: 'event'});
+});
+
 // Auto-load existing session data on app start
 $(document).ready(function() {
   if (window.hasAppState('current_session')) {

@@ -175,7 +175,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
       if (time_since_upload < min_upload_interval) {
         shiny::showNotification(
-          paste0("Vent venligst mindst ", min_upload_interval, " sekunder mellem fil-uploads (sikkerhedsbeskyttelse)"),
+          "Vent venligst et \u00f8jeblik, f\u00f8r du uploader en ny fil.",
           type = "warning",
           duration = 3
         )

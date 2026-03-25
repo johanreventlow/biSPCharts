@@ -125,4 +125,22 @@
   $(document).on('click', '#clear_saved', function() {
     setActiveUploadBtn('clear_saved');
   });
+
+  // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
+  var plotInputs = [
+    'chart_type', 'y_axis_unit', 'x_column', 'y_column',
+    'n_column', 'skift_column', 'frys_column', 'target_value',
+    'centerline_value'
+  ];
+  plotInputs.forEach(function(id) {
+    $(document).on('change', '#' + id, function() {
+      $('.spc-plot-container').addClass('input-pending');
+    });
+  });
+  // Fjern pending-klasse når plot er opdateret
+  $(document).on('shiny:value', function(e) {
+    if (e.name && e.name.indexOf('spc_plot') !== -1) {
+      $('.spc-plot-container').removeClass('input-pending');
+    }
+  });
 })();

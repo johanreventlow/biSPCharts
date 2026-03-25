@@ -212,6 +212,7 @@ create_ui_header <- function() {
     }
 
     /* Loading overlay på SPC plot under genberegning */
+    .spc-plot-container.input-pending .shiny-plot-output,
     .spc-plot-container .recalculating {
       opacity: 0.35 !important;
       transition: opacity 0.15s ease-in-out;

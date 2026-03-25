@@ -32,10 +32,7 @@ clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
 Other performance: 
 \code{\link{create_cached_reactive}()},
 \code{\link{create_performance_debounced}()},
-\code{\link{evaluate_data_content_cached}()},
-\code{\link{get_performance_stats}()},
-\code{\link{measure_reactive_performance}()},
-\code{\link{monitor_memory_usage}()}
+\code{\link{evaluate_data_content_cached}()}
 }
 \concept{performance}
 \keyword{internal}

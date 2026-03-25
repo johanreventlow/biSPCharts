@@ -6,18 +6,15 @@
 \usage{
 setup_session_cleanup(session, app_state = NULL, observers = NULL)
 }
-\description{
-Comprehensive cleanup functions til at frigøre memory og resources
-når session afsluttes eller reset. Del af Fase 5 performance optimization.
+\arguments{
+\item{session}{Shiny session object}
+
+\item{app_state}{App state object (optional)}
+
+\item{observers}{List of observer objects (optional)}
 }
-\seealso{
-Other memory_management: 
-\code{\link{cleanup_app_state}()},
-\code{\link{cleanup_observers}()},
-\code{\link{cleanup_reactive_values}()},
-\code{\link{cleanup_temp_files}()},
-\code{\link{reset_app_to_clean_state}()},
-\code{\link{start_memory_monitoring}()}
+\description{
+Registers cleanup handler on session end to free memory and resources.
 }
 \concept{memory_management}
 \keyword{internal}

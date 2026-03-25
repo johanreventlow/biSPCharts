@@ -32,10 +32,5 @@ register_roboto_font()
 }
 
 }
-\seealso{
-Other font_registration: 
-\code{\link{get_font_status}()},
-\code{\link{is_roboto_available}()}
-}
 \concept{font_registration}
 \keyword{internal}

@@ -20,16 +20,13 @@
 visualizationModuleUI <- function(id) {
   ns <- shiny::NS(id)
 
-  # PRODUCTION VERSION: Restored original styling with fixes applied
-  # shiny::div(
-  #   id = ns("plot_container"),
-  # class = "spc-plot-main-container",
-  # style = "position: relative; height: 100%;",
-  # shiny::div(
-  # class = "spc-ggplot-output",
-  shiny::plotOutput(ns("spc_plot_actual"), width = "100%", height = "100%")
-  # )
-  # )
+  shiny::div(
+    class = "spc-plot-container",
+    style = "position: relative; height: 100%;",
+    shiny::plotOutput(ns("spc_plot_actual"), width = "100%", height = "100%"),
+    # Sync-indikator — vises via CSS baseret på .recalculating tilstand
+    shiny::div(class = "spc-sync-badge", shiny::icon("check"), " Synkroniseret")
+  )
 }
 
 # STATUS ELEMENTER UI ========================================================

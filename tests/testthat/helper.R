@@ -39,9 +39,11 @@ if (!requireNamespace("microbenchmark", quietly = TRUE)) {
 }
 
 # Mock shinytest2 if not available
-if (requireNamespace("shinytest2", quietly = TRUE)) {
-  library(shinytest2)
-} else {
+# NOTE: library(shinytest2) MUST NOT be called here — it initializes a chromote
+# session that blocks indefinitely in non-interactive Rscript environments.
+# Tests that need shinytest2 should call library(shinytest2) inside their own
+# test_that() block, gated by skip_if_not(interactive()) or skip_on_ci().
+if (!requireNamespace("shinytest2", quietly = TRUE)) {
   # Lightweight mock AppDriver for basic functionality testing (without R6 dependency)
   create_mock_app_driver <- function(app_dir = ".", name = "mock-app", timeout = 5000, load_timeout = 3000, ...) {
     mock_app <- new.env(parent = emptyenv())
@@ -85,49 +87,49 @@ debounce <- shiny::debounce
 updateSelectizeInput <- shiny::updateSelectizeInput
 req <- shiny::req
 
-# Lightweight package-based setup instead of heavy global.R sourcing
+# Package loading setup
+# VIGTIGT: helper.R sourses af pkgload::load_all(helpers=TRUE), som er default.
+# Hvis helper.R selv kalder pkgload::load_all(), opstår uendelig rekursion:
+#   load_all() → source(helper.R) → load_all() → source(helper.R) → ...
+# Hver iteration kører .onLoad() (~18s), så det ligner en uendelig hang.
+#
+# Løsning: Tjek om pakken allerede er loaded. Kald KUN load_all() hvis den
+# IKKE allerede er loaded, og brug helpers=FALSE for at bryde rekursionen.
+
 project_root <- here::here()
 
-# Prefer pkgload for development package loading
-use_pkgload_setup <- function() {
+package_already_loaded <- function() {
+  "SPCify" %in% loadedNamespaces()
+}
+
+if (!package_already_loaded()) {
+  # Pakken er ikke loaded endnu — load med helpers=FALSE for at undgå rekursion
   if (requireNamespace("pkgload", quietly = TRUE)) {
-    tryCatch({
-      pkgload::load_all(project_root, quiet = TRUE)
-      return(TRUE)
-    }, error = function(e) {
-      message("pkgload failed, falling back to source-based loading: ", e$message)
-      return(FALSE)
-    })
+    tryCatch(
+      {
+        pkgload::load_all(project_root, quiet = TRUE, helpers = FALSE)
+      },
+      error = function(e) {
+        message("pkgload failed, falling back to source-based loading: ", e$message)
+        # Lightweight fallback — source kun essentielle filer
+        essential_files <- c(
+          "R/state_management.R",
+          "R/utils_error_handling.R",
+          "R/utils_server_performance.R",
+          "R/fct_autodetect_helpers.R",
+          "R/fct_autodetect_unified.R"
+        )
+        for (file_path in essential_files) {
+          full_path <- file.path(project_root, file_path)
+          if (file.exists(full_path)) {
+            tryCatch(source(full_path, local = FALSE), error = function(e) {
+              message("Failed to source ", file_path, ": ", e$message)
+            })
+          }
+        }
+      }
+    )
   }
-  return(FALSE)
-}
-
-# Lightweight fallback - load only essential functions without full global.R
-source_essential_functions <- function() {
-  essential_files <- c(
-    "R/state_management.R",
-    "R/utils_error_handling.R",        # Updated from utils_safe_operation.R
-    "R/utils_server_performance.R",    # Updated from server_performance_helpers.R
-    "R/fct_autodetect_helpers.R",      # Updated from core_autodetect_helpers.R
-    "R/fct_autodetect_unified.R"       # For unified autodetect functions
-  )
-
-  for (file_path in essential_files) {
-    full_path <- file.path(project_root, file_path)
-    if (file.exists(full_path)) {
-      tryCatch({
-        source(full_path, local = FALSE)
-      }, error = function(e) {
-        # Continue if individual file fails
-        message("Failed to source ", file_path, ": ", e$message)
-      })
-    }
-  }
-}
-
-# Try package loading first, fall back to minimal sourcing
-if (!use_pkgload_setup()) {
-  source_essential_functions()
 }
 
 # NOTE: With pkgload approach, most functions should be available via package namespace
@@ -149,12 +151,15 @@ conditionally_source_helpers <- function() {
     for (file_path in additional_helper_files) {
       full_path <- file.path(project_root, file_path)
       if (file.exists(full_path)) {
-        tryCatch({
-          source(full_path, local = FALSE)
-        }, error = function(e) {
-          # Continue if individual file fails
-          message("Failed to source helper ", file_path, ": ", e$message)
-        })
+        tryCatch(
+          {
+            source(full_path, local = FALSE)
+          },
+          error = function(e) {
+            # Continue if individual file fails
+            message("Failed to source helper ", file_path, ": ", e$message)
+          }
+        )
       }
     }
   }
@@ -167,7 +172,7 @@ conditionally_source_helpers()
 create_test_data <- function() {
   data.frame(
     Skift = rep(FALSE, 10),
-    Frys = rep(FALSE, 10), 
+    Frys = rep(FALSE, 10),
     Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 10),
     Tæller = c(90, 85, 92, 88, 94, 91, 87, 93, 89, 95),
     Nævner = c(100, 95, 100, 98, 102, 99, 96, 101, 97, 103),

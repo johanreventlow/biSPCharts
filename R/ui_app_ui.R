@@ -181,8 +181,8 @@ create_ui_header <- function() {
     /* Gennemfoert wizard-trin: checkmark med tema-farve */
     .navbar-nav .nav-link.wizard-completed[data-step]::before {
       content: '\\2713';
-      background-color: #58B99E;
-      border-color: #58B99E;
+      background-color: var(--bs-success);
+      border-color: var(--bs-success);
       -webkit-text-fill-color: white;
       color: white;
     }

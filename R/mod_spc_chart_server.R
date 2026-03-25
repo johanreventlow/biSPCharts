@@ -908,60 +908,6 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       }
     })
 
-    ## Data Summary Box
-    # Data oversigt value box til fejlkontrol
-    output$data_summary_box <- shiny::renderUI({
-      data <- module_data_reactive()
-      config <- chart_config()
-
-      if (is.null(data) || nrow(data) == 0) {
-        return(
-          bslib::value_box(
-            title = "Data Oversigt",
-            value = "Ingen data",
-            showcase = spc_out_of_control_icon,
-            theme = "light",
-            shiny::p(class = "fs-7 text-muted mb-0", "Vent på data load")
-          )
-        )
-      }
-
-      # Generer oversigt info
-      total_rows <- nrow(data)
-      total_cols <- ncol(data)
-
-      # Check for konfigurerede kolonner
-      summary_text <- ""
-      if (!is.null(config)) {
-        if (!is.null(config$y_col) && config$y_col %in% names(data)) {
-          y_data <- data[[config$y_col]]
-          valid_y <- sum(!is.na(y_data))
-          summary_text <- paste0("Y: ", valid_y, "/", total_rows, " gyldige")
-
-          if (!is.null(config$n_col) && config$n_col %in% names(data)) {
-            n_data <- data[[config$n_col]]
-            valid_n <- sum(!is.na(n_data))
-            zeros_n <- sum(n_data == 0, na.rm = TRUE)
-            summary_text <- paste0(summary_text, " | N: ", valid_n, "/", total_rows)
-            if (zeros_n > 0) summary_text <- paste0(summary_text, " (", zeros_n, " nuller)")
-          }
-        } else {
-          summary_text <- "Kolonner ikke konfigureret"
-        }
-      } else {
-        summary_text <- "Konfiguration ikke klar"
-      }
-
-      bslib::value_box(
-        title = "Data Oversigt",
-        value = paste0(total_rows, "×", total_cols),
-        showcase = spc_out_of_control_icon,
-        showcase_layout = "top right",
-        theme = "light",
-        shiny::p(class = "fs-7 text-muted mb-0", summary_text)
-      )
-    })
-
     ## Anhøj Rules Value Boxes
     # Anhøj rules som value boxes - ALTID SYNLIGE
     # Viser serielængde og antal kryds for alle chart typer

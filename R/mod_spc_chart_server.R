@@ -1053,7 +1053,16 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       shiny::tagList(
         ### Serielængde Box-----
         bslib::value_box(
-          title = "Serielængde",
+          title = shiny::span(
+            "Seriel\u00e6ngde",
+            shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
+          ) |> bslib::tooltip(
+            paste0(
+              "L\u00e6ngste serie af punkter p\u00e5 samme side af centerlinjen. ",
+              "Hvis den overstiger gr\u00e6nsen, kan der v\u00e6re en ",
+              "systematisk \u00e6ndring i processen."
+            )
+          ),
           style = if (status_info$status == "insufficient_data") {
             "flex: 1;  background-color: white !important; color: #999999;"
           } else {
@@ -1125,7 +1134,16 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
 
         ### Antal Kryds Box -----
         bslib::value_box(
-          title = "Antal kryds",
+          title = shiny::span(
+            "Antal kryds",
+            shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
+          ) |> bslib::tooltip(
+            paste0(
+              "Antal gange datapunkterne krydser centerlinjen. ",
+              "For f\u00e5 krydsninger kan tyde p\u00e5 trends ",
+              "eller skift i processen."
+            )
+          ),
           style = if (status_info$status == "insufficient_data") {
             "flex: 1;  background-color: white !important; color: #999999;"
           } else {
@@ -1197,9 +1215,21 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         ### Kontrolgrænser Box ----
         bslib::value_box(
           title = if (status_info$status == "ready" && chart_type == "run") {
-            shiny::div("Uden for kontrolgrænser", style = "color: #999999 !important;")
+            shiny::div(
+              "Uden for kontrolgr\u00e6nser",
+              style = "color: #999999 !important;"
+            )
           } else {
-            "Uden for kontrolgrænser"
+            shiny::span(
+              "Uden for kontrolgr\u00e6nser",
+              shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
+            ) |> bslib::tooltip(
+              paste0(
+                "Antal datapunkter der ligger uden for ",
+                "kontrolgr\u00e6nserne. Disse punkter kan ",
+                "indikere s\u00e6rlige \u00e5rsager til variation."
+              )
+            )
           },
           style = if (status_info$status == "ready" && chart_type == "run") {
             "flex: 1; background-color: white !important; color: #999999 !important;"

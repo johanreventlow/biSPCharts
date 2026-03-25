@@ -117,9 +117,13 @@ autoSaveAppState <- function(session, current_data, metadata) {
               .context = "AUTO_SAVE"
             )
             shiny::showNotification(
-              "Auto-gem fejlede. Funktionen er midlertidigt deaktiveret. Brug Download for at gemme data.",
+              paste0(
+                "Din data er stadig tilg\u00e6ngelig i appen. ",
+                "Automatisk lagring er midlertidigt deaktiveret. ",
+                "Du kan gemme manuelt via Download-knappen."
+              ),
               type = "warning",
-              duration = 5
+              duration = 8
             )
             return(FALSE)
           },
@@ -132,9 +136,12 @@ autoSaveAppState <- function(session, current_data, metadata) {
         }
       } else {
         shiny::showNotification(
-          "Data for stor til automatisk gem - brug Download funktion",
+          paste0(
+            "Datas\u00e6ttet er for stort til automatisk lagring. ",
+            "Brug Download-knappen for at gemme manuelt."
+          ),
           type = "warning",
-          duration = 3
+          duration = 5
         )
       }
     }

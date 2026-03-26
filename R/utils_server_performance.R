@@ -127,13 +127,35 @@ ensure_standard_columns <- function(data) {
     return(data)
   }
 
-  # NOTE: Removed automatic empty column removal as empty columns can be meaningful
-  # Empty columns are preserved to allow users to work with their data structure as intended
+  # Tilføj Skift som kolonne 1 hvis den mangler
+  if (!"Skift" %in% names(data)) {
+    data <- dplyr::bind_cols(
+      tibble::tibble(Skift = rep(FALSE, nrow(data))),
+      data
+    )
+  }
 
-  # Only ensure reasonable column names (remove problematic characters, ensure uniqueness)
+  # Tilføj Frys som kolonne 2 (efter Skift) hvis den mangler
+  if (!"Frys" %in% names(data)) {
+    skift_pos <- which(names(data) == "Skift")
+    if (skift_pos < ncol(data)) {
+      data <- dplyr::bind_cols(
+        data[, 1:skift_pos, drop = FALSE],
+        tibble::tibble(Frys = rep(FALSE, nrow(data))),
+        data[, (skift_pos + 1):ncol(data), drop = FALSE]
+      )
+    } else {
+      data <- dplyr::bind_cols(
+        data,
+        tibble::tibble(Frys = rep(FALSE, nrow(data)))
+      )
+    }
+  }
+
+  # Sikre gyldige kolonnenavne
   names(data) <- make.names(names(data), unique = TRUE)
 
-  return(data)
+  data
 }
 
 #' Add Comments Optimized

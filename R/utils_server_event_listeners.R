@@ -1395,17 +1395,35 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
       ext <- tolower(tools::file_ext(file_info$name))
 
       if (ext %in% c("xlsx", "xls")) {
-        # Excel: brug eksisterende handler (bevarer Metadata-sheet og typer)
-        handle_excel_upload(file_info$datapath, session, app_state, emit)
+        # Excel: tjek for session-fil (Data+Metadata) → direkte handler
+        excel_sheets <- readxl::excel_sheets(file_info$datapath)
+        if ("Data" %in% excel_sheets && "Metadata" %in% excel_sheets) {
+          handle_excel_upload(file_info$datapath, session, app_state, emit)
+        } else {
+          # Standard Excel → konverter til tab-separeret tekst til preview
+          data <- readxl::read_excel(file_info$datapath, col_names = TRUE)
+          text_lines <- c(
+            paste(names(data), collapse = "\t"),
+            apply(data, 1, function(row) paste(row, collapse = "\t"))
+          )
+          shiny::updateTextAreaInput(
+            session, "paste_data_input",
+            value = paste(text_lines, collapse = "\n")
+          )
+          shiny::showNotification(
+            paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
+            type = "message", duration = 3
+          )
+        }
       } else if (ext %in% c("csv", "txt")) {
-        # CSV: vis i paste-felt så brugeren kan reviewe før "Fortsæt"
-        text_content <- readLines(file_info$datapath, warn = FALSE, encoding = "UTF-8")
+        # CSV: encoding-aware preview i paste-felt (#166)
+        text_content <- read_csv_detect_encoding(file_info$datapath)
         shiny::updateTextAreaInput(
           session, "paste_data_input",
           value = paste(text_content, collapse = "\n")
         )
         shiny::showNotification(
-          paste0("\"", file_info$name, "\" indlæst — tryk Fortsæt for at analysere"),
+          paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
           type = "message", duration = 3
         )
       } else {

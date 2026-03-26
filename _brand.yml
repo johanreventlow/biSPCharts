@@ -70,8 +70,14 @@ color:
 typography:
   fonts:
     - family: "Lato"
-      source: "google" 
-      weights: [300, 400, 700]
+      source: file
+      files:
+        - path: "inst/fonts/Lato-Light.ttf"
+          weight: 300
+        - path: "inst/fonts/Lato-Regular.ttf"
+          weight: 400
+        - path: "inst/fonts/Lato-Bold.ttf"
+          weight: 700
   base: "Lato"
   headings:
     family: "Lato"

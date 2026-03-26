@@ -226,6 +226,28 @@ result <- generateSPCPlot(
 
 ---
 
+## API Parameter Limitations
+
+### 1. chart_title Parameter
+
+**Limitation:** BFHcharts API accepterer ikke `chart_title` parameter direkte.
+
+**Symptom:** Titel sendt til `create_spc_chart()` ignoreres.
+
+**Workaround:** SPCify filtrerer `chart_title` fra i `fct_spc_bfh_service.R` og håndterer titel via UI-laget i stedet.
+
+---
+
+### 2. target_text Parameter
+
+**Limitation:** BFHcharts API accepterer ikke `target_text` parameter. Target-linjen renderes via `target_value`, men den tilhørende tekst-label kan ikke sendes.
+
+**Symptom:** Target-tekst sendt til BFHcharts ignoreres.
+
+**Workaround:** SPCify filtrerer `target_text` fra og viser target-information via UI.
+
+---
+
 ## Feature Limitations
 
 ### 1. Centerline Override

@@ -416,6 +416,63 @@ describe("Session Metadata Parsing", {
     expect_equal(metadata$kommentar_column, "Kommentar")
   })
 
+  it("roundtrips metadata through JSON (lokal session restore)", {
+    skip_if_not(exists("collect_metadata", mode = "function"))
+
+    # Simuler komplet metadata fra collect_metadata
+    original_metadata <- list(
+      x_column = "Dato",
+      y_column = "Tæller",
+      n_column = "Nævner",
+      skift_column = "Skift",
+      frys_column = "Frys",
+      kommentar_column = "Kommentar",
+      chart_type = "P-kort \u2014 andele/procenter (fx infektionsrate)",
+      target_value = ">=90%",
+      centerline_value = "68%",
+      y_axis_unit = "percent"
+    )
+
+    # Roundtrip via JSON (som saveDataLocally/restore gør)
+    json <- jsonlite::toJSON(original_metadata, auto_unbox = TRUE)
+    restored <- jsonlite::fromJSON(json, simplifyVector = FALSE)
+
+    # Alle felter skal overleve roundtrip
+    for (field in names(original_metadata)) {
+      expect_equal(restored[[field]], original_metadata[[field]],
+        info = paste("Felt", field, "skal overleve JSON roundtrip")
+      )
+    }
+  })
+
+  it("detekterer manglende felter ved delvis restore", {
+    skip_if_not(exists("parse_session_metadata", mode = "function"))
+
+    data_cols <- c("Dato", "Tæller", "Nævner", "Skift", "Frys", "Kommentar")
+
+    # Session-linjer med kun basale felter (mangler skift, frys, kommentar, target, baseline, y-akse)
+    partial_lines <- c(
+      "• Titel: Delvis session",
+      "• X-akse: Dato (Tid)",
+      "• Y-akse: Tæller (Antal)",
+      "• Nævner: Nævner"
+    )
+
+    metadata <- parse_session_metadata(partial_lines, data_cols)
+
+    # Basale felter skal være til stede
+    expect_equal(metadata$x_column, "Dato")
+    expect_equal(metadata$y_column, "Tæller")
+
+    # Avancerede felter skal være NULL ved delvis restore
+    expect_null(metadata$skift_column)
+    expect_null(metadata$frys_column)
+    expect_null(metadata$kommentar_column)
+    expect_null(metadata$target_value)
+    expect_null(metadata$centerline_value)
+    expect_null(metadata$y_axis_unit)
+  })
+
   it("sanitizes metadata input for security", {
     skip_if_not(exists("sanitize_session_metadata", mode = "function"))
 

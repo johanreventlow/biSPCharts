@@ -396,10 +396,14 @@ compute_spc_results_bfh <- function(
             .context = "BFH_SERVICE"
           )
         } else {
-          log_warn(
-            paste("X column remains character - BFHcharts may fail:", x_var),
+          # Dato-parsing fejlede — x-kolonnen er ren tekst (fx "Uge 1", "Uge 2")
+          # Konverter til numerisk sekvens og gem originale labels til x-aksen
+          log_info(
+            paste("X column is text, converting to numeric sequence:", x_var),
             .context = "BFH_SERVICE"
           )
+          complete_data[[paste0(".x_labels_", x_var)]] <- complete_data[[x_var]]
+          complete_data[[x_var]] <- seq_len(nrow(complete_data))
         }
       }
 
@@ -467,6 +471,21 @@ compute_spc_results_bfh <- function(
 
       if (is.null(standardized)) {
         stop("Output transformation failed")
+      }
+
+      # 7d2. Tilføj tekst-labels på x-aksen hvis x var konverteret fra tekst
+      x_labels_col <- paste0(".x_labels_", x_var)
+      if (x_labels_col %in% names(complete_data) && !is.null(standardized$plot)) {
+        x_labels <- complete_data[[x_labels_col]]
+        x_breaks <- seq_len(length(x_labels))
+        standardized$plot <- standardized$plot +
+          ggplot2::scale_x_continuous(
+            breaks = x_breaks,
+            labels = x_labels
+          ) +
+          ggplot2::theme(
+            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+          )
       }
 
       # 7e. Calculate Anhøj metadata locally for UI display

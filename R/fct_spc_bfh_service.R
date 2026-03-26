@@ -477,7 +477,7 @@ compute_spc_results_bfh <- function(
       x_labels_col <- paste0(".x_labels_", x_var)
       if (x_labels_col %in% names(complete_data) && !is.null(standardized$plot)) {
         x_labels <- complete_data[[x_labels_col]]
-        x_breaks <- seq_len(length(x_labels))
+        x_breaks <- seq_along(x_labels)
         standardized$plot <- standardized$plot +
           ggplot2::scale_x_continuous(
             breaks = x_breaks,

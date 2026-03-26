@@ -639,11 +639,10 @@ mod_export_server <- function(id, app_state) {
     })
     outputOptions(output, "plot_available", suspendWhenHidden = FALSE)
 
-    # CRITICAL: Disable suspension for export preview to ensure reactive dependencies
-    # are tracked even when user is on Analysis tab. Without this, changes to
-    # target_value, centerline, etc. on Analysis-side won't trigger export plot
-    # regeneration because the reactive is suspended when output is hidden.
-    outputOptions(output, "export_preview", suspendWhenHidden = FALSE)
+    # Lazy export preview: kun genberegn når brugeren er på eksport-fanen.
+    # Shiny genberegner automatisk med aktuelle data når fanen vises.
+    # (Tidligere suspendWhenHidden = FALSE — se commit c4c0a5d for rollback)
+    outputOptions(output, "export_preview", suspendWhenHidden = TRUE)
 
     # PDF PREVIEW GENERATION ==================================================
 
@@ -748,9 +747,9 @@ mod_export_server <- function(id, app_state) {
       deleteFile = FALSE # Don't delete temp file (will be cleaned up by R session)
     )
 
-    # CRITICAL: Disable suspension for PDF preview to ensure pdf_export_plot()
-    # reactive tracks dependencies even when user is on Analysis tab
-    outputOptions(output, "pdf_preview", suspendWhenHidden = FALSE)
+    # Lazy PDF preview: kun genberegn når brugeren er på eksport-fanen.
+    # (Tidligere suspendWhenHidden = FALSE — se commit c4c0a5d for rollback)
+    outputOptions(output, "pdf_preview", suspendWhenHidden = TRUE)
 
     # PDF format flag - for conditional UI rendering
     output$is_pdf_format <- shiny::reactive({

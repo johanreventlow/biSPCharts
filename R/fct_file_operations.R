@@ -4,6 +4,42 @@
 # Dependencies ----------------------------------------------------------------
 # Bruger readxl og readr til fil-import
 
+#' Læs tekstfil med automatisk encoding-detection
+#'
+#' Prøver UTF-8 først, derefter Latin1 som fallback for danske filer
+#' fra Windows-systemer.
+#'
+#' @param file_path Sti til fil
+#' @return Character vector med filens linjer (altid UTF-8)
+#' @noRd
+read_csv_detect_encoding <- function(file_path) {
+  # Prøv UTF-8 først (mest sandsynligt)
+  text <- tryCatch(
+    readLines(file_path, warn = FALSE, encoding = "UTF-8"),
+    error = function(e) NULL
+  )
+
+  if (!is.null(text) && length(text) > 0) {
+    # Tjek om teksten ser ud til at have korrupte danske tegn (Latin1 læst som UTF-8)
+    collapsed <- paste(text, collapse = "")
+    has_valid_danish <- grepl("\u00e6|\u00f8|\u00e5|\u00c6|\u00d8|\u00c5", collapsed)
+    has_mojibake <- grepl("\xc3\xa6|\xc3\xb8|\xc3\xa5", collapsed, useBytes = TRUE) &&
+      !has_valid_danish
+
+    if (!has_mojibake) {
+      return(text)
+    }
+  }
+
+  # Fallback: Latin1 (Windows-eksporterede danske filer)
+  text_latin1 <- tryCatch(
+    readLines(file_path, warn = FALSE, encoding = "latin1"),
+    error = function(e) text %||% character(0)
+  )
+
+  text_latin1
+}
+
 #' Upload-successnotifikation med kolonnenavne
 #' @param source_label Kildelabel (fx "CSV", "Excel", "Indsatte data")
 #' @param data Data frame der blev indlæst
@@ -451,17 +487,67 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     session_id = session_id
   )
 
-  # CSV behandling med danske standarder
+  # CSV behandling med auto-detection af separator (#124)
+  # 1. Dansk standard (semikolon + komma-decimal)
+  # 2. Fallback: auto-detect
+  # 3. Fallback: engelsk (komma + punkt-decimal)
 
-  data <- readr::read_csv2(
-    file_path,
-    locale = readr::locale(
-      decimal_mark = ",",
-      grouping_mark = ".",
-      encoding = UTF8_ENCODING
-    ),
-    show_col_types = FALSE
+  data <- tryCatch(
+    {
+      result <- readr::read_csv2(
+        file_path,
+        locale = readr::locale(
+          decimal_mark = ",",
+          grouping_mark = ".",
+          encoding = UTF8_ENCODING
+        ),
+        show_col_types = FALSE
+      )
+      if (ncol(result) >= 2) result else NULL
+    },
+    error = function(e) NULL
   )
+
+  if (is.null(data)) {
+    # Fallback: auto-detect separator
+    data <- tryCatch(
+      {
+        result <- readr::read_delim(
+          file_path,
+          delim = NULL,
+          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+          show_col_types = FALSE,
+          trim_ws = TRUE
+        )
+        if (ncol(result) >= 2) result else NULL
+      },
+      error = function(e) NULL
+    )
+  }
+
+  if (is.null(data)) {
+    # Fallback: engelsk CSV (komma + punkt-decimal)
+    data <- tryCatch(
+      readr::read_csv(
+        file_path,
+        locale = readr::locale(
+          decimal_mark = ".",
+          grouping_mark = ",",
+          encoding = UTF8_ENCODING
+        ),
+        show_col_types = FALSE
+      ),
+      error = function(e) NULL
+    )
+  }
+
+  if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
+    shiny::showNotification(
+      "Kunne ikke parse CSV-filen. Kontroll\u00e9r format og encoding.",
+      type = "error", duration = 5
+    )
+    return(invisible(NULL))
+  }
 
 
   debug_log("CSV data loaded successfully", "FILE_UPLOAD_FLOW",

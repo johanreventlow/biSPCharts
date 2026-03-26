@@ -258,6 +258,14 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       data <- module_data_reactive()
       shiny::req(shiny::isTruthy(data))
       shiny::req(nrow(data) > 0)
+      # Guard: kræv mindst 3 rækker med reelle data (SPC kræver minimum 3 punkter)
+      data_cols <- setdiff(names(data), c("Skift", "Frys"))
+      if (length(data_cols) > 0) {
+        rows_with_values <- sum(apply(data[, data_cols, drop = FALSE], 1, function(row) {
+          any(!is.na(row) & nzchar(as.character(row)))
+        }))
+        shiny::req(rows_with_values >= 3)
+      }
       data
     })
 
@@ -790,9 +798,20 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
 
         data <- module_data_reactive()
 
-        if (is.null(data) || nrow(data) == 0) {
+        # Tjek om data har mindst 3 rækker med reelle værdier (SPC minimum)
+        rows_with_data <- 0L
+        if (!is.null(data) && nrow(data) > 0) {
+          data_cols <- setdiff(names(data), c("Skift", "Frys"))
+          if (length(data_cols) > 0) {
+            rows_with_data <- sum(apply(data[, data_cols, drop = FALSE], 1, function(row) {
+              any(!is.na(row) & nzchar(as.character(row)))
+            }))
+          }
+        }
+
+        if (rows_with_data < 3) {
           graphics::plot.new()
-          graphics::text(0.5, 0.5, "Ingen data endnu", cex = 1.3, col = "#6c757d")
+          graphics::text(0.5, 0.5, "Indtast data", cex = 1.3, col = "#6c757d")
           return(invisible(NULL))
         }
 

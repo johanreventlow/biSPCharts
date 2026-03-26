@@ -666,12 +666,13 @@ mod_export_server <- function(id, app_state) {
       pdf_result <- pdf_export_plot()
       shiny::req(pdf_result, pdf_result$bfh_qic_result)
 
-      # Read export metadata inputs (triggers reactive dependency)
-      # Note: title and department are already embedded in pdf_export_plot()
-      title_input <- input$export_title
-      dept_input <- input$export_department
-      analysis_input <- input$pdf_improvement
-      data_def_input <- input$pdf_description
+      # Isolate metadata inputs — de trigger allerede pdf_export_plot() via
+      # dens egne reactive dependencies (debounced 1000ms). Uden isolate() her
+      # ville hvert tastetryk invalidere preview direkte OG via pdf_export_plot().
+      title_input <- shiny::isolate(input$export_title)
+      dept_input <- shiny::isolate(input$export_department)
+      analysis_input <- shiny::isolate(input$pdf_improvement)
+      data_def_input <- shiny::isolate(input$pdf_description)
 
       # Build metadata for PDF generation
       metadata <- list(

@@ -460,6 +460,19 @@ compute_spc_results_bfh <- function(
         stop("BFHcharts rendering failed")
       }
 
+      # 7c2. Tilføj tekst-labels på x-aksen til bfh_result (bruges af PDF preview/eksport)
+      x_labels_col <- paste0(".x_labels_", x_var)
+      if (x_labels_col %in% names(complete_data)) {
+        x_labels <- complete_data[[x_labels_col]]
+        x_breaks <- seq_along(x_labels)
+        x_scale <- ggplot2::scale_x_continuous(breaks = x_breaks, labels = x_labels)
+        x_theme <- ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+        # Opdater bfh_result plot (for PDF/PNG eksport)
+        if (!is.null(bfh_result$plot)) {
+          bfh_result$plot <- bfh_result$plot + x_scale + x_theme
+        }
+      }
+
       # 7d. Transform BFHcharts output to standardized format
       standardized <- transform_bfh_output(
         bfh_result = bfh_result,
@@ -473,19 +486,9 @@ compute_spc_results_bfh <- function(
         stop("Output transformation failed")
       }
 
-      # 7d2. Tilføj tekst-labels på x-aksen hvis x var konverteret fra tekst
-      x_labels_col <- paste0(".x_labels_", x_var)
+      # 7d2. Tilføj tekst-labels på standardized plot (analyse-visning)
       if (x_labels_col %in% names(complete_data) && !is.null(standardized$plot)) {
-        x_labels <- complete_data[[x_labels_col]]
-        x_breaks <- seq_along(x_labels)
-        standardized$plot <- standardized$plot +
-          ggplot2::scale_x_continuous(
-            breaks = x_breaks,
-            labels = x_labels
-          ) +
-          ggplot2::theme(
-            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-          )
+        standardized$plot <- standardized$plot + x_scale + x_theme
       }
 
       # 7e. Calculate Anhøj metadata locally for UI display

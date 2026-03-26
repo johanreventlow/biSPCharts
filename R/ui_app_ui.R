@@ -462,11 +462,11 @@ create_inline_column_mapping <- function() {
     ),
     compact_select(
       "skift_column", "Skift",
-      "Valgfri: Kolonne der markerer hvor processen opdeles i faser"
+      "Kolonne der markerer hvor processen opdeles i faser (tilf\u00f8jes automatisk hvis den mangler)"
     ),
     compact_select(
       "frys_column", "Frys",
-      "Valgfri: Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne"
+      "Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne (tilf\u00f8jes automatisk hvis den mangler)"
     ),
     compact_select(
       "kommentar_column", "Kommentar",

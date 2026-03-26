@@ -238,6 +238,9 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
     shiny::req(input$data_file)
 
+    # Luk upload-modal automatisk når fil er valgt (#167)
+    shiny::removeModal()
+
     # Start workflow tracer for file upload
     # SPRINT 1 SECURITY FIX: Sanitize session token before logging
     upload_tracer <- debug_workflow_tracer("file_upload_workflow", app_state, sanitize_session_token(session$token))

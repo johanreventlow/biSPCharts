@@ -366,8 +366,17 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     data <- current_data_check
 
-    # Behold logiske kolonner som logiske for excelR checkbox
-    # excelR håndterer logiske værdier direkte for checkbox type
+    # Formatér numeriske kolonner til dansk format (komma-decimal) for visning
+    numeric_cols <- names(data)[vapply(data, is.numeric, logical(1))]
+    # Ekskluder Skift/Frys (logiske kolonner)
+    numeric_cols <- setdiff(numeric_cols, c("Skift", "Frys"))
+    for (col in numeric_cols) {
+      data[[col]] <- ifelse(
+        is.na(data[[col]]),
+        NA_character_,
+        format(data[[col]], decimal.mark = ",", big.mark = ".")
+      )
+    }
 
     excelR::excelTable(
       data = data,
@@ -469,10 +478,11 @@ setup_data_table <- function(input, output, session, app_state, emit) {
                   dplyr::any_of(c("Skift", "Frys")),
                   ~ .x %in% c("TRUE", "true")
                 ),
-                # Numeriske kolonner
+                # Numeriske kolonner — brug parse_danish_number for at håndtere
+                # både dansk (komma-decimal) og engelsk (punkt-decimal) format
                 dplyr::across(
                   dplyr::any_of(c("Tæller", "Nævner")),
-                  ~ as.numeric(.x)
+                  ~ parse_danish_number(.x)
                 ),
                 # Karakter kolonner (allerede character, men eksplicit for tydelighed)
                 dplyr::across(

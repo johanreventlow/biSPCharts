@@ -12,24 +12,15 @@ test_that("app_server function is available without file source", {
 })
 
 test_that("app_server can be tested without file dependencies", {
-  # Test that app_server can be instantiated in test environment
-  # without needing to source files from disk
-
-  # Note: This may fail due to missing dependencies in main_app_server,
-  # but importantly it should NOT fail due to file source() calls
-  result <- try({
-    shiny::testServer(app_server, {
-      expect_true(TRUE)  # If we get here, server loaded successfully
-    })
-  }, silent = TRUE)
-
-  # The key test: if it fails, it should NOT be due to source() file errors
-  if (inherits(result, "try-error")) {
-    error_msg <- as.character(result)
-    expect_false(grepl("system\\.file", error_msg))
-    expect_false(grepl("No such file", error_msg))
-    expect_false(grepl("cannot open the connection", error_msg))
-  }
+  # Verificer at app_server ikke indeholder source() eller system.file() kald
+  # VIGTIGT: testServer(app_server, ...) starter hele appen og hænger i test_dir()
+  app_server_body <- deparse(body(app_server))
+  expect_false(any(grepl("source\\(", app_server_body)),
+    info = "app_server should not use source() calls"
+  )
+  expect_false(any(grepl("system\\.file", app_server_body)),
+    info = "app_server should not use system.file() calls"
+  )
 })
 
 test_that("run_app function works without file dependencies", {

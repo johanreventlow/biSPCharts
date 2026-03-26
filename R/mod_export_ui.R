@@ -5,6 +5,35 @@
 # Dependencies ----------------------------------------------------------------
 # Helper functions loaded globally in global.R for better performance
 
+# Helpers -------------------------------------------------------------------
+
+#' Opret en eksportformat-knap med ikon
+#' @param ns Namespace-funktion fra modulet
+#' @param suffix Format-suffix ("pdf", "png", "pptx")
+#' @param icon_name FontAwesome ikon-navn
+#' @param label_text Tekst vist under ikonet
+#' @return shiny.tag
+#' @noRd
+export_format_button <- function(ns, suffix, icon_name, label_text) {
+  shiny::div(
+    style = "flex: 1;",
+    shiny::actionButton(
+      ns(paste0("export_fmt_", suffix)),
+      label = shiny::div(
+        shiny::icon(icon_name, class = "fa-2x"),
+        shiny::tags$br(),
+        shiny::tags$span(label_text, style = "font-size: 0.85rem; font-weight: 600;")
+      ),
+      class = paste(
+        "btn btn-outline-secondary export-format-btn w-100",
+        "d-flex flex-column align-items-center justify-content-center"
+      ),
+      style = "aspect-ratio: 1; padding: 12px; min-height: 110px;",
+      title = paste0("Eksport\u00e9r som ", label_text)
+    )
+  )
+}
+
 # EXPORT MODULE UI ============================================================
 
 #' Export Module UI
@@ -40,7 +69,7 @@ mod_export_ui <- function(id) {
         )
       ),
       bslib::card_body(
-        # Format selector (radio buttons)
+        # Format selector (ikonknapper) ----
         shiny::div(
           style = "margin-bottom: 20px;",
           shiny::tags$label(
@@ -48,13 +77,34 @@ mod_export_ui <- function(id) {
             class = "control-label",
             style = "font-weight: 500; margin-bottom: 10px; display: block;"
           ),
-          shiny::radioButtons(
-            ns("export_format"),
-            label = NULL,
-            choices = EXPORT_FORMAT_OPTIONS,
-            selected = "pdf",
-            inline = FALSE
-          )
+          # Hidden input — værdi styres udelukkende af JS via Shiny.setInputValue()
+          shiny::tags$input(
+            type = "hidden",
+            id = ns("export_format"),
+            name = ns("export_format"),
+            value = "pdf"
+          ),
+          shiny::div(
+            style = "display: flex; gap: 12px;",
+            export_format_button(ns, "pdf", "file-pdf", "PDF"),
+            export_format_button(ns, "png", "file-image", "PNG"),
+            export_format_button(ns, "pptx", "file-powerpoint", "PowerPoint")
+          ),
+          shiny::tags$style(htmltools::HTML("
+            .export-format-btn {
+              transition: all 0.15s ease;
+            }
+            .export-format-btn:hover {
+              background-color: #fff !important;
+              border-color: #828c8d !important;
+              color: #828c8d !important;
+            }
+            .export-format-btn.upload-btn-active {
+              background-color: #95a5a6 !important;
+              border-color: #95a5a6 !important;
+              color: #fff !important;
+            }
+          "))
         ),
         shiny::hr(),
 

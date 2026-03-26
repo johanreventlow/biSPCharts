@@ -7,10 +7,10 @@ test_that("Core functions can be loaded via pkgload", {
   # Skip hvis pkgload ikke er tilgængelig
   skip_if_not_installed("pkgload")
 
-  # Load package i development mode
-  expect_no_error({
-    pkgload::load_all(".", quiet = TRUE)
-  })
+  # Pakken er allerede loaded via helper.R — verificer blot at namespace er aktiv.
+  # VIGTIGT: Kald ALDRIG load_all() uden helpers=FALSE i testfiler,
+  # da det trigger helper.R rekursivt og kan hænge.
+  expect_true("SPCify" %in% loadedNamespaces() || "claudespc" %in% loadedNamespaces())
 
   # TEST: Kritiske funktioner er tilgængelige via namespace
   core_functions <- c(
@@ -75,7 +75,7 @@ test_that("Package dependencies can be loaded", {
   if (!is.na(imports_field)) {
     # Extract package names (remove version constraints)
     imports <- strsplit(imports_field, ",\\s*")[[1]]
-    imports <- gsub("\\s*\\([^)]*\\)", "", imports)  # Remove version constraints
+    imports <- gsub("\\s*\\([^)]*\\)", "", imports) # Remove version constraints
     imports <- trimws(imports)
 
     # TEST: Core dependencies kan loades

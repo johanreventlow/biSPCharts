@@ -65,6 +65,64 @@ test_that("ensure_standard_columns virker med test data", {
 })
 
 # =============================================================================
+# Skift/Frys auto-tilføjelse (#173)
+# =============================================================================
+
+test_that("ensure_standard_columns tilføjer Skift og Frys hvis de mangler", {
+  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+
+  data <- data.frame(
+    Dato = c("2024-01-01", "2024-02-01"),
+    Tæller = c(10, 15),
+    Nævner = c(100, 120)
+  )
+
+  result <- ensure_standard_columns(data)
+
+  expect_true("Skift" %in% names(result))
+  expect_true("Frys" %in% names(result))
+  expect_equal(names(result)[1], "Skift")
+  expect_equal(names(result)[2], "Frys")
+  expect_equal(result$Skift, c(FALSE, FALSE))
+  expect_equal(result$Frys, c(FALSE, FALSE))
+  expect_equal(ncol(result), 5)
+})
+
+test_that("ensure_standard_columns tilføjer kun Frys hvis Skift allerede findes", {
+  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+
+  data <- data.frame(
+    Skift = c(FALSE, TRUE),
+    Dato = c("2024-01-01", "2024-02-01"),
+    Tæller = c(10, 15)
+  )
+
+  result <- ensure_standard_columns(data)
+
+  expect_true("Frys" %in% names(result))
+  expect_equal(names(result)[1], "Skift")
+  expect_equal(names(result)[2], "Frys")
+  expect_equal(ncol(result), 4)
+})
+
+test_that("ensure_standard_columns ændrer ikke data med begge kolonner", {
+  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+
+  data <- data.frame(
+    Skift = c(FALSE, TRUE),
+    Frys = c(FALSE, FALSE),
+    Dato = c("2024-01-01", "2024-02-01"),
+    Tæller = c(10, 15)
+  )
+
+  result <- ensure_standard_columns(data)
+
+  expect_equal(ncol(result), 4)
+  expect_equal(names(result)[1], "Skift")
+  expect_equal(names(result)[2], "Frys")
+})
+
+# =============================================================================
 # Separator auto-detection tests (#124)
 # =============================================================================
 

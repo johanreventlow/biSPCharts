@@ -49,6 +49,20 @@ STARTUP_CACHE_CONFIG <- list(
   )
 )
 
+#' Initialize startup cache directory
+#'
+#' @return TRUE if cache dir exists or was created, FALSE otherwise
+#' @keywords internal
+#' @export
+init_startup_cache <- function() {
+  cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
+  if (!dir.exists(cache_dir)) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+  log_info("Startup cache initialized at:", cache_dir, .context = "STARTUP_CACHE")
+  dir.exists(cache_dir)
+}
+
 #' Cache startup data
 #' Cache all configured static artifacts for faster subsequent startups
 #'

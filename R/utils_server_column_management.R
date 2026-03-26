@@ -500,7 +500,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
           # Emit event to trigger downstream effects
           emit$data_updated("table_cells_edited")
 
-          shiny::showNotification("Tabel opdateret", type = "message", duration = 2)
+          # Stille opdatering — ingen notification ved hver celleredigering
         },
         error_type = "processing",
         emit = emit,

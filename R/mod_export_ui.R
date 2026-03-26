@@ -184,7 +184,7 @@ mod_export_ui <- function(id) {
             shiny::actionButton(
               ns("ai_generate_suggestion"),
               label = "Generér forslag med AI",
-              icon = shiny::icon("sparkles"),
+              icon = shiny::icon("wand-magic-sparkles"),
               class = "btn-primary btn-sm",
               style = "margin-top: 5px;"
             ),

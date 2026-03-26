@@ -46,7 +46,7 @@ dev_load_siblings <- function(base_path = dirname(getwd())) {
 dev_load_siblings()
 
 # Load SPCify
-devtools::load_all(reset = TRUE, recompile = FALSE, helpers = FALSE)
+devtools::load_all(helpers = FALSE)
 
 # Optional: Show debug contexts and set filter before running app
 # show_debug_contexts()

@@ -224,22 +224,6 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
     handle_confirm_clear_saved(session, app_state, emit, ui_service)
   })
 
-  # Track file selection for modal
-  output$fileSelected <- shiny::reactive({
-    !is.null(input$data_file) && !is.null(input$data_file$datapath)
-  })
-  outputOptions(output, "fileSelected", suspendWhenHidden = FALSE)
-
-  # Confirm upload handler
-  shiny::observeEvent(input$confirm_upload, {
-    # Set navigation flags for file upload flow
-    # Use unified state management
-    app_state$session$user_started_session <- TRUE
-    app_state$session$file_uploaded <- FALSE # Will be set to TRUE by actual file upload handler
-
-    shiny::removeModal()
-  })
-
   # Save status display
   output$save_status_display <- shiny::renderUI({
     # Unified state: Use centralized state for last save time
@@ -495,13 +479,7 @@ show_upload_modal <- function() {
         )
       )
     ),
-    footer = shiny::tagList(
-      shiny::modalButton("Annuller"),
-      shiny::conditionalPanel(
-        condition = "output.fileSelected == true",
-        shiny::actionButton("confirm_upload", "Upload fil", class = "btn-primary", icon = shiny::icon("check"))
-      )
-    ),
+    footer = shiny::modalButton("Annuller"),
     easyClose = TRUE
   ))
 }

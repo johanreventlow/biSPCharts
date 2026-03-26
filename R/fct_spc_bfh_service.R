@@ -454,7 +454,9 @@ compute_spc_results_bfh <- function(
       }
 
       # 7c. Call BFHcharts high-level API directly
+      t_bfh_start <- Sys.time()
       bfh_result <- call_bfh_chart(bfh_params)
+      log_info(paste("Step 7c bfh_qic:", round(difftime(Sys.time(), t_bfh_start, units = "secs"), 2), "sek"), .context = "BFH_TIMING")
 
       if (is.null(bfh_result)) {
         stop("BFHcharts rendering failed")
@@ -474,6 +476,7 @@ compute_spc_results_bfh <- function(
       }
 
       # 7d. Transform BFHcharts output to standardized format
+      t_transform_start <- Sys.time()
       standardized <- transform_bfh_output(
         bfh_result = bfh_result,
         multiply = multiply,
@@ -481,6 +484,8 @@ compute_spc_results_bfh <- function(
         original_data = complete_data,
         freeze_applied = !is.null(freeze_var) && freeze_var %in% names(complete_data)
       )
+
+      log_info(paste("Step 7d transform:", round(difftime(Sys.time(), t_transform_start, units = "secs"), 2), "sek"), .context = "BFH_TIMING")
 
       if (is.null(standardized)) {
         stop("Output transformation failed")
@@ -491,28 +496,34 @@ compute_spc_results_bfh <- function(
         standardized$plot <- standardized$plot + x_scale + x_theme
       }
 
-      # 7e. Calculate Anhøj metadata locally for UI display
-      # This is separate from BFHcharts SPC calculation - for UI presentation only
-      anhoej_metadata_local <- compute_anhoej_metadata_local(
-        data = complete_data,
-        config = list(
-          x_col = x_var,
-          y_col = y_var,
-          n_col = n_var,
-          chart_type = validated_chart_type
+      # 7e. Anhøj metadata: brug BFHcharts' allerede beregnede metadata
+      # transform_bfh_output() udtrækker Anhøj-regler fra BFHcharts qic_data.
+      # compute_anhoej_metadata_local() (qicharts2::qic) er FJERNET da den var
+      # redundant og tog ~24 sek for P-kort pga. intern ggplot rendering.
+      # Fallback til qicharts2 kun hvis BFHcharts metadata mangler.
+      if (is.null(standardized$metadata$anhoej_rules)) {
+        log_warn(
+          "BFHcharts Anhøj metadata mangler — falder tilbage til qicharts2",
+          .context = "BFH_SERVICE"
         )
-      )
-
-      # 7f. Update metadata with locally calculated Anhøj rules for UI display
-      # Override BFHcharts metadata with local calculation
-      if (!is.null(anhoej_metadata_local)) {
-        standardized$metadata$anhoej_rules <- list(
-          runs_detected = anhoej_metadata_local$runs_signal,
-          crossings_detected = anhoej_metadata_local$crossings_signal,
-          longest_run = anhoej_metadata_local$longest_run,
-          n_crossings = anhoej_metadata_local$n_crossings,
-          n_crossings_min = anhoej_metadata_local$n_crossings_min
+        anhoej_metadata_local <- compute_anhoej_metadata_local(
+          data = complete_data,
+          config = list(
+            x_col = x_var,
+            y_col = y_var,
+            n_col = n_var,
+            chart_type = validated_chart_type
+          )
         )
+        if (!is.null(anhoej_metadata_local)) {
+          standardized$metadata$anhoej_rules <- list(
+            runs_detected = anhoej_metadata_local$runs_signal,
+            crossings_detected = anhoej_metadata_local$crossings_signal,
+            longest_run = anhoej_metadata_local$longest_run,
+            n_crossings = anhoej_metadata_local$n_crossings,
+            n_crossings_min = anhoej_metadata_local$n_crossings_min
+          )
+        }
       }
 
       # 7g. Add backend flag to indicate BFHcharts workflow
@@ -893,8 +904,11 @@ map_to_bfh_params <- function(
         # Replace NA with empty strings (BFHcharts may not handle NA)
         notes_char[is.na(notes_char)] <- ""
 
-        # Add as notes parameter (character vector, not NSE symbol)
-        params$notes <- notes_char
+        # Kun send notes hvis der faktisk er ikke-tomme noter
+        # Tomme notes-vektorer kan forårsage langsom label placement i BFHcharts
+        if (any(nzchar(notes_char))) {
+          params$notes <- notes_char
+        }
 
         log_debug(
           paste(
@@ -1139,9 +1153,9 @@ call_bfh_chart <- function(bfh_params) {
 
       elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
-      # 5. Log success with debug info about result type
-      log_debug(
-        paste("BFHchart call succeeded in", round(elapsed, 3), "seconds"),
+      # 5. Log success with timing
+      log_info(
+        paste("BFHchart bfh_qic() call:", round(elapsed, 3), "seconds"),
         .context = "BFH_SERVICE"
       )
       log_debug(

@@ -660,39 +660,33 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
     return(invisible(NULL))
   }
 
-  # Parser med auto-detected separator
-  data <- tryCatch(
-    {
+  # Smart separator detection: prøv eksplicitte separatorer først
+  # read_delim(delim=NULL) auto-detect fejler på semikolon-filer med mellemrum
+  # i kolonnenavne (fx "Uge tekst"), så vi prøver dansk standard først.
+  data <- NULL
+  best_fallback <- NULL
+  for (sep in c(";", "\t", ",")) {
+    attempt <- tryCatch(
       readr::read_delim(
         I(text_data),
-        delim = NULL,
+        delim = sep,
         locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
         show_col_types = FALSE,
         trim_ws = TRUE
-      )
-    },
-    error = function(e) {
-      # Fallback: proev eksplicit tab, semikolon, komma
-      for (sep in c("\t", ";", ",")) {
-        result <- tryCatch(
-          {
-            readr::read_delim(
-              I(text_data),
-              delim = sep,
-              locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
-              show_col_types = FALSE,
-              trim_ws = TRUE
-            )
-          },
-          error = function(e2) NULL
-        )
-        if (!is.null(result) && ncol(result) >= 2) {
-          return(result)
-        }
-      }
-      return(NULL)
+      ),
+      error = function(e) NULL
+    )
+    if (!is.null(attempt) && ncol(attempt) >= 3) {
+      data <- attempt
+      break
     }
-  )
+    if (!is.null(attempt) && ncol(attempt) >= 2 && is.null(best_fallback)) {
+      best_fallback <- attempt
+    }
+  }
+  if (is.null(data)) {
+    data <- best_fallback
+  }
 
   # Valider resultat
   if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {

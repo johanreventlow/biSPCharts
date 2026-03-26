@@ -499,10 +499,10 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   # Validate plot context
   validate_plot_context(plot_context, stop_on_invalid = TRUE)
 
-  log_debug(
+  log_info(
     component = "[BACKEND_WRAPPER]",
     message = sprintf(
-      "Using BFHchart backend for chart type: %s in context: %s",
+      "generateSPCPlot CALLED: chart_type=%s, context=%s",
       chart_type,
       plot_context
     ),

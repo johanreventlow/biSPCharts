@@ -492,6 +492,15 @@ mod_export_server <- function(id, app_state) {
       priority = OBSERVER_PRIORITIES$HIGH
     )
 
+    # Tab-guard: tjek om brugeren er på eksport-fanen
+    # Bruges af export reactives for at undgå beregning på trin 1/2
+    is_on_export_tab <- shiny::reactive({
+      # Tilgå root session navbar input via parent session
+      root_input <- session$rootScope()$input
+      active_tab <- root_input$main_navbar
+      identical(active_tab, "eksporter")
+    })
+
     # PREVIEW GENERATION ======================================================
 
     # Export plot reactive - regenerates plot with export-specific dimensions
@@ -499,21 +508,8 @@ mod_export_server <- function(id, app_state) {
     # Issue #62: Cache isolated from analysis context
     # Debounced to prevent excessive re-rendering when user types metadata
     export_plot <- shiny::reactive({
-      # Log BEFORE req() checks to diagnose issues
-      log_debug(
-        .context = "EXPORT_MODULE",
-        message = "export_plot() reactive called - checking prerequisites",
-        details = list(
-          has_app_state = !is.null(app_state),
-          has_data = !is.null(app_state$data$current_data),
-          has_x_col = !is.null(app_state$columns$mappings$x_column),
-          has_y_col = !is.null(app_state$columns$mappings$y_column),
-          has_chart_type = !is.null(app_state$columns$mappings$chart_type),
-          x_col_value = app_state$columns$mappings$x_column %||% "NULL",
-          y_col_value = app_state$columns$mappings$y_column %||% "NULL",
-          chart_type_value = app_state$columns$mappings$chart_type %||% "NULL"
-        )
-      )
+      # Guard: kun beregn når brugeren er på eksport-fanen
+      shiny::req(is_on_export_tab())
 
       # Issue #66: Use idiomatic Shiny req() pattern for cleaner validation
       # chart_type can be NULL at startup - use default "run" as fallback
@@ -557,11 +553,8 @@ mod_export_server <- function(id, app_state) {
     # Issue #65: Use shared helper to reduce code duplication
     # Issue #67: Helper is undebounced; reactive debounces for preview performance
     pdf_export_plot <- shiny::reactive({
-      # Log BEFORE req() checks to diagnose issues
-      log_debug(
-        .context = "EXPORT_MODULE",
-        message = "pdf_export_plot() reactive called - checking prerequisites"
-      )
+      # Guard: kun beregn når brugeren er på eksport-fanen
+      shiny::req(is_on_export_tab())
 
       # Issue #66: Use idiomatic Shiny req() pattern for cleaner validation
       shiny::req(

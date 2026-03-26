@@ -13,31 +13,16 @@
 #' @return Character vector med filens linjer (altid UTF-8)
 #' @noRd
 read_csv_detect_encoding <- function(file_path) {
-  # Prøv UTF-8 først (mest sandsynligt)
-  text <- tryCatch(
-    readLines(file_path, warn = FALSE, encoding = "UTF-8"),
-    error = function(e) NULL
-  )
+  # Læs som UTF-8 først (mest sandsynligt)
+  text <- readLines(file_path, warn = FALSE, encoding = "UTF-8")
 
-  if (!is.null(text) && length(text) > 0) {
-    # Tjek om teksten ser ud til at have korrupte danske tegn (Latin1 læst som UTF-8)
-    collapsed <- paste(text, collapse = "")
-    has_valid_danish <- grepl("\u00e6|\u00f8|\u00e5|\u00c6|\u00d8|\u00c5", collapsed)
-    has_mojibake <- grepl("\xc3\xa6|\xc3\xb8|\xc3\xa5", collapsed, useBytes = TRUE) &&
-      !has_valid_danish
-
-    if (!has_mojibake) {
-      return(text)
-    }
+  # Tjek om resultatet er valid UTF-8 — hvis ikke, er filen sandsynligvis Latin1
+  # (typisk for danske CSV-filer eksporteret fra Windows/Excel)
+  if (length(text) > 0 && !all(validEnc(text))) {
+    text <- readLines(file_path, warn = FALSE, encoding = "latin1")
   }
 
-  # Fallback: Latin1 (Windows-eksporterede danske filer)
-  text_latin1 <- tryCatch(
-    readLines(file_path, warn = FALSE, encoding = "latin1"),
-    error = function(e) text %||% character(0)
-  )
-
-  text_latin1
+  text
 }
 
 #' Upload-successnotifikation med kolonnenavne

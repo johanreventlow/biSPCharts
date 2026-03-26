@@ -94,16 +94,22 @@
     }
   }, true);
 
-  // Upload-knap aktiv-tilstand switching
-  // Sæt "Kopiér & Indsæt data" som default aktiv ved start
+  // Default aktiv-tilstand for upload- og eksportknapper
   $(document).on('shiny:connected', function() {
     setTimeout(function() {
+      // Upload: "Kopiér & Indsæt data" som default
       var pasteBtn = document.getElementById('show_paste_area');
       if (pasteBtn) pasteBtn.classList.add('upload-btn-active');
+
+      // Eksport: PDF som default + sæt Shiny input-værdi
+      var pdfBtn = document.querySelector('[id$="export_fmt_pdf"]');
+      if (pdfBtn) pdfBtn.classList.add('upload-btn-active');
+      var hiddenInput = document.querySelector('input[id$="export_format"][type="hidden"]');
+      if (hiddenInput) Shiny.setInputValue(hiddenInput.id, 'pdf');
     }, 200);
   });
 
-  // Skift aktiv knap ved klik på en af de fire upload-source knapper
+  // Upload-knap aktiv-tilstand switching
   function setActiveUploadBtn(clickedId) {
     document.querySelectorAll('.upload-source-btn').forEach(function(btn) {
       btn.classList.remove('upload-btn-active');
@@ -112,7 +118,6 @@
     if (clicked) clicked.classList.add('upload-btn-active');
   }
 
-  // Lyt på klik for hver knap
   $(document).on('click', '#show_paste_area', function() {
     setActiveUploadBtn('show_paste_area');
   });
@@ -124,6 +129,25 @@
   });
   $(document).on('click', '#clear_saved', function() {
     setActiveUploadBtn('clear_saved');
+  });
+
+  // Eksportformat-knap aktiv-tilstand switching (én delegeret handler)
+  function setActiveExportBtn(clickedBtn, format) {
+    document.querySelectorAll('.export-format-btn').forEach(function(btn) {
+      btn.classList.remove('upload-btn-active');
+    });
+    if (clickedBtn) clickedBtn.classList.add('upload-btn-active');
+
+    var hiddenInput = document.querySelector('input[id$="export_format"][type="hidden"]');
+    if (hiddenInput) {
+      hiddenInput.value = format;
+      Shiny.setInputValue(hiddenInput.id, format);
+    }
+  }
+
+  $(document).on('click', '.export-format-btn', function() {
+    var idMatch = this.id.match(/export_fmt_(\w+)$/);
+    if (idMatch) setActiveExportBtn(this, idMatch[1]);
   });
 
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring

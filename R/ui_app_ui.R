@@ -455,16 +455,23 @@ create_inline_column_mapping <- function() {
       )
     )
     if (!is.null(tooltip_text)) {
-      el <- el |> bslib::tooltip(tooltip_text)
+      el <- el |> bslib::tooltip(tooltip_text, placement = "top", options = list(fallbackPlacements = list("top", "bottom")))
     }
     el
   }
 
   shiny::div(
+    class = "column-mapping-row",
     style = paste0(
       "display: flex; gap: 6px; padding: 4px 0 8px 0; ",
       "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;"
     ),
+    # Begræns selectize input-felt til én linje, men lad dropdown vise fulde navne
+    shiny::tags$style(shiny::HTML(paste0(
+      ".column-mapping-row .selectize-input { height: 36px; overflow: hidden; }",
+      ".column-mapping-row .selectize-input > .item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
+      ".column-mapping-row .selectize-dropdown .option { white-space: normal; overflow: visible; }"
+    ))),
     compact_select(
       "x_column", "X-akse",
       "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned)"

@@ -51,14 +51,14 @@ devtools::load_all(helpers = FALSE)
 # Optional: Show debug contexts and set filter before running app
 # show_debug_contexts()
 # set_debug_context(c("data", "ai", "cache", "qic"))  # Uncomment to filter
-set_debug_context(c("data", "ai", "cache", "qic", "RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE", "BFH_SERVICE", "BFH_TIMING"))
+# set_debug_context(c("data", "ai", "cache", "qic", "RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE", "BFH_SERVICE", "BFH_TIMING"))
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE"))
 # set_debug_context(c("EXPORT_MODULE"))
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE"))
-# set_debug_context(NULL)
+set_debug_context(NULL)
 
 # Run app with test mode enabled for development
 
 options(shiny.launch.browser = TRUE)
-run_app(enable_test_mode = TRUE, log_level = "DEBUG")
-# run_app(enable_test_mode = FALSE, log_level = "INFO")
+# run_app(enable_test_mode = TRUE, log_level = "DEBUG")
+run_app(enable_test_mode = FALSE, log_level = "INFO")

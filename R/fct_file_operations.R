@@ -705,6 +705,9 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   )
   data <- preprocessing_result$data
 
+  # Tilføj Skift/Frys kolonner hvis de mangler
+  data <- ensure_standard_columns(data)
+
   # Gem i app state (samme moenster som handle_csv_upload)
   data_frame <- as.data.frame(data)
   set_current_data(app_state, data_frame)

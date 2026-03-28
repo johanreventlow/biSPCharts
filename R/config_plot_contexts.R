@@ -9,7 +9,7 @@
 #   - Plot generation (generateSPCPlot med context parameter)
 #   - Cache keys (spc_results reactive)
 #   - Export functions (PDF, PNG, PowerPoint)
-#   - Label placement (fct_add_spc_labels.R)
+#   - Label placement (BFHcharts)
 #
 # RELATERET:
 #   - Issue #61: Context-aware label placement

@@ -52,7 +52,8 @@ export_format_button <- function(ns, suffix, icon_name, label_text) {
 mod_export_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  # Hovedlayout: To-kolonne layout (40% / 60%)
+  # Hovedlayout: To-kolonne layout + navigationsknapper
+  shiny::tagList(
   bslib::layout_columns(
     col_widths = c(4, 8), # 40% / 60% split
     height = "auto",
@@ -256,19 +257,6 @@ mod_export_ui <- function(id) {
               )
             )
           )
-        ),
-        shiny::hr(),
-
-        # Download button ----
-        shiny::div(
-          style = "margin-top: 20px;",
-          shiny::downloadButton(
-            ns("download_export"),
-            "Download",
-            icon = shiny::icon("download"),
-            class = "btn-primary w-100",
-            style = "padding: 12px; font-weight: 500;"
-          )
         )
       )
     ),
@@ -344,5 +332,23 @@ mod_export_ui <- function(id) {
         )
       )
     )
+  ),
+  # Tilbage/Eksportér knapper under cards
+  shiny::div(
+    style = "display: flex; justify-content: space-between;",
+    shiny::actionButton(
+      ns("back_to_analysis"),
+      shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
+      class = "btn-secondary",
+      style = "width: 200px;",
+      title = "Gå tilbage til analyse"
+    ),
+    shiny::downloadButton(
+      ns("download_export"),
+      shiny::tagList("Eksportér ", shiny::icon("file-export")),
+      class = "btn-primary",
+      style = "width: 200px; text-align: center;"
+    )
+  )
   )
 }

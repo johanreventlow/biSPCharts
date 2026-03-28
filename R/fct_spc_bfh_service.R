@@ -1069,16 +1069,9 @@ call_bfh_chart <- function(bfh_params) {
       start_time <- Sys.time()
 
       # 3b. CONSERVATIVE APPROACH: Only send core params
-      # BFHcharts accepterer kun et subset — chart_title
-      # og target_text ikke supporteret endnu.
-      # Se: docs/BFHCHARTS_LIMITATIONS.md
-      # NOTE: target_value added for target line rendering (feat/target-line-rendering)
-      # NOTE: cl (centerline) added for baseline rendering (fix/bfhcharts-core-features)
-      # NOTE: notes added for comment annotations (fix/kommentarer-notes-mapping)
-      # NOTE: y_axis_unit added for y-axis formatting (fix/y-axis-unit-regression)
-      # NOTE: width, height added for context-aware label placement (feat/context-aware-plots)
-      #       plot_context is NOT sent - BFHcharts only needs dimensions in inches
-      fields_to_keep <- c("data", "x", "y", "n", "chart_type", "freeze", "part", "multiply", "target_value", "cl", "notes", "y_axis_unit", "width", "height")
+      # BFHcharts accepterer kun et subset af parametre.
+      # plot_context sendes IKKE — BFHcharts bruger kun dimensioner i inches.
+      fields_to_keep <- c("data", "x", "y", "n", "chart_type", "freeze", "part", "multiply", "target_value", "target_text", "cl", "notes", "y_axis_unit", "width", "height")
       bfh_params_clean <- bfh_params[names(bfh_params) %in% fields_to_keep]
 
       removed_fields <- setdiff(names(bfh_params), fields_to_keep)

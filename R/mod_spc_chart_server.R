@@ -400,7 +400,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         base_size = base_size,
         viewport_width_px = width_px,
         viewport_height_px = height_px,
-        viewport_ready = TRUE # Flag til add_spc_labels() at viewport er verificeret
+        viewport_ready = TRUE
       )
     })
 

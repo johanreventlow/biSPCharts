@@ -245,7 +245,6 @@ anhoej_metadata <- extract_anhoej_metadata(qic_result)
 | `config_observer_priorities.R` | Observer priorities (race condition prevention) |
 | `config_spc_config.R` | SPC-specifikke konstanter (validation, colors) |
 | `config_log_contexts.R` | Centraliserede log context strings (inkl. RAG contexts) |
-| `config_label_placement.R` | Intelligent label placement (collision avoidance) |
 | `config_system_config.R` | System constants (performance, timeouts, cache) |
 | `config_ui.R` | UI layout (widths, heights, font scaling) |
 | `inst/golem-config.yml` | Environment-based config (dev/prod/test, RAG settings) |

@@ -12,7 +12,7 @@
 #   - Responsive design (FONT_SCALING_CONFIG)
 #
 # RELATERET:
-#   - config_label_placement.R - Label sizing for plots
+#   - BFHcharts - Label sizing for plots
 #   - Plot rendering functions - Font calculation
 #   - See: docs/CONFIGURATION.md for complete guide
 # ==============================================================================

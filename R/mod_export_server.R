@@ -196,11 +196,12 @@ build_export_plot <- function(app_state, title_input, dept_input,
 #' @param id Module ID
 #' @param app_state Reactive values. Global app state med data, columns og chart config.
 #'   Tilgås read-only - ingen modificering af state.
+#' @param parent_session Shiny session. Parent session for navbar navigation (Tilbage-knap).
 #'
 #' @return Liste med reactive values for module status
 #' @family export_modules
 #' @export
-mod_export_server <- function(id, app_state) {
+mod_export_server <- function(id, app_state, parent_session = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
     # Module initialization
     ns <- session$ns
@@ -210,6 +211,13 @@ mod_export_server <- function(id, app_state) {
       .context = "EXPORT_MODULE",
       message = "Export module initialized"
     )
+
+    # Tilbage-knap: Trin 3 -> Trin 2
+    shiny::observeEvent(input$back_to_analysis, {
+      if (!is.null(parent_session)) {
+        bslib::nav_select("main_navbar", selected = "analyser", session = parent_session)
+      }
+    })
 
     # AI SUGGESTION INTEGRATION ===============================================
 

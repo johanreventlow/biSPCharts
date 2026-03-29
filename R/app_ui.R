@@ -13,6 +13,7 @@ app_ui <- function(request) {
     bslib::page_navbar(
       id = "main_navbar",
       selected = "start",
+      window_title = "SPCify",
       title = shiny::tagList(
         shiny::tags$a(
           id = "logo_home_link",

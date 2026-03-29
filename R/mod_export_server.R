@@ -484,7 +484,6 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         context <- list(
           data_definition = input$pdf_description %||% "",
           chart_title = input$export_title %||% "",
-          y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
           target_value = normalize_mapping(app_state$columns$mappings$target_value)
         )
 
@@ -973,7 +972,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
                 x = pdf_plot_result$bfh_qic_result,
                 output = file,
                 metadata = metadata,
-                template = "bfh-diagram"
+                template = "bfh-diagram",
+                auto_analysis = FALSE
               )
 
               # Verify successful generation

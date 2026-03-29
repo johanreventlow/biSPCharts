@@ -167,9 +167,9 @@ mod_export_ui <- function(id) {
             style = "margin-bottom: 15px;",
             shiny::textAreaInput(
               ns("pdf_improvement"),
-              "Forbedringsmål:",
+              "Analyse af processen:",
               value = "",
-              placeholder = "Angiv mål for forbedring eller ønsket udvikling",
+              placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
               width = "100%",
               rows = 4,
               resize = "vertical"
@@ -177,7 +177,14 @@ mod_export_ui <- function(id) {
             shiny::tags$small(
               class = "text-muted",
               sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
-            )
+            ),
+            shiny::div(
+              id = ns("analysis_auto_indicator"),
+              class = "text-muted",
+              style = "font-size: 0.8rem; font-style: italic; margin-top: 4px;",
+              shiny::icon("magic"),
+              " Auto-genereret analyse \u2014 rediger for at tilpasse"
+            ),
           ),
           # AI Suggestion Button
           shiny::div(
@@ -196,7 +203,7 @@ mod_export_ui <- function(id) {
               class = "text-muted",
               style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
               shiny::icon("info-circle"),
-              " AI kan hjælpe dig med at formulere forbedringsmål baseret på din SPC-analyse. Forslaget kan redigeres efter behov."
+              " AI kan hjælpe med at formulere en mere detaljeret analyse af processen. Teksten kan redigeres efter behov."
             )
           )
         ),

@@ -221,21 +221,15 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # ANALYSIS AUTO-GENERATION =================================================
 
-    # Track kilde for analysetekst: "auto" (regelbaseret) eller "user" (manuelt/AI)
-    analysis_source <- shiny::reactiveVal("auto")
-
-    # Flag til at skelne programmatiske opdateringer fra bruger-input
-    updating_analysis_programmatically <- shiny::reactiveVal(FALSE)
+    # Gem sidst auto-genererede tekst til sammenligning med brugerens input.
+    # Undgår flaky analysis_source flag der fejlagtigt skifter til "user"
+    # pga. Shiny flush-timing issues.
+    last_auto_analysis <- shiny::reactiveVal("")
 
     # Auto-generer analysetekst når SPC-resultat er tilgængeligt
     shiny::observeEvent(export_plot(), {
       result <- export_plot()
       if (is.null(result) || is.null(result$bfh_qic_result)) {
-        return()
-      }
-
-      # Kun opdatér feltet hvis brugeren ikke har skrevet noget selv
-      if (analysis_source() != "auto") {
         return()
       }
 
@@ -247,46 +241,27 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         error_type = "processing"
       )
 
-      if (!is.null(auto_text) && nchar(auto_text) > 0) {
-        updating_analysis_programmatically(TRUE)
-        shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
-        session$onFlushed(function() {
-          updating_analysis_programmatically(FALSE)
-        })
-
-        log_debug(
-          .context = "EXPORT_MODULE",
-          message = "Auto-analysis text inserted",
-          details = list(text_length = nchar(auto_text))
-        )
-      }
-    }, priority = OBSERVER_PRIORITIES$LOW)
-
-    # Detektér om brugeren redigerer analysefeltet manuelt
-    shiny::observeEvent(input$pdf_improvement, {
-      # Ignorér programmatiske opdateringer
-      if (updating_analysis_programmatically()) {
+      if (is.null(auto_text) || nchar(auto_text) == 0) {
         return()
       }
 
-      current_text <- input$pdf_improvement %||% ""
+      # Opdatér kun hvis feltet er tomt eller indeholder den forrige auto-tekst
+      current_text <- shiny::isolate(input$pdf_improvement) %||% ""
+      prev_auto <- shiny::isolate(last_auto_analysis())
+      user_has_edited <- nchar(trimws(current_text)) > 0 && current_text != prev_auto
 
-      if (nchar(trimws(current_text)) == 0) {
-        # Bruger har slettet al tekst - re-aktiver auto-generering
-        analysis_source("auto")
-        log_debug("Analysis source reset to auto (field cleared)", .context = "EXPORT_MODULE")
-      } else {
-        # Bruger har skrevet noget - stop auto-opdatering
-        if (analysis_source() != "user") {
-          analysis_source("user")
-          log_debug("Analysis source changed to user (manual edit)", .context = "EXPORT_MODULE")
-        }
+      if (!user_has_edited) {
+        last_auto_analysis(auto_text)
+        shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
       }
-    }, ignoreInit = TRUE)
+    }, priority = OBSERVER_PRIORITIES$LOW)
 
-    # Vis/skjul auto-indikator baseret på analysis_source
+    # Vis/skjul auto-indikator: synlig når feltets tekst matcher auto-teksten
     shiny::observe({
-      shinyjs::toggle("analysis_auto_indicator", condition = analysis_source() == "auto")
+      current <- input$pdf_improvement %||% ""
+      auto <- last_auto_analysis()
+      is_auto <- nchar(auto) > 0 && current == auto
+      shinyjs::toggle("analysis_auto_indicator", condition = is_auto)
     })
 
     # AI SUGGESTION INTEGRATION ===============================================
@@ -543,13 +518,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
             message = "Updating UI with suggestion",
             details = list(suggestion_length = nchar(suggestion))
           )
-          # Success: Insert suggestion
-          updating_analysis_programmatically(TRUE)
+          # Success: Insert suggestion (AI-tekst != auto-tekst, så auto-gen holder sig væk)
           shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
-          session$onFlushed(function() {
-            updating_analysis_programmatically(FALSE)
-          })
-          analysis_source("user")
 
           shiny::showNotification(
             "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",

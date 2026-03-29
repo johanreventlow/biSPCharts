@@ -219,6 +219,76 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       }
     })
 
+    # ANALYSIS AUTO-GENERATION =================================================
+
+    # Track kilde for analysetekst: "auto" (regelbaseret) eller "user" (manuelt/AI)
+    analysis_source <- shiny::reactiveVal("auto")
+
+    # Flag til at skelne programmatiske opdateringer fra bruger-input
+    updating_analysis_programmatically <- shiny::reactiveVal(FALSE)
+
+    # Auto-generer analysetekst når SPC-resultat er tilgængeligt
+    shiny::observeEvent(export_plot(), {
+      result <- export_plot()
+      if (is.null(result) || is.null(result$bfh_qic_result)) {
+        return()
+      }
+
+      # Kun opdatér feltet hvis brugeren ikke har skrevet noget selv
+      if (analysis_source() != "auto") {
+        return()
+      }
+
+      auto_text <- safe_operation(
+        operation_name = "Auto-generate analysis text",
+        code = {
+          BFHcharts::bfh_generate_analysis(result$bfh_qic_result, use_ai = FALSE)
+        },
+        error_type = "processing"
+      )
+
+      if (!is.null(auto_text) && nchar(auto_text) > 0) {
+        updating_analysis_programmatically(TRUE)
+        shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
+        session$onFlushed(function() {
+          updating_analysis_programmatically(FALSE)
+        })
+
+        log_debug(
+          .context = "EXPORT_MODULE",
+          message = "Auto-analysis text inserted",
+          details = list(text_length = nchar(auto_text))
+        )
+      }
+    }, priority = OBSERVER_PRIORITIES$LOW)
+
+    # Detektér om brugeren redigerer analysefeltet manuelt
+    shiny::observeEvent(input$pdf_improvement, {
+      # Ignorér programmatiske opdateringer
+      if (updating_analysis_programmatically()) {
+        return()
+      }
+
+      current_text <- input$pdf_improvement %||% ""
+
+      if (nchar(trimws(current_text)) == 0) {
+        # Bruger har slettet al tekst - re-aktiver auto-generering
+        analysis_source("auto")
+        log_debug("Analysis source reset to auto (field cleared)", .context = "EXPORT_MODULE")
+      } else {
+        # Bruger har skrevet noget - stop auto-opdatering
+        if (analysis_source() != "user") {
+          analysis_source("user")
+          log_debug("Analysis source changed to user (manual edit)", .context = "EXPORT_MODULE")
+        }
+      }
+    }, ignoreInit = TRUE)
+
+    # Vis/skjul auto-indikator baseret på analysis_source
+    shiny::observe({
+      shinyjs::toggle("analysis_auto_indicator", condition = analysis_source() == "auto")
+    })
+
     # AI SUGGESTION INTEGRATION ===============================================
 
     # Note: BFHllm cache is now created on-demand in generate_bfhllm_suggestion()
@@ -255,7 +325,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         )
       } else {
         sprintf(
-          "$('#%s').attr('title', 'Klik for at generere et forbedringsmål med AI');",
+          "$('#%s').attr('title', 'Klik for at generere en analyse med AI');",
           session$ns("ai_generate_suggestion")
         )
       }
@@ -294,7 +364,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
             class = "text-muted",
             style = "margin-top: 5px;",
             shiny::icon("spinner", class = "fa-spin"),
-            " Genererer forslag..."
+            " Genererer analyse..."
           )
         })
 
@@ -416,7 +486,6 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         context <- list(
           data_definition = input$pdf_description %||% "",
           chart_title = input$export_title %||% "",
-          y_axis_unit = normalize_mapping(app_state$columns$mappings$y_axis_unit) %||% "count",
           target_value = normalize_mapping(app_state$columns$mappings$target_value)
         )
 
@@ -431,27 +500,36 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           )
         )
 
-        # Generate suggestion
+        # Generate AI-enhanced analysis via BFHcharts
         log_info(
           .context = "EXPORT_MODULE",
-          message = "About to call generate_improvement_suggestion()",
-          details = list(
-            session_valid = !is.null(session),
-            spc_result_valid = !is.null(spc_result),
-            context_valid = !is.null(context)
-          )
+          message = "About to call bfh_generate_analysis(use_ai = TRUE)"
         )
 
-        suggestion <- generate_improvement_suggestion(
-          spc_result = spc_result,
-          context = context,
-          session = session,
-          max_chars = 350
+        analysis_metadata <- list(
+          data_definition = context$data_definition,
+          target = context$target_value,
+          chart_title = context$chart_title
+        )
+
+        suggestion <- safe_operation(
+          operation_name = "AI analysis generation",
+          code = {
+            shiny::req(spc_result$bfh_qic_result)
+            BFHcharts::bfh_generate_analysis(
+              spc_result$bfh_qic_result,
+              metadata = analysis_metadata,
+              use_ai = TRUE,
+              max_chars = 375
+            )
+          },
+          fallback = NULL,
+          error_type = "processing"
         )
 
         log_info(
           .context = "EXPORT_MODULE",
-          message = "generate_improvement_suggestion() returned",
+          message = "bfh_generate_analysis(use_ai=TRUE) returned",
           details = list(
             is_null = is.null(suggestion),
             length = if (!is.null(suggestion)) nchar(suggestion) else NA
@@ -466,10 +544,15 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
             details = list(suggestion_length = nchar(suggestion))
           )
           # Success: Insert suggestion
+          updating_analysis_programmatically(TRUE)
           shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
+          session$onFlushed(function() {
+            updating_analysis_programmatically(FALSE)
+          })
+          analysis_source("user")
 
           shiny::showNotification(
-            "✓ Forslag genereret. Du kan nu redigere forslaget efter behov.",
+            "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
             type = "message",
             duration = 3
           )
@@ -482,7 +565,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         } else {
           # Failure: Show error
           shiny::showNotification(
-            "Kunne ikke generere AI-forslag. Tjek internetforbindelse og prøv igen, eller skriv forbedringsmålet manuelt.",
+            "Kunne ikke generere AI-analyse. Tjek internetforbindelse og prøv igen, eller skriv analysen manuelt.",
             type = "error",
             duration = 8
           )
@@ -649,6 +732,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # PDF preview reactive - generates PNG preview of Typst PDF layout
     # Only active when format is "pdf"
+    # Debounced metadata-inputs til PDF preview (undgår re-render per tastetryk)
+    debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
+    debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
+
     pdf_preview_image <- shiny::reactive({
       # Only generate for PDF format
       format <- input$export_format %||% "pdf"
@@ -666,13 +753,14 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       pdf_result <- pdf_export_plot()
       shiny::req(pdf_result, pdf_result$bfh_qic_result)
 
-      # Isolate metadata inputs — de trigger allerede pdf_export_plot() via
-      # dens egne reactive dependencies (debounced 1000ms). Uden isolate() her
-      # ville hvert tastetryk invalidere preview direkte OG via pdf_export_plot().
+      # Titel og afdeling er isoleret — de trigger allerede pdf_export_plot()
+      # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
-      analysis_input <- shiny::isolate(input$pdf_improvement)
-      data_def_input <- shiny::isolate(input$pdf_description)
+      # Analyse og datadefinition er debounced reactives (1000ms)
+      # så preview opdateres når brugeren stopper med at skrive
+      analysis_input <- debounced_analysis()
+      data_def_input <- debounced_data_def()
 
       # Build metadata for PDF generation
       metadata <- list(
@@ -893,7 +981,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
                 x = pdf_plot_result$bfh_qic_result,
                 output = file,
                 metadata = metadata,
-                template = "bfh-diagram"
+                template = "bfh-diagram",
+                auto_analysis = FALSE
               )
 
               # Verify successful generation

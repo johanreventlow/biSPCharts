@@ -296,7 +296,8 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_str <- paste(names(details), unlist(details, use.names = FALSE), sep = "=", collapse = ", ")
+        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(message, " [", details_str, "]")
       },
       error = function(e) {
@@ -339,7 +340,8 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_str <- paste(names(details), unlist(details, use.names = FALSE), sep = "=", collapse = ", ")
+        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(message, " [", details_str, "]")
       },
       error = function(e) {
@@ -388,7 +390,8 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_str <- paste(names(details), unlist(details, use.names = FALSE), sep = "=", collapse = ", ")
+        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(msg, " [", details_str, "]")
       },
       error = function(e) {

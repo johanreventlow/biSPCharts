@@ -212,6 +212,9 @@ main_app_server <- function(input, output, session) {
   # Pass app_state (read-only) to export module for chart access
   export_module_status <- mod_export_server("export", app_state, parent_session = session)
 
+  ## Hjælpeside modul (statisk indhold)
+  mod_help_server("help")
+
   session_debugger$event("server_setup_complete")
   log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")
 

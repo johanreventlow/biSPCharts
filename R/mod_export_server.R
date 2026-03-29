@@ -233,10 +233,22 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         return()
       }
 
+      # Byg metadata med target og datadefinition fra app_state
+      auto_metadata <- list(
+        target = shiny::isolate(
+          normalize_mapping(app_state$columns$mappings$target_value)
+        ),
+        data_definition = shiny::isolate(input$pdf_description %||% "")
+      )
+
       auto_text <- safe_operation(
         operation_name = "Auto-generate analysis text",
         code = {
-          BFHcharts::bfh_generate_analysis(result$bfh_qic_result, use_ai = FALSE)
+          BFHcharts::bfh_generate_analysis(
+            result$bfh_qic_result,
+            metadata = auto_metadata,
+            use_ai = FALSE
+          )
         },
         error_type = "processing"
       )

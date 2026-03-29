@@ -95,8 +95,21 @@
   }, true);
 
   // Default aktiv-tilstand for upload- og eksportknapper
+  // + Skjul wizard-trin ved start (landing page)
   $(document).on('shiny:connected', function() {
     setTimeout(function() {
+      // Landing page: Skjul alle nav-items undtagen startside
+      document.querySelectorAll('.navbar .nav-link[data-value]').forEach(function(link) {
+        var val = link.getAttribute('data-value');
+        if (val && val !== 'start') {
+          var item = link.closest('.nav-item');
+          if (item) {
+            item.classList.add('wizard-nav-item');
+            item.style.display = 'none';
+          }
+        }
+      });
+
       // Upload: "Kopiér & Indsæt data" som default
       var pasteBtn = document.getElementById('show_paste_area');
       if (pasteBtn) pasteBtn.classList.add('upload-btn-active');

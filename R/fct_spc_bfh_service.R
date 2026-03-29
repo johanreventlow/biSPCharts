@@ -1359,7 +1359,12 @@ transform_bfh_output <- function(
         n_points = nrow(qic_data),
         n_phases = length(unique(qic_data$part)),
         freeze_applied = freeze_applied, # Use parameter passed from compute_spc_results_bfh
-        signals_detected = sum(qic_data$signal, na.rm = TRUE),
+        signals_detected = if ("signal" %in% names(qic_data) && "part" %in% names(qic_data)) {
+          # Tæl antal parts med signal (anhoej.signal er per-part, ikke per-punkt)
+          sum(tapply(qic_data$signal, qic_data$part, function(x) any(x, na.rm = TRUE)))
+        } else {
+          sum(qic_data$signal, na.rm = TRUE)
+        },
         bfh_version = as.character(utils::packageVersion("BFHcharts")),
         anhoej_rules = if (!is.null(anhoej_metadata)) {
           list(

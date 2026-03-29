@@ -53,6 +53,17 @@ app_ui <- function(request) {
         icon = shiny::icon("file-export"),
         value = "eksporter",
         mod_export_ui("export")
+      ),
+
+      # Visuelt skel mellem wizard-trin og hjælp
+      bslib::nav_spacer(),
+
+      # Hjælp (adskilt fra wizard-flow)
+      bslib::nav_panel(
+        title = "Lær om SPC",
+        icon = shiny::icon("book-open"),
+        value = "hjaelp",
+        mod_help_ui("help")
       )
     )
   )

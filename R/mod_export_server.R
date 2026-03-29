@@ -250,7 +250,9 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       if (!is.null(auto_text) && nchar(auto_text) > 0) {
         updating_analysis_programmatically(TRUE)
         shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
-        updating_analysis_programmatically(FALSE)
+        session$onFlushed(function() {
+          updating_analysis_programmatically(FALSE)
+        })
 
         log_debug(
           .context = "EXPORT_MODULE",
@@ -544,11 +546,13 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           # Success: Insert suggestion
           updating_analysis_programmatically(TRUE)
           shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
-          updating_analysis_programmatically(FALSE)
+          session$onFlushed(function() {
+            updating_analysis_programmatically(FALSE)
+          })
           analysis_source("user")
 
           shiny::showNotification(
-            "✓ Forslag genereret. Du kan nu redigere forslaget efter behov.",
+            "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
             type = "message",
             duration = 3
           )

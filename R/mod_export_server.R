@@ -239,12 +239,27 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         return()
       }
 
-      auto_text <- safe_operation(
-        operation_name = "Auto-generate analysis text",
-        code = {
-          BFHcharts::bfh_generate_analysis(result$bfh_qic_result, use_ai = FALSE)
+      # Byg analysetekst fra SPC-kontekst (inline i stedet for bfh_generate_analysis
+      # pga. uforklaret 'invalid replacement argument' fejl i BFHcharts, se #176)
+      bfh_result <- result$bfh_qic_result
+      auto_text <- tryCatch(
+        {
+          ctx <- BFHcharts:::bfh_build_analysis_context(bfh_result, metadata = list())
+          interp <- ctx$signal_interpretations
+          if (length(interp) > 0) {
+            paste(interp, collapse = " ")
+          } else {
+            "Processen viser stabil adf\u00e6rd uden s\u00e6rlige signaler."
+          }
         },
-        error_type = "processing"
+        error = function(e) {
+          log_warn(
+            .context = "EXPORT_MODULE",
+            message = "Auto-analysis generation failed",
+            details = list(error = e$message)
+          )
+          NULL
+        }
       )
 
       if (!is.null(auto_text) && nchar(auto_text) > 0) {

@@ -16,7 +16,7 @@
 #' @noRd
 export_format_button <- function(ns, suffix, icon_name, label_text) {
   shiny::div(
-    style = "flex: 1;",
+    style = "flex: 1; max-width: 120px;",
     shiny::actionButton(
       ns(paste0("export_fmt_", suffix)),
       label = shiny::div(
@@ -28,7 +28,7 @@ export_format_button <- function(ns, suffix, icon_name, label_text) {
         "btn btn-outline-secondary export-format-btn w-100",
         "d-flex flex-column align-items-center justify-content-center"
       ),
-      style = "aspect-ratio: 1; padding: 12px; min-height: 110px;",
+      style = "aspect-ratio: 1; padding: 12px;",
       title = paste0("Eksport\u00e9r som ", label_text)
     )
   )
@@ -86,7 +86,7 @@ mod_export_ui <- function(id) {
             value = "pdf"
           ),
           shiny::div(
-            style = "display: flex; gap: 12px;",
+            style = "display: flex; gap: 12px; justify-content: center;",
             export_format_button(ns, "pdf", "file-pdf", "PDF"),
             export_format_button(ns, "png", "file-image", "PNG"),
             export_format_button(ns, "pptx", "file-powerpoint", "PowerPoint")
@@ -352,7 +352,8 @@ mod_export_ui <- function(id) {
     ),
     shiny::downloadButton(
       ns("download_export"),
-      shiny::tagList("Eksportér ", shiny::icon("file-export")),
+      "Eksportér",
+      icon = shiny::icon("file-export"),
       class = "btn-primary",
       style = "width: 200px; text-align: center;"
     )

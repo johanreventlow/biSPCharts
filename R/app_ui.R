@@ -12,20 +12,32 @@ app_ui <- function(request) {
     # Your application UI logic
     bslib::page_navbar(
       id = "main_navbar",
+      selected = "start",
       title = shiny::tagList(
-        shiny::img(
-          src = get_hospital_logo_path(),
-          height = "40px",
-          style = "margin-right: 15px;",
-          onerror = "this.style.display='none'"
-        ),
-        # shiny::div("BFH SPC-værktøj", style = "position: absolute; right: 20px; top: 20px; font-weight: bold;")
+        shiny::tags$a(
+          id = "logo_home_link",
+          href = "#",
+          style = "cursor: pointer; text-decoration: none;",
+          shiny::img(
+            src = get_hospital_logo_path(),
+            height = "40px",
+            style = "margin-right: 15px;",
+            onerror = "this.style.display='none'"
+          )
+        )
       ),
       theme = get_bootstrap_theme(),
       navbar_options = bslib::navbar_options(theme = "light", underline = FALSE),
 
       # Header-komponenter
       header = create_ui_header(),
+
+      # Startside (landing page)
+      bslib::nav_panel(
+        title = NULL,
+        value = "start",
+        mod_landing_ui("landing")
+      ),
 
       # Navigation tabs (wizard trin)
       # data-step attributter tilføjes via JS (wizard-nav.js) da bslib

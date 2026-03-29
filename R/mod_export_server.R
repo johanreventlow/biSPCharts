@@ -732,6 +732,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # PDF preview reactive - generates PNG preview of Typst PDF layout
     # Only active when format is "pdf"
+    # Debounced metadata-inputs til PDF preview (undgår re-render per tastetryk)
+    debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
+    debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
+
     pdf_preview_image <- shiny::reactive({
       # Only generate for PDF format
       format <- input$export_format %||% "pdf"
@@ -749,13 +753,14 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       pdf_result <- pdf_export_plot()
       shiny::req(pdf_result, pdf_result$bfh_qic_result)
 
-      # Isolate metadata inputs — de trigger allerede pdf_export_plot() via
-      # dens egne reactive dependencies (debounced 1000ms). Uden isolate() her
-      # ville hvert tastetryk invalidere preview direkte OG via pdf_export_plot().
+      # Titel og afdeling er isoleret — de trigger allerede pdf_export_plot()
+      # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
-      analysis_input <- shiny::isolate(input$pdf_improvement)
-      data_def_input <- shiny::isolate(input$pdf_description)
+      # Analyse og datadefinition er debounced reactives (1000ms)
+      # så preview opdateres når brugeren stopper med at skrive
+      analysis_input <- debounced_analysis()
+      data_def_input <- debounced_data_def()
 
       # Build metadata for PDF generation
       metadata <- list(

@@ -218,20 +218,8 @@ main_app_server <- function(input, output, session) {
   ## Landing page modul
   mod_landing_server("landing", parent_session = session)
 
-  # Skjul wizard-trin og hjælp i navbar ved start (vises af "Kom i gang")
-  # Markerer nav-items med class 'wizard-nav-item' via JS for nem toggle
-  shinyjs::runjs("
-    document.querySelectorAll('.navbar .nav-link[data-value]').forEach(function(link) {
-      var val = link.getAttribute('data-value');
-      if (val && val !== 'start') {
-        var item = link.closest('.nav-item');
-        if (item) {
-          item.classList.add('wizard-nav-item');
-          item.style.display = 'none';
-        }
-      }
-    });
-  ")
+  # Wizard-trin skjules ved start via wizard-nav.js (shiny:connected handler)
+  # for at undgå timing-issues med shinyjs::runjs() i server-initialisering.
 
   # Logo-klik: navigér til startside og skjul trin
   shinyjs::onclick("logo_home_link", {

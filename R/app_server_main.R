@@ -219,13 +219,7 @@ main_app_server <- function(input, output, session) {
   mod_landing_server("landing", parent_session = session)
 
   # Wizard-trin skjules ved start via wizard-nav.js (shiny:connected handler)
-  # for at undgå timing-issues med shinyjs::runjs() i server-initialisering.
-
-  # Logo-klik: navigér til startside og skjul trin
-  shinyjs::onclick("logo_home_link", {
-    shinyjs::runjs("document.querySelectorAll('.navbar .nav-item.wizard-nav-item').forEach(function(el) { el.style.display = 'none'; });")
-    bslib::nav_select("main_navbar", selected = "start", session = session)
-  })
+  # Logo-klik håndteres også i wizard-nav.js (se logo_home_link handler)
 
   session_debugger$event("server_setup_complete")
   log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")

@@ -163,6 +163,20 @@
     if (idMatch) setActiveExportBtn(this, idMatch[1]);
   });
 
+  // Logo-klik: navigér til startside og skjul wizard-trin
+  $(document).on('click', '#logo_home_link', function(e) {
+    e.preventDefault();
+    // Skjul wizard-trin
+    document.querySelectorAll('.navbar .nav-item.wizard-nav-item').forEach(function(el) {
+      el.style.display = 'none';
+    });
+    // Navigér til startside via Shiny
+    Shiny.setInputValue('main_navbar', 'start');
+    // Klik på start-tab linket for at aktivere det
+    var startLink = document.querySelector('.navbar .nav-link[data-value="start"]');
+    if (startLink) startLink.click();
+  });
+
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
   var plotInputs = [
     'chart_type', 'y_axis_unit', 'x_column', 'y_column',

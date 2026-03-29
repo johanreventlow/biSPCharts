@@ -215,6 +215,30 @@ main_app_server <- function(input, output, session) {
   ## Hjælpeside modul (statisk indhold)
   mod_help_server("help")
 
+  ## Landing page modul
+  mod_landing_server("landing", parent_session = session)
+
+  # Skjul wizard-trin og hjælp i navbar ved start (vises af "Kom i gang")
+  # Markerer nav-items med class 'wizard-nav-item' via JS for nem toggle
+  shinyjs::runjs("
+    document.querySelectorAll('.navbar .nav-link[data-value]').forEach(function(link) {
+      var val = link.getAttribute('data-value');
+      if (val && val !== 'start') {
+        var item = link.closest('.nav-item');
+        if (item) {
+          item.classList.add('wizard-nav-item');
+          item.style.display = 'none';
+        }
+      }
+    });
+  ")
+
+  # Logo-klik: navigér til startside og skjul trin
+  shinyjs::onclick("logo_home_link", {
+    shinyjs::runjs("document.querySelectorAll('.navbar .nav-item.wizard-nav-item').forEach(function(el) { el.style.display = 'none'; });")
+    bslib::nav_select("main_navbar", selected = "start", session = session)
+  })
+
   session_debugger$event("server_setup_complete")
   log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")
 

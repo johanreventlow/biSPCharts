@@ -95,21 +95,8 @@
   }, true);
 
   // Default aktiv-tilstand for upload- og eksportknapper
-  // + Skjul wizard-trin ved start (landing page)
   $(document).on('shiny:connected', function() {
     setTimeout(function() {
-      // Landing page: Skjul alle nav-items undtagen startside
-      document.querySelectorAll('.navbar .nav-link[data-value]').forEach(function(link) {
-        var val = link.getAttribute('data-value');
-        if (val && val !== 'start') {
-          var item = link.closest('.nav-item');
-          if (item) {
-            item.classList.add('wizard-nav-item');
-            item.style.display = 'none';
-          }
-        }
-      });
-
       // Upload: "Kopiér & Indsæt data" som default
       var pasteBtn = document.getElementById('show_paste_area');
       if (pasteBtn) pasteBtn.classList.add('upload-btn-active');
@@ -166,13 +153,7 @@
   // Logo-klik: navigér til startside og skjul wizard-trin
   $(document).on('click', '#logo_home_link', function(e) {
     e.preventDefault();
-    // Skjul wizard-trin
-    document.querySelectorAll('.navbar .nav-item.wizard-nav-item').forEach(function(el) {
-      el.style.display = 'none';
-    });
-    // Navigér til startside via Shiny
-    Shiny.setInputValue('main_navbar', 'start');
-    // Klik på start-tab linket for at aktivere det
+    document.body.classList.remove('wizard-nav-active');
     var startLink = document.querySelector('.navbar .nav-link[data-value="start"]');
     if (startLink) startLink.click();
   });

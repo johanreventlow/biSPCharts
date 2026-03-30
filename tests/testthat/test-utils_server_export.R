@@ -32,18 +32,7 @@ test_that("extract_spc_statistics() handles reactive context errors gracefully",
   skip("Requires reactive context - test via Shiny testServer or manual testing")
 })
 
-# TEST: generate_details_string() ============================================
-
-test_that("generate_details_string() returns NULL when app_state is NULL", {
-  result <- generate_details_string(NULL)
-  expect_null(result)
-})
-
-test_that("generate_details_string() handles reactive context errors gracefully", {
-  # These functions require reactive context, so we test error handling
-  # in non-reactive context
-  skip("Requires reactive context - test via Shiny testServer or manual testing")
-})
+# generate_details_string() fjernet — details genereres nu af BFHcharts
 
 # TEST: quarto_available() ===================================================
 
@@ -141,14 +130,12 @@ test_that("Export helpers integrate with safe_operation correctly", {
   # All functions should return NULL gracefully when given NULL input
   # (errors are logged but not thrown due to safe_operation)
   expect_null(extract_spc_statistics(NULL))
-  expect_null(generate_details_string(NULL))
   expect_null(generate_pdf_preview(NULL, list()))
 })
 
 # SUMMARY ====================================================================
 # Test coverage:
 # ✅ extract_spc_statistics() data extraction
-# ✅ generate_details_string() formatting (full/short)
 # ✅ quarto_available() delegation
 # ✅ generate_pdf_preview() error handling
 # ⚠️  generate_pdf_preview() full integration (requires BFHcharts + Quarto)

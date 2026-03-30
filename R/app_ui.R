@@ -9,6 +9,27 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+    # CSS: Skjul wizard-trin og hjælp i navbar fra start.
+    # Klassen 'wizard-nav-active' på <body> viser dem (tilføjes af JS ved "Kom i gang").
+    # Dette undgår FOUC (flash of unstyled content) i langsomme browsere.
+    shiny::tags$style(htmltools::HTML("
+      .navbar .nav-link[data-value='upload'],
+      .navbar .nav-link[data-value='analyser'],
+      .navbar .nav-link[data-value='eksporter'],
+      .navbar .nav-link[data-value='hjaelp'],
+      .navbar .nav-item:has(.nav-link[data-value='upload']),
+      .navbar .nav-item:has(.nav-link[data-value='analyser']),
+      .navbar .nav-item:has(.nav-link[data-value='eksporter']),
+      .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
+        display: none !important;
+      }
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='upload']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='analyser']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='eksporter']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
+        display: flex !important;
+      }
+    ")),
     # Your application UI logic
     bslib::page_navbar(
       id = "main_navbar",

@@ -751,10 +751,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         title = title_input,
         analysis = analysis_input,
         data_definition = data_def_input,
-        details = generate_details_string(app_state, format = "full"),
         author = Sys.getenv("USER"),
         date = Sys.Date()
       )
+      # details udeladt — BFHcharts auto-genererer via bfh_generate_details()
 
       # Generate PDF preview PNG using BFHcharts
       safe_operation(
@@ -946,10 +946,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
                 title = input$export_title,
                 analysis = input$pdf_improvement,
                 data_definition = input$pdf_description,
-                details = generate_details_string(app_state, format = "full"),
                 author = Sys.getenv("USER"),
                 date = Sys.Date()
               )
+              # details udeladt — BFHcharts auto-genererer via bfh_generate_details()
 
               # Validate export inputs
               validate_export_inputs(

@@ -16,8 +16,8 @@ mod_landing_server <- function(id, parent_session = NULL) {
     # "Kom i gang" knap: vis navbar-trin og navigér til Upload
     shiny::observeEvent(input$start_wizard, {
       if (!is.null(parent_session)) {
-        # Vis wizard-trin og hjælp i navbar
-        shinyjs::runjs("document.querySelectorAll('.navbar .nav-item.wizard-nav-item').forEach(function(el) { el.style.display = ''; });")
+        # Tilføj wizard-nav-active class til body (CSS viser nav-items)
+        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
         bslib::nav_select("main_navbar", selected = "upload", session = parent_session)
       }
     })

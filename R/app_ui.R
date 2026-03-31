@@ -33,7 +33,7 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
       body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
       body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
-        display: flex !important;
+        display: block !important;
       }
     ")),
     # Your application UI logic

@@ -59,6 +59,11 @@ set_debug_context(NULL)
 
 # Run app with test mode enabled for development
 
+# Browser-launch: RStudio viewer bruges automatisk i RStudio.
+# Firefox via 'open' kan ramme race condition — brug manuelt besøg
+# af URL'en fra konsollen, eller sæt TRUE for RStudio viewer.
+shiny::devmode(TRUE)
+options(shiny.port = 8080)
 options(shiny.launch.browser = TRUE)
-# run_app(enable_test_mode = TRUE, log_level = "DEBUG")
+# run_app(enable_test_mode = FALSE, log_level = "DEBUG")
 run_app(enable_test_mode = FALSE, log_level = "INFO")

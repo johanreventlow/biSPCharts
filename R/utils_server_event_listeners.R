@@ -1335,11 +1335,29 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
         ))
       )
     })
-    handle_paste_data(
-      text_data = input$paste_data_input,
-      app_state = app_state,
-      session_id = sanitize_session_token(session$token),
-      emit = emit
+    safe_operation(
+      "Paste data parsing",
+      code = {
+        handle_paste_data(
+          text_data = input$paste_data_input,
+          app_state = app_state,
+          session_id = sanitize_session_token(session$token),
+          emit = emit
+        )
+      },
+      fallback = {
+        shiny::showNotification(
+          paste0(
+            "Data kunne ikke l\u00e6ses. S\u00f8rg for at data har kolonneoverskrifter ",
+            "adskilt med semikolon eller tabulator."
+          ),
+          type = "error", duration = 6
+        )
+      },
+      session = session,
+      error_type = "processing",
+      emit = emit,
+      app_state = app_state
     )
   })
 

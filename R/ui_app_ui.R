@@ -256,7 +256,37 @@ create_ui_header <- function() {
     }
 
         ")))
-    )
+    ),
+    # Tooltips på Skift/Frys tabel-headere (excelR renderer dynamisk)
+    # Keys SKAL matche kolonnenavne fra ensure_standard_columns()
+    shiny::tags$script(htmltools::HTML("
+      (function() {
+        var tooltips = {
+          'Skift': 'Opdeler diagrammet i faser ved kendte proces\\u00e6ndringer',
+          'Frys': 'L\\u00e5ser kontrolgr\\u00e6nser baseret p\\u00e5 en baseline-periode'
+        };
+        var pending = null;
+        function addTableHeaderTooltips() {
+          var headers = document.querySelectorAll('.jexcel thead td');
+          headers.forEach(function(td) {
+            var text = td.textContent.trim();
+            if (tooltips[text] && !td.title) {
+              td.title = tooltips[text];
+              td.style.cursor = 'help';
+            }
+          });
+        }
+        var observer = new MutationObserver(function() {
+          if (!pending) {
+            pending = requestAnimationFrame(function() {
+              addTableHeaderTooltips();
+              pending = null;
+            });
+          }
+        });
+        observer.observe(document.body, {childList: true, subtree: true});
+      })();
+    "))
   )
 }
 # R/ui/ui_main_content.R
@@ -490,11 +520,11 @@ create_inline_column_mapping <- function() {
     ),
     compact_select(
       "skift_column", "Skift",
-      "Kolonne der markerer hvor processen opdeles i faser (tilf\u00f8jes automatisk hvis den mangler)"
+      "Opdeler diagrammet i faser ved kendte proces\u00e6ndringer. Kolonne med TRUE/1 markerer nye faser (tilf\u00f8jes automatisk hvis den mangler)."
     ),
     compact_select(
       "frys_column", "Frys",
-      "Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne (tilf\u00f8jes automatisk hvis den mangler)"
+      "L\u00e5ser kontrolgr\u00e6nser baseret p\u00e5 en baseline-periode. Kolonne med TRUE/1 markerer baseline-punkter (tilf\u00f8jes automatisk hvis den mangler)."
     ),
     compact_select(
       "kommentar_column", "Kommentar",

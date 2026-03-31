@@ -29,6 +29,12 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
         display: flex !important;
       }
+      body.wizard-nav-active .navbar .nav-link[data-value='upload'],
+      body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
+      body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
+      body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
+        display: flex !important;
+      }
     ")),
     # Your application UI logic
     bslib::page_navbar(

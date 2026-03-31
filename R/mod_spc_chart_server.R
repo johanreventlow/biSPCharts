@@ -818,8 +818,21 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         plot_result <- spc_plot()
 
         if (is.null(plot_result)) {
+          # Vis kontekstuel tom-state i stedet for uendelig "Beregner..."
+          config <- tryCatch(column_config_reactive(), error = function(e) NULL)
+          empty_state_msg <- if (is.null(config) || is.null(config$y_col)) {
+            "V\u00e6lg en numerisk Y-akse-kolonne\nfor at generere diagrammet."
+          } else {
+            y_col_data <- tryCatch(data[[config$y_col]], error = function(e) NULL)
+            if (!is.null(y_col_data) && !is_column_numeric(y_col_data)) {
+              "Den valgte Y-akse-kolonne indeholder\nikke numeriske data."
+            } else {
+              NULL
+            }
+          }
+
           graphics::plot.new()
-          graphics::text(0.5, 0.5, "Beregner...", cex = 1.1, col = "#6c757d")
+          graphics::text(0.5, 0.5, empty_state_msg %||% "Beregner...", cex = 1.1, col = "#6c757d")
           return(invisible(NULL))
         }
 
@@ -977,7 +990,13 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       } else if (is.null(config) || is.null(config$y_col)) {
         list(
           status = "not_configured",
-          message = "Vælg kolonner i indstillinger",
+          message = "V\u00e6lg en numerisk Y-akse-kolonne for at generere diagrammet",
+          theme = "warning"
+        )
+      } else if (!is_column_numeric(data[[config$y_col]])) {
+        list(
+          status = "not_configured",
+          message = "Den valgte Y-akse-kolonne indeholder ikke numeriske data",
           theme = "warning"
         )
       } else {
@@ -996,7 +1015,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         } else if (get_plot_state("is_computing") %||% FALSE) {
           list(
             status = "calculating",
-            message = "Beregner nye værdier...",
+            message = "Beregner nye v\u00e6rdier...",
             theme = "info"
           )
         } else if (!(get_plot_state("plot_ready") %||% FALSE)) {
@@ -1069,13 +1088,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
             )
           },
           showcase = spc_run_chart_icon,
-          theme = if (status_info$status == "ready" && chart_type == "run" && !is.null(anhoej$runs_signal) && (anhoej$runs_signal %||% FALSE)) {
-            "dark"
-          } else if (status_info$status == "ready") {
-            "light"
-          } else {
-            status_info$theme
-          },
+          theme = value_box_signal_theme(status_info, anhoej$runs_signal),
           shiny::p(
             class = "fs-7 text-muted mb-0",
             if (status_info$status == "ready") {
@@ -1149,13 +1162,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
             )
           },
           showcase = spc_median_crossings_icon,
-          theme = if (status_info$status == "ready" && !is.null(anhoej$crossings_signal) && (anhoej$crossings_signal %||% FALSE)) {
-            "dark"
-          } else if (status_info$status == "ready") {
-            "light"
-          } else {
-            status_info$theme
-          },
+          theme = value_box_signal_theme(status_info, anhoej$crossings_signal),
           shiny::p(
             class = "fs-7 text-muted mb-0",
             if (status_info$status == "ready") {
@@ -1229,9 +1236,9 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
           theme = if (status_info$status == "ready" && chart_type == "run") {
             NULL # No theme when we use custom styling
           } else if (status_info$status == "ready" && !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0)) {
-            "dark"
+            "danger"
           } else if (status_info$status == "ready") {
-            "light"
+            "success"
           } else {
             status_info$theme
           },

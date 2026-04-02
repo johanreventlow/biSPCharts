@@ -90,6 +90,15 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       app_state$events$visualization_update_needed <- 0L
     }
 
+    # Sæt viewport dims tidligt så cache key bruger reelle dimensioner
+    shiny::observe({
+      width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+      height <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      shiny::req(!is.null(width), !is.null(height), width > 100, height > 100)
+      emit <- create_emit_api(app_state)
+      set_viewport_dims(app_state, width, height, emit)
+    })
+
     # ATOMIC UPDATE: Consolidated observer with proper guards
     shiny::observeEvent(
       app_state$events$visualization_update_needed,
@@ -323,34 +332,16 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       kommentar_value <- if (!is.null(kommentar_column_reactive)) kommentar_column_reactive() else NULL
       target_text_value <- if (!is.null(target_text_reactive)) target_text_reactive() else NULL
 
-      # VIEWPORT DIMENSIONS: Brug clientData hvis tilgængelig, ellers conservative defaults
-      # Dette sikrer at plot ALTID renders (også ved første render), men med progressive
-      # enhancement når faktiske dimensioner bliver tilgængelige.
-      #
-      # STRATEGI: Safe defaults → Perfect placement
-      # - Første render: Brug defaults (800×600) → Labels placeres konservativt
-      # - Anden render: Brug faktiske dimensioner → Labels placeres perfekt
-      width_px_raw <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
-      height_px_raw <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      # VIEWPORT DIMENSIONS: Kræv faktiske clientData dimensioner.
+      # Blokerer evaluering indtil browseren har rapporteret reelle dimensioner.
+      # Eliminerer label-placering baseret på forkerte 800×600 defaults.
+      width_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+      height_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      shiny::req(!is.null(width_px), !is.null(height_px), width_px > 100, height_px > 100)
 
-      # M10: Fallback til konfigurerede defaults hvis clientData ikke klar
-      width_px <- if (!is.null(width_px_raw) && width_px_raw > 100) {
-        width_px_raw
-      } else {
-        VIEWPORT_DEFAULTS$width # Conservative default width
-      }
-
-      height_px <- if (!is.null(height_px_raw) && height_px_raw > 100) {
-        height_px_raw
-      } else {
-        VIEWPORT_DEFAULTS$height # Conservative default height
-      }
-
-      # Log viewport status for debugging label placement issues
       if (getOption("spc.debug.label_placement", FALSE)) {
-        viewport_source <- if (!is.null(width_px_raw)) "clientData" else "defaults"
         log_debug(
-          sprintf("Viewport: %d×%d px (source: %s)", width_px, height_px, viewport_source),
+          sprintf("Viewport: %d\u00d7%d px (clientData)", width_px, height_px),
           "VIEWPORT_DIMENSIONS"
         )
       }

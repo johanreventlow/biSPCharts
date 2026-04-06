@@ -493,8 +493,8 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
                                          qic_cache = NULL,
                                          plot_context = "analysis",
                                          override_dpi = NULL) {
-  # Supported chart types for BFHcharts
-  supported_types <- c("run", "i", "p", "c", "u")
+  # Supported chart types (fra config_chart_types.R)
+  supported_types <- SUPPORTED_CHART_TYPES
 
   # Validate plot context
   validate_plot_context(plot_context, stop_on_invalid = TRUE)

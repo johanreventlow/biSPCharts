@@ -88,7 +88,7 @@ spc_plot_config <- function(
   qic_cache = NULL
 ) {
   # Validation
-  valid_chart_types <- c("run", "i", "mr", "xbar", "s", "t", "p", "c", "u", "g")
+  valid_chart_types <- SUPPORTED_CHART_TYPES_BFH
   if (!chart_type %in% valid_chart_types) {
     if (exists("log_warn", mode = "function")) {
       log_warn(

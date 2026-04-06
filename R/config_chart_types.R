@@ -35,7 +35,8 @@ CHART_TYPES_DA <- list(
   "U-kort \u2014 rater (fx komplikationer pr. 1000)" = "u",
   "U\u2032-kort \u2014 rater, standardiseret" = "up",
   "C-kort \u2014 t\u00e6llinger (fx antal fald)" = "c",
-  "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g"
+  "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g",
+  "T-kort \u2014 tid mellem sj\u00e6ldne komplikationer" = "t"
 )
 
 ## Omvendt mapping til engelske koder -----
@@ -48,8 +49,16 @@ CHART_TYPES_EN <- list(
   "u" = "u",
   "up" = "up",
   "c" = "c",
-  "g" = "g"
+  "g" = "g",
+  "t" = "t"
 )
+
+## Understøttede chart types (single source of truth) -----
+## Typer der kan renderes af BFHcharts og er tilgængelige i UI
+SUPPORTED_CHART_TYPES <- unname(unlist(CHART_TYPES_EN))
+
+## Alle BFHcharts-kendte typer (inkl. typer der endnu ikke har UI-support)
+SUPPORTED_CHART_TYPES_BFH <- c(SUPPORTED_CHART_TYPES, "xbar", "s")
 
 ## Hjælpefunktion til konvertering -----
 
@@ -100,7 +109,8 @@ CHART_TYPE_DESCRIPTIONS <- list(
   "u" = "U-kort til rater og hændelser per enhed",
   "up" = "U'-kort til standardiserede rater",
   "c" = "C-kort til tællinger af defekter eller hændelser",
-  "g" = "G-kort til tid mellem sjældne hændelser"
+  "g" = "G-kort til tid mellem sjældne hændelser",
+  "t" = "T-kort til tid mellem sjældne komplikationer (log-transformeret)"
 )
 
 #' Kræver diagramtype en nævner (n)?

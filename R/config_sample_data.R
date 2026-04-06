@@ -85,5 +85,12 @@ SAMPLE_DATASETS <- list(
     description = "Dage mellem alvorlige utilsigtede h\u00e6ndelser",
     file = "sample_g.csv",
     chart_type = "g"
+  ),
+  list(
+    id = "t",
+    label = "T-kort \u2014 Tid mellem sj\u00e6ldne komplikationer",
+    description = "Dage mellem sj\u00e6ldne komplikationer (log-transformeret)",
+    file = "sample_t.csv",
+    chart_type = "t"
   )
 )

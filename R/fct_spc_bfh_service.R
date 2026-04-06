@@ -1653,8 +1653,8 @@ validate_chart_type_bfh <- function(chart_type) {
   safe_operation(
     operation_name = "Chart type validation",
     code = {
-      # Supported chart types (based on BFHchart API validation)
-      supported_types <- c("run", "i", "mr", "p", "pp", "u", "up", "c", "g", "xbar", "s", "t")
+      # Supported chart types (fra config_chart_types.R)
+      supported_types <- SUPPORTED_CHART_TYPES_BFH
 
       # Normalize to lowercase
       chart_type <- tolower(trimws(chart_type))
@@ -2059,11 +2059,10 @@ compute_anhoej_metadata_local <- function(data, config) {
       }
 
       # 5. Validate chart type
-      valid_types <- c("run", "i", "mr", "p", "pp", "u", "up", "c", "g")
-      if (!chart_type %in% valid_types) {
+      if (!chart_type %in% SUPPORTED_CHART_TYPES) {
         stop(paste0(
           "Invalid chart_type: '", chart_type, "'. ",
-          "Must be one of: ", paste(valid_types, collapse = ", ")
+          "Must be one of: ", paste(SUPPORTED_CHART_TYPES, collapse = ", ")
         ))
       }
 

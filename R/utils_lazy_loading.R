@@ -87,7 +87,7 @@ lazy_load_module <- function(module_name, force_reload = FALSE) {
     operation_name = paste("Lazy load module:", module_name),
     code = {
       # In production (package mode), functions are already loaded via namespace
-      if (!"SPCify" %in% loadedNamespaces() || getOption("spc.debug.source_loading", FALSE)) {
+      if (!"biSPCharts" %in% loadedNamespaces() || getOption("spc.debug.source_loading", FALSE)) {
         # Development mode: use source loading
         if (file.exists(module_config$file)) {
           source(module_config$file, local = FALSE)

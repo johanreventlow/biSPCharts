@@ -184,12 +184,12 @@ test_that("y_axis_unit = 'count' does not apply percentage formatting", {
 - Any chart where users set `y_axis_unit = "percent"`
 
 ### Integration
-This fix is required for **SPCify** integration. SPCify passes `y_axis_unit` to BFHcharts and expects correct y-axis formatting.
+This fix is required for **biSPCharts** integration. biSPCharts passes `y_axis_unit` to BFHcharts and expects correct y-axis formatting.
 
 ---
 
 ## Related Issues
-- SPCify regression: Y-axis formatting lost after qicharts2 → BFHcharts migration
+- biSPCharts regression: Y-axis formatting lost after qicharts2 → BFHcharts migration
 - User expectation: Percentage charts should display "75%" not "0.75"
 
 ---
@@ -211,7 +211,7 @@ y.percent: Logical value. If TRUE, formats y axis labels as percentages.
 - R version: [insert version]
 
 **Downstream Dependencies:**
-- SPCify (R Shiny application for clinical SPC charts)
+- biSPCharts (R Shiny application for clinical SPC charts)
 
 ---
 
@@ -222,10 +222,10 @@ y.percent: Logical value. If TRUE, formats y axis labels as percentages.
 - [ ] Add unit tests
 - [ ] Update documentation (if needed)
 - [ ] Release new version
-- [ ] Notify SPCify team of fix availability
+- [ ] Notify biSPCharts team of fix availability
 
 ---
 
-**Reported by:** SPCify Development Team
+**Reported by:** biSPCharts Development Team
 **Date:** 2025-10-17
 **Related Documentation:** `docs/BFHCHARTS_FEATURE_REQUEST_y_axis_unit.md`

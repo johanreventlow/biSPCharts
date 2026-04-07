@@ -31,7 +31,7 @@ mod_landing_ui <- function(id) {
 
     # Velkomsttekst
     shiny::tags$h1(
-      "Velkommen til SPCify",
+      "Velkommen til biSPCharts",
       style = "font-weight: 700; margin-bottom: 10px;"
     ),
     shiny::tags$p(

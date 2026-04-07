@@ -1,6 +1,6 @@
-# Cross-Repository Coordination: SPCify ↔ BFHcharts
+# Cross-Repository Coordination: biSPCharts ↔ BFHcharts
 
-Comprehensive guide for coordinating development, releases, and issue management between SPCify and BFHcharts repositories.
+Comprehensive guide for coordinating development, releases, and issue management between biSPCharts and BFHcharts repositories.
 
 **Last Updated:** 2025-10-17
 **Version:** 1.0.0
@@ -26,7 +26,7 @@ Comprehensive guide for coordinating development, releases, and issue management
 
 ### Purpose
 
-This document establishes workflows and processes for coordinating development between SPCify and BFHcharts repositories. It defines clear boundaries for issue escalation, version management, test sharing, and release coordination.
+This document establishes workflows and processes for coordinating development between biSPCharts and BFHcharts repositories. It defines clear boundaries for issue escalation, version management, test sharing, and release coordination.
 
 ### Goals
 
@@ -39,7 +39,7 @@ This document establishes workflows and processes for coordinating development b
 ### Principles
 
 1. **BFHcharts owns visualization** - All chart rendering, statistical calculations, and core SPC functionality
-2. **SPCify owns integration** - Data flow, UI, Shiny reactivity, and user experience
+2. **biSPCharts owns integration** - Data flow, UI, Shiny reactivity, and user experience
 3. **Clear boundaries** - Well-defined facade layer separating concerns
 4. **Explicit coordination** - Document cross-repository dependencies
 5. **User focus** - Prioritize end-user experience over implementation convenience
@@ -52,7 +52,7 @@ This document establishes workflows and processes for coordinating development b
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      SPCify App                         │
+│                      biSPCharts App                         │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │           Shiny UI Layer                         │  │
 │  │  - File upload, data table, settings             │  │
@@ -97,12 +97,12 @@ This document establishes workflows and processes for coordinating development b
 
 | Responsibility | Owner | Examples |
 |----------------|-------|----------|
-| **UI/UX** | SPCify | File upload, settings panel, modal dialogs |
-| **Shiny Integration** | SPCify | Reactivity, observers, state management |
-| **Data Preprocessing** | SPCify | CSV parsing, column detection, validation |
-| **Parameter Mapping** | SPCify | qicharts2 → BFHcharts translation |
-| **Error Handling (User-facing)** | SPCify | Danish error messages, user notifications |
-| **Localization** | SPCify | Danish language support |
+| **UI/UX** | biSPCharts | File upload, settings panel, modal dialogs |
+| **Shiny Integration** | biSPCharts | Reactivity, observers, state management |
+| **Data Preprocessing** | biSPCharts | CSV parsing, column detection, validation |
+| **Parameter Mapping** | biSPCharts | qicharts2 → BFHcharts translation |
+| **Error Handling (User-facing)** | biSPCharts | Danish error messages, user notifications |
+| **Localization** | biSPCharts | Danish language support |
 | **Chart Rendering** | BFHcharts | ggplot2 generation, geoms, scales |
 | **Statistical Calculations** | BFHcharts | Control limits, centerlines, sigma calculations |
 | **Chart Types** | BFHcharts | I, P, C, U, X̄, S, R, T charts |
@@ -124,9 +124,9 @@ For rapid decision-making, use the decision tree:
 
 When a bug or feature request arises:
 
-1. **Create issue in SPCify repository first**
+1. **Create issue in biSPCharts repository first**
    - Even if you think it belongs in BFHcharts
-   - SPCify context is valuable for prioritization
+   - biSPCharts context is valuable for prioritization
    - Easier to escalate than to de-escalate
 
 2. **Apply initial label:** `needs-triage`
@@ -144,9 +144,9 @@ Use decision tree to answer:
 - Parameter mapping
 - UI integration
 - Data preprocessing
-- SPCify-specific logic
+- biSPCharts-specific logic
 
-→ **YES**: Label `facade-layer`, fix in SPCify
+→ **YES**: Label `facade-layer`, fix in biSPCharts
 
 **Is this a BFHcharts core issue?**
 - Chart rendering
@@ -165,7 +165,7 @@ Use decision tree to answer:
 
 #### Step 3: Escalate to BFHcharts
 
-1. **Update SPCify issue:**
+1. **Update biSPCharts issue:**
    - Change label from `needs-triage` to `bfhchart-escalation`
    - Add context about escalation decision
    - Link to decision tree section that guided decision
@@ -173,7 +173,7 @@ Use decision tree to answer:
 2. **Create BFHcharts issue:**
    - Use template: `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md`
    - Include minimal reproducible example (standalone R script)
-   - Link to SPCify issue
+   - Link to biSPCharts issue
    - Share test cases
 
 3. **Cross-link issues:**
@@ -185,7 +185,7 @@ Use decision tree to answer:
    **Target BFHcharts version:** 0.3.0
    ```
 
-4. **Add to SPCify backlog:**
+4. **Add to biSPCharts backlog:**
    - Label: `bfhchart-blocked`
    - Milestone: Linked to target BFHcharts version
    - Monitor BFHcharts progress
@@ -201,7 +201,7 @@ Use decision tree to answer:
    - [ ] Implement target line rendering
    - [ ] Add tests for target line positioning
 
-   ### SPCify Changes
+   ### biSPCharts Changes
    - [ ] Add UI control for target line
    - [ ] Map to BFHcharts parameter
    - [ ] Update facade layer caching
@@ -209,12 +209,12 @@ Use decision tree to answer:
 
    ### Release Sequence
    1. BFHcharts 0.3.0 (target: 2025-11-01)
-   2. SPCify 1.5.0 (target: 2025-11-15)
+   2. biSPCharts 1.5.0 (target: 2025-11-15)
    ```
 
 2. **Assign owners:**
    - BFHcharts changes: BFHcharts maintainer
-   - SPCify changes: SPCify maintainer
+   - biSPCharts changes: biSPCharts maintainer
    - Integration testing: Both (shared responsibility)
 
 3. **Schedule check-ins:**
@@ -223,12 +223,12 @@ Use decision tree to answer:
 
 ### Issue Labels
 
-#### SPCify Repository
+#### biSPCharts Repository
 
 | Label | Purpose | When to Use |
 |-------|---------|-------------|
 | `needs-triage` | Initial assessment needed | All new issues |
-| `facade-layer` | Fix in SPCify facade | After triage, SPCify-owned |
+| `facade-layer` | Fix in biSPCharts facade | After triage, biSPCharts-owned |
 | `bfhchart-escalation` | Requires BFHcharts changes | Escalated to BFHcharts |
 | `bfhchart-blocked` | Waiting for BFHcharts release | After escalation, awaiting fix |
 | `bfhchart-coordinated` | Both repos need changes | Coordinated development |
@@ -237,9 +237,9 @@ Use decision tree to answer:
 
 | Label | Purpose | When to Use |
 |-------|---------|-------------|
-| `spcify-request` | Feature request from SPCify | All escalated issues |
-| `spcify-coordinated` | Coordinated with SPCify | Coordinated development |
-| `high-priority-integration` | Blocks SPCify release | Critical escalations |
+| `spcify-request` | Feature request from biSPCharts | All escalated issues |
+| `spcify-coordinated` | Coordinated with biSPCharts | Coordinated development |
+| `high-priority-integration` | Blocks biSPCharts release | Critical escalations |
 
 ---
 
@@ -253,7 +253,7 @@ BFHcharts follows semantic versioning (semver):
 - **Minor (0.X.0):** New features, backward compatible
 - **Patch (0.0.X):** Bug fixes, backward compatible
 
-SPCify DESCRIPTION must specify appropriate constraints.
+biSPCharts DESCRIPTION must specify appropriate constraints.
 
 ### Dependency Strategies
 
@@ -337,14 +337,14 @@ Imports:
 1. **Monitor BFHcharts releases:**
    - Subscribe to BFHcharts repository notifications
    - Review CHANGELOG for each release
-   - Assess impact on SPCify
+   - Assess impact on biSPCharts
 
 2. **Evaluate update:**
    ```bash
-   # In SPCify development environment
+   # In biSPCharts development environment
    remotes::install_github("user/BFHcharts@v0.2.1")
 
-   # Run SPCify test suite
+   # Run biSPCharts test suite
    devtools::test()
 
    # Manual testing
@@ -416,10 +416,10 @@ When escalating issues to BFHcharts, share test cases to enable thorough validat
 
 #### Process
 
-1. **Extract minimal test case from SPCify:**
+1. **Extract minimal test case from biSPCharts:**
 
    ```r
-   # SPCify integration test (in tests/testthat/test-spc-chart-integration.R)
+   # biSPCharts integration test (in tests/testthat/test-spc-chart-integration.R)
    test_that("Control limits calculated correctly for I-chart", {
      data <- data.frame(
        x = 1:30,
@@ -446,7 +446,7 @@ When escalating issues to BFHcharts, share test cases to enable thorough validat
 
    ```r
    # Standalone test case for BFHcharts issue #42
-   # Shared from SPCify: https://github.com/user/SPCify/issues/123
+   # Shared from biSPCharts: https://github.com/user/biSPCharts/issues/123
 
    library(BFHcharts)
 
@@ -496,7 +496,7 @@ When escalating issues to BFHcharts, share test cases to enable thorough validat
    - LCL = 32.8 (incorrect)
    ```
 
-4. **Link test to issue in SPCify:**
+4. **Link test to issue in biSPCharts:**
 
    ```r
    test_that("Control limits calculated correctly for I-chart", {
@@ -512,7 +512,7 @@ When escalating issues to BFHcharts, share test cases to enable thorough validat
 
 ### Integration Test Ownership
 
-**SPCify owns:**
+**biSPCharts owns:**
 - End-to-end integration tests
 - Shiny interaction tests
 - Data flow tests
@@ -531,34 +531,34 @@ When escalating issues to BFHcharts, share test cases to enable thorough validat
 
 ### Regression Test Coordination
 
-When BFHcharts fixes a bug escalated from SPCify:
+When BFHcharts fixes a bug escalated from biSPCharts:
 
 1. **BFHcharts adds regression test:**
    ```r
    # In BFHcharts: tests/testthat/test-i-chart.R
    test_that("I-chart control limits calculation (issue #42)", {
-     # Regression test for SPCify issue #123
+     # Regression test for biSPCharts issue #123
      data <- data.frame(...)
      result <- spc_chart(data, chart = "i")
      expect_equal(result$limits$ucl, 62.5, tolerance = 0.1)
    })
    ```
 
-2. **SPCify keeps integration test:**
+2. **biSPCharts keeps integration test:**
    ```r
-   # In SPCify: tests/testthat/test-spc-chart-integration.R
+   # In biSPCharts: tests/testthat/test-spc-chart-integration.R
    test_that("Control limits calculated correctly for I-chart", {
      # Verifies BFHcharts issue #42 fix in integration context
      skip_if_bfhchart_version_below("0.2.0")
 
-     # Full integration test with SPCify data flow
+     # Full integration test with biSPCharts data flow
      # ...
    })
    ```
 
 3. **Document test coordination:**
    ```r
-   # Comment in SPCify test:
+   # Comment in biSPCharts test:
    # This integration test complements BFHcharts unit test
    # Changes to BFHcharts behavior should be coordinated
    # See: BFHcharts tests/testthat/test-i-chart.R:L45
@@ -566,7 +566,7 @@ When BFHcharts fixes a bug escalated from SPCify:
 
 ### Helper: Version Check Function
 
-Add to SPCify test helpers:
+Add to biSPCharts test helpers:
 
 ```r
 # tests/testthat/helper-bfhcharts.R
@@ -631,7 +631,7 @@ When a feature requires changes in both repositories:
 
 #### Phase 1: Planning
 
-1. **Create coordination issue in SPCify:**
+1. **Create coordination issue in biSPCharts:**
    ```markdown
    # Feature: Add Target Line Support
 
@@ -646,7 +646,7 @@ When a feature requires changes in both repositories:
    - Implement target line rendering
    - Add validation and error handling
 
-   ### SPCify Changes
+   ### biSPCharts Changes
    - Add UI input for target value
    - Map to BFHcharts parameter
    - Update facade layer
@@ -654,7 +654,7 @@ When a feature requires changes in both repositories:
 
    ## Timeline
    - BFHcharts 0.3.0: 2025-11-01
-   - SPCify 1.5.0: 2025-11-15
+   - biSPCharts 1.5.0: 2025-11-15
    ```
 
 2. **Create corresponding BFHcharts issue**
@@ -688,7 +688,7 @@ When a feature requires changes in both repositories:
    - Update documentation
    - Create pre-release (e.g., 0.3.0-rc1)
 
-2. **SPCify integrates against pre-release:**
+2. **biSPCharts integrates against pre-release:**
    ```r
    # DESCRIPTION (temporary for testing)
    Remotes:
@@ -696,7 +696,7 @@ When a feature requires changes in both repositories:
    ```
 
 3. **Iterative feedback:**
-   - SPCify tests integration
+   - biSPCharts tests integration
    - Reports issues to BFHcharts
    - BFHcharts refines implementation
    - Repeat until stable
@@ -705,24 +705,24 @@ When a feature requires changes in both repositories:
 
 1. **BFHcharts releases 0.3.0**
 
-2. **SPCify updates dependency:**
+2. **biSPCharts updates dependency:**
    ```r
    # DESCRIPTION
    Imports:
        BFHcharts (>= 0.3.0)
    ```
 
-3. **SPCify releases 1.5.0**
+3. **biSPCharts releases 1.5.0**
 
 4. **Cross-link releases:**
-   - BFHcharts release notes mention SPCify integration
-   - SPCify release notes mention BFHcharts feature
+   - BFHcharts release notes mention biSPCharts integration
+   - biSPCharts release notes mention BFHcharts feature
 
 ### Hotfix Coordination
 
 When critical bug requires immediate fix:
 
-#### Option A: Fix in BFHcharts, SPCify Updates
+#### Option A: Fix in BFHcharts, biSPCharts Updates
 
 **Scenario:** Bug in BFHcharts core logic
 
@@ -735,7 +735,7 @@ When critical bug requires immediate fix:
    # Tag: v0.2.1
    ```
 
-2. **SPCify pulls update:**
+2. **biSPCharts pulls update:**
    ```r
    # Update DESCRIPTION
    Imports:
@@ -743,14 +743,14 @@ When critical bug requires immediate fix:
    ```
 
 3. **Test and release if needed:**
-   - If SPCify users affected → Release SPCify patch
+   - If biSPCharts users affected → Release biSPCharts patch
    - If transparent to users → Update in next regular release
 
-#### Option B: Temporary Workaround in SPCify
+#### Option B: Temporary Workaround in biSPCharts
 
 **Scenario:** BFHcharts fix will take time, users need immediate relief
 
-1. **Implement workaround in SPCify facade:**
+1. **Implement workaround in biSPCharts facade:**
    ```r
    # R/fct_spc_chart_generation.R
 
@@ -773,7 +773,7 @@ When critical bug requires immediate fix:
    ```markdown
    ## Temporary Workaround
 
-   Implemented workaround in SPCify facade layer to correct control limits
+   Implemented workaround in biSPCharts facade layer to correct control limits
    until BFHcharts 0.2.1 is released.
 
    **Workaround location:** `R/fct_spc_chart_generation.R:L45-L52`
@@ -792,7 +792,7 @@ When critical bug requires immediate fix:
 
 ### Pre-Release Checklist
 
-Before releasing SPCify:
+Before releasing biSPCharts:
 
 - [ ] **BFHcharts version identified**
   - Which version are we targeting?
@@ -800,8 +800,8 @@ Before releasing SPCify:
 
 - [ ] **BFHcharts CHANGELOG reviewed**
   - Any breaking changes?
-  - New features used in SPCify?
-  - Bug fixes affecting SPCify?
+  - New features used in biSPCharts?
+  - Bug fixes affecting biSPCharts?
 
 - [ ] **Facade layer updated**
   - API changes adapted
@@ -831,15 +831,15 @@ Before releasing SPCify:
 
 #### Coordinated Release
 
-When SPCify and BFHcharts releases are tightly coupled:
+When biSPCharts and BFHcharts releases are tightly coupled:
 
 1. **Plan timeline:**
    ```
    Week 1: BFHcharts feature freeze
    Week 2: BFHcharts release candidate
-   Week 3: SPCify integration testing
+   Week 3: biSPCharts integration testing
    Week 4: BFHcharts 0.3.0 release (Monday)
-   Week 4: SPCify 1.5.0 release (Friday)
+   Week 4: biSPCharts 1.5.0 release (Friday)
    ```
 
 2. **Communication:**
@@ -848,13 +848,13 @@ When SPCify and BFHcharts releases are tightly coupled:
    - Schedule check-in meetings
 
 3. **Testing:**
-   - SPCify tests against BFHcharts RC
+   - biSPCharts tests against BFHcharts RC
    - Report blockers immediately
    - Iterate until stable
 
 4. **Release sequence:**
    - BFHcharts releases first (dependency)
-   - SPCify releases shortly after (dependent)
+   - biSPCharts releases shortly after (dependent)
 
 5. **Post-release:**
    - Monitor for issues
@@ -863,7 +863,7 @@ When SPCify and BFHcharts releases are tightly coupled:
 
 #### Independent Release
 
-When SPCify releases independently of BFHcharts:
+When biSPCharts releases independently of BFHcharts:
 
 1. **Verify compatibility:**
    - Test with current BFHcharts version
@@ -872,7 +872,7 @@ When SPCify releases independently of BFHcharts:
 
 2. **Document BFHcharts version:**
    ```markdown
-   ## SPCify 1.4.2 - 2025-10-20
+   ## biSPCharts 1.4.2 - 2025-10-20
 
    ### Changed
    - Updated data validation logic
@@ -898,7 +898,7 @@ When BFHcharts introduces breaking changes:
 
 1. **Announce breaking change early:**
    - Create GitHub issue describing change
-   - Tag SPCify maintainer
+   - Tag biSPCharts maintainer
    - Provide migration timeline
 
 2. **Provide migration guide:**
@@ -923,7 +923,7 @@ When BFHcharts introduces breaking changes:
    - Compatibility shims if feasible
    - Clear timeline for removal
 
-#### SPCify Side
+#### biSPCharts Side
 
 1. **Assess impact:**
    - Review breaking changes
@@ -937,17 +937,17 @@ When BFHcharts introduces breaking changes:
    - Performance validation
 
 3. **Coordinate timing:**
-   - Align with SPCify release cycle
-   - Communicate to SPCify users
+   - Align with biSPCharts release cycle
+   - Communicate to biSPCharts users
    - Provide migration path if user-facing
 
 4. **Update DESCRIPTION:**
    ```r
-   # Before migration (SPCify 1.x)
+   # Before migration (biSPCharts 1.x)
    Imports:
        BFHcharts (>= 0.9.0, < 2.0.0)
 
-   # After migration (SPCify 2.0)
+   # After migration (biSPCharts 2.0)
    Imports:
        BFHcharts (>= 2.0.0, < 3.0.0)
    ```
@@ -966,21 +966,21 @@ When BFHcharts introduces breaking changes:
 
 ### Issue Linking Conventions
 
-**In SPCify issue:**
+**In biSPCharts issue:**
 ```markdown
 ## BFHcharts Coordination
 
 **BFHcharts issue:** https://github.com/user/BFHcharts/issues/XX
 **Status:** In progress / Blocked / Resolved
 **Target BFHcharts version:** 0.3.0
-**SPCify integration planned:** 1.5.0
+**biSPCharts integration planned:** 1.5.0
 ```
 
 **In BFHcharts issue:**
 ```markdown
-## SPCify Context
+## biSPCharts Context
 
-**SPCify issue:** https://github.com/user/SPCify/issues/YY
+**biSPCharts issue:** https://github.com/user/biSPCharts/issues/YY
 **Use case:** [Brief description]
 **Priority:** High / Medium / Low
 **User impact:** [Description]
@@ -1003,13 +1003,13 @@ Can you provide timeline estimate for BFHcharts implementation?
 
 ### Response Time Expectations
 
-**SPCify to BFHcharts escalations:**
+**biSPCharts to BFHcharts escalations:**
 - Initial acknowledgment: 1-2 business days
 - Impact assessment: 1 week
 - Timeline estimate: 2 weeks
 
 **BFHcharts breaking change announcements:**
-- SPCify impact assessment: 1 week
+- biSPCharts impact assessment: 1 week
 - Migration plan: 2 weeks
 - Implementation: Coordinated with release cycles
 
@@ -1039,11 +1039,11 @@ For active development periods:
 
 ### Example 1: New Chart Type (T-Chart)
 
-**Scenario:** SPCify user requests T-chart support. This requires BFHcharts implementation.
+**Scenario:** biSPCharts user requests T-chart support. This requires BFHcharts implementation.
 
 #### Step 1: User Request
 
-SPCify user creates issue:
+biSPCharts user creates issue:
 ```markdown
 # Feature Request: Support for T-Chart
 
@@ -1051,13 +1051,13 @@ We need T-charts for time-between-events analysis in our
 infection control monitoring.
 ```
 
-#### Step 2: SPCify Triage
+#### Step 2: biSPCharts Triage
 
-SPCify maintainer assesses:
+biSPCharts maintainer assesses:
 - **Decision:** This requires BFHcharts implementation (new chart type)
 - **Action:** Escalate to BFHcharts
 
-#### Step 3: Create SPCify Issue
+#### Step 3: Create biSPCharts Issue
 
 ```markdown
 # Support for T-Chart
@@ -1068,16 +1068,16 @@ Request from infection control department for T-chart support
 
 ## Analysis
 This requires BFHcharts to implement T-chart functionality.
-SPCify facade layer will then integrate it.
+biSPCharts facade layer will then integrate it.
 
 ## Escalation
 **BFHcharts issue:** https://github.com/user/BFHcharts/issues/78
 **Priority:** Medium
 **Target versions:**
 - BFHcharts 0.4.0 (Q1 2026)
-- SPCify 1.6.0 (Q2 2026)
+- biSPCharts 1.6.0 (Q2 2026)
 
-## SPCify Integration Tasks
+## biSPCharts Integration Tasks
 - [ ] Add T-chart to chart type mappings
 - [ ] Update UI to show T-chart option
 - [ ] Add facade layer support
@@ -1094,10 +1094,10 @@ Using template `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md`:
 ```markdown
 # Feature Request: T-Chart Implementation
 
-## SPCify Context
+## biSPCharts Context
 
-### Use Case in SPCify
-SPCify users need T-charts for time-between-events analysis,
+### Use Case in biSPCharts
+biSPCharts users need T-charts for time-between-events analysis,
 particularly for infection control monitoring.
 
 **User story:**
@@ -1105,7 +1105,7 @@ As an infection control analyst, I need T-charts to monitor
 time between infection events, so that I can identify improvements
 in prevention protocols.
 
-### Impact on SPCify Users
+### Impact on biSPCharts Users
 - **Severity:** Medium
 - **Affected users:** Infection control departments
 - **Current workaround:** None (feature gap)
@@ -1139,9 +1139,9 @@ bfhchart::spc_chart(
 
 ## Coordination
 
-**SPCify issue:** https://github.com/user/SPCify/issues/234
+**biSPCharts issue:** https://github.com/user/biSPCharts/issues/234
 **Target BFHcharts version:** 0.4.0
-**SPCify version that will integrate:** 1.6.0
+**biSPCharts version that will integrate:** 1.6.0
 ```
 
 #### Step 5: BFHcharts Development
@@ -1152,9 +1152,9 @@ BFHcharts maintainer:
 3. Implements T-chart
 4. Releases 0.4.0
 
-#### Step 6: SPCify Integration
+#### Step 6: biSPCharts Integration
 
-SPCify maintainer:
+biSPCharts maintainer:
 1. Updates DESCRIPTION: `BFHcharts (>= 0.4.0)`
 2. Adds facade layer support:
    ```r
@@ -1174,15 +1174,15 @@ SPCify maintainer:
    ```
 3. Updates UI to show T-chart option
 4. Adds tests
-5. Releases SPCify 1.6.0
+5. Releases biSPCharts 1.6.0
 
 #### Step 7: Close Issues
 
 Both issues closed with cross-references:
 
-**SPCify:**
+**biSPCharts:**
 ```markdown
-Resolved in SPCify 1.6.0, using BFHcharts 0.4.0.
+Resolved in biSPCharts 1.6.0, using BFHcharts 0.4.0.
 
 See release notes: [link]
 ```
@@ -1191,7 +1191,7 @@ See release notes: [link]
 ```markdown
 Implemented in BFHcharts 0.4.0.
 
-Integrated by SPCify 1.6.0: https://github.com/user/SPCify/issues/234
+Integrated by biSPCharts 1.6.0: https://github.com/user/biSPCharts/issues/234
 ```
 
 ---
@@ -1202,7 +1202,7 @@ Integrated by SPCify 1.6.0: https://github.com/user/SPCify/issues/234
 
 #### Step 1: Bug Identified
 
-SPCify user reports chart issue:
+biSPCharts user reports chart issue:
 ```markdown
 # Bug: Target Line Not Showing
 
@@ -1219,12 +1219,12 @@ When I specify a target line in settings, it doesn't appear on the chart.
 **Actual:** No target line visible
 ```
 
-#### Step 2: SPCify Triage
+#### Step 2: biSPCharts Triage
 
 Maintainer investigates:
 
 ```r
-# Test in SPCify console
+# Test in biSPCharts console
 result <- generate_spc_chart(
   data = test_data,
   chart_type = "i",
@@ -1247,9 +1247,9 @@ bfh_result <- bfhchart::spc_chart(
 plot(bfh_result)  # Target line still missing!
 ```
 
-**Conclusion:** Bug is in BFHcharts, not SPCify facade.
+**Conclusion:** Bug is in BFHcharts, not biSPCharts facade.
 
-#### Step 3: Create SPCify Issue
+#### Step 3: Create biSPCharts Issue
 
 ```markdown
 # Bug: Target Line Not Rendering (BFHcharts)
@@ -1259,7 +1259,7 @@ Target lines specified via `target` parameter are not rendering
 in BFHcharts output.
 
 ## Root Cause
-Issue is in BFHcharts rendering logic, not SPCify facade layer.
+Issue is in BFHcharts rendering logic, not biSPCharts facade layer.
 
 **Evidence:**
 - Direct BFHcharts call also shows bug
@@ -1283,17 +1283,17 @@ Label: `bug`, `bfhchart-escalation`
 ```markdown
 # Bug: Target Line Not Rendering
 
-## SPCify Context
+## biSPCharts Context
 
-### Use Case in SPCify
-SPCify users specify target values for goal-based monitoring.
+### Use Case in biSPCharts
+biSPCharts users specify target values for goal-based monitoring.
 Target lines should appear on generated charts but are missing.
 
 **Affected feature:** Target line rendering
 **Severity:** High
 **Current workaround:** None
 
-### Impact on SPCify Users
+### Impact on biSPCharts Users
 - Cannot display target lines
 - Limits chart utility
 - Affects all chart types
@@ -1375,9 +1375,9 @@ test_that("Target line renders at specified value", {
 
 ## Coordination
 
-**SPCify issue:** https://github.com/user/SPCify/issues/245
+**biSPCharts issue:** https://github.com/user/biSPCharts/issues/245
 **Expected in BFHcharts version:** 0.2.6 (hotfix)
-**SPCify will adopt:** Immediately upon release
+**biSPCharts will adopt:** Immediately upon release
 ```
 
 #### Step 5: BFHcharts Hotfix
@@ -1389,12 +1389,12 @@ BFHcharts maintainer:
 4. Adds regression test
 5. Releases BFHcharts 0.2.6 (hotfix)
 
-#### Step 6: SPCify Updates
+#### Step 6: biSPCharts Updates
 
-SPCify maintainer:
+biSPCharts maintainer:
 1. Tests with BFHcharts 0.2.6
 2. Updates DESCRIPTION: `BFHcharts (>= 0.2.6)`
-3. Adds regression test in SPCify:
+3. Adds regression test in biSPCharts:
    ```r
    test_that("Target line renders correctly (BFHcharts #92)", {
      skip_if_bfhchart_version_below("0.2.6")
@@ -1405,7 +1405,7 @@ SPCify maintainer:
      expect_equal(result$target_line$value, 50)
    })
    ```
-4. Releases SPCify 1.4.3 (patch)
+4. Releases biSPCharts 1.4.3 (patch)
 
 ---
 
@@ -1424,7 +1424,7 @@ making the app unresponsive.
 
 ## Analysis
 Profiling shows time split between:
-- SPCify data preprocessing: 2-3 seconds
+- biSPCharts data preprocessing: 2-3 seconds
 - BFHcharts chart generation: 8-12 seconds
 
 Both layers need optimization.
@@ -1439,7 +1439,7 @@ Both layers need optimization.
 
 This performance issue requires optimization in BOTH repositories.
 
-### SPCify Optimizations
+### biSPCharts Optimizations
 - [ ] Implement data caching (avoid reprocessing)
 - [ ] Add progress indicator for long operations
 - [ ] Optimize column detection for large datasets
@@ -1455,7 +1455,7 @@ This performance issue requires optimization in BOTH repositories.
 **BFHcharts issue:** https://github.com/user/BFHcharts/issues/105
 **Target:**
 - BFHcharts 0.3.1: <5 seconds for 10k points
-- SPCify 1.5.1: <7 seconds total (including preprocessing)
+- biSPCharts 1.5.1: <7 seconds total (including preprocessing)
 
 ## Benchmarking
 
@@ -1477,21 +1477,21 @@ This performance issue requires optimization in BOTH repositories.
 - Reduces memory allocations
 - Adds benchmarks
 
-**SPCify:**
+**biSPCharts:**
 - Implements caching layer
 - Optimizes preprocessing
 - Adds progress indicators
 
 #### Step 4: Integration and Validation
 
-1. SPCify tests with optimized BFHcharts
+1. biSPCharts tests with optimized BFHcharts
 2. Combined benchmarks run
 3. Verify targets met
 
 #### Step 5: Coordinated Release
 
 - BFHcharts 0.3.1 released
-- SPCify 1.5.1 released
+- biSPCharts 1.5.1 released
 - Joint announcement highlighting performance improvements
 
 ---
@@ -1531,16 +1531,16 @@ to snake_case for consistency with modern R practices.
 [Link to detailed migration guide]
 
 ## Downstream Impact
-**SPCify users:** This will require SPCify to update facade layer.
-**Issue:** https://github.com/user/SPCify/issues/456
+**biSPCharts users:** This will require biSPCharts to update facade layer.
+**Issue:** https://github.com/user/biSPCharts/issues/456
 
 @spcify-maintainer - Please review migration guide and provide
-timeline for SPCify 2.0 integration.
+timeline for biSPCharts 2.0 integration.
 ```
 
-#### Step 2: SPCify Impact Assessment
+#### Step 2: biSPCharts Impact Assessment
 
-SPCify maintainer creates issue:
+biSPCharts maintainer creates issue:
 
 ```markdown
 # BFHcharts 2.0 Migration
@@ -1551,7 +1551,7 @@ layer updates.
 
 ## Impact Assessment
 
-### Changes Required in SPCify
+### Changes Required in biSPCharts
 
 **Parameter mapping updates:**
 ```r
@@ -1572,13 +1572,13 @@ bfhchart::spc_chart(..., show_grid = TRUE)
 ### Migration Strategy
 
 #### Option A: Coordinated Major Release
-- SPCify 2.0 released alongside BFHcharts 2.0
+- biSPCharts 2.0 released alongside BFHcharts 2.0
 - Clean break, no backward compatibility
 - Requires user communication
 
 #### Option B: Gradual Migration
-- SPCify 1.x supports BFHcharts 1.x
-- SPCify 2.0 supports BFHcharts 2.0
+- biSPCharts 1.x supports BFHcharts 1.x
+- biSPCharts 2.0 supports BFHcharts 2.0
 - Longer support cycle
 
 **Decision:** Option A (coordinated major release)
@@ -1586,9 +1586,9 @@ bfhchart::spc_chart(..., show_grid = TRUE)
 ### Timeline
 
 - **2025-12:** Review BFHcharts 1.9.0 with deprecation warnings
-- **2026-01:** Create SPCify 2.0 migration branch
-- **2026-02:** SPCify 2.0 beta testing
-- **2026-03:** SPCify 2.0 release (after BFHcharts 2.0)
+- **2026-01:** Create biSPCharts 2.0 migration branch
+- **2026-02:** biSPCharts 2.0 beta testing
+- **2026-03:** biSPCharts 2.0 release (after BFHcharts 2.0)
 
 ## Coordination
 **BFHcharts issue:** https://github.com/user/BFHcharts/issues/120
@@ -1596,7 +1596,7 @@ bfhchart::spc_chart(..., show_grid = TRUE)
 
 #### Step 3: Migration Development
 
-SPCify maintainer:
+biSPCharts maintainer:
 
 1. **Creates migration branch:**
    ```bash
@@ -1664,7 +1664,7 @@ SPCify maintainer:
    - Selected user testing
    - Feedback incorporation
 
-2. **Release SPCify 2.0:**
+2. **Release biSPCharts 2.0:**
    - After BFHcharts 2.0 is stable
    - Communication to users
    - Migration support
@@ -1680,7 +1680,7 @@ SPCify maintainer:
 
 ### Common Issues and Solutions
 
-#### Issue: BFHcharts Update Breaks SPCify
+#### Issue: BFHcharts Update Breaks biSPCharts
 
 **Symptoms:**
 - Tests failing after BFHcharts update
@@ -1689,7 +1689,7 @@ SPCify maintainer:
 
 **Diagnosis:**
 1. Check BFHcharts CHANGELOG for breaking changes
-2. Run SPCify tests with new BFHcharts version
+2. Run biSPCharts tests with new BFHcharts version
 3. Profile to identify affected code paths
 
 **Solutions:**
@@ -1714,7 +1714,7 @@ Imports:
 #### Issue: Can't Determine Where Bug Belongs
 
 **Symptoms:**
-- Unclear if issue is in SPCify or BFHcharts
+- Unclear if issue is in biSPCharts or BFHcharts
 - Complex interaction between layers
 - Hard to isolate
 
@@ -1722,7 +1722,7 @@ Imports:
 
 1. **Test with minimal BFHcharts example:**
    ```r
-   # Bypass SPCify facade entirely
+   # Bypass biSPCharts facade entirely
    library(BFHcharts)
    result <- bfhchart::spc_chart(
      data = data.frame(x = 1:30, y = rnorm(30)),
@@ -1734,7 +1734,7 @@ Imports:
    ```
 
    - **Bug persists?** → BFHcharts issue
-   - **Bug disappears?** → SPCify facade issue
+   - **Bug disappears?** → biSPCharts facade issue
 
 2. **Check parameter transformation:**
    ```r
@@ -1754,11 +1754,11 @@ Imports:
 
 3. **Compare outputs:**
    - Direct BFHcharts call output
-   - SPCify facade layer output
+   - biSPCharts facade layer output
    - Identify divergence point
 
 **Solutions:**
-- Create issue in SPCify (default)
+- Create issue in biSPCharts (default)
 - Label `needs-triage`
 - Document investigation findings
 - Tag maintainer for architecture decision
@@ -1766,7 +1766,7 @@ Imports:
 #### Issue: Version Conflict with Other Packages
 
 **Symptoms:**
-- Cannot install SPCify due to BFHcharts version
+- Cannot install biSPCharts due to BFHcharts version
 - Dependency resolution errors
 - Version conflicts with ggplot2, scales, etc.
 
@@ -1776,8 +1776,8 @@ Imports:
 packageVersion("BFHcharts")
 packageVersion("ggplot2")
 
-# Check SPCify requirements
-remotes::package_deps("SPCify")$version
+# Check biSPCharts requirements
+remotes::package_deps("biSPCharts")$version
 ```
 
 **Solutions:**
@@ -1786,17 +1786,17 @@ remotes::package_deps("SPCify")$version
 ```r
 update.packages(ask = FALSE)
 remotes::install_github("user/BFHcharts")
-remotes::install_github("user/SPCify")
+remotes::install_github("user/biSPCharts")
 ```
 
 **Option 2: Use renv for isolation**
 ```r
 renv::init()
 renv::install("user/BFHcharts@v0.3.0")
-renv::install("user/SPCify@v1.5.0")
+renv::install("user/biSPCharts@v1.5.0")
 ```
 
-**Option 3: Relax version constraints (SPCify developers)**
+**Option 3: Relax version constraints (biSPCharts developers)**
 ```r
 # DESCRIPTION
 Imports:
@@ -1837,7 +1837,7 @@ bench::mark(
 - Share benchmarking results
 - Provide profiling data
 
-**Option 2: Optimize SPCify facade**
+**Option 2: Optimize biSPCharts facade**
 - Add caching
 - Reduce data transformations
 - Profile preprocessing
@@ -1853,22 +1853,22 @@ bench::mark(
 
 ### Escalation Decision in 60 Seconds
 
-1. **UI/Shiny issue?** → SPCify
-2. **Data preprocessing?** → SPCify
+1. **UI/Shiny issue?** → biSPCharts
+2. **Data preprocessing?** → biSPCharts
 3. **Chart rendering/statistical?** → BFHcharts
 4. **Both needed?** → Coordinate
-5. **Unsure?** → Create SPCify issue, label `needs-triage`
+5. **Unsure?** → Create biSPCharts issue, label `needs-triage`
 
 ### Essential Links
 
 - **Decision Tree:** `.claude/ISSUE_ESCALATION_DECISION_TREE.md`
 - **Issue Template:** `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md`
-- **SPCify CLAUDE.md:** Section 5.3 - External Package Ownership
+- **biSPCharts CLAUDE.md:** Section 5.3 - External Package Ownership
 - **Test Helper:** `tests/testthat/helper-bfhcharts.R`
 
 ### Key Contacts
 
-- **SPCify Maintainer:** [Name/GitHub handle]
+- **biSPCharts Maintainer:** [Name/GitHub handle]
 - **BFHcharts Maintainer:** [Name/GitHub handle]
 
 ### Version Check Commands
@@ -1877,8 +1877,8 @@ bench::mark(
 # Check installed versions
 packageVersion("BFHcharts")
 
-# Check SPCify's BFHcharts requirement
-desc::desc_get_deps("SPCify") %>%
+# Check biSPCharts's BFHcharts requirement
+desc::desc_get_deps("biSPCharts") %>%
   filter(package == "BFHcharts")
 
 # Test with specific version

@@ -1178,7 +1178,7 @@ validate_csv_file <- function(file_path) {
         if (grepl("[,;\\t]", first_value)) {
           errors <- c(errors, paste0(
             "Din CSV-fil bruger muligvis komma eller tabulator som ",
-            "kolonneadskiller. SPCify forventer semikolon (;), som ",
+            "kolonneadskiller. biSPCharts forventer semikolon (;), som ",
             "er standarden i dansk Excel. Pr\u00f8v at eksportere ",
             "filen igen som 'CSV (semikolon-separeret)' fra Excel."
           ))

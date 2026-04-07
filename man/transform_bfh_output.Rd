@@ -30,22 +30,22 @@ a freeze column.}
 \value{
 list with three components:
 \describe{
-\item{plot}{ggplot2 object compatible with SPCify customization}
+\item{plot}{ggplot2 object compatible with biSPCharts customization}
 \item{qic_data}{tibble with standardized SPC data (qicharts2 format)}
 \item{metadata}{list with chart configuration and diagnostics}
 }
 Returns NULL on transformation failure (with error logging).
 }
 \description{
-Converts BFHchart output (ggplot object) to SPCify's standardized
+Converts BFHchart output (ggplot object) to biSPCharts's standardized
 format matching qicharts2 structure. Ensures output compatibility with
-existing SPCify plot rendering, customization, and export functions.
+existing biSPCharts plot rendering, customization, and export functions.
 }
 \details{
 \strong{Transformation Responsibilities:}
 \itemize{
 \item Extract qic_data from ggplot object layers
-\item Standardize column names (BFHchart → SPCify conventions)
+\item Standardize column names (BFHchart → biSPCharts conventions)
 \item Apply multiply scaling to y-axis values
 \item Calculate combined Anhøj signal if not provided by BFHchart
 \item Ensure required columns present: x, y, cl, ucl, lcl, part, signal
@@ -81,7 +81,7 @@ print(standardized$plot)
 summary(standardized$qic_data)
 print(standardized$metadata$signals_detected)
 
-# Use with existing SPCify functions
+# Use with existing biSPCharts functions
 customized_plot <- apply_hospital_theme(standardized$plot)
 export_plot(customized_plot, filename = "spc_chart.png")
 }

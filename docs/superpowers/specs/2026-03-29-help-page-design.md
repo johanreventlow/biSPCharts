@@ -2,7 +2,7 @@
 
 ## Baggrund
 
-SPCify mangler en hjælpeside der forklarer SPC-grundbegreber og vejleder brugeren i at bruge appen. Målgruppen er danske klinikere og kvalitetsmedarbejdere — fra helt nye til SPC til brugere der kender konceptet men har brug for app-specifik hjælp.
+biSPCharts mangler en hjælpeside der forklarer SPC-grundbegreber og vejleder brugeren i at bruge appen. Målgruppen er danske klinikere og kvalitetsmedarbejdere — fra helt nye til SPC til brugere der kender konceptet men har brug for app-specifik hjælp.
 
 ## Krav
 

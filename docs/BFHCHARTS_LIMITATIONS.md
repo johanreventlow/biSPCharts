@@ -178,7 +178,7 @@ tryCatch(
 )
 ```
 
-**Recommendation:** Use one of the supported chart types (run, i, p, c, u) instead. If X̄ charts are essential for your workflow, SPCify is not currently suitable.
+**Recommendation:** Use one of the supported chart types (run, i, p, c, u) instead. If X̄ charts are essential for your workflow, biSPCharts is not currently suitable.
 
 ---
 
@@ -234,7 +234,7 @@ result <- generateSPCPlot(
 
 **Symptom:** Titel sendt til `create_spc_chart()` ignoreres.
 
-**Workaround:** SPCify filtrerer `chart_title` fra i `fct_spc_bfh_service.R` og håndterer titel via UI-laget i stedet.
+**Workaround:** biSPCharts filtrerer `chart_title` fra i `fct_spc_bfh_service.R` og håndterer titel via UI-laget i stedet.
 
 ---
 
@@ -244,7 +244,7 @@ result <- generateSPCPlot(
 
 **Symptom:** Target-tekst sendt til BFHcharts ignoreres.
 
-**Workaround:** SPCify filtrerer `target_text` fra og viser target-information via UI.
+**Workaround:** biSPCharts filtrerer `target_text` fra og viser target-information via UI.
 
 ---
 
@@ -548,17 +548,17 @@ Expected to address:
 - Improved performance with large datasets
 - Enhanced comment rendering
 
-**SPCify Action:** Update wrapper layer to use new features automatically
+**biSPCharts Action:** Update wrapper layer to use new features automatically
 
 ---
 
 ### BFHcharts Roadmap Dependency
 
-SPCify's limitations are directly tied to BFHcharts development:
+biSPCharts's limitations are directly tied to BFHcharts development:
 
-- **If BFHcharts adds X̄/S support:** SPCify adds automatically (no feature flag needed)
-- **If BFHcharts improves performance:** SPCify benefits automatically
-- **If BFHcharts API changes:** SPCify wrapper layer updates
+- **If BFHcharts adds X̄/S support:** biSPCharts adds automatically (no feature flag needed)
+- **If BFHcharts improves performance:** biSPCharts benefits automatically
+- **If BFHcharts API changes:** biSPCharts wrapper layer updates
 
 ---
 
@@ -583,7 +583,7 @@ app$expect_screenshot(
 
 ## Migration Notes
 
-For teams using SPCify with pure BFHcharts implementation:
+For teams using biSPCharts with pure BFHcharts implementation:
 
 1. **Code changes** - No feature flag branching needed (simplified)
 2. **Chart types** - Limited to: run, i, p, c, u (explicit errors for others)

@@ -7,7 +7,7 @@
 normalize_scale_for_bfh(value, chart_type, param_name = "value")
 }
 \arguments{
-\item{value}{numeric. Value in SPCify scale (may be percentage or decimal).}
+\item{value}{numeric. Value in biSPCharts scale (may be percentage or decimal).}
 
 \item{chart_type}{character. Chart type to determine if normalization needed.}
 
@@ -17,7 +17,7 @@ normalize_scale_for_bfh(value, chart_type, param_name = "value")
 numeric. Value in BFHchart scale (normalized if needed).
 }
 \description{
-Converts SPCify scale values (percentages 0-100) to BFHchart scale (decimals 0-1)
+Converts biSPCharts scale values (percentages 0-100) to BFHchart scale (decimals 0-1)
 when appropriate. Internal helper for parameter transformation.
 }
 \examples{

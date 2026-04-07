@@ -6,7 +6,7 @@
 #'
 #' Package-based initialization function that replaces file sourcing with
 #' package namespace access. All functions are assumed to be loaded via
-#' package loading (library(SPCify)).
+#' package loading (library(biSPCharts)).
 #'
 #' @param force_reload Boolean indicating if forced reload is needed (legacy parameter)
 #' @param config_override Optional configuration override

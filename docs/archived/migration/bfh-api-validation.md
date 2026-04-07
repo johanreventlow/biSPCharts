@@ -47,7 +47,7 @@ Installation: Local development version via devtools::install()
 - geomtextpath (>= 0.1.0) - Label placement
 - BFHtheme (>= 0.1.0) - Hospital branding
 
-**Note:** BFHcharts is an in-house package extracted from SPCify, confirming feature parity assumptions.
+**Note:** BFHcharts is an in-house package extracted from biSPCharts, confirming feature parity assumptions.
 
 ---
 
@@ -128,7 +128,7 @@ create_spc_chart(
 | xbar | ✅ SUPPORTED | PASS | X-bar chart (bonus) |
 | s | ✅ SUPPORTED | PASS | S chart (bonus) |
 
-**Summary:** 8/9 SPCify chart types validated + 2 bonus types (xbar, s)
+**Summary:** 8/9 biSPCharts chart types validated + 2 bonus types (xbar, s)
 
 **Issue Identified:**
 
@@ -152,7 +152,7 @@ CHART_TYPES_EN <- c("run", "i", "mr", "p", "pp", "u", "up", "c", "g", "xbar", "s
 **Workaround for Stream D:**
 1. **Option A (Recommended):** File BFHcharts issue to fix validation list
 2. **Option B:** Use low-level `bfh_spc_plot()` API with qicharts2 directly for MR/PP/UP charts
-3. **Option C:** Temporarily patch validation in SPCify adapter layer
+3. **Option C:** Temporarily patch validation in biSPCharts adapter layer
 
 **Recommendation:** Create BFHcharts issue #XX to sync `valid_chart_types` with `CHART_TYPES_EN`
 
@@ -171,12 +171,12 @@ class(plot)
 
 - ✅ Returns ggplot object (confirmed)
 - ✅ Can add ggplot2 layers (tested with `+ theme_minimal()`)
-- ✅ Compatible with SPCify's post-processing pipeline
+- ✅ Compatible with biSPCharts's post-processing pipeline
 - ✅ Supports hospital branding via `bfh_theme()`
 
 **Integration Strategy:**
 ```r
-# SPCify can apply additional layers
+# biSPCharts can apply additional layers
 plot <- create_spc_chart(...)
 plot <- plot + geomtextpath::geom_textline(...)  # Control limit labels
 plot <- plot + ggrepel::geom_text_repel(...)     # Comments
@@ -221,7 +221,7 @@ qic_data <- qic(data, x = x, y = y, chart = "run", return.data = TRUE)
 - ✅ Label columns for visual customization
 
 **Row ID Preservation:**
-- SPCify injects `.original_row_id` before qic() call
+- biSPCharts injects `.original_row_id` before qic() call
 - Column preserved through qicharts2 processing
 - Comment mapping stability confirmed
 
@@ -250,7 +250,7 @@ qic_data$cl   # Centerline (per point/phase)
 **Per-Phase Calculation:**
 - Control limits recalculate when `part` parameter specified
 - Centerline changes per phase (validated)
-- Compatible with SPCify's phase splitting logic
+- Compatible with biSPCharts's phase splitting logic
 
 **Edge Cases Tested:**
 - Small n (<10): Handled gracefully
@@ -287,9 +287,9 @@ qic_data$n.crossings.min  # Expected minimum crossings
 - ✅ Format: Numeric per-point values
 - ✅ Can be used to calculate crossings signal
 
-**SPCify Integration:**
+**biSPCharts Integration:**
 ```r
-# SPCify combines runs + crossings into unified signal
+# biSPCharts combines runs + crossings into unified signal
 anhoej.signal <- qic_data$runs.signal |
                  (qic_data$n.crossings < qic_data$n.crossings.min)
 
@@ -330,9 +330,9 @@ create_spc_chart(data, x, y, freeze = 10, part = c(15))
 - ✅ Parameters passed directly to qicharts2::qic()
 - ✅ Label logic handled by BFHcharts visualization layer
 
-**Baseline Label Logic (from SPCify):**
+**Baseline Label Logic (from biSPCharts):**
 ```r
-# SPCify determines "BASELINE" vs "NUV. NIVEAU" label
+# biSPCharts determines "BASELINE" vs "NUV. NIVEAU" label
 has_frys_without_subsequent_skift <- freeze && !any(part > freeze)
 label <- if (has_frys_without_subsequent_skift) "BASELINE" else "NUV. NIVEAU"
 ```
@@ -359,7 +359,7 @@ The `notes` parameter expects NSE (bare column name), but internal validation ca
 
 **Workaround Options:**
 
-**Option A: Use String Reference (Recommended for SPCify)**
+**Option A: Use String Reference (Recommended for biSPCharts)**
 ```r
 # Pass column name as string
 create_spc_chart(data, x, y, notes = "comment_column")
@@ -370,22 +370,22 @@ create_spc_chart(data, x, y, notes = "comment_column")
 # Extract comments manually, add via ggrepel
 qic_data <- qic(data, x, y, chart = "run", return.data = TRUE)
 plot <- bfh_spc_plot(qic_data, ...)
-plot <- plot + ggrepel::geom_text_repel(...)  # SPCify's existing approach
+plot <- plot + ggrepel::geom_text_repel(...)  # biSPCharts's existing approach
 ```
 
 **Option C: File BFHcharts Issue**
 Fix NSE handling in `create_spc_chart()` validation logic.
 
-**SPCify Impact:** LOW
-- SPCify already handles comments via ggrepel layer after plot generation
+**biSPCharts Impact:** LOW
+- biSPCharts already handles comments via ggrepel layer after plot generation
 - Existing comment handling includes XSS sanitization + Danish character support
-- Recommendation: Keep Option B (existing SPCify approach)
+- Recommendation: Keep Option B (existing biSPCharts approach)
 
 **Rationale for Option B:**
-1. SPCify has complex comment requirements (sanitization, truncation, collision avoidance)
-2. BFHcharts notes parameter may not support full SPCify feature set
-3. Keeping comment handling in SPCify maintains security control
-4. No breaking changes to existing SPCify logic
+1. biSPCharts has complex comment requirements (sanitization, truncation, collision avoidance)
+2. BFHcharts notes parameter may not support full biSPCharts feature set
+3. Keeping comment handling in biSPCharts maintains security control
+4. No breaking changes to existing biSPCharts logic
 
 **Deviation:** Minor - Workaround available, no blocker
 
@@ -407,12 +407,12 @@ Average per chart: 189ms
 - BFHcharts theming/labels: ~40-60ms (estimated)
 
 **Comparison Context:**
-- SPCify's current qicharts2 integration: ~150-200ms (similar)
+- biSPCharts's current qicharts2 integration: ~150-200ms (similar)
 - Package loading (library(BFHcharts)): ~50-100ms
 - Source loading alternative: ~400ms+
 
 **Optimization Notes:**
-- BFHcharts uses qicharts2 backend (same as SPCify current)
+- BFHcharts uses qicharts2 backend (same as biSPCharts current)
 - Performance parity confirmed
 - No regression expected from migration
 
@@ -454,7 +454,7 @@ plot <- bfh_spc_plot(qic_data, ...)
 ### 2. Notes Parameter NSE Handling
 
 **Severity:** LOW
-**Category:** WORKAROUND_SPCify
+**Category:** WORKAROUND_biSPCharts
 **Impact:** Cannot use bare column name for notes parameter
 
 **Details:**
@@ -462,7 +462,7 @@ plot <- bfh_spc_plot(qic_data, ...)
 - Causes "closure is not subsettable" error
 
 **Workaround:**
-- SPCify already handles comments via ggrepel layer (no change needed)
+- biSPCharts already handles comments via ggrepel layer (no change needed)
 - Alternatively, use string reference: `notes = "column_name"`
 
 **BFHcharts Issue:** #XX (to be created)
@@ -488,7 +488,7 @@ All P0 features work as expected:
 
 **Implementation:**
 ```r
-# In SPCify adapter layer (compute_spc_results_bfh.R)
+# In biSPCharts adapter layer (compute_spc_results_bfh.R)
 compute_spc_results_bfh <- function(data, chart_type, ...) {
   # Use low-level API for MR/PP/UP charts until BFHcharts #XX resolved
   if (chart_type %in% c("mr", "pp", "up")) {
@@ -516,21 +516,21 @@ compute_spc_results_bfh <- function(data, chart_type, ...) {
 
 ### Workaround 2: Comment Handling
 
-**Task:** Integrate SPCify's comment system with BFHcharts
+**Task:** Integrate biSPCharts's comment system with BFHcharts
 
 **Implementation:**
 ```r
-# Keep existing SPCify approach (no change)
+# Keep existing biSPCharts approach (no change)
 plot <- create_spc_chart(data, x, y, chart_type, ...)  # No notes param
 
-# Extract comment data (existing SPCify function)
+# Extract comment data (existing biSPCharts function)
 comment_data <- extract_comment_data(
   data = original_data,
   kommentar_column = kommentar_column,
   qic_data = qic_data
 )
 
-# Add comments via ggrepel (existing SPCify approach)
+# Add comments via ggrepel (existing biSPCharts approach)
 plot <- plot + ggrepel::geom_text_repel(
   data = comment_data,
   aes(x = x, y = y, label = comment),
@@ -553,14 +553,14 @@ plot <- plot + ggrepel::geom_text_repel(
 
 ### Workaround 3: Intelligent X-Axis Breaks
 
-**Task:** Apply SPCify's date formatting to BFHcharts plots
+**Task:** Apply biSPCharts's date formatting to BFHcharts plots
 
 **Implementation:**
 ```r
 # BFHcharts returns base plot
 plot <- create_spc_chart(data, x = date_column, ...)
 
-# SPCify applies intelligent x-axis formatting (existing function)
+# biSPCharts applies intelligent x-axis formatting (existing function)
 interval_info <- detect_date_interval(qic_data$x)
 format_config <- get_optimal_formatting(interval_info)
 
@@ -592,7 +592,7 @@ options(spc.debug.source_loading = TRUE)
 source("R/create_spc_chart.R")  # ~400ms+ for all sources
 ```
 
-**SPCify Integration:**
+**biSPCharts Integration:**
 - Load BFHcharts at app startup (global.R)
 - Cache plot configurations
 - Lazy load heavy modules (performance monitoring)
@@ -610,7 +610,7 @@ source("R/create_spc_chart.R")  # ~400ms+ for all sources
 - Caching opportunity: Reuse plot configs
 
 **Production Target:**
-- Current SPCify: ~150-200ms per chart
+- Current biSPCharts: ~150-200ms per chart
 - BFHcharts: ~189ms per chart
 - **Verdict:** Performance parity achieved
 
@@ -638,7 +638,7 @@ source("R/create_spc_chart.R")  # ~400ms+ for all sources
 | Risk Factor | Severity | Mitigation |
 |-------------|----------|------------|
 | Chart type validation issue | LOW | Use low-level API, file BFHcharts issue |
-| Notes parameter NSE issue | LOW | Keep SPCify comment handling (existing) |
+| Notes parameter NSE issue | LOW | Keep biSPCharts comment handling (existing) |
 | Missing features | NONE | All P0 features present |
 | Performance regression | NONE | Performance parity confirmed |
 | Integration complexity | LOW | ggplot2 layer compatibility excellent |
@@ -658,7 +658,7 @@ source("R/create_spc_chart.R")  # ~400ms+ for all sources
 2. **Implement Adapter Layer:**
    - Create `compute_spc_results_bfh()` facade function
    - Handle MR/PP/UP chart types via low-level API
-   - Integrate SPCify comment handling
+   - Integrate biSPCharts comment handling
    - Apply intelligent x-axis formatting
 
 3. **Validation Testing:**
@@ -677,7 +677,7 @@ source("R/create_spc_chart.R")  # ~400ms+ for all sources
 - Validate one chart type at a time
 
 **Week 2: Integration Testing**
-- Test all chart types with real SPCify data
+- Test all chart types with real biSPCharts data
 - Validate Anhøj rules visualization
 - Test phase splits and baseline freezing
 - Validate hospital branding application
@@ -698,7 +698,7 @@ source("R/create_spc_chart.R")  # ~400ms+ for all sources
 
 ### Long-Term Strategy
 
-**Keep in SPCify:**
+**Keep in biSPCharts:**
 1. Intelligent x-axis breaks (already in BFHcharts)
 2. Y-axis formatting (presentation logic)
 3. Comment annotations (security + complexity)
@@ -788,7 +788,7 @@ if (!rlang::quo_is_null(notes_col)) {
 | P0-5 | Control Limits | ✅ PASS | NO | - |
 | P0-6 | Anhøj Rules | ✅ PASS | NO | - |
 | P0-7 | Freeze/Phase | ✅ PASS | NO | - |
-| P0-8 | Notes Parameter | ⚠️ WORKAROUND | NO | Keep SPCify ggrepel approach |
+| P0-8 | Notes Parameter | ⚠️ WORKAROUND | NO | Keep biSPCharts ggrepel approach |
 | P0-9 | Performance | ✅ PASS | NO | - |
 
 **Overall Assessment:** ✅ **7/9 PASS**, ⚠️ **2/9 WORKAROUND**, ❌ **0/9 FAIL**

@@ -109,7 +109,7 @@ add_resource_path <- function(path = "www", prefix = "www") {
 
   # Use system.file() for packaged apps, fallback for development
   if (path == "www") {
-    www_path <- system.file("app", "www", package = "SPCify")
+    www_path <- system.file("app", "www", package = "biSPCharts")
     if (www_path == "") {
       # Development mode fallbacks
       possible_paths <- c(
@@ -172,7 +172,7 @@ add_resource_path <- function(path = "www", prefix = "www") {
 favicon <- function(path = "www/favicon.ico") {
   # For packaged apps, adjust favicon path
   if (path == "www/favicon.ico") {
-    favicon_path <- system.file("app", "www", "favicon.ico", package = "SPCify")
+    favicon_path <- system.file("app", "www", "favicon.ico", package = "biSPCharts")
     if (favicon_path == "") {
       favicon_path <- file.path("inst", "app", "www", "favicon.ico")
     }

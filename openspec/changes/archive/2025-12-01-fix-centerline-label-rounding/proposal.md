@@ -21,18 +21,18 @@ Centerlinje (CL) labels på SPC charts viser "100%" selvom den faktiske centerli
 
 | Komponent | Ansvar | Involveret? |
 |-----------|--------|-------------|
-| SPCify | Parameter mapping, data prep | Nej (sender korrekt) |
+| biSPCharts | Parameter mapping, data prep | Nej (sender korrekt) |
 | BFHcharts | Chart rendering, label formatering | **Ja (root cause)** |
 
 ### Teknisk Flow
 
-1. **SPCify** sender `cl` parameter til BFHcharts via `bfh_qic()`
-2. **SPCify** normaliserer værdier korrekt (0-100 → 0-1 for procent-charts)
+1. **biSPCharts** sender `cl` parameter til BFHcharts via `bfh_qic()`
+2. **biSPCharts** normaliserer værdier korrekt (0-100 → 0-1 for procent-charts)
 3. **BFHcharts** modtager korrekt værdi men formaterer label forkert
 
 ### Verifikation
 
-SPCify's parameter mapping i `R/fct_spc_bfh_service.R`:
+biSPCharts's parameter mapping i `R/fct_spc_bfh_service.R`:
 ```r
 # Linje 808-816
 if (!is.null(centerline_value)) {
@@ -53,22 +53,22 @@ Værdien sendes korrekt - problemet ligger i BFHcharts' label rendering.
 **Eskalér til BFHcharts** (korrekt arkitektur per CLAUDE.md):
 - Opret GitHub issue i `johanreventlow/BFHcharts`
 - Vent på fix fra BFHcharts maintainer
-- Ingen workaround i SPCify (respekterer package boundaries)
+- Ingen workaround i biSPCharts (respekterer package boundaries)
 
 ### Rationale
 
-Per SPCify's arkitekturprincipper:
+Per biSPCharts's arkitekturprincipper:
 - Label formatering er **BFHcharts' ansvar**
-- SPCify er **integration layer**, ikke visualization engine
-- Workarounds i SPCify ville bryde arkitekturgrænser
+- biSPCharts er **integration layer**, ikke visualization engine
+- Workarounds i biSPCharts ville bryde arkitekturgrænser
 
 ## Acceptance Criteria
 
 - [x] GitHub issue oprettet i BFHcharts repo
 - [x] BFHcharts issue indeholder reproduktion steps
-- [x] SPCify OpenSpec linker til BFHcharts issue
+- [x] biSPCharts OpenSpec linker til BFHcharts issue
 - [x] Fix released i BFHcharts (deployed in v0.4.0)
-- [x] SPCify opdateret til ny BFHcharts version (using v0.4.0)
+- [x] biSPCharts opdateret til ny BFHcharts version (using v0.4.0)
 
 ## Related
 

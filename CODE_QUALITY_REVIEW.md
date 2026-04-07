@@ -119,7 +119,7 @@ In `R/fct_spc_bfh_service.R`:
 
 ```r
 # In R console:
-library(SPCify)
+library(biSPCharts)
 
 # Verify these no longer exist
 exists("map_to_bfh_params")    # Should return FALSE

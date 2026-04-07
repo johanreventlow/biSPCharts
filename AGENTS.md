@@ -41,13 +41,13 @@ R Shiny applikation til **Statistical Process Control (SPC)** med qicharts2. Anv
 **Test-kommandoer:**
 ```r
 # Alle tests
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # Specifik test-fil
 R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 # Performance benchmark
-R -e "microbenchmark::microbenchmark(package = library(SPCify), source = source('global.R'), times = 5)"
+R -e "microbenchmark::microbenchmark(package = library(biSPCharts), source = source('global.R'), times = 5)"
 ```
 
 ### 2.2 Defensive Programming
@@ -144,7 +144,7 @@ values$some_data <- data
 * Wrap komplekse reactives i `safe_operation()`
 
 **Performance:**
-* Package loading primary: `library(SPCify)` (~50-100ms)
+* Package loading primary: `library(biSPCharts)` (~50-100ms)
 * Source loading sekundært: `options(spc.debug.source_loading = TRUE)` (~400ms+)
 * Lazy loading af tunge komponenter
 
@@ -479,7 +479,7 @@ safe_operation <- function(operation_name, code, fallback = NULL, session = NULL
 ## 📎 Appendix B: Performance Architecture
 
 **Boot Strategy:**
-* Production: `library(SPCify)` (~50-100ms)
+* Production: `library(biSPCharts)` (~50-100ms)
 * Development debug: `options(spc.debug.source_loading = TRUE)` (~400ms+)
 
 **Lazy Loading:**

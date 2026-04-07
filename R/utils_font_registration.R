@@ -50,7 +50,7 @@ register_roboto_font <- function() {
   font_path_medium <- tryCatch(
     {
       # Forsøg at finde font i installeret pakke
-      system.file("fonts", "Roboto-Medium.ttf", package = "SPCify")
+      system.file("fonts", "Roboto-Medium.ttf", package = "biSPCharts")
     },
     error = function(e) {
       # Fallback til relativ sti i udvikling
@@ -60,7 +60,7 @@ register_roboto_font <- function() {
 
   font_path_bold <- tryCatch(
     {
-      system.file("fonts", "Roboto-Bold.ttf", package = "SPCify")
+      system.file("fonts", "Roboto-Bold.ttf", package = "biSPCharts")
     },
     error = function(e) {
       file.path("inst", "fonts", "Roboto-Bold.ttf")

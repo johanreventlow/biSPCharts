@@ -99,7 +99,7 @@ req <- shiny::req
 project_root <- here::here()
 
 package_already_loaded <- function() {
-  "SPCify" %in% loadedNamespaces()
+  "biSPCharts" %in% loadedNamespaces()
 }
 
 if (!package_already_loaded()) {

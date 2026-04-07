@@ -128,8 +128,8 @@ result <- BFHcharts::create_spc_chart(
 - `y_axis_unit = "rate"` → No change (existing behavior)
 - `y_axis_unit = "time"` → No change (existing behavior)
 
-### Integration with SPCify
-SPCify currently **passes** `y_axis_unit` to BFHcharts but **does not receive** the expected formatting. This fix will restore SPCify's y-axis formatting functionality lost during qicharts2 → BFHcharts migration.
+### Integration with biSPCharts
+biSPCharts currently **passes** `y_axis_unit` to BFHcharts but **does not receive** the expected formatting. This fix will restore biSPCharts's y-axis formatting functionality lost during qicharts2 → BFHcharts migration.
 
 ---
 
@@ -167,7 +167,7 @@ test_that("y_axis_unit count does not apply percentage formatting", {
 })
 ```
 
-### Integration Tests with SPCify
+### Integration Tests with biSPCharts
 1. Upload CSV with percentage data
 2. Select P-chart
 3. Set Y-axis unit to "Procent"
@@ -190,7 +190,7 @@ create_spc_chart(
 )
 ```
 
-### SPCify Integration
+### biSPCharts Integration
 - File: `R/fct_spc_bfh_service.R`
 - Function: `compute_spc_results_bfh()`
 - Current status: Passes `y_axis_unit` but formatting does not apply
@@ -202,12 +202,12 @@ create_spc_chart(
 
 ---
 
-## Workaround (Temporary - for SPCify Only)
+## Workaround (Temporary - for biSPCharts Only)
 
-Until this is fixed in BFHcharts, SPCify could implement a temporary workaround:
+Until this is fixed in BFHcharts, biSPCharts could implement a temporary workaround:
 
 ```r
-# In SPCify's map_to_bfh_params() - TEMPORARY WORKAROUND
+# In biSPCharts's map_to_bfh_params() - TEMPORARY WORKAROUND
 # Mark clearly as temporary and remove when BFHcharts is fixed
 
 # TEMPORARY: Map y_axis_unit to y.percent for qicharts2 compatibility
@@ -229,12 +229,12 @@ if (!is.null(y_axis_unit) && y_axis_unit == "percent") {
 2. **Implements** the 3-line fix in `create_spc_chart()`
 3. **Adds** unit tests for y.percent mapping
 4. **Releases** new BFHcharts version
-5. **SPCify updates** to new BFHcharts version
-6. **Verification** in SPCify integration tests
+5. **biSPCharts updates** to new BFHcharts version
+6. **Verification** in biSPCharts integration tests
 
 ---
 
 ## Contact
-**Requester:** SPCify development team
+**Requester:** biSPCharts development team
 **Date:** 2025-10-17
-**Related Issues:** SPCify regression after BFHcharts migration
+**Related Issues:** biSPCharts regression after BFHcharts migration

@@ -68,7 +68,7 @@ All unacceptable differences must be validated through automated regression test
 **BFHchart Behavior:**
 - [To be documented after Stream B testing]
 - Expected: Similar or improved collision avoidance
-- SPCify integration: `config_label_placement.R` may apply additional optimizations
+- biSPCharts integration: `config_label_placement.R` may apply additional optimizations
 
 **Edge Cases to Test:**
 1. Dense data points (>50 observations)
@@ -112,7 +112,7 @@ All unacceptable differences must be validated through automated regression test
 **BFHchart:**
 - [To be documented after Stream B]
 - Expected: Similar responsive behavior
-- SPCify control: `config_ui.R` defines standard dimensions
+- biSPCharts control: `config_ui.R` defines standard dimensions
 
 **Validation Method:** Responsive layout testing
 **Approval Status:** ⏳ Pending
@@ -165,8 +165,8 @@ All unacceptable differences must be validated through automated regression test
 | Both violations | Both signals triggered | ⏳ Stream A/B |
 
 **Failure Scenario:**
-- If BFHchart doesn't expose Anhøj rules → Stream A implements in SPCify
-- If detection differs → File BFHchart issue, use SPCify implementation
+- If BFHchart doesn't expose Anhøj rules → Stream A implements in biSPCharts
+- If detection differs → File BFHchart issue, use biSPCharts implementation
 - Document in `docs/migration/bfh-workarounds.md`
 
 **Approval Status:** ⏳ Awaiting Stream A implementation validation

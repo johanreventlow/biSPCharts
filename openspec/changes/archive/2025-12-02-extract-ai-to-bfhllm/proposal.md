@@ -2,18 +2,18 @@
 
 ## Why
 
-SPCify's AI/LLM-funktionalitet er i dag tæt koblet til Shiny-applikationen. Udskillelse til en separat pakke (BFHllm) muliggør:
+biSPCharts's AI/LLM-funktionalitet er i dag tæt koblet til Shiny-applikationen. Udskillelse til en separat pakke (BFHllm) muliggør:
 
-1. **Genbrug med BFHcharts standalone** - Brugere kan generere AI-drevne forbedringsforslag direkte fra BFHcharts uden SPCify
+1. **Genbrug med BFHcharts standalone** - Brugere kan generere AI-drevne forbedringsforslag direkte fra BFHcharts uden biSPCharts
 2. **Fremtidige applikationer** - Email-generering, rapportskrivning og anden tekstgenerering
 3. **Renere separation of concerns** - LLM-integration adskilt fra SPC-applikationslogik
 4. **Uafhængig test og versionering** - BFHllm kan versioneres og testes separat
 
 **Nuværende situation:**
-- ~1200 linjer AI-relateret kode spredt over 5 filer i SPCify
-- Direkte afhængighed af `ellmer` og `ragnar` i SPCify
-- RAG knowledge store bundled i SPCify
-- Ikke muligt at bruge AI-funktionalitet uden SPCify
+- ~1200 linjer AI-relateret kode spredt over 5 filer i biSPCharts
+- Direkte afhængighed af `ellmer` og `ragnar` i biSPCharts
+- RAG knowledge store bundled i biSPCharts
+- Ikke muligt at bruge AI-funktionalitet uden biSPCharts
 
 ## What Changes
 
@@ -34,7 +34,7 @@ SPCify's AI/LLM-funktionalitet er i dag tæt koblet til Shiny-applikationen. Uds
 - digest - Cache keys
 - stringr - String manipulation
 
-### SPCify ændringer
+### biSPCharts ændringer
 
 **Fjernes:**
 - `R/utils_gemini_integration.R`
@@ -51,14 +51,14 @@ SPCify's AI/LLM-funktionalitet er i dag tæt koblet til Shiny-applikationen. Uds
 - `DESCRIPTION` → tilføjer BFHllm, fjerner ellmer/ragnar
 
 **Ny fil:**
-- `R/utils_bfhllm_integration.R` - Tynd wrapper til SPCify-specifik konfiguration
+- `R/utils_bfhllm_integration.R` - Tynd wrapper til biSPCharts-specifik konfiguration
 
 ## Impact
 
 **Affected code:**
-- 5 R-filer fjernes fra SPCify (~1200 linjer)
+- 5 R-filer fjernes fra biSPCharts (~1200 linjer)
 - 2 inst/ mapper flyttes til BFHllm
-- 2 R-filer opdateres i SPCify
+- 2 R-filer opdateres i biSPCharts
 - 1 ny integration fil oprettes
 
 **User-visible changes:**
@@ -66,17 +66,17 @@ SPCify's AI/LLM-funktionalitet er i dag tæt koblet til Shiny-applikationen. Uds
 - Ny mulighed: Standalone brug med BFHcharts
 
 **Breaking changes:**
-- SPCify kræver nu BFHllm (>= 0.1.0) som dependency
+- biSPCharts kræver nu BFHllm (>= 0.1.0) som dependency
 
 **New package:**
 - BFHllm v0.1.0 udgives på GitHub
 
 ## Alternatives Considered
 
-**Alternative 1: Behold alt i SPCify**
+**Alternative 1: Behold alt i biSPCharts**
 ```r
 # Nuværende struktur
-SPCify::generate_improvement_suggestion(spc_result, context)
+biSPCharts::generate_improvement_suggestion(spc_result, context)
 ```
 **Afvist fordi:**
 - Forhindrer standalone brug med BFHcharts
@@ -87,20 +87,20 @@ SPCify::generate_improvement_suggestion(spc_result, context)
 ```r
 # Minimal extraction
 BFHllm::call_gemini(prompt)
-# RAG og SPC-logik forbliver i SPCify
+# RAG og SPC-logik forbliver i biSPCharts
 ```
 **Afvist fordi:**
 - RAG og SPC-specifik logik er tæt koblet
 - Halvt udskilt løsning giver kompleksitet
-- Genbrug med BFHcharts kræver stadig SPCify
+- Genbrug med BFHcharts kræver stadig biSPCharts
 
 **Valgt tilgang: Komplet udskillelse inkl. RAG og SPC-modul**
 - Fuldt selvstændig pakke
-- Kan bruges med BFHcharts uden SPCify
+- Kan bruges med BFHcharts uden biSPCharts
 - Fremtidssikret til andre tekstgenereringsformål
 
 ## Related
 
-- **SPCify issue:** #99
+- **biSPCharts issue:** #99
 - **BFHllm repository:** https://github.com/johanreventlow/BFHllm
 - **Plan fil:** ~/.claude/plans/vast-watching-candy.md

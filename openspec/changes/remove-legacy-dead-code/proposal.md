@@ -1,6 +1,6 @@
 ## Why
 
-SPCify-kodebasen indeholder ~8.000+ linjer ubrugt kode fordelt på:
+biSPCharts-kodebasen indeholder ~8.000+ linjer ubrugt kode fordelt på:
 - **10 helt døde filer** (~3.300 linjer) — abstraktionslag og frameworks der aldrig blev adopteret
 - **~100+ ubrugte funktioner** spredt over 20+ filer
 - **Ghost input IDs** — server-kode der refererer til UI-elementer der ikke eksisterer

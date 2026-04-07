@@ -41,14 +41,14 @@ qic_data <- qic(..., target = 110, return.data = TRUE)
 
 **Mangler:** GeomHline for target line
 
-**Konklusion:** Target line rendering er sandsynligvis ikke implementeret i BFHcharts endnu. Dette skal håndteres i BFHcharts pakken, ikke i SPCify integration layer.
+**Konklusion:** Target line rendering er sandsynligvis ikke implementeret i BFHcharts endnu. Dette skal håndteres i BFHcharts pakken, ikke i biSPCharts integration layer.
 
 ### ✅ Bug #2: centerline_value (cl)
 **Status:** VIRKER - IMPLEMENTERET I BFHCHARTS
 
 **Finding:** BFHcharts understøtter custom centerline via `cl` parameter.
 
-**SPCify Implementation:**
+**biSPCharts Implementation:**
 - ✅ Parameter ekstraheres fra `extra_params$centerline_value`
 - ✅ Passes til `map_to_bfh_params()` (line 332)
 - ✅ Mappes til BFHcharts `cl` parameter (correct parameter name)
@@ -58,7 +58,7 @@ qic_data <- qic(..., target = 110, return.data = TRUE)
 
 **Test Resultat (Efter Parameter Navn Fix):**
 ```r
-# SPCify sender korrekt med cl parameter:
+# biSPCharts sender korrekt med cl parameter:
 [00:20:38] DEBUG: [BFH_SERVICE] Centerline parameter included: cl = 45
 
 # BFHcharts accepterer:
@@ -68,7 +68,7 @@ qic_data <- qic(..., target = 110, return.data = TRUE)
 ✓ Plot saved to: verify_bfhcharts_centerline.png
 ```
 
-**Implementering i SPCify:**
+**Implementering i biSPCharts:**
 - `R/fct_spc_bfh_service.R` lines 663-671: centerline_value → cl parameter mapping
 - `R/fct_spc_bfh_service.R` line 826: cl inkluderet i conservative filter
 - `R/fct_spc_bfh_service.R` lines 848-856: Debug logging for cl parameter
@@ -96,11 +96,11 @@ spc_plot_config(y_axis_unit = "Patienter")
 # Warning: Invalid y_axis_unit: 'Patienter'. Valid units are: count, percent, rate, time
 ```
 
-**Impact på SPCify:**
-- SPCify's UI tillader fri-tekst y_axis_unit input
+**Impact på biSPCharts:**
+- biSPCharts's UI tillader fri-tekst y_axis_unit input
 - Dette vil fejle ved BFHcharts rendering
 - Kræver enten:
-  1. Mapping layer i SPCify (fri-tekst → valid unit)
+  1. Mapping layer i biSPCharts (fri-tekst → valid unit)
   2. UI constraint til kun valid units
   3. BFHcharts API ændring til at acceptere custom units
 
@@ -126,7 +126,7 @@ Chart title overføres korrekt til BFHcharts via `plot_config$chart_title`.
 
 **Anbefaling:** Test i appen med rigtige data og observer om crash opstår i production context.
 
-## SPCify Integration Impact
+## biSPCharts Integration Impact
 
 ### ✅ Ændringer Implementeret (2025-10-16)
 
@@ -174,8 +174,8 @@ log_debug(
 #### 2. Target Value & Centerline Handling
 
 **Status:**
-- ✅ SPCify sender `target_value` korrekt (feat/target-line-rendering)
-- ✅ SPCify sender `cl` (centerline) korrekt (fix/bfhcharts-core-features)
+- ✅ biSPCharts sender `target_value` korrekt (feat/target-line-rendering)
+- ✅ biSPCharts sender `cl` (centerline) korrekt (fix/bfhcharts-core-features)
 - ✅ **BFHcharts understøtter `cl` parameter - centerline virker!**
 - ❌ BFHcharts renderer ikke target line visuelt endnu (modtager data men viser ikke GeomHline)
 
@@ -200,7 +200,7 @@ Anbefaling for target line: **Option A** - Vent på BFHcharts rendering implemen
 
 ## Anbefalinger
 
-### Kort Sigt (SPCify)
+### Kort Sigt (biSPCharts)
 1. ✅ Ingen ændringer nødvendige til font handling (fixed i BFHthemes)
 2. ⚠️ Implementér y_axis_unit mapping layer
 3. ✅ chart_title virker - ingen ændringer

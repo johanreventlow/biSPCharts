@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-SPCify's `epic/bfhcharts-spc-migration` branch contains significant duplicate visualization code that overlaps with BFHcharts and BFHtheme packages. This document outlines the cleanup strategy and migration plan.
+biSPCharts's `epic/bfhcharts-spc-migration` branch contains significant duplicate visualization code that overlaps with BFHcharts and BFHtheme packages. This document outlines the cleanup strategy and migration plan.
 
 **Code Reduction Target:** 1,482 → ~400 lines in `R/fct_spc_plot_generation.R`
 **Functions to Remove:** 2 (add_plot_enhancements, applyHospitalTheme)
@@ -18,9 +18,9 @@ SPCify's `epic/bfhcharts-spc-migration` branch contains significant duplicate vi
 
 ### 1.1 Extended Lines & Comment Annotations
 
-**Status:** ✅ **EXACT DUPLICATE** - Remove from SPCify
+**Status:** ✅ **EXACT DUPLICATE** - Remove from biSPCharts
 
-#### SPCify Implementation
+#### biSPCharts Implementation
 - **File:** `R/fct_spc_plot_generation.R`
 - **Function:** `add_plot_enhancements()` (linje 461-594)
 - **Lines of Code:** 133
@@ -34,28 +34,28 @@ SPCify's `epic/bfhcharts-spc-migration` branch contains significant duplicate vi
 - **Function:** `add_plot_enhancements()` (linje 27-148)
 - **Lines of Code:** 121
 - **Identical Logic:**
-  - Same 20% extension calculation (linje 34-51 vs SPCify 472-491)
-  - Same centerline logic (linje 56-81 vs SPCify 497-525)
-  - Same target line logic (linje 83-93 vs SPCify 529-540)
-  - Same ggrepel comment annotation (linje 130-145 vs SPCify 574-587)
+  - Same 20% extension calculation (linje 34-51 vs biSPCharts 472-491)
+  - Same centerline logic (linje 56-81 vs biSPCharts 497-525)
+  - Same target line logic (linje 83-93 vs biSPCharts 529-540)
+  - Same ggrepel comment annotation (linje 130-145 vs biSPCharts 574-587)
 
 #### Key Differences
-| Aspect | SPCify | BFHcharts | Impact |
+| Aspect | biSPCharts | BFHcharts | Impact |
 |--------|--------|-----------|--------|
-| Hospital Colors | Hardcoded `hospital_colors$hospitalblue` | `BFHtheme::bfh_cols("hospital_blue")` | ⚠️ SPCify outdated |
-| Grey Color | Hardcoded `"#565656"` | `BFHtheme::bfh_cols("hospital_dark_grey")` | ⚠️ SPCify outdated |
+| Hospital Colors | Hardcoded `hospital_colors$hospitalblue` | `BFHtheme::bfh_cols("hospital_blue")` | ⚠️ biSPCharts outdated |
+| Grey Color | Hardcoded `"#565656"` | `BFHtheme::bfh_cols("hospital_dark_grey")` | ⚠️ biSPCharts outdated |
 | Color Management | Custom function | Centralized BFHtheme API | ✅ BFHcharts better |
 
 #### Migration Action
 ```r
-# BEFORE (SPCify):
+# BEFORE (biSPCharts):
 plot <- add_plot_enhancements(plot, qic_data, comment_data, y_axis_unit="count")
 
 # AFTER (Using BFHcharts):
 plot <- BFHcharts::add_plot_enhancements(plot, qic_data, comment_data)
 ```
 
-**Decision:** ❌ **REMOVE** SPCify's `add_plot_enhancements()` → use `BFHcharts::add_plot_enhancements()`
+**Decision:** ❌ **REMOVE** biSPCharts's `add_plot_enhancements()` → use `BFHcharts::add_plot_enhancements()`
 
 ---
 
@@ -63,7 +63,7 @@ plot <- BFHcharts::add_plot_enhancements(plot, qic_data, comment_data)
 
 **Status:** ✅ **OBSOLETE** - Replace with BFHtheme + BFHcharts
 
-#### SPCify Implementation
+#### biSPCharts Implementation
 - **File:** `R/fct_spc_plot_generation.R`
 - **Function:** `applyHospitalTheme()` (linje 1389-1438)
 - **Lines of Code:** 50
@@ -90,14 +90,14 @@ plot <- BFHcharts::add_plot_enhancements(plot, qic_data, comment_data)
 
 #### Migration Decision
 ```r
-# BEFORE (SPCify):
+# BEFORE (biSPCharts):
 plot <- applyHospitalTheme(plot, base_size = 14)
 
 # AFTER (Using BFHcharts):
 plot <- BFHcharts::apply_spc_theme(plot, base_size = 14)
 ```
 
-**Decision:** ❌ **REMOVE** SPCify's `applyHospitalTheme()` → use `BFHcharts::apply_spc_theme()`
+**Decision:** ❌ **REMOVE** biSPCharts's `applyHospitalTheme()` → use `BFHcharts::apply_spc_theme()`
 
 ---
 
@@ -105,7 +105,7 @@ plot <- BFHcharts::apply_spc_theme(plot, base_size = 14)
 
 **Status:** ⚠️ **LIKELY REUSABLE** - Verify imports
 
-#### SPCify Implementation
+#### biSPCharts Implementation
 - **File:** `R/fct_spc_plot_generation.R`
 - **Function:** `apply_y_axis_formatting()` (called linje 1301)
 - **Actual Implementation:** `R/utils_y_axis_formatting.R` (separate file)
@@ -119,7 +119,7 @@ plot <- BFHcharts::apply_spc_theme(plot, base_size = 14)
 - **Status:** Exists in BFHcharts
 
 #### Action
-- [ ] **TODO:** Verify if SPCify reuses BFHcharts version or has own implementation
+- [ ] **TODO:** Verify if biSPCharts reuses BFHcharts version or has own implementation
 - If own implementation: Check for NAMESPACE import
 - If BFHcharts has it: Consider migration
 
@@ -127,9 +127,9 @@ plot <- BFHcharts::apply_spc_theme(plot, base_size = 14)
 
 ### 1.4 Date/Axis Intelligent Formatting
 
-**Status:** ⚠️ **SPCify-SPECIFIC** - Keep for now
+**Status:** ⚠️ **biSPCharts-SPECIFIC** - Keep for now
 
-#### SPCify Implementation
+#### biSPCharts Implementation
 - **File:** `R/fct_spc_plot_generation.R`
 - **Lines:** 1098-1296 (detailed intelligent date formatting)
 - **Smart Features:**
@@ -143,7 +143,7 @@ plot <- BFHcharts::apply_spc_theme(plot, base_size = 14)
 - **Similarity:** Unknown - likely more basic
 
 #### Decision
-- ⚠️ **KEEP** SPCify's smart date formatting for now
+- ⚠️ **KEEP** biSPCharts's smart date formatting for now
 - **TODO:** Evaluate if BFHcharts version is sufficient
 - Long-term: Consider migrating to BFHcharts if robust enough
 
@@ -303,7 +303,7 @@ After Phase 3: ~400-500 lines (only BFHcharts + essential qicharts2 compat)
 - [ ] Create GitHub Issue #49 ✅ Done
 - [ ] Create this documentation ✅ Done
 - [ ] Update NAMESPACE: Add BFHcharts imports
-- [ ] Replace SPCify calls → BFHcharts calls
+- [ ] Replace biSPCharts calls → BFHcharts calls
 - [ ] Run tests - verify no regressions
 - [ ] Code review PR
 
@@ -369,7 +369,7 @@ This cleanup represents a significant architectural improvement:
 2. **Better Maintainability:** Less duplicated code to maintain
 3. **Improved Branding:** BFHtheme provides canonical color/font management
 4. **Reduced Complexity:** 1,482 → 400 lines in main plot file
-5. **Better Separation:** SPCify focuses on data logic, BFHcharts on visualization
+5. **Better Separation:** biSPCharts focuses on data logic, BFHcharts on visualization
 
 **Expected Effort:** 2-3 hours (Phase 1 + 2)
 **Expected Value:** Significant code quality improvement + maintainability gain

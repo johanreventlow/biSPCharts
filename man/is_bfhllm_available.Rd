@@ -10,6 +10,6 @@ is_bfhllm_available()
 Logical, TRUE if BFHllm is configured and ready
 }
 \description{
-Wrapper for BFHllm::bfhllm_chat_available() with SPCify logging.
+Wrapper for BFHllm::bfhllm_chat_available() with biSPCharts logging.
 }
 \keyword{internal}

@@ -2,7 +2,7 @@
 
 ## Baggrund
 
-SPCify starter i dag direkte på Upload-trinnet. Der mangler en velkomstside der introducerer appen og giver brugeren en tydelig indgang til arbejdsflowet.
+biSPCharts starter i dag direkte på Upload-trinnet. Der mangler en velkomstside der introducerer appen og giver brugeren en tydelig indgang til arbejdsflowet.
 
 ## Krav
 
@@ -25,7 +25,7 @@ App starter → Startside (navbar-trin skjulte)
 
 ### Centralt på siden
 - Hospitalets logo (stort, centreret)
-- Overskrift: "Velkommen til SPCify"
+- Overskrift: "Velkommen til biSPCharts"
 - Undertekst: Kort beskrivelse af appens formål (1-2 sætninger om SPC og klinisk kvalitetsarbejde)
 
 ### Feature-highlights (3 kort i række)

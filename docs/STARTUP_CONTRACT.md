@@ -117,7 +117,7 @@ run_app(log_level = "INFO")
 ### Production vs Development
 ```r
 # Production test: No file warnings
-library(SPCify); run_app()  # Should not mention missing R/ files
+library(biSPCharts); run_app()  # Should not mention missing R/ files
 
 # Development test: Source loading works
 source('global.R')  # Should load all functions correctly

@@ -567,7 +567,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         y_var = config$y_col,
         chart_type = chart_type,
         n_var = config$n_col,
-        cl_var = NULL, # Not currently supported in SPCify
+        cl_var = NULL, # Not currently supported in biSPCharts
         freeze_var = frys_column,
         part_var = if (isTRUE(show_phases) && !is.null(skift_column)) skift_column else NULL,
         notes_column = kommentar_column,

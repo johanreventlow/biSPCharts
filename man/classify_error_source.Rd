@@ -12,7 +12,7 @@ classify_error_source(error)
 \value{
 List with classification metadata:
 \describe{
-\item{source}{Character. Error source: "BFHcharts", "SPCify", "User Data", "Unknown"}
+\item{source}{Character. Error source: "BFHcharts", "biSPCharts", "User Data", "Unknown"}
 \item{component}{Character. Log component tag (e.g., "\link{BFH_INTEGRATION}")}
 \item{actionable_by}{Character. Who can fix this error}
 \item{escalate}{Logical. Should this be escalated externally?}
@@ -21,21 +21,21 @@ List with classification metadata:
 }
 \description{
 Analyzes error messages and stack traces to attribute errors to the correct
-component (BFHcharts, SPCify, or User Data). Enables actionable error messages
+component (BFHcharts, biSPCharts, or User Data). Enables actionable error messages
 and proper escalation.
 }
 \details{
 \strong{Classification Logic:}
 \itemize{
 \item \strong{BFHcharts errors:} API errors, calculation errors → Escalate to package maintainer
-\item \strong{SPCify errors:} Validation errors, missing columns → Fix in SPCify
+\item \strong{biSPCharts errors:} Validation errors, missing columns → Fix in biSPCharts
 \item \strong{User Data errors:} Empty data, invalid values → User action needed
 }
 
 \strong{Decision Tree:}
 \enumerate{
 \item Check for BFHcharts-specific patterns (package namespace, function names)
-\item Check for SPCify validation patterns (missing columns, invalid types)
+\item Check for biSPCharts validation patterns (missing columns, invalid types)
 \item Check for data quality patterns (empty, null, NA)
 \item Default to unknown (requires investigation)
 }
@@ -65,7 +65,7 @@ tryCatch(
   validate_bfh_inputs(data, config),
   error = function(e) {
     classification <- classify_error_source(e)
-    # Returns: list(source = "SPCify", escalate = FALSE, ...)
+    # Returns: list(source = "biSPCharts", escalate = FALSE, ...)
   }
 )
 }

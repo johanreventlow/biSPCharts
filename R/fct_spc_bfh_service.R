@@ -1,7 +1,7 @@
 # fct_spc_bfh_service.R
 # Service Layer Facade for BFHchart Integration
 #
-# Dette modul implementerer facade-mønstret til at isolere SPCify fra BFHchart API.
+# Dette modul implementerer facade-mønstret til at isolere biSPCharts fra BFHchart API.
 # Alle funktioner implementerer det fulde workflow fra validation til output transformation.
 #
 # Design princip: Single Responsibility - hver funktion har én klar opgave:
@@ -13,18 +13,18 @@
 
 #' Compute SPC Results Using BFHchart Backend
 #'
-#' Primary facade function that wraps BFHchart functionality with SPCify conventions.
+#' Primary facade function that wraps BFHchart functionality with biSPCharts conventions.
 #' This function provides a stable interface that isolates the application from
 #' BFHchart API changes, handles parameter mapping, validates inputs, and standardizes
-#' output format for seamless integration with existing SPCify plot rendering.
+#' output format for seamless integration with existing biSPCharts plot rendering.
 #'
 #' @details
 #' **Architectural Role:** Service layer facade implementing adapter pattern.
 #' Coordinates validation, transformation, BFHchart invocation, and output formatting.
 #'
 #' **Workflow:**
-#' 1. Input validation using existing SPCify validators
-#' 2. Parameter transformation (SPCify conventions → BFHchart API)
+#' 1. Input validation using existing biSPCharts validators
+#' 2. Parameter transformation (biSPCharts conventions → BFHchart API)
 #' 3. Safe BFHchart invocation with error handling
 #' 4. Output standardization (match qicharts2 format)
 #' 5. Structured logging and cache management
@@ -34,7 +34,7 @@
 #'
 #' @section Notes Column Mapping:
 #' The `notes_column` parameter maps to BFHchart's comment/notes system. If BFHchart
-#' does not provide native notes support, SPCify applies comments as a ggrepel layer
+#' does not provide native notes support, biSPCharts applies comments as a ggrepel layer
 #' after BFHchart rendering (existing pattern). Comment handling includes:
 #' - Row ID stability via `.original_row_id` injection
 #' - XSS sanitization with Danish character support (æøå)
@@ -55,7 +55,7 @@
 #' @param part_var character. Name of part/subgroup/phase variable. Enables
 #'   per-phase control limit calculation and Anhøj rule application. Default NULL.
 #' @param notes_column character. Name of notes/comment column to display on plot.
-#'   Maps to BFHchart notes parameter or SPCify ggrepel layer. Default NULL.
+#'   Maps to BFHchart notes parameter or biSPCharts ggrepel layer. Default NULL.
 #' @param multiply numeric. Multiplier applied to y-axis values for display scaling.
 #'   Common use: convert decimal proportions to percentages (multiply = 100).
 #'   Default 1 (no scaling).
@@ -64,12 +64,12 @@
 #' @param app_state Application state object. Required for cache access. If NULL,
 #'   caching is disabled. Default NULL.
 #' @param ... Additional arguments passed to BFHchart backend. Allows flexibility
-#'   for BFHchart-specific parameters without breaking SPCify interface.
+#'   for BFHchart-specific parameters without breaking biSPCharts interface.
 #'
 #' @return list with three components:
 #'   \describe{
 #'     \item{plot}{ggplot2 object. Rendered SPC chart with control limits, centerline,
-#'       and optional annotations. Compatible with SPCify plot customization functions.}
+#'       and optional annotations. Compatible with biSPCharts plot customization functions.}
 #'     \item{qic_data}{tibble. Standardized data frame with SPC calculations. Columns:
 #'       \itemize{
 #'         \item x: X-axis values (dates or observation numbers)
@@ -625,11 +625,11 @@ compute_spc_results_bfh <- function(
 }
 
 
-#' Map SPCify Parameters to BFHchart API
+#' Map biSPCharts Parameters to BFHchart API
 #'
-#' Transforms SPCify-style parameters to BFHchart API conventions. Handles
+#' Transforms biSPCharts-style parameters to BFHchart API conventions. Handles
 #' parameter name mapping, scale normalization (percentage ↔ decimal), and
-#' data structure preparation. Isolates SPCify from BFHchart API changes.
+#' data structure preparation. Isolates biSPCharts from BFHchart API changes.
 #'
 #' @details
 #' **Transformation Responsibilities:**
@@ -641,10 +641,10 @@ compute_spc_results_bfh <- function(
 #' - NSE (non-standard evaluation) handling if required by BFHchart
 #'
 #' **Parameter Mappings (Expected):**
-#' - SPCify `part_var` → BFHchart `part` parameter
-#' - SPCify `cl_var` → BFHchart centerline override
-#' - SPCify `freeze_var` → BFHchart `freeze` parameter
-#' - Scale: SPCify percentages (0-100) → BFHchart decimals (0-1) if needed
+#' - biSPCharts `part_var` → BFHchart `part` parameter
+#' - biSPCharts `cl_var` → BFHchart centerline override
+#' - biSPCharts `freeze_var` → BFHchart `freeze` parameter
+#' - Scale: biSPCharts percentages (0-100) → BFHchart decimals (0-1) if needed
 #'
 #' @param data data.frame. Cleaned input data (post-validation).
 #' @param x_var character. X-axis column name.
@@ -656,8 +656,8 @@ compute_spc_results_bfh <- function(
 #' @param part_var character. Phase grouping column (optional).
 #' @param notes_column character. Name of notes/comment column in data. Will be
 #'   mapped to BFHcharts `notes` parameter as character vector. Default NULL.
-#' @param target_value numeric. Target value in SPCify scale (optional).
-#' @param centerline_value numeric. Custom centerline in SPCify scale (optional).
+#' @param target_value numeric. Target value in biSPCharts scale (optional).
+#' @param centerline_value numeric. Custom centerline in biSPCharts scale (optional).
 #' @param ... Additional parameters to pass through to BFHchart.
 #'
 #' @return list. Named list of BFHchart-compatible parameters ready for
@@ -781,7 +781,7 @@ map_to_bfh_params <- function(
       # CRITICAL: Use unname() to get just the values, not named character vector
       names(data) <- unname(col_mapping[names(data)])
 
-      # Map SPCify variable names to sanitized versions
+      # Map biSPCharts variable names to sanitized versions
       x_var_sanitized <- col_mapping[x_var]
       y_var_sanitized <- col_mapping[y_var]
       n_var_sanitized <- if (!is.null(n_var)) col_mapping[n_var] else NULL
@@ -1215,14 +1215,14 @@ call_bfh_chart <- function(bfh_params) {
 
 #' Transform BFHchart Output to Standardized Format
 #'
-#' Converts BFHchart output (ggplot object) to SPCify's standardized
+#' Converts BFHchart output (ggplot object) to biSPCharts's standardized
 #' format matching qicharts2 structure. Ensures output compatibility with
-#' existing SPCify plot rendering, customization, and export functions.
+#' existing biSPCharts plot rendering, customization, and export functions.
 #'
 #' @details
 #' **Transformation Responsibilities:**
 #' - Extract qic_data from ggplot object layers
-#' - Standardize column names (BFHchart → SPCify conventions)
+#' - Standardize column names (BFHchart → biSPCharts conventions)
 #' - Apply multiply scaling to y-axis values
 #' - Calculate combined Anhøj signal if not provided by BFHchart
 #' - Ensure required columns present: x, y, cl, ucl, lcl, part, signal
@@ -1251,7 +1251,7 @@ call_bfh_chart <- function(bfh_params) {
 #'
 #' @return list with three components:
 #'   \describe{
-#'     \item{plot}{ggplot2 object compatible with SPCify customization}
+#'     \item{plot}{ggplot2 object compatible with biSPCharts customization}
 #'     \item{qic_data}{tibble with standardized SPC data (qicharts2 format)}
 #'     \item{metadata}{list with chart configuration and diagnostics}
 #'   }
@@ -1272,7 +1272,7 @@ call_bfh_chart <- function(bfh_params) {
 #' summary(standardized$qic_data)
 #' print(standardized$metadata$signals_detected)
 #'
-#' # Use with existing SPCify functions
+#' # Use with existing biSPCharts functions
 #' customized_plot <- apply_hospital_theme(standardized$plot)
 #' export_plot(customized_plot, filename = "spc_chart.png")
 #' }
@@ -1457,7 +1457,7 @@ transform_bfh_output <- function(
 #'
 #' Applies comment/notes annotations to SPC plot as a ggrepel layer. Handles
 #' stable row mapping, XSS sanitization, Danish character support, and collision
-#' avoidance. This function implements SPCify's comment handling pattern,
+#' avoidance. This function implements biSPCharts's comment handling pattern,
 #' independent of BFHchart's native notes support.
 #'
 #' @details
@@ -1488,7 +1488,7 @@ transform_bfh_output <- function(
 #' - Point padding: 0.5
 #' - Max overlaps: Inf (show all comments)
 #'
-#' @param plot ggplot2 object. Base SPC plot from BFHchart or SPCify.
+#' @param plot ggplot2 object. Base SPC plot from BFHchart or biSPCharts.
 #' @param qic_data data.frame. Standardized SPC data with `.original_row_id` column.
 #' @param original_data data.frame. Original input data with comment column.
 #' @param notes_column character. Name of column containing comment text in
@@ -1796,10 +1796,10 @@ calculate_combined_anhoej_signal <- function(
 
 #' Normalize Scale for BFHchart Parameters
 #'
-#' Converts SPCify scale values (percentages 0-100) to BFHchart scale (decimals 0-1)
+#' Converts biSPCharts scale values (percentages 0-100) to BFHchart scale (decimals 0-1)
 #' when appropriate. Internal helper for parameter transformation.
 #'
-#' @param value numeric. Value in SPCify scale (may be percentage or decimal).
+#' @param value numeric. Value in biSPCharts scale (may be percentage or decimal).
 #' @param chart_type character. Chart type to determine if normalization needed.
 #' @param param_name character. Parameter name for logging. Default "value".
 #'
@@ -1819,7 +1819,7 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
   safe_operation(
     operation_name = "Scale normalization",
     code = {
-      # Chart types that use percentage scale (0-100) in SPCify
+      # Chart types that use percentage scale (0-100) in biSPCharts
       # but may expect decimal scale (0-1) in BFHchart
       percentage_charts <- c("p", "pp", "u", "up")
 
@@ -1848,18 +1848,18 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
 #' Classify Error Source for Attribution
 #'
 #' Analyzes error messages and stack traces to attribute errors to the correct
-#' component (BFHcharts, SPCify, or User Data). Enables actionable error messages
+#' component (BFHcharts, biSPCharts, or User Data). Enables actionable error messages
 #' and proper escalation.
 #'
 #' @details
 #' **Classification Logic:**
 #' - **BFHcharts errors:** API errors, calculation errors → Escalate to package maintainer
-#' - **SPCify errors:** Validation errors, missing columns → Fix in SPCify
+#' - **biSPCharts errors:** Validation errors, missing columns → Fix in biSPCharts
 #' - **User Data errors:** Empty data, invalid values → User action needed
 #'
 #' **Decision Tree:**
 #' 1. Check for BFHcharts-specific patterns (package namespace, function names)
-#' 2. Check for SPCify validation patterns (missing columns, invalid types)
+#' 2. Check for biSPCharts validation patterns (missing columns, invalid types)
 #' 3. Check for data quality patterns (empty, null, NA)
 #' 4. Default to unknown (requires investigation)
 #'
@@ -1874,7 +1874,7 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
 #'
 #' @return List with classification metadata:
 #'   \describe{
-#'     \item{source}{Character. Error source: "BFHcharts", "SPCify", "User Data", "Unknown"}
+#'     \item{source}{Character. Error source: "BFHcharts", "biSPCharts", "User Data", "Unknown"}
 #'     \item{component}{Character. Log component tag (e.g., "[BFH_INTEGRATION]")}
 #'     \item{actionable_by}{Character. Who can fix this error}
 #'     \item{escalate}{Logical. Should this be escalated externally?}
@@ -1896,7 +1896,7 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
 #'   validate_bfh_inputs(data, config),
 #'   error = function(e) {
 #'     classification <- classify_error_source(e)
-#'     # Returns: list(source = "SPCify", escalate = FALSE, ...)
+#'     # Returns: list(source = "biSPCharts", escalate = FALSE, ...)
 #'   }
 #' )
 #' }
@@ -1921,16 +1921,16 @@ classify_error_source <- function(error) {
         ))
       }
 
-      # SPCify integration/validation errors
+      # biSPCharts integration/validation errors
       if (grepl("missing.*column", error_msg) ||
         grepl("invalid.*type", error_msg) ||
         grepl("validation failed", error_msg) ||
         grepl("required.*parameter", error_msg) ||
         grepl("parameter.*required", error_msg)) {
         return(list(
-          source = "SPCify",
+          source = "biSPCharts",
           component = "BFH_VALIDATION",
-          actionable_by = "SPCify developer",
+          actionable_by = "biSPCharts developer",
           escalate = FALSE,
           user_message = "Konfigurationsfejl. Tjek dine diagramindstillinger."
         ))
@@ -1985,7 +1985,7 @@ classify_error_source <- function(error) {
 #'
 #' **Architecture Context:**
 #' - BFHcharts: SPC engine (calculation + visualization)
-#' - SPCify: Integration layer + business logic
+#' - biSPCharts: Integration layer + business logic
 #' - This function: UI presentation concern (Anhøj metrics for display)
 #'
 #' **Separation of Concerns:**

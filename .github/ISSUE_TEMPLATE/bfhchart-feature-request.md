@@ -8,19 +8,19 @@ assignees: ''
 
 # BFHcharts Feature Request / Bug Report
 
-## SPCify Context
+## biSPCharts Context
 
-### Use Case in SPCify
-<!-- Describe how this feature will be used in SPCify or how the bug affects SPCify users -->
+### Use Case in biSPCharts
+<!-- Describe how this feature will be used in biSPCharts or how the bug affects biSPCharts users -->
 
 **User story:**
-As a [SPCify user/clinician/analyst], I need to [functionality], so that I can [benefit].
+As a [biSPCharts user/clinician/analyst], I need to [functionality], so that I can [benefit].
 
-**Affected SPCify feature:**
-<!-- Which part of SPCify is affected? (e.g., chart generation, data visualization, UI component) -->
+**Affected biSPCharts feature:**
+<!-- Which part of biSPCharts is affected? (e.g., chart generation, data visualization, UI component) -->
 
 ### Current Workaround (if any)
-<!-- Describe any temporary solution implemented in SPCify facade layer -->
+<!-- Describe any temporary solution implemented in biSPCharts facade layer -->
 
 ```r
 # Current workaround code (if applicable)
@@ -34,7 +34,7 @@ As a [SPCify user/clinician/analyst], I need to [functionality], so that I can [
 - [ ] User experience degradation
 - [ ] Other: _______________
 
-### Impact on SPCify Users
+### Impact on biSPCharts Users
 
 **Severity:**
 - [ ] Critical - Blocks core functionality
@@ -90,7 +90,7 @@ result <- bfhchart::spc_chart(
 
 **Standalone R script demonstrating issue or desired behavior:**
 ```r
-# Minimal reproducible example (standalone - no SPCify dependencies)
+# Minimal reproducible example (standalone - no biSPCharts dependencies)
 library(BFHcharts)
 
 # Sample data
@@ -186,8 +186,8 @@ test_that("[description]", {
 
 ### Cross-Repository Links
 
-**SPCify issue:**
-<!-- Link to related SPCify issue: https://github.com/user/SPCify/issues/XX -->
+**biSPCharts issue:**
+<!-- Link to related biSPCharts issue: https://github.com/user/biSPCharts/issues/XX -->
 
 **BFHcharts issue:**
 <!-- Link to BFHcharts issue once created: https://github.com/user/BFHcharts/issues/YY -->
@@ -197,22 +197,22 @@ test_that("[description]", {
 **Target BFHcharts version for this feature:**
 <!-- e.g., 0.3.0 -->
 
-**SPCify version that will integrate this feature:**
+**biSPCharts version that will integrate this feature:**
 <!-- e.g., 1.5.0 -->
 
 **Release coordination:**
 - [ ] BFHcharts release planned
-- [ ] SPCify facade integration planned
+- [ ] biSPCharts facade integration planned
 - [ ] DESCRIPTION dependency update planned
 - [ ] Migration path documented (if breaking change)
 
 ### Communication
 
-**SPCify maintainer notified:**
-<!-- @mention SPCify maintainer -->
+**biSPCharts maintainer notified:**
+<!-- @mention biSPCharts maintainer -->
 
 **BFHcharts maintainer notified:**
-<!-- @mention BFHcharts maintainer if creating in SPCify repo -->
+<!-- @mention BFHcharts maintainer if creating in biSPCharts repo -->
 
 **Estimated timeline (if known):**
 <!-- e.g., Target Q2 2025, or depends on BFHcharts roadmap -->
@@ -236,15 +236,15 @@ test_that("[description]", {
 
 Before submitting this issue:
 
-- [ ] Verified this requires BFHcharts changes (not just SPCify facade)
+- [ ] Verified this requires BFHcharts changes (not just biSPCharts facade)
 - [ ] Tested with latest BFHcharts version
 - [ ] Created minimal reproducible example
-- [ ] Documented SPCify context and user impact
+- [ ] Documented biSPCharts context and user impact
 - [ ] Prepared test cases
-- [ ] Cross-linked with SPCify issue
+- [ ] Cross-linked with biSPCharts issue
 - [ ] Reviewed decision tree: `.claude/ISSUE_ESCALATION_DECISION_TREE.md`
 - [ ] Consulted coordination guide: `docs/CROSS_REPO_COORDINATION.md`
 
 ---
 
-**For SPCify developers:** See `.claude/ISSUE_ESCALATION_DECISION_TREE.md` for escalation decision guidance.
+**For biSPCharts developers:** See `.claude/ISSUE_ESCALATION_DECISION_TREE.md` for escalation decision guidance.

@@ -58,14 +58,14 @@ BFHcharts plot indeholder kun standard ggplot2 layers:
 
 **ggplot2 version incompatibility** mellem:
 1. BFHcharts' build environment (udviklet med én ggplot2 version)
-2. SPCify's runtime environment (kører med anden ggplot2 version)
+2. biSPCharts's runtime environment (kører med anden ggplot2 version)
 3. Shiny's renderPlot() execution context (modificerer ggplot2 behavior)
 
 ### Understøttende Bevis
 
 1. **"Unknown or uninitialised column: `signal`"** warning:
    - BFHcharts returnerer data uden `signal` kolonne
-   - SPCify forventer `signal` kolonne fra qicharts2
+   - biSPCharts forventer `signal` kolonne fra qicharts2
    - Dette tyder på API mismatch
 
 2. **Standalone OK, Shiny FAIL**:
@@ -223,7 +223,7 @@ if (!"signal" %in% names(standardized$qic_data)) {
 }
 ```
 
-SPCify forventer signal column fra qicharts2, men BFHcharts leverer den ikke altid.
+biSPCharts forventer signal column fra qicharts2, men BFHcharts leverer den ikke altid.
 
 ## Relaterede Issues
 

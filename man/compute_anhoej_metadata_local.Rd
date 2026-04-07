@@ -41,7 +41,7 @@ supplementary metrics (runs length, crossings count) for UI value boxes.
 \strong{Architecture Context:}
 \itemize{
 \item BFHcharts: SPC engine (calculation + visualization)
-\item SPCify: Integration layer + business logic
+\item biSPCharts: Integration layer + business logic
 \item This function: UI presentation concern (Anhøj metrics for display)
 }
 

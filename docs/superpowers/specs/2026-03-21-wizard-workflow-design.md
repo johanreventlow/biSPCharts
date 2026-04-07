@@ -1,4 +1,4 @@
-# SPCify Wizard Workflow — Design Specification
+# biSPCharts Wizard Workflow — Design Specification
 
 **Dato:** 2026-03-21
 **Status:** Approved (spec review passed)
@@ -8,7 +8,7 @@
 
 ## 1. Motivation
 
-SPCify's nuværende UI viser alt samtidigt på én fane: data-tabel, kolonne-mapping, chart-type, preview og konfiguration. Det kan føles overvældende, særligt for klinikere og sygeplejersker der sjældent arbejder med SPC. Datawrapper's guidede wizard-flow demonstrerer at en trinvis tilgang reducerer kognitiv belastning markant, samtidig med at erfarne brugere stadig kan arbejde effektivt.
+biSPCharts's nuværende UI viser alt samtidigt på én fane: data-tabel, kolonne-mapping, chart-type, preview og konfiguration. Det kan føles overvældende, særligt for klinikere og sygeplejersker der sjældent arbejder med SPC. Datawrapper's guidede wizard-flow demonstrerer at en trinvis tilgang reducerer kognitiv belastning markant, samtidig med at erfarne brugere stadig kan arbejde effektivt.
 
 ### Mål
 
@@ -356,7 +356,7 @@ Følgende er **eksplicit ikke** del af denne designændring:
 
 ## Appendix A: Sammenligning med Datawrapper
 
-| Aspekt | Datawrapper | SPCify Wizard |
+| Aspekt | Datawrapper | biSPCharts Wizard |
 |--------|-------------|---------------|
 | Antal trin | 4 | 4 |
 | Trin 1 | Upload (paste/upload/link) | Upload fil eller blankt datasæt |

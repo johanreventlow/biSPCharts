@@ -617,42 +617,4 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
 #' @keywords internal
 generateSPCPlot <- generateSPCPlot_with_backend
 
-## Y-akse Skalering
-# Automatisk detektering af passende Y-akse format (decimal, procent, heltal)
-# Y-akse skalering konstanter
-YAXIS_DECIMAL_MAX <- 1.0 # Værdier under denne → decimal skala
-YAXIS_PERCENT_MAX <- 200 # Øvre grænse for mulig procent-skala
-YAXIS_PERCENT_RANGE <- c(0, 100) # Forventet procent-interval
-YAXIS_PERCENT_THRESHOLD <- 0.7 # 70% af værdier skal ligne procent
 
-detectYAxisScale <- function(y_data) {
-  if (is.null(y_data) || length(y_data) == 0) {
-    return("integer")
-  }
-
-  # Fjern NA-værdier
-  y_clean <- y_data[!is.na(y_data)]
-
-  if (length(y_clean) == 0) {
-    return("integer")
-  }
-
-  max_val <- max(y_clean)
-  min_val <- min(y_clean)
-
-  # Rule 1: Decimal skala (0-1)
-  if (max_val <= YAXIS_DECIMAL_MAX) {
-    return("decimal")
-  }
-
-  # Rule 2: Procent skala (0-100+ med flertallet af værdier i procent-intervallet)
-  if (min_val >= 0 && max_val <= YAXIS_PERCENT_MAX) {
-    percent_like_count <- sum(y_clean >= YAXIS_PERCENT_RANGE[1] & y_clean <= YAXIS_PERCENT_RANGE[2])
-    if (percent_like_count / length(y_clean) >= YAXIS_PERCENT_THRESHOLD) {
-      return("percent")
-    }
-  }
-
-  # Rule 3: Heltal/rate skala
-  return("integer")
-}

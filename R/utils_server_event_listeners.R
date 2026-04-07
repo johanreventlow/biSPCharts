@@ -1399,6 +1399,11 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
         session, "paste_data_input",
         value = paste(sample_text, collapse = "\n")
       )
+      # Sæt chart type dropdown til det anbefalede chart type for datasættet
+      shiny::updateSelectizeInput(
+        session, "chart_type",
+        selected = dataset$chart_type
+      )
       shiny::showNotification(
         paste0(dataset$label, " indsat \u2014 tryk Forts\u00e6t for at analysere"),
         type = "message", duration = 4

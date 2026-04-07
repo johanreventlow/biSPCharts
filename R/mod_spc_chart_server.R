@@ -1226,12 +1226,11 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
           showcase = spc_out_of_control_icon,
           theme = if (status_info$status == "ready" && chart_type == "run") {
             NULL # No theme when we use custom styling
-          } else if (status_info$status == "ready" && !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0)) {
-            "danger"
-          } else if (status_info$status == "ready") {
-            "success"
           } else {
-            status_info$theme
+            value_box_signal_theme(
+              status_info,
+              !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0)
+            )
           },
           shiny::p(
             class = if (status_info$status == "ready" && chart_type == "run") "fs-7 mb-0" else "fs-7 text-muted mb-0",

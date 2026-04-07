@@ -600,7 +600,7 @@ create_ui_upload_page <- function() {
       /* Sample data dropdown */
       .sample-data-dropdown {
         position: absolute;
-        top: 100%;
+        bottom: 100%;
         left: 0;
         z-index: 1000;
         min-width: 320px;
@@ -611,7 +611,7 @@ create_ui_upload_page <- function() {
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,.12);
         padding: 4px 0;
-        margin-top: 4px;
+        margin-bottom: 4px;
         display: none;
       }
       .sample-data-item {
@@ -772,8 +772,8 @@ create_ui_upload_page <- function() {
           shiny::downloadLink(
             "download_template",
             label = shiny::tagList(
-              shiny::icon("download"),
-              " Download tom Excel-skabelon"
+              " ... eller download en tom Excel-skabelon til dine egne data ",
+              shiny::icon("download")
             ),
             class = "download-template-link"
           )

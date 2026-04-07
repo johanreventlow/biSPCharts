@@ -1,6 +1,6 @@
 # Tasks: Fix Export Code Review Issues
 
-**Tracking:** [GitHub Issue #97](https://github.com/johanreventlow/claude_spc/issues/97)
+**Tracking:** [GitHub Issue #97](https://github.com/johanreventlow/biSPCharts/issues/97)
 **Status:** completed
 
 ## Phase 1: Critical - Fix CI (Blocking)

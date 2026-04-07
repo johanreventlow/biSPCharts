@@ -248,4 +248,4 @@ done
 ---
 
 **Last Updated:** 2025-10-15
-**Maintained By:** SPCify Development Team (Task #31 Stream C)
+**Maintained By:** biSPCharts Development Team (Task #31 Stream C)

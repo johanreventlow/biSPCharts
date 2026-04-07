@@ -1,12 +1,12 @@
 # GitHub Labels Setup for Cross-Repository Coordination
 
-This document describes the GitHub labels required for cross-repository coordination between SPCify and BFHcharts.
+This document describes the GitHub labels required for cross-repository coordination between biSPCharts and BFHcharts.
 
 **Last Updated:** 2025-10-17
 
 ---
 
-## Labels for SPCify Repository
+## Labels for biSPCharts Repository
 
 ### Coordination Labels
 
@@ -20,19 +20,19 @@ This document describes the GitHub labels required for cross-repository coordina
 - **Description:** Waiting for BFHcharts release
 - **Color:** `#D73A4A` (Red)
 - **Usage:** Applied after escalation when waiting for BFHcharts implementation
-- **Workflow:** Update when BFHcharts releases fix, then integrate into SPCify
+- **Workflow:** Update when BFHcharts releases fix, then integrate into biSPCharts
 
 #### `bfhchart-coordinated`
 - **Description:** Coordinated development across both repositories
 - **Color:** `#0052CC` (Blue)
-- **Usage:** For features requiring changes in both SPCify and BFHcharts
+- **Usage:** For features requiring changes in both biSPCharts and BFHcharts
 - **Workflow:** Create coordination plan, assign ownership, schedule releases
 
 #### `facade-layer`
-- **Description:** Can be fixed in SPCify facade layer
+- **Description:** Can be fixed in biSPCharts facade layer
 - **Color:** `#0E8A16` (Green)
-- **Usage:** After triage determines issue belongs in SPCify integration layer
-- **Workflow:** Fix in SPCify without BFHcharts changes
+- **Usage:** After triage determines issue belongs in biSPCharts integration layer
+- **Workflow:** Fix in biSPCharts without BFHcharts changes
 
 #### `needs-triage`
 - **Description:** Initial assessment needed to determine ownership
@@ -55,32 +55,32 @@ This document describes the GitHub labels required for cross-repository coordina
 ### Coordination Labels
 
 #### `spcify-request`
-- **Description:** Feature request from SPCify users
+- **Description:** Feature request from biSPCharts users
 - **Color:** `#FFA500` (Orange)
-- **Usage:** For all issues escalated from SPCify
-- **Workflow:** Tag issues with SPCify context for prioritization
+- **Usage:** For all issues escalated from biSPCharts
+- **Workflow:** Tag issues with biSPCharts context for prioritization
 
 #### `spcify-coordinated`
-- **Description:** Coordinated with SPCify development
+- **Description:** Coordinated with biSPCharts development
 - **Color:** `#0052CC` (Blue)
 - **Usage:** For coordinated feature development
-- **Workflow:** Align release timing with SPCify
+- **Workflow:** Align release timing with biSPCharts
 
 #### `high-priority-integration`
-- **Description:** Blocks SPCify release
+- **Description:** Blocks biSPCharts release
 - **Color:** `#D73A4A` (Red)
-- **Usage:** Critical issues blocking SPCify users
+- **Usage:** Critical issues blocking biSPCharts users
 - **Workflow:** Prioritize for hotfix or next release
 
 ---
 
 ## Creating Labels via GitHub CLI
 
-### SPCify Repository
+### biSPCharts Repository
 
 ```bash
-# Navigate to SPCify repository
-cd /path/to/SPCify
+# Navigate to biSPCharts repository
+cd /path/to/biSPCharts
 
 # Create coordination labels
 gh label create "bfhchart-escalation" \
@@ -96,7 +96,7 @@ gh label create "bfhchart-coordinated" \
   --color "0052CC"
 
 gh label create "facade-layer" \
-  --description "Can be fixed in SPCify facade layer" \
+  --description "Can be fixed in biSPCharts facade layer" \
   --color "0E8A16"
 
 gh label create "needs-triage" \
@@ -112,15 +112,15 @@ cd /path/to/BFHcharts
 
 # Create coordination labels
 gh label create "spcify-request" \
-  --description "Feature request from SPCify users" \
+  --description "Feature request from biSPCharts users" \
   --color "FFA500"
 
 gh label create "spcify-coordinated" \
-  --description "Coordinated with SPCify development" \
+  --description "Coordinated with biSPCharts development" \
   --color "0052CC"
 
 gh label create "high-priority-integration" \
-  --description "Blocks SPCify release" \
+  --description "Blocks biSPCharts release" \
   --color "D73A4A"
 ```
 
@@ -144,9 +144,9 @@ gh label create "high-priority-integration" \
 
 ## Label Workflow Examples
 
-### Example 1: Escalation from SPCify to BFHcharts
+### Example 1: Escalation from biSPCharts to BFHcharts
 
-**Initial state (SPCify):**
+**Initial state (biSPCharts):**
 - Labels: `needs-triage`
 
 **After triage:**
@@ -156,16 +156,16 @@ gh label create "high-priority-integration" \
 **BFHcharts issue created:**
 - Labels: `spcify-request`, `bug`
 
-**Waiting for BFHcharts release (SPCify):**
+**Waiting for BFHcharts release (biSPCharts):**
 - Labels: `bfhchart-blocked`, `bug`
 
-**BFHcharts released (SPCify):**
+**BFHcharts released (biSPCharts):**
 - Remove: `bfhchart-blocked`
 - Add: `facade-layer` (for integration work)
 
 ### Example 2: Coordinated Development
 
-**SPCify issue:**
+**biSPCharts issue:**
 - Labels: `bfhchart-coordinated`, `enhancement`
 
 **BFHcharts issue:**
@@ -175,7 +175,7 @@ gh label create "high-priority-integration" \
 
 ### Example 3: Critical Bug Blocking Release
 
-**SPCify issue:**
+**biSPCharts issue:**
 - Labels: `bfhchart-escalation`, `bfhchart-blocked`, `bug`
 
 **BFHcharts issue:**
@@ -189,27 +189,27 @@ gh label create "high-priority-integration" \
 
 ### Useful GitHub Searches
 
-**SPCify: All BFHcharts-related issues**
+**biSPCharts: All BFHcharts-related issues**
 ```
 label:bfhchart-escalation OR label:bfhchart-blocked OR label:bfhchart-coordinated
 ```
 
-**SPCify: Blocked by BFHcharts**
+**biSPCharts: Blocked by BFHcharts**
 ```
 is:open label:bfhchart-blocked
 ```
 
-**SPCify: Needs triage**
+**biSPCharts: Needs triage**
 ```
 is:open label:needs-triage
 ```
 
-**BFHcharts: SPCify requests**
+**BFHcharts: biSPCharts requests**
 ```
 is:open label:spcify-request
 ```
 
-**BFHcharts: High priority for SPCify**
+**BFHcharts: High priority for biSPCharts**
 ```
 is:open label:high-priority-integration
 ```
@@ -219,7 +219,7 @@ is:open label:high-priority-integration
 Track coordination health:
 
 ```bash
-# Count SPCify issues blocked by BFHcharts
+# Count biSPCharts issues blocked by BFHcharts
 gh issue list --label "bfhchart-blocked" --state open | wc -l
 
 # Count open BFHcharts requests
@@ -281,7 +281,7 @@ Consistent color scheme across repositories:
 | Orange | `#FFA500` | Escalation/Request |
 | Red | `#D73A4A` | Blocked/High Priority |
 | Blue | `#0052CC` | Coordination |
-| Green | `#0E8A16` | Can Fix (SPCify) |
+| Green | `#0E8A16` | Can Fix (biSPCharts) |
 | Yellow | `#FBCA04` | Needs Triage |
 
 ---

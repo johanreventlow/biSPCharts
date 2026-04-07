@@ -293,7 +293,7 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
 
   # Observer: Indlaes sample datasaet
   shiny::observeEvent(input$load_sample_data, {
-    sample_path <- system.file("extdata", "sample_spc_data.csv", package = "SPCify")
+    sample_path <- system.file("extdata", "sample_spc_data.csv", package = "biSPCharts")
 
     # Fallback for dev mode
     if (sample_path == "" || !file.exists(sample_path)) {

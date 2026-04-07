@@ -1,10 +1,10 @@
 #' Package initialization and loading
 #'
-#' This file handles package initialization when SPCify is loaded.
+#' This file handles package initialization when biSPCharts is loaded.
 #' It replaces the global.R source() chain with proper package loading.
 #'
 #' @param libname Library name (not used)
-#' @param pkgname Package name (should be "SPCify")
+#' @param pkgname Package name (should be "biSPCharts")
 #'
 #' @importFrom utils packageVersion
 #' @noRd
@@ -13,7 +13,7 @@
 # This prevents pollution of .GlobalEnv
 .claudespc_env <- NULL
 
-#' Get or create the SPCify package environment
+#' Get or create the biSPCharts package environment
 #'
 #' Returns the package-level environment used for storing configuration
 #' and global variables. Creates it if it doesn't exist.
@@ -291,13 +291,13 @@ unlock_cache_statistics <- function(ns = NULL) {
 
   if (is.null(ns) || !is.environment(ns)) {
     ns <- tryCatch(
-      getNamespace("SPCify"),
+      getNamespace("biSPCharts"),
       error = function(e) NULL
     )
   }
 
   if (is.null(ns) || !is.environment(ns)) {
-    warning("Failed to resolve SPCify namespace for cache unlocking")
+    warning("Failed to resolve biSPCharts namespace for cache unlocking")
     return(invisible(FALSE))
   }
 

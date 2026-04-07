@@ -17,7 +17,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 <!-- OPENSPEC:END -->
 
-# Claude Instructions – SPCify
+# Claude Instructions – biSPCharts
 
 **Bootstrap workflow:**
 
@@ -57,7 +57,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ### Unified Event Architecture
 
-**SPCify bruger centraliseret event-bus:**
+**biSPCharts bruger centraliseret event-bus:**
 
 ```r
 # Events defineres i global.R
@@ -118,7 +118,7 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 ### Performance Architecture
 
 **Boot strategy:**
-- Production: `library(SPCify)` (~50-100ms)
+- Production: `library(biSPCharts)` (~50-100ms)
 - Debug: `source('global.R')` med `options(spc.debug.source_loading = TRUE)` (~400ms+)
 
 **Lazy loading:** Tunge moduler (file_operations, advanced_debug, performance_monitoring) loaded on demand
@@ -137,13 +137,13 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 - **BFHtheme** – Hospital branding, themes og fonts
 - **Ragnar** – RAG knowledge store, embedding, retrieval algorithms
 
-❌ **ALDRIG implementer funktionalitet i SPCify som hører hjemme i BFHcharts, BFHtheme eller Ragnar**
+❌ **ALDRIG implementer funktionalitet i biSPCharts som hører hjemme i BFHcharts, BFHtheme eller Ragnar**
 
 ✅ **I STEDET:**
 1. Identificer manglende funktionalitet i ekstern pakke
 2. Dokumentér behovet (issue, ADR, eller docs/)
 3. Informér maintainer om feature request
-4. Implementér midlertidig workaround i SPCify HVIS kritisk (marker tydeligt som temporary)
+4. Implementér midlertidig workaround i biSPCharts HVIS kritisk (marker tydeligt som temporary)
 5. Fjern workaround når funktionalitet er tilgængelig i ekstern pakke
 
 **Eksempler:**
@@ -158,12 +158,12 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 
 ### Integration Pattern
 
-- SPCify: **Integration layer + business logic + knowledge curation**
+- biSPCharts: **Integration layer + business logic + knowledge curation**
 - BFHcharts: **Visualization engine**
 - BFHtheme: **Styling framework**
 - Ragnar: **RAG knowledge store engine**
 
-**SPCify's RAG responsibilities:**
+**biSPCharts's RAG responsibilities:**
 - Knowledge content curation (`inst/spc_knowledge/`)
 - Integration layer (`R/utils_ragnar_integration.R`)
 - Application-specific query formulation
@@ -181,7 +181,7 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 
 ### BFHcharts + qicharts2 Hybrid Architecture
 
-✅ **KRITISK:** SPCify bruger **permanent hybrid arkitektur**:
+✅ **KRITISK:** biSPCharts bruger **permanent hybrid arkitektur**:
 
 | Komponent | Ansvar | Package | Rationale |
 |-----------|--------|---------|-----------|
@@ -225,12 +225,12 @@ anhoej_metadata <- extract_anhoej_metadata(qic_result)
 - BFHcharts API design limitations
 - Performance issues i BFHcharts algoritmer
 
-**Fix i SPCify hvis:**
+**Fix i biSPCharts hvis:**
 - Parameter mapping (qicharts2 → BFHcharts)
 - UI integration og Shiny reaktivitet
 - Data preprocessing og validering
 - Fejlbeskeder og dansk lokalisering
-- SPCify-specifik caching
+- biSPCharts-specifik caching
 
 ---
 
@@ -262,13 +262,13 @@ anhoej_metadata <- extract_anhoej_metadata(qic_result)
 
 ```r
 # Alle tests
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # Specifik test
 R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 # Performance benchmark
-R -e "microbenchmark::microbenchmark(package = library(SPCify), source = source('global.R'), times = 5)"
+R -e "microbenchmark::microbenchmark(package = library(biSPCharts), source = source('global.R'), times = 5)"
 
 # Manual verification scripts (for external integrations)
 Rscript tests/manual/verify_rag.R
@@ -320,7 +320,7 @@ gemini -p "@R/ Analyze current state management patterns and identify areas for 
 gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 ```
 
-**Integration med SPCify workflow:**
+**Integration med biSPCharts workflow:**
 1. Arkitektur verification før større refaktorering
 2. Code review på tværs af moduler
 3. Pattern detection for inconsistencies
@@ -330,11 +330,11 @@ gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 ### AI/LLM Integration Patterns (BFHllm Package)
 
 **Architecture (efter BFHllm migration):**
-- **SPCify facade:** `R/fct_ai_improvement_suggestions.R` - Thin wrapper
-- **Integration layer:** `R/utils_bfhllm_integration.R` - SPCify-specific config
+- **biSPCharts facade:** `R/fct_ai_improvement_suggestions.R` - Thin wrapper
+- **Integration layer:** `R/utils_bfhllm_integration.R` - biSPCharts-specific config
 - **Core AI logic:** Delegeret til `BFHllm` package (v0.1.0+)
 
-**SPCify API (unchanged for users):**
+**biSPCharts API (unchanged for users):**
 
 ```r
 # Generate AI improvement suggestion
@@ -354,7 +354,7 @@ suggestion <- generate_improvement_suggestion(
 **BFHllm Integration:**
 
 ```r
-# SPCify initialization (global.R eller run_app.R)
+# biSPCharts initialization (global.R eller run_app.R)
 initialize_bfhllm(
   ai_config = get_ai_config(),
   rag_config = get_rag_config()
@@ -405,7 +405,7 @@ default:
 ```
 
 **Files involved:**
-- `R/fct_ai_improvement_suggestions.R` - SPCify facade (thin wrapper)
+- `R/fct_ai_improvement_suggestions.R` - biSPCharts facade (thin wrapper)
 - `R/utils_bfhllm_integration.R` - Integration layer
 - `inst/golem-config.yml` - AI/RAG configuration
 - **BFHllm package:** Core AI logic, RAG, caching, prompts, knowledge base
@@ -430,20 +430,20 @@ default:
 
 ### Overview (Post-Migration)
 
-**VIGTIGT:** Efter Issue #100 (Phase 2) er al AI/LLM funktionalitet migreret til **BFHllm** package (v0.1.0+). SPCify delegerer nu til BFHllm for RAG, LLM calls, caching, og prompt building.
+**VIGTIGT:** Efter Issue #100 (Phase 2) er al AI/LLM funktionalitet migreret til **BFHllm** package (v0.1.0+). biSPCharts delegerer nu til BFHllm for RAG, LLM calls, caching, og prompt building.
 
 **System Flow:**
-1. User anmoder om AI suggestion via SPCify UI
-2. SPCify kalder `generate_improvement_suggestion()` (thin wrapper)
+1. User anmoder om AI suggestion via biSPCharts UI
+2. biSPCharts kalder `generate_improvement_suggestion()` (thin wrapper)
 3. Wrapper delegerer til `BFHllm::bfhllm_spc_suggestion()`
 4. BFHllm performer RAG query, prompt building, LLM call, caching
-5. AI suggestion returneres til SPCify og vises i UI
+5. AI suggestion returneres til biSPCharts og vises i UI
 
-### SPCify Integration Layer
+### biSPCharts Integration Layer
 
-**Files i SPCify:**
+**Files i biSPCharts:**
 - `R/fct_ai_improvement_suggestions.R` - Thin facade, input validation
-- `R/utils_bfhllm_integration.R` - SPCify-specific BFHllm configuration
+- `R/utils_bfhllm_integration.R` - biSPCharts-specific BFHllm configuration
 - `inst/golem-config.yml` - AI/RAG configuration settings
 
 **BFHllm Package Responsibilities:**
@@ -456,7 +456,7 @@ default:
 
 ### Configuration
 
-**SPCify Configuration (`inst/golem-config.yml`):**
+**biSPCharts Configuration (`inst/golem-config.yml`):**
 
 ```yaml
 default:
@@ -473,7 +473,7 @@ default:
 **Initialization (global.R eller run_app.R):**
 
 ```r
-# Configure BFHllm with SPCify settings
+# Configure BFHllm with biSPCharts settings
 initialize_bfhllm(
   ai_config = get_ai_config(),
   rag_config = get_rag_config()
@@ -496,17 +496,17 @@ initialize_bfhllm(
 3. Rebuild Ragnar store: `source("data-raw/build_ragnar_store.R")`
 4. Test locally: `devtools::install("path/to/BFHllm")`
 5. Commit og push til BFHllm repo
-6. Update SPCify DESCRIPTION: `BFHllm (>= new_version)`
+6. Update biSPCharts DESCRIPTION: `BFHllm (>= new_version)`
 
 **Benefits of Extraction:**
 - Single source of truth for SPC knowledge
 - Independent versioning og updates
 - Reusable across multiple R packages
-- Reduced SPCify maintenance burden
+- Reduced biSPCharts maintenance burden
 
 ### Testing
 
-**SPCify Tests:**
+**biSPCharts Tests:**
 - `tests/testthat/test-fct_ai_improvement_suggestions.R` - Facade behavior (delegation, validation)
 - Mocked BFHllm calls (no API dependency)
 
@@ -515,7 +515,7 @@ initialize_bfhllm(
 
 **Manual Verification:**
 1. Install BFHllm: `devtools::install_github("johanreventlow/BFHllm")`
-2. Verify SPCify integration: `devtools::load_all()` i SPCify project
+2. Verify biSPCharts integration: `devtools::load_all()` i biSPCharts project
 3. Test AI suggestions via Shiny app
 
 ### Troubleshooting
@@ -543,7 +543,7 @@ initialize_bfhllm(
 options(spc.log.level = "debug")
 
 # Check for AI_SUGGESTION context logs
-# [AI_SUGGESTION] - SPCify wrapper behavior
+# [AI_SUGGESTION] - biSPCharts wrapper behavior
 # [BFHllm] - See BFHllm package logs (if enabled)
 ```
 

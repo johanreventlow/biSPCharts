@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_bfhllm_integration.R
 \name{initialize_bfhllm}
 \alias{initialize_bfhllm}
-\title{Initialize BFHllm for SPCify}
+\title{Initialize BFHllm for biSPCharts}
 \usage{
 initialize_bfhllm(ai_config = NULL, rag_config = NULL)
 }
@@ -15,7 +15,7 @@ initialize_bfhllm(ai_config = NULL, rag_config = NULL)
 invisible(NULL)
 }
 \description{
-Configures BFHllm package with SPCify-specific defaults. Called during
+Configures BFHllm package with biSPCharts-specific defaults. Called during
 app initialization (global.R or run_app.R).
 }
 \keyword{internal}

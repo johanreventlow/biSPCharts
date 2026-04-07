@@ -13,7 +13,7 @@ add_comment_annotations(
 )
 }
 \arguments{
-\item{plot}{ggplot2 object. Base SPC plot from BFHchart or SPCify.}
+\item{plot}{ggplot2 object. Base SPC plot from BFHchart or biSPCharts.}
 
 \item{qic_data}{data.frame. Standardized SPC data with \code{.original_row_id} column.}
 
@@ -40,7 +40,7 @@ Returns NULL on error (with structured logging).
 \description{
 Applies comment/notes annotations to SPC plot as a ggrepel layer. Handles
 stable row mapping, XSS sanitization, Danish character support, and collision
-avoidance. This function implements SPCify's comment handling pattern,
+avoidance. This function implements biSPCharts's comment handling pattern,
 independent of BFHchart's native notes support.
 }
 \details{

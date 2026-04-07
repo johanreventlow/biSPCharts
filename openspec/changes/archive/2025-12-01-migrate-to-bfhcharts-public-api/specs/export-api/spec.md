@@ -2,13 +2,13 @@
 
 ## Overview
 
-This specification defines how SPCify uses BFHcharts functions for PDF export functionality. It governs the API contract between SPCify and BFHcharts to ensure stable, maintainable integration.
+This specification defines how biSPCharts uses BFHcharts functions for PDF export functionality. It governs the API contract between biSPCharts and BFHcharts to ensure stable, maintainable integration.
 
 ## MODIFIED Requirements
 
-### Requirement: SPCify SHALL use BFHcharts public API functions
+### Requirement: biSPCharts SHALL use BFHcharts public API functions
 
-SPCify SHALL use only exported public API functions from BFHcharts, NOT internal functions accessed via `:::` operator.
+biSPCharts SHALL use only exported public API functions from BFHcharts, NOT internal functions accessed via `:::` operator.
 
 **Rationale:**
 - Follows R package best practices
@@ -19,9 +19,9 @@ SPCify SHALL use only exported public API functions from BFHcharts, NOT internal
 #### Scenario: Extract SPC statistics using public API
 
 **Given** a qic result with summary data
-**When** SPCify needs to extract SPC statistics
-**Then** SPCify SHALL call `BFHcharts::bfh_extract_spc_stats()`
-**And** SPCify SHALL NOT use `BFHcharts:::extract_spc_stats()`
+**When** biSPCharts needs to extract SPC statistics
+**Then** biSPCharts SHALL call `BFHcharts::bfh_extract_spc_stats()`
+**And** biSPCharts SHALL NOT use `BFHcharts:::extract_spc_stats()`
 
 **Implementation:**
 ```r
@@ -40,9 +40,9 @@ stats <- BFHcharts::bfh_extract_spc_stats(result$summary)
 #### Scenario: Merge metadata using public API
 
 **Given** user-provided metadata and chart title
-**When** SPCify needs to merge metadata with defaults
-**Then** SPCify SHALL call `BFHcharts::bfh_merge_metadata()`
-**And** SPCify SHALL NOT use `BFHcharts:::merge_metadata()`
+**When** biSPCharts needs to merge metadata with defaults
+**Then** biSPCharts SHALL call `BFHcharts::bfh_merge_metadata()`
+**And** biSPCharts SHALL NOT use `BFHcharts:::merge_metadata()`
 
 **Implementation:**
 ```r
@@ -58,9 +58,9 @@ merged <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
 - Function returns expected merged metadata
 - User values override defaults correctly
 
-### Requirement: SPCify SHALL require minimum BFHcharts version
+### Requirement: biSPCharts SHALL require minimum BFHcharts version
 
-SPCify DESCRIPTION SHALL specify `BFHcharts (>= 0.4.0)` to ensure public API availability.
+biSPCharts DESCRIPTION SHALL specify `BFHcharts (>= 0.4.0)` to ensure public API availability.
 
 **Rationale:**
 - BFHcharts 0.4.0 exports `bfh_extract_spc_stats()` and `bfh_merge_metadata()`
@@ -69,7 +69,7 @@ SPCify DESCRIPTION SHALL specify `BFHcharts (>= 0.4.0)` to ensure public API ava
 
 #### Scenario: DESCRIPTION specifies correct version
 
-**Given** SPCify DESCRIPTION file
+**Given** biSPCharts DESCRIPTION file
 **When** BFHcharts dependency is specified
 **Then** version requirement SHALL be `BFHcharts (>= 0.4.0)`
 
@@ -138,7 +138,7 @@ merged_metadata <- BFHcharts::bfh_merge_metadata(metadata, result$config$chart_t
 - BFHcharts (>= 0.4.0) - provides public API functions
 
 **Deployment dependencies:**
-- BFHcharts 0.4.0 must be deployed before SPCify deployment
+- BFHcharts 0.4.0 must be deployed before biSPCharts deployment
 - Shiny app restart required after deployment
 
 ## Future Considerations

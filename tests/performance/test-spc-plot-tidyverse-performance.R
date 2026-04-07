@@ -96,7 +96,7 @@ test_that("purrr::reduce for plot enhancement", {
   skip_if_not_installed("ggplot2")
 
   # NOTE: add_plot_enhancements() has been migrated to BFHcharts
-  # Legacy function is no longer available in SPCify
+  # Legacy function is no longer available in biSPCharts
   # This test now validates the base plot structure
 
   # Create base plot

@@ -6,6 +6,38 @@
 
 # HJÆLPEFUNKTIONER ============================================================
 
+#' Tjek om en kolonne primært indeholder numeriske værdier
+#'
+#' @param col Vector. Kolonne at tjekke.
+#' @param threshold Numeric. Andel non-NA værdier der skal være numeriske (0-1).
+#' @return Logical. TRUE hvis kolonnen er numerisk nok.
+#' @keywords internal
+is_column_numeric <- function(col, threshold = 0.5) {
+  if (is.numeric(col)) return(TRUE)
+  non_na <- col[!is.na(col)]
+  if (length(non_na) == 0) return(TRUE)
+  parsed <- suppressWarnings(as.numeric(as.character(non_na)))
+  sum(!is.na(parsed)) / length(non_na) >= threshold
+}
+
+#' Bestem value box theme baseret på signal-status
+#'
+#' Bruger dark/light for at signalere udfald uden at antyde fejl/succes.
+#'
+#' @param status_info List med status felt.
+#' @param signal Logical. TRUE hvis signal er detekteret.
+#' @return Character. bslib theme navn.
+#' @keywords internal
+value_box_signal_theme <- function(status_info, signal) {
+  if (status_info$status == "ready" && isTRUE(signal)) {
+    "dark"
+  } else if (status_info$status == "ready") {
+    "light"
+  } else {
+    status_info$theme
+  }
+}
+
 #' Konverter enheds-kode til dansk label
 #'
 #' @param unit_code Character. Kode for organisatorisk enhed

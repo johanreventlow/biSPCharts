@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**SPCify** is a production-grade Shiny application for Statistical Process Control (SPC) analysis, developed for clinical quality improvement work at Bispebjerg og Frederiksberg Hospital in Copenhagen, Denmark.
+**biSPCharts** is a production-grade Shiny application for Statistical Process Control (SPC) analysis, developed for clinical quality improvement work at Bispebjerg og Frederiksberg Hospital in Copenhagen, Denmark.
 
 **Goals:**
 - Enable clinicians to create and interpret SPC charts (run charts, control charts) for quality monitoring
@@ -118,7 +118,7 @@ Administreres centralt i `R/state_management.R`
 
 - Test-driven development (TDD) er obligatorisk – skriv tests før implementation
 - Brug `tests/testthat/` til automatiserede enheder og integration, `tests/manual/` til API-verifikation
-- Kør `R -e "library(SPCify); testthat::test_dir('tests/testthat')"` før commit
+- Kør `R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"` før commit
 - Performance verificeres med `microbenchmark` og `profvis` ved behov
 - `lintr::lint_package()` og `styler::style_pkg()` for code quality
 - Ved større ændringer: udarbejd OpenSpec change proposal og kør `openspec validate --strict`
@@ -142,7 +142,7 @@ Administreres centralt i `R/state_management.R`
 **Test Commands:**
 ```r
 # All tests
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # Specific test
 R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
@@ -199,7 +199,7 @@ R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 ### External Package Ownership (CRITICAL)
 
-**DO NOT implement functionality in SPCify that belongs in external packages:**
+**DO NOT implement functionality in biSPCharts that belongs in external packages:**
 
 - **BFHcharts** - Chart rendering, SPC visualization, target lines, freezing
 - **BFHtheme** - Hospital branding, themes, fonts, colors
@@ -209,7 +209,7 @@ R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 1. Identify missing functionality in external package
 2. Document need (issue, ADR, docs)
 3. Inform maintainer (feature request)
-4. Temporary workaround in SPCify IF critical (mark clearly)
+4. Temporary workaround in biSPCharts IF critical (mark clearly)
 5. Remove workaround when available in external package
 
 ### Git Constraints (CRITICAL)
@@ -238,7 +238,7 @@ R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 ### Performance Targets
 
-- Startup time: <100ms (production mode via `library(SPCify)`)
+- Startup time: <100ms (production mode via `library(biSPCharts)`)
 - Chart rendering: <500ms for typical dataset (<10k points)
 - RAG query: <100ms retrieval time
 
@@ -292,12 +292,12 @@ R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 
 ### OpenSpec + GitHub Issues
 
-SPCify uses a **complementary approach** where OpenSpec changes are tracked via both `tasks.md` files (source of truth for implementation details) and GitHub issues (high-level tracking and visibility).
+biSPCharts uses a **complementary approach** where OpenSpec changes are tracked via both `tasks.md` files (source of truth for implementation details) and GitHub issues (high-level tracking and visibility).
 
 **Rationale:**
 - Preserves OpenSpec workflow (offline-first, structured validation)
 - Gains GitHub visibility (project boards, search, notifications, cross-references)
-- Fits SPCify's mandatory GitHub issue tracking (CLAUDE.md requirement)
+- Fits biSPCharts's mandatory GitHub issue tracking (CLAUDE.md requirement)
 - Enables automation via slash commands
 
 ### Label System
@@ -396,7 +396,7 @@ gh issue close 142 --comment "Deployed via openspec archive on 2025-11-02"
 - ✅ Update issue labels as workflow progresses (automatic via slash commands)
 
 **Don't:**
-- ❌ Skip GitHub issue creation (breaks SPCify tracking requirement)
+- ❌ Skip GitHub issue creation (breaks biSPCharts tracking requirement)
 - ❌ Update tasks.md via GitHub (tasks.md is authoritative, sync is one-way)
 - ❌ Close issues before archiving change (use `/openspec:archive` workflow)
 - ❌ Use GitHub issues for implementation checklists (that's tasks.md's role)
@@ -405,12 +405,12 @@ gh issue close 142 --comment "Deployed via openspec archive on 2025-11-02"
 
 When OpenSpec changes affect external packages (BFHcharts, BFHtheme, Ragnar):
 
-1. Create OpenSpec proposal with GitHub issue in SPCify repo
+1. Create OpenSpec proposal with GitHub issue in biSPCharts repo
 2. If external package changes needed:
    - Create separate issue in external repo using `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md`
    - Add coordination labels (`bfhchart-escalation`, `bfhchart-coordinated`)
-   - Cross-reference issues: `Blocked by BFHcharts#45` in SPCify issue
+   - Cross-reference issues: `Blocked by BFHcharts#45` in biSPCharts issue
 3. Track both issues lifecycle independently
-4. Archive SPCify change only after external dependencies deployed
+4. Archive biSPCharts change only after external dependencies deployed
 
 See `docs/CROSS_REPO_COORDINATION.md` for detailed coordination workflow.

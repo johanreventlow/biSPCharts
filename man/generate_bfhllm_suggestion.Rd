@@ -2,14 +2,14 @@
 % Please edit documentation in R/utils_bfhllm_integration.R
 \name{generate_bfhllm_suggestion}
 \alias{generate_bfhllm_suggestion}
-\title{Generate AI Improvement Suggestion (SPCify Wrapper)}
+\title{Generate AI Improvement Suggestion (biSPCharts Wrapper)}
 \usage{
 generate_bfhllm_suggestion(spc_result, context, session, max_chars = NULL)
 }
 \arguments{
 \item{spc_result}{List from compute_spc_results_bfh() with metadata and qic_data}
 
-\item{context}{Named list with SPCify context (data_definition, chart_title, etc.)}
+\item{context}{Named list with biSPCharts context (data_definition, chart_title, etc.)}
 
 \item{session}{Shiny session object for cache access}
 
@@ -19,7 +19,7 @@ generate_bfhllm_suggestion(spc_result, context, session, max_chars = NULL)
 Character string with AI suggestion, or NULL on error
 }
 \description{
-Wrapper for BFHllm::bfhllm_spc_suggestion() that adapts SPCify's
-data structures and adds SPCify-specific logging.
+Wrapper for BFHllm::bfhllm_spc_suggestion() that adapts biSPCharts's
+data structures and adds biSPCharts-specific logging.
 }
 \keyword{internal}

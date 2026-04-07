@@ -6,7 +6,7 @@
 ## 📁 Aktuel filstruktur
 
 ```
-claude_spc/
+biSPCharts/
 ├── app.R                           # Hovedfil der starter appen
 ├── global.R                        # Globale konfigurationer, hospital branding
 ├── CLAUDE.md                       # Udviklingsinstruktioner og regler

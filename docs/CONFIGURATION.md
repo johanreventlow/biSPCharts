@@ -1,12 +1,12 @@
-# SPCify Configuration Guide
+# biSPCharts Configuration Guide
 
-This document covers configuration options and dependencies for SPCify.
+This document covers configuration options and dependencies for biSPCharts.
 
 ## Dependencies
 
 ### Core Dependencies
 
-SPCify requires the following key R packages:
+biSPCharts requires the following key R packages:
 
 - **shiny** (>= 1.7.0) - Shiny web application framework
 - **BFHcharts** (>= 0.1.0) - SPC visualization engine for BFH branding
@@ -66,7 +66,7 @@ Sys.getenv("GOOGLE_API_KEY")
 
 ## Golem Configuration
 
-SPCify uses `inst/golem-config.yml` for environment-specific settings:
+biSPCharts uses `inst/golem-config.yml` for environment-specific settings:
 
 - **dev** - Development mode with debug logging
 - **test** - Testing mode with reduced logging
@@ -147,7 +147,7 @@ if (isTRUE(rag_config$enabled)) {
 devtools::install()
 
 # Or from GitHub (when available)
-remotes::install_github("johanreventlow/claude_spc")
+remotes::install_github("johanreventlow/biSPCharts")
 ```
 
 **With RAG Knowledge Store Build:**

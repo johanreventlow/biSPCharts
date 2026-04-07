@@ -30,7 +30,7 @@ Cached artifacts:
 Cache location: Uses persistent user cache directory for optimal performance
 Cache TTL: 1 hour (configurable)
 
-Cache directory: tools::R_user_dir("SPCify", which = "cache")
+Cache directory: tools::R_user_dir("biSPCharts", which = "cache")
 This ensures cache persists across R sessions for maximum startup performance.
 }
 \keyword{datasets}

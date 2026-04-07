@@ -9,9 +9,9 @@
 
 ## Overview
 
-This document defines the **Facade Pattern** architecture for integrating BFHchart into SPCify. The facade provides a stable service layer that isolates the application from BFHchart API changes, standardizes outputs, and coordinates existing validation and error handling utilities.
+This document defines the **Facade Pattern** architecture for integrating BFHchart into biSPCharts. The facade provides a stable service layer that isolates the application from BFHchart API changes, standardizes outputs, and coordinates existing validation and error handling utilities.
 
-**Primary Goal:** Enable seamless BFHchart integration without disrupting SPCify's established architecture, while maintaining flexibility for future backend changes.
+**Primary Goal:** Enable seamless BFHchart integration without disrupting biSPCharts's established architecture, while maintaining flexibility for future backend changes.
 
 ---
 
@@ -19,14 +19,14 @@ This document defines the **Facade Pattern** architecture for integrating BFHcha
 
 ### What is the Facade Pattern?
 
-The **Facade Pattern** is a structural design pattern that provides a simplified, unified interface to a complex subsystem. In SPCify's context:
+The **Facade Pattern** is a structural design pattern that provides a simplified, unified interface to a complex subsystem. In biSPCharts's context:
 
 - **Complex Subsystem:** BFHchart API (external package with evolving interface)
 - **Facade:** `compute_spc_results_bfh()` and supporting functions in `R/fct_spc_bfh_service.R`
-- **Client:** SPCify's plot rendering, UI observers, and export functions
+- **Client:** biSPCharts's plot rendering, UI observers, and export functions
 
 **Benefits:**
-1. **Isolation:** SPCify depends on facade interface, not BFHchart directly
+1. **Isolation:** biSPCharts depends on facade interface, not BFHchart directly
 2. **Stability:** BFHchart API changes contained to facade layer
 3. **Testability:** Mock facade for unit tests without BFHchart dependency
 4. **Consistency:** Standardized output format matching qicharts2 structure
@@ -38,7 +38,7 @@ The **Facade Pattern** is a structural design pattern that provides a simplified
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      SPCify Application                      │
+│                      biSPCharts Application                      │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │          UI Layer (Shiny Modules)                   │    │
 │  │  • mod_data_upload.R                                │    │
@@ -68,7 +68,7 @@ The **Facade Pattern** is a structural design pattern that provides a simplified
 │  └───────┼───────────┼───────────┼─────────────────────┘    │
 │          │           │           │                          │
 │  ┌───────▼───────────▼───────────▼─────────────────────┐    │
-│  │    Integration Points (Existing SPCify Utilities)   │    │
+│  │    Integration Points (Existing biSPCharts Utilities)   │    │
 │  │  • parse_and_validate_spc_data()                    │    │
 │  │  • filter_complete_spc_data()                       │    │
 │  │  • safe_operation()                                 │    │
@@ -91,7 +91,7 @@ The **Facade Pattern** is a structural design pattern that provides a simplified
 
 ## Facade Responsibilities
 
-### 1. Input Transformation (SPCify → BFHchart)
+### 1. Input Transformation (biSPCharts → BFHchart)
 
 **Function:** `map_to_bfh_params()`
 
@@ -105,7 +105,7 @@ The **Facade Pattern** is a structural design pattern that provides a simplified
 
 **Example:**
 ```r
-# SPCify conventions
+# biSPCharts conventions
 data <- hospital_data
 x_var <- "Dato"
 y_var <- "Tæller"
@@ -230,7 +230,7 @@ call_bfh_chart <- function(bfh_params) {
 
 ---
 
-### 4. Output Transformation (BFHchart → SPCify)
+### 4. Output Transformation (BFHchart → biSPCharts)
 
 **Function:** `transform_bfh_output()`
 
@@ -364,7 +364,7 @@ comment_text <- sanitize_user_input(
 
 ### Output Compatibility
 
-**Must Work With Existing SPCify Functions:**
+**Must Work With Existing biSPCharts Functions:**
 
 **`R/fct_spc_plot_generation.R`:**
 - `render_spc_plot()` - Plot rendering
@@ -400,7 +400,7 @@ map_to_bfh_params <- function(..., part_var = NULL, ...) {
   # Previously: bfh_params$phases <- ...
 }
 
-# SPCify calls remain unchanged:
+# biSPCharts calls remain unchanged:
 compute_spc_results_bfh(..., part_var = "Phase", ...)
 ```
 
@@ -436,10 +436,10 @@ transform_bfh_output <- function(bfh_result, ...) {
   return(list(plot = ..., qic_data = qic_data, ...))
 }
 
-# SPCify always receives 'signal' column
+# biSPCharts always receives 'signal' column
 ```
 
-**Key Principle:** Facade absorbs API changes. SPCify interface remains stable.
+**Key Principle:** Facade absorbs API changes. biSPCharts interface remains stable.
 
 ---
 
@@ -532,7 +532,7 @@ test_that("compute_spc_results_bfh() handles run charts", {
 
 ### Critical Feature: `notes_column` Parameter
 
-**Context:** SPCify's comment functionality is a **key feature** for clinical users. Comments provide contextual annotations for outliers, interventions, and data quality notes.
+**Context:** biSPCharts's comment functionality is a **key feature** for clinical users. Comments provide contextual annotations for outliers, interventions, and data quality notes.
 
 **Current Implementation (qicharts2):**
 - Comments added **after** qic() call as ggrepel layer
@@ -554,7 +554,7 @@ bfh_params$notes <- data[[notes_column]]
 # - Styling customizable
 ```
 
-**Option B: SPCify Layer Approach (RECOMMENDED)**
+**Option B: biSPCharts Layer Approach (RECOMMENDED)**
 ```r
 # Continue existing pattern (PREFERRED)
 # 1. Get BFHchart output
@@ -581,11 +581,11 @@ plot <- bfh_result$plot +
 # 4. Apply sanitization (already done in extract_comment_data)
 ```
 
-**Recommendation: Option B (SPCify Layer)**
+**Recommendation: Option B (biSPCharts Layer)**
 
 **Rationale:**
-1. **SPCify retains control** over comment presentation logic
-2. **XSS sanitization** remains SPCify's responsibility (security best practice)
+1. **biSPCharts retains control** over comment presentation logic
+2. **XSS sanitization** remains biSPCharts's responsibility (security best practice)
 3. **Collision avoidance** handled by proven ggrepel logic
 4. **Danish characters** (æøå) preserved with existing sanitization
 5. **Flexibility** for future styling changes (hospital branding)
@@ -686,7 +686,7 @@ store_cached_result(cache_key, result)
 
 1. **BFHchart Dependency:**
    - Facade cannot eliminate dependency on BFHchart package
-   - BFHchart bugs propagate to SPCify (mitigated by error handling)
+   - BFHchart bugs propagate to biSPCharts (mitigated by error handling)
 
 2. **API Assumptions:**
    - Facade design based on **expected** BFHchart API (not validated yet)
@@ -698,7 +698,7 @@ store_cached_result(cache_key, result)
    - Acceptable for clinical use case (not real-time processing)
 
 4. **Comment Handling:**
-   - SPCify layer approach adds complexity
+   - biSPCharts layer approach adds complexity
    - Requires stable `.original_row_id` mapping (tested in Task 29)
 
 ### Trade-offs
@@ -715,7 +715,7 @@ store_cached_result(cache_key, result)
 
 **Standardization vs. BFHchart Features:**
 - **Trade-off:** Standardizing output may hide BFHchart-specific features
-- **Benefit:** Consistent interface for SPCify consumers
+- **Benefit:** Consistent interface for biSPCharts consumers
 - **Decision:** Expose BFHchart features via `...` parameter if needed
 
 ---
@@ -805,9 +805,9 @@ result <- compute_spc_results_bfh(...)
 
 1. **Facade Pattern:** Provides stable interface, isolates BFHchart API changes
 2. **Reuse Existing Utilities:** No duplication of validation, error handling, or logging
-3. **Comment Handling:** SPCify layer approach (Option B) recommended for control and security
+3. **Comment Handling:** biSPCharts layer approach (Option B) recommended for control and security
 4. **Output Compatibility:** qicharts2-compatible structure ensures seamless integration
-5. **Evolution Strategy:** Facade absorbs API changes, SPCify interface remains stable
+5. **Evolution Strategy:** Facade absorbs API changes, biSPCharts interface remains stable
 6. **Testing:** TDD approach with mocking for unit tests, real BFHchart for integration tests
 7. **Performance:** Facade overhead target < 50ms (acceptable for clinical use case)
 
@@ -827,7 +827,7 @@ result <- compute_spc_results_bfh(...)
 
 - **Facade Pattern:** [Refactoring Guru - Facade Pattern](https://refactoring.guru/design-patterns/facade)
 - **R Package Design:** [R Packages (2e) - Wickham & Bryan](https://r-pkgs.org/)
-- **SPCify Architecture:** `CLAUDE.md` - Sections 3.1 (Shiny Best Practices), 6.1 (File Organization)
+- **biSPCharts Architecture:** `CLAUDE.md` - Sections 3.1 (Shiny Best Practices), 6.1 (File Organization)
 
 ---
 

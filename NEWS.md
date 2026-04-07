@@ -1,10 +1,10 @@
-# SPCify (development version)
+# biSPCharts (development version)
 
 ## Breaking Changes
 
 ### Migration to BFHllm Package (Issue #100, Phase 2)
 
-**BREAKING:** SPCify now delegates all AI/LLM functionality to the standalone BFHllm package (v0.1.0+). This migration eliminates ~600 lines of embedded AI code and establishes BFHllm as the single source of truth for LLM integration and RAG functionality.
+**BREAKING:** biSPCharts now delegates all AI/LLM functionality to the standalone BFHllm package (v0.1.0+). This migration eliminates ~600 lines of embedded AI code and establishes BFHllm as the single source of truth for LLM integration and RAG functionality.
 
 **What Changed:**
 - AI functionality extracted to `BFHllm` package
@@ -21,14 +21,14 @@
 
 **Migration Guide:**
 
-SPCify users: No changes needed - `generate_improvement_suggestion()` API remains the same.
+biSPCharts users: No changes needed - `generate_improvement_suggestion()` API remains the same.
 
 For direct AI functionality usage:
 ```r
-# OLD (SPCify v0.1.x)
+# OLD (biSPCharts v0.1.x)
 # Direct calls to internal functions not supported
 
-# NEW (SPCify v0.2.0+)
+# NEW (biSPCharts v0.2.0+)
 # Use BFHllm package directly for advanced use cases
 library(BFHllm)
 bfhllm_configure(provider = "gemini", model = "gemini-2.0-flash-exp")
@@ -42,13 +42,13 @@ suggestion <- bfhllm_spc_suggestion(spc_result, context, max_chars = 350)
 **Benefits:**
 - Reusable AI infrastructure across multiple R packages
 - Single source of truth for LLM/RAG integration
-- Cleaner separation of concerns (SPCify focuses on SPC, BFHllm on AI)
+- Cleaner separation of concerns (biSPCharts focuses on SPC, BFHllm on AI)
 - Independent versioning and testing of AI components
-- Reduced SPCify maintenance burden (~600 lines removed)
+- Reduced biSPCharts maintenance burden (~600 lines removed)
 
 ### Migration to BFHcharts v0.3.0 Export API (Issue #95)
 
-**BREAKING:** SPCify now delegates all PNG and PDF export to BFHcharts v0.3.0+ export functions. This migration eliminates ~850 lines of duplicate code and establishes BFHcharts as the single source of truth for export functionality.
+**BREAKING:** biSPCharts now delegates all PNG and PDF export to BFHcharts v0.3.0+ export functions. This migration eliminates ~850 lines of duplicate code and establishes BFHcharts as the single source of truth for export functionality.
 
 **What Changed:**
 - `generate_png_export()` removed → use `BFHcharts::bfh_export_png()`
@@ -60,7 +60,7 @@ suggestion <- bfhllm_spc_suggestion(spc_result, context, max_chars = 350)
 **Migration Guide:**
 
 ```r
-# OLD (SPCify v0.1.x)
+# OLD (biSPCharts v0.1.x)
 generate_png_export(
   plot_object = plot,
   width_inches = 10,
@@ -69,7 +69,7 @@ generate_png_export(
   output_path = "chart.png"
 )
 
-# NEW (SPCify v0.2.0+)
+# NEW (biSPCharts v0.2.0+)
 # Note: BFHcharts uses mm, not inches
 BFHcharts::bfh_export_png(
   bfh_result = bfh_result,  # bfh_qic_result object
@@ -82,7 +82,7 @@ BFHcharts::bfh_export_png(
 **What Stays the Same:**
 - PowerPoint export (`fct_export_powerpoint.R`) unchanged
 - Export size presets (`EXPORT_SIZE_PRESETS`) unchanged
-- `get_size_from_preset()` still available in SPCify
+- `get_size_from_preset()` still available in biSPCharts
 - Export UI and workflow unchanged for end users
 
 **Dependencies:**
@@ -98,7 +98,7 @@ BFHcharts::bfh_export_png(
 
 ### Migrated to BFHcharts Public API (Issue #98)
 
-* **Migrated from internal to public API:** SPCify now uses BFHcharts public API instead of internal functions accessed via `:::` operator
+* **Migrated from internal to public API:** biSPCharts now uses BFHcharts public API instead of internal functions accessed via `:::` operator
 * **What Changed:**
   - `BFHcharts:::extract_spc_stats()` → `BFHcharts::bfh_extract_spc_stats()`
   - `BFHcharts:::merge_metadata()` → `BFHcharts::bfh_merge_metadata()`
@@ -222,7 +222,7 @@ BFHcharts::bfh_export_png(
 
 ---
 
-# SPCify 0.1.0 (Initial Development)
+# biSPCharts 0.1.0 (Initial Development)
 
 * Initial package structure
 * Basic SPC chart functionality

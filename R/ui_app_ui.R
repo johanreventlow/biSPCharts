@@ -256,7 +256,37 @@ create_ui_header <- function() {
     }
 
         ")))
-    )
+    ),
+    # Tooltips på Skift/Frys tabel-headere (excelR renderer dynamisk)
+    # Keys SKAL matche kolonnenavne fra ensure_standard_columns()
+    shiny::tags$script(htmltools::HTML("
+      (function() {
+        var tooltips = {
+          'Skift': 'Opdeler diagrammet i faser ved kendte proces\\u00e6ndringer',
+          'Frys': 'L\\u00e5ser kontrolgr\\u00e6nser baseret p\\u00e5 en baseline-periode'
+        };
+        var pending = null;
+        function addTableHeaderTooltips() {
+          var headers = document.querySelectorAll('.jexcel thead td');
+          headers.forEach(function(td) {
+            var text = td.textContent.trim();
+            if (tooltips[text] && !td.title) {
+              td.title = tooltips[text];
+              td.style.cursor = 'help';
+            }
+          });
+        }
+        var observer = new MutationObserver(function() {
+          if (!pending) {
+            pending = requestAnimationFrame(function() {
+              addTableHeaderTooltips();
+              pending = null;
+            });
+          }
+        });
+        observer.observe(document.body, {childList: true, subtree: true});
+      })();
+    "))
   )
 }
 # R/ui/ui_main_content.R
@@ -490,11 +520,11 @@ create_inline_column_mapping <- function() {
     ),
     compact_select(
       "skift_column", "Skift",
-      "Kolonne der markerer hvor processen opdeles i faser (tilf\u00f8jes automatisk hvis den mangler)"
+      "Opdeler diagrammet i faser ved kendte proces\u00e6ndringer. Kolonne med TRUE/1 markerer nye faser (tilf\u00f8jes automatisk hvis den mangler)."
     ),
     compact_select(
       "frys_column", "Frys",
-      "Kolonne der markerer en baseline-periode for kontrolgr\u00e6nserne (tilf\u00f8jes automatisk hvis den mangler)"
+      "L\u00e5ser kontrolgr\u00e6nser baseret p\u00e5 en baseline-periode. Kolonne med TRUE/1 markerer baseline-punkter (tilf\u00f8jes automatisk hvis den mangler)."
     ),
     compact_select(
       "kommentar_column", "Kommentar",
@@ -566,14 +596,89 @@ create_ui_upload_page <- function() {
       .upload-source-btn.upload-btn-active span {
         color: #fff !important;
       }
+
+      /* Sample data dropdown */
+      .sample-data-dropdown {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        z-index: 1000;
+        min-width: 320px;
+        max-height: 400px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        padding: 4px 0;
+        margin-bottom: 4px;
+        display: none;
+      }
+      .sample-data-item {
+        display: block;
+        padding: 8px 16px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #333;
+        font-size: 0.82rem;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        line-height: 1.4;
+      }
+      .sample-data-item:hover {
+        background-color: #f5f5f5;
+        text-decoration: none;
+        color: #333;
+      }
+      .sample-data-item .sample-label {
+        font-weight: 600;
+        display: block;
+      }
+      .sample-data-item .sample-desc {
+        font-size: 0.75rem;
+        color: #888;
+        display: block;
+      }
+
+      /* Download skabelon link */
+      .download-template-link {
+        font-size: 0.8rem;
+        color: #888;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
+      }
+      .download-template-link:hover {
+        color: #555;
+        text-decoration: underline;
+      }
+    ")),
+    # Luk dropdown ved klik udenfor
+    shiny::tags$script(htmltools::HTML("
+      document.addEventListener('click', function(e) {
+        var dropdown = document.getElementById('sample_data_dropdown');
+        var toggleBtn = document.getElementById('toggle_sample_dropdown');
+        if (dropdown && toggleBtn &&
+            !dropdown.contains(e.target) &&
+            !toggleBtn.contains(e.target)) {
+          dropdown.style.display = 'none';
+        }
+      });
     ")),
     shiny::div(
       class = "container-fluid d-flex align-items-center justify-content-center",
       style = "max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 120px);",
 
-      # Flexbox-row: knapper (fast bredde) + paste-felt (fylder resten)
       shiny::div(
-        style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
+        style = "width: 100%;",
+
+        # Flexbox-row: knapper (fast bredde) + paste-felt (fylder resten)
+        shiny::div(
+          style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
 
         # Knap 1: Kopiér & Indsæt data (default valgt via JS)
         shiny::div(
@@ -603,12 +708,28 @@ create_ui_upload_page <- function() {
           )
         ),
 
-        # Knap 3: Prøv med eksempeldata
+        # Knap 3: Prøv med eksempeldata (med dropdown)
         shiny::div(
-          style = "flex: 0 0 120px;",
+          style = "flex: 0 0 120px; position: relative;",
           square_button(
-            "load_sample_data", "Prøv med\neksempeldata", "flask",
-            "Indlæs et SPC-eksempeldatasæt"
+            "toggle_sample_dropdown", "Pr\u00f8v med\neksempeldata", "flask",
+            "V\u00e6lg et SPC-eksempeldatas\u00e6t"
+          ),
+          # Dropdown-menu med eksempeldatasæt
+          shiny::div(
+            id = "sample_data_dropdown",
+            class = "sample-data-dropdown",
+            lapply(SAMPLE_DATASETS, function(ds) {
+              shiny::tags$button(
+                class = "sample-data-item",
+                onclick = sprintf(
+                  "Shiny.setInputValue('selected_sample', '%s', {priority: 'event'}); document.getElementById('sample_data_dropdown').style.display='none';",
+                  ds$id
+                ),
+                shiny::tags$span(class = "sample-label", ds$label),
+                shiny::tags$span(class = "sample-desc", ds$description)
+              )
+            })
           )
         ),
 
@@ -617,7 +738,7 @@ create_ui_upload_page <- function() {
           style = "flex: 0 0 120px;",
           square_button(
             "clear_saved", "Blank\nsession", "file-circle-plus",
-            "Start med tomt datasæt"
+            "Start med tomt datas\u00e6t"
           )
         ),
 
@@ -630,20 +751,34 @@ create_ui_upload_page <- function() {
             value = "",
             rows = 6,
             width = "100%",
-            placeholder = "Indsæt data fra Excel eller CSV her..."
+            placeholder = "Inds\u00e6t data fra Excel eller CSV her..."
           ),
           shiny::div(
             style = "display: flex; justify-content: flex-end;",
             shiny::actionButton(
               "load_paste_data",
-              shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+              shiny::tagList("Forts\u00e6t ", shiny::icon("arrow-right")),
               class = "btn-primary",
               style = "width: 200px;",
-              title = "Indlæs data og gå til analyse"
+              title = "Indl\u00e6s data og g\u00e5 til analyse"
             )
           )
         )
-      )
+        ), # Luk flex-row div
+
+        # Download tom skabelon-link under knapperne
+        shiny::div(
+          style = "margin-top: 12px; padding-left: 4px;",
+          shiny::downloadLink(
+            "download_template",
+            label = shiny::tagList(
+              " ... eller download en tom Excel-skabelon til dine egne data ",
+              shiny::icon("download")
+            ),
+            class = "download-template-link"
+          )
+        )
+      ) # Luk wrapper div
     )
   )
 }

@@ -16,7 +16,7 @@ Denne guide hjælper udviklere med at forstå, modificere og udvide SPC App'en.
 1. **Clone repository**
 ```bash
 git clone <repository-url>
-cd claude_spc
+cd biSPCharts
 ```
 
 2. **Installer dependencies**
@@ -901,7 +901,7 @@ roxygen2::roxygenise()
 
 # View generated help
 ?function_name
-help(package = "claude_spc")
+help(package = "biSPCharts")
 ```
 
 **Documentation workflow:**

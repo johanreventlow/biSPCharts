@@ -6,7 +6,7 @@
 ## Kontekst
 
 ### Baggrund
-SPCify applikationen har historisk brugt en **two-stage workflow** for SPC beregning og visualisering:
+biSPCharts applikationen har historisk brugt en **two-stage workflow** for SPC beregning og visualisering:
 
 **Stage 1:** `qicharts2::qic()` genererer SPC data (kontrolgrænser, centerline, Anhøj rules)
 **Stage 2:** `BFHcharts::bfh_spc_plot()` renderer visualisering fra qicharts2 data
@@ -58,7 +58,7 @@ Eliminér qicharts2 fra SPC calculation pipeline og brug BFHcharts direkte:
 
 **BFHcharts:** SPC engine (beregning + visualisering)
 **qicharts2:** UI presentation metrics (serielængde, antal kryds for value boxes)
-**SPCify:** Integration layer + business logic
+**biSPCharts:** Integration layer + business logic
 
 ### Implementeringsdetaljer
 

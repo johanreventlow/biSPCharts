@@ -8,4 +8,4 @@ library(testthat)
 # Tests that need shinytest2 should load it inside their own test blocks.
 
 # Test directory
-test_check("claude_spc")
+test_check("biSPCharts")

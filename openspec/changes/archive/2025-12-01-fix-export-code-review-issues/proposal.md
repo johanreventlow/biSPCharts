@@ -4,7 +4,7 @@
 **Type:** bugfix
 **Status:** completed
 **Priority:** critical
-**GitHub Issue:** [#97](https://github.com/johanreventlow/claude_spc/issues/97)
+**GitHub Issue:** [#97](https://github.com/johanreventlow/biSPCharts/issues/97)
 
 ## Problem Statement
 
@@ -94,7 +94,7 @@ Ny PDF path (`generate_pdf_preview()`, `bfh_export_pdf` integration) mangler tes
 
 4. **Håndter BFHcharts internal API**
    - Option A: Request public API i BFHcharts (anbefalet)
-   - Option B: Duplikér logic i SPCify (ikke anbefalet)
+   - Option B: Duplikér logic i biSPCharts (ikke anbefalet)
    - Option C: Accept risiko og dokumentér (kortsigtet)
 
 5. **Tilføj Quarto error handling**

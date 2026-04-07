@@ -43,7 +43,7 @@ baseline period for control limit calculation. Default NULL (no freeze).}
 per-phase control limit calculation and Anhøj rule application. Default NULL.}
 
 \item{notes_column}{character. Name of notes/comment column to display on plot.
-Maps to BFHchart notes parameter or SPCify ggrepel layer. Default NULL.}
+Maps to BFHchart notes parameter or biSPCharts ggrepel layer. Default NULL.}
 
 \item{multiply}{numeric. Multiplier applied to y-axis values for display scaling.
 Common use: convert decimal proportions to percentages (multiply = 100).
@@ -56,13 +56,13 @@ Set to FALSE to force fresh computation (useful for debugging or testing).}
 caching is disabled. Default NULL.}
 
 \item{...}{Additional arguments passed to BFHchart backend. Allows flexibility
-for BFHchart-specific parameters without breaking SPCify interface.}
+for BFHchart-specific parameters without breaking biSPCharts interface.}
 }
 \value{
 list with three components:
 \describe{
 \item{plot}{ggplot2 object. Rendered SPC chart with control limits, centerline,
-and optional annotations. Compatible with SPCify plot customization functions.}
+and optional annotations. Compatible with biSPCharts plot customization functions.}
 \item{qic_data}{tibble. Standardized data frame with SPC calculations. Columns:
 \itemize{
 \item x: X-axis values (dates or observation numbers)
@@ -90,10 +90,10 @@ and optional annotations. Compatible with SPCify plot customization functions.}
 Returns NULL on error (with structured logging).
 }
 \description{
-Primary facade function that wraps BFHchart functionality with SPCify conventions.
+Primary facade function that wraps BFHchart functionality with biSPCharts conventions.
 This function provides a stable interface that isolates the application from
 BFHchart API changes, handles parameter mapping, validates inputs, and standardizes
-output format for seamless integration with existing SPCify plot rendering.
+output format for seamless integration with existing biSPCharts plot rendering.
 }
 \details{
 \strong{Architectural Role:} Service layer facade implementing adapter pattern.
@@ -101,8 +101,8 @@ Coordinates validation, transformation, BFHchart invocation, and output formatti
 
 \strong{Workflow:}
 \enumerate{
-\item Input validation using existing SPCify validators
-\item Parameter transformation (SPCify conventions → BFHchart API)
+\item Input validation using existing biSPCharts validators
+\item Parameter transformation (biSPCharts conventions → BFHchart API)
 \item Safe BFHchart invocation with error handling
 \item Output standardization (match qicharts2 format)
 \item Structured logging and cache management
@@ -114,7 +114,7 @@ fallback. Errors logged with structured context for debugging.
 \section{Notes Column Mapping}{
 
 The \code{notes_column} parameter maps to BFHchart's comment/notes system. If BFHchart
-does not provide native notes support, SPCify applies comments as a ggrepel layer
+does not provide native notes support, biSPCharts applies comments as a ggrepel layer
 after BFHchart rendering (existing pattern). Comment handling includes:
 \itemize{
 \item Row ID stability via \code{.original_row_id} injection

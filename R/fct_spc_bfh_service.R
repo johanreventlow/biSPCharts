@@ -420,12 +420,54 @@ compute_spc_results_bfh <- function(
       )
       target_text <- extra_params$target_text
 
+      # Guard: Fjern nævner for chart types der ikke bruger den.
+      # Forhindrer at BFHcharts dividerer y med n (giver alle værdier = 1).
+      if (!is.null(n_var) && !chart_type_requires_denominator(validated_chart_type)) {
+        log_warn(
+          paste(
+            "n_var fjernet for chart_type=", validated_chart_type,
+            "— denne type bruger ikke nævner (n_var var:", n_var, ")"
+          ),
+          .context = "BFH_SERVICE"
+        )
+        n_var <- NULL
+      }
+
+      # Guard: "percent" kræver nævner — uden nævner er det en fejldetektering
+      if (identical(y_axis_unit, "percent") && is.null(n_var)) {
+        log_warn(
+          paste(
+            "y_axis_unit='percent' uden nævner (n_var=NULL) for chart_type=",
+            validated_chart_type,
+            "— overskriver til 'count' for at undgå forkert normalisering"
+          ),
+          .context = "BFH_SERVICE"
+        )
+        y_axis_unit <- "count"
+      }
+
       log_debug(
         paste(
           "Pure BFHcharts workflow parameters:",
-          "y_axis_unit =", y_axis_unit,
+          "chart_type =", validated_chart_type,
+          ", y_axis_unit =", y_axis_unit,
+          ", n_var =", if (is.null(n_var)) "NULL" else n_var,
           ", has_target =", !is.null(target_value),
           ", has_chart_title =", !is.null(chart_title)
+        ),
+        .context = "BFH_SERVICE"
+      )
+
+      # Diagnostisk log af y-værdier sendt til BFHcharts
+      log_debug(
+        paste(
+          "[DEBUG_Y_VALUES] chart_type =", validated_chart_type,
+          "| y_axis_unit =", y_axis_unit,
+          "| n_var =", if (is.null(n_var)) "NULL" else n_var,
+          "| y_col =", y_var,
+          "| y_class =", class(complete_data[[y_var]])[1],
+          "| y_first5 =", paste(head(complete_data[[y_var]], 5), collapse = ", "),
+          "| y_range =", paste(range(complete_data[[y_var]], na.rm = TRUE), collapse = "-")
         ),
         .context = "BFH_SERVICE"
       )
@@ -1653,8 +1695,8 @@ validate_chart_type_bfh <- function(chart_type) {
   safe_operation(
     operation_name = "Chart type validation",
     code = {
-      # Supported chart types (based on BFHchart API validation)
-      supported_types <- c("run", "i", "mr", "p", "pp", "u", "up", "c", "g", "xbar", "s", "t")
+      # Supported chart types (fra config_chart_types.R)
+      supported_types <- SUPPORTED_CHART_TYPES_BFH
 
       # Normalize to lowercase
       chart_type <- tolower(trimws(chart_type))
@@ -2059,11 +2101,10 @@ compute_anhoej_metadata_local <- function(data, config) {
       }
 
       # 5. Validate chart type
-      valid_types <- c("run", "i", "mr", "p", "pp", "u", "up", "c", "g")
-      if (!chart_type %in% valid_types) {
+      if (!chart_type %in% SUPPORTED_CHART_TYPES) {
         stop(paste0(
           "Invalid chart_type: '", chart_type, "'. ",
-          "Must be one of: ", paste(valid_types, collapse = ", ")
+          "Must be one of: ", paste(SUPPORTED_CHART_TYPES, collapse = ", ")
         ))
       }
 

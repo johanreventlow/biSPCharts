@@ -1361,11 +1361,36 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
     )
   })
 
-  # Observer: "Prøv med eksempeldata" — paste sample data ind i textArea
-  shiny::observeEvent(input$load_sample_data, {
-    sample_path <- system.file("extdata", "sample_spc_data.csv", package = "SPCify")
+  # Observer: Toggle dropdown for eksempeldatasæt
+  shiny::observeEvent(input$toggle_sample_dropdown, {
+    shinyjs::toggle("sample_data_dropdown")
+  })
+
+  # Observer: Bruger vælger eksempeldatasæt fra dropdown
+  shiny::observeEvent(input$selected_sample, {
+    sample_id <- input$selected_sample
+
+    # Find datasæt-metadata fra config
+    dataset <- NULL
+    for (ds in SAMPLE_DATASETS) {
+      if (ds$id == sample_id) {
+        dataset <- ds
+        break
+      }
+    }
+
+    if (is.null(dataset)) {
+      shiny::showNotification(
+        "Ukendt eksempeldatas\u00e6t",
+        type = "error", duration = 3
+      )
+      return()
+    }
+
+    # Læs CSV-fil fra inst/extdata/
+    sample_path <- system.file("extdata", dataset$file, package = "SPCify")
     if (sample_path == "" || !file.exists(sample_path)) {
-      sample_path <- "inst/extdata/sample_spc_data.csv"
+      sample_path <- file.path("inst", "extdata", dataset$file)
     }
 
     if (file.exists(sample_path)) {
@@ -1374,17 +1399,42 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
         session, "paste_data_input",
         value = paste(sample_text, collapse = "\n")
       )
+      # Sæt chart type dropdown til det anbefalede chart type for datasættet
+      shiny::updateSelectizeInput(
+        session, "chart_type",
+        selected = dataset$chart_type
+      )
       shiny::showNotification(
-        "Eksempeldata indsat — tryk Fortsæt for at analysere",
-        type = "message", duration = 3
+        paste0(dataset$label, " indsat \u2014 tryk Forts\u00e6t for at analysere"),
+        type = "message", duration = 4
       )
     } else {
       shiny::showNotification(
-        "Kunne ikke finde eksempeldatasæt",
+        paste0("Kunne ikke finde fil: ", dataset$file),
         type = "error", duration = 3
       )
     }
   })
+
+  # Download handler: Tom Excel-skabelon
+  output$download_template <- shiny::downloadHandler(
+    filename = function() {
+      "SPC_skabelon.xlsx"
+    },
+    content = function(file) {
+      # Opret tom skabelon med alle relevante kolonner
+      template_data <- data.frame(
+        Dato = as.Date(character(0)),
+        "T\u00e6ller" = numeric(0),
+        "N\u00e6vner" = numeric(0),
+        Kommentar = character(0),
+        Skift = logical(0),
+        Frys = logical(0),
+        check.names = FALSE
+      )
+      openxlsx::write.xlsx(template_data, file)
+    }
+  )
 
   # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
   shiny::observeEvent(input$trigger_file_upload, {

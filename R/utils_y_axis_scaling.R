@@ -217,18 +217,11 @@ detect_unit_from_data <- function(y_data) {
     }
   }
 
-  # Rule 2: Percent detection [0-100+]
-  if (min_val >= 0 && max_val <= 200) {
-    percent_range_count <- sum(y_clean >= 0 & y_clean <= 100)
-    whole_number_ratio <- sum(y_clean == floor(y_clean)) / length(y_clean)
+  # Percent detection er fjernet fra data-heuristik. Tal i 0-100 kan være
+  # minutter, scores, counts osv. Chart type (p/pp) + nævner er den korrekte
+  # indikator for procent — styres via chart_type_to_ui_type().
 
-    # Requires: ≥80% in [0-100] range AND ≥70% whole numbers
-    if (percent_range_count / length(y_clean) >= 0.8 && whole_number_ratio >= 0.7) {
-      return("percent")
-    }
-  }
-
-  # Rule 3: Default to absolute
+  # Rule 2: Default to absolute
   return("absolute")
 }
 

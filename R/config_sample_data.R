@@ -25,8 +25,8 @@
 SAMPLE_DATASETS <- list(
   list(
     id = "run",
-    label = "Run \u2014 Ventetid til f\u00f8rste bes\u00f8g",
-    description = "Seriediagram over ventetider i dage",
+    label = "Run \u2014 M\u00f8defremmøde procent",
+    description = "M\u00f8defremmøde (mødt/tilkaldt) som procent",
     file = "sample_run.csv",
     chart_type = "run"
   ),

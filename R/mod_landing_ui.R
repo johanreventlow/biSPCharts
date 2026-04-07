@@ -36,9 +36,9 @@ mod_landing_ui <- function(id) {
     ),
     shiny::tags$p(
       style = "font-size: 1.15rem; color: #6c757d; max-width: 600px; margin-bottom: 25px;",
-      "Statistisk proceskontrol til klinisk kvalitetsarbejde. ",
+      "Statistisk proceskontrol til klinisk kvalitetsarbejde på Bispebjerg og Frederiksberg Hospital.",
       "Upload dine data, analys\u00e9r med seriediagrammer og kontroldiagrammer, ",
-      "og eksport\u00e9r professionelle rapporter."
+      "og eksport\u00e9r færdige diagrammer i regionalt layout."
     ),
 
     # Feature-highlights
@@ -48,8 +48,8 @@ mod_landing_ui <- function(id) {
         "Upload CSV/Excel eller inds\u00e6t direkte fra regneark"),
       landing_feature_card("chart-line", "Analys\u00e9r med SPC",
         "Seriediagrammer og kontroldiagrammer med automatisk signaldetektion"),
-      landing_feature_card("file-export", "Eksport\u00e9r rapporter",
-        "Professionelle PDF-rapporter med automatisk analysetekst")
+      landing_feature_card("file-export", "Eksport\u00e9r diagram",
+        "Diagrammer i PDF, PNG eller MS PowerPoint-format")
     ),
 
     # CTA-knap

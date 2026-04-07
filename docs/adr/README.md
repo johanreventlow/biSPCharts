@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-Dette directory indeholder Architecture Decision Records (ADRs) for SPCify projektet.
+Dette directory indeholder Architecture Decision Records (ADRs) for biSPCharts projektet.
 
 ## Hvad er en ADR?
 
@@ -93,7 +93,7 @@ Lav en ADR når du:
 - Afviser en "obvious" løsning af gode grunde
 - Ændrer en eksisterende arkitektonisk beslutning
 
-**Eksempler fra SPCify:**
+**Eksempler fra biSPCharts:**
 - Hvorfor throttle UI sync på 250ms i stedet for 800ms? → ADR-001
 - Hvorfor centralisere data signatures? → Ville være ADR-002
 - Hvorfor context-aware cache invalidation? → Ville være ADR-003
@@ -185,5 +185,5 @@ Se ADR-002 for rationale og performance gains.
 
 ---
 
-**Maintained by**: SPCify Development Team
+**Maintained by**: biSPCharts Development Team
 **Last updated**: 2025-10-10

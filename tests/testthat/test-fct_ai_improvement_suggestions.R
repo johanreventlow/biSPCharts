@@ -279,7 +279,7 @@ describe("generate_improvement_suggestion()", {
 # - Caching → BFHllm::bfhllm_cache_shiny()
 #
 # Test strategy:
-# - SPCify tests: Focus on thin wrapper behavior (delegation, validation)
+# - biSPCharts tests: Focus on thin wrapper behavior (delegation, validation)
 # - BFHllm tests: Focus on core AI logic (in BFHllm package)
 # - Integration tests: Manual verification via tests/manual/verify_ai.R
 #

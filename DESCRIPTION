@@ -1,5 +1,5 @@
-Package: SPCify
-Title: SPCify - Kvalitetsudvikling på Bispebjerg og Frederiksberg Hospital
+Package: biSPCharts
+Title: biSPCharts - Kvalitetsudvikling på Bispebjerg og Frederiksberg Hospital
 Version: 0.2.0
 Authors@R:
     person("Johan", "Reventlow", , "noreply@example.com", role = c("aut", "cre"))

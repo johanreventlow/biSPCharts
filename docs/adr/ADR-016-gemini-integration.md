@@ -8,7 +8,7 @@
 
 ## Context
 
-Brugere af SPCify bruger betydelig tid på at formulere kvalitetsforbedringsmål baseret på SPC-analyse. Processen kræver:
+Brugere af biSPCharts bruger betydelig tid på at formulere kvalitetsforbedringsmål baseret på SPC-analyse. Processen kræver:
 1. Fortolkning af SPC-signaler (Anhøj rules, serielængde, krydsninger)
 2. Sammenligning med målværdier
 3. Formulering af konkrete, handlingsorienterede forslag på dansk

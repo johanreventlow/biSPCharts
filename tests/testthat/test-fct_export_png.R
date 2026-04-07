@@ -15,7 +15,7 @@
 #   generate_png_export() er nu erstattet af BFHcharts::bfh_export_png().
 #
 #   For detaljerede dimension accuracy tests, se BFHcharts test suite.
-#   SPCify tester nu kun integration og preset mapping.
+#   biSPCharts tester nu kun integration og preset mapping.
 # ==============================================================================
 
 library(testthat)
@@ -203,7 +203,7 @@ test_that("Custom dimensions in inches convert correctly", {
 # INTEGRATION NOTES
 # ==============================================================================
 #
-# Dette testfile tester SPCify's integration med BFHcharts::bfh_export_png().
+# Dette testfile tester biSPCharts's integration med BFHcharts::bfh_export_png().
 #
 # BFHcharts ansvar (testes i BFHcharts package):
 # - Actual PNG generation via ragg::agg_png()
@@ -212,7 +212,7 @@ test_that("Custom dimensions in inches convert correctly", {
 # - File I/O
 # - Error handling
 #
-# SPCify ansvar (testes her):
+# biSPCharts ansvar (testes her):
 # - Size preset definitions (EXPORT_SIZE_PRESETS)
 # - get_size_from_preset() function
 # - Dimension conversion logic (pixels → inches → mm)

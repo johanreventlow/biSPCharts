@@ -28,7 +28,7 @@ Tracking: GitHub Issue #98
   - Verify PDF creation succeeds
   - Verify SPC statistics appear in PDF
   - Verify metadata appears correctly
-  - **Validation:** SPCify loads successfully with BFHcharts 0.4.0 ✅
+  - **Validation:** biSPCharts loads successfully with BFHcharts 0.4.0 ✅
 
 - [x] 3.2 Run full test suite
   - Execute: `devtools::test()`
@@ -69,7 +69,7 @@ Tracking: GitHub Issue #98
   - **Validation:** `library(BFHcharts)` loads v0.4.0 ✅
 
 - [x] 6.2 Restart Shiny app
-  - Reload: SPCify application
+  - Reload: biSPCharts application
   - Verify: App starts without errors
   - **Validation:** No startup errors ✅
 
@@ -123,16 +123,16 @@ Tracking: GitHub Issue #98
 
 **Phase 6 complete when:**
 - BFHcharts 0.4.0 deployed
-- SPCify app restarted successfully
+- biSPCharts app restarted successfully
 - Production PDF export verified
 - GitHub issue closed
 - OpenSpec change archived
 
 ## Risk Mitigation
 
-**Risk:** BFHcharts 0.4.0 not deployed before SPCify deployment
+**Risk:** BFHcharts 0.4.0 not deployed before biSPCharts deployment
 - **Mitigation:** Phase 6.1 checks for BFHcharts availability
-- **Fallback:** Delay SPCify deployment until BFHcharts ready
+- **Fallback:** Delay biSPCharts deployment until BFHcharts ready
 
 **Risk:** API behavior differs from internal functions
 - **Mitigation:** BFHcharts internal functions delegate to public API (identical behavior)

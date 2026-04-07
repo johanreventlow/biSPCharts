@@ -10,7 +10,7 @@ test_that("Core functions can be loaded via pkgload", {
   # Pakken er allerede loaded via helper.R — verificer blot at namespace er aktiv.
   # VIGTIGT: Kald ALDRIG load_all() uden helpers=FALSE i testfiler,
   # da det trigger helper.R rekursivt og kan hænge.
-  expect_true("SPCify" %in% loadedNamespaces() || "claudespc" %in% loadedNamespaces())
+  expect_true("biSPCharts" %in% loadedNamespaces() || "claudespc" %in% loadedNamespaces())
 
   # TEST: Kritiske funktioner er tilgængelige via namespace
   core_functions <- c(

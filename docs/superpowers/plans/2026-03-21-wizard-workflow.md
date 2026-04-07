@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Refaktorér SPCify's UI fra single-page layout til en 4-trins Datawrapper-inspireret wizard.
+**Goal:** Refaktorér biSPCharts's UI fra single-page layout til en 4-trins Datawrapper-inspireret wizard.
 
 **Architecture:** bslib `navset_bar()` tabs stylet via custom CSS til wizard-look. Wizard-moduler er UI-layout containere — form-inputs forbliver på top-level scope for at undgå at bryde ~190 eksisterende `input$`-referencer. Eksisterende event-bus, state management og business logic bevares uændret.
 
@@ -65,7 +65,7 @@ library(shiny)
 library(bslib)
 
 ui <- page_navbar(
-  title = "SPCify Spike",
+  title = "biSPCharts Spike",
   nav_panel(
     title = "1. Upload",
     value = "step_upload",
@@ -965,7 +965,7 @@ git commit -m "refactor(export): læs metadata fra app_state, fjern duplikerede 
 
 ```r
 # R/app_ui.R
-#' SPCify Application UI
+#' biSPCharts Application UI
 #'
 #' @param request Internal parameter for `{shiny}`.
 #' @noRd
@@ -981,7 +981,7 @@ app_ui <- function(request) {
           src = get_hospital_logo_path(), height = "30px",
           class = "me-2"
         ),
-        "SPCify"
+        "biSPCharts"
       ),
       theme = get_bootstrap_theme(),
 

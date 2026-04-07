@@ -358,7 +358,7 @@ jobs:
 1. Install R 4.5.1+
 2. Install dependencies: `renv::restore()`
 3. Configure environment: `Sys.setenv(GOLEM_CONFIG_ACTIVE = "production")`
-4. Run app: `library(SPCify); run_app()`
+4. Run app: `library(biSPCharts); run_app()`
 
 ## Docker Deployment
 [Docker configuration example]

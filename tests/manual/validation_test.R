@@ -320,8 +320,8 @@ time_bfh <- system.time({
 cat(sprintf("  BFHcharts (10 iterations): %.3f seconds\n", time_bfh["elapsed"]))
 cat(sprintf("  Average per chart: %.3f seconds\n", time_bfh["elapsed"] / 10))
 
-# Note: qicharts2 comparison would require SPCify's full plotting pipeline
-cat("  ℹ Full qicharts2 comparison requires SPCify integration\n")
+# Note: qicharts2 comparison would require biSPCharts's full plotting pipeline
+cat("  ℹ Full qicharts2 comparison requires biSPCharts integration\n")
 
 cat("\n")
 

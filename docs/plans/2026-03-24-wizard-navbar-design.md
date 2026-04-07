@@ -2,7 +2,7 @@
 
 ## Formål
 
-Omdanne SPCify's navbar til en nummereret wizard-flow inspireret af Datawrapper, så brugeren guides igennem upload → analyse → eksport som et progressivt flow.
+Omdanne biSPCharts's navbar til en nummereret wizard-flow inspireret af Datawrapper, så brugeren guides igennem upload → analyse → eksport som et progressivt flow.
 
 ## Trin og gates
 

@@ -13,7 +13,7 @@ Planen beskriver de tre højst prioriterede forbedringer fra gennemgangen af `R/
   3. Brug `tidyr::drop_na()` og `stringr::str_trim()` for at filtrere tomme tekster.
   4. Tilføj en fokuseret test i `tests/testthat/test-utils_spc_data_processing.R` (eller opret ny fil) der sikrer korrekt join og trimming.
 - **Berørte filer**: `R/fct_spc_plot_generation.R`, evt. ny/udvidet testfil i `tests/testthat/`.
-- **Test**: `R -e "library(SPCify); testthat::test_file('tests/testthat/test-utils_spc_data_processing.R')"`
+- **Test**: `R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-utils_spc_data_processing.R')"`
 
 ---
 
@@ -27,7 +27,7 @@ Planen beskriver de tre højst prioriterede forbedringer fra gennemgangen af `R/
   4. Indkapsl logikken i helper-funktioner for at lette test (fx `adjust_part_positions()`).
   5. Skriv nye tests der dækker scenarier med part/freeze og rækker fjernet midt i serien.
 - **Berørte filer**: `R/fct_spc_plot_generation.R`, evt. helper i `R/utils_spc_data_processing.R`.
-- **Test**: `R -e "library(SPCify); testthat::test_file('tests/testthat/test-spc_qic_arguments.R')"`
+- **Test**: `R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-spc_qic_arguments.R')"`
 
 ---
 
@@ -41,8 +41,8 @@ Planen beskriver de tre højst prioriterede forbedringer fra gennemgangen af `R/
   4. Gennemgå caching/logging efter ændringer, så `safe_operation()` stadig fanger fejl korrekt.
 - **Berørte filer**: `R/fct_spc_plot_generation.R`, `R/state_management.R` (til performance-slot), tests hvis logik ændrer output.
 - **Test**:
-  - `R -e "library(SPCify); testthat::test_dir('tests/testthat')"`
-  - `R -e "library(SPCify); testthat::test_file('tests/testthat/test-spc_plot_generation.R')"`
+  - `R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"`
+  - `R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-spc_plot_generation.R')"`
 
 ---
 

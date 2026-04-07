@@ -101,7 +101,7 @@ result <- result +
 standardized$metadata$backend <- "bfhcharts"
 ```
 
-**Rationale:** Giver SPCify mulighed for at identificere om et plot kommer fra BFHcharts eller qicharts2, så det kan behandles forskelligt.
+**Rationale:** Giver biSPCharts mulighed for at identificere om et plot kommer fra BFHcharts eller qicharts2, så det kan behandles forskelligt.
 
 #### Part 2: Skip Theme Application
 
@@ -189,7 +189,7 @@ if (is_bfhcharts) {
 
 ### Manual Testing Checklist
 
-- [ ] Load data i SPCify app
+- [ ] Load data i biSPCharts app
 - [ ] Generate Run Chart med BFHcharts
 - [ ] Generate P-Chart med BFHcharts
 - [ ] Verify labels render correctly

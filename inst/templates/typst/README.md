@@ -127,7 +127,7 @@ To modify the template:
 1. Edit `bfh-template/bfh-template.typ`
 2. Test changes with `bfh_horisonal.typ`
 3. Rebuild R package: `devtools::install()`
-4. Changes are available via `system.file("templates/typst/...", package = "SPCify")`
+4. Changes are available via `system.file("templates/typst/...", package = "biSPCharts")`
 
 ## Requirements
 

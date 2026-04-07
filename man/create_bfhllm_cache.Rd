@@ -13,7 +13,7 @@ create_bfhllm_cache(session)
 BFHllm cache object (session-scoped)
 }
 \description{
-Wrapper for BFHllm::bfhllm_cache_shiny() that integrates with SPCify
+Wrapper for BFHllm::bfhllm_cache_shiny() that integrates with biSPCharts
 configuration system.
 }
 \keyword{internal}

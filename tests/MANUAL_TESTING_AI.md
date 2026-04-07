@@ -7,7 +7,7 @@
 
 ## Prerequisites
 
-- [ ] SPCify app running locally (`run_app()`)
+- [ ] biSPCharts app running locally (`run_app()`)
 - [ ] GOOGLE_API_KEY configured in `.Renviron`
 - [ ] Sample CSV data available for upload
 - [ ] Internet connection active
@@ -17,7 +17,7 @@
 ### 1. Happy Path - Full Workflow
 
 **Steps:**
-1. Start SPCify app
+1. Start biSPCharts app
 2. Upload CSV file with date and numeric columns
 3. Navigate to "Analyse" tab
 4. Wait for auto-detection to complete
@@ -81,7 +81,7 @@
 ### 4. No SPC Data - Button Disabled
 
 **Steps:**
-1. Start fresh SPCify session
+1. Start fresh biSPCharts session
 2. Navigate directly to "Eksport" tab
 3. DO NOT upload data or generate chart first
 4. Hover over AI button
@@ -100,7 +100,7 @@
 **Steps:**
 1. Unset GOOGLE_API_KEY environment variable
 2. Restart R session
-3. Start SPCify app
+3. Start biSPCharts app
 4. Upload data and generate chart
 5. Navigate to Eksport tab
 6. Hover over AI button

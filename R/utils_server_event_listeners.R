@@ -1388,7 +1388,7 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
     }
 
     # Læs CSV-fil fra inst/extdata/
-    sample_path <- system.file("extdata", dataset$file, package = "SPCify")
+    sample_path <- system.file("extdata", dataset$file, package = "biSPCharts")
     if (sample_path == "" || !file.exists(sample_path)) {
       sample_path <- file.path("inst", "extdata", dataset$file)
     }

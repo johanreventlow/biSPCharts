@@ -31,7 +31,7 @@ get_hospital_branding_config <- function() {
       if (exists("get_hospital_name", mode = "function")) {
         branding_config$name <- get_hospital_name()
       } else {
-        branding_config$name <- "SPCify SPC"
+        branding_config$name <- "biSPCharts SPC"
       }
 
       # Cache timestamp
@@ -45,7 +45,7 @@ get_hospital_branding_config <- function() {
       log_warn(paste("Failed to generate hospital branding cache:", e$message), "CACHE_GENERATOR")
       return(list(
         colors = list(primary = "#375a7f", secondary = "#6c757d"),
-        name = "SPCify SPC",
+        name = "biSPCharts SPC",
         generated_at = Sys.time(),
         version = "1.0.0"
       ))

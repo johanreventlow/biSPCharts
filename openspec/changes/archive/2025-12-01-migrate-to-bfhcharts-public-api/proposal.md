@@ -2,11 +2,11 @@
 
 ## Why
 
-**Problem:** SPCify uses BFHcharts internal functions via `:::` accessor, breaking R package best practices and creating fragile coupling.
+**Problem:** biSPCharts uses BFHcharts internal functions via `:::` accessor, breaking R package best practices and creating fragile coupling.
 
 **Current situation:**
-- SPCify calls `BFHcharts:::extract_spc_stats()` in `R/utils_server_export.R:376`
-- SPCify calls `BFHcharts:::merge_metadata()` in `R/utils_server_export.R:379`
+- biSPCharts calls `BFHcharts:::extract_spc_stats()` in `R/utils_server_export.R:376`
+- biSPCharts calls `BFHcharts:::merge_metadata()` in `R/utils_server_export.R:379`
 - Both functions are internal and not exported by BFHcharts
 - This creates tight coupling and breaks with BFHcharts refactoring
 - No API stability guarantees
@@ -61,7 +61,7 @@ Both functions have comprehensive documentation, parameter validation, and seman
 **Compatibility:**
 - Fully backward compatible (functions have identical behavior)
 - Must deploy BFHcharts 0.4.0 before deploying this change
-- No changes to SPCify user interface or behavior
+- No changes to biSPCharts user interface or behavior
 
 ## Alternatives Considered
 
@@ -76,9 +76,9 @@ stats <- BFHcharts:::extract_spc_stats(result$summary)
 - Fragile coupling to BFHcharts internals
 - CRAN would reject this pattern
 
-**Alternative 2: Copy functions into SPCify**
+**Alternative 2: Copy functions into biSPCharts**
 ```r
-# Duplicate extract_spc_stats logic in SPCify
+# Duplicate extract_spc_stats logic in biSPCharts
 spcify_extract_stats <- function(summary) {
   # Copy implementation from BFHcharts
 }
@@ -97,7 +97,7 @@ result$spc_stats <- list(runs = ..., crossings = ...)
 **Rejected because:**
 - Requires breaking change to BFHcharts data structure
 - Other BFHcharts users don't need this
-- SPCify-specific requirement shouldn't drive BFHcharts API
+- biSPCharts-specific requirement shouldn't drive BFHcharts API
 - Already solved by public API export
 
 **Chosen approach: Use BFHcharts public API**
@@ -110,7 +110,7 @@ result$spc_stats <- list(runs = ..., crossings = ...)
 
 ## Related
 
-- SPCify GitHub Issue: [#98](https://github.com/johanreventlow/claude_spc/issues/98)
+- biSPCharts GitHub Issue: [#98](https://github.com/johanreventlow/claude_spc/issues/98)
 - BFHcharts GitHub Issue: [#64](https://github.com/johanreventlow/BFHcharts/issues/64) (deployed in v0.4.0)
 - BFHcharts Commit: 866563f
 - BFHcharts OpenSpec: `2025-12-01-export-spc-utility-functions` (archived)

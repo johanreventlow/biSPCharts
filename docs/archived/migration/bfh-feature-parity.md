@@ -3,14 +3,14 @@
 **Document Version:** 1.0
 **Date:** 2025-10-15
 **Status:** Initial Analysis
-**Context:** BFHchart is an in-house R package **extracted from SPCify** - this is a reintegration exercise
+**Context:** BFHchart is an in-house R package **extracted from biSPCharts** - this is a reintegration exercise
 
 ## Executive Summary
 
-This document analyzes feature parity between qicharts2 (current implementation) and BFHchart (extracted SPCify visualization code) across 11 critical feature areas. **Important Context:** BFHchart was derived from SPCify's own codebase, meaning most functionality should exist but may require API refinement during reintegration.
+This document analyzes feature parity between qicharts2 (current implementation) and BFHchart (extracted biSPCharts visualization code) across 11 critical feature areas. **Important Context:** BFHchart was derived from biSPCharts's own codebase, meaning most functionality should exist but may require API refinement during reintegration.
 
 **Key Findings:**
-- **Assumed Feature Parity:** Since BFHchart originated from SPCify, core functionality likely exists
+- **Assumed Feature Parity:** Since BFHchart originated from biSPCharts, core functionality likely exists
 - **Gap Risk:** Medium - API design and integration patterns need validation
 - **Blocker Risk:** Low - We control both codebases and can enhance BFHchart as needed
 - **Recommendation:** Proceed with phased validation, enhance BFHchart incrementally
@@ -21,7 +21,7 @@ This document analyzes feature parity between qicharts2 (current implementation)
 
 ### 1. Chart Type Support
 
-**qicharts2 Usage in SPCify:**
+**qicharts2 Usage in biSPCharts:**
 - Run charts (with/without denominator)
 - I charts (individuals)
 - MR charts (moving range)
@@ -49,7 +49,7 @@ CHART_TYPES_DA <- list(
 ```
 
 **BFHchart Status:** **ASSUMED_PARITY** (needs validation)
-- **Rationale:** BFHchart was extracted from SPCify, which already implements all 9 chart types
+- **Rationale:** BFHchart was extracted from biSPCharts, which already implements all 9 chart types
 - **Gap Category:** WORKAROUND_BFHchart (if API differs)
 - **Action:** Validate BFHchart API supports same chart types with equivalent parameters
 
@@ -65,7 +65,7 @@ CHART_TYPES_DA <- list(
 
 **qicharts2 Implementation:**
 
-SPCify combines **runs** and **crossings** signals into unified `anhoej.signal`:
+biSPCharts combines **runs** and **crossings** signals into unified `anhoej.signal`:
 
 ```r
 # Runs signal (8+ consecutive points on same side of centerline)
@@ -96,7 +96,7 @@ qic_data$anhoej.signal <- runs_sig_col | qic_data$crossings_signal
 - **Critical Question:** Does BFHchart expose runs/crossings data or calculate internally?
 - **Action:**
   1. Check if BFHchart returns Anhøj rule results per data point
-  2. If not: Implement Anhøj detection in SPCify service layer
+  2. If not: Implement Anhøj detection in biSPCharts service layer
   3. If yes but different: Validate clinical acceptance of algorithm differences
 
 **Validation Checklist:**
@@ -111,7 +111,7 @@ qic_data$anhoej.signal <- runs_sig_col | qic_data$crossings_signal
 
 **qicharts2 Implementation:**
 
-SPCify relies on qicharts2 for automatic control limit calculation based on chart type:
+biSPCharts relies on qicharts2 for automatic control limit calculation based on chart type:
 
 ```r
 # Control limits returned in qic_data data.frame
@@ -133,7 +133,7 @@ qic_data$cl   # Changes per phase (part column)
 - Centerline rendered with anhoej.signal styling
 
 **BFHchart Status:** **ASSUMED_PARITY**
-- **Rationale:** Control limit calculations are core SPC functionality extracted from SPCify
+- **Rationale:** Control limit calculations are core SPC functionality extracted from biSPCharts
 - **Gap Category:** BLOCKER (if missing) / ACCEPTABLE (if minor differences)
 - **Action:** Validate BFHchart calculates limits identically to qicharts2 for all chart types
 
@@ -149,7 +149,7 @@ qic_data$cl   # Changes per phase (part column)
 
 **qicharts2 Usage:**
 
-SPCify supports P' (pp) and U' (up) standardized charts:
+biSPCharts supports P' (pp) and U' (up) standardized charts:
 
 ```r
 chart_type_requires_denominator("pp")  # TRUE
@@ -160,13 +160,13 @@ chart_type_requires_denominator("up")  # TRUE
 
 **BFHchart Status:** **VALIDATION_REQUIRED**
 - **Gap Category:** WORKAROUND_BFHchart (if missing)
-- **Action:** Confirm BFHchart supports standardized chart types or if standardization must be done in SPCify
+- **Action:** Confirm BFHchart supports standardized chart types or if standardization must be done in biSPCharts
 
 **Validation Checklist:**
 - [ ] Test P' charts with varying denominators
 - [ ] Test U' charts with rate data
 - [ ] Validate standardization formula matches qicharts2
-- [ ] Document if standardization should live in BFHchart or SPCify
+- [ ] Document if standardization should live in BFHchart or biSPCharts
 
 ---
 
@@ -174,7 +174,7 @@ chart_type_requires_denominator("up")  # TRUE
 
 **qicharts2 Implementation:**
 
-SPCify supports **baseline freezing** via `freeze` parameter:
+biSPCharts supports **baseline freezing** via `freeze` parameter:
 
 ```r
 qic_args$freeze <- freeze_position  # Row index for baseline end
@@ -209,7 +209,7 @@ qic_args$part <- part_positions     # Phase boundaries AFTER freeze
 
 **qicharts2 Implementation:**
 
-SPCify supports multiple phase boundaries via `part` parameter:
+biSPCharts supports multiple phase boundaries via `part` parameter:
 
 ```r
 qic_args$part <- part_positions  # Vector of row indices marking phase starts
@@ -225,7 +225,7 @@ qic_args$part <- part_positions  # Vector of row indices marking phase starts
 - Separate control limits per phase (if enough data points)
 - Anhøj rules applied per-phase
 
-**Adjustment Logic:** SPCify adjusts part positions when rows removed due to NA values:
+**Adjustment Logic:** biSPCharts adjusts part positions when rows removed due to NA values:
 
 ```r
 # From clean_qic_call_args()
@@ -238,7 +238,7 @@ adjusted_part <- call_args$part |>
 ```
 
 **BFHchart Status:** **VALIDATION_REQUIRED**
-- **Gap Category:** BLOCKER (if missing) / WORKAROUND_SPCify (for adjustment logic)
+- **Gap Category:** BLOCKER (if missing) / WORKAROUND_biSPCharts (for adjustment logic)
 - **Action:** Confirm BFHchart part parameter exists and handles per-phase calculations
 
 **Validation Checklist:**
@@ -254,7 +254,7 @@ adjusted_part <- call_args$part |>
 
 **qicharts2 Usage:**
 
-SPCify does NOT use qicharts2's `breaks` parameter directly. Instead, **intelligent x-axis breaks** are calculated in SPCify after qic() call:
+biSPCharts does NOT use qicharts2's `breaks` parameter directly. Instead, **intelligent x-axis breaks** are calculated in biSPCharts after qic() call:
 
 ```r
 # Detect date interval (weekly, monthly, daily)
@@ -271,14 +271,14 @@ breaks_posix <- seq(from = rounded_start, to = rounded_end, by = interval_size)
 - Daily data → "DD/MM" format
 - Adaptive interval multipliers (2×, 4×, 13×) to limit break count
 
-**BFHchart Status:** **WORKAROUND_SPCify**
-- **Rationale:** This is SPCify-specific intelligent formatting, not core SPC logic
-- **Gap Category:** ACCEPTABLE - Keep in SPCify integration layer
-- **Action:** Apply same x-axis formatting to BFHchart plots in SPCify
+**BFHchart Status:** **WORKAROUND_biSPCharts**
+- **Rationale:** This is biSPCharts-specific intelligent formatting, not core SPC logic
+- **Gap Category:** ACCEPTABLE - Keep in biSPCharts integration layer
+- **Action:** Apply same x-axis formatting to BFHchart plots in biSPCharts
 
 **Implementation Strategy:**
 - BFHchart provides raw plot
-- SPCify applies `scale_x_datetime()` with intelligent breaks
+- biSPCharts applies `scale_x_datetime()` with intelligent breaks
 - No BFHchart enhancement needed
 
 ---
@@ -287,7 +287,7 @@ breaks_posix <- seq(from = rounded_start, to = rounded_end, by = interval_size)
 
 **qicharts2 Usage:**
 
-SPCify handles axis formatting **after** qic() call using ggplot2 layers:
+biSPCharts handles axis formatting **after** qic() call using ggplot2 layers:
 
 **X-Axis:**
 - `validate_x_column_format()` → Determines date vs observation number
@@ -316,14 +316,14 @@ Y_AXIS_UNITS_DA <- list(
 )
 ```
 
-**BFHchart Status:** **WORKAROUND_SPCify**
+**BFHchart Status:** **WORKAROUND_biSPCharts**
 - **Rationale:** Axis formatting is presentation logic, not core SPC calculations
-- **Gap Category:** ACCEPTABLE - SPCify handles via ggplot2 layers
+- **Gap Category:** ACCEPTABLE - biSPCharts handles via ggplot2 layers
 - **Action:** Apply same formatting functions to BFHchart output
 
 **Implementation Strategy:**
 - BFHchart returns base ggplot object or data
-- SPCify applies axis formatting utilities
+- biSPCharts applies axis formatting utilities
 - Reuse existing `utils_y_axis_formatting.R` and date formatting logic
 
 ---
@@ -332,12 +332,12 @@ Y_AXIS_UNITS_DA <- list(
 
 **qicharts2 Implementation:**
 
-qicharts2 returns ggplot object that SPCify extensively modifies:
+qicharts2 returns ggplot object that biSPCharts extensively modifies:
 
 ```r
 qic_args$return.data <- TRUE  # Get data instead of plot
 
-# SPCify builds custom ggplot from qic_data
+# biSPCharts builds custom ggplot from qic_data
 plot <- ggplot2::ggplot(qic_data, aes(x = x, y = y))
 plot <- plot + geomtextpath::geom_textline(...)  # Control limit labels
 plot <- plot + ggrepel::geom_text_repel(...)     # Comments
@@ -355,8 +355,8 @@ plot <- plot + custom_theme()                     # Hospital branding
 - **Critical Question:** Does BFHchart return ggplot object or raw data?
 - **Action:**
   1. Confirm BFHchart output format (ggplot vs data.frame)
-  2. If ggplot: Validate SPCify can add layers (comments, labels, theme)
-  3. If data: Build ggplot in SPCify from BFHchart data
+  2. If ggplot: Validate biSPCharts can add layers (comments, labels, theme)
+  3. If data: Build ggplot in biSPCharts from BFHchart data
 
 **Validation Checklist:**
 - [ ] Confirm BFHchart returns ggplot2-compatible output
@@ -370,7 +370,7 @@ plot <- plot + custom_theme()                     # Hospital branding
 
 **qicharts2 Input:**
 
-SPCify prepares data for qicharts2 using NSE (non-standard evaluation):
+biSPCharts prepares data for qicharts2 using NSE (non-standard evaluation):
 
 ```r
 qic_args <- list(
@@ -404,14 +404,14 @@ qic_data$part         # Phase indicator
 qic_data$runs.signal  # Runs rule violation
 qic_data$n.crossings  # Number of crossings
 qic_data$n.crossings.min  # Minimum expected crossings
-qic_data$.original_row_id  # Injected by SPCify
+qic_data$.original_row_id  # Injected by biSPCharts
 ```
 
 **BFHchart Status:** **VALIDATION_REQUIRED**
-- **Gap Category:** BLOCKER (if incompatible) / WORKAROUND_SPCify (for data prep)
+- **Gap Category:** BLOCKER (if incompatible) / WORKAROUND_biSPCharts (for data prep)
 - **Action:**
   1. Document BFHchart input/output data structure
-  2. Create adapter functions in SPCify if structure differs
+  2. Create adapter functions in biSPCharts if structure differs
   3. Validate `.original_row_id` preservation for comment mapping
 
 **Validation Checklist:**
@@ -424,9 +424,9 @@ qic_data$.original_row_id  # Injected by SPCify
 
 ### 11. Comment/Notes Parameter Mapping ⚠️ CRITICAL
 
-**qicharts2 Implementation (SPCify Custom):**
+**qicharts2 Implementation (biSPCharts Custom):**
 
-SPCify adds comments **after** qic() call as ggplot layer:
+biSPCharts adds comments **after** qic() call as ggplot layer:
 
 ```r
 # Extract comments with stable row mapping
@@ -450,7 +450,7 @@ plot <- plot + ggrepel::geom_text_repel(
 
 **Stable Row Mapping Strategy:**
 
-SPCify injects `.original_row_id` before qic() call to prevent comment drift when qicharts2 reorders/filters rows:
+biSPCharts injects `.original_row_id` before qic() call to prevent comment drift when qicharts2 reorders/filters rows:
 
 ```r
 # Before qic()
@@ -482,13 +482,13 @@ if (nchar(comment) > SPC_COMMENT_CONFIG$display_length) {  # 40
 ```
 
 **BFHchart Status:** **CRITICAL_VALIDATION_REQUIRED**
-- **Gap Category:** BLOCKER (if notes parameter incompatible) / WORKAROUND_SPCify (if API differs)
+- **Gap Category:** BLOCKER (if notes parameter incompatible) / WORKAROUND_biSPCharts (if API differs)
 - **Critical Questions:**
   1. Does BFHchart have a `notes` parameter?
   2. If yes: How does it map notes to data points (by index, row ID, x/y match)?
   3. If yes: Does it handle Danish characters (æøå)?
   4. If yes: Does it support custom styling (font size, color, arrow)?
-  5. If no: Can SPCify continue using ggrepel layer approach?
+  5. If no: Can biSPCharts continue using ggrepel layer approach?
 
 **Mapping Options:**
 
@@ -505,16 +505,16 @@ bfh_args$notes <- data[[kommentar_column]]
 
 **Option B: No BFHchart `notes` Parameter**
 ```r
-# Continue SPCify approach:
+# Continue biSPCharts approach:
 # 1. Get BFHchart output data
 # 2. Extract comment_data with .original_row_id join
 # 3. Add ggrepel::geom_text_repel() layer
 # 4. Apply sanitization as before
 ```
 
-**Recommendation:** **Option B (SPCify Layer) Preferred**
+**Recommendation:** **Option B (biSPCharts Layer) Preferred**
 - **Rationale:** Comment handling is presentation logic with complex requirements (XSS, Danish characters, collision avoidance)
-- **Benefit:** SPCify retains full control over comment styling and security
+- **Benefit:** biSPCharts retains full control over comment styling and security
 - **Downside:** BFHchart `notes` parameter (if it exists) goes unused
 
 **Validation Checklist:**
@@ -531,7 +531,7 @@ bfh_args$notes <- data[[kommentar_column]]
 ## Gap Category Definitions
 
 ### BLOCKER
-**Definition:** Feature absolutely required for SPCify, no workaround possible without BFHchart implementation.
+**Definition:** Feature absolutely required for biSPCharts, no workaround possible without BFHchart implementation.
 
 **Impact:** Blocks migration until BFHchart enhancement completed.
 
@@ -542,12 +542,12 @@ bfh_args$notes <- data[[kommentar_column]]
 - Chart type not supported
 - ggplot2 output incompatible
 
-### WORKAROUND_SPCify
-**Definition:** Feature can be implemented in SPCify integration layer without BFHchart changes.
+### WORKAROUND_biSPCharts
+**Definition:** Feature can be implemented in biSPCharts integration layer without BFHchart changes.
 
-**Impact:** Adds complexity to SPCify but unblocks migration.
+**Impact:** Adds complexity to biSPCharts but unblocks migration.
 
-**Escalation:** Document in SPCify code, consider BFHchart enhancement in future.
+**Escalation:** Document in biSPCharts code, consider BFHchart enhancement in future.
 
 **Examples:**
 - Intelligent x-axis breaks
@@ -555,7 +555,7 @@ bfh_args$notes <- data[[kommentar_column]]
 - Y-axis formatting
 
 ### WORKAROUND_BFHchart
-**Definition:** Feature should be in BFHchart but can be temporarily worked around in SPCify.
+**Definition:** Feature should be in BFHchart but can be temporarily worked around in biSPCharts.
 
 **Impact:** Technical debt; BFHchart enhancement recommended.
 
@@ -563,7 +563,7 @@ bfh_args$notes <- data[[kommentar_column]]
 
 **Examples:**
 - Missing chart type (can be added to BFHchart)
-- Anhøj rules not exposed (can be calculated in SPCify)
+- Anhøj rules not exposed (can be calculated in biSPCharts)
 - Freeze parameter missing (can be simulated)
 
 ### ACCEPTABLE
@@ -590,11 +590,11 @@ bfh_args$notes <- data[[kommentar_column]]
 | 4. Prime Charts | VALIDATION_REQUIRED | WORKAROUND_BFHchart | P1 | Test P'/U' |
 | 5. Freeze Period | ASSUMED_PARITY | BLOCKER (if missing) | P0 | Validate behavior |
 | 6. Part Aggregation | VALIDATION_REQUIRED | BLOCKER (if missing) | P0 | Test phases |
-| 7. Custom Breaks | WORKAROUND_SPCify | ACCEPTABLE | P2 | Keep in SPCify |
-| 8. Axis Formatting | WORKAROUND_SPCify | ACCEPTABLE | P2 | Keep in SPCify |
+| 7. Custom Breaks | WORKAROUND_biSPCharts | ACCEPTABLE | P2 | Keep in biSPCharts |
+| 8. Axis Formatting | WORKAROUND_biSPCharts | ACCEPTABLE | P2 | Keep in biSPCharts |
 | 9. ggplot2 Integration | VALIDATION_REQUIRED | BLOCKER (if incompatible) | P0 | Confirm output |
 | 10. Data Structure | VALIDATION_REQUIRED | BLOCKER (if incompatible) | P0 | Document API |
-| 11. Comment/Notes | CRITICAL_VALIDATION | WORKAROUND_SPCify | P0 | Prefer SPCify layer |
+| 11. Comment/Notes | CRITICAL_VALIDATION | WORKAROUND_biSPCharts | P0 | Prefer biSPCharts layer |
 
 **Legend:**
 - **P0:** Blocker - Must resolve before Phase 3
@@ -622,7 +622,7 @@ bfh_args$notes <- data[[kommentar_column]]
 3. **Incremental:** Implement one chart type at a time, validate against baseline
 
 ### Long-Term Strategy
-1. **Keep in SPCify:**
+1. **Keep in biSPCharts:**
    - Intelligent x-axis breaks
    - Y-axis formatting
    - Comment annotations
@@ -636,7 +636,7 @@ bfh_args$notes <- data[[kommentar_column]]
 3. **API Refinement:**
    - Document expected BFHchart API in Task 30
    - Propose BFHchart enhancements based on real-world usage
-   - Version BFHchart releases in sync with SPCify requirements
+   - Version BFHchart releases in sync with biSPCharts requirements
 
 ---
 
@@ -648,8 +648,8 @@ bfh_args$notes <- data[[kommentar_column]]
 
 1. **[BFHchart] Expose Anhøj rules per data point**
    - Priority: P0 (BLOCKER if missing)
-   - Workaround: Calculate in SPCify service layer
-   - Effort: Medium (algorithm already exists if extracted from SPCify)
+   - Workaround: Calculate in biSPCharts service layer
+   - Effort: Medium (algorithm already exists if extracted from biSPCharts)
 
 2. **[BFHchart] Support freeze parameter for baseline period**
    - Priority: P0 (BLOCKER if missing)
@@ -663,7 +663,7 @@ bfh_args$notes <- data[[kommentar_column]]
 
 4. **[BFHchart] Validate ggplot2 layer compatibility**
    - Priority: P0 (BLOCKER if incompatible)
-   - Workaround: Rebuild plot from data in SPCify
+   - Workaround: Rebuild plot from data in biSPCharts
    - Effort: High (major architectural change)
 
 ---
@@ -683,7 +683,7 @@ bfh_args$notes <- data[[kommentar_column]]
 3. **Create Issue List:**
    - File BFHchart issues for confirmed gaps
    - Prioritize based on blocking status
-   - Link SPCify use cases in issue descriptions
+   - Link biSPCharts use cases in issue descriptions
 
 4. **Update Task 30:**
    - Use findings to design `compute_spc_results_bfh()` facade
@@ -723,7 +723,7 @@ str(qic_data)
 # $ runs.signal : logical - Runs rule violation
 # $ n.crossings : integer - Number of crossings
 # $ n.crossings.min : integer - Expected minimum crossings
-# $ .original_row_id : integer - Injected by SPCify
+# $ .original_row_id : integer - Injected by biSPCharts
 ```
 
 ### Parameter Defaults

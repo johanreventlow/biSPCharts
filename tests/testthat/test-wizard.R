@@ -17,7 +17,7 @@ library(readr)
 # Loekker package-sti, project-root, og test_path for at finde inst-filer
 resolve_inst_path <- function(...) {
   rel <- file.path(...)
-  p <- system.file(..., package = "SPCify")
+  p <- system.file(..., package = "biSPCharts")
   if (p != "" && file.exists(p)) {
     return(p)
   }

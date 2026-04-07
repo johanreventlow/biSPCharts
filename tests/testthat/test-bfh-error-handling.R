@@ -28,12 +28,12 @@ test_that("classify_error_source correctly attributes BFHcharts errors", {
   expect_match(classification$user_message, "SPC beregning")
 })
 
-test_that("classify_error_source correctly attributes SPCify validation errors", {
+test_that("classify_error_source correctly attributes biSPCharts validation errors", {
   # Validation error
   validation_error <- simpleError("Missing required columns: x_column")
   classification <- classify_error_source(validation_error)
 
-  expect_equal(classification$source, "SPCify")
+  expect_equal(classification$source, "biSPCharts")
   expect_equal(classification$component, "BFH_VALIDATION")
   expect_false(classification$escalate)
   expect_match(classification$user_message, "Konfigurationsfejl")
@@ -296,17 +296,17 @@ test_that("Error messages are actionable and user-friendly", {
   chart_error <- simpleError("Invalid chart_type: 'not_a_chart_type'. Must be one of: run, i, mr")
   classification1 <- classify_error_source(chart_error)
 
-  # This should be classified as SPCify (validation error)
-  expect_equal(classification1$source, "SPCify")
+  # This should be classified as biSPCharts (validation error)
+  expect_equal(classification1$source, "biSPCharts")
   expect_match(classification1$user_message, "Konfigurationsfejl")
 
   # Missing column error classification
   column_error <- simpleError("Missing required columns: x_column")
   classification2 <- classify_error_source(column_error)
 
-  expect_equal(classification2$source, "SPCify")
+  expect_equal(classification2$source, "biSPCharts")
   expect_match(classification2$user_message, "Konfigurationsfejl")
-  expect_match(classification2$actionable_by, "SPCify developer")
+  expect_match(classification2$actionable_by, "biSPCharts developer")
 })
 
 # Test: Log volume control

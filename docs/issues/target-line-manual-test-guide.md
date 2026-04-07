@@ -165,7 +165,7 @@ Hvis BFHcharts IKKE renderer target line:
 - Dette er BFHcharts ansvar
 - Dokumenter issue i BFHcharts repo
 
-**Option B:** Manual overlay i SPCify
+**Option B:** Manual overlay i biSPCharts
 - Tilføj `geom_hline()` efter BFHcharts plot generation
 - Duplikation af ansvar - ikke ideel
 

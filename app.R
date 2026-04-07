@@ -23,7 +23,7 @@
 # ==============================================================================
 # Indlaeser BFHtheme, BFHcharts og BFHllm fra kildekode (sibling-mapper)
 # saa vi altid tester nyeste version under udvikling.
-# Raekkefoelge: BFHtheme -> BFHcharts -> BFHllm -> SPCify (dependency order)
+# Raekkefoelge: BFHtheme -> BFHcharts -> BFHllm -> biSPCharts (dependency order)
 # ==============================================================================
 dev_load_siblings <- function(base_path = dirname(getwd())) {
   siblings <- list(
@@ -45,7 +45,7 @@ dev_load_siblings <- function(base_path = dirname(getwd())) {
 
 dev_load_siblings()
 
-# Load SPCify
+# Load biSPCharts
 devtools::load_all(helpers = FALSE)
 
 # Optional: Show debug contexts and set filter before running app

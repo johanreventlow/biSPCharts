@@ -1,7 +1,7 @@
 # utils_bfhllm_integration.R
-# SPCify Integration Layer for BFHllm Package
+# biSPCharts Integration Layer for BFHllm Package
 #
-# Thin wrapper providing SPCify-specific configuration and helpers for
+# Thin wrapper providing biSPCharts-specific configuration and helpers for
 # BFHllm package integration. Delegates actual LLM/RAG work to BFHllm.
 
 # CONFIG HELPERS ================================================================
@@ -100,9 +100,9 @@ get_system_config <- function() {
 
 # INITIALIZATION ================================================================
 
-#' Initialize BFHllm for SPCify
+#' Initialize BFHllm for biSPCharts
 #'
-#' Configures BFHllm package with SPCify-specific defaults. Called during
+#' Configures BFHllm package with biSPCharts-specific defaults. Called during
 #' app initialization (global.R or run_app.R).
 #'
 #' @param ai_config List with AI configuration from get_ai_config()
@@ -117,9 +117,9 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
     ai_config <- get_ai_config()
   }
 
-  # Configure BFHllm with SPCify settings
+  # Configure BFHllm with biSPCharts settings
   BFHllm::bfhllm_configure(
-    provider = "gemini", # SPCify uses Gemini
+    provider = "gemini", # biSPCharts uses Gemini
     model = ai_config$model,
     timeout_seconds = ai_config$timeout_seconds,
     max_response_chars = ai_config$max_response_chars
@@ -138,7 +138,7 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
 
 #' Check if BFHllm is Available
 #'
-#' Wrapper for BFHllm::bfhllm_chat_available() with SPCify logging.
+#' Wrapper for BFHllm::bfhllm_chat_available() with biSPCharts logging.
 #'
 #' @return Logical, TRUE if BFHllm is configured and ready
 #'
@@ -155,7 +155,7 @@ is_bfhllm_available <- function() {
 
 #' Create BFHllm Cache for Shiny Session
 #'
-#' Wrapper for BFHllm::bfhllm_cache_shiny() that integrates with SPCify
+#' Wrapper for BFHllm::bfhllm_cache_shiny() that integrates with biSPCharts
 #' configuration system.
 #'
 #' @param session Shiny session object
@@ -164,7 +164,7 @@ is_bfhllm_available <- function() {
 #'
 #' @keywords internal
 create_bfhllm_cache <- function(session) {
-  # Get TTL from SPCify config (if exists, otherwise use BFHllm default)
+  # Get TTL from biSPCharts config (if exists, otherwise use BFHllm default)
   system_config <- get_system_config()
   ttl <- system_config$cache_ttl_seconds %||% 3600 # 1 hour default
 
@@ -178,13 +178,13 @@ create_bfhllm_cache <- function(session) {
   return(cache)
 }
 
-#' Generate AI Improvement Suggestion (SPCify Wrapper)
+#' Generate AI Improvement Suggestion (biSPCharts Wrapper)
 #'
-#' Wrapper for BFHllm::bfhllm_spc_suggestion() that adapts SPCify's
-#' data structures and adds SPCify-specific logging.
+#' Wrapper for BFHllm::bfhllm_spc_suggestion() that adapts biSPCharts's
+#' data structures and adds biSPCharts-specific logging.
 #'
 #' @param spc_result List from compute_spc_results_bfh() with metadata and qic_data
-#' @param context Named list with SPCify context (data_definition, chart_title, etc.)
+#' @param context Named list with biSPCharts context (data_definition, chart_title, etc.)
 #' @param session Shiny session object for cache access
 #' @param max_chars Maximum response characters (default from config)
 #'

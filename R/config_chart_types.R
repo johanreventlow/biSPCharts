@@ -29,28 +29,28 @@
 CHART_TYPES_DA <- list(
   "Run \u2014 seriediagram over tid" = "run",
   "I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)" = "i",
-  "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
+  # "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
   "P-kort \u2014 andele/procenter (fx infektionsrate)" = "p",
-  "P\u2032-kort \u2014 andele, standardiseret" = "pp",
+  # "P\u2032-kort \u2014 andele, standardiseret" = "pp",
   "U-kort \u2014 rater (fx komplikationer pr. 1000)" = "u",
-  "U\u2032-kort \u2014 rater, standardiseret" = "up",
-  "C-kort \u2014 t\u00e6llinger (fx antal fald)" = "c",
-  "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g",
-  "T-kort \u2014 tid mellem sj\u00e6ldne komplikationer" = "t"
+  # "U\u2032-kort \u2014 rater, standardiseret" = "up",
+  "C-kort \u2014 t\u00e6llinger (fx antal fald)" = "c"
+  # "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g",
+  # "T-kort \u2014 tid mellem sj\u00e6ldne komplikationer" = "t"
 )
 
 ## Omvendt mapping til engelske koder -----
 CHART_TYPES_EN <- list(
   "run" = "run",
   "i" = "i",
-  "mr" = "mr",
+  # "mr" = "mr",
   "p" = "p",
-  "pp" = "pp",
+  # "pp" = "pp",
   "u" = "u",
-  "up" = "up",
-  "c" = "c",
-  "g" = "g",
-  "t" = "t"
+  # "up" = "up",
+  "c" = "c"
+  # "g" = "g",
+  # "t" = "t"
 )
 
 ## Understøttede chart types (single source of truth) -----

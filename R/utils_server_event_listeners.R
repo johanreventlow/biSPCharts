@@ -1438,8 +1438,8 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
 
   # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
   shiny::observeEvent(input$trigger_file_upload, {
-    # Klik på det skjulte fileInput via JS
-    shinyjs::click("direct_file_upload")
+    # Klik på det faktiske <input type="file"> element inden i fileInput containeren
+    shinyjs::runjs("$('#direct_file_upload').find('input[type=\"file\"]').click();")
   })
 
   # Observer: Direkte fil-upload — validér og behandl via eksisterende upload-logik

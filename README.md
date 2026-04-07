@@ -180,7 +180,7 @@ install.packages(c(
 ```r
 # Clone repository
 git clone <repository-url>
-cd claude_spc
+cd biSPCharts
 
 # ═══════════════════════════════════════════════════════
 # PRODUCTION MODE (Anbefalet) - Package loading
@@ -267,7 +267,7 @@ Dato;Tæller;Nævner;Skift;Frys;Kommentarer
 
 ### Project Structure
 ```
-claude_spc/
+biSPCharts/
 ├── R/                          # R source files
 │   ├── app_server.R           # Main server logic
 │   ├── app_ui.R               # User interface

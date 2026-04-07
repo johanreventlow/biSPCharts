@@ -60,8 +60,8 @@ Se `DESCRIPTION` fil for fuld liste.
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-org/claude_spc.git
-cd claude_spc
+git clone https://github.com/your-org/biSPCharts.git
+cd biSPCharts
 ```
 
 ### 2. Install Dependencies
@@ -230,7 +230,7 @@ admin 4151 {
 ```bash
 # Copy app to Shiny Server directory
 sudo mkdir -p /srv/shiny-server/spc
-sudo cp -r /path/to/claude_spc/* /srv/shiny-server/spc/
+sudo cp -r /path/to/biSPCharts/* /srv/shiny-server/spc/
 
 # Set correct permissions
 sudo chown -R shiny:shiny /srv/shiny-server/spc
@@ -514,7 +514,7 @@ R -e "source('global.R'); testthat::test_dir('tests/testthat')"
 
 # Deploy to production
 sudo systemctl stop shiny-server
-sudo cp -r /path/to/claude_spc/* /srv/shiny-server/spc/
+sudo cp -r /path/to/biSPCharts/* /srv/shiny-server/spc/
 sudo systemctl start shiny-server
 ```
 

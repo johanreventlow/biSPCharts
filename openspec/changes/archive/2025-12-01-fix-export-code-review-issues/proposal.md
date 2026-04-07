@@ -4,7 +4,7 @@
 **Type:** bugfix
 **Status:** completed
 **Priority:** critical
-**GitHub Issue:** [#97](https://github.com/johanreventlow/claude_spc/issues/97)
+**GitHub Issue:** [#97](https://github.com/johanreventlow/biSPCharts/issues/97)
 
 ## Problem Statement
 

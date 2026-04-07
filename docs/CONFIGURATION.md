@@ -147,7 +147,7 @@ if (isTRUE(rag_config$enabled)) {
 devtools::install()
 
 # Or from GitHub (when available)
-remotes::install_github("johanreventlow/claude_spc")
+remotes::install_github("johanreventlow/biSPCharts")
 ```
 
 **With RAG Knowledge Store Build:**

@@ -22,15 +22,17 @@ is_column_numeric <- function(col, threshold = 0.5) {
 
 #' Bestem value box theme baseret på signal-status
 #'
+#' Bruger dark/light for at signalere udfald uden at antyde fejl/succes.
+#'
 #' @param status_info List med status felt.
 #' @param signal Logical. TRUE hvis signal er detekteret.
 #' @return Character. bslib theme navn.
 #' @keywords internal
 value_box_signal_theme <- function(status_info, signal) {
   if (status_info$status == "ready" && isTRUE(signal)) {
-    "danger"
+    "dark"
   } else if (status_info$status == "ready") {
-    "success"
+    "light"
   } else {
     status_info$theme
   }

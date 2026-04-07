@@ -656,7 +656,7 @@ test_that("register_session_lifecycle_events clears cache on reset", {
 
 ```bash
 # Run full suite
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # Verify no regressions
 R -e "devtools::check()"

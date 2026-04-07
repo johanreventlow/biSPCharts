@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_spc_bfh_service.R
 \name{map_to_bfh_params}
 \alias{map_to_bfh_params}
-\title{Map SPCify Parameters to BFHchart API}
+\title{Map biSPCharts Parameters to BFHchart API}
 \usage{
 map_to_bfh_params(
   data,
@@ -39,9 +39,9 @@ map_to_bfh_params(
 \item{notes_column}{character. Name of notes/comment column in data. Will be
 mapped to BFHcharts \code{notes} parameter as character vector. Default NULL.}
 
-\item{target_value}{numeric. Target value in SPCify scale (optional).}
+\item{target_value}{numeric. Target value in biSPCharts scale (optional).}
 
-\item{centerline_value}{numeric. Custom centerline in SPCify scale (optional).}
+\item{centerline_value}{numeric. Custom centerline in biSPCharts scale (optional).}
 
 \item{...}{Additional parameters to pass through to BFHchart.}
 }
@@ -63,9 +63,9 @@ list. Named list of BFHchart-compatible parameters ready for
 Returns NULL on validation failure (with error logging).
 }
 \description{
-Transforms SPCify-style parameters to BFHchart API conventions. Handles
+Transforms biSPCharts-style parameters to BFHchart API conventions. Handles
 parameter name mapping, scale normalization (percentage ↔ decimal), and
-data structure preparation. Isolates SPCify from BFHchart API changes.
+data structure preparation. Isolates biSPCharts from BFHchart API changes.
 }
 \details{
 \strong{Transformation Responsibilities:}
@@ -80,10 +80,10 @@ data structure preparation. Isolates SPCify from BFHchart API changes.
 
 \strong{Parameter Mappings (Expected):}
 \itemize{
-\item SPCify \code{part_var} → BFHchart \code{part} parameter
-\item SPCify \code{cl_var} → BFHchart centerline override
-\item SPCify \code{freeze_var} → BFHchart \code{freeze} parameter
-\item Scale: SPCify percentages (0-100) → BFHchart decimals (0-1) if needed
+\item biSPCharts \code{part_var} → BFHchart \code{part} parameter
+\item biSPCharts \code{cl_var} → BFHchart centerline override
+\item biSPCharts \code{freeze_var} → BFHchart \code{freeze} parameter
+\item Scale: biSPCharts percentages (0-100) → BFHchart decimals (0-1) if needed
 }
 }
 \examples{

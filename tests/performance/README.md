@@ -56,7 +56,7 @@ Comprehensive performance benchmarks for BFHcharts vs qicharts2 backends, includ
 ### Run All Benchmarks
 ```r
 # Load project
-library(SPCify)
+library(biSPCharts)
 
 # Run benchmarks
 testthat::test_file('tests/performance/test-bfh-vs-qic-benchmark.R')

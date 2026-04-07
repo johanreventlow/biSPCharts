@@ -29,12 +29,18 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
         display: flex !important;
       }
+      body.wizard-nav-active .navbar .nav-link[data-value='upload'],
+      body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
+      body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
+      body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
+        display: block !important;
+      }
     ")),
     # Your application UI logic
     bslib::page_navbar(
       id = "main_navbar",
       selected = "start",
-      window_title = "SPCify",
+      window_title = "biSPCharts",
       title = shiny::tagList(
         shiny::tags$a(
           id = "logo_home_link",
@@ -122,7 +128,7 @@ golem_add_external_resources <- function() {
       golem::favicon(),
       golem::bundle_resources(
         path = app_sys("app/www"),
-        app_title = "SPCify"
+        app_title = "biSPCharts"
       ),
       # Accessibility: aria-live på Shinys notification-panel
       shiny::tags$script(htmltools::HTML(
@@ -152,7 +158,7 @@ golem_add_external_resources <- function() {
 #' @noRd
 app_sys <- function(...) {
   # Try package installation first
-  result <- system.file(..., package = "SPCify")
+  result <- system.file(..., package = "biSPCharts")
 
   # If package not found, try development paths
   if (result == "") {

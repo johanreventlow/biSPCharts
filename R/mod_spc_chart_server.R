@@ -90,6 +90,15 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       app_state$events$visualization_update_needed <- 0L
     }
 
+    # Sæt viewport dims tidligt så cache key bruger reelle dimensioner
+    shiny::observe({
+      width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+      height <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      shiny::req(!is.null(width), !is.null(height), width > 100, height > 100)
+      emit <- create_emit_api(app_state)
+      set_viewport_dims(app_state, width, height, emit)
+    })
+
     # ATOMIC UPDATE: Consolidated observer with proper guards
     shiny::observeEvent(
       app_state$events$visualization_update_needed,
@@ -323,34 +332,16 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       kommentar_value <- if (!is.null(kommentar_column_reactive)) kommentar_column_reactive() else NULL
       target_text_value <- if (!is.null(target_text_reactive)) target_text_reactive() else NULL
 
-      # VIEWPORT DIMENSIONS: Brug clientData hvis tilgængelig, ellers conservative defaults
-      # Dette sikrer at plot ALTID renders (også ved første render), men med progressive
-      # enhancement når faktiske dimensioner bliver tilgængelige.
-      #
-      # STRATEGI: Safe defaults → Perfect placement
-      # - Første render: Brug defaults (800×600) → Labels placeres konservativt
-      # - Anden render: Brug faktiske dimensioner → Labels placeres perfekt
-      width_px_raw <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
-      height_px_raw <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      # VIEWPORT DIMENSIONS: Kræv faktiske clientData dimensioner.
+      # Blokerer evaluering indtil browseren har rapporteret reelle dimensioner.
+      # Eliminerer label-placering baseret på forkerte 800×600 defaults.
+      width_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+      height_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+      shiny::req(!is.null(width_px), !is.null(height_px), width_px > 100, height_px > 100)
 
-      # M10: Fallback til konfigurerede defaults hvis clientData ikke klar
-      width_px <- if (!is.null(width_px_raw) && width_px_raw > 100) {
-        width_px_raw
-      } else {
-        VIEWPORT_DEFAULTS$width # Conservative default width
-      }
-
-      height_px <- if (!is.null(height_px_raw) && height_px_raw > 100) {
-        height_px_raw
-      } else {
-        VIEWPORT_DEFAULTS$height # Conservative default height
-      }
-
-      # Log viewport status for debugging label placement issues
       if (getOption("spc.debug.label_placement", FALSE)) {
-        viewport_source <- if (!is.null(width_px_raw)) "clientData" else "defaults"
         log_debug(
-          sprintf("Viewport: %d×%d px (source: %s)", width_px, height_px, viewport_source),
+          sprintf("Viewport: %d\u00d7%d px (clientData)", width_px, height_px),
           "VIEWPORT_DIMENSIONS"
         )
       }
@@ -818,8 +809,21 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         plot_result <- spc_plot()
 
         if (is.null(plot_result)) {
+          # Vis kontekstuel tom-state i stedet for uendelig "Beregner..."
+          config <- tryCatch(column_config_reactive(), error = function(e) NULL)
+          empty_state_msg <- if (is.null(config) || is.null(config$y_col)) {
+            "V\u00e6lg en numerisk Y-akse-kolonne\nfor at generere diagrammet."
+          } else {
+            y_col_data <- tryCatch(data[[config$y_col]], error = function(e) NULL)
+            if (!is.null(y_col_data) && !is_column_numeric(y_col_data)) {
+              "Den valgte Y-akse-kolonne indeholder\nikke numeriske data."
+            } else {
+              NULL
+            }
+          }
+
           graphics::plot.new()
-          graphics::text(0.5, 0.5, "Beregner...", cex = 1.1, col = "#6c757d")
+          graphics::text(0.5, 0.5, empty_state_msg %||% "Beregner...", cex = 1.1, col = "#6c757d")
           return(invisible(NULL))
         }
 
@@ -977,7 +981,13 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       } else if (is.null(config) || is.null(config$y_col)) {
         list(
           status = "not_configured",
-          message = "Vælg kolonner i indstillinger",
+          message = "V\u00e6lg en numerisk Y-akse-kolonne for at generere diagrammet",
+          theme = "warning"
+        )
+      } else if (!is_column_numeric(data[[config$y_col]])) {
+        list(
+          status = "not_configured",
+          message = "Den valgte Y-akse-kolonne indeholder ikke numeriske data",
           theme = "warning"
         )
       } else {
@@ -996,7 +1006,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         } else if (get_plot_state("is_computing") %||% FALSE) {
           list(
             status = "calculating",
-            message = "Beregner nye værdier...",
+            message = "Beregner nye v\u00e6rdier...",
             theme = "info"
           )
         } else if (!(get_plot_state("plot_ready") %||% FALSE)) {
@@ -1069,13 +1079,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
             )
           },
           showcase = spc_run_chart_icon,
-          theme = if (status_info$status == "ready" && chart_type == "run" && !is.null(anhoej$runs_signal) && (anhoej$runs_signal %||% FALSE)) {
-            "dark"
-          } else if (status_info$status == "ready") {
-            "light"
-          } else {
-            status_info$theme
-          },
+          theme = value_box_signal_theme(status_info, anhoej$runs_signal),
           shiny::p(
             class = "fs-7 text-muted mb-0",
             if (status_info$status == "ready") {
@@ -1149,13 +1153,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
             )
           },
           showcase = spc_median_crossings_icon,
-          theme = if (status_info$status == "ready" && !is.null(anhoej$crossings_signal) && (anhoej$crossings_signal %||% FALSE)) {
-            "dark"
-          } else if (status_info$status == "ready") {
-            "light"
-          } else {
-            status_info$theme
-          },
+          theme = value_box_signal_theme(status_info, anhoej$crossings_signal),
           shiny::p(
             class = "fs-7 text-muted mb-0",
             if (status_info$status == "ready") {
@@ -1228,12 +1226,11 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
           showcase = spc_out_of_control_icon,
           theme = if (status_info$status == "ready" && chart_type == "run") {
             NULL # No theme when we use custom styling
-          } else if (status_info$status == "ready" && !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0)) {
-            "dark"
-          } else if (status_info$status == "ready") {
-            "light"
           } else {
-            status_info$theme
+            value_box_signal_theme(
+              status_info,
+              !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0)
+            )
           },
           shiny::p(
             class = if (status_info$status == "ready" && chart_type == "run") "fs-7 mb-0" else "fs-7 text-muted mb-0",

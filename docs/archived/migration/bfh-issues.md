@@ -9,7 +9,7 @@
 
 This document tracks identified gaps between qicharts2 (current implementation) and BFHchart (migration target) based on the feature parity analysis. Each gap is categorized by priority, type, and mitigation strategy.
 
-**Important Context:** BFHchart was extracted from SPCify's own codebase. Most gaps represent API validation needs rather than true blockers, since we control both codebases.
+**Important Context:** BFHchart was extracted from biSPCharts's own codebase. Most gaps represent API validation needs rather than true blockers, since we control both codebases.
 
 ---
 
@@ -18,7 +18,7 @@ This document tracks identified gaps between qicharts2 (current implementation) 
 **Total Gaps Identified:** 11 feature areas requiring validation
 **Confirmed Blockers:** 0 (VALIDATION COMPLETE - Task #30 Stream C)
 **Workarounds Available:** 2 minor issues (chart type validation + notes NSE)
-**Acceptable Differences:** 3 (presentation logic - already in BFHcharts/SPCify)
+**Acceptable Differences:** 3 (presentation logic - already in BFHcharts/biSPCharts)
 
 **Risk Assessment (UPDATED 2025-10-15):**
 - Gap Risk: LOW (down from Medium)
@@ -42,39 +42,39 @@ This document tracks identified gaps between qicharts2 (current implementation) 
 | G8 | Axis Formatting (Y-axis units) | ACCEPTABLE | P2 | ✅ **IMPLEMENTED** | Already in BFHcharts | N/A | Y-axis formatting utilities exist |
 | G9 | ggplot2 Integration | N/A | P0 | ✅ **VALIDATED** | No workaround needed | N/A | Returns ggplot object, layer addition confirmed |
 | G10 | Data Structure (input/output) | N/A | P0 | ✅ **VALIDATED** | No workaround needed | N/A | qicharts2 data structure preserved |
-| G11 | Comment/Notes Parameter | WORKAROUND_SPCify | P0 | ✅ **VALIDATED** | Keep SPCify ggrepel approach | [BFH #XX] | NSE issue, SPCify workaround preferred |
+| G11 | Comment/Notes Parameter | WORKAROUND_biSPCharts | P0 | ✅ **VALIDATED** | Keep biSPCharts ggrepel approach | [BFH #XX] | NSE issue, biSPCharts workaround preferred |
 
 ---
 
 ## Gap Category Definitions
 
 ### BLOCKER (if missing)
-**Definition:** Feature absolutely required for SPCify with no viable workaround unless BFHchart implements it.
+**Definition:** Feature absolutely required for biSPCharts with no viable workaround unless BFHchart implements it.
 
 **Examples:** Control limits (G3), Freeze period (G5), Part aggregation (G6), ggplot2 output (G9), Data structure (G10)
 
 **Mitigation:** Create BFHchart issues immediately, prioritize as P0, plan parallel development.
 
 ### WORKAROUND_BFHchart
-**Definition:** Feature should ideally be in BFHchart but can be temporarily implemented in SPCify.
+**Definition:** Feature should ideally be in BFHchart but can be temporarily implemented in biSPCharts.
 
 **Examples:** Anhøj rules (G2), Chart types (G1), Prime charts (G4)
 
-**Mitigation:** Document technical debt, create BFHchart enhancement issues, implement SPCify-side calculation.
+**Mitigation:** Document technical debt, create BFHchart enhancement issues, implement biSPCharts-side calculation.
 
-### WORKAROUND_SPCify
-**Definition:** Feature can be implemented in SPCify integration layer without BFHchart changes.
+### WORKAROUND_biSPCharts
+**Definition:** Feature can be implemented in biSPCharts integration layer without BFHchart changes.
 
 **Examples:** Comment annotations (G11)
 
-**Mitigation:** Keep implementation in SPCify, apply as ggplot2 layers or post-processing.
+**Mitigation:** Keep implementation in biSPCharts, apply as ggplot2 layers or post-processing.
 
 ### ACCEPTABLE
-**Definition:** Minor differences acceptable; implementation in SPCify preferred.
+**Definition:** Minor differences acceptable; implementation in biSPCharts preferred.
 
 **Examples:** Custom x-axis breaks (G7), Y-axis formatting (G8)
 
-**Mitigation:** Document approach, keep presentation logic in SPCify.
+**Mitigation:** Document approach, keep presentation logic in biSPCharts.
 
 ---
 
@@ -98,9 +98,9 @@ This document tracks identified gaps between qicharts2 (current implementation) 
 
 **Issue Filing Strategy:**
 - Start with P0 validation gaps (G2, G3, G5, G6, G9, G10)
-- Include SPCify use cases in issue descriptions
+- Include biSPCharts use cases in issue descriptions
 - Link back to this tracking document
-- Coordinate BFHchart releases with SPCify migration phases
+- Coordinate BFHchart releases with biSPCharts migration phases
 
 ---
 
@@ -159,9 +159,9 @@ This document tracks identified gaps between qicharts2 (current implementation) 
 
 ### P2 Features (Defer or Document)
 
-- [ ] **G7: Custom Breaks** - Keep in SPCify (intelligent x-axis logic)
-- [ ] **G8: Axis Formatting** - Keep in SPCify (presentation layer)
-- [ ] **G11: Comments** - Keep in SPCify (security, XSS, Danish chars)
+- [ ] **G7: Custom Breaks** - Keep in biSPCharts (intelligent x-axis logic)
+- [ ] **G8: Axis Formatting** - Keep in biSPCharts (presentation layer)
+- [ ] **G11: Comments** - Keep in biSPCharts (security, XSS, Danish chars)
 
 ---
 
@@ -172,7 +172,7 @@ This document tracks identified gaps between qicharts2 (current implementation) 
 **Answer:** YES - Proceed with phased validation approach
 
 **Rationale:**
-1. **No Confirmed Blockers:** All BLOCKER gaps are marked "ASSUMED_PARITY" based on BFHchart's origin from SPCify
+1. **No Confirmed Blockers:** All BLOCKER gaps are marked "ASSUMED_PARITY" based on BFHchart's origin from biSPCharts
 2. **Controlled Environment:** In-house package allows rapid enhancement if gaps found
 3. **Fallback Available:** qicharts2 remains in Suggests for regression testing
 4. **Validation Strategy:** Task 30 will implement adapter pattern allowing incremental validation
@@ -265,7 +265,7 @@ notes_col <- rlang::enquo(notes)
 if (!rlang::quo_is_null(notes_col)) { ... }
 ```
 
-**Impact:** Users must use string reference instead of bare column name (SPCify workaround: ggrepel layer)
+**Impact:** Users must use string reference instead of bare column name (biSPCharts workaround: ggrepel layer)
 
 ---
 

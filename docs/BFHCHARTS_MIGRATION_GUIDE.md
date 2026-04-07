@@ -8,7 +8,7 @@
 
 1. [Overview](#overview)
 2. [Architecture: Pure BFHcharts](#architecture-pure-bfhcharts)
-3. [Parameter Mapping: SPCify ↔ BFHcharts](#parameter-mapping-spcify--bfhcharts)
+3. [Parameter Mapping: biSPCharts ↔ BFHcharts](#parameter-mapping-spcify--bfhcharts)
 4. [Key Changes from qicharts2](#key-changes-from-qicharts2)
 5. [Error Handling](#error-handling)
 6. [Performance Optimizations](#performance-optimizations)
@@ -21,7 +21,7 @@
 
 ## Overview
 
-SPCify has completed full migration from **qicharts2** to **BFHcharts** for SPC visualization:
+biSPCharts has completed full migration from **qicharts2** to **BFHcharts** for SPC visualization:
 
 - **BFHcharts HIGH-LEVEL API** (`create_spc_chart()`) for all SPC chart visualization
 - **qicharts2 LOW-LEVEL API** for Anhøj rules metadata extraction only (internal use)
@@ -42,7 +42,7 @@ SPCify has completed full migration from **qicharts2** to **BFHcharts** for SPC 
 ```
 User Input
     ↓
-SPCify Parameters
+biSPCharts Parameters
     ↓
 generateSPCPlot_with_backend()
     ↓
@@ -76,11 +76,11 @@ User sees chart (BFHcharts styled)
 
 ---
 
-## Parameter Mapping: SPCify ↔ BFHcharts
+## Parameter Mapping: biSPCharts ↔ BFHcharts
 
 ### Column Names (CRITICAL!)
 
-| SPCify Name | BFHcharts Name | Type | Notes |
+| biSPCharts Name | BFHcharts Name | Type | Notes |
 |-------------|----------------|------|-------|
 | `x_column` | `x_var` | Column name | Time/sequence axis |
 | `y_column` | `y_var` | Column name | Measurement value |
@@ -112,7 +112,7 @@ compute_spc_results_bfh(
 
 ### Numerical Parameters
 
-| SPCify | BFHcharts | Type | Notes |
+| biSPCharts | BFHcharts | Type | Notes |
 |--------|-----------|------|-------|
 | `multiply_by` | `multiply` | Numeric | Scale factor for Y-axis |
 | `target_value` | `target_value` | Numeric | Target line position |
@@ -270,13 +270,13 @@ cache_key <- digest::digest(
 - S (subgroup standard deviation) charts
 - MR (moving range) charts
 
-**Note:** Unsupported chart types will result in an explicit error. There is no automatic fallback. If your workflow requires these chart types, SPCify is not currently suitable for that use case.
+**Note:** Unsupported chart types will result in an explicit error. There is no automatic fallback. If your workflow requires these chart types, biSPCharts is not currently suitable for that use case.
 
 ### Parameter Limitations
 
 **kommentar_column → notes_column**
 - BFHcharts uses different parameter name
-- Must map SPCify `kommentar_column` to `notes_column`
+- Must map biSPCharts `kommentar_column` to `notes_column`
 - Already handled in `compute_spc_results_bfh()`
 
 **Centerline Override**
@@ -448,10 +448,10 @@ The analytical content (centerline, control limits, signals) remains the same. I
 
 ### Dependency on BFHcharts Roadmap
 
-SPCify's capabilities are directly tied to BFHcharts development:
-- **If BFHcharts adds X̄/S support:** SPCify will add support immediately
-- **If BFHcharts performance improves:** SPCify benefits automatically
-- **If BFHcharts API changes:** SPCify wrapper layer will be updated
+biSPCharts's capabilities are directly tied to BFHcharts development:
+- **If BFHcharts adds X̄/S support:** biSPCharts will add support immediately
+- **If BFHcharts performance improves:** biSPCharts benefits automatically
+- **If BFHcharts API changes:** biSPCharts wrapper layer will be updated
 
 ---
 

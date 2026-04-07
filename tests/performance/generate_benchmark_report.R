@@ -36,7 +36,7 @@ generate_performance_report <- function(
     "# BFHcharts vs qicharts2 Performance Benchmark Report",
     "",
     sprintf("**Generated:** %s", Sys.time()),
-    sprintf("**SPCify Version:** %s", utils::packageVersion("SPCify")),
+    sprintf("**biSPCharts Version:** %s", utils::packageVersion("biSPCharts")),
     sprintf("**BFHcharts Version:** %s", utils::packageVersion("BFHcharts")),
     sprintf("**qicharts2 Version:** %s", utils::packageVersion("qicharts2")),
     "",

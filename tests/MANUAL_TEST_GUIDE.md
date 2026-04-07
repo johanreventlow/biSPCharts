@@ -27,11 +27,11 @@
 ```bash
 # Option 1: Launch from R console
 R
-> library(SPCify)
+> library(biSPCharts)
 > run_app()
 
 # Option 2: Launch from command line
-Rscript -e "SPCify::run_app()"
+Rscript -e "biSPCharts::run_app()"
 
 # Option 3: RStudio
 # Open app.R and click "Run App"
@@ -305,7 +305,7 @@ Rscript -e "SPCify::run_app()"
 **Solutions:**
 ```bash
 # Check package installation
-R -e "library(SPCify)"
+R -e "library(biSPCharts)"
 
 # Reinstall if needed
 R -e "devtools::install()"

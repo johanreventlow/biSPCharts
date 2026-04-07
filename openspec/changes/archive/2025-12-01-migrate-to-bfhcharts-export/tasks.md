@@ -7,11 +7,11 @@
 
 - [x] 1.1 Update DESCRIPTION: `BFHcharts (>= 0.3.0)`
 - [x] 1.2 Run `devtools::check()` to verify BFHcharts v0.3.0 compatibility
-- [x] 1.3 Investigate how SPCify stores plot results (ggplot vs bfh_qic_result)
+- [x] 1.3 Investigate how biSPCharts stores plot results (ggplot vs bfh_qic_result)
 
 ## Phase 2: Refactor Plot Storage
 
-- [x] 2.1 Identify where `bfh_qic()` is called in SPCify
+- [x] 2.1 Identify where `bfh_qic()` is called in biSPCharts
 - [x] 2.2 Modify `call_bfh_chart()` to use `BFHcharts::bfh_qic()`
 - [x] 2.3 Modify `transform_bfh_output()` to handle `bfh_qic_result` objects
 - [x] 2.4 Store full `bfh_qic_result` in return structure for exports
@@ -28,7 +28,7 @@
 
 - [x] 4.1 Update PDF download handler in `mod_export_server.R`
 - [x] 4.2 Replace `export_spc_to_typst_pdf()` with `BFHcharts::bfh_export_pdf()`
-- [x] 4.3 Map SPCify metadata to BFHcharts metadata format
+- [x] 4.3 Map biSPCharts metadata to BFHcharts metadata format
 - [x] 4.4 Test PDF export with full metadata (deferred to post-deployment testing)
 - [x] 4.5 Test PDF export with minimal metadata (deferred to post-deployment testing)
 - [x] 4.6 Verify hospital branding appears correctly (deferred to post-deployment testing)

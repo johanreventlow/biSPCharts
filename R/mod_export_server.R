@@ -1156,7 +1156,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
               template_path <- system.file(
                 "templates",
                 "hospital_presentation.pptx",
-                package = "SPCify"
+                package = "biSPCharts"
               )
 
               # If template doesn't exist, use NULL (creates default)

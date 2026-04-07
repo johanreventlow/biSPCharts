@@ -1,8 +1,8 @@
-# SPCify — Frontend Design Brief
+# biSPCharts — Frontend Design Brief
 
-## Hvad er SPCify?
+## Hvad er biSPCharts?
 
-SPCify er en webapplikation til **Statistical Process Control (SPC)** for kliniske kvalitetsteams på Bispebjerg og Frederiksberg Hospital (BFH), Region Hovedstaden, Danmark. Brugerne er sygeplejersker, læger og kvalitetskoordinatorer der skal lave SPC-diagrammer (kontroldiagrammer) til at overvåge og forbedre kliniske processer.
+biSPCharts er en webapplikation til **Statistical Process Control (SPC)** for kliniske kvalitetsteams på Bispebjerg og Frederiksberg Hospital (BFH), Region Hovedstaden, Danmark. Brugerne er sygeplejersker, læger og kvalitetskoordinatorer der skal lave SPC-diagrammer (kontroldiagrammer) til at overvåge og forbedre kliniske processer.
 
 ---
 

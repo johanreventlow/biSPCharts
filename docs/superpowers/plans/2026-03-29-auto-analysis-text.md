@@ -430,7 +430,7 @@ action_text, baseline_analysis, centerline, department).
 
 ## Opgave
 - Tilføj department, centerline, at_target, target_direction til metadata
-  sendt til bfh_generate_analysis() fra SPCify
+  sendt til bfh_generate_analysis() fra biSPCharts
 - Sammenlign med BFHddl pipeline.R linje 1109-1196
 - Vurder om kontekst-opbygningen kan deles via BFHcharts
 

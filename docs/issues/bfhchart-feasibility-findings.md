@@ -30,7 +30,7 @@ create_spc_chart(data = test_data, y = count)
 # SUCCESS
 ```
 
-**Impact:** SPCify bruger konsekvent danske kolonnenavne:
+**Impact:** biSPCharts bruger konsekvent danske kolonnenavne:
 - `Tæller` (numerator)
 - `Nævner` (denominator)
 - `Dato` (date)
@@ -54,7 +54,7 @@ BFHcharts har to lag:
    - Output: styled ggplot2 object
    - Ingen NSE problemer på dette lag
 
-### Nuværende SPCify Workflow
+### Nuværende biSPCharts Workflow
 ```
 Data (danske kolonner)
   ↓
@@ -165,7 +165,7 @@ generateSPCPlot <- function(data, config, ...) {
 
 ## Feature Paritet Analyse
 
-### Nuværende qicharts2 features i SPCify:
+### Nuværende qicharts2 features i biSPCharts:
 - [x] Run charts
 - [x] I-charts
 - [x] P-charts
@@ -208,7 +208,7 @@ generateSPCPlot <- function(data, config, ...) {
 
 ### Næste skridt
 1. ✅ Dokumenter findings (denne fil)
-2. [ ] Test BFHcharts::bfh_spc_plot() med qic_data fra SPCify
+2. [ ] Test BFHcharts::bfh_spc_plot() med qic_data fra biSPCharts
 3. [ ] Verificer Anhøj rules rendering
 4. [ ] Verificer comment annotations
 5. [ ] Implementer proof-of-concept i generateSPCPlot()

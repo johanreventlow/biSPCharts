@@ -35,7 +35,7 @@ test_that("unlock_cache_statistics uses provided namespace without global lookup
 
   expect_no_error(
     suppressMessages(
-      SPCify:::unlock_cache_statistics(ns = fake_ns)
+      biSPCharts:::unlock_cache_statistics(ns = fake_ns)
     )
   )
 

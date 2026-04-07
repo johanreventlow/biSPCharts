@@ -4,7 +4,7 @@
 Proposed
 
 ## Kontekst
-SPCify anvender i dag `qicharts2::qic()` til at generere SPC-diagrammer (run, I, P m.fl.) i Shiny-applikationen. Implementeringen er udbygget med omfattende hjælpefunktioner (`R/fct_spc_plot_generation.R`, `R/utils_qic_preparation.R`) til datarensning, state-håndtering, caching og strukturering af Anhøj-signaler. Denne løsning er moden, men giver begrænsninger:
+biSPCharts anvender i dag `qicharts2::qic()` til at generere SPC-diagrammer (run, I, P m.fl.) i Shiny-applikationen. Implementeringen er udbygget med omfattende hjælpefunktioner (`R/fct_spc_plot_generation.R`, `R/utils_qic_preparation.R`) til datarensning, state-håndtering, caching og strukturering af Anhøj-signaler. Denne løsning er moden, men giver begrænsninger:
 
 - **Udvidelser**: Flere ønskede forbedringer (eksempelvis forbedret fasevisning og annotationsstyring) kræver dybe hooks i qicharts2.
 - **Vedligehold**: Mange interne abstractions er skræddersyet til qicharts2’s output og parametre, hvilket gør videreudvikling og refaktorering tung.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains PowerPoint templates used by the export functionality in SPCify.
+This directory contains PowerPoint templates used by the export functionality in biSPCharts.
 
 ## Hospital Presentation Template
 

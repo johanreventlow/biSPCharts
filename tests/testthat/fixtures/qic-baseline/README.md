@@ -185,7 +185,7 @@ source(here::here("tests/testthat/fixtures/qic-baseline/capture_baselines.R"))
 1. **Baseline stability**: These baselines should remain **unchanged** once captured unless qicharts2 version changes
 2. **Tolerance**: Use `tolerance = 1e-6` for floating-point comparisons in tests
 3. **Visual regression**: The `ggplot_object` can be used for visual diff testing
-4. **Chart type coverage**: Covers all SPCify-supported chart types except MR and G charts (not currently used in production)
+4. **Chart type coverage**: Covers all biSPCharts-supported chart types except MR and G charts (not currently used in production)
 
 ---
 

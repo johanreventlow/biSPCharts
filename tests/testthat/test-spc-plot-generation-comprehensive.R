@@ -565,7 +565,7 @@ test_that("generateSPCPlot hospital theme integration works", {
   # TEST: Hospital theme application
   # NOTE: applyHospitalTheme() has been migrated to BFHcharts
   # The theme is now applied internally by the BFHcharts backend
-  # Legacy function is no longer available in SPCify
+  # Legacy function is no longer available in biSPCharts
   # Verify the plot is ready (theme is already applied by backend)
   expect_s3_class(result$plot, "ggplot")
   expect_gte(length(result$plot$layers), 3) # Basic plot layers are present

@@ -1,10 +1,10 @@
-# Profiling Guide - SPCify Development Tools
+# Profiling Guide - biSPCharts Development Tools
 
 > **Note**: Disse værktøjer er markeret som `@keywords internal` og eksporteres ikke i NAMESPACE. De er beregnet til lokal udvikling og performance-analyse.
 
 ## Oversigt
 
-SPCify indeholder tre profiling utilities til performance-analyse under udvikling:
+biSPCharts indeholder tre profiling utilities til performance-analyse under udvikling:
 
 1. **`profile_reactive()`** - Detaljeret profiling af reactive expressions
 2. **`benchmark_reactives()`** - Sammenligning af alternative implementations
@@ -378,5 +378,5 @@ install.packages("pryr")
 ---
 
 ## Maintained by
-Development Tools - SPCify Project
+Development Tools - biSPCharts Project
 Last updated: 2025-10-11

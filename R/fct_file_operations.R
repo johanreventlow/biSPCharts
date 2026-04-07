@@ -688,21 +688,59 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
     data <- best_fallback
   }
 
-  # Valider resultat
+  # Valider resultat — fang ustruktureret fritekst uden kolonner/separatorer
   if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
     shiny::showNotification(
-      "Kunne ikke parse data. Kontrollér at data har mindst 2 kolonner og 1 række.",
-      type = "error", duration = 5
+      paste0(
+        "Data kunne ikke l\u00e6ses. S\u00f8rg for at data har kolonneoverskrifter ",
+        "adskilt med semikolon eller tabulator."
+      ),
+      type = "error", duration = 6
+    )
+    return(invisible(NULL))
+  }
+
+  # Fritekst med tilfældige separatorer kan passere strukturel validering
+  has_numeric <- any(vapply(data, is_column_numeric, logical(1), threshold = 0))
+
+  if (!has_numeric) {
+    shiny::showNotification(
+      paste0(
+        "Data kunne ikke l\u00e6ses. Mindst \u00e9n kolonne skal indeholde tal. ",
+        "S\u00f8rg for at data har kolonneoverskrifter adskilt med semikolon eller tabulator."
+      ),
+      type = "error", duration = 6
     )
     return(invisible(NULL))
   }
 
   # Preprocessing (genbrug eksisterende)
-  preprocessing_result <- preprocess_uploaded_data(
-    data,
-    list(name = "pasted_data", size = nchar(text_data)),
-    session_id
+  preprocessing_result <- tryCatch(
+    preprocess_uploaded_data(
+      data,
+      list(name = "pasted_data", size = nchar(text_data)),
+      session_id
+    ),
+    error = function(e) {
+      log_error(
+        paste("Preprocessing af paste-data fejlede:", e$message),
+        .context = "PASTE_DATA"
+      )
+      NULL
+    }
   )
+
+  if (is.null(preprocessing_result)) {
+    shiny::showNotification(
+      paste0(
+        "Data kunne ikke behandles. S\u00f8rg for at data har kolonneoverskrifter ",
+        "adskilt med semikolon eller tabulator."
+      ),
+      type = "error", duration = 6
+    )
+    return(invisible(NULL))
+  }
+
   data <- preprocessing_result$data
 
   # Tilføj Skift/Frys kolonner hvis de mangler
@@ -1140,7 +1178,7 @@ validate_csv_file <- function(file_path) {
         if (grepl("[,;\\t]", first_value)) {
           errors <- c(errors, paste0(
             "Din CSV-fil bruger muligvis komma eller tabulator som ",
-            "kolonneadskiller. SPCify forventer semikolon (;), som ",
+            "kolonneadskiller. biSPCharts forventer semikolon (;), som ",
             "er standarden i dansk Excel. Pr\u00f8v at eksportere ",
             "filen igen som 'CSV (semikolon-separeret)' fra Excel."
           ))

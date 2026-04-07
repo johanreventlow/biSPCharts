@@ -8,11 +8,11 @@
 
 ## Why
 
-BFHcharts v0.3.0 now includes export functionality (`bfh_export_png()`, `bfh_export_pdf()`) that duplicates code in SPCify. Maintaining two implementations causes maintenance burden, inconsistency risk, and violates DRY principles. This migration consolidates export logic in BFHcharts as the single source of truth.
+BFHcharts v0.3.0 now includes export functionality (`bfh_export_png()`, `bfh_export_pdf()`) that duplicates code in biSPCharts. Maintaining two implementations causes maintenance burden, inconsistency risk, and violates DRY principles. This migration consolidates export logic in BFHcharts as the single source of truth.
 
 ## Problem Statement
 
-SPCify currently has ~850 lines of duplicate export code that duplicates BFHcharts v0.3.0 functionality:
+biSPCharts currently has ~850 lines of duplicate export code that duplicates BFHcharts v0.3.0 functionality:
 - `R/fct_export_png.R` (280 lines) - PNG export via ggsave()
 - `R/fct_export_typst.R` (576 lines) - PDF export via Typst/Quarto
 
@@ -25,7 +25,7 @@ This causes:
 
 Delete duplicate export functions and delegate to BFHcharts v0.3.0:
 
-| Current SPCify | BFHcharts Replacement |
+| Current biSPCharts | BFHcharts Replacement |
 |----------------|----------------------|
 | `generate_png_export()` | `BFHcharts::bfh_export_png()` |
 | `export_spc_to_typst_pdf()` | `BFHcharts::bfh_export_pdf()` |
@@ -49,11 +49,11 @@ bfh_export_png(x, output, ...)  # x must be bfh_qic_result
 bfh_export_pdf(x, output, ...)  # x must be bfh_qic_result
 ```
 
-**Solution:** Modify SPCify's plot generation to store the full `bfh_qic_result` object in `app_state$visualization$result` instead of just the ggplot.
+**Solution:** Modify biSPCharts's plot generation to store the full `bfh_qic_result` object in `app_state$visualization$result` instead of just the ggplot.
 
 ### Dimension Conversion
 
-SPCify uses **inches**, BFHcharts uses **mm**:
+biSPCharts uses **inches**, BFHcharts uses **mm**:
 ```r
 width_mm <- width_inches * 25.4
 height_mm <- height_inches * 25.4
@@ -61,7 +61,7 @@ height_mm <- height_inches * 25.4
 
 ### Metadata Mapping
 
-SPCify metadata structure is compatible with BFHcharts:
+biSPCharts metadata structure is compatible with BFHcharts:
 ```r
 metadata <- list(
   hospital = get_hospital_name_for_export(),
@@ -95,7 +95,7 @@ metadata <- list(
 
 ## Success Criteria
 
-- [x] SPCify export module uses BFHcharts export functions
+- [x] biSPCharts export module uses BFHcharts export functions
 - [x] All existing export tests pass
 - [x] PNG export workflow works in Shiny app
 - [x] PDF export workflow works in Shiny app

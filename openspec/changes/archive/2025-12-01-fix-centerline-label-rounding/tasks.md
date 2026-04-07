@@ -5,7 +5,7 @@
 
 ## Phase 1: Documentation & Escalation
 
-- [x] 1.1 Opret OpenSpec proposal i SPCify
+- [x] 1.1 Opret OpenSpec proposal i biSPCharts
 - [x] 1.2 Dokumentér root cause analysis
 - [x] 1.3 Opret GitHub issue i BFHcharts repo
 - [x] 1.4 Link GitHub issue i proposal.md
@@ -14,7 +14,7 @@
 
 - [x] 2.1 Monitor BFHcharts issue status (CLOSED with openspec-deployed label)
 - [x] 2.2 Test fix når released (deployed in BFHcharts v0.4.0)
-- [x] 2.3 Opdater SPCify til ny BFHcharts version (using v0.4.0)
+- [x] 2.3 Opdater biSPCharts til ny BFHcharts version (using v0.4.0)
 - [x] 2.4 Verificer centerlinje labels vises korrekt (fix deployed)
 
 ## Phase 3: Cleanup
@@ -31,10 +31,10 @@
 
 **Root Cause:** BFHcharts' label formatting logic runder værdier fejlagtigt op
 
-**Fix Location:** BFHcharts package (ikke SPCify)
+**Fix Location:** BFHcharts package (ikke biSPCharts)
 
 ## Notes
 
-- SPCify sender korrekte værdier til BFHcharts
-- Ingen workaround implementeres i SPCify (arkitektur boundary)
+- biSPCharts sender korrekte værdier til BFHcharts
+- Ingen workaround implementeres i biSPCharts (arkitektur boundary)
 - Afventer fix fra BFHcharts maintainer

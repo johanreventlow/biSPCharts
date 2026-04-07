@@ -103,7 +103,7 @@ Før implementering er følgende løsninger vurderet kritisk:
 - **Batch 3** (parallel): K7 (performance - kan testes separat) - **2-3 timer**
 
 **Teststrategi**:
-- K1, K4: `R -e "library(SPCify); testthat::test_file('tests/testthat/test-autodetect-engine.R')"`
+- K1, K4: `R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-autodetect-engine.R')"`
 - K2, K5, K6: Manuel security QA + integration tests
 - K3: Event bus chain test (`test-event-bus-full-chain.R`, `test-state-management.R`)
 - K7: Performance benchmarks (`tests/performance/test-qic-caching-benchmark.R`)
@@ -286,35 +286,35 @@ H13 (QIC invalidation) ──> H14 (Data signatures)
 
 **Autodetect fixes (K1, K4)**:
 ```r
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-autodetect-engine.R')"
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-fct-autodetect-unified.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-autodetect-engine.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-fct-autodetect-unified.R')"
 ```
 
 **Event bus (K3)**:
 ```r
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-event-bus-full-chain.R')"
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-state-management.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-event-bus-full-chain.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-state-management.R')"
 ```
 
 **Configuration (H1-H6)**:
 ```r
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-yaml-config-adherence.R')"
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-constants-architecture.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-yaml-config-adherence.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-constants-architecture.R')"
 R -e "devtools::document()" # Verify NAMESPACE
 R -e "devtools::check()" # Full build check
 ```
 
 **Logging & Error Handling (H7-H10)**:
 ```r
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-logging-standardization.R')"
-R -e "library(SPCify); testthat::test_file('tests/testthat/test-file-operations.R')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-logging-standardization.R')"
+R -e "library(biSPCharts); testthat::test_file('tests/testthat/test-file-operations.R')"
 ```
 
 **Performance (K7, H13-H16)**:
 ```r
 R -e "source('tests/performance/test-qic-caching-benchmark.R')"
-R -e "library(SPCify); profvis::profvis(generateSPCPlot(...))"  # Compare before/after
+R -e "library(biSPCharts); profvis::profvis(generateSPCPlot(...))"  # Compare before/after
 ```
 
 **Security (K2, K5, K6)**:
@@ -327,7 +327,7 @@ R -e "library(SPCify); profvis::profvis(generateSPCPlot(...))"  # Compare before
 **Efter hver fase**:
 ```r
 # 1. Full test suite
-R -e "library(SPCify); testthat::test_dir('tests/testthat')"
+R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # 2. Build check
 R -e "devtools::check()"
@@ -534,7 +534,7 @@ Efter hver fase:
 - [x] **Fase 2**: Alle opgaver i fasen completed ✅
 - [x] **Fase 3**: Alle opgaver i fasen completed ✅
 - [x] **Fase 4**: Alle opgaver i fasen completed ✅
-- [x] Fuld test suite bestået (`R -e "library(SPCify); testthat::test_dir('tests/testthat')"`) ✅
+- [x] Fuld test suite bestået (`R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"`) ✅
 - [x] `devtools::check()` uden errors/warnings ✅
 - [x] Manual smoke test passed ✅
 - [x] Performance benchmarks dokumenteret (hvis relevant) ✅

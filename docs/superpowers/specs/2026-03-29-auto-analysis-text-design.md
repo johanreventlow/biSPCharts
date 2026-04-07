@@ -1,8 +1,8 @@
-# Design: Auto-genereret analysetekst i SPCify
+# Design: Auto-genereret analysetekst i biSPCharts
 
 ## Baggrund
 
-BFHddl-pipelinen genererer automatisk en analysetekst for hvert SPC-diagram baseret på regelbaserede formuleringer (serielængde, krydsninger, outliers, stabilitet, target-vurdering). Denne tekst vises i Typst PDF-eksporten over grafen. SPCify mangler denne funktionalitet — feltet "Forbedringsmål" er tomt medmindre brugeren manuelt skriver noget eller klikker AI-knappen.
+BFHddl-pipelinen genererer automatisk en analysetekst for hvert SPC-diagram baseret på regelbaserede formuleringer (serielængde, krydsninger, outliers, stabilitet, target-vurdering). Denne tekst vises i Typst PDF-eksporten over grafen. biSPCharts mangler denne funktionalitet — feltet "Forbedringsmål" er tomt medmindre brugeren manuelt skriver noget eller klikker AI-knappen.
 
 **Vigtig designbeslutning:** Analyseteksten skal *beskrive* hvad SPC-analysen viser (deskriptivt), ikke *foreslå* forbedringstiltag (preskriptivt). Forbedringsforslag kræver domæneviden som ligger hos brugeren, ikke i systemet.
 

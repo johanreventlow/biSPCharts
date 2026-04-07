@@ -2,18 +2,18 @@
 
 **Date:** 2025-10-15
 **BFHchart Version:** 0.1.0
-**SPCify Version:** 0.1.0
+**biSPCharts Version:** 0.1.0
 **Status:** Implementation in progress
 
 ---
 
 ## Purpose
 
-This document catalogs SPCify-side workarounds for BFHchart API gaps, missing features, or behavioral differences compared to qicharts2. Each workaround includes:
+This document catalogs biSPCharts-side workarounds for BFHchart API gaps, missing features, or behavioral differences compared to qicharts2. Each workaround includes:
 
 1. **Issue description** - What's missing or different in BFHchart
 2. **Impact assessment** - P0 (blocker), P1 (important), P2 (nice-to-have)
-3. **Workaround implementation** - How SPCify compensates
+3. **Workaround implementation** - How biSPCharts compensates
 4. **Upstream status** - Whether issue filed with BFHchart maintainers
 5. **Performance impact** - Additional overhead introduced
 
@@ -39,7 +39,7 @@ All P0 workarounds must be validated against qicharts2 baselines before clinical
 - **Risk:** Without this, clinicians cannot distinguish random noise from systematic changes
 - **Regulatory:** Danish quality standards require statistical process control
 
-**SPCify Workaround:**
+**biSPCharts Workaround:**
 
 **Implementation Location:** `R/fct_anhoej_rules.R` (new, Stream A)
 
@@ -103,7 +103,7 @@ if (!is.null(bfh_result$qic_data$cl)) {
 - **Priority:** [P0/P1/P2]
 - **Justification:** [Impact description]
 
-**SPCify Workaround:**
+**biSPCharts Workaround:**
 - [Implementation details]
 
 **Status:**
@@ -125,7 +125,7 @@ if (!is.null(bfh_result$qic_data$cl)) {
 - **Priority:** [P0/P1/P2]
 - **Justification:** [Impact description]
 
-**SPCify Workaround:**
+**biSPCharts Workaround:**
 - [Implementation details]
 
 **Status:**
@@ -175,7 +175,7 @@ if (!is.null(bfh_result$qic_data$cl)) {
 
 **Issue Filing Process:**
 1. Confirm issue through Stream A/B testing
-2. Document workaround implementation in SPCify
+2. Document workaround implementation in biSPCharts
 3. Create minimal reproducible example
 4. File issue on BFHchart GitHub repository
 5. Link issue in this table
@@ -236,7 +236,7 @@ If Stream A/B discovers limitations without viable workarounds:
 **Workaround Quality Standards:**
 1. **Correctness:** Must match qicharts2 behavior (validated by tests)
 2. **Performance:** Overhead <10% of baseline chart generation time
-3. **Maintainability:** Well-documented, unit tested, follows SPCify patterns
+3. **Maintainability:** Well-documented, unit tested, follows biSPCharts patterns
 4. **Observability:** Structured logging for debugging (use `log_debug()`)
 5. **Error handling:** Graceful degradation with `safe_operation()`
 
@@ -397,7 +397,7 @@ compute_spc_results_bfh <- function(data, x_var, y_var, chart_type, ...) {
 - **Priority:** [P0/P1/P2]
 - **Justification:** [Why this matters clinically]
 
-**SPCify Workaround:**
+**biSPCharts Workaround:**
 - **Implementation Location:** [File path]
 - **Functions Implemented:** [List with signatures]
 - **Integration Point:** [Where applied in service layer]
@@ -437,5 +437,5 @@ compute_spc_results_bfh <- function(data, x_var, y_var, chart_type, ...) {
 ---
 
 **Last Updated:** 2025-10-15
-**Maintained By:** SPCify Development Team
+**Maintained By:** biSPCharts Development Team
 **Clinical Review Required:** Yes (before production deployment)

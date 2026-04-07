@@ -13,7 +13,7 @@ En professionel Shiny applikation til **Statistical Process Control (SPC)** anal
 
 ### AI-Assisteret Forbedringsmål
 
-SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af Google Gemini AI.
+biSPCharts kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af Google Gemini AI.
 
 **Features:**
 - Genererer konkrete, handlingsorienterede forslag på dansk (max 350 tegn)
@@ -37,7 +37,7 @@ SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af G
 3. **Verificer setup:**
    ```r
    Sys.getenv("GOOGLE_API_KEY")  # Should return your key
-   library(SPCify)
+   library(biSPCharts)
    # AI button should be enabled in export panel
    ```
 
@@ -90,7 +90,7 @@ SPCify kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp af G
 
 **RAG Knowledge Base:**
 
-SPCify bruger RAG (Retrieval-Augmented Generation) med Ragnar-pakken til at grunde AI-forslag i autoritativ SPC-metodologi:
+biSPCharts bruger RAG (Retrieval-Augmented Generation) med Ragnar-pakken til at grunde AI-forslag i autoritativ SPC-metodologi:
 
 - **Knowledge base:** 3 markdown dokumenter med SPC fundamentals, Anhøj rules, og interpretation guidance
 - **Source:** Jacob Anhøj's "SPC for Healthcare" (https://anhoej.github.io/spc4hc/)
@@ -180,20 +180,20 @@ install.packages(c(
 ```r
 # Clone repository
 git clone <repository-url>
-cd claude_spc
+cd biSPCharts
 
 # ═══════════════════════════════════════════════════════
 # PRODUCTION MODE (Anbefalet) - Package loading
 # ═══════════════════════════════════════════════════════
 
 # Standard production start (~50-100ms startup)
-R -e "library(SPCify); SPCify::run_app()"
+R -e "library(biSPCharts); biSPCharts::run_app()"
 
 # Custom port
-R -e "library(SPCify); SPCify::run_app(port = 3838)"
+R -e "library(biSPCharts); biSPCharts::run_app(port = 3838)"
 
 # Development mode med enhanced debugging
-R -e "GOLEM_CONFIG_ACTIVE=development library(SPCify); SPCify::run_app(port = 4040)"
+R -e "GOLEM_CONFIG_ACTIVE=development library(biSPCharts); biSPCharts::run_app(port = 4040)"
 
 # ═══════════════════════════════════════════════════════
 # DEVELOPMENT MODE - Source loading (kun til debugging)
@@ -212,16 +212,16 @@ R -e "source('global.R'); shiny::runApp('.', port = 4040)"
 ### Environment-Specific Usage
 ```r
 # Development environment (auto-load test data, debug logging)
-GOLEM_CONFIG_ACTIVE=development R -e "library(SPCify); SPCify::run_app()"
+GOLEM_CONFIG_ACTIVE=development R -e "library(biSPCharts); biSPCharts::run_app()"
 
 # Production environment (secure defaults)
-GOLEM_CONFIG_ACTIVE=production R -e "library(SPCify); SPCify::run_app()"
+GOLEM_CONFIG_ACTIVE=production R -e "library(biSPCharts); biSPCharts::run_app()"
 
 # Testing environment (controlled conditions)
-GOLEM_CONFIG_ACTIVE=testing R -e "library(SPCify); SPCify::run_app()"
+GOLEM_CONFIG_ACTIVE=testing R -e "library(biSPCharts); biSPCharts::run_app()"
 
 # Manual debug logging (via explicit parameter)
-R -e "library(SPCify); SPCify::run_app(log_level = 'DEBUG')"
+R -e "library(biSPCharts); biSPCharts::run_app(log_level = 'DEBUG')"
 
 # Development med source loading og debug logs
 GOLEM_CONFIG_ACTIVE=development SPC_LOG_LEVEL=DEBUG R -e "source('global.R'); run_app()"
@@ -267,7 +267,7 @@ Dato;Tæller;Nævner;Skift;Frys;Kommentarer
 
 ### Project Structure
 ```
-claude_spc/
+biSPCharts/
 ├── R/                          # R source files
 │   ├── app_server.R           # Main server logic
 │   ├── app_ui.R               # User interface

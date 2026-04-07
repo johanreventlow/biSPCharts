@@ -170,7 +170,7 @@ setup_testing_config <- function(override_options = list()) {
   testing_golem_config <- tryCatch(
     {
       # Skip golem config during package loading to avoid freeze
-      if (exists("SPCify") && "package:SPCify" %in% search()) {
+      if (exists("biSPCharts") && "package:biSPCharts" %in% search()) {
         # Use our custom get_golem_config when package is loaded
         if (exists("get_golem_config", mode = "function")) {
           golem_config <- get_golem_config("testing")

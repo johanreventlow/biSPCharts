@@ -13,7 +13,7 @@
 # • Debugging and performance profiling
 #
 # To start the application in production:
-#   library(SPCify)  # or pkgload::load_all()
+#   library(biSPCharts)  # or pkgload::load_all()
 #   run_app()
 #
 # To start in development mode:
@@ -34,15 +34,15 @@ use_source_loading <- getOption("spc.debug.source_loading", FALSE) ||
 if (use_source_loading) {
   message("Loading development configuration via source() loading...")
 
-  # Clear any existing SPCify package conflicts for development
-  if (exists("SPCify") && "package:SPCify" %in% search()) {
-    detach("package:SPCify", unload = TRUE, force = TRUE)
+  # Clear any existing biSPCharts package conflicts for development
+  if (exists("biSPCharts") && "package:biSPCharts" %in% search()) {
+    detach("package:biSPCharts", unload = TRUE, force = TRUE)
   }
 } else {
   message("Loading production configuration via package loading...")
 
   # Use package-based loading (standard production approach)
-  if (!"SPCify" %in% loadedNamespaces()) {
+  if (!"biSPCharts" %in% loadedNamespaces()) {
     # Try to load the package with connection management, fallback to source loading if it fails
     tryCatch(
       {
@@ -71,7 +71,7 @@ if (use_source_loading) {
         suppressPackageStartupMessages({
           pkgload::load_all(".", quiet = TRUE)
         })
-        message("✓ SPCify package loaded via pkgload")
+        message("✓ biSPCharts package loaded via pkgload")
       },
       error = function(e) {
         message("pkgload failed, falling back to source-based loading: ", e$message)
@@ -80,7 +80,7 @@ if (use_source_loading) {
       }
     )
   } else {
-    message("✓ SPCify package already loaded")
+    message("✓ biSPCharts package already loaded")
   }
 
   # If package loading failed, continue to source loading
@@ -177,7 +177,7 @@ if (use_source_loading) {
     }
   }
 
-  message("✓ SPCify package loaded")
+  message("✓ biSPCharts package loaded")
 
   # STARTUP CACHE FOR STATIC ARTIFACTS --------------------------------
   # Load cached static data if available, cache new data for next startup

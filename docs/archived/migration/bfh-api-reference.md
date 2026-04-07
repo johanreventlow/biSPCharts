@@ -1,15 +1,15 @@
-# BFHchart API Reference for SPCify Migration
+# BFHchart API Reference for biSPCharts Migration
 
 **Document Version:** 1.0
 **Date:** 2025-10-15
 **Purpose:** Map qicharts2 API patterns to expected BFHchart API for service layer design
-**Context:** BFHchart is extracted from SPCify - API may need refinement during reintegration
+**Context:** BFHchart is extracted from biSPCharts - API may need refinement during reintegration
 
 ---
 
 ## Overview
 
-This document defines the **expected API** for BFHchart based on current qicharts2 usage patterns in SPCify. Since BFHchart was extracted from SPCify's visualization code, the API should closely mirror these patterns but may require adaptation.
+This document defines the **expected API** for BFHchart based on current qicharts2 usage patterns in biSPCharts. Since BFHchart was extracted from biSPCharts's visualization code, the API should closely mirror these patterns but may require adaptation.
 
 **Usage:** This reference guides:
 1. Phase 3: Service layer facade design (`compute_spc_results_bfh()`)
@@ -77,7 +77,7 @@ bfhchart::spc_chart(
 
 ### Supported Chart Types
 
-SPCify requires these 9 chart types:
+biSPCharts requires these 9 chart types:
 
 | Danish UI Label | English Code | BFHchart Support |
 |-----------------|--------------|------------------|
@@ -146,7 +146,7 @@ class(bfh_plot)
 ```
 
 **Layer Compatibility:**
-- SPCify must add layers: comments, extended lines, custom labels, theme
+- biSPCharts must add layers: comments, extended lines, custom labels, theme
 - **Critical:** Validate ggplot2 layers can be added without breaking
 
 **Validation:**
@@ -174,7 +174,7 @@ qic_data <- qicharts2::qic(
 
 **If BFHchart uses NSE:**
 ```r
-# SPCify adapter using rlang/tidy eval
+# biSPCharts adapter using rlang/tidy eval
 bfh_data <- bfhchart::spc_chart(
   data = df,
   x = !!rlang::sym(x_col_name),   # Convert string to symbol
@@ -206,7 +206,7 @@ bfh_data <- bfhchart::spc_chart(
 
 **If BFHchart uses strings:**
 ```r
-# SPCify adapter - simpler!
+# biSPCharts adapter - simpler!
 bfh_data <- bfhchart::spc_chart(
   data = df,
   x = x_col_name,   # Already strings
@@ -265,7 +265,7 @@ qic_data <- qicharts2::qic(
 )
 ```
 
-**SPCify normalization:** Converts percentage input to decimal for qicharts2:
+**biSPCharts normalization:** Converts percentage input to decimal for qicharts2:
 
 ```r
 # If chart = "run" with denominator AND target > 1
@@ -284,7 +284,7 @@ if (chart_type == "run" && !is.null(n_col_name) && target_value > 1) {
 
 ## Data Preparation Requirements
 
-### Input Data Cleaning (SPCify Responsibility)
+### Input Data Cleaning (biSPCharts Responsibility)
 
 **Before calling BFHchart:**
 
@@ -311,7 +311,7 @@ if (chart_type == "run" && !is.null(n_col_name) && target_value > 1) {
 **Question for BFHchart:**
 - Does BFHchart handle NA removal internally?
 - Does BFHchart preserve `.original_row_id` column in output?
-- Should SPCify pre-clean data or let BFHchart handle it?
+- Should biSPCharts pre-clean data or let BFHchart handle it?
 
 **Validation:**
 - [ ] Test BFHchart with NA values in input
@@ -320,7 +320,7 @@ if (chart_type == "run" && !is.null(n_col_name) && target_value > 1) {
 
 ---
 
-### Danish Number Parsing (SPCify Utility)
+### Danish Number Parsing (biSPCharts Utility)
 
 **Conversion logic:**
 ```r
@@ -337,15 +337,15 @@ parse_danish_number <- function(x) {
 
 **Question for BFHchart:**
 - Does BFHchart handle Danish number format internally?
-- Should SPCify pre-parse numbers before calling BFHchart?
+- Should biSPCharts pre-parse numbers before calling BFHchart?
 
-**Recommendation:** SPCify parses numbers (already implemented in multiple utils).
+**Recommendation:** biSPCharts parses numbers (already implemented in multiple utils).
 
 ---
 
 ## Error Handling & Safe Operation
 
-### SPCify Integration Pattern
+### biSPCharts Integration Pattern
 
 **All BFHchart calls wrapped in `safe_operation()`:**
 
@@ -385,7 +385,7 @@ bfh_data <- safe_operation(
 
 ## Performance Considerations
 
-### Caching Strategy (SPCify Responsibility)
+### Caching Strategy (biSPCharts Responsibility)
 
 **Current qicharts2 caching:**
 ```r
@@ -447,12 +447,12 @@ bench::mark(
 
 ### Service Layer Interface
 
-**SPCify facade function signature:**
+**biSPCharts facade function signature:**
 
 ```r
 #' Compute SPC Results Using BFHchart
 #'
-#' Adapter function isolating BFHchart API from SPCify internals.
+#' Adapter function isolating BFHchart API from biSPCharts internals.
 #' Handles data preparation, parameter normalization, and output formatting.
 #'
 #' @param data data.frame - Cleaned input data
@@ -460,8 +460,8 @@ bench::mark(
 #' @param chart_type character - qicharts2-style chart code
 #' @param freeze_position integer - Baseline freeze (optional)
 #' @param part_positions integer vector - Phase boundaries (optional)
-#' @param target_value numeric - Target value (optional, SPCify scale)
-#' @param centerline_value numeric - Custom centerline (optional, SPCify scale)
+#' @param target_value numeric - Target value (optional, biSPCharts scale)
+#' @param centerline_value numeric - Custom centerline (optional, biSPCharts scale)
 #' @param qic_cache environment - Cache environment (optional)
 #'
 #' @return list(bfh_data = data.frame, plot = ggplot|NULL)
@@ -485,7 +485,7 @@ compute_spc_results_bfh <- function(
 ```
 
 **Adapter Responsibilities:**
-1. Translate SPCify config → BFHchart parameters
+1. Translate biSPCharts config → BFHchart parameters
 2. Handle scale normalization (percentage → decimal)
 3. Inject `.original_row_id` for comment mapping
 4. Standardize output structure (match qicharts2 format)
@@ -503,7 +503,7 @@ compute_spc_results_bfh <- function(
 - [ ] **Return Value:** Document data.frame structure with all required columns
 - [ ] **Control Limits:** Confirm cl, ucl, lcl calculated per point/phase
 - [ ] **Anhøj Rules:** Validate runs/crossings data exposed
-- [ ] **ggplot2 Output:** Confirm ggplot object compatible with SPCify layers
+- [ ] **ggplot2 Output:** Confirm ggplot object compatible with biSPCharts layers
 - [ ] **Freeze/Phase:** Test interaction between freeze and phase parameters
 - [ ] **Performance:** Benchmark against qicharts2 baseline
 
@@ -512,7 +512,7 @@ compute_spc_results_bfh <- function(
 - [ ] **Parameter Naming:** Document deviations from qicharts2 conventions
 - [ ] **NSE vs Strings:** Clarify column specification style
 - [ ] **Target/Centerline Scale:** Validate decimal vs percentage expectations
-- [ ] **NA Handling:** Confirm who handles missing data (BFHchart vs SPCify)
+- [ ] **NA Handling:** Confirm who handles missing data (BFHchart vs biSPCharts)
 - [ ] **Row ID Preservation:** Test `.original_row_id` persistence
 - [ ] **Error Messages:** Validate informative error output
 - [ ] **Prime Charts:** Test P'/U' standardization
@@ -552,7 +552,7 @@ compute_spc_results_bfh <- function(
 
 ## Appendix: qicharts2 Complete Example
 
-### Full SPCify → qicharts2 Flow
+### Full biSPCharts → qicharts2 Flow
 
 ```r
 # 1. Prepare data
@@ -593,7 +593,7 @@ plot <- ggplot(qic_data, aes(x = x, y = y)) +
 list(plot = plot, qic_data = qic_data)
 ```
 
-**Goal for BFHchart:** Replicate this flow with minimal changes to SPCify integration logic.
+**Goal for BFHchart:** Replicate this flow with minimal changes to biSPCharts integration logic.
 
 ---
 

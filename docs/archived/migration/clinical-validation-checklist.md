@@ -4,7 +4,7 @@
 **Title:** Klinisk kvalitetsmedarbejder
 **Date:** _____________________
 **BFHchart Version:** 0.1.0
-**SPCify Version:** 0.1.0
+**biSPCharts Version:** 0.1.0
 
 ---
 
@@ -827,7 +827,7 @@ This checklist ensures that BFHchart-based SPC charts meet clinical safety and a
 
 ## Section 5: Integration & Workflow
 
-### 5.1 SPCify App Integration Readiness
+### 5.1 biSPCharts App Integration Readiness
 
 **Validation Tests:**
 
@@ -1078,5 +1078,5 @@ If any medium/high risks identified:
 
 **Checklist Version:** 1.0
 **Last Updated:** 2025-10-15
-**Maintained By:** SPCify Development Team
+**Maintained By:** biSPCharts Development Team
 **Clinical Review Cycle:** Before each major release

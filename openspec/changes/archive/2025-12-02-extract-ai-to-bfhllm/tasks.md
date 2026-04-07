@@ -34,9 +34,9 @@
 ### 1.5 RAG Integration
 - [ ] 1.5.1 Implementer `R/knowledge-store.R` (store loading)
 - [ ] 1.5.2 Implementer `R/rag.R` (RAG query functions)
-- [ ] 1.5.3 Flyt `inst/spc_knowledge/` fra SPCify
-- [ ] 1.5.4 Flyt `inst/ragnar_store/` fra SPCify
-- [ ] 1.5.5 Flyt `data-raw/build_ragnar_store.R` fra SPCify
+- [ ] 1.5.3 Flyt `inst/spc_knowledge/` fra biSPCharts
+- [ ] 1.5.4 Flyt `inst/ragnar_store/` fra biSPCharts
+- [ ] 1.5.5 Flyt `data-raw/build_ragnar_store.R` fra biSPCharts
 - [ ] 1.5.6 Skriv tests for RAG funktionalitet
 
 ### 1.6 SPC Suggestions Module
@@ -54,7 +54,7 @@
 
 ---
 
-## Phase 2: SPCify Migration
+## Phase 2: biSPCharts Migration
 
 ### 2.1 Dependency Update
 - [ ] 2.1.1 Tilføj `BFHllm (>= 0.1.0)` til DESCRIPTION Imports
@@ -63,7 +63,7 @@
 
 ### 2.2 Integration Layer
 - [ ] 2.2.1 Opret `R/utils_bfhllm_integration.R` (tynd wrapper)
-- [ ] 2.2.2 Implementer SPCify-specifik konfiguration
+- [ ] 2.2.2 Implementer biSPCharts-specifik konfiguration
 - [ ] 2.2.3 Implementer Shiny cache adapter integration
 
 ### 2.3 Code Migration
@@ -102,7 +102,7 @@
 - [ ] 3.1.2 Tag BFHllm v0.1.0 release
 - [ ] 3.1.3 Verificer `remotes::install_github("johanreventlow/BFHllm")` virker
 
-### 3.2 SPCify Integration Test
+### 3.2 biSPCharts Integration Test
 - [ ] 3.2.1 Manuel test: AI suggestions i Shiny app
 - [ ] 3.2.2 Manuel test: RAG context i AI suggestions
 - [ ] 3.2.3 Verificer cache fungerer korrekt
@@ -116,7 +116,7 @@
 ### 3.4 Final Cleanup
 - [ ] 3.4.1 Close GitHub tracking issue
 - [ ] 3.4.2 Arkiver OpenSpec change
-- [ ] 3.4.3 Commit og push SPCify ændringer
+- [ ] 3.4.3 Commit og push biSPCharts ændringer
 
 ---
 
@@ -127,20 +127,20 @@
 |------|--------|-------------|
 | `R/chat.R` | New | Main `bfhllm_chat()` function |
 | `R/config.R` | New | Configuration management |
-| `R/provider-gemini.R` | SPCify utils_gemini_integration.R | Gemini API wrapper |
-| `R/circuit-breaker.R` | SPCify utils_gemini_integration.R | Circuit breaker logic |
-| `R/cache.R` | SPCify utils_ai_cache.R | Generic cache |
-| `R/cache-shiny.R` | SPCify utils_ai_cache.R | Shiny adapter |
-| `R/rag.R` | SPCify utils_ragnar_integration.R | RAG integration |
-| `R/spc-suggestions.R` | SPCify fct_ai_improvement_suggestions.R | SPC facade |
-| `inst/spc_knowledge/` | SPCify inst/spc_knowledge/ | Knowledge base |
-| `inst/ragnar_store/` | SPCify inst/ragnar_store/ | RAG store |
+| `R/provider-gemini.R` | biSPCharts utils_gemini_integration.R | Gemini API wrapper |
+| `R/circuit-breaker.R` | biSPCharts utils_gemini_integration.R | Circuit breaker logic |
+| `R/cache.R` | biSPCharts utils_ai_cache.R | Generic cache |
+| `R/cache-shiny.R` | biSPCharts utils_ai_cache.R | Shiny adapter |
+| `R/rag.R` | biSPCharts utils_ragnar_integration.R | RAG integration |
+| `R/spc-suggestions.R` | biSPCharts fct_ai_improvement_suggestions.R | SPC facade |
+| `inst/spc_knowledge/` | biSPCharts inst/spc_knowledge/ | Knowledge base |
+| `inst/ragnar_store/` | biSPCharts inst/ragnar_store/ | RAG store |
 
-### SPCify (Modifications)
+### biSPCharts (Modifications)
 | File | Action | Description |
 |------|--------|-------------|
 | `DESCRIPTION` | Modify | Add BFHllm, remove ellmer/ragnar |
-| `R/utils_bfhllm_integration.R` | Create | Thin wrapper for SPCify config |
+| `R/utils_bfhllm_integration.R` | Create | Thin wrapper for biSPCharts config |
 | `R/fct_ai_improvement_suggestions.R` | Modify | Call BFHllm functions |
 | `R/utils_gemini_integration.R` | Delete | Moved to BFHllm |
 | `R/utils_ai_cache.R` | Delete | Moved to BFHllm |

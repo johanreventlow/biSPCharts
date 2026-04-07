@@ -23,7 +23,7 @@
 # ==============================================================================
 # Indlaeser BFHtheme, BFHcharts og BFHllm fra kildekode (sibling-mapper)
 # saa vi altid tester nyeste version under udvikling.
-# Raekkefoelge: BFHtheme -> BFHcharts -> BFHllm -> SPCify (dependency order)
+# Raekkefoelge: BFHtheme -> BFHcharts -> BFHllm -> biSPCharts (dependency order)
 # ==============================================================================
 dev_load_siblings <- function(base_path = dirname(getwd())) {
   siblings <- list(
@@ -45,7 +45,7 @@ dev_load_siblings <- function(base_path = dirname(getwd())) {
 
 dev_load_siblings()
 
-# Load SPCify
+# Load biSPCharts
 devtools::load_all(helpers = FALSE)
 
 # Optional: Show debug contexts and set filter before running app
@@ -59,6 +59,11 @@ set_debug_context(NULL)
 
 # Run app with test mode enabled for development
 
+# Browser-launch: RStudio viewer bruges automatisk i RStudio.
+# Firefox via 'open' kan ramme race condition — brug manuelt besøg
+# af URL'en fra konsollen, eller sæt TRUE for RStudio viewer.
+shiny::devmode(TRUE)
+options(shiny.port = 8080)
 options(shiny.launch.browser = TRUE)
-# run_app(enable_test_mode = TRUE, log_level = "DEBUG")
+# run_app(enable_test_mode = FALSE, log_level = "DEBUG")
 run_app(enable_test_mode = FALSE, log_level = "INFO")

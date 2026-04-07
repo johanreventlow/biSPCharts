@@ -513,4 +513,4 @@ All unacceptable differences must be validated through automated regression test
 **Version Control:**
 - Epic branch: `epic/bfhcharts-spc-migration`
 - Worktree: `/Users/johanreventlow/Documents/R/epic-bfhcharts-spc-migration/`
-- Main repo: `/Users/johanreventlow/Documents/R/claude_spc/`
+- Main repo: `/Users/johanreventlow/Documents/R/biSPCharts/`

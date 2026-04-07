@@ -110,7 +110,7 @@ result$spc_stats <- list(runs = ..., crossings = ...)
 
 ## Related
 
-- biSPCharts GitHub Issue: [#98](https://github.com/johanreventlow/claude_spc/issues/98)
+- biSPCharts GitHub Issue: [#98](https://github.com/johanreventlow/biSPCharts/issues/98)
 - BFHcharts GitHub Issue: [#64](https://github.com/johanreventlow/BFHcharts/issues/64) (deployed in v0.4.0)
 - BFHcharts Commit: 866563f
 - BFHcharts OpenSpec: `2025-12-01-export-spc-utility-functions` (archived)

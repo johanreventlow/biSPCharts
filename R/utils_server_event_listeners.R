@@ -1315,7 +1315,7 @@ setup_wizard_gates <- function(input, app_state, session) {
 #' @param session Shiny session
 #' @param emit Event emit API
 #' @keywords internal
-setup_paste_data_observers <- function(input, app_state, session, emit) {
+setup_paste_data_observers <- function(input, output, app_state, session, emit) {
   # Observer: "Fortsæt" knap — indlæs pasted data
   shiny::observeEvent(input$load_paste_data, {
     shinyjs::disable("load_paste_data")
@@ -1438,8 +1438,8 @@ setup_paste_data_observers <- function(input, app_state, session, emit) {
 
   # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
   shiny::observeEvent(input$trigger_file_upload, {
-    # Klik på det faktiske <input type="file"> element inden i fileInput containeren
-    shinyjs::runjs("$('#direct_file_upload').find('input[type=\"file\"]').click();")
+    # Klik på det skjulte fileInput via JS
+    shinyjs::click("direct_file_upload")
   })
 
   # Observer: Direkte fil-upload — validér og behandl via eksisterende upload-logik
@@ -1597,7 +1597,7 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   setup_wizard_gates(input, app_state, session)
 
   # Paste data og sample data observers
-  setup_paste_data_observers(input, app_state, session, emit)
+  setup_paste_data_observers(input, output, app_state, session, emit)
 
   # ============================================================================
   # OBSERVER CLEANUP ON SESSION END

@@ -25,8 +25,8 @@
 SAMPLE_DATASETS <- list(
   list(
     id = "run",
-    label = "Run \u2014 M\u00f8defremmøde procent",
-    description = "M\u00f8defremmøde (mødt/tilkaldt) som procent",
+    label = "Run \u2014 Patientfremmøde ved ambulante bes\u00f8g",
+    description = "Andel patienter m\u00f8dt til aftale (m\u00f8dt/tilkaldt)",
     file = "sample_run.csv",
     chart_type = "run"
   ),

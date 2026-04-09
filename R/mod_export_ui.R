@@ -299,20 +299,28 @@ mod_export_ui <- function(id) {
           condition = "output.plot_available == true && output.is_pdf_format == true",
           ns = ns,
           shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: auto; background-color: #f8f8f8; padding: 20px;",
+            style = "height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f8f8f8; padding: 10px;",
             shiny::div(
               class = "export-preview-container",
               style = paste0(
                 "border: 1px solid #d2d2d2; border-radius: 4px; ",
                 "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
-                "background-color: white; display: inline-block; ",
+                "background-color: white; ",
+                "max-width: 100%; max-height: 100%; ",
                 "position: relative;"
               ),
               shiny::imageOutput(
                 ns("pdf_preview"),
                 width = "100%",
-                height = "auto"
-              )
+                height = "100%"
+              ),
+              # CSS: fit preview image within container without scrolling
+              shiny::tags$style(shiny::HTML(paste0(
+                "#", ns("pdf_preview"), " img { ",
+                "max-width: 100%; max-height: calc(100vh - 350px); ",
+                "width: auto; height: auto; ",
+                "object-fit: contain; display: block; }"
+              )))
             )
           )
         ),

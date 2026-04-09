@@ -616,7 +616,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
       # Issue #65: Use shared helper to reduce code duplication
       build_export_plot(app_state, title_input, dept_input, "export_preview")
-    }) %>% shiny::debounce(millis = 500) # Debounce metadata changes for performance
+    }) |> shiny::debounce(millis = 500) # Debounce metadata changes for performance
 
     # PDF EXPORT PLOT GENERATION ==============================================
 
@@ -643,7 +643,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
       # Issue #65: Use shared helper with "export_pdf" context
       build_export_plot(app_state, title_input, dept_input, "export_pdf")
-    }) %>% shiny::debounce(millis = 1000) # Debounce for preview performance
+    }) |> shiny::debounce(millis = 1000) # Debounce for preview performance
 
     # EXPORT PREVIEW RENDERING ================================================
 
@@ -788,7 +788,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         },
         error_type = "processing"
       )
-    }) %>% shiny::debounce(millis = 1000) # Debounce for performance (PDF generation is slow)
+    }) |> shiny::debounce(millis = 1000) # Debounce for performance (PDF generation is slow)
 
     # PDF preview renderImage - displays PNG preview of Typst PDF layout
     output$pdf_preview <- shiny::renderImage(

@@ -122,48 +122,47 @@ quarto_available <- function() {
   TRUE
 }
 
-# FONT INJECTION ==============================================================
+# TEMPLATE ASSET INJECTION =====================================================
 
-#' Inject biSPCharts Hospital Fonts into BFHcharts Template
+#' Inject biSPCharts Template Assets into Export Temp Directory
 #'
-#' Kopierer Mari-fonte fra biSPCharts til BFHcharts' installerede
-#' template-mappe, saa Typst kan finde dem ved PDF-kompilering.
-#' Idempotent - kopierer kun fonte der ikke allerede findes.
+#' Kopierer fonts og images fra biSPCharts' template til en temp-mappe
+#' hvor BFHcharts har oprettet Typst-template strukturen.
+#' Bruges fordi BFHcharts' GitHub repo ikke inkluderer fonts/images.
 #'
+#' @param template_dir Sti til bfh-template mappen i temp directory
 #' @return invisible(TRUE) ved succes, invisible(FALSE) ved fejl
 #' @keywords internal
-inject_hospital_fonts <- function() {
+inject_template_assets <- function(template_dir) {
   safe_operation(
-    operation_name = "Inject hospital fonts",
+    operation_name = "Inject template assets",
     code = {
-      src <- system.file(
-        "templates/typst/bfh-template/fonts",
+      src_base <- system.file(
+        "templates/typst/bfh-template",
         package = "biSPCharts"
       )
-      dst <- system.file(
-        "templates/typst/bfh-template/fonts",
-        package = "BFHcharts"
-      )
 
-      if (!nzchar(src) || !dir.exists(src)) {
-        log_info("biSPCharts font directory not found - skipping font injection")
+      if (!nzchar(src_base) || !dir.exists(src_base)) {
+        log_info("biSPCharts template directory not found - skipping asset injection")
         return(invisible(FALSE))
       }
 
-      if (!nzchar(dst) || !dir.exists(dst)) {
-        log_info("BFHcharts template font directory not found - skipping font injection")
-        return(invisible(FALSE))
+      # Kopier fonts
+      src_fonts <- file.path(src_base, "fonts")
+      dst_fonts <- file.path(template_dir, "fonts")
+      if (dir.exists(src_fonts)) {
+        if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
+        font_files <- list.files(src_fonts, full.names = TRUE)
+        file.copy(font_files, dst_fonts, overwrite = FALSE)
       }
 
-      font_files <- list.files(src, full.names = TRUE)
-      existing <- list.files(dst)
-      new_fonts <- font_files[!basename(font_files) %in% existing]
-
-      if (length(new_fonts) > 0) {
-        file.copy(new_fonts, dst, overwrite = FALSE)
-        log_info(
-          sprintf("Injected %d hospital fonts into BFHcharts template", length(new_fonts))
-        )
+      # Kopier images
+      src_images <- file.path(src_base, "images")
+      dst_images <- file.path(template_dir, "images")
+      if (dir.exists(src_images)) {
+        if (!dir.exists(dst_images)) dir.create(dst_images, recursive = TRUE)
+        image_files <- list.files(src_images, full.names = TRUE)
+        file.copy(image_files, dst_images, overwrite = FALSE)
       }
 
       invisible(TRUE)
@@ -326,6 +325,9 @@ generate_pdf_preview <- function(bfh_qic_result,
           spc_stats = spc_stats,
           template = "bfh-diagram"
         )
+
+        # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke)
+        inject_template_assets(file.path(temp_dir, "bfh-template"))
 
         # 5. Compile Typst directly to PNG (more efficient than PDF→PNG)
         temp_png <- tempfile(fileext = ".png")

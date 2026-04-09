@@ -333,6 +333,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         temp_png <- tempfile(fileext = ".png")
 
         # Use quarto typst compile with PNG format
+        font_path <- file.path(temp_dir, "bfh-template", "fonts")
         compile_result <- system2(
           "quarto",
           args = c(
@@ -340,7 +341,8 @@ generate_pdf_preview <- function(bfh_qic_result,
             typst_file,
             temp_png,
             "-f", "png",
-            "--ppi", as.character(dpi)
+            "--ppi", as.character(dpi),
+            "--font-path", font_path
           ),
           stdout = TRUE,
           stderr = TRUE

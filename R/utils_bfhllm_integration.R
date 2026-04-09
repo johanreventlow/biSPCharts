@@ -112,6 +112,11 @@ get_system_config <- function() {
 #'
 #' @keywords internal
 initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
+  if (!requireNamespace("BFHllm", quietly = TRUE)) {
+    log_info("BFHllm not installed - AI features disabled")
+    return(invisible(NULL))
+  }
+
   # Get config if not provided
   if (is.null(ai_config)) {
     ai_config <- get_ai_config()
@@ -144,6 +149,10 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
 #'
 #' @keywords internal
 is_bfhllm_available <- function() {
+  if (!requireNamespace("BFHllm", quietly = TRUE)) {
+    return(FALSE)
+  }
+
   available <- BFHllm::bfhllm_chat_available()
 
   if (!available) {
@@ -164,6 +173,10 @@ is_bfhllm_available <- function() {
 #'
 #' @keywords internal
 create_bfhllm_cache <- function(session) {
+  if (!requireNamespace("BFHllm", quietly = TRUE)) {
+    return(NULL)
+  }
+
   # Get TTL from biSPCharts config (if exists, otherwise use BFHllm default)
   system_config <- get_system_config()
   ttl <- system_config$cache_ttl_seconds %||% 3600 # 1 hour default
@@ -192,6 +205,11 @@ create_bfhllm_cache <- function(session) {
 #'
 #' @keywords internal
 generate_bfhllm_suggestion <- function(spc_result, context, session, max_chars = NULL) {
+  if (!requireNamespace("BFHllm", quietly = TRUE)) {
+    log_info("BFHllm not installed - skipping AI suggestion")
+    return(NULL)
+  }
+
   # Get max_chars from config if not specified
   if (is.null(max_chars)) {
     ai_config <- get_ai_config()

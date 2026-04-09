@@ -122,6 +122,56 @@ quarto_available <- function() {
   TRUE
 }
 
+# FONT INJECTION ==============================================================
+
+#' Inject biSPCharts Hospital Fonts into BFHcharts Template
+#'
+#' Kopierer Mari-fonte fra biSPCharts til BFHcharts' installerede
+#' template-mappe, saa Typst kan finde dem ved PDF-kompilering.
+#' Idempotent - kopierer kun fonte der ikke allerede findes.
+#'
+#' @return invisible(TRUE) ved succes, invisible(FALSE) ved fejl
+#' @keywords internal
+inject_hospital_fonts <- function() {
+  safe_operation(
+    operation_name = "Inject hospital fonts",
+    code = {
+      src <- system.file(
+        "templates/typst/bfh-template/fonts",
+        package = "biSPCharts"
+      )
+      dst <- system.file(
+        "templates/typst/bfh-template/fonts",
+        package = "BFHcharts"
+      )
+
+      if (!nzchar(src) || !dir.exists(src)) {
+        log_info("biSPCharts font directory not found - skipping font injection")
+        return(invisible(FALSE))
+      }
+
+      if (!nzchar(dst) || !dir.exists(dst)) {
+        log_info("BFHcharts template font directory not found - skipping font injection")
+        return(invisible(FALSE))
+      }
+
+      font_files <- list.files(src, full.names = TRUE)
+      existing <- list.files(dst)
+      new_fonts <- font_files[!basename(font_files) %in% existing]
+
+      if (length(new_fonts) > 0) {
+        file.copy(new_fonts, dst, overwrite = FALSE)
+        log_info(
+          sprintf("Injected %d hospital fonts into BFHcharts template", length(new_fonts))
+        )
+      }
+
+      invisible(TRUE)
+    },
+    fallback = FALSE
+  )
+}
+
 # GET HOSPITAL NAME ===========================================================
 
 #' Get Hospital Name for Export

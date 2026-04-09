@@ -46,10 +46,10 @@
         "GithubRef": "HEAD",
         "GithubSHA1": "a0cf0d7ac43621115327adc324de19465893c288",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-09 13:25:41 UTC; JREV0004",
+        "Packaged": "2026-04-09 14:20:27 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-09 13:25:45 UTC; windows"
+        "Built": "R 4.5.2; ; 2026-04-09 14:20:33 UTC; windows"
       }
     },
     "BFHllm": {
@@ -81,10 +81,10 @@
         "GithubRef": "HEAD",
         "GithubSHA1": "cb7191bf4f4c5f625f982cfbd2db5cd416d9d541",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-09 13:32:15 UTC; JREV0004",
+        "Packaged": "2026-04-09 14:18:30 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-09 13:32:20 UTC; windows"
+        "Built": "R 4.5.2; ; 2026-04-09 14:18:33 UTC; windows"
       }
     },
     "BFHtheme": {
@@ -116,10 +116,10 @@
         "GithubRef": "HEAD",
         "GithubSHA1": "2cc45509bad5eeb87de02def94bcb1a04b25e9cd",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-09 13:27:49 UTC; JREV0004",
+        "Packaged": "2026-04-09 14:19:57 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-09 13:27:53 UTC; windows"
+        "Built": "R 4.5.2; ; 2026-04-09 14:20:00 UTC; windows"
       }
     },
     "BH": {
@@ -5967,7 +5967,7 @@
       "checksum": "ebed77db24ba7ba31ab2deffdabd5fd8"
     },
     "R/app_server.R": {
-      "checksum": "956fb0db97b4300b6da1ae1d13bb4302"
+      "checksum": "c498787a6bfe98d51ff8ef913b1e6c6c"
     },
     "R/app_server_main.R": {
       "checksum": "3e90683bc8a0e7dc1fdad555771ba860"
@@ -6168,7 +6168,7 @@
       "checksum": "10c8b30b24120afdd09ee2751c8a3149"
     },
     "R/utils_server_export.R": {
-      "checksum": "ea0357399009ae59d2d904525bc4d58c"
+      "checksum": "cdea12527ccb436434139ed7b75b39ce"
     },
     "R/utils_server_initialization.R": {
       "checksum": "58f9c41ac4c41c05a27684fbcffb8cc0"

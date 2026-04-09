@@ -162,7 +162,7 @@ sanitize_csv_output <- function(data) {
   formula_chars <- c("=", "+", "-", "@", "\t", "\r")
 
   # Sanitize alle character kolonner
-  data <- data %>%
+  data <- data |>
     dplyr::mutate(
       dplyr::across(
         dplyr::where(is.character),

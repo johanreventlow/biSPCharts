@@ -633,7 +633,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         qic_data = computation$qic_data,
         cache_key = cache_key
       )
-    }) %>%
+    }) |>
       bindCache({
         inputs <- spc_inputs()
         # M11: Context-aware cache binding
@@ -673,7 +673,7 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       )
 
       result$plot
-    }) %>%
+    }) |>
       bindCache({
         result <- spc_results()
         inputs <- spc_inputs()

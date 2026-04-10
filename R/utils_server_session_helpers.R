@@ -359,6 +359,45 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     obs_manager$add(obs_settings_save, "settings_auto_save")
   }
 
+  # Diskret save-status indikator i wizard-bjælken (Issue #193)
+  # Viser:
+  #   - Intet hvis last_save_time er NULL (ingen save endnu)
+  #   - "Gemt · N s siden" / "Gemt · N min siden" ved success
+  #   - "Automatisk lagring deaktiveret" når auto_save_enabled er FALSE
+  output$session_save_status <- shiny::renderUI({
+    last_save <- app_state$session$last_save_time
+    auto_save_on <- app_state$session$auto_save_enabled
+
+    if (isFALSE(auto_save_on)) {
+      return(shiny::span(
+        shiny::icon("triangle-exclamation"),
+        " Automatisk lagring deaktiveret",
+        style = "color: #b33a3a; font-size: 0.8rem;",
+        title = "Browseren har ikke plads til mere. Din data er stadig i appen."
+      ))
+    }
+
+    if (is.null(last_save)) {
+      return(NULL)
+    }
+
+    diff_sec <- as.numeric(difftime(Sys.time(), last_save, units = "secs"))
+    label <- if (diff_sec < 60) {
+      paste0("Gemt \u00b7 ", round(diff_sec), " s siden")
+    } else if (diff_sec < 3600) {
+      paste0("Gemt \u00b7 ", round(diff_sec / 60), " min siden")
+    } else {
+      "Gemt \u00b7 tidligere"
+    }
+
+    shiny::span(
+      shiny::icon("check"),
+      " ", label,
+      style = "color: #6c757d; font-size: 0.8rem;",
+      title = "Indstillinger og data gemmes automatisk i din browser"
+    )
+  })
+
   # JS → R feedback-kanal for localStorage save-result (Issue #193)
   # Lytter på result fra shiny-handlers.js saveAppState handler.
   # Ved success: opdater last_save_time. Ved fejl: deaktiver auto-save og

@@ -73,7 +73,7 @@ default:
   # Session management
   session:
     auto_save_enabled: true             # Kontinuerlig auto-save til browser localStorage
-    auto_restore_session: false         # Genindlæs ved next session start
+    auto_restore_session: true          # Genindlæs ved next session start
     save_interval_ms: 2000              # Debounce for data changes
     settings_save_interval_ms: 1000     # Debounce for settings changes
     save_session_on_exit: false
@@ -169,7 +169,7 @@ development:
   # Session management (convenient for development)
   session:
     auto_save_enabled: true         # Test auto-save lokalt
-    auto_restore_session: false     # Clean slate for testing
+    auto_restore_session: true      # Test auto-restore lokalt
     save_interval_ms: 2000
     settings_save_interval_ms: 1000
     save_session_on_exit: false

@@ -85,6 +85,14 @@
     });
   });
 
+  // Aktivér wizard-mode (vis navbar-trin).
+  // Bruges af session restore (Issue #193) til at skippe landing page
+  // når der er gemt data i localStorage, så brugeren kommer direkte til
+  // deres session uden at skulle trykke "Kom i gang" først.
+  Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
+    document.body.classList.add('wizard-nav-active');
+  });
+
   // Intercept klik paa laaste tabs
   document.addEventListener('click', function(e) {
     var navLink = e.target.closest('.wizard-locked');

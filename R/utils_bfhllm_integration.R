@@ -60,9 +60,16 @@ get_ai_config <- function() {
 #'
 #' @keywords internal
 get_session_config <- function() {
+  # NB: Brug get_golem_config (lokal wrapper, læser fra YAML via config::get)
+  # i stedet for golem::get_golem_options (som læser fra runtime-options).
+  # Dette sikrer at YAML er single source of truth.
   session_config <- tryCatch(
     {
-      golem::get_golem_options("session")
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("session")
+      } else {
+        NULL
+      }
     },
     error = function(e) NULL
   )

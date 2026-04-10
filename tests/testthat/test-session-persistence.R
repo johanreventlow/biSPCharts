@@ -360,21 +360,24 @@ test_that("Roundtrip preserves factor columns with levels (Fase 3)", {
 # SECTION 4: Metadata Roundtrip
 # ==============================================================================
 
-test_that("collect_metadata captures all form fields", {
+test_that("collect_metadata captures all form fields including active_tab", {
   skip_if_not(exists("collect_metadata", mode = "function"),
     "collect_metadata not available")
 
   mock_input <- list(
     x_column = "Dato",
-    y_column = "Tæller",
-    n_column = "Nævner",
+    y_column = "T\u00e6ller",
+    n_column = "N\u00e6vner",
     skift_column = "Skift",
     frys_column = "Frys",
     kommentar_column = "Kommentar",
     chart_type = "pp",
     target_value = "0.95",
     centerline_value = "0.90",
-    y_axis_unit = "percent"
+    y_axis_unit = "percent",
+    indicator_title = "Patientfremm\u00f8de",
+    indicator_description = "Procent m\u00f8dt ud af tilkaldte",
+    main_navbar = "analyser"
   )
 
   # shiny::isolate wrapper in collect_metadata requires a reactive context —
@@ -382,8 +385,8 @@ test_that("collect_metadata captures all form fields", {
   metadata <- isolate(collect_metadata(mock_input))
 
   expect_equal(metadata$x_column, "Dato")
-  expect_equal(metadata$y_column, "Tæller")
-  expect_equal(metadata$n_column, "Nævner")
+  expect_equal(metadata$y_column, "T\u00e6ller")
+  expect_equal(metadata$n_column, "N\u00e6vner")
   expect_equal(metadata$skift_column, "Skift")
   expect_equal(metadata$frys_column, "Frys")
   expect_equal(metadata$kommentar_column, "Kommentar")
@@ -391,6 +394,34 @@ test_that("collect_metadata captures all form fields", {
   expect_equal(metadata$target_value, "0.95")
   expect_equal(metadata$centerline_value, "0.90")
   expect_equal(metadata$y_axis_unit, "percent")
+  expect_equal(metadata$indicator_title, "Patientfremm\u00f8de")
+  expect_equal(metadata$indicator_description, "Procent m\u00f8dt ud af tilkaldte")
+  expect_equal(metadata$active_tab, "analyser")
+})
+
+test_that("collect_metadata falls back to 'analyser' when main_navbar is NULL", {
+  skip_if_not(exists("collect_metadata", mode = "function"),
+    "collect_metadata not available")
+
+  mock_input <- list(
+    x_column = "",
+    y_column = "",
+    n_column = "",
+    skift_column = "",
+    frys_column = "",
+    kommentar_column = "",
+    chart_type = "run",
+    target_value = NULL,
+    centerline_value = NULL,
+    y_axis_unit = NULL,
+    indicator_title = NULL,
+    indicator_description = NULL,
+    main_navbar = NULL
+  )
+
+  metadata <- isolate(collect_metadata(mock_input))
+  expect_equal(metadata$active_tab, "analyser",
+    info = "active_tab skal defaulte til 'analyser' ved NULL (ikke 'start')")
 })
 
 test_that("collect_metadata handles empty/NULL fields gracefully", {

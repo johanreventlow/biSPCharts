@@ -123,6 +123,29 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             app_state$session$file_uploaded <- TRUE
             app_state$columns$auto_detect$completed <- TRUE
 
+            # Wizard-integration: Skip landing page og aktivér wizard-navigation.
+            # Landing page har body class "wizard-nav-active" skjult som default,
+            # hvilket skjuler navbar-trin. Vi skal eksplicit aktivere wizard-mode
+            # efter restore så navbar-trin er synlige.
+            session$sendCustomMessage("activate-wizard-mode", list())
+
+            # Navigér til korrekt tab baseret på gemt active_tab.
+            # Hvis active_tab er "start" (landing page), hop til "analyser" som
+            # sensible default siden der er data. Ellers brug gemt tab.
+            saved_tab <- saved_state$metadata$active_tab %||% "analyser"
+            if (saved_tab == "start" || is.null(saved_tab) || saved_tab == "") {
+              saved_tab <- "analyser"
+            }
+
+            # Unlock wizard-trin 2 og navigér (gør det synligt straks)
+            session$sendCustomMessage("wizard-complete-step", 1)
+            session$sendCustomMessage("wizard-unlock-step", 2)
+            if (saved_tab == "eksporter") {
+              session$sendCustomMessage("wizard-complete-step", 2)
+              session$sendCustomMessage("wizard-unlock-step", 3)
+            }
+            bslib::nav_select("main_navbar", selected = saved_tab, session = session)
+
             # FINALLY emit event (listeners ser nu korrekt state)
             emit$data_updated(context = "session_restore")
 
@@ -131,7 +154,8 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 
             shiny::showNotification(
               paste(
-                "Tidligere session automatisk genindlæst:", data_rows, "datapunkter fra",
+                "Tidligere session automatisk genindl\u00e6st:", data_rows,
+                "datapunkter fra",
                 format(as.POSIXct(saved_state$timestamp), "%d-%m-%Y %H:%M")
               ),
               type = "message",
@@ -224,6 +248,12 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       if (!is.null(metadata$y_axis_unit)) {
         shiny::updateSelectizeInput(session, "y_axis_unit", selected = metadata$y_axis_unit)
       }
+      if (!is.null(metadata$indicator_title)) {
+        shiny::updateTextInput(session, "indicator_title", value = metadata$indicator_title)
+      }
+      if (!is.null(metadata$indicator_description)) {
+        shiny::updateTextAreaInput(session, "indicator_description", value = metadata$indicator_description)
+      }
     }
   })
 }
@@ -240,7 +270,11 @@ collect_metadata <- function(input) {
       chart_type = input$chart_type,
       target_value = input$target_value,
       centerline_value = input$centerline_value,
-      y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit
+      y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit,
+      indicator_title = input$indicator_title,
+      indicator_description = input$indicator_description,
+      # Wizard navigation state (Issue #193)
+      active_tab = input$main_navbar %||% "analyser"
     )
   })
 }

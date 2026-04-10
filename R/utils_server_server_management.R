@@ -170,78 +170,21 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
     once = TRUE
   )
 
-  # Manual save handler
-  shiny::observeEvent(input$manual_save, {
-    # Unified state: Use centralized state for current data
-    current_data_check <- app_state$data$current_data
-    shiny::req(current_data_check)
-
-    metadata <- collect_metadata(input)
-
-    # H7: Wrap manual save in safe_operation with user feedback
-    result <- safe_operation(
-      "Manual save to local storage",
-      code = {
-        saveDataLocally(session, current_data_check, metadata)
-      },
-      fallback = function(e) {
-        log_error(
-          paste("Manuel gem fejlede:", e$message),
-          .context = "MANUAL_SAVE"
-        )
-        shiny::showNotification(
-          "Kunne ikke gemme sessionen lokalt. Prøv igen eller brug Download-funktionen.",
-          type = "error",
-          duration = 5
-        )
-        return(FALSE)
-      },
-      error_type = "local_storage"
-    )
-
-    # Only update timestamp and show success if save worked
-    if (!identical(result, FALSE)) {
-      # Unified state assignment only
-      app_state$session$last_save_time <- Sys.time()
-      shiny::showNotification("Session gemt lokalt!", type = "message", duration = 2)
-    }
-  })
-
   # Clear saved handler
   shiny::observeEvent(input$clear_saved, {
     handle_clear_saved_request(input, session, app_state, emit, ui_service)
   })
-
-  # Upload modal handler
-  shiny::observeEvent(input$show_upload_modal, {
-    show_upload_modal()
-  })
-
-  # Kolonnemapping modal fjernet — felterne er nu inline over datatabellen
 
   # Confirm clear saved handler
   shiny::observeEvent(input$confirm_clear_saved, {
     handle_confirm_clear_saved(session, app_state, emit, ui_service)
   })
 
-  # Save status display
-  output$save_status_display <- shiny::renderUI({
-    # Unified state: Use centralized state for last save time
-    last_save_time_check <- app_state$session$last_save_time
-
-    if (!is.null(last_save_time_check)) {
-      time_diff <- as.numeric(difftime(Sys.time(), last_save_time_check, units = "mins"))
-      if (time_diff < 1) {
-        shiny::span(shiny::icon("check"), " Gemt lige nu", style = "color: green;")
-      } else if (time_diff < 60) {
-        shiny::span(shiny::icon("clock"), paste(" Gemt for", round(time_diff), "min siden"))
-      } else {
-        shiny::span(shiny::icon("clock"), " Gemt for mere end 1 time siden")
-      }
-    }
-  })
-
   # NOTE: output$dataLoaded is now handled in server_helpers.R with smart logic
+  # NOTE: manual_save, show_upload_modal og save_status_display observers
+  # blev fjernet i Issue #193 (OpenSpec add-session-persistence-autosave).
+  # Auto-save hvert 2s gør manuel save-knap overflødig; status-display erstattes
+  # af en diskret indikator i wizard-bjælken (se Fase 5).
 }
 
 # Helper functions for session management
@@ -438,50 +381,6 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
 
   # Unified state only
   app_state$data$updating_table <- FALSE
-}
-
-show_upload_modal <- function() {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-
-  shiny::showModal(shiny::modalDialog(
-    title = shiny::div(
-      shiny::icon("upload"),
-      " Upload datafil",
-      style = paste("color:", hospital_colors$primary)
-    ),
-    size = "m",
-    shiny::div(
-      style = "margin: 20px 0;",
-
-      # File input i modal
-      shiny::fileInput(
-        "data_file",
-        "Vælg datafil:",
-        accept = c(".xlsx", ".xls", ".csv", ".CSV"),
-        placeholder = "Ingen fil valgt...",
-        width = "100%"
-      ),
-      shiny::hr(),
-      shiny::div(
-        style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-size: 0.9rem;",
-        shiny::h6("Understøttede filformater:", style = "font-weight: 500; margin-bottom: 10px;"),
-        shiny::tags$ul(
-          style = "margin-bottom: 0;",
-          shiny::tags$li(shiny::strong("Excel filer:"), " .xlsx, .xls - med automatisk kolonnedetekttion"),
-          shiny::tags$li(shiny::strong("CSV filer:"), " .csv - danske indstillinger (semikolon, komma som decimal)")
-        ),
-        shiny::br(),
-        shiny::div(
-          style = "font-size: 0.8rem; color: #666;",
-          shiny::icon("info-circle"),
-          " Filer med 'Data' og 'Metadata' sheets genindlæser komplette sessioner automatisk."
-        )
-      )
-    ),
-    footer = shiny::modalButton("Annuller"),
-    easyClose = TRUE
-  ))
 }
 
 show_clear_confirmation_modal <- function(has_data, has_settings, app_state) {

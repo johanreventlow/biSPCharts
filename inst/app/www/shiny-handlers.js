@@ -36,6 +36,17 @@ Shiny.addCustomMessageHandler('clearAppState', function(message) {
   }
 });
 
+// Aktivér wizard-mode (vis navbar-trin).
+// Issue #193: Bruges af session restore til at skippe landing page
+// når der er gemt data i localStorage. Placeret her i stedet for
+// wizard-nav.js for at være uafhængig af wizard-nav.js loading status.
+Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
+  if (document.body) {
+    document.body.classList.add('wizard-nav-active');
+    console.log('[SPC] wizard-nav-active body class added');
+  }
+});
+
 // Auto-load existing session data when Shiny session is fully initialized.
 // Issue #193: Bruger 'shiny:sessioninitialized' event i stedet for setTimeout(500)
 // — sidstnævnte var en gæt der kunne fyre før observer var registreret.

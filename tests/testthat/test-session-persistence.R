@@ -219,6 +219,8 @@ test_that("autoSaveAppState skips when auto_save_enabled is FALSE", {
 # ==============================================================================
 
 # HELPER: Simuler roundtrip via ekstraktion → JSON → parsing → rekonstruktion
+# NB: jsonlite serialiserer R NA til JSON null, som parses tilbage til R NULL
+# i list-elementer. Vi skal eksplicit konvertere NULL → NA før rekonstruktion.
 simulate_roundtrip <- function(data) {
   skip_if_not(exists("extract_class_info", mode = "function"),
     "extract_class_info not yet implemented (Fase 3)")
@@ -247,9 +249,17 @@ simulate_roundtrip <- function(data) {
   )
   names(reconstructed) <- unlist(reloaded$col_names)
 
+  # Helper: konverter list med NULLs til vector med NAs (bevar længde)
+  # NB: vapply kan ikke bruges her da FUN.VALUE kræver en fast type, men
+  # kolonner kan være numeric/character/integer — brug lapply + unlist i stedet
+  list_to_vector_with_na <- function(lst) {
+    cleaned <- lapply(lst, function(x) if (is.null(x)) NA else x)
+    unlist(cleaned, use.names = FALSE)
+  }
+
   for (i in seq_along(reloaded$values)) {
     col_name <- names(reconstructed)[i]
-    raw_values <- unlist(reloaded$values[[i]], use.names = FALSE)
+    raw_values <- list_to_vector_with_na(reloaded$values[[i]])
     reconstructed[[i]] <- restore_column_class(
       raw_values,
       class_info = reloaded$class_info[[col_name]]

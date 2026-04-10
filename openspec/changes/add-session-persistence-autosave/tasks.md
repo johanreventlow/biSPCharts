@@ -22,41 +22,41 @@
 - [x] 2.16 Commit: `test: tilføj session persistence regression tests`
 
 ## 3. Fase 2: Fix blockers 🔴
-- [ ] 3.1 Fix `inst/app/www/local-storage.js`: fjern `JSON.stringify()` i `window.saveAppState` (data fra R er allerede JSON-string)
-- [ ] 3.2 Verificer at `window.loadAppState` stadig kalder `JSON.parse()` én gang
-- [ ] 3.3 Tilføj `app_state` parameter til `autoSaveAppState()` i `R/utils_local_storage.R`
-- [ ] 3.4 Opdater caller i `R/utils_server_session_helpers.R:229`: `autoSaveAppState(session, save_data$data, save_data$metadata, app_state)`
-- [ ] 3.5 Opdater caller i `R/utils_server_session_helpers.R:282`: samme signatur-udvidelse
-- [ ] 3.6 Slet `exists("app_state")` check i `utils_local_storage.R:138` — erstat med direkte `!is.null(app_state)` check
-- [ ] 3.7 Fjern dead observer `observeEvent(input$manual_save, ...)` fra `R/utils_server_server_management.R:174-208`
-- [ ] 3.8 Fjern dead observer `observeEvent(input$show_upload_modal, ...)` fra `R/utils_server_server_management.R:216-218`
-- [ ] 3.9 Fjern dead `output$save_status_display` render fra `R/utils_server_server_management.R:228-242`
-- [ ] 3.10 Fjern `show_upload_modal()` helper-funktion (ubrugt efter dead observer-fjernelse)
-- [ ] 3.11 Fjern `collect_metadata()` / `restore_metadata()` sikkerhedscheck — flyt funktioner til egen fil eller behold hvis de bruges internt
-- [ ] 3.12 Kør test-suite: tests 2.14 (JSON double-encoding) og 2.13 (scope bug) skal nu bestå
-- [ ] 3.13 Commit: `fix(session-persistence): ret JSON double-encoding, autoSaveAppState scope og dead observers`
+- [x] 3.1 Fix `inst/app/www/local-storage.js`: fjern `JSON.stringify()` i `window.saveAppState` (data fra R er allerede JSON-string)
+- [x] 3.2 Verificer at `window.loadAppState` stadig kalder `JSON.parse()` én gang
+- [x] 3.3 Tilføj `app_state` parameter til `autoSaveAppState()` i `R/utils_local_storage.R`
+- [x] 3.4 Opdater caller i `R/utils_server_session_helpers.R:229`: `autoSaveAppState(session, save_data$data, save_data$metadata, app_state)`
+- [x] 3.5 Opdater caller i `R/utils_server_session_helpers.R:282`: samme signatur-udvidelse
+- [x] 3.6 Slet `exists("app_state")` check i `utils_local_storage.R:138` — erstat med direkte `!is.null(app_state)` check
+- [x] 3.7 Fjern dead observer `observeEvent(input$manual_save, ...)` fra `R/utils_server_server_management.R:174-208`
+- [x] 3.8 Fjern dead observer `observeEvent(input$show_upload_modal, ...)` fra `R/utils_server_server_management.R:216-218`
+- [x] 3.9 Fjern dead `output$save_status_display` render fra `R/utils_server_server_management.R:228-242`
+- [x] 3.10 Fjern `show_upload_modal()` helper-funktion (ubrugt efter dead observer-fjernelse)
+- [x] 3.11 `collect_metadata()` / `restore_metadata()` beholdes — bruges stadigt af auto-save og auto-restore
+- [x] 3.12 Kør test-suite: 41 PASS / 0 FAIL / 8 SKIP (blockers fixet)
+- [x] 3.13 Commit: `fix(session-persistence): ret double-encoding, scope bug og dead observers`
 
 ## 4. Fase 3: Korrekthed og robusthed 🟠
-- [ ] 4.1 Ret restore-rækkefølge i `R/utils_server_server_management.R`:
+- [x] 4.1 Ret restore-rækkefølge i `R/utils_server_server_management.R`:
   - Flyt `restore_metadata()` kald op til at ske **før** `set_current_data()` og `emit$data_updated()`
   - Bevar guard-flags (`restoring_session`, `updating_table`, `auto_save_enabled = FALSE`)
-- [ ] 4.2 Udvid class-preservation i `R/utils_local_storage.R`:
-  - Opret hjælper `extract_class_info(data)` der returnerer `list(primary, is_date, is_posixct, is_factor, levels, tz)` per kolonne
-  - Brug den i `saveDataLocally()` payload
-- [ ] 4.3 Udvid class-restoration i `R/utils_server_server_management.R`:
-  - Opret hjælper `restore_column_class(values, class_info)` der håndterer `Date`, `POSIXct` med tz, `integer`, `factor` med levels
-  - Kald den for hver kolonne i `for (i in seq_along(saved_data$values))` loop
-- [ ] 4.4 Tilføj JS → R save-result kanal:
-  - Opdater `inst/app/www/shiny-handlers.js` `saveAppState` handler til at kalde `Shiny.setInputValue('local_storage_save_result', {...})`
-  - Opret ny observer i `R/utils_server_session_helpers.R` der lytter på `input$local_storage_save_result`
-  - Ved `success = FALSE`: log_warn, sæt `auto_save_enabled <- FALSE`, vis notifikation
+- [x] 4.2 Udvid class-preservation i `R/utils_local_storage.R`:
+  - Oprettet helper `extract_class_info(data)` med `list(primary, is_date, is_posixct, is_factor, levels, tz)` per kolonne
+  - Brugt i `saveDataLocally()` payload
+- [x] 4.3 Udvid class-restoration i `R/utils_local_storage.R`:
+  - Oprettet helper `restore_column_class(values, class_info)` — håndterer Date, POSIXct m. tz, integer, factor m. levels
+  - Kaldt for hver kolonne i restore-loopet i `utils_server_server_management.R`
+- [x] 4.4 Tilføj JS → R save-result kanal:
+  - Opdateret `inst/app/www/shiny-handlers.js` `saveAppState` handler til at kalde `Shiny.setInputValue('local_storage_save_result', {...})`
+  - Oprettet observer `obs_save_result` i `R/utils_server_session_helpers.R`
+  - Ved `success = FALSE`: `log_warn`, sæt `auto_save_enabled <- FALSE`, vis dansk notifikation
   - Ved `success = TRUE`: opdater `last_save_time`
-- [ ] 4.5 Flyt `last_save_time <- Sys.time()` ud af auto-save observers — lad save-result observer håndtere det i stedet
-- [ ] 4.6 Udskift `setTimeout(500)` med `$(document).on('shiny:sessioninitialized', ...)` i `inst/app/www/shiny-handlers.js:33-44`
-- [ ] 4.7 Tilføj version-check i auto-restore observer: hvis `saved_state$version != "2.0"`, kald `clearDataLocally()` og return silent
-- [ ] 4.8 Bump version i `saveDataLocally()` payload fra `"1.2"` til `"2.0"`
-- [ ] 4.9 Kør test-suite: tests 2.6, 2.7, 2.8, 2.9 (Date, POSIXct, integer, factor) skal nu bestå
-- [ ] 4.10 Commit: `fix(session-persistence): restore order, class preservation og JS feedback loop`
+- [x] 4.5 Flyttet `last_save_time <- Sys.time()` ud af auto-save observers — håndteres af save-result observer
+- [x] 4.6 Udskiftet `setTimeout(500)` med `$(document).on('shiny:sessioninitialized', ...)` i `inst/app/www/shiny-handlers.js`
+- [x] 4.7 Tilføjet version-check i auto-restore observer: `!= LOCAL_STORAGE_SCHEMA_VERSION` → `clearDataLocally()` og return silent
+- [x] 4.8 Bumpet version fra `"1.2"` til `"2.0"` (via `LOCAL_STORAGE_SCHEMA_VERSION` konstant)
+- [x] 4.9 Kør test-suite: 57 PASS / 0 FAIL / 1 SKIP — alle class-preservation tests består
+- [x] 4.10 Commit: `fix(session-persistence): restore order, class preservation og JS feedback loop`
 
 ## 5. Fase 4: Konfiguration og feature flag 🟡
 - [ ] 5.1 Slet funktion `determine_auto_restore_setting()` fra `R/app_runtime_config.R:307-323`

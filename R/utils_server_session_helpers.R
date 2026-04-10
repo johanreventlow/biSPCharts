@@ -230,10 +230,10 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     save_data <- auto_save_trigger()
     shiny::req(save_data) # Only proceed if we have valid save data
 
+    # NB: last_save_time opdateres af local_storage_save_result observer
+    # når JS-siden bekræfter success — ikke her.
     autoSaveAppState(session, save_data$data, save_data$metadata,
       app_state = app_state)
-    # Use unified state management
-    app_state$session$last_save_time <- save_data$timestamp
   })
 
   # Register observer with manager
@@ -284,10 +284,10 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     save_data <- settings_save_trigger()
     shiny::req(save_data) # Only proceed if we have valid save data
 
+    # NB: last_save_time opdateres af local_storage_save_result observer
+    # når JS-siden bekræfter success — ikke her.
     autoSaveAppState(session, save_data$data, save_data$metadata,
       app_state = app_state)
-    # Use unified state management
-    app_state$session$last_save_time <- save_data$timestamp
   }) |> bindEvent(
     {
       list(
@@ -339,6 +339,39 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # Register observer with manager
   if (!is.null(obs_manager)) {
     obs_manager$add(obs_settings_save, "settings_auto_save")
+  }
+
+  # JS → R feedback-kanal for localStorage save-result (Issue #193)
+  # Lytter på result fra shiny-handlers.js saveAppState handler.
+  # Ved success: opdater last_save_time. Ved fejl: deaktiver auto-save og
+  # vis dansk warning til brugeren.
+  obs_save_result <- shiny::observeEvent(input$local_storage_save_result, {
+    result <- input$local_storage_save_result
+    if (is.null(result)) {
+      return()
+    }
+
+    if (isTRUE(result$success)) {
+      app_state$session$last_save_time <- Sys.time()
+    } else {
+      log_warn(
+        "localStorage save failed (quota or permission)",
+        .context = "AUTO_SAVE"
+      )
+      app_state$session$auto_save_enabled <- FALSE
+      shiny::showNotification(
+        paste0(
+          "Browseren kan ikke gemme mere data (lokal lagerplads fuld). ",
+          "Automatisk lagring er deaktiveret for denne session."
+        ),
+        type = "warning",
+        duration = 8
+      )
+    }
+  })
+
+  if (!is.null(obs_manager)) {
+    obs_manager$add(obs_save_result, "local_storage_save_result")
   }
 
   # UNIFIED EVENT SYSTEM: No return value needed - all navigation handled via events

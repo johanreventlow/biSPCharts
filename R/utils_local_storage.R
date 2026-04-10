@@ -2,6 +2,103 @@
 # Server-side funktioner til localStorage integration og databehandling
 
 # Dependencies ----------------------------------------------------------------
+
+# SCHEMA VERSION ==============================================================
+# Bumpes når payload-struktur ændres. Load-logik rydder ved version-mismatch.
+LOCAL_STORAGE_SCHEMA_VERSION <- "2.0"
+
+# CLASS PRESERVATION HELPERS =================================================
+
+#' Ekstraherer class-metadata for hver kolonne i et data.frame
+#'
+#' Producerer en named list pr. kolonne med nok information til at rekonstruere
+#' den præcise R-type efter JSON roundtrip. Understøtter numeric, integer,
+#' character, logical, Date, POSIXct (med tz) og factor (med levels).
+#'
+#' @param data data.frame hvis kolonner skal beskrives
+#' @return Named list indekseret på kolonnenavne
+#' @keywords internal
+extract_class_info <- function(data) {
+  if (is.null(data) || ncol(data) == 0) {
+    return(list())
+  }
+
+  info <- lapply(data, function(col) {
+    cls <- class(col)
+    list(
+      primary = cls[1],
+      is_date = inherits(col, "Date"),
+      is_posixct = inherits(col, "POSIXct"),
+      is_factor = is.factor(col),
+      levels = if (is.factor(col)) levels(col) else NULL,
+      tz = if (inherits(col, "POSIXct")) {
+        tz_attr <- attr(col, "tzone")
+        if (is.null(tz_attr) || identical(tz_attr, "")) "UTC" else tz_attr
+      } else {
+        NULL
+      }
+    )
+  })
+
+  names(info) <- colnames(data)
+  info
+}
+
+#' Gendanner en kolonne til dens oprindelige R-klasse
+#'
+#' Modtager rå værdier efter JSON roundtrip og class_info genereret af
+#' extract_class_info(). Håndterer Date, POSIXct med tz, integer, factor
+#' med levels, samt basis-typer numeric/character/logical.
+#'
+#' @param values Rå værdier efter fromJSON (typisk character eller numeric)
+#' @param class_info Class-metadata fra extract_class_info() for denne kolonne
+#' @return Vector gendannet til korrekt R-klasse
+#' @keywords internal
+restore_column_class <- function(values, class_info) {
+  if (is.null(class_info)) {
+    return(values)
+  }
+
+  primary <- class_info$primary %||% "character"
+
+  # Factor: brug gemte levels for at bevare rækkefølge
+  if (isTRUE(class_info$is_factor)) {
+    char_values <- as.character(values)
+    return(factor(char_values, levels = class_info$levels))
+  }
+
+  # Date: parse ISO8601
+  if (isTRUE(class_info$is_date)) {
+    if (is.numeric(values)) {
+      # jsonlite kan serialisere Date som numeric (days since 1970)
+      return(as.Date(values, origin = "1970-01-01"))
+    }
+    return(as.Date(as.character(values)))
+  }
+
+  # POSIXct: parse med original tidszone
+  if (isTRUE(class_info$is_posixct)) {
+    tz <- class_info$tz %||% "UTC"
+    if (is.numeric(values)) {
+      return(as.POSIXct(values, origin = "1970-01-01", tz = tz))
+    }
+    return(as.POSIXct(as.character(values), tz = tz))
+  }
+
+  # Basis-typer
+  switch(primary,
+    "integer" = as.integer(values),
+    "numeric" = as.numeric(values),
+    "double" = as.numeric(values),
+    "character" = as.character(values),
+    "logical" = as.logical(values),
+    values
+  )
+}
+
+# Null-coalesce helper (defineret her hvis ikke globalt tilgængelig)
+`%||%` <- function(a, b) if (is.null(a)) b else a
+
 # LOCAL STORAGE FUNKTIONER ===================================================
 
 ## Local Storage funktioner til server med datastruktur preservation
@@ -9,20 +106,20 @@ saveDataLocally <- function(session, data, metadata = NULL) {
   safe_operation(
     "Save data to local storage",
     code = {
-      # CRITICAL: Preserve data structure explicitly - improved method
+      # CRITICAL: Preserve data structure explicitly med udvidet class-info
       data_to_save <- list(
         values = lapply(data, function(x) as.vector(x)), # Convert each column to vector
         col_names = colnames(data),
         nrows = nrow(data),
         ncols = ncol(data),
-        class_info = sapply(data, function(x) class(x)[1]) # Take first class only
+        class_info = extract_class_info(data)
       )
 
       app_state <- list(
         data = data_to_save, # Use structured data
         metadata = metadata,
         timestamp = Sys.time(),
-        version = "1.2" # Bumped for data structure fix
+        version = LOCAL_STORAGE_SCHEMA_VERSION
       )
 
       # Konverter til JSON med bedre indstillinger for data preservation

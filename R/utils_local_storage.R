@@ -131,16 +131,28 @@ saveDataLocally <- function(session, data, metadata = NULL) {
         na = "null" # Handle NA values properly
       )
 
-      if (is.null(json_data) || nchar(json_data) == 0) {
+      # CRITICAL: Strip jsonlite 'json' class før vi sender til Shiny.
+      # Shiny's interne message serializer håndterer ikke 'json' class korrekt
+      # og kan konvertere sådanne objekter til literal null. Ved at caste til
+      # ren character får vi en almindelig string der serialiseres som JS-string.
+      json_data_raw <- as.character(json_data)
+
+      if (is.null(json_data_raw) || length(json_data_raw) == 0 ||
+        nchar(json_data_raw) == 0) {
         stop("JSON konvertering resulterede i tomme data")
       }
+
+      log_debug(
+        sprintf("Sending %d bytes to browser localStorage", nchar(json_data_raw)),
+        .context = "LOCAL_STORAGE"
+      )
 
       # Send til browser localStorage
       session$sendCustomMessage(
         type = "saveAppState",
         message = list(
           key = "current_session",
-          data = json_data
+          data = json_data_raw
         )
       )
     },

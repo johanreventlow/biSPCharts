@@ -184,7 +184,12 @@ create_ui_update_service <- function(session, app_state) {
                 shiny::updateTextInput(session, field, value = metadata[[field]])
               } else if (field == "centerline_value") {
                 shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field %in% c("unit_select", "chart_type", "x_column", "y_column", "n_column", "y_axis_unit")) {
+              } else if (field %in% c(
+                "unit_select", "chart_type",
+                "x_column", "y_column", "n_column",
+                "skift_column", "frys_column", "kommentar_column",
+                "y_axis_unit"
+              )) {
                 shiny::updateSelectizeInput(session, field, selected = metadata[[field]])
               }
             }

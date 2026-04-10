@@ -16,16 +16,25 @@ window.saveAppState = function(key, data) {
 };
 
 // Load data from localStorage
+// Issue #193: Ved parse-fejl (fx gammel double-encoded data fra tidligere
+// version) rydder vi automatisk storage så brugeren ikke sidder fast i
+// et brudt state. Næste gang bruger gemmer, starter de forfra med v2.0.
 window.loadAppState = function(key) {
+  var storageKey = 'spc_app_' + key;
   try {
-    var data = localStorage.getItem('spc_app_' + key);
+    var data = localStorage.getItem(storageKey);
     if (data) {
       return JSON.parse(data);
     } else {
       return null;
     }
   } catch(e) {
-    console.error('Failed to load from localStorage:', e);
+    console.warn('[SPC] Corrupt localStorage entry detected, auto-clearing:', e.message);
+    try {
+      localStorage.removeItem(storageKey);
+    } catch(cleanupErr) {
+      console.error('[SPC] Failed to clean up corrupt entry:', cleanupErr);
+    }
     return null;
   }
 };

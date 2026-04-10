@@ -16,10 +16,12 @@ create_ui_header <- function() {
     # Aktivér shinyjs
     shinyjs::useShinyjs(),
     shiny::tags$head(
-      # JavaScript files
-      shiny::tags$script(src = "local-storage.js"),
-      shiny::tags$script(src = "shiny-handlers.js"),
-      shiny::tags$script(src = "wizard-nav.js"),
+      # JavaScript files loades automatisk via golem::bundle_resources() i
+      # golem_add_external_resources() (app_ui.R). Manuelle <script src=...>
+      # tags her 404'ede fordi stien skulle være "www/..." og ikke root.
+      # Fjernet i Issue #193 — bundle_resources håndterer alle .js/.css i
+      # inst/app/www/ automatisk.
+
       # Inline CSS styles
       shiny::tags$style(htmltools::HTML(paste0("
 

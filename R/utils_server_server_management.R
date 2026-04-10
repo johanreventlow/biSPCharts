@@ -125,19 +125,43 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
               )
             }
 
-            # CRITICAL: Restore metadata FØR data_updated event emitteres,
-            # så downstream listeners (auto-detect, chart render) ser korrekt
-            # kolonne-mapping fra første cycle. Tidligere bug: metadata blev
-            # gendannet efter emit → race condition.
-            if (!is.null(saved_state$metadata)) {
-              restore_metadata(session, saved_state$metadata, ui_service)
-            }
-
-            # Sæt data og completion flags
+            # Sæt data og completion flags FØR emit så downstream listeners
+            # ser korrekt state (men metadata restore sker EFTER flush).
             set_current_data(app_state, reconstructed_data)
             app_state$data$original_data <- reconstructed_data
             app_state$session$file_uploaded <- TRUE
             app_state$columns$auto_detect$completed <- TRUE
+
+            # CRITICAL: Metadata restore skal ske EFTER selectize choices er
+            # populeret (sker i observer på data_updated). Vi bruger
+            # session$onFlushed(once = TRUE) så update-kaldene kører efter
+            # Shiny har flushed UI-opdateringer. Ellers peger
+            # updateSelectizeInput(selected="Dato") på en tom choices-liste
+            # og effekten er nul.
+            if (!is.null(saved_state$metadata)) {
+              saved_meta <- saved_state$metadata
+              session$onFlushed(
+                function() {
+                  log_info(
+                    "Restoring metadata after UI flush",
+                    .context = "SESSION_RESTORE"
+                  )
+                  restore_metadata(session, saved_meta, ui_service)
+
+                  # Kopier mappings ind i centraliseret state så reactive
+                  # chain ikke resetter dem ved næste render.
+                  if (!is.null(app_state$columns$mappings)) {
+                    for (field in c("x_column", "y_column", "n_column",
+                      "skift_column", "frys_column", "kommentar_column")) {
+                      if (!is.null(saved_meta[[field]]) && saved_meta[[field]] != "") {
+                        app_state$columns$mappings[[field]] <- saved_meta[[field]]
+                      }
+                    }
+                  }
+                },
+                once = TRUE
+              )
+            }
 
             # Wizard-integration: Skip landing page og aktivér wizard-navigation.
             # Landing page har body class "wizard-nav-active" skjult som default,

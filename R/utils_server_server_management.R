@@ -142,22 +142,25 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
               saved_meta <- saved_state$metadata
               session$onFlushed(
                 function() {
-                  log_info(
-                    "Restoring metadata after UI flush",
-                    .context = "SESSION_RESTORE"
-                  )
-                  restore_metadata(session, saved_meta, ui_service)
+                  shiny::isolate({
+                    log_info(
+                      "Restoring metadata after UI flush",
+                      .context = "SESSION_RESTORE"
+                    )
+                    restore_metadata(session, saved_meta, ui_service)
 
-                  # Kopier mappings ind i centraliseret state så reactive
-                  # chain ikke resetter dem ved næste render.
-                  if (!is.null(app_state$columns$mappings)) {
+                    # Kopier mappings ind i centraliseret state så reactive
+                    # chain ikke resetter dem ved næste render.
+                    # NB: writes til reactiveValues kræver ikke reactive
+                    # context, men reads gør — derfor isolate() wrapper.
                     for (field in c("x_column", "y_column", "n_column",
                       "skift_column", "frys_column", "kommentar_column")) {
-                      if (!is.null(saved_meta[[field]]) && saved_meta[[field]] != "") {
-                        app_state$columns$mappings[[field]] <- saved_meta[[field]]
+                      val <- saved_meta[[field]]
+                      if (!is.null(val) && nzchar(val)) {
+                        app_state$columns$mappings[[field]] <- val
                       }
                     }
-                  }
+                  })
                 },
                 once = TRUE
               )

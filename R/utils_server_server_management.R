@@ -314,6 +314,7 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
 collect_metadata <- function(input) {
   shiny::isolate({
     list(
+      # Trin 2 (Analyser) — kolonne-mapping og chart-indstillinger
       x_column = if (is.null(input$x_column) || input$x_column == "") "" else input$x_column,
       y_column = if (is.null(input$y_column) || input$y_column == "") "" else input$y_column,
       n_column = if (is.null(input$n_column) || input$n_column == "") "" else input$n_column,
@@ -326,6 +327,16 @@ collect_metadata <- function(input) {
       y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit,
       indicator_title = input$indicator_title,
       indicator_description = input$indicator_description,
+
+      # Trin 3 (Eksporter) — export-modulets felter (namespaced med "export-")
+      export_title = input[["export-export_title"]],
+      export_department = input[["export-export_department"]],
+      export_format = input[["export-export_format"]],
+      pdf_description = input[["export-pdf_description"]],
+      pdf_improvement = input[["export-pdf_improvement"]],
+      png_size_preset = input[["export-png_size_preset"]],
+      png_dpi = input[["export-png_dpi"]],
+
       # Wizard navigation state (Issue #193)
       active_tab = input$main_navbar %||% "analyser"
     )

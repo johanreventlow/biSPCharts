@@ -309,6 +309,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     }) |> bindEvent(
       {
         list(
+          # Trin 2 (Analyser) felter
           input$indicator_title,
           input$unit_type,
           input$unit_select,
@@ -323,7 +324,15 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
           input$chart_type,
           input$target_value,
           input$centerline_value,
-          input$y_axis_unit
+          input$y_axis_unit,
+          # Trin 3 (Eksporter) felter — namespaced med "export-" prefix
+          input[["export-export_title"]],
+          input[["export-export_department"]],
+          input[["export-export_format"]],
+          input[["export-pdf_description"]],
+          input[["export-pdf_improvement"]],
+          input[["export-png_size_preset"]],
+          input[["export-png_dpi"]]
         )
       },
       ignoreInit = TRUE

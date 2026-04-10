@@ -205,18 +205,33 @@ autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) 
   if (!is.null(app_state)) {
     enabled <- shiny::isolate(app_state$session$auto_save_enabled)
     if (!isTRUE(enabled)) {
+      log_debug(
+        "Auto-save sprunget over: app_state$session$auto_save_enabled er FALSE",
+        .context = "AUTO_SAVE"
+      )
       return(invisible(NULL))
     }
   }
 
   if (is.null(current_data)) {
+    log_debug("Auto-save sprunget over: current_data er NULL", .context = "AUTO_SAVE")
     return(invisible(NULL))
   }
 
   # Kun gem hvis der er meaningful data
   if (nrow(current_data) == 0 || !any(!is.na(current_data))) {
+    log_debug(
+      sprintf("Auto-save sprunget over: tomt datas\u00e6t (nrow=%d)", nrow(current_data)),
+      .context = "AUTO_SAVE"
+    )
     return(invisible(NULL))
   }
+
+  log_info(
+    sprintf("Auto-saving %d rows x %d cols to localStorage",
+      nrow(current_data), ncol(current_data)),
+    .context = "AUTO_SAVE"
+  )
 
   # Begræns data størrelse for localStorage (typisk 5-10 MB quota, men vi
   # holder os konservativt under 1 MB for at efterlade plads til metadata)

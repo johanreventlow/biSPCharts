@@ -12,13 +12,29 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 
   # Check if centralized state is available
   use_centralized_state <- !is.null(app_state)
+  # Log auto-restore feature flag ved session start (diagnostik)
+  log_info(
+    sprintf("auto_restore_data observer registered (auto_restore_enabled=%s)",
+      isTRUE(get_auto_restore_enabled())),
+    .context = "SESSION_RESTORE"
+  )
+
   # Auto-gendan session data når tilgængelig (hvis aktiveret)
   shiny::observeEvent(input$auto_restore_data,
     {
       shiny::req(input$auto_restore_data)
 
+      log_info(
+        "auto_restore_data observer triggered",
+        .context = "SESSION_RESTORE"
+      )
+
       # Tjek om auto-gendannelse er aktiveret
       if (!get_auto_restore_enabled()) {
+        log_info(
+          "Auto-restore disabled via config - skipping restore",
+          .context = "SESSION_RESTORE"
+        )
         return()
       }
 

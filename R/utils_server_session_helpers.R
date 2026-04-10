@@ -190,12 +190,15 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # gør debugging nemmere når funktionen er slået fra.
   auto_save_feature_enabled <- isTRUE(get_auto_save_enabled())
 
-  if (!auto_save_feature_enabled) {
-    log_info(
-      "Auto-save er deaktiveret via config — springer observer-oprettelse over",
-      .context = "AUTO_SAVE"
-    )
-  }
+  log_info(
+    sprintf(
+      "Session persistence observers: auto_save=%s, auto_restore=%s, save_interval=%dms",
+      auto_save_feature_enabled,
+      isTRUE(get_auto_restore_enabled()),
+      as.integer(get_save_interval_ms())
+    ),
+    .context = "AUTO_SAVE"
+  )
 
   # PERFORMANCE OPTIMIZED: Reaktiv debounced auto-save med performance monitoring
   auto_save_trigger <- shiny::debounce(
@@ -407,6 +410,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     if (is.null(result)) {
       return()
     }
+
+    log_info(
+      sprintf("localStorage save result: success=%s", isTRUE(result$success)),
+      .context = "LOCAL_STORAGE"
+    )
 
     if (isTRUE(result$success)) {
       app_state$session$last_save_time <- Sys.time()

@@ -768,7 +768,7 @@ create_ui_upload_page <- function() {
 
         # Download tom skabelon-link under knapperne
         shiny::div(
-          style = "margin-top: 12px; padding-left: 4px;",
+          style = "margin-top: 12px; padding-left: 4px; display: flex; justify-content: space-between; align-items: center;",
           shiny::downloadLink(
             "download_template",
             label = shiny::tagList(
@@ -776,7 +776,9 @@ create_ui_upload_page <- function() {
               shiny::icon("download")
             ),
             class = "download-template-link"
-          )
+          ),
+          # Diskret save-status (Issue #193)
+          shiny::uiOutput("session_save_status", inline = TRUE)
         )
       ) # Luk wrapper div
     )

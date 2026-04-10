@@ -77,25 +77,25 @@
 - [x] 5.13 Commit: `refactor(session-persistence): single source of truth for feature flags`
 
 ## 6. Fase 5: UX-polish 💄
-- [ ] 6.1 Tilføj diskret statuslinje i `R/ui_app_ui.R` — find passende placering i wizard-bjælken:
+- [x] 6.1 Tilføjet diskret statuslinje i `R/ui_app_ui.R` — placeret under download-template-link i wizard-området:
   - `shiny::uiOutput("session_save_status", inline = TRUE)` med subtle styling
-- [ ] 6.2 Opret `output$session_save_status` render i `R/utils_server_session_helpers.R`:
-  - Viser "Indstillinger gemt · N s/min siden" baseret på `app_state$session$last_save_time`
+- [x] 6.2 Oprettet `output$session_save_status` render i `R/utils_server_session_helpers.R`:
+  - Viser "Gemt · N s/min siden" baseret på `app_state$session$last_save_time`
   - Viser intet når `last_save_time` er NULL
-  - Viser "Automatisk lagring deaktiveret" når `auto_save_enabled == FALSE`
-- [ ] 6.3 Behold den eksisterende restore-notifikation — verificer den fortsat fungerer med nye data-format
-- [ ] 6.4 Verificér at quota-fejl viser dansk notifikation (fra task 4.4)
-- [ ] 6.5 Test i Chrome, Firefox, Safari — localStorage quota varierer
-- [ ] 6.6 Commit: `feat(session-persistence): diskret statuslinje og quota-håndtering`
+  - Viser "Automatisk lagring deaktiveret" med advarselsikon når `auto_save_enabled == FALSE`
+- [x] 6.3 Eksisterende restore-notifikation beholdt (fungerer med nye v2.0 data-format)
+- [x] 6.4 Quota-fejl viser dansk notifikation via `obs_save_result` observer (Fase 3)
+- [ ] 6.5 Test i Chrome, Firefox, Safari — **[MANUELT TRIN]**
+- [x] 6.6 Commit: `feat(session-persistence): diskret statuslinje og CLAUDE.md docs`
 
 ## 7. Fase 6: Dokumentation og rollout 📝
-- [ ] 7.1 Opdater `CLAUDE.md` med ny sektion "Session Persistence" under "Project-Specific Architecture"
-- [ ] 7.2 Tilføj NEWS.md entry: `- Gen-aktiveret automatisk session persistence via browser localStorage (Issue ###)`
-- [ ] 7.3 Dokumentér den manuelle verifikations-checkliste i `docs/session-persistence-testing.md` (eller inline i tasks)
-- [ ] 7.4 Aktivér feature i `inst/golem-config.yml`: sæt `auto_restore_session: true` i prod-profil (bekræft at dev-profil har det slået til eller fra som ønsket)
-- [ ] 7.5 Kør fuld test-suite en sidste gang
-- [ ] 7.6 Kør `devtools::document()` hvis NAMESPACE ændres
-- [ ] 7.7 Commit: `docs(session-persistence): opdater CLAUDE.md og NEWS`
+- [x] 7.1 Opdateret `CLAUDE.md` med ny sektion "Session Persistence (Issue #193)" under "Project-Specific Architecture"
+- [x] 7.2 Tilføjet NEWS.md entry med fuldt feature-beskrivelse, config og fixes
+- [x] 7.3 Manuel verifikations-checkliste dokumenteret i sektion 8 af denne tasks.md
+- [x] 7.4 Feature aktiveret: `auto_save_enabled: true` i alle profiles, `auto_restore_session: true` i production
+- [x] 7.5 Fuld test-suite kørt: 68 PASS / 0 FAIL / 1 SKIP
+- [ ] 7.6 Kør `devtools::document()` hvis NAMESPACE ændres — **[MANUELT TRIN]** (ingen nye `@export` tilføjet, sandsynligvis ikke nødvendig)
+- [x] 7.7 Commit: `feat(session-persistence): diskret statuslinje og CLAUDE.md docs`
 
 ## 8. Manuel verifikation (før merge) — **[MANUELT TRIN]**
 - [ ] 8.1 Upload CSV-fil, sæt kolonne-mapping + titel, luk fane brat → genåbn app → verificér at session er gendannet

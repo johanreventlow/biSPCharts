@@ -28,27 +28,33 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
           saved_state <- input$auto_restore_data
 
           if (!is.null(saved_state$data)) {
+            # Version-check: Ryd inkompatibel data og spring restore over
+            saved_version <- saved_state$version %||% "unknown"
+            if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
+              log_info(
+                paste("Ryder inkompatibel localStorage session version:", saved_version),
+                .context = "SESSION_RESTORE",
+                details = list(
+                  found_version = saved_version,
+                  expected_version = LOCAL_STORAGE_SCHEMA_VERSION
+                )
+              )
+              clearDataLocally(session)
+              return(invisible(NULL))
+            }
+
             # Sæt gendannelses guards for at forhindre interferens
-            # Unified state assignment only
             app_state$session$restoring_session <- TRUE
-            # Unified state assignment only
             app_state$data$updating_table <- TRUE
-            # Unified state assignment only
             app_state$data$table_operation_in_progress <- TRUE
-            # Unified state assignment only
             app_state$session$auto_save_enabled <- FALSE
 
             # Oprydningsfunktion til at nulstille guards
             on.exit(
               {
-                # Unified state assignment only
                 app_state$data$updating_table <- FALSE
-                # Unified state assignment only
                 app_state$session$restoring_session <- FALSE
-                # Unified state assignment only
                 app_state$session$auto_save_enabled <- TRUE
-                # Set flag for delayed cleanup - handled by separate observer
-                # Unified state assignment only
                 app_state$data$table_operation_cleanup_needed <- TRUE
               },
               add = TRUE
@@ -58,86 +64,70 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             saved_data <- saved_state$data
 
             # K5 FIX: Bounds checking to prevent DoS via unbounded memory allocation
-            # Reject payloads exceeding conservative limits before reconstruction
             max_rows <- 1e6 # 1 million rows max
             max_cols <- 1000 # 1000 columns max
             max_cells <- 1e7 # 10 million total cells max
 
-            if (!is.null(saved_data$values) && !is.null(saved_data$nrows) && !is.null(saved_data$ncols)) {
-              # Validate dimensions before reconstruction
-              if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
-                saved_data$nrows < 0 || saved_data$ncols < 0 ||
-                saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
-                (saved_data$nrows * saved_data$ncols) > max_cells ||
-                length(saved_data$values) != saved_data$ncols) {
-                stop("Invalid data dimensions or structure - rejecting restoration payload")
-              }
-
-              # Reconstruct data.frame manually
-              reconstructed_data <- data.frame(
-                matrix(nrow = saved_data$nrows, ncol = saved_data$ncols),
-                stringsAsFactors = FALSE
-              )
-
-              # Set column names first if available
-              if (!is.null(saved_data$col_names)) {
-                names(reconstructed_data) <- saved_data$col_names
-              }
-
-              # Populate columns one by one
-              for (i in seq_along(saved_data$values)) {
-                reconstructed_data[[i]] <- saved_data$values[[i]]
-              }
-
-              # Restore column classes if available
-              if (!is.null(saved_data$class_info)) {
-                for (col_name in names(saved_data$class_info)) {
-                  if (col_name %in% names(reconstructed_data)) {
-                    target_class <- saved_data$class_info[[col_name]]
-                    if (target_class == "numeric") {
-                      reconstructed_data[[col_name]] <- as.numeric(reconstructed_data[[col_name]])
-                    } else if (target_class == "character") {
-                      reconstructed_data[[col_name]] <- as.character(reconstructed_data[[col_name]])
-                    } else if (target_class == "logical") {
-                      reconstructed_data[[col_name]] <- as.logical(reconstructed_data[[col_name]])
-                    }
-                  }
-                }
-              }
-
-              # Dual-state sync during migration
-              set_current_data(app_state, reconstructed_data)
-              app_state$data$original_data <- reconstructed_data
-
-              # Emit consolidated event with context
-              emit$data_updated(context = "session_restore")
-            } else {
-              # Fallback for older save format
-              # Dual-state sync during migration
-              fallback_data <- as.data.frame(saved_state$data)
-              set_current_data(app_state, fallback_data)
-              app_state$data$original_data <- fallback_data
-
-              # Emit consolidated event with context
-              emit$data_updated(context = "session_restore")
+            if (is.null(saved_data$values) || is.null(saved_data$nrows) ||
+              is.null(saved_data$ncols)) {
+              stop("Invalid saved data format - missing required fields")
             }
 
-            # Unified state assignment only
+            # Validate dimensions before reconstruction
+            if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
+              saved_data$nrows < 0 || saved_data$ncols < 0 ||
+              saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
+              (saved_data$nrows * saved_data$ncols) > max_cells ||
+              length(saved_data$values) != saved_data$ncols) {
+              stop("Invalid data dimensions or structure - rejecting restoration payload")
+            }
+
+            # Reconstruct data.frame manually med class-preservation
+            reconstructed_data <- data.frame(
+              matrix(nrow = saved_data$nrows, ncol = saved_data$ncols),
+              stringsAsFactors = FALSE
+            )
+
+            # Set column names first if available
+            if (!is.null(saved_data$col_names)) {
+              names(reconstructed_data) <- saved_data$col_names
+            }
+
+            # Populate columns med udvidet class-restoration
+            for (i in seq_along(saved_data$values)) {
+              col_name <- names(reconstructed_data)[i]
+              raw_values <- saved_data$values[[i]]
+              col_class_info <- if (!is.null(saved_data$class_info)) {
+                saved_data$class_info[[col_name]]
+              } else {
+                NULL
+              }
+
+              reconstructed_data[[i]] <- restore_column_class(
+                raw_values,
+                class_info = col_class_info
+              )
+            }
+
+            # CRITICAL: Restore metadata FØR data_updated event emitteres,
+            # så downstream listeners (auto-detect, chart render) ser korrekt
+            # kolonne-mapping fra første cycle. Tidligere bug: metadata blev
+            # gendannet efter emit → race condition.
+            if (!is.null(saved_state$metadata)) {
+              restore_metadata(session, saved_state$metadata, ui_service)
+            }
+
+            # Sæt data og completion flags
+            set_current_data(app_state, reconstructed_data)
+            app_state$data$original_data <- reconstructed_data
             app_state$session$file_uploaded <- TRUE
-            # Unified state assignment only
             app_state$columns$auto_detect$completed <- TRUE
 
-            # Restore metadata if available
-            if (!is.null(saved_state$metadata)) {
-              restore_metadata(session, saved_state$metadata)
-            }
+            # FINALLY emit event (listeners ser nu korrekt state)
+            emit$data_updated(context = "session_restore")
 
             # Show notification about auto restore
-            data_rows <- if (!is.null(saved_state$data$nrows)) {
-              saved_state$data$nrows
-            } else {
-              nrow(saved_state$data)
-            }
+            data_rows <- saved_data$nrows %||% nrow(reconstructed_data)
 
             shiny::showNotification(
               paste(

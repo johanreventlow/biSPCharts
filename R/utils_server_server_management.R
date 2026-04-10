@@ -247,6 +247,16 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 # Helper functions for session management
 restore_metadata <- function(session, metadata, ui_service = NULL) {
   shiny::isolate({
+    # Diagnostisk: log hvilke felter der faktisk er gemt
+    present_fields <- names(metadata)[
+      vapply(metadata, function(v) !is.null(v) && !identical(v, ""), logical(1))
+    ]
+    log_info(
+      sprintf("restore_metadata called with %d non-empty fields: %s",
+        length(present_fields), paste(present_fields, collapse = ", ")),
+      .context = "SESSION_RESTORE"
+    )
+
     if (!is.null(ui_service)) {
       # Use centralized UI service for metadata restoration
       ui_service$update_form_fields(metadata)

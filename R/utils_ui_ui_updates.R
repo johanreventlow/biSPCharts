@@ -160,11 +160,14 @@ create_ui_update_service <- function(session, app_state) {
   #
   update_form_fields <- function(metadata, fields = NULL) {
     if (is.null(fields)) {
-      # Default fields to update
+      # Default fields to update — includes advanced column mappings
+      # (skift/frys/kommentar) for complete session restore (Issue #193).
       fields <- c(
         "indicator_title", "unit_select", "unit_custom", "indicator_description",
-        "chart_type", "x_column", "y_column", "n_column", "target_value",
-        "centerline_value", "y_axis_unit"
+        "chart_type",
+        "x_column", "y_column", "n_column",
+        "skift_column", "frys_column", "kommentar_column",
+        "target_value", "centerline_value", "y_axis_unit"
       )
     }
 

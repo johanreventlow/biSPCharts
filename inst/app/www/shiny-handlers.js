@@ -8,7 +8,10 @@
 // Issue #193: Rapporterer success/failure tilbage til R så server-side
 // kan deaktivere auto-save ved quota-fejl eller andre persistente fejl.
 Shiny.addCustomMessageHandler('saveAppState', function(message) {
+  var dataLen = message.data ? message.data.length : 0;
+  console.log('[SPC] saveAppState handler called, key:', message.key, 'size:', dataLen);
   var success = window.saveAppState(message.key, message.data);
+  console.log('[SPC] saveAppState success:', success);
   if (!success) {
     console.error('saveAppState failed for key:', message.key);
   }
@@ -37,10 +40,19 @@ Shiny.addCustomMessageHandler('clearAppState', function(message) {
 // Issue #193: Bruger 'shiny:sessioninitialized' event i stedet for setTimeout(500)
 // — sidstnævnte var en gæt der kunne fyre før observer var registreret.
 $(document).on('shiny:sessioninitialized', function() {
-  if (window.hasAppState('current_session')) {
+  console.log('[SPC] shiny:sessioninitialized fired');
+  var hasState = window.hasAppState('current_session');
+  console.log('[SPC] localStorage has current_session:', hasState);
+  if (hasState) {
     var data = window.loadAppState('current_session');
+    console.log('[SPC] loaded data type:', typeof data, 'is-null:', data === null);
     if (data) {
+      console.log('[SPC] sending auto_restore_data to server');
       Shiny.setInputValue('auto_restore_data', data, {priority: 'event'});
+    } else {
+      console.warn('[SPC] loadAppState returned null/undefined');
     }
+  } else {
+    console.log('[SPC] No saved session to restore');
   }
 });

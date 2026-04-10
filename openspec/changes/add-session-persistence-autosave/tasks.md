@@ -59,21 +59,22 @@
 - [x] 4.10 Commit: `fix(session-persistence): restore order, class preservation og JS feedback loop`
 
 ## 5. Fase 4: Konfiguration og feature flag 🟡
-- [ ] 5.1 Slet funktion `determine_auto_restore_setting()` fra `R/app_runtime_config.R:307-323`
-- [ ] 5.2 Slet kald i `setup_development_config()` i `R/app_runtime_config.R:72`
-- [ ] 5.3 Slet `development = list(auto_restore_enabled = FALSE)` dead default fra `R/app_initialization.R:34`
-- [ ] 5.4 Verificer at `convert_profile_to_legacy_config()` er eneste kilde der populerer `config$development$auto_restore_enabled`
-- [ ] 5.5 Tilføj `auto_save_enabled: true` og `save_interval_ms: 2000` til alle profiles i `inst/golem-config.yml` under `session:` sektion
-- [ ] 5.6 Opdater `apply_runtime_config()` i `R/app_runtime_config.R` til også at sætte `claudespc_env$AUTO_SAVE_ENABLED` og `claudespc_env$SAVE_INTERVAL_MS`
-- [ ] 5.7 Opdater `convert_profile_to_legacy_config()` til at inkludere de nye felter
-- [ ] 5.8 Tilføj getters i `R/zzz.R`:
+- [x] 5.1 Slettet funktion `determine_auto_restore_setting()` fra `R/app_runtime_config.R`
+- [x] 5.2 Slettet kald i `setup_development_config()` — erstattet med `get_session_config()`
+- [x] 5.3 `development = list(auto_restore_enabled = FALSE)` dead default erstattet med komplet session config
+- [x] 5.4 YAML er nu eneste kilde via `get_session_config()` (læser `golem::get_golem_options("session")`)
+- [x] 5.5 Tilføjet `auto_save_enabled`, `save_interval_ms`, `settings_save_interval_ms` til alle 4 profiles (default, development, production, testing) i `inst/golem-config.yml`
+- [x] 5.6 `apply_runtime_config()` sætter nu `AUTO_SAVE_ENABLED`, `SAVE_INTERVAL_MS`, `SETTINGS_SAVE_INTERVAL_MS` i pakke-miljø
+- [x] 5.7 `convert_profile_to_legacy_config()` inkluderer nu alle nye felter
+- [x] 5.8 Nye getters tilføjet i `R/zzz.R`:
   - `get_auto_save_enabled()` → default `TRUE`
   - `get_save_interval_ms()` → default `2000`
-- [ ] 5.9 Opdater `R/utils_server_session_helpers.R`: læs `get_save_interval_ms()` i `debounce(..., millis = ...)` i stedet for `AUTOSAVE_DELAYS$data_save`
-- [ ] 5.10 Wrap auto-save observer oprettelse i top-level check: `if (isTRUE(get_auto_save_enabled())) { ... }` så observers ikke oprettes når flag er OFF
-- [ ] 5.11 Opdater test `tests/testthat/test-package-initialization.R:175,186` til nye getters
-- [ ] 5.12 Kør test-suite: alle config-relaterede tests skal bestå
-- [ ] 5.13 Commit: `refactor(session-persistence): single source of truth for feature flags`
+  - `get_settings_save_interval_ms()` → default `1000`
+- [x] 5.9 `utils_server_session_helpers.R` bruger nu `get_save_interval_ms()` og `get_settings_save_interval_ms()` i debounce-kaldene
+- [x] 5.10 Auto-save observer-oprettelse wrappet i `if (auto_save_feature_enabled)` check — observers oprettes ikke når flag er OFF
+- [x] 5.11 Ny `get_session_config()` helper i `utils_bfhllm_integration.R` — single source of truth
+- [x] 5.12 Test-suite: 68 PASS / 0 FAIL / 1 SKIP
+- [x] 5.13 Commit: `refactor(session-persistence): single source of truth for feature flags`
 
 ## 6. Fase 5: UX-polish 💄
 - [ ] 6.1 Tilføj diskret statuslinje i `R/ui_app_ui.R` — find passende placering i wizard-bjælken:

@@ -2,9 +2,12 @@
 // Browser localStorage integration for SPC App
 
 // Save data to localStorage with app prefix
+// Note: `data` is already a JSON string from R's jsonlite::toJSON().
+// We must NOT call JSON.stringify() here — doing so double-encodes the
+// payload and breaks roundtrip parsing. See Issue #193.
 window.saveAppState = function(key, data) {
   try {
-    localStorage.setItem('spc_app_' + key, JSON.stringify(data));
+    localStorage.setItem('spc_app_' + key, data);
     return true;
   } catch(e) {
     console.error('Failed to save to localStorage:', e);

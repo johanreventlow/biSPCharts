@@ -96,54 +96,73 @@ clearDataLocally <- function(session) {
   )
 }
 
-## Auto-save funktion med bedre logging og error handling
-autoSaveAppState <- function(session, current_data, metadata) {
-  if (!is.null(current_data)) {
-    # Kun gem hvis der er meaningful data
-    if (nrow(current_data) > 0 && any(!is.na(current_data))) {
-      # Begræns data størrelse for localStorage (max ~5MB i de fleste browsers)
-      data_size <- object.size(current_data)
-
-      if (data_size < 1000000) { # 1MB limit
-        result <- safe_operation(
-          "Auto-save application state",
-          code = {
-            saveDataLocally(session, current_data, metadata)
-          },
-          fallback = function(e) {
-            # H7: Disable auto-save on persistent failures
-            log_error(
-              paste("Auto-gem fejlede:", e$message),
-              .context = "AUTO_SAVE"
-            )
-            shiny::showNotification(
-              paste0(
-                "Din data er stadig tilg\u00e6ngelig i appen. ",
-                "Automatisk lagring er midlertidigt deaktiveret. ",
-                "Du kan gemme manuelt via Download-knappen."
-              ),
-              type = "warning",
-              duration = 8
-            )
-            return(FALSE)
-          },
-          error_type = "local_storage"
-        )
-
-        # Disable auto-save if it failed
-        if (identical(result, FALSE) && exists("app_state")) {
-          app_state$session$auto_save_enabled <- FALSE
-        }
-      } else {
-        shiny::showNotification(
-          paste0(
-            "Datas\u00e6ttet er for stort til automatisk lagring. ",
-            "Brug Download-knappen for at gemme manuelt."
-          ),
-          type = "warning",
-          duration = 5
-        )
-      }
+## Auto-save funktion med eksplicit app_state dependency injection
+#' @param session Shiny session objekt
+#' @param current_data data.frame der skal gemmes
+#' @param metadata Named list med UI-state (kolonne-mapping, chart_type, etc.)
+#' @param app_state Centraliseret app_state (reactiveValues) — påkrævet for at
+#'   kunne deaktivere auto-save ved persistent fejl. Hvis NULL, springes
+#'   graceful disable-logik over.
+autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) {
+  # Guard: Respektér auto_save_enabled flag
+  if (!is.null(app_state)) {
+    enabled <- shiny::isolate(app_state$session$auto_save_enabled)
+    if (!isTRUE(enabled)) {
+      return(invisible(NULL))
     }
   }
+
+  if (is.null(current_data)) {
+    return(invisible(NULL))
+  }
+
+  # Kun gem hvis der er meaningful data
+  if (nrow(current_data) == 0 || !any(!is.na(current_data))) {
+    return(invisible(NULL))
+  }
+
+  # Begræns data størrelse for localStorage (typisk 5-10 MB quota, men vi
+  # holder os konservativt under 1 MB for at efterlade plads til metadata)
+  data_size <- object.size(current_data)
+  if (data_size >= 1000000) {
+    shiny::showNotification(
+      paste0(
+        "Datas\u00e6ttet er for stort til automatisk lagring. ",
+        "Brug Download-knappen for at gemme manuelt."
+      ),
+      type = "warning",
+      duration = 5
+    )
+    return(invisible(NULL))
+  }
+
+  result <- safe_operation(
+    "Auto-save application state",
+    code = {
+      saveDataLocally(session, current_data, metadata)
+    },
+    fallback = function(e) {
+      log_error(
+        paste("Auto-gem fejlede:", e$message),
+        .context = "AUTO_SAVE"
+      )
+      shiny::showNotification(
+        paste0(
+          "Din data er stadig tilg\u00e6ngelig i appen. ",
+          "Automatisk lagring er midlertidigt deaktiveret."
+        ),
+        type = "warning",
+        duration = 8
+      )
+      return(FALSE)
+    },
+    error_type = "local_storage"
+  )
+
+  # Graceful disable ved persistent fejl — kræver eksplicit app_state
+  if (identical(result, FALSE) && !is.null(app_state)) {
+    app_state$session$auto_save_enabled <- FALSE
+  }
+
+  invisible(result)
 }

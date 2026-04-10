@@ -439,6 +439,19 @@ test_that("Save skips oversized datasets", {
 
   metadata <- list(x_column = "V1", y_column = "V2")
 
+  # Mock showNotification — MockShinySession supports ikke sendNotification
+  notifications <- list()
+  mockery::stub(
+    autoSaveAppState,
+    "shiny::showNotification",
+    function(ui, type = NULL, duration = NULL, ...) {
+      notifications[[length(notifications) + 1]] <<- list(
+        ui = ui, type = type, duration = duration
+      )
+      invisible(NULL)
+    }
+  )
+
   autoSaveAppState(mock$session, large_data, metadata, app_state = app_state)
 
   # Ingen save skal være foretaget (data for stort)

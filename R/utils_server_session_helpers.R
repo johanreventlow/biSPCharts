@@ -230,7 +230,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     save_data <- auto_save_trigger()
     shiny::req(save_data) # Only proceed if we have valid save data
 
-    autoSaveAppState(session, save_data$data, save_data$metadata)
+    autoSaveAppState(session, save_data$data, save_data$metadata,
+      app_state = app_state)
     # Use unified state management
     app_state$session$last_save_time <- save_data$timestamp
   })
@@ -283,7 +284,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     save_data <- settings_save_trigger()
     shiny::req(save_data) # Only proceed if we have valid save data
 
-    autoSaveAppState(session, save_data$data, save_data$metadata)
+    autoSaveAppState(session, save_data$data, save_data$metadata,
+      app_state = app_state)
     # Use unified state management
     app_state$session$last_save_time <- save_data$timestamp
   }) |> bindEvent(

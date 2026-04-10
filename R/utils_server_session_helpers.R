@@ -185,6 +185,18 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   })
 
 
+  # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi
+  # oprettelsen af auto-save observers helt over. Dette gemmer både CPU og
+  # gør debugging nemmere når funktionen er slået fra.
+  auto_save_feature_enabled <- isTRUE(get_auto_save_enabled())
+
+  if (!auto_save_feature_enabled) {
+    log_info(
+      "Auto-save er deaktiveret via config — springer observer-oprettelse over",
+      .context = "AUTO_SAVE"
+    )
+  }
+
   # PERFORMANCE OPTIMIZED: Reaktiv debounced auto-save med performance monitoring
   auto_save_trigger <- shiny::debounce(
     shiny::reactive({
@@ -223,22 +235,24 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
         NULL
       }
     }),
-    millis = AUTOSAVE_DELAYS$data_save
+    millis = get_save_interval_ms()
   )
 
-  obs_data_save <- shiny::observe({
-    save_data <- auto_save_trigger()
-    shiny::req(save_data) # Only proceed if we have valid save data
+  if (auto_save_feature_enabled) {
+    obs_data_save <- shiny::observe({
+      save_data <- auto_save_trigger()
+      shiny::req(save_data) # Only proceed if we have valid save data
 
-    # NB: last_save_time opdateres af local_storage_save_result observer
-    # når JS-siden bekræfter success — ikke her.
-    autoSaveAppState(session, save_data$data, save_data$metadata,
-      app_state = app_state)
-  })
+      # NB: last_save_time opdateres af local_storage_save_result observer
+      # når JS-siden bekræfter success — ikke her.
+      autoSaveAppState(session, save_data$data, save_data$metadata,
+        app_state = app_state)
+    })
 
-  # Register observer with manager
-  if (!is.null(obs_manager)) {
-    obs_manager$add(obs_data_save, "data_auto_save")
+    # Register observer with manager
+    if (!is.null(obs_manager)) {
+      obs_manager$add(obs_data_save, "data_auto_save")
+    }
   }
 
   # PERFORMANCE OPTIMIZED: Reaktiv debounced settings save med performance monitoring
@@ -277,39 +291,43 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
         NULL
       }
     }),
-    millis = AUTOSAVE_DELAYS$settings_save # Faster debounce for settings
+    millis = get_settings_save_interval_ms() # Faster debounce for settings
   )
 
-  obs_settings_save <- shiny::observe({
-    save_data <- settings_save_trigger()
-    shiny::req(save_data) # Only proceed if we have valid save data
+  obs_settings_save <- if (auto_save_feature_enabled) {
+    shiny::observe({
+      save_data <- settings_save_trigger()
+      shiny::req(save_data) # Only proceed if we have valid save data
 
-    # NB: last_save_time opdateres af local_storage_save_result observer
-    # når JS-siden bekræfter success — ikke her.
-    autoSaveAppState(session, save_data$data, save_data$metadata,
-      app_state = app_state)
-  }) |> bindEvent(
-    {
-      list(
-        input$indicator_title,
-        input$unit_type,
-        input$unit_select,
-        input$unit_custom,
-        input$indicator_description,
-        input$x_column,
-        input$y_column,
-        input$n_column,
-        input$skift_column,
-        input$frys_column,
-        input$kommentar_column,
-        input$chart_type,
-        input$target_value,
-        input$centerline_value,
-        input$y_axis_unit
-      )
-    },
-    ignoreInit = TRUE
-  )
+      # NB: last_save_time opdateres af local_storage_save_result observer
+      # når JS-siden bekræfter success — ikke her.
+      autoSaveAppState(session, save_data$data, save_data$metadata,
+        app_state = app_state)
+    }) |> bindEvent(
+      {
+        list(
+          input$indicator_title,
+          input$unit_type,
+          input$unit_select,
+          input$unit_custom,
+          input$indicator_description,
+          input$x_column,
+          input$y_column,
+          input$n_column,
+          input$skift_column,
+          input$frys_column,
+          input$kommentar_column,
+          input$chart_type,
+          input$target_value,
+          input$centerline_value,
+          input$y_axis_unit
+        )
+      },
+      ignoreInit = TRUE
+    )
+  } else {
+    NULL
+  }
 
   # PERFORMANCE OPTIMIZED: Event-driven table operation cleanup med monitoring
   table_cleanup_trigger <- shiny::debounce(
@@ -336,8 +354,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$data$table_operation_cleanup_needed <- FALSE
   })
 
-  # Register observer with manager
-  if (!is.null(obs_manager)) {
+  # Register observer with manager (only if created)
+  if (!is.null(obs_manager) && !is.null(obs_settings_save)) {
     obs_manager$add(obs_settings_save, "settings_auto_save")
   }
 

@@ -66,6 +66,30 @@ get_auto_restore_enabled <- function() {
   get_package_config("AUTO_RESTORE_ENABLED", default = FALSE)
 }
 
+#' Get auto save enabled setting
+#'
+#' @return Boolean indicating if continuous auto-save is enabled
+#' @keywords internal
+get_auto_save_enabled <- function() {
+  get_package_config("AUTO_SAVE_ENABLED", default = TRUE)
+}
+
+#' Get auto-save debounce interval for data changes (milliseconds)
+#'
+#' @return Integer milliseconds
+#' @keywords internal
+get_save_interval_ms <- function() {
+  get_package_config("SAVE_INTERVAL_MS", default = 2000)
+}
+
+#' Get auto-save debounce interval for settings changes (milliseconds)
+#'
+#' @return Integer milliseconds
+#' @keywords internal
+get_settings_save_interval_ms <- function() {
+  get_package_config("SETTINGS_SAVE_INTERVAL_MS", default = 1000)
+}
+
 #' Get hospital name from package environment
 #'
 #' @return Hospital name string
@@ -257,6 +281,9 @@ setup_package_runtime_config <- function() {
     }
     if (!is.null(config$development)) {
       claudespc_env$AUTO_RESTORE_ENABLED <- config$development$auto_restore_enabled %||% FALSE
+      claudespc_env$AUTO_SAVE_ENABLED <- config$development$auto_save_enabled %||% TRUE
+      claudespc_env$SAVE_INTERVAL_MS <- config$development$save_interval_ms %||% 2000
+      claudespc_env$SETTINGS_SAVE_INTERVAL_MS <- config$development$settings_save_interval_ms %||% 1000
     }
   }
 

@@ -474,6 +474,42 @@ test_that("Save skips oversized datasets", {
 # SECTION 6: Version Check
 # ==============================================================================
 
+test_that("Feature flag getters return sensible defaults", {
+  skip_if_not(exists("get_auto_save_enabled", mode = "function"),
+    "get_auto_save_enabled not available")
+  skip_if_not(exists("get_save_interval_ms", mode = "function"),
+    "get_save_interval_ms not available")
+  skip_if_not(exists("get_settings_save_interval_ms", mode = "function"),
+    "get_settings_save_interval_ms not available")
+
+  # Default-værdier skal være sensible når pakke-miljø er tomt
+  expect_true(is.logical(get_auto_save_enabled()))
+  expect_true(is.numeric(get_save_interval_ms()))
+  expect_true(is.numeric(get_settings_save_interval_ms()))
+  expect_gt(get_save_interval_ms(), 0)
+  expect_gt(get_settings_save_interval_ms(), 0)
+})
+
+test_that("get_session_config returns list with all required fields", {
+  skip_if_not(exists("get_session_config", mode = "function"),
+    "get_session_config not available")
+
+  cfg <- get_session_config()
+  expect_type(cfg, "list")
+  expect_true(all(c("auto_save_enabled", "auto_restore_session",
+    "save_interval_ms", "settings_save_interval_ms") %in% names(cfg)))
+  expect_true(is.logical(cfg$auto_save_enabled))
+  expect_true(is.logical(cfg$auto_restore_session))
+  expect_true(is.numeric(cfg$save_interval_ms))
+})
+
+test_that("determine_auto_restore_setting is removed (single source of truth)", {
+  # Issue #193: determine_auto_restore_setting blev slettet for at undgå
+  # parallelle config-paths. Feature flag læses nu kun fra golem-config.yml
+  expect_false(exists("determine_auto_restore_setting", mode = "function"),
+    info = "determine_auto_restore_setting skal være slettet (Fase 4)")
+})
+
 test_that("saveDataLocally payload uses current version tag", {
   skip_if_not(exists("saveDataLocally", mode = "function"),
     "saveDataLocally not available")

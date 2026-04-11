@@ -697,6 +697,10 @@ create_ui_upload_page <- function() {
             "Vælg Excel eller CSV fil"
           )
         ),
+        shiny::tags$small(
+          style = "color: #6c757d; font-size: 0.75rem; text-align: center; display: block; margin-top: 4px;",
+          "Upload datafil eller gemt biSPCharts-fil"
+        ),
 
         # Knap 3: Prøv med eksempeldata (med dropdown)
         shiny::div(

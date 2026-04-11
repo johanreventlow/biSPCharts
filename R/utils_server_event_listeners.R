@@ -1319,7 +1319,7 @@ setup_wizard_gates <- function(input, app_state, session) {
   shiny::observe({
     has_data <- isTRUE(app_state$session$file_uploaded) ||
       (!is.null(app_state$data$current_data) &&
-        nrow(shiny::isolate(app_state$data$current_data)) > 0)
+        nrow(app_state$data$current_data) > 0)
 
     if (has_data) {
       shinyjs::enable("download_spc_file")
@@ -1336,10 +1336,11 @@ setup_wizard_gates <- function(input, app_state, session) {
       if (is.null(title) || nchar(trimws(title)) == 0) {
         return("data_biSPCharts.xlsx")
       }
-      safe_title <- title |>
-        stringr::str_replace_all("[^\\w\\s\\-\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]", "") |>
-        stringr::str_replace_all("\\s+", "_") |>
-        stringr::str_trunc(50, ellipsis = "")
+      safe_title <- sanitize_filename(trimws(title))
+      if (nchar(safe_title) == 0) {
+        return("data_biSPCharts.xlsx")
+      }
+      safe_title <- stringr::str_trunc(safe_title, 50, ellipsis = "")
       paste0(safe_title, "_biSPCharts.xlsx")
     },
     content = function(file) {
@@ -1349,6 +1350,7 @@ setup_wizard_gates <- function(input, app_state, session) {
           data <- shiny::isolate(app_state$data$current_data)
           metadata <- collect_metadata(input, app_state)
           temp_path <- build_spc_excel(data, metadata)
+          on.exit(unlink(temp_path), add = TRUE)
           file.copy(temp_path, file)
         },
         error_type = "processing",

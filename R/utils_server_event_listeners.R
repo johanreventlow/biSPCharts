@@ -1317,7 +1317,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
     }
   })
 
-  # Gem-knap: aktiv når data er uploadet
+  # Gem-knap: aktiv når data er uploadet (trin 2 og trin 3)
   shiny::observe({
     has_data <- isTRUE(app_state$session$file_uploaded) ||
       (!is.null(app_state$data$current_data) &&
@@ -1325,41 +1325,51 @@ setup_wizard_gates <- function(input, output, app_state, session) {
 
     if (has_data) {
       shinyjs::enable("download_spc_file")
+      shinyjs::enable("download_spc_file_step3")
     } else {
       shinyjs::disable("download_spc_file")
+      shinyjs::disable("download_spc_file_step3")
     }
   })
 
-  # Gem til fil: download handler
-  output$download_spc_file <- shiny::downloadHandler(
-    filename = function() {
-      md <- collect_metadata(input, app_state)
-      title <- md$indicator_title
-      if (is.null(title) || nchar(trimws(title)) == 0) {
-        return("data_biSPCharts.xlsx")
-      }
-      safe_title <- sanitize_filename(trimws(title))
-      if (nchar(safe_title) == 0) {
-        return("data_biSPCharts.xlsx")
-      }
-      safe_title <- stringr::str_trunc(safe_title, 50, ellipsis = "")
-      paste0(safe_title, "_biSPCharts.xlsx")
-    },
-    content = function(file) {
-      safe_operation(
-        "Gem til fil",
-        code = {
-          data <- shiny::isolate(app_state$data$current_data)
-          metadata <- collect_metadata(input, app_state)
-          temp_path <- build_spc_excel(data, metadata)
-          on.exit(unlink(temp_path), add = TRUE)
-          file.copy(temp_path, file)
-        },
-        error_type = "processing",
-        session = session,
-        show_user = TRUE
-      )
+  # Gem til fil: download handler (delt logik mellem trin 2 og trin 3)
+  spc_save_filename <- function() {
+    md <- collect_metadata(input, app_state)
+    title <- md$indicator_title
+    if (is.null(title) || nchar(trimws(title)) == 0) {
+      return("data_biSPCharts.xlsx")
     }
+    safe_title <- sanitize_filename(trimws(title))
+    if (nchar(safe_title) == 0) {
+      return("data_biSPCharts.xlsx")
+    }
+    safe_title <- stringr::str_trunc(safe_title, 50, ellipsis = "")
+    paste0(safe_title, "_biSPCharts.xlsx")
+  }
+
+  spc_save_content <- function(file) {
+    safe_operation(
+      "Gem til fil",
+      code = {
+        data <- shiny::isolate(app_state$data$current_data)
+        metadata <- collect_metadata(input, app_state)
+        temp_path <- build_spc_excel(data, metadata)
+        on.exit(unlink(temp_path), add = TRUE)
+        file.copy(temp_path, file)
+      },
+      error_type = "processing",
+      session = session,
+      show_user = TRUE
+    )
+  }
+
+  output$download_spc_file <- shiny::downloadHandler(
+    filename = spc_save_filename,
+    content = spc_save_content
+  )
+  output$download_spc_file_step3 <- shiny::downloadHandler(
+    filename = spc_save_filename,
+    content = spc_save_content
   )
 
   # Tilbage-knap: Trin 2 -> Trin 1

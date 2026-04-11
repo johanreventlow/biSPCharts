@@ -47,23 +47,46 @@ Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
   }
 });
 
-// Auto-load existing session data when Shiny session is fully initialized.
-// Issue #193: Bruger 'shiny:sessioninitialized' event i stedet for setTimeout(500)
-// — sidstnævnte var en gæt der kunne fyre før observer var registreret.
+// Peek localStorage ved session-init og send kun metadata til R.
+// Fuld payload caches i window.__pendingRestore — sendes først når bruger
+// aktivt vælger "Gendan session" via performSessionRestore custom message.
+// Issue #193 / brugerstyret restore.
 $(document).on('shiny:sessioninitialized', function() {
   console.log('[SPC] shiny:sessioninitialized fired');
-  var hasState = window.hasAppState('current_session');
-  console.log('[SPC] localStorage has current_session:', hasState);
-  if (hasState) {
-    var data = window.loadAppState('current_session');
-    console.log('[SPC] loaded data type:', typeof data, 'is-null:', data === null);
-    if (data) {
-      console.log('[SPC] sending auto_restore_data to server');
-      Shiny.setInputValue('auto_restore_data', data, {priority: 'event'});
-    } else {
-      console.warn('[SPC] loadAppState returned null/undefined');
-    }
+  var data = window.loadAppState('current_session');
+  console.log('[SPC] localStorage peek: data present =', data !== null);
+  if (data) {
+    // Cache fuld payload — sendes til R først ved brugerens valg
+    window.__pendingRestore = data;
+    // Send kun metadata-subset til R (ingen PHI i log)
+    Shiny.setInputValue('session_peek', {
+      has_payload: true,
+      version: data.version || null,
+      timestamp: data.timestamp || null,
+      nrows: (data.data && data.data.nrows) || null,
+      ncols: (data.data && data.data.ncols) || null,
+      indicator_title: (data.metadata && data.metadata.indicator_title) || '',
+      active_tab: (data.metadata && data.metadata.active_tab) || null
+    }, {priority: 'event'});
   } else {
-    console.log('[SPC] No saved session to restore');
+    window.__pendingRestore = null;
+    Shiny.setInputValue('session_peek', {has_payload: false}, {priority: 'event'});
   }
+});
+
+// Trigges af R når bruger klikker "Gendan session"
+Shiny.addCustomMessageHandler('performSessionRestore', function(_message) {
+  console.log('[SPC] performSessionRestore: sending cached payload to R');
+  if (window.__pendingRestore) {
+    Shiny.setInputValue('auto_restore_data', window.__pendingRestore, {priority: 'event'});
+    window.__pendingRestore = null;
+  } else {
+    console.warn('[SPC] performSessionRestore called but no pending restore data');
+  }
+});
+
+// Trigges af R når bruger klikker "Start ny session"
+Shiny.addCustomMessageHandler('discardPendingRestore', function(_message) {
+  console.log('[SPC] discardPendingRestore: clearing cached payload');
+  window.__pendingRestore = null;
 });

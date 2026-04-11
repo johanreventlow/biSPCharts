@@ -1256,10 +1256,12 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' Trin 1 (Upload) altid tilgaengelig. Trin 2 (Analyser) kraever data.
 #' Trin 3 (Eksporter) kraever renderet plot.
 #'
+#' @param input Shiny input
+#' @param output Shiny output
 #' @param app_state Centraliseret app state
 #' @param session Shiny session
 #' @keywords internal
-setup_wizard_gates <- function(input, app_state, session) {
+setup_wizard_gates <- function(input, output, app_state, session) {
   # Lock trin 2+3 ved startup
   session$sendCustomMessage("wizard-lock-step", 2)
   session$sendCustomMessage("wizard-lock-step", 3)
@@ -1665,7 +1667,7 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # Centralized cleanup is maintained below.
 
   # Wizard navigation gates
-  setup_wizard_gates(input, app_state, session)
+  setup_wizard_gates(input, output, app_state, session)
 
   # Issue #193: Bridge manuel tab-skift til event-bus.
   # Uden denne observer invalideres module_data_reactive ikke når brugeren

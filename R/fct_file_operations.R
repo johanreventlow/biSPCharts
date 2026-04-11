@@ -135,50 +135,6 @@ validate_safe_file_path <- function(uploaded_path) {
   return(file_path)
 }
 
-#' Sanitize session metadata input
-#' Secure input sanitization for Excel session metadata
-#' @param input_value Raw input value from Excel
-#' @param field_type Type of field for specific validation
-#' @param max_length Maximum allowed length
-#' @return Sanitized input value
-#' @noRd
-sanitize_session_metadata <- function(input_value, field_type = "general", max_length = 255) {
-  # Basic input validation
-  if (is.null(input_value) || !is.character(input_value) || length(input_value) != 1) {
-    return("")
-  }
-
-  # Base sanitization using existing function if available
-  clean_value <- if (exists("sanitize_user_input", mode = "function")) {
-    sanitize_user_input(input_value, max_length = max_length)
-  } else {
-    # Fallback basic sanitization
-    substr(trimws(as.character(input_value)), 1, max_length)
-  }
-
-  # Field-specific validation
-  if (field_type == "title") {
-    # Titles: Danish chars + basic punctuation
-    clean_value <- gsub("[^A-Za-z0-9æøåÆØÅ .,:-]", "", clean_value)
-  } else if (field_type == "description") {
-    # Descriptions: More permissive but no HTML/scripts
-    clean_value <- gsub("<[^>]+>", "", clean_value) # Strip HTML tags
-    clean_value <- gsub("javascript:", "", clean_value, ignore.case = TRUE)
-    clean_value <- gsub("vbscript:", "", clean_value, ignore.case = TRUE)
-    clean_value <- gsub("data:", "", clean_value, ignore.case = TRUE)
-  } else if (field_type == "unit") {
-    # Units: Very restrictive
-    clean_value <- gsub("[^A-Za-z0-9æøåÆØÅ /%()-]", "", clean_value)
-  }
-
-  # Final safety check - remove any remaining dangerous patterns
-  clean_value <- gsub("[\r\n\t]", " ", clean_value) # Replace newlines/tabs with spaces
-  clean_value <- gsub("\\s+", " ", clean_value) # Collapse multiple spaces
-  clean_value <- trimws(clean_value)
-
-  return(clean_value)
-}
-
 # UPLOAD HÅNDTERING ===========================================================
 
 ## Setup fil upload funktionalitet
@@ -379,86 +335,31 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     return(invisible(NULL))
   }
 
-  if ("Data" %in% excel_sheets && "Metadata" %in% excel_sheets) {
-    # Read data from Data sheet
-    data <- readxl::read_excel(file_path, sheet = "Data", col_names = TRUE)
+  # Standard Excel file (uden Indstillinger-ark)
+  data <- readxl::read_excel(file_path, col_names = TRUE)
 
-    # Ensure standard columns are present and in correct order
-    data <- ensure_standard_columns(data)
+  # Ensure standard columns are present and in correct order
+  data <- ensure_standard_columns(data)
 
-    # Read session info from Metadata sheet
-    session_info_raw <- readxl::read_excel(
-      file_path,
-      sheet = "Metadata",
-      col_names = FALSE
-    )
+  # Dual-state sync during migration - Excel file loading
+  data_frame <- as.data.frame(data)
+  set_current_data(app_state, data_frame)
+  app_state$data$original_data <- data_frame
 
-    # Parse session info for configuration
-    session_lines <- as.character(session_info_raw[[1]])
+  # Emit unified data_updated event (replaces legacy data_loaded)
+  emit$data_updated("file_loaded")
 
-    # Extract metadata from session info
-    metadata <- parse_session_metadata(session_lines, names(data))
+  # Unified state assignment only - Set file uploaded flag
+  app_state$session$file_uploaded <- TRUE
+  # Unified state assignment only - Set auto detect flag
+  app_state$columns$auto_detect$completed <- FALSE
+  # Unified state assignment only - Re-enable Anhøj rules when real data is uploaded
+  app_state$ui$hide_anhoej_rules <- FALSE
 
-    # Load data
-    # Dual-state sync during migration - session restore
-    data_frame <- as.data.frame(data)
-    set_current_data(app_state, data_frame)
-    app_state$data$original_data <- data_frame
+  # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
+  emit$navigation_changed()
 
-    # Emit unified data_updated event (replaces legacy data_loaded)
-    emit$data_updated("file_loaded")
-
-    # Unified state assignment only - Set file uploaded flag
-    app_state$session$file_uploaded <- TRUE
-    # Unified state assignment only - Set auto detect completed (skip since we have session info)
-    app_state$columns$auto_detect$completed <- TRUE
-    # Unified state assignment only - Re-enable Anhøj rules when real data is uploaded
-    app_state$ui$hide_anhoej_rules <- FALSE
-
-    # NAVIGATION TRIGGER: Emit navigation changed event to update reactive components
-    emit$navigation_changed()
-
-    # Restore metadata with delay to ensure UI is ready
-    shiny::invalidateLater(500)
-    shiny::isolate({
-      if (!is.null(ui_service)) {
-        restore_metadata(session, metadata, ui_service)
-      } else {}
-    })
-
-    shiny::showNotification(
-      paste("Komplet session importeret:", nrow(data), "rækker,", ncol(data), "kolonner + konfiguration"),
-      type = "message",
-      duration = 4
-    )
-  } else {
-    # Standard Excel file
-    data <- readxl::read_excel(file_path, col_names = TRUE)
-
-    # Ensure standard columns are present and in correct order
-    data <- ensure_standard_columns(data)
-
-    # Dual-state sync during migration - Excel file loading
-    data_frame <- as.data.frame(data)
-    set_current_data(app_state, data_frame)
-    app_state$data$original_data <- data_frame
-
-    # Emit unified data_updated event (replaces legacy data_loaded)
-    emit$data_updated("file_loaded")
-
-    # Unified state assignment only - Set file uploaded flag
-    app_state$session$file_uploaded <- TRUE
-    # Unified state assignment only - Set auto detect flag
-    app_state$columns$auto_detect$completed <- FALSE
-    # Unified state assignment only - Re-enable Anhøj rules when real data is uploaded
-    app_state$ui$hide_anhoej_rules <- FALSE
-
-    # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
-    emit$navigation_changed()
-
-
-    notify_upload_success("Excel", data)
-  }
+  notify_upload_success("Excel", data)
 }
 
 #' Håndter CSV fil upload med dansk formattering
@@ -797,141 +698,6 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   invisible(NULL)
 }
 
-## Parse session metadata fra importerede filer
-parse_session_metadata <- function(session_lines, data_cols) {
-  metadata <- list()
-
-  # Parse titel with sanitization
-  title_line <- session_lines[grepl("^• Titel:", session_lines)]
-  if (length(title_line) > 0) {
-    raw_title <- gsub("^• Titel: ", "", title_line[1])
-    raw_title <- gsub(" Ikke angivet$", "", raw_title)
-    metadata$title <- sanitize_session_metadata(raw_title, "title")
-  }
-
-  # Parse enhed
-  unit_line <- session_lines[grepl("^• Enhed:", session_lines)]
-  if (length(unit_line) > 0) {
-    unit_text <- gsub("^• Enhed: ", "", unit_line[1])
-    if (unit_text != "Ikke angivet" && unit_text != "") {
-      # Check if it's a standard unit
-      standard_units <- list(
-        "Medicinsk Afdeling" = "med",
-        "Kirurgisk Afdeling" = "kir",
-        "Intensiv Afdeling" = "icu",
-        "Ambulatorie" = "amb",
-        "Akutmodtagelse" = "akut",
-        "Pædiatrisk Afdeling" = "paed",
-        "Gynækologi/Obstetrik" = "gyn"
-      )
-
-      if (unit_text %in% names(standard_units)) {
-        metadata$unit_type <- "select"
-        metadata$unit_select <- standard_units[[unit_text]]
-      } else {
-        metadata$unit_type <- "custom"
-        metadata$unit_custom <- sanitize_session_metadata(unit_text, "unit")
-      }
-    }
-  }
-
-  # Parse beskrivelse with sanitization
-  desc_line <- session_lines[grepl("^• Beskrivelse:", session_lines)]
-  if (length(desc_line) > 0) {
-    desc_text <- gsub("^• Beskrivelse: ", "", desc_line[1])
-    if (desc_text != "Ikke angivet" && desc_text != "") {
-      metadata$description <- sanitize_session_metadata(desc_text, "description")
-    }
-  }
-
-  # Parse graf konfiguration
-  chart_line <- session_lines[grepl("^• Chart Type:", session_lines)]
-  if (length(chart_line) > 0) {
-    chart_text <- gsub("^• Chart Type: ", "", chart_line[1])
-    if (chart_text %in% names(CHART_TYPES_DA)) {
-      metadata$chart_type <- chart_text
-    }
-  }
-
-  # Parse kolonne mapping
-  x_line <- session_lines[grepl("^• X-akse:", session_lines)]
-  if (length(x_line) > 0) {
-    x_text <- gsub("^• X-akse: (.+) \\(.*\\)$", "\\1", x_line[1])
-    if (x_text != "Ikke valgt" && x_text %in% data_cols) {
-      metadata$x_column <- x_text
-    }
-  }
-
-  y_line <- session_lines[grepl("^• Y-akse:", session_lines)]
-  if (length(y_line) > 0) {
-    y_text <- gsub("^• Y-akse: (.+) \\(.*\\)$", "\\1", y_line[1])
-    if (y_text != "Ikke valgt" && y_text %in% data_cols) {
-      metadata$y_column <- y_text
-    }
-  }
-
-  n_line <- session_lines[grepl("^• Nævner:", session_lines)]
-  if (length(n_line) > 0) {
-    n_text <- gsub("^• Nævner: ", "", n_line[1])
-    if (n_text %in% data_cols) {
-      metadata$n_column <- n_text
-    }
-  }
-
-  # Avancerede kolonnemappings
-  skift_line <- session_lines[grepl("^• Skift:", session_lines)]
-  if (length(skift_line) > 0) {
-    skift_text <- gsub("^• Skift: ", "", skift_line[1])
-    if (skift_text %in% data_cols) {
-      metadata$skift_column <- skift_text
-    }
-  }
-
-  frys_line <- session_lines[grepl("^• Frys:", session_lines)]
-  if (length(frys_line) > 0) {
-    frys_text <- gsub("^• Frys: ", "", frys_line[1])
-    if (frys_text %in% data_cols) {
-      metadata$frys_column <- frys_text
-    }
-  }
-
-  kommentar_line <- session_lines[grepl("^• Kommentar:", session_lines)]
-  if (length(kommentar_line) > 0) {
-    kommentar_text <- gsub("^• Kommentar: ", "", kommentar_line[1])
-    if (kommentar_text %in% data_cols) {
-      metadata$kommentar_column <- kommentar_text
-    }
-  }
-
-  # Analyseindstillinger
-  target_line <- session_lines[grepl("^• Target:", session_lines)]
-  if (length(target_line) > 0) {
-    target_text <- gsub("^• Target: ", "", target_line[1])
-    if (nzchar(target_text) && target_text != "Ikke angivet") {
-      metadata$target_value <- target_text
-    }
-  }
-
-  baseline_line <- session_lines[grepl("^• Baseline:", session_lines)]
-  if (length(baseline_line) > 0) {
-    baseline_text <- gsub("^• Baseline: ", "", baseline_line[1])
-    if (nzchar(baseline_text) && baseline_text != "Ikke angivet") {
-      metadata$centerline_value <- baseline_text
-    }
-  }
-
-  unit_type_line <- session_lines[grepl("^• Y-akse enhed:", session_lines)]
-  if (length(unit_type_line) > 0) {
-    unit_type_text <- gsub("^• Y-akse enhed: ", "", unit_type_line[1])
-    valid_units <- c("count", "percent", "rate", "time")
-    if (unit_type_text %in% valid_units) {
-      metadata$y_axis_unit <- unit_type_text
-    }
-  }
-
-  return(metadata)
-}
-
 # ENHANCED FILE VALIDATION ===================================================
 
 ## Enhanced file validation with comprehensive checks
@@ -1109,57 +875,20 @@ validate_excel_file <- function(file_path) {
         errors <- c(errors, "Excel fil indeholder ingen ark")
       }
 
-      # If this is a session restore file, check for required sheets
-      if (all(c("Data", "Metadata") %in% sheets)) {
-        # Validate Data sheet
-        data_validation <- safe_operation(
-          "Validate Excel Data sheet",
-          code = {
-            data <- readxl::read_excel(file_path, sheet = "Data", n_max = 1)
-            if (ncol(data) == 0) {
-              errors <- c(errors, "Data ark er tomt")
-            }
-            if (nrow(data) == 0) {
-              errors <- c(errors, "Data ark indeholder ingen datarækker")
-            }
-            TRUE
-          },
-          fallback = function(e) {
-            errors <<- c(errors, paste("Kan ikke læse Data-ark:", e$message))
-            FALSE
-          },
-          error_type = "processing"
-        )
-
-        # Validate Metadata sheet
-        metadata_validation <- safe_operation(
-          "Validate Excel Metadata sheet",
-          code = {
-            metadata <- readxl::read_excel(file_path, sheet = "Metadata", n_max = 1)
-            TRUE
-          },
-          fallback = function(e) {
-            errors <<- c(errors, paste("Kan ikke læse Metadata-ark:", e$message))
-            FALSE
-          },
-          error_type = "processing"
-        )
-      } else {
-        # Regular Excel file - validate first sheet
-        safe_operation(
-          "Validate regular Excel file",
-          code = {
-            data <- readxl::read_excel(file_path, n_max = 1)
-            if (ncol(data) == 0) {
-              errors <- c(errors, "Excel fil indeholder ingen kolonner")
-            }
-          },
-          fallback = function(e) {
-            errors <<- c(errors, paste("Kan ikke læse Excel-fil:", e$message))
-          },
-          error_type = "processing"
-        )
-      }
+      # Regular Excel file - validate first sheet
+      safe_operation(
+        "Validate regular Excel file",
+        code = {
+          data <- readxl::read_excel(file_path, n_max = 1)
+          if (ncol(data) == 0) {
+            errors <- c(errors, "Excel fil indeholder ingen kolonner")
+          }
+        },
+        fallback = function(e) {
+          errors <<- c(errors, paste("Kan ikke læse Excel-fil:", e$message))
+        },
+        error_type = "processing"
+      )
     },
     fallback = function(e) {
       errors <<- c(errors, paste("Excel fil er beskadiget eller ugyldig:", e$message))

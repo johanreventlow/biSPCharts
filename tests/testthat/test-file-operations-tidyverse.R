@@ -227,38 +227,3 @@ test_that("Excel file processing with tidyverse patterns", {
   }
 })
 
-test_that("session metadata parsing with tidyverse patterns", {
-  if (exists("parse_session_metadata")) {
-    # Test session metadata lines
-    session_lines <- c(
-      "• Titel: Test SPC Analysis",
-      "• Enhed: Medicinsk Afdeling",
-      "• Beskrivelse: Test analysis for quality improvement",
-      "• Chart Type: P-kort (Andele)",
-      "• X-akse: Dato (Date)",
-      "• Y-akse: Tæller (Count)",
-      "• Nævner: Nævner"
-    )
-
-    data_cols <- c("Dato", "Tæller", "Nævner", "Kommentar")
-
-    metadata <- parse_session_metadata(session_lines, data_cols)
-
-    expect_true(is.list(metadata))
-    expect_equal(metadata$title, "Test SPC Analysis")
-    expect_equal(metadata$unit_type, "select")
-    expect_equal(metadata$unit_select, "med")
-    expect_equal(metadata$description, "Test analysis for quality improvement")
-    expect_equal(metadata$x_column, "Dato")
-    expect_equal(metadata$y_column, "Tæller")
-    expect_equal(metadata$n_column, "Nævner")
-
-    # Test with missing or invalid data
-    minimal_lines <- c("• Titel: Minimal Test")
-    minimal_metadata <- parse_session_metadata(minimal_lines, data_cols)
-    expect_equal(minimal_metadata$title, "Minimal Test")
-    expect_null(minimal_metadata$unit_type)
-  } else {
-    skip("parse_session_metadata function not available")
-  }
-})

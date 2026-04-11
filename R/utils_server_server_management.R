@@ -132,34 +132,35 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             app_state$session$file_uploaded <- TRUE
             app_state$columns$auto_detect$completed <- TRUE
 
-            # CRITICAL: Metadata restore skal ske EFTER selectize choices er
-            # populeret (sker i observer på data_updated). Vi bruger
-            # session$onFlushed(once = TRUE) så update-kaldene kører efter
-            # Shiny har flushed UI-opdateringer. Ellers peger
-            # updateSelectizeInput(selected="Dato") på en tom choices-liste
-            # og effekten er nul.
+            # FUND #1: Skriv kolonne-mappings til centraliseret state FØR
+            # emit, så listeners på data_updated (priority HIGH) ser korrekt
+            # mapping-state i første iteration. Selve selectize-selected
+            # opdateringen sker stadig i onFlushed nedenfor, fordi choices
+            # skal være populeret først.
             if (!is.null(saved_state$metadata)) {
               saved_meta <- saved_state$metadata
+              for (field in c("x_column", "y_column", "n_column",
+                "skift_column", "frys_column", "kommentar_column")) {
+                val <- saved_meta[[field]]
+                if (!is.null(val) && nzchar(val)) {
+                  app_state$columns$mappings[[field]] <- val
+                }
+              }
+
+              # CRITICAL: Metadata restore skal ske EFTER selectize choices
+              # er populeret (sker i observer på data_updated). Vi bruger
+              # session$onFlushed(once = TRUE) så update-kaldene kører efter
+              # Shiny har flushed UI-opdateringer. Ellers peger
+              # updateSelectizeInput(selected="Dato") på en tom choices-liste
+              # og effekten er nul.
               session$onFlushed(
                 function() {
                   shiny::isolate({
-                    log_info(
+                    log_debug(
                       "Restoring metadata after UI flush",
                       .context = "SESSION_RESTORE"
                     )
                     restore_metadata(session, saved_meta, ui_service)
-
-                    # Kopier mappings ind i centraliseret state så reactive
-                    # chain ikke resetter dem ved næste render.
-                    # NB: writes til reactiveValues kræver ikke reactive
-                    # context, men reads gør — derfor isolate() wrapper.
-                    for (field in c("x_column", "y_column", "n_column",
-                      "skift_column", "frys_column", "kommentar_column")) {
-                      val <- saved_meta[[field]]
-                      if (!is.null(val) && nzchar(val)) {
-                        app_state$columns$mappings[[field]] <- val
-                      }
-                    }
                   })
                 },
                 once = TRUE

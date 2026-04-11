@@ -1545,10 +1545,9 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit) 
       ext <- tolower(tools::file_ext(file_info$name))
 
       if (ext %in% c("xlsx", "xls")) {
-        # Excel: tjek for session-fil (Data+Metadata) → direkte handler
+        # Excel: tjek for biSPCharts gem-fil (Data+Indstillinger) → direkte handler
         excel_sheets <- readxl::excel_sheets(file_info$datapath)
-        if ("Data" %in% excel_sheets &&
-            ("Metadata" %in% excel_sheets || "Indstillinger" %in% excel_sheets)) {
+        if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
           handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
         } else {
           # Standard Excel → konverter til tab-separeret tekst til preview

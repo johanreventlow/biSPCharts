@@ -152,29 +152,6 @@ test_that("BOM handling preserves file integrity", {
   expect_true("ø" %in% unlist(strsplit(paste(result$By, collapse = ""), "")))
 })
 
-test_that("Session metadata sanitization prevents XSS", {
-  # Test malicious session metadata
-  malicious_inputs <- list(
-    title = "<script>alert('XSS')</script>Test Title",
-    description = "Normal text <img src=x onerror=alert(1)> more text",
-    unit = "javascript:alert('malicious')",
-    custom_field = "<iframe src='http://malicious.com'></iframe>"
-  )
-
-  for (field_type in names(malicious_inputs)) {
-    sanitized <- sanitize_session_metadata(
-      malicious_inputs[[field_type]],
-      field_type = if(field_type %in% c("title", "description", "unit")) field_type else "general"
-    )
-
-    # Should not contain script tags or javascript:
-    expect_false(grepl("<script", sanitized, ignore.case = TRUE))
-    expect_false(grepl("javascript:", sanitized, ignore.case = TRUE))
-    expect_false(grepl("<iframe", sanitized, ignore.case = TRUE))
-    expect_false(grepl("onerror=", sanitized, ignore.case = TRUE))
-  }
-})
-
 test_that("File type validation rejects dangerous files", {
   # Test dangerous file extensions (theoretical test)
   dangerous_extensions <- c(".exe", ".bat", ".cmd", ".scr", ".vbs", ".js")

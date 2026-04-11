@@ -49,36 +49,9 @@ create_temp_csv <- function(data, encoding = "ISO-8859-1") {
 }
 
 # Helper til at oprette temporary Excel file
-create_temp_excel <- function(data, with_metadata = FALSE) {
+create_temp_excel <- function(data) {
   temp_file <- tempfile(fileext = ".xlsx")
-
-  if (with_metadata) {
-    # Create Excel with Data and Metadata sheets
-    wb <- openxlsx::createWorkbook()
-
-    # Data sheet
-    openxlsx::addWorksheet(wb, "Data")
-    openxlsx::writeData(wb, "Data", data)
-
-    # Metadata sheet
-    openxlsx::addWorksheet(wb, "Metadata")
-    metadata_lines <- c(
-      "• Titel: Test SPC Chart",
-      "• Enhed: Medicinsk Afdeling",
-      "• Beskrivelse: Test beskrivelse",
-      "• Chart Type: P-chart (Andel)",
-      "• X-akse: Dato (Tid)",
-      "• Y-akse: Tæller (Antal)",
-      "• Nævner: Nævner"
-    )
-    openxlsx::writeData(wb, "Metadata", data.frame(Info = metadata_lines))
-
-    openxlsx::saveWorkbook(wb, temp_file, overwrite = TRUE)
-  } else {
-    # Simple Excel with just data
-    openxlsx::write.xlsx(data, temp_file)
-  }
-
+  openxlsx::write.xlsx(data, temp_file)
   return(temp_file)
 }
 
@@ -175,7 +148,7 @@ describe("Excel File Support", {
       stringsAsFactors = FALSE
     )
 
-    excel_file <- create_temp_excel(data, with_metadata = FALSE)
+    excel_file <- create_temp_excel(data)
     on.exit(unlink(excel_file))
 
     result <- readxl::read_excel(excel_file)
@@ -183,29 +156,6 @@ describe("Excel File Support", {
     expect_equal(nrow(result), 3)
     expect_equal(ncol(result), 3)
     expect_true("Dato" %in% names(result))
-  })
-
-  it("reads Excel with Data + Metadata sheets", {
-    data <- data.frame(
-      Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 3),
-      Tæller = c(10, 12, 15),
-      Nævner = c(100, 100, 100),
-      stringsAsFactors = FALSE
-    )
-
-    excel_file <- create_temp_excel(data, with_metadata = TRUE)
-    on.exit(unlink(excel_file))
-
-    sheets <- readxl::excel_sheets(excel_file)
-
-    expect_true("Data" %in% sheets)
-    expect_true("Metadata" %in% sheets)
-
-    data_sheet <- readxl::read_excel(excel_file, sheet = "Data")
-    expect_equal(nrow(data_sheet), 3)
-
-    metadata_sheet <- readxl::read_excel(excel_file, sheet = "Metadata", col_names = FALSE)
-    expect_true(nrow(metadata_sheet) > 0)
   })
 
   it("handles Excel files with multiple sheets", {
@@ -302,91 +252,9 @@ describe("File Validation", {
   })
 })
 
-# METADATA PARSING TESTS =======================================================
+# COLLECT METADATA TESTS =======================================================
 
-describe("Session Metadata Parsing", {
-  it("parses complete metadata", {
-    skip_if_not(exists("parse_session_metadata", mode = "function"))
-
-    session_lines <- c(
-      "• Titel: Test Chart Ikke angivet",
-      "• Enhed: Medicinsk Afdeling",
-      "• Beskrivelse: Test beskrivelse",
-      "• Chart Type: P-chart (Andel)",
-      "• X-akse: Dato (Tid)",
-      "• Y-akse: Tæller (Antal)",
-      "• Nævner: Nævner"
-    )
-
-    data_cols <- c("Dato", "Tæller", "Nævner")
-
-    metadata <- parse_session_metadata(session_lines, data_cols)
-
-    expect_equal(metadata$title, "Test Chart")
-    expect_equal(metadata$unit_select, "med")
-    expect_equal(metadata$description, "Test beskrivelse")
-    expect_equal(metadata$x_column, "Dato")
-    expect_equal(metadata$y_column, "Tæller")
-    expect_equal(metadata$n_column, "Nævner")
-  })
-
-  it("handles missing metadata fields gracefully", {
-    skip_if_not(exists("parse_session_metadata", mode = "function"))
-
-    session_lines <- c(
-      "• Titel: Ikke angivet",
-      "• X-akse: Dato (Tid)"
-    )
-
-    data_cols <- c("Dato", "Værdi")
-
-    metadata <- parse_session_metadata(session_lines, data_cols)
-
-    expect_null(metadata$title) # "Ikke angivet" should be NULL
-    expect_equal(metadata$x_column, "Dato")
-    expect_null(metadata$y_column) # Not specified
-  })
-
-  it("roundtrips all analysis fields through session metadata", {
-    skip_if_not(exists("parse_session_metadata", mode = "function"))
-
-    data_cols <- c("Dato", "Tæller", "Nævner", "Skift", "Frys", "Kommentar")
-
-    session_lines <- c(
-      "• Titel: Infektionsrate Q1",
-      "• Enhed: Kirurgisk Afdeling",
-      "• Beskrivelse: Antal infektioner pr. 1000 sengedage",
-      "• Chart Type: P-kort \u2014 andele/procenter (fx infektionsrate)",
-      "• X-akse: Dato (Tid)",
-      "• Y-akse: Tæller (Antal)",
-      "• Nævner: Nævner",
-      "• Skift: Skift",
-      "• Frys: Frys",
-      "• Kommentar: Kommentar",
-      "• Target: >=90%",
-      "• Baseline: 68%",
-      "• Y-akse enhed: percent"
-    )
-
-    metadata <- parse_session_metadata(session_lines, data_cols)
-
-    # Kernekonfiguration
-    expect_equal(metadata$title, "Infektionsrate Q1")
-    expect_equal(metadata$x_column, "Dato")
-    expect_equal(metadata$y_column, "Tæller")
-    expect_equal(metadata$n_column, "Nævner")
-
-    # Avancerede kolonner der tidligere manglede
-    expect_equal(metadata$skift_column, "Skift")
-    expect_equal(metadata$frys_column, "Frys")
-    expect_equal(metadata$kommentar_column, "Kommentar")
-
-    # Analyseindstillinger der tidligere manglede
-    expect_equal(metadata$target_value, ">=90%")
-    expect_equal(metadata$centerline_value, "68%")
-    expect_equal(metadata$y_axis_unit, "percent")
-  })
-
+describe("Collect Metadata", {
   it("collect_metadata includes frys_column", {
     skip_if_not(exists("collect_metadata", mode = "function"))
 
@@ -443,54 +311,6 @@ describe("Session Metadata Parsing", {
         info = paste("Felt", field, "skal overleve JSON roundtrip")
       )
     }
-  })
-
-  it("detekterer manglende felter ved delvis restore", {
-    skip_if_not(exists("parse_session_metadata", mode = "function"))
-
-    data_cols <- c("Dato", "Tæller", "Nævner", "Skift", "Frys", "Kommentar")
-
-    # Session-linjer med kun basale felter (mangler skift, frys, kommentar, target, baseline, y-akse)
-    partial_lines <- c(
-      "• Titel: Delvis session",
-      "• X-akse: Dato (Tid)",
-      "• Y-akse: Tæller (Antal)",
-      "• Nævner: Nævner"
-    )
-
-    metadata <- parse_session_metadata(partial_lines, data_cols)
-
-    # Basale felter skal være til stede
-    expect_equal(metadata$x_column, "Dato")
-    expect_equal(metadata$y_column, "Tæller")
-
-    # Avancerede felter skal være NULL ved delvis restore
-    expect_null(metadata$skift_column)
-    expect_null(metadata$frys_column)
-    expect_null(metadata$kommentar_column)
-    expect_null(metadata$target_value)
-    expect_null(metadata$centerline_value)
-    expect_null(metadata$y_axis_unit)
-  })
-
-  it("sanitizes metadata input for security", {
-    skip_if_not(exists("sanitize_session_metadata", mode = "function"))
-
-    # XSS attempt
-    malicious_input <- "<script>alert('xss')</script>Test"
-    result <- sanitize_session_metadata(malicious_input, "description")
-
-    expect_false(grepl("<script>", result))
-    expect_true(grepl("Test", result))
-  })
-
-  it("limits metadata field length", {
-    skip_if_not(exists("sanitize_session_metadata", mode = "function"))
-
-    long_input <- paste(rep("a", 300), collapse = "")
-    result <- sanitize_session_metadata(long_input, "title", max_length = 255)
-
-    expect_lte(nchar(result), 255)
   })
 })
 

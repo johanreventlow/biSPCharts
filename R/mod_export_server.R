@@ -291,6 +291,20 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Note: BFHllm cache is now created on-demand in generate_bfhllm_suggestion()
     # No separate initialization needed after BFHllm migration
 
+    # Review fund #4: Cache BFHllm availability per session.
+    # is_bfhllm_available() kalder BFHllm::bfhllm_chat_available() som
+    # har log-sideeffekter ("BFHllm setup validated successfully") og evt.
+    # netværksarbejde. API-nøglen ændrer sig ikke under session-levetid,
+    # så vi cacher resultatet én gang per session. Det fjerner støj-loggen
+    # uden at ændre funktionaliteten.
+    bfhllm_available_cached <- NULL
+    get_bfhllm_available <- function() {
+      if (is.null(bfhllm_available_cached)) {
+        bfhllm_available_cached <<- isTRUE(is_bfhllm_available())
+      }
+      bfhllm_available_cached
+    }
+
     # Manage AI button state based on data and API key availability
     shiny::observe({
       # Check prerequisites
@@ -300,8 +314,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         !is.null(app_state$columns$mappings$y_column)
       has_spc_data <- has_data && has_columns
 
-      # Validate BFHllm API setup
-      api_ready <- is_bfhllm_available()
+      # Validate BFHllm API setup (cached per session — se kommentar ovenfor)
+      api_ready <- get_bfhllm_available()
 
       # Button enabled only when both prerequisites met
       can_use_ai <- has_spc_data && api_ready

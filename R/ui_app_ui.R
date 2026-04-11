@@ -140,27 +140,6 @@ create_ui_header <- function() {
       z-index: 1050 !important;
     }
 
-    /* Recalculating overlay for export preview (og SPC preview) */
-    .export-preview-container {
-      position: relative;
-    }
-    .export-preview-container .recalculating,
-    .shiny-plot-output.recalculating {
-      opacity: 0.4;
-    }
-    .export-preview-container .recalculating::after,
-    .shiny-plot-output.recalculating::after {
-      content: 'Opdaterer...';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.1rem;
-      color: #6c757d;
-      font-weight: 600;
-      z-index: 10;
-    }
-
     /* Dynamic hospital color styles that need R variables */
     .status-ready { background-color: ", hospital_colors$success, "; }
     .status-warning { background-color: ", hospital_colors$warning, "; }

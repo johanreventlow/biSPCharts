@@ -177,7 +177,13 @@ create_ui_update_service <- function(session, app_state) {
       )
     }
 
-    shiny::isolate({
+    # Review fund #1 (HIGH): Wrap programmatic updates i
+    # safe_programmatic_ui_update() så observers ser
+    # app_state$ui$updating_programmatically = TRUE og skipper deres
+    # logik under restore. Ellers fyrer y_axis_unit/n_column observers
+    # på halv state og logger fx "N-kolonne kræves for valgt Y-akse-type"
+    # selvom mappingen faktisk findes i metadata.
+    safe_programmatic_ui_update(session, app_state, function() {
       safe_operation(
         "Update form fields from metadata",
         code = {

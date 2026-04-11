@@ -137,3 +137,179 @@ test_that("parse_spc_excel returnerer NULL ved korrupt Indstillinger-ark", {
   result <- parse_spc_excel(path)
   expect_true(is.null(result) || length(result) == 0)
 })
+
+# ==============================================================================
+# INTEGRATION: full build -> handle_excel_upload -> restore round-trip
+# ==============================================================================
+#
+# Verificerer at en gemt biSPCharts-fil kan uploades igen og at:
+#   1. Data havner i app_state$data$current_data
+#   2. Kolonne-mappings skrives til app_state$columns$mappings FØR emit
+#   3. restoring_session-flag sættes under restore
+#   4. emit$data_updated kaldes med "session_restore" kontekst (IKKE file_loaded)
+#   5. ui_service$update_form_fields modtager metadata efter onFlushed
+#   6. auto_detection_started bliver IKKE kaldt (da mappings allerede gendannes)
+
+test_that("handle_excel_upload round-trip genskaber mappings og trigger session_restore", {
+  skip_if_not(exists("handle_excel_upload", mode = "function"))
+  skip_if_not(exists("build_spc_excel", mode = "function"))
+
+  # --- Byg en realistisk save-fil ---
+  data <- data.frame(
+    Dato    = as.Date("2024-01-01") + 0:4,
+    Taeller = c(1.0, 2.0, 3.0, 4.0, 5.0),
+    Naevner = c(10, 10, 10, 10, 10)
+  )
+  original_metadata <- list(
+    x_column        = "Dato",
+    y_column        = "Taeller",
+    n_column        = "Naevner",
+    chart_type      = "p",
+    indicator_title = "Roundtrip-test",
+    target_value    = "0.5",
+    y_axis_unit     = "percent"
+  )
+  save_path <- build_spc_excel(data, original_metadata)
+  expect_true(file.exists(save_path))
+
+  # --- Mock infrastructure ---
+  app_state <- new.env(parent = emptyenv())
+  app_state$data <- shiny::reactiveValues(
+    current_data = NULL,
+    original_data = NULL,
+    updating_table = FALSE
+  )
+  app_state$session <- shiny::reactiveValues(
+    restoring_session = FALSE,
+    file_uploaded = FALSE
+  )
+  app_state$columns <- shiny::reactiveValues(
+    mappings = shiny::reactiveValues(
+      x_column = NULL, y_column = NULL, n_column = NULL,
+      skift_column = NULL, frys_column = NULL, kommentar_column = NULL
+    ),
+    auto_detect = shiny::reactiveValues(completed = FALSE)
+  )
+  app_state$ui <- shiny::reactiveValues(hide_anhoej_rules = TRUE)
+
+  # Emit-sporing: capture konteksten fra data_updated samt hvilke andre
+  # events der blev fyret
+  emit_log <- new.env(parent = emptyenv())
+  emit_log$data_updated_context <- NULL
+  emit_log$auto_detection_started_called <- FALSE
+  emit <- list(
+    data_updated = function(context = NULL, ...) {
+      emit_log$data_updated_context <- context
+    },
+    navigation_changed = function(...) invisible(NULL),
+    auto_detection_started = function(...) {
+      emit_log$auto_detection_started_called <- TRUE
+    },
+    visualization_update_needed = function(...) invisible(NULL)
+  )
+
+  # Mock ui_service
+  ui_log <- new.env(parent = emptyenv())
+  ui_log$received_metadata <- NULL
+  ui_service <- list(
+    update_form_fields = function(metadata, fields = NULL) {
+      ui_log$received_metadata <- metadata
+    }
+  )
+
+  # Mock session. MockShinySession understøtter ikke sendNotification, så vi
+  # stubber showNotification væk for at isolere testen fra Shiny's UI-lag.
+  session <- shiny::MockShinySession$new()
+  mockery::stub(
+    handle_excel_upload,
+    "shiny::showNotification",
+    function(...) invisible(NULL)
+  )
+
+  shiny::isolate({
+    handle_excel_upload(save_path, session, app_state, emit, ui_service)
+  })
+
+  # --- Verifikationer FØR onFlushed-callbacks ---
+  # Data skal være skrevet til app_state
+  expect_equal(shiny::isolate(nrow(app_state$data$current_data)), 5)
+  expect_true(shiny::isolate(app_state$session$file_uploaded))
+  expect_true(shiny::isolate(app_state$columns$auto_detect$completed))
+
+  # Mappings skal være skrevet FØR emit (det er pointen i fixet)
+  expect_equal(shiny::isolate(app_state$columns$mappings$x_column), "Dato")
+  expect_equal(shiny::isolate(app_state$columns$mappings$y_column), "Taeller")
+  expect_equal(shiny::isolate(app_state$columns$mappings$n_column), "Naevner")
+
+  # emit skal have fyret "session_restore" — IKKE "file_loaded"
+  expect_equal(emit_log$data_updated_context, "session_restore")
+  expect_false(emit_log$auto_detection_started_called,
+    info = "auto_detection_started må IKKE kaldes når mappings gendannes")
+
+  # restoring_session skal være TRUE indtil flush-cleanup kører
+  expect_true(shiny::isolate(app_state$session$restoring_session))
+
+  # --- Kør onFlushed-callbacks (simulerer Shiny flush) ---
+  session$flushReact()
+
+  # Nu skal restore_metadata være kaldt → ui_service har metadata
+  expect_false(is.null(ui_log$received_metadata))
+  expect_equal(ui_log$received_metadata$x_column, "Dato")
+  expect_equal(ui_log$received_metadata$indicator_title, "Roundtrip-test")
+
+  # Og restoring_session skal være ryddet
+  expect_false(shiny::isolate(app_state$session$restoring_session))
+})
+
+test_that("handle_excel_upload fallback uden metadata triggerer auto-detection", {
+  skip_if_not(exists("handle_excel_upload", mode = "function"))
+
+  # Lav en ugyldig "save-fil" hvor Indstillinger-arket eksisterer men er korrupt.
+  # parse_spc_excel returnerer NULL for denne, så handle_excel_upload skal
+  # falde tilbage til standard data-upload + auto-detection.
+  wb <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(wb, "Data")
+  openxlsx::writeData(wb, "Data",
+    data.frame(Dato = as.Date("2024-01-01") + 0:2, Vaerdi = 1:3))
+  openxlsx::addWorksheet(wb, "Indstillinger")
+  openxlsx::writeData(wb, "Indstillinger", data.frame(Besked = "kun kommentar"),
+    startRow = 1, colNames = FALSE)
+  bad_path <- tempfile(fileext = ".xlsx")
+  openxlsx::saveWorkbook(wb, bad_path, overwrite = TRUE)
+
+  app_state <- new.env(parent = emptyenv())
+  app_state$data <- shiny::reactiveValues(current_data = NULL, original_data = NULL, updating_table = FALSE)
+  app_state$session <- shiny::reactiveValues(restoring_session = FALSE, file_uploaded = FALSE)
+  app_state$columns <- shiny::reactiveValues(
+    mappings = shiny::reactiveValues(),
+    auto_detect = shiny::reactiveValues(completed = FALSE)
+  )
+  app_state$ui <- shiny::reactiveValues(hide_anhoej_rules = TRUE)
+
+  emit_log <- new.env(parent = emptyenv())
+  emit_log$data_updated_context <- NULL
+  emit <- list(
+    data_updated = function(context = NULL, ...) {
+      emit_log$data_updated_context <- context
+    },
+    navigation_changed = function(...) invisible(NULL),
+    auto_detection_started = function(...) invisible(NULL),
+    visualization_update_needed = function(...) invisible(NULL)
+  )
+
+  session <- shiny::MockShinySession$new()
+  mockery::stub(
+    handle_excel_upload,
+    "shiny::showNotification",
+    function(...) invisible(NULL)
+  )
+
+  shiny::isolate({
+    handle_excel_upload(bad_path, session, app_state, emit, ui_service = NULL)
+  })
+
+  # Fallback: auto_detect skal NIT være completed, emit skal være file_loaded
+  expect_false(shiny::isolate(app_state$columns$auto_detect$completed))
+  expect_equal(emit_log$data_updated_context, "file_loaded")
+  expect_false(shiny::isolate(app_state$session$restoring_session))
+})

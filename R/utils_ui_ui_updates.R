@@ -205,7 +205,17 @@ create_ui_update_service <- function(session, app_state) {
               } else if (field == "export_department") {
                 shiny::updateTextInput(session, "export-export_department", value = metadata[[field]])
               } else if (field == "export_format") {
-                shiny::updateTextInput(session, "export-export_format", value = metadata[[field]])
+                # Issue #193 fund #3: export_format er en hidden input uden
+                # Shiny input binding. updateTextInput virker ikke — vi skal
+                # gå via JS setActiveExportBtn() så knap-state, hidden input
+                # og Shiny.setInputValue() alle synkroniseres.
+                fmt <- metadata[[field]]
+                if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png", "pptx")) {
+                  session$sendCustomMessage(
+                    "set-export-format",
+                    list(format = fmt)
+                  )
+                }
               } else if (field == "pdf_description") {
                 shiny::updateTextAreaInput(session, "export-pdf_description", value = metadata[[field]])
               } else if (field == "pdf_improvement") {

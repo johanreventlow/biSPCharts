@@ -78,6 +78,12 @@ classify_update_context <- function(update_context) {
     return("table_edit")
   }
 
+  # Session restore (exact match for precision — må ikke trigger
+  # auto-detection siden vi har gemte mappings at gendanne)
+  if (identical(context, "session_restore")) {
+    return("session_restore")
+  }
+
   # Load contexts (upload, file, paste, new data)
   if (grepl("load|upload|file|paste|new", ctx_lower, ignore.case = TRUE)) {
     return("load")
@@ -303,6 +309,57 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
   )
 }
 
+#' Handle Session Restore Context
+#'
+#' Handles data updates triggered by session restore (Issue #193).
+#'
+#' @param app_state Centralized app state
+#' @param emit Event emission API
+#' @param input Shiny input
+#' @param output Shiny output
+#' @param session Shiny session
+#' @param ui_service UI service for UI updates
+#'
+#' @details
+#' **Behavior**:
+#' - Updates column choices (selectize dropdowns) baseret på gendannet data
+#' - Triggerer navigation_changed (navigation + plot refresh)
+#' - Triggerer visualization_update_needed (SPC chart rendering)
+#' - **Gør IKKE** auto-detection (vi har allerede saved mappings)
+#'
+#' **Event Chain**:
+#' 1. data_updated (session_restore context)
+#' 2. → update_column_choices_unified() (populerer choices)
+#' 3. → navigation_changed
+#' 4. → visualization_update_needed
+#'
+#' @keywords internal
+handle_session_restore_context <- function(app_state, emit, input, output, session, ui_service) {
+  # Kolonne choices skal populeres så selectize kan sætte selected værdier.
+  safe_operation(
+    "Update column choices on session restore",
+    code = {
+      update_column_choices_unified(
+        app_state,
+        input,
+        output,
+        session,
+        ui_service,
+        reason = "session"
+      )
+    }
+  )
+
+  # Trigger plot rendering — restore skal vise SPC chart med det samme.
+  emit$navigation_changed()
+  emit$visualization_update_needed()
+
+  log_debug(
+    "Session restore context: Updated choices and triggered plot rendering",
+    .context = "EVENT_CONTEXT_HANDLER"
+  )
+}
+
 # ============================================================================
 # MAIN DISPATCHER (STRATEGY PATTERN)
 # ============================================================================
@@ -328,6 +385,7 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
 #' **Handler Mapping**:
 #' - `load` → `handle_load_context()`
 #' - `table_edit` → `handle_table_edit_context()`
+#' - `session_restore` → `handle_session_restore_context()`
 #' - `data_change` → `handle_data_change_context()`
 #' - `general` → `handle_general_context()`
 #'
@@ -385,6 +443,14 @@ handle_data_update_by_context <- function(
     table_edit = handle_table_edit_context(
       app_state = app_state,
       emit = emit
+    ),
+    session_restore = handle_session_restore_context(
+      app_state = app_state,
+      emit = emit,
+      input = input,
+      output = output,
+      session = session,
+      ui_service = ui_service
     ),
     data_change = handle_data_change_context(
       app_state = app_state,

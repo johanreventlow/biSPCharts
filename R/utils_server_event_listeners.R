@@ -1490,8 +1490,9 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit) 
       if (ext %in% c("xlsx", "xls")) {
         # Excel: tjek for session-fil (Data+Metadata) → direkte handler
         excel_sheets <- readxl::excel_sheets(file_info$datapath)
-        if ("Data" %in% excel_sheets && "Metadata" %in% excel_sheets) {
-          handle_excel_upload(file_info$datapath, session, app_state, emit)
+        if ("Data" %in% excel_sheets &&
+            ("Metadata" %in% excel_sheets || "Indstillinger" %in% excel_sheets)) {
+          handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
         } else {
           # Standard Excel → konverter til tab-separeret tekst til preview
           data <- readxl::read_excel(file_info$datapath, col_names = TRUE)

@@ -345,6 +345,40 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 handle_excel_upload <- function(file_path, session, app_state, emit, ui_service = NULL) {
   excel_sheets <- readxl::excel_sheets(file_path)
 
+  # Nyt biSPCharts gem-format: "Data" + "Indstillinger"
+  if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
+    data <- readxl::read_excel(file_path, sheet = "Data", col_names = TRUE)
+    data <- ensure_standard_columns(data)
+    metadata <- parse_spc_excel(file_path)
+
+    data_frame <- as.data.frame(data)
+    set_current_data(app_state, data_frame)
+    app_state$data$original_data <- data_frame
+
+    emit$data_updated("file_loaded")
+    app_state$session$file_uploaded <- TRUE
+    app_state$columns$auto_detect$completed <- TRUE
+    app_state$ui$hide_anhoej_rules <- FALSE
+    emit$navigation_changed()
+
+    if (!is.null(metadata)) {
+      shiny::invalidateLater(500)
+      shiny::isolate({
+        restore_metadata(session, metadata, ui_service)
+      })
+    }
+
+    besked <- if (!is.null(metadata)) {
+      paste0("Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
+             ncol(data_frame), " kolonner + indstillinger")
+    } else {
+      paste0("Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
+             "indstillinger kunne ikke gendannes")
+    }
+    shiny::showNotification(besked, type = "message", duration = 4)
+    return(invisible(NULL))
+  }
+
   if ("Data" %in% excel_sheets && "Metadata" %in% excel_sheets) {
     # Read data from Data sheet
     data <- readxl::read_excel(file_path, sheet = "Data", col_names = TRUE)

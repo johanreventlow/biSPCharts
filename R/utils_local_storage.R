@@ -59,6 +59,19 @@ restore_column_class <- function(values, class_info) {
     return(values)
   }
 
+  # NULL→NA konvertering: jsonlite::fromJSON(simplifyVector = FALSE)
+  # giver lister hvor NA-elementer bliver NULL. Downstream coercion
+  # (as.numeric, as.Date, etc.) fejler på list med NULL-elementer, så
+  # vi konverterer her til en atomic vector med NA på NULL-positioner.
+  # NB: Vi kan IKKE bruge vapply(FUN.VALUE = NA) fordi logical NA ville
+  # coerce alt til logical. unlist() bestemmer common type selv.
+  if (is.list(values)) {
+    cleaned <- lapply(values, function(x) {
+      if (is.null(x) || length(x) == 0) NA else x
+    })
+    values <- unlist(cleaned, use.names = FALSE)
+  }
+
   primary <- class_info$primary %||% "character"
 
   # Factor: brug gemte levels for at bevare rækkefølge

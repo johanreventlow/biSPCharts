@@ -125,6 +125,38 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 
 **Target:** Startup < 100ms (achieved: 55-57ms)
 
+### Session Persistence (Issue #193)
+
+**Auto-save flow:**
+- Data ændringer debounced 2s → `autoSaveAppState()` → `saveDataLocally()` → `session$sendCustomMessage("saveAppState", …)` → JS handler → `localStorage`
+- Settings ændringer debounced 1s via `bindEvent()` på form-felter
+- Feature flag: `get_auto_save_enabled()` (default TRUE)
+
+**Auto-restore flow:**
+- JS `$(document).on('shiny:sessioninitialized', ...)` → `Shiny.setInputValue('auto_restore_data', …)` → `observeEvent(input$auto_restore_data, …, once = TRUE)`
+- Rækkefølge: version-check → guards → `restore_metadata()` → reconstruct data.frame med class preservation → emit `data_updated(context = "session_restore")`
+- Feature flag: `get_auto_restore_enabled()` (prod=TRUE, dev/test=FALSE)
+
+**Class preservation:**
+- `extract_class_info()` gemmer per-kolonne metadata (primary, is_date, is_posixct, is_factor, levels, tz)
+- `restore_column_class()` rekonstruerer præcis R-type
+- Understøtter: `numeric`, `integer`, `character`, `logical`, `Date`, `POSIXct` med tz, `factor` med levels
+
+**Fejl-håndtering:**
+- JS rapporterer success/failure tilbage via `input$local_storage_save_result`
+- R observer deaktiverer auto-save ved quota-fejl og viser dansk notifikation
+- `last_save_time` opdateres KUN ved bekræftet success
+
+**Schema version:** `LOCAL_STORAGE_SCHEMA_VERSION = "2.0"` — ved mismatch ryddes localStorage lydløst.
+
+**Relevante filer:**
+- `R/utils_local_storage.R` — `saveDataLocally`, `autoSaveAppState`, class helpers
+- `R/utils_server_server_management.R` — auto-restore observer + `clear_saved`
+- `R/utils_server_session_helpers.R` — auto-save triggers + save-status display
+- `inst/app/www/local-storage.js` — localStorage wrapper (IKKE `JSON.stringify`)
+- `inst/app/www/shiny-handlers.js` — custom message handlers + auto-restore trigger
+- `inst/golem-config.yml` — `session:` sektion
+
 ---
 
 ## 3) Critical Project Constraints

@@ -85,6 +85,9 @@
     });
   });
 
+  // NOTE: 'activate-wizard-mode' handler er flyttet til shiny-handlers.js
+  // (Issue #193) så den er uafhængig af wizard-nav.js loading status.
+
   // Intercept klik paa laaste tabs
   document.addEventListener('click', function(e) {
     var navLink = e.target.closest('.wizard-locked');
@@ -149,6 +152,22 @@
     var idMatch = this.id.match(/export_fmt_(\w+)$/);
     if (idMatch) setActiveExportBtn(this, idMatch[1]);
   });
+
+  // Custom message handler: Session restore skal kunne gendanne
+  // aktivt export-format (Issue #193, fund #3). Den normale
+  // updateTextInput() virker ikke mod skjult input der ikke har
+  // Shiny input binding — vi skal gå via setActiveExportBtn() så
+  // knap-state, hidden input, og Shiny.setInputValue() alle er synkrone.
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('set-export-format', function(message) {
+      var format = message && message.format;
+      if (!format) return;
+      var btn = document.querySelector(
+        '.export-format-btn[id$="export_fmt_' + format + '"]'
+      );
+      setActiveExportBtn(btn, format);
+    });
+  }
 
   // Logo-klik: navigér til startside og skjul wizard-trin
   $(document).on('click', '#logo_home_link', function(e) {

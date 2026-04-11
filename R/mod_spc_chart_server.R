@@ -693,6 +693,17 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         return()
       }
 
+      # Cache hits: bindCache short-circuiter spc_results reactive body,
+      # så set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
+      # gyldigt result med qic_data her, så plot er de-facto klar.
+      # Issue #193: Uden dette viser anhøj-bokse "Behandler data og
+      # beregner..." permanent efter session restore.
+      if (!is.null(result$plot)) {
+        set_plot_state("plot_ready", TRUE)
+        set_plot_state("is_computing", FALSE)
+        set_plot_state("plot_object", result$plot)
+      }
+
       # Udled metrics fra qic_data (samme logik som i computation-blokken)
       runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
 
@@ -761,27 +772,34 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
     # 3. Dette sikrer at device ALTID har korrekte dimensioner når labels beregnes
     # 4. Ingen fallbacks nødvendige - req() garanterer valid data
     output$spc_plot_actual <- shiny::renderPlot(
+      # Fallback-dimensioner når clientData ikke er tilgængelig (sker når
+      # output er hidden men suspendWhenHidden = FALSE tvinger rendering).
+      # Shiny's interne getDims fejler med "argument is of length zero" hvis
+      # width/height returnerer NULL. Issue #193.
       width = function() {
-        session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+        w <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
+        if (is.null(w) || length(w) == 0) 800 else w
       },
       height = function() {
-        session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+        h <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+        if (is.null(h) || length(h) == 0) 600 else h
       },
       res = VIEWPORT_DEFAULTS$dpi, # M10: Industry standard for web (auto-scaled by pixelratio)
       {
-        # VIEWPORT GUARD: Vent på clientData før rendering
-        # Dette sikrer at device altid har korrekte dimensioner når labels beregnes.
-        # req() invaliderer reactive context indtil clientData er tilgængelig.
+        # VIEWPORT GUARD: Brug clientData hvis tilgængelig, ellers fallback.
+        # Issue #193: Ved session restore til trin 3 er analyser-tab skjult
+        # og clientData findes ikke. Tidligere blokkerede req() plot-beregning,
+        # men så beregnes anhoej_results heller ikke → bokse fryser. I stedet
+        # bruger vi fallback-dimensioner så reactive chain kan køre.
         viewport_width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
         viewport_height <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
 
-        # Kræv at viewport er initialiseret med realistiske værdier
-        shiny::req(
-          !is.null(viewport_width),
-          !is.null(viewport_height),
-          viewport_width > 100, # Minimum realistic width
-          viewport_height > 100 # Minimum realistic height
-        )
+        if (is.null(viewport_width) || length(viewport_width) == 0 || viewport_width <= 100) {
+          viewport_width <- 800
+        }
+        if (is.null(viewport_height) || length(viewport_height) == 0 || viewport_height <= 100) {
+          viewport_height <- 600
+        }
 
         # M10: Opdater viewport dimensions i centraliseret state
         emit <- create_emit_api(app_state)
@@ -841,6 +859,13 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       }
     )
 
+    # SPC plot må ikke suspenderes når analyser-tab er skjult:
+    # plot-reactive chain (spc_results → set_plot_state("anhoej_results"))
+    # kører kun når renderPlot observeres. Hvis session restore lander på
+    # trin 3 (eksporter), er analyser-tab skjult og anhoej_results beregnes
+    # aldrig → anhøj-bokse fryser. Issue #193.
+    outputOptions(output, "spc_plot_actual", suspendWhenHidden = FALSE)
+
     # Status og Information ---------------------------------------------------
 
     ## Plot Status
@@ -849,7 +874,6 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       get_plot_state("plot_ready")
     })
     outputOptions(output, "plot_ready", suspendWhenHidden = FALSE)
-
     ## Plot Information
     # Plot info og advarsler - event-driven med reactive isolation
     output$plot_info <- shiny::renderUI({
@@ -1251,6 +1275,10 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
         )
       )
     })
+    # Anhøj-bokse må aldrig suspenderes: de skal altid opdateres i baggrunden
+    # så de viser korrekte værdier straks når bruger navigerer til "analyser"
+    # efter session restore (uanset om restore landede på "eksporter" tab).
+    outputOptions(output, "anhoej_rules_boxes", suspendWhenHidden = FALSE)
 
     ## Placeholder Value Boxes
     # Reserveret til fremtidige funktioner

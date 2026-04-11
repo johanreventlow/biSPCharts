@@ -1,44 +1,92 @@
 // shiny-handlers.js
 // Custom Shiny message handlers for SPC App
-
+//
 // K6 FIX: Remove console.log PHI leakage - sensitive session data should NOT be logged
 // Production apps should never log full payloads that may contain patient health information
 
 // Handler for saving app state via Shiny messages
+// Issue #193: Rapporterer success/failure tilbage til R så server-side
+// kan deaktivere auto-save ved quota-fejl eller andre persistente fejl.
 Shiny.addCustomMessageHandler('saveAppState', function(message) {
-  // K6: Removed console.log that exposed full message payload (PHI risk)
+  var dataLen = message.data ? message.data.length : 0;
+  console.log('[SPC] saveAppState handler called, key:', message.key, 'size:', dataLen);
   var success = window.saveAppState(message.key, message.data);
+  console.log('[SPC] saveAppState success:', success);
   if (!success) {
     console.error('saveAppState failed for key:', message.key);
   }
+  Shiny.setInputValue('local_storage_save_result', {
+    success: success,
+    timestamp: new Date().toISOString(),
+    key: message.key
+  }, {priority: 'event'});
 });
 
 // Handler for loading app state via Shiny messages
 Shiny.addCustomMessageHandler('loadAppState', function(message) {
-  // K6: Removed console.log that exposed full message payload (PHI risk)
   var data = window.loadAppState(message.key);
   Shiny.setInputValue('loaded_app_state', data, {priority: 'event'});
 });
 
 // Handler for clearing app state via Shiny messages
 Shiny.addCustomMessageHandler('clearAppState', function(message) {
-  // K6: Removed console.log that exposed full message payload (PHI risk)
   var success = window.clearAppState(message.key);
   if (!success) {
     console.error('clearAppState failed for key:', message.key);
   }
 });
 
-// Auto-load existing session data on app start
-$(document).ready(function() {
-  if (window.hasAppState('current_session')) {
-    setTimeout(function() {
-      // K6: Removed console.log calls that exposed session data (PHI risk)
-      // If debugging is needed, use a debug flag and redact sensitive fields
-      var data = window.loadAppState('current_session');
-      if (data) {
-        Shiny.setInputValue('auto_restore_data', data, {priority: 'event'});
-      }
-    }, 500); // Wait for Shiny to be ready
+// Aktivér wizard-mode (vis navbar-trin).
+// Issue #193: Bruges af session restore til at skippe landing page
+// når der er gemt data i localStorage. Placeret her i stedet for
+// wizard-nav.js for at være uafhængig af wizard-nav.js loading status.
+Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
+  if (document.body) {
+    document.body.classList.add('wizard-nav-active');
+    console.log('[SPC] wizard-nav-active body class added');
   }
+});
+
+// Peek localStorage ved session-init og send kun metadata til R.
+// Fuld payload caches i window.__pendingRestore — sendes først når bruger
+// aktivt vælger "Gendan session" via performSessionRestore custom message.
+// Issue #193 / brugerstyret restore.
+$(document).on('shiny:sessioninitialized', function() {
+  console.log('[SPC] shiny:sessioninitialized fired');
+  var data = window.loadAppState('current_session');
+  console.log('[SPC] localStorage peek: data present =', data !== null);
+  if (data) {
+    // Cache fuld payload — sendes til R først ved brugerens valg
+    window.__pendingRestore = data;
+    // Send kun metadata-subset til R (ingen PHI i log)
+    Shiny.setInputValue('session_peek', {
+      has_payload: true,
+      version: data.version || null,
+      timestamp: data.timestamp || null,
+      nrows: (data.data && data.data.nrows) || null,
+      ncols: (data.data && data.data.ncols) || null,
+      indicator_title: (data.metadata && data.metadata.indicator_title) || '',
+      active_tab: (data.metadata && data.metadata.active_tab) || null
+    }, {priority: 'event'});
+  } else {
+    window.__pendingRestore = null;
+    Shiny.setInputValue('session_peek', {has_payload: false}, {priority: 'event'});
+  }
+});
+
+// Trigges af R når bruger klikker "Gendan session"
+Shiny.addCustomMessageHandler('performSessionRestore', function(_message) {
+  console.log('[SPC] performSessionRestore: sending cached payload to R');
+  if (window.__pendingRestore) {
+    Shiny.setInputValue('auto_restore_data', window.__pendingRestore, {priority: 'event'});
+    window.__pendingRestore = null;
+  } else {
+    console.warn('[SPC] performSessionRestore called but no pending restore data');
+  }
+});
+
+// Trigges af R når bruger klikker "Start ny session"
+Shiny.addCustomMessageHandler('discardPendingRestore', function(_message) {
+  console.log('[SPC] discardPendingRestore: clearing cached payload');
+  window.__pendingRestore = null;
 });

@@ -185,6 +185,21 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   })
 
 
+  # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi
+  # oprettelsen af auto-save observers helt over. Dette gemmer både CPU og
+  # gør debugging nemmere når funktionen er slået fra.
+  auto_save_feature_enabled <- isTRUE(get_auto_save_enabled())
+
+  log_info(
+    sprintf(
+      "Session persistence observers: auto_save=%s, auto_restore=%s, save_interval=%dms",
+      auto_save_feature_enabled,
+      isTRUE(get_auto_restore_enabled()),
+      as.integer(get_save_interval_ms())
+    ),
+    .context = "AUTO_SAVE"
+  )
+
   # PERFORMANCE OPTIMIZED: Reaktiv debounced auto-save med performance monitoring
   auto_save_trigger <- shiny::debounce(
     shiny::reactive({
@@ -216,33 +231,66 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
         any(!is.na(current_data_check))) {
         list(
           data = current_data_check,
-          metadata = collect_metadata(input),
+          metadata = collect_metadata(input, app_state = app_state),
           timestamp = Sys.time()
         )
       } else {
         NULL
       }
     }),
-    millis = AUTOSAVE_DELAYS$data_save
+    millis = get_save_interval_ms()
   )
 
-  obs_data_save <- shiny::observe({
-    save_data <- auto_save_trigger()
-    shiny::req(save_data) # Only proceed if we have valid save data
+  if (auto_save_feature_enabled) {
+    obs_data_save <- shiny::observe({
+      save_data <- auto_save_trigger()
+      shiny::req(save_data) # Only proceed if we have valid save data
 
-    autoSaveAppState(session, save_data$data, save_data$metadata)
-    # Use unified state management
-    app_state$session$last_save_time <- save_data$timestamp
-  })
+      # NB: last_save_time opdateres af local_storage_save_result observer
+      # når JS-siden bekræfter success — ikke her.
+      autoSaveAppState(session, save_data$data, save_data$metadata,
+        app_state = app_state)
+    })
 
-  # Register observer with manager
-  if (!is.null(obs_manager)) {
-    obs_manager$add(obs_data_save, "data_auto_save")
+    # Register observer with manager
+    if (!is.null(obs_manager)) {
+      obs_manager$add(obs_data_save, "data_auto_save")
+    }
   }
 
   # PERFORMANCE OPTIMIZED: Reaktiv debounced settings save med performance monitoring
   settings_save_trigger <- shiny::debounce(
     shiny::reactive({
+      # KRITISK: Skab eksplicitte reactive deps på input-felterne ved at læse
+      # dem HER, udenfor isolate. Uden disse reads bliver reactiven kun
+      # invalideret af app_state-deps, og collect_metadata(input, app_state = app_state) returnerer
+      # stale metadata fordi alle input-reads inde i funktionen er isolated.
+      # Dette er årsagen til at fx export_title og active_tab ikke blev
+      # persisteret selv om bindEvent korrekt fyrede observeren.
+      force(input$main_navbar)
+      force(input$indicator_title)
+      force(input$unit_type)
+      force(input$unit_select)
+      force(input$unit_custom)
+      force(input$indicator_description)
+      force(input$x_column)
+      force(input$y_column)
+      force(input$n_column)
+      force(input$skift_column)
+      force(input$frys_column)
+      force(input$kommentar_column)
+      force(input$chart_type)
+      force(input$target_value)
+      force(input$centerline_value)
+      force(input$y_axis_unit)
+      force(input[["export-export_title"]])
+      force(input[["export-export_department"]])
+      force(input[["export-export_format"]])
+      force(input[["export-pdf_description"]])
+      force(input[["export-pdf_improvement"]])
+      force(input[["export-png_size_preset"]])
+      force(input[["export-png_dpi"]])
+
       # Samme guards som data auto-gem
       # Use unified state management
       updating_table_check <- app_state$data$updating_table
@@ -267,47 +315,59 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       current_data_check <- app_state$data$current_data
 
       if (!is.null(current_data_check)) {
+        md <- collect_metadata(input, app_state = app_state)
+        # Diagnostik (Issue #193): verificér at felter rent faktisk fanges ved
+        # save-tidspunkt — både target, trin 3-felter og active_tab.
+        log_info(
+          sprintf(
+            paste0(
+              "settings_save capture: active_tab='%s', target='%s', ",
+              "export_title='%s', export_department='%s', export_format='%s', ",
+              "pdf_description='%s', pdf_improvement='%s', ",
+              "png_size_preset='%s', png_dpi='%s'"
+            ),
+            md$active_tab %||% "<NULL>",
+            md$target_value %||% "<NULL>",
+            md$export_title %||% "<NULL>",
+            md$export_department %||% "<NULL>",
+            md$export_format %||% "<NULL>",
+            md$pdf_description %||% "<NULL>",
+            md$pdf_improvement %||% "<NULL>",
+            md$png_size_preset %||% "<NULL>",
+            md$png_dpi %||% "<NULL>"
+          ),
+          .context = "AUTO_SAVE"
+        )
         list(
           data = current_data_check,
-          metadata = collect_metadata(input),
+          metadata = md,
           timestamp = Sys.time()
         )
       } else {
         NULL
       }
     }),
-    millis = AUTOSAVE_DELAYS$settings_save # Faster debounce for settings
+    millis = get_settings_save_interval_ms() # Faster debounce for settings
   )
 
-  obs_settings_save <- shiny::observe({
-    save_data <- settings_save_trigger()
-    shiny::req(save_data) # Only proceed if we have valid save data
+  obs_settings_save <- if (auto_save_feature_enabled) {
+    # Ingen bindEvent her: settings_save_trigger har nu selv eksplicitte
+    # input-deps, så den fyrer via sin egen debounce når inputs ændres.
+    # Observeren reagerer på trigger-invalidering og sparer dermed ikke stale
+    # metadata (tidligere fejl: bindEvent fyrede observer før debounce kunne
+    # re-computere reactiven → stale cached value blev gemt).
+    shiny::observe({
+      save_data <- settings_save_trigger()
+      shiny::req(save_data) # Only proceed if we have valid save data
 
-    autoSaveAppState(session, save_data$data, save_data$metadata)
-    # Use unified state management
-    app_state$session$last_save_time <- save_data$timestamp
-  }) |> bindEvent(
-    {
-      list(
-        input$indicator_title,
-        input$unit_type,
-        input$unit_select,
-        input$unit_custom,
-        input$indicator_description,
-        input$x_column,
-        input$y_column,
-        input$n_column,
-        input$skift_column,
-        input$frys_column,
-        input$kommentar_column,
-        input$chart_type,
-        input$target_value,
-        input$centerline_value,
-        input$y_axis_unit
-      )
-    },
-    ignoreInit = TRUE
-  )
+      # NB: last_save_time opdateres af local_storage_save_result observer
+      # når JS-siden bekræfter success — ikke her.
+      autoSaveAppState(session, save_data$data, save_data$metadata,
+        app_state = app_state)
+    })
+  } else {
+    NULL
+  }
 
   # PERFORMANCE OPTIMIZED: Event-driven table operation cleanup med monitoring
   table_cleanup_trigger <- shiny::debounce(
@@ -334,9 +394,86 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$data$table_operation_cleanup_needed <- FALSE
   })
 
-  # Register observer with manager
-  if (!is.null(obs_manager)) {
+  # Register observer with manager (only if created)
+  if (!is.null(obs_manager) && !is.null(obs_settings_save)) {
     obs_manager$add(obs_settings_save, "settings_auto_save")
+  }
+
+  # Diskret save-status indikator i wizard-bjælken (Issue #193)
+  # Viser:
+  #   - Intet hvis last_save_time er NULL (ingen save endnu)
+  #   - "Gemt · N s siden" / "Gemt · N min siden" ved success
+  #   - "Automatisk lagring deaktiveret" når auto_save_enabled er FALSE
+  output$session_save_status <- shiny::renderUI({
+    last_save <- app_state$session$last_save_time
+    auto_save_on <- app_state$session$auto_save_enabled
+
+    if (isFALSE(auto_save_on)) {
+      return(shiny::span(
+        shiny::icon("triangle-exclamation"),
+        " Automatisk lagring deaktiveret",
+        style = "color: #b33a3a; font-size: 0.8rem;",
+        title = "Browseren har ikke plads til mere. Din data er stadig i appen."
+      ))
+    }
+
+    if (is.null(last_save)) {
+      return(NULL)
+    }
+
+    diff_sec <- as.numeric(difftime(Sys.time(), last_save, units = "secs"))
+    label <- if (diff_sec < 60) {
+      paste0("Gemt \u00b7 ", round(diff_sec), " s siden")
+    } else if (diff_sec < 3600) {
+      paste0("Gemt \u00b7 ", round(diff_sec / 60), " min siden")
+    } else {
+      "Gemt \u00b7 tidligere"
+    }
+
+    shiny::span(
+      shiny::icon("check"),
+      " ", label,
+      style = "color: #6c757d; font-size: 0.8rem;",
+      title = "Indstillinger og data gemmes automatisk i din browser"
+    )
+  })
+
+  # JS → R feedback-kanal for localStorage save-result (Issue #193)
+  # Lytter på result fra shiny-handlers.js saveAppState handler.
+  # Ved success: opdater last_save_time. Ved fejl: deaktiver auto-save og
+  # vis dansk warning til brugeren.
+  obs_save_result <- shiny::observeEvent(input$local_storage_save_result, {
+    result <- input$local_storage_save_result
+    if (is.null(result)) {
+      return()
+    }
+
+    log_info(
+      sprintf("localStorage save result: success=%s", isTRUE(result$success)),
+      .context = "LOCAL_STORAGE"
+    )
+
+    if (isTRUE(result$success)) {
+      app_state$session$last_save_time <- Sys.time()
+    } else {
+      log_warn(
+        "localStorage save failed (quota or permission)",
+        .context = "AUTO_SAVE"
+      )
+      app_state$session$auto_save_enabled <- FALSE
+      shiny::showNotification(
+        paste0(
+          "Browseren kan ikke gemme mere data (lokal lagerplads fuld). ",
+          "Automatisk lagring er deaktiveret for denne session."
+        ),
+        type = "warning",
+        duration = 8
+      )
+    }
+  })
+
+  if (!is.null(obs_manager)) {
+    obs_manager$add(obs_save_result, "local_storage_save_result")
   }
 
   # UNIFIED EVENT SYSTEM: No return value needed - all navigation handled via events

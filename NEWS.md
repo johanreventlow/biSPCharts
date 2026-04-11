@@ -1,5 +1,44 @@
 # biSPCharts (development version)
 
+## Features
+
+### Session Persistence via Browser localStorage (Issue #193)
+
+Gen-aktiveret automatisk session persistence. Appen gemmer nu data og
+indstillinger kontinuerligt i browserens `localStorage` hvert 2 sekund,
+og genindlæser automatisk ved næste session start. Dette beskytter mod
+tab af arbejde ved forbindelsestab, utilsigtet browser-luk eller crash.
+
+**Hvad gemmes:**
+- Rådata med fuld type-bevaring (numeric, integer, character, logical,
+  Date, POSIXct med tidszone, factor med levels)
+- Kolonne-mapping (x, y, n, skift, frys, kommentar)
+- UI-indstillinger (titel, chart_type, target_value, centerline_value,
+  y_axis_unit, indicator_description)
+- Form-felter (unit_type, unit_select, unit_custom)
+
+**Konfiguration** (via `inst/golem-config.yml`):
+```yaml
+session:
+  auto_save_enabled: true
+  auto_restore_session: true      # prod=true, dev/test=false
+  save_interval_ms: 2000
+  settings_save_interval_ms: 1000
+```
+
+**Fixes fra tidligere implementation:**
+- Dobbelt JSON-encoding mellem R og JS rettet
+- `autoSaveAppState()` scope bug — graceful disable virker nu
+- Dead UI observers fjernet (`manual_save`, `show_upload_modal`, `save_status_display`)
+- Restore-rækkefølge fix: metadata gendannes før `data_updated` event
+- Race condition med auto-detect elimineret
+- `setTimeout(500)` erstattet med `shiny:sessioninitialized` event
+- JS → R fejl-kanal via `input$local_storage_save_result`
+
+**Nyt UI:**
+- Diskret save-status indikator i wizard-bjælken under paste-området
+- Restore-notifikation ved automatisk genindlæsning
+
 ## Breaking Changes
 
 ### Migration to BFHllm Package (Issue #100, Phase 2)

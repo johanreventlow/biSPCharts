@@ -31,7 +31,12 @@ initialize_app <- function(force_reload = FALSE, config_override = NULL) {
       list(
         logging = list(debug_mode_enabled = FALSE),
         testing = list(auto_load_enabled = FALSE),
-        development = list(auto_restore_enabled = FALSE),
+        development = list(
+          auto_restore_enabled = FALSE,
+          auto_save_enabled = TRUE,
+          save_interval_ms = 2000,
+          settings_save_interval_ms = 1000
+        ),
         performance = list()
       )
     }
@@ -197,6 +202,9 @@ setup_performance_optimizations <- function(config) {
 
   if (!is.null(config$development)) {
     claudespc_env$AUTO_RESTORE_ENABLED <- config$development$auto_restore_enabled %||% FALSE
+    claudespc_env$AUTO_SAVE_ENABLED <- config$development$auto_save_enabled %||% TRUE
+    claudespc_env$SAVE_INTERVAL_MS <- config$development$save_interval_ms %||% 2000
+    claudespc_env$SETTINGS_SAVE_INTERVAL_MS <- config$development$settings_save_interval_ms %||% 1000
     optimizations$development_config_set <- TRUE
   }
 

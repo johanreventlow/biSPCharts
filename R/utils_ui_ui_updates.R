@@ -160,15 +160,30 @@ create_ui_update_service <- function(session, app_state) {
   #
   update_form_fields <- function(metadata, fields = NULL) {
     if (is.null(fields)) {
-      # Default fields to update
+      # Default fields to update — includes advanced column mappings
+      # (skift/frys/kommentar) og eksport-modul felter for complete
+      # session restore (Issue #193).
       fields <- c(
+        # Trin 2 (Analyser)
         "indicator_title", "unit_select", "unit_custom", "indicator_description",
-        "chart_type", "x_column", "y_column", "n_column", "target_value",
-        "centerline_value", "y_axis_unit"
+        "chart_type",
+        "x_column", "y_column", "n_column",
+        "skift_column", "frys_column", "kommentar_column",
+        "target_value", "centerline_value", "y_axis_unit",
+        # Trin 3 (Eksporter) — namespaced med "export-" prefix
+        "export_title", "export_department", "export_format",
+        "pdf_description", "pdf_improvement",
+        "png_size_preset", "png_dpi"
       )
     }
 
-    shiny::isolate({
+    # Review fund #1 (HIGH): Wrap programmatic updates i
+    # safe_programmatic_ui_update() så observers ser
+    # app_state$ui$updating_programmatically = TRUE og skipper deres
+    # logik under restore. Ellers fyrer y_axis_unit/n_column observers
+    # på halv state og logger fx "N-kolonne kræves for valgt Y-akse-type"
+    # selvom mappingen faktisk findes i metadata.
+    safe_programmatic_ui_update(session, app_state, function() {
       safe_operation(
         "Update form fields from metadata",
         code = {
@@ -184,8 +199,37 @@ create_ui_update_service <- function(session, app_state) {
                 shiny::updateTextInput(session, field, value = metadata[[field]])
               } else if (field == "centerline_value") {
                 shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field %in% c("unit_select", "chart_type", "x_column", "y_column", "n_column", "y_axis_unit")) {
+              } else if (field %in% c(
+                "unit_select", "chart_type",
+                "x_column", "y_column", "n_column",
+                "skift_column", "frys_column", "kommentar_column",
+                "y_axis_unit"
+              )) {
                 shiny::updateSelectizeInput(session, field, selected = metadata[[field]])
+              } else if (field == "export_title") {
+                shiny::updateTextAreaInput(session, "export-export_title", value = metadata[[field]])
+              } else if (field == "export_department") {
+                shiny::updateTextInput(session, "export-export_department", value = metadata[[field]])
+              } else if (field == "export_format") {
+                # Issue #193 fund #3: export_format er en hidden input uden
+                # Shiny input binding. updateTextInput virker ikke — vi skal
+                # gå via JS setActiveExportBtn() så knap-state, hidden input
+                # og Shiny.setInputValue() alle synkroniseres.
+                fmt <- metadata[[field]]
+                if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png", "pptx")) {
+                  session$sendCustomMessage(
+                    "set-export-format",
+                    list(format = fmt)
+                  )
+                }
+              } else if (field == "pdf_description") {
+                shiny::updateTextAreaInput(session, "export-pdf_description", value = metadata[[field]])
+              } else if (field == "pdf_improvement") {
+                shiny::updateTextAreaInput(session, "export-pdf_improvement", value = metadata[[field]])
+              } else if (field == "png_size_preset") {
+                shiny::updateSelectInput(session, "export-png_size_preset", selected = metadata[[field]])
+              } else if (field == "png_dpi") {
+                shiny::updateSelectInput(session, "export-png_dpi", selected = metadata[[field]])
               }
             }
           }

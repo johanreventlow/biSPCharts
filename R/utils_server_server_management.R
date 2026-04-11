@@ -326,6 +326,12 @@ collect_metadata <- function(input) {
       target_value = input$target_value,
       centerline_value = input$centerline_value,
       y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit,
+      # Unit-type system (select/custom) og tilhørende værdier.
+      # Disse triggerer autosave og opdateres i update_form_fields(),
+      # så de skal også gemmes i metadata for korrekt roundtrip.
+      unit_type = input$unit_type,
+      unit_select = input$unit_select,
+      unit_custom = input$unit_custom,
       indicator_title = input$indicator_title,
       indicator_description = input$indicator_description,
 

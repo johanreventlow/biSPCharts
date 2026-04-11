@@ -349,7 +349,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
   if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
     data <- readxl::read_excel(file_path, sheet = "Data", col_names = TRUE)
     data <- ensure_standard_columns(data)
-    metadata <- parse_spc_excel(file_path)
+    metadata <- parse_spc_excel(file_path, sheets = excel_sheets)
 
     data_frame <- as.data.frame(data)
     set_current_data(app_state, data_frame)

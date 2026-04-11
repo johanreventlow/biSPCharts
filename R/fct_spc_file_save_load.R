@@ -8,6 +8,11 @@
 #' @name fct_spc_file_save_load
 NULL
 
+# Antal header-rækker i Indstillinger-arket (kommentar + tom linje).
+# build_spc_excel() skriver metadata fra startRow = INDSTILLINGER_HEADER_ROWS + 1L.
+# parse_spc_excel() bruger skip = INDSTILLINGER_HEADER_ROWS.
+INDSTILLINGER_HEADER_ROWS <- 2L
+
 #' Byg biSPCharts Excel-fil med Data- og Indstillinger-ark
 #'
 #' @param data data.frame med brugerens data
@@ -32,7 +37,6 @@ build_spc_excel <- function(data, metadata) {
   openxlsx::writeData(wb, sheet = "Indstillinger",
     x = data.frame(Besked = kommentar), startRow = 1, colNames = FALSE)
 
-  # Metadata som Felt/Vaerdi-tabel fra række 3
   meta_df <- data.frame(
     Felt   = names(metadata),
     Vaerdi = vapply(metadata, function(x) {
@@ -42,10 +46,8 @@ build_spc_excel <- function(data, metadata) {
     }, character(1)),
     stringsAsFactors = FALSE
   )
-  # Metadata fra række 3 (række 1: kommentar, række 2: header-linje).
-  # VIGTIGT: parse_spc_excel() bruger skip = 2 baseret på denne konstant.
   openxlsx::writeData(wb, sheet = "Indstillinger",
-    x = meta_df, startRow = 3, rowNames = FALSE)
+    x = meta_df, startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE)
 
   # Gem til temp-fil
   temp_path <- tempfile(fileext = ".xlsx")
@@ -59,29 +61,29 @@ build_spc_excel <- function(data, metadata) {
 #' @return Named list svarende til collect_metadata()-output, eller NULL
 #'   hvis arket mangler eller er korrupt
 #' @keywords internal
-parse_spc_excel <- function(file_path) {
+parse_spc_excel <- function(file_path, sheets = NULL) {
   tryCatch({
-    sheets <- readxl::excel_sheets(file_path)
+    if (is.null(sheets)) sheets <- readxl::excel_sheets(file_path)
     if (!"Indstillinger" %in% sheets) {
       return(NULL)
     }
 
-    # skip = 2: startRow = 3 i build_spc_excel() (række 1: kommentar, række 2: header).
+    # skip = INDSTILLINGER_HEADER_ROWS: matcher startRow i build_spc_excel()
     raw <- suppressMessages(
       readxl::read_excel(file_path, sheet = "Indstillinger",
-        skip = 2, col_names = TRUE)
+        skip = INDSTILLINGER_HEADER_ROWS, col_names = TRUE)
     )
 
     if (ncol(raw) < 2 || nrow(raw) == 0) {
       return(NULL)
     }
 
-    felter  <- as.character(raw[[1]])
-    vaerder <- as.character(raw[[2]])
-    vaerder[is.na(vaerder)] <- ""
+    fields <- as.character(raw[[1]])
+    values <- as.character(raw[[2]])
+    values[is.na(values)] <- ""
 
-    metadata <- as.list(vaerder)
-    names(metadata) <- felter
+    metadata <- as.list(values)
+    names(metadata) <- fields
 
     metadata
   }, error = function(e) {

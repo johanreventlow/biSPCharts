@@ -4926,7 +4926,7 @@
       "checksum": "9c39c4ea3db8be6bbe44510db7be739a"
     },
     ".claude/settings.local.json": {
-      "checksum": "a380fe19d397b6afbc67273cd29f911b"
+      "checksum": "f84602544a33fac7fb337983f74e6737"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -18479,6 +18479,12 @@
     "docs/STARTUP_CONTRACT.md": {
       "checksum": "ef93d83bc2b48df8e876a4bf0c8b2a83"
     },
+    "docs/superpowers/plans/2026-04-11-save-load-file.md": {
+      "checksum": "8daeb00b3753359c3578438d93de5b33"
+    },
+    "docs/superpowers/specs/2026-04-11-save-load-design.md": {
+      "checksum": "89b8e59f66365ddb4eaa3feb12c8b77a"
+    },
     "docs/USER_GUIDE.md": {
       "checksum": "9558c1b892794698483b124dd521e61d"
     },
@@ -21615,10 +21621,13 @@
       "checksum": "beec753d414c6ff67835a91457c92e5c"
     },
     "R/fct_file_operations.R": {
-      "checksum": "eac4f3aa94b5ee08b22bebb8c08bf45d"
+      "checksum": "1b07fdf3ae78c4b6b217e99d7434b1ac"
     },
     "R/fct_spc_bfh_service.R": {
       "checksum": "8c53a30d5d5e9422f4a19cbe36f80a7b"
+    },
+    "R/fct_spc_file_save_load.R": {
+      "checksum": "bdde78f5d9dc20afb01037938bc912ae"
     },
     "R/fct_spc_helpers.R": {
       "checksum": "c45a0e197d29a8bc846d580326095891"
@@ -21666,7 +21675,7 @@
       "checksum": "5894c918cbab34f405e888ec2c251c0f"
     },
     "R/ui_app_ui.R": {
-      "checksum": "f282b5c389879dde5f63eb6b8739cc9f"
+      "checksum": "22ae6001e03ff12e9bc04f9682228386"
     },
     "R/utils_advanced_debug.R": {
       "checksum": "b58eab3f78fed2b6668eb798d4707935"
@@ -21759,7 +21768,7 @@
       "checksum": "0c047d2504c7df9e62522f72a06cdc73"
     },
     "R/utils_server_event_listeners.R": {
-      "checksum": "fb57dfb3790f0ec3feb7a90b7957bbc2"
+      "checksum": "27bb2d2eee7a244c6d448ddb306d7964"
     },
     "R/utils_server_export.R": {
       "checksum": "d5dad84d2f155b3f1ea820808d4335e6"
@@ -22164,7 +22173,7 @@
       "checksum": "d352583b751cf1393720ffec21268a5b"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "1921ffcb0b922f050b803804d5c8ee4c"
+      "checksum": "9e08482b53a4a72181135c2fc2b31773"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
       "checksum": "5b5377680c8912b7973824466bf25f8f"
@@ -22333,6 +22342,9 @@
     },
     "tests/testthat/test-fct_export_powerpoint.R": {
       "checksum": "7e1c2e0b8e43204d947176aabdae49b1"
+    },
+    "tests/testthat/test-fct_spc_file_save_load.R": {
+      "checksum": "0f00781b9772557819cc2be4959453d5"
     },
     "tests/testthat/test-file-io-comprehensive.R": {
       "checksum": "ca30aadea6e2a9906cf65ba9b4848264"

@@ -50,3 +50,41 @@ build_spc_excel <- function(data, metadata) {
   openxlsx::saveWorkbook(wb, temp_path, overwrite = TRUE)
   temp_path
 }
+
+#' Læs Indstillinger-ark fra biSPCharts Excel-fil
+#'
+#' @param file_path Sti til Excel-filen
+#' @return Named list svarende til collect_metadata()-output, eller NULL
+#'   hvis arket mangler eller er korrupt
+#' @keywords internal
+parse_spc_excel <- function(file_path) {
+  tryCatch({
+    sheets <- readxl::excel_sheets(file_path)
+    if (!"Indstillinger" %in% sheets) {
+      return(NULL)
+    }
+
+    # skip = 2: spring kommentarcelleblok (række 1) og tom linje (række 2) over
+    raw <- suppressMessages(
+      readxl::read_excel(file_path, sheet = "Indstillinger",
+        skip = 2, col_names = TRUE)
+    )
+
+    if (ncol(raw) < 2 || nrow(raw) == 0) {
+      return(NULL)
+    }
+
+    felter  <- as.character(raw[[1]])
+    vaerder <- as.character(raw[[2]])
+    vaerder[is.na(vaerder)] <- ""
+
+    metadata <- as.list(vaerder)
+    names(metadata) <- felter
+
+    metadata
+  }, error = function(e) {
+    log_warn(paste("Kunne ikke parse Indstillinger-ark:", e$message),
+      .context = "FILE_SAVE_LOAD")
+    NULL
+  })
+}

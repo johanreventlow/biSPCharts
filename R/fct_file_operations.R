@@ -361,7 +361,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     app_state$ui$hide_anhoej_rules <- FALSE
     emit$navigation_changed()
 
-    if (!is.null(metadata)) {
+    if (!is.null(metadata) && !is.null(ui_service)) {
       shiny::invalidateLater(500)
       shiny::isolate({
         restore_metadata(session, metadata, ui_service)

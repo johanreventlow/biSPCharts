@@ -308,29 +308,83 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     metadata <- parse_spc_excel(file_path, sheets = excel_sheets)
 
     data_frame <- as.data.frame(data)
-    set_current_data(app_state, data_frame)
-    app_state$data$original_data <- data_frame
-
-    emit$data_updated("file_loaded")
-    app_state$session$file_uploaded <- TRUE
-    app_state$columns$auto_detect$completed <- TRUE
-    app_state$ui$hide_anhoej_rules <- FALSE
-    emit$navigation_changed()
 
     if (!is.null(metadata) && !is.null(ui_service)) {
-      shiny::invalidateLater(500)
-      shiny::isolate({
-        restore_metadata(session, metadata, ui_service)
-      })
+      # Fuld restore: spejl localStorage-session_restore-flowet så auto-detect
+      # IKKE kører og gemte mappings ikke overskrives. Rækkefølge er kritisk:
+      # 1) Guard-flag sættes FØR state-skriv så listeners suppresses korrekt.
+      # 2) Kolonne-mappings skrives til app_state FØR emit, så downstream-
+      #    listeners ser korrekt state i første iteration.
+      # 3) restore_metadata() scheduleres via session$onFlushed — den må IKKE
+      #    køre synkront, da selectize-choices først populeres af
+      #    handle_session_restore_context().
+      # 4) emit("session_restore") router til session_restore-handler (exact
+      #    match), som kalder update_column_choices_unified + navigation +
+      #    visualization_update_needed. Dette erstatter emit("file_loaded")
+      #    der ellers ville trigge auto_detection_started.
+      # 5) Cleanup af restoring_session-flag scheduleres efter flush.
+      app_state$session$restoring_session <- TRUE
+
+      set_current_data(app_state, data_frame)
+      app_state$data$original_data <- data_frame
+      app_state$session$file_uploaded <- TRUE
+      app_state$columns$auto_detect$completed <- TRUE
+      app_state$ui$hide_anhoej_rules <- FALSE
+
+      for (field in c("x_column", "y_column", "n_column",
+                      "skift_column", "frys_column", "kommentar_column")) {
+        val <- metadata[[field]]
+        if (!is.null(val) && nzchar(val)) {
+          app_state$columns$mappings[[field]] <- val
+        }
+      }
+
+      session$onFlushed(
+        function() {
+          shiny::isolate({
+            log_debug(
+              "Restoring metadata after UI flush (Excel upload)",
+              .context = "SESSION_RESTORE"
+            )
+            restore_metadata(session, metadata, ui_service)
+          })
+        },
+        once = TRUE
+      )
+
+      emit$data_updated("session_restore")
+
+      session$onFlushed(
+        function() {
+          shiny::isolate({
+            app_state$session$restoring_session <- FALSE
+            log_debug(
+              "restoring_session flag cleared after Excel upload restore",
+              .context = "SESSION_RESTORE"
+            )
+          })
+        },
+        once = TRUE
+      )
+
+      besked <- paste0("Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
+                       ncol(data_frame), " kolonner + indstillinger")
+    } else {
+      # Fallback: Indstillinger-ark kunne ikke parses. Behandl som almindelig
+      # data-upload og kør auto-detection i stedet.
+      set_current_data(app_state, data_frame)
+      app_state$data$original_data <- data_frame
+      app_state$session$file_uploaded <- TRUE
+      app_state$columns$auto_detect$completed <- FALSE
+      app_state$ui$hide_anhoej_rules <- FALSE
+
+      emit$data_updated("file_loaded")
+      emit$navigation_changed()
+
+      besked <- paste0("Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
+                       "indstillinger kunne ikke gendannes")
     }
 
-    besked <- if (!is.null(metadata)) {
-      paste0("Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
-             ncol(data_frame), " kolonner + indstillinger")
-    } else {
-      paste0("Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
-             "indstillinger kunne ikke gendannes")
-    }
     shiny::showNotification(besked, type = "message", duration = 4)
     return(invisible(NULL))
   }

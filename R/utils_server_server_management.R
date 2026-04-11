@@ -12,13 +12,92 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 
   # Check if centralized state is available
   use_centralized_state <- !is.null(app_state)
+  # Log auto-restore feature flag ved session start (diagnostik)
+  log_info(
+    sprintf("auto_restore_data observer registered (auto_restore_enabled=%s)",
+      isTRUE(get_auto_restore_enabled())),
+    .context = "SESSION_RESTORE"
+  )
+
+  # Peek-observer: modtager metadata-subset fra JS ved session-init.
+  # Sætter app_state$session$peek_result så landing-modulet kan vise
+  # restore-card eller default-landing. Ingen ændring af auto_restore_data
+  # observer — den trigges nu via performSessionRestore custom message.
+  shiny::observeEvent(input$session_peek,
+    ignoreNULL = TRUE,
+    {
+      peek <- input$session_peek
+
+      # has_payload = FALSE (eller mangler) → default landing
+      if (!isTRUE(peek$has_payload)) {
+        log_info("session_peek: ingen gemt session", .context = "SESSION_RESTORE")
+        app_state$session$peek_result <- list(has_payload = FALSE)
+        return()
+      }
+
+      # Feature flag off → ryd lydløst og vis default landing
+      if (!get_auto_restore_enabled()) {
+        log_info(
+          "session_peek: auto_restore deaktiveret — ryder localStorage",
+          .context = "SESSION_RESTORE"
+        )
+        clearDataLocally(session)
+        session$sendCustomMessage("discardPendingRestore", list())
+        app_state$session$peek_result <- list(has_payload = FALSE)
+        return()
+      }
+
+      # Schema version-check → ryd lydløst og vis default landing
+      saved_version <- peek$version %||% "unknown"
+      if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
+        log_info(
+          paste("session_peek: version mismatch", saved_version, "≠", LOCAL_STORAGE_SCHEMA_VERSION,
+            "— ryder localStorage lydløst"),
+          .context = "SESSION_RESTORE"
+        )
+        clearDataLocally(session)
+        session$sendCustomMessage("discardPendingRestore", list())
+        app_state$session$peek_result <- list(has_payload = FALSE)
+        return()
+      }
+
+      # Gyldig peek — gem metadata til landing-modulet
+      log_info(
+        "session_peek: gyldig gemt session fundet — afventer brugervalg",
+        .context = "SESSION_RESTORE",
+        details = list(
+          nrows = peek$nrows,
+          ncols = peek$ncols,
+          active_tab = peek$active_tab
+        )
+      )
+      app_state$session$peek_result <- list(
+        has_payload = TRUE,
+        timestamp     = peek$timestamp,
+        nrows         = peek$nrows,
+        ncols         = peek$ncols,
+        indicator_title = peek$indicator_title %||% "",
+        active_tab    = peek$active_tab
+      )
+    }
+  )
+
   # Auto-gendan session data når tilgængelig (hvis aktiveret)
   shiny::observeEvent(input$auto_restore_data,
     {
       shiny::req(input$auto_restore_data)
 
+      log_info(
+        "auto_restore_data observer triggered",
+        .context = "SESSION_RESTORE"
+      )
+
       # Tjek om auto-gendannelse er aktiveret
       if (!get_auto_restore_enabled()) {
+        log_info(
+          "Auto-restore disabled via config - skipping restore",
+          .context = "SESSION_RESTORE"
+        )
         return()
       }
 
@@ -28,27 +107,37 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
           saved_state <- input$auto_restore_data
 
           if (!is.null(saved_state$data)) {
+            # Version-check: Ryd inkompatibel data og spring restore over
+            saved_version <- saved_state$version %||% "unknown"
+            if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
+              log_info(
+                paste("Ryder inkompatibel localStorage session version:", saved_version),
+                .context = "SESSION_RESTORE",
+                details = list(
+                  found_version = saved_version,
+                  expected_version = LOCAL_STORAGE_SCHEMA_VERSION
+                )
+              )
+              clearDataLocally(session)
+              return(invisible(NULL))
+            }
+
             # Sæt gendannelses guards for at forhindre interferens
-            # Unified state assignment only
             app_state$session$restoring_session <- TRUE
-            # Unified state assignment only
             app_state$data$updating_table <- TRUE
-            # Unified state assignment only
             app_state$data$table_operation_in_progress <- TRUE
-            # Unified state assignment only
             app_state$session$auto_save_enabled <- FALSE
 
-            # Oprydningsfunktion til at nulstille guards
+            # Oprydningsfunktion til at nulstille guards.
+            # VIGTIGT: restoring_session skal IKKE nulstilles her.
+            # wizard_gates-observeren på data_updated fyrer i NÆSTE flush,
+            # og vi skal bevare restoring_session = TRUE så den skipper
+            # auto-nav til "analyser". Cleanup af restoring_session sker
+            # i session$onFlushed nedenfor.
             on.exit(
               {
-                # Unified state assignment only
                 app_state$data$updating_table <- FALSE
-                # Unified state assignment only
-                app_state$session$restoring_session <- FALSE
-                # Unified state assignment only
                 app_state$session$auto_save_enabled <- TRUE
-                # Set flag for delayed cleanup - handled by separate observer
-                # Unified state assignment only
                 app_state$data$table_operation_cleanup_needed <- TRUE
               },
               add = TRUE
@@ -58,90 +147,147 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             saved_data <- saved_state$data
 
             # K5 FIX: Bounds checking to prevent DoS via unbounded memory allocation
-            # Reject payloads exceeding conservative limits before reconstruction
             max_rows <- 1e6 # 1 million rows max
             max_cols <- 1000 # 1000 columns max
             max_cells <- 1e7 # 10 million total cells max
 
-            if (!is.null(saved_data$values) && !is.null(saved_data$nrows) && !is.null(saved_data$ncols)) {
-              # Validate dimensions before reconstruction
-              if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
-                saved_data$nrows < 0 || saved_data$ncols < 0 ||
-                saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
-                (saved_data$nrows * saved_data$ncols) > max_cells ||
-                length(saved_data$values) != saved_data$ncols) {
-                stop("Invalid data dimensions or structure - rejecting restoration payload")
+            if (is.null(saved_data$values) || is.null(saved_data$nrows) ||
+              is.null(saved_data$ncols)) {
+              stop("Invalid saved data format - missing required fields")
+            }
+
+            # Validate dimensions before reconstruction
+            if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
+              saved_data$nrows < 0 || saved_data$ncols < 0 ||
+              saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
+              (saved_data$nrows * saved_data$ncols) > max_cells ||
+              length(saved_data$values) != saved_data$ncols) {
+              stop("Invalid data dimensions or structure - rejecting restoration payload")
+            }
+
+            # Reconstruct data.frame manually med class-preservation
+            reconstructed_data <- data.frame(
+              matrix(nrow = saved_data$nrows, ncol = saved_data$ncols),
+              stringsAsFactors = FALSE
+            )
+
+            # Set column names first if available
+            if (!is.null(saved_data$col_names)) {
+              names(reconstructed_data) <- saved_data$col_names
+            }
+
+            # Populate columns med udvidet class-restoration
+            for (i in seq_along(saved_data$values)) {
+              col_name <- names(reconstructed_data)[i]
+              raw_values <- saved_data$values[[i]]
+              col_class_info <- if (!is.null(saved_data$class_info)) {
+                saved_data$class_info[[col_name]]
+              } else {
+                NULL
               }
 
-              # Reconstruct data.frame manually
-              reconstructed_data <- data.frame(
-                matrix(nrow = saved_data$nrows, ncol = saved_data$ncols),
-                stringsAsFactors = FALSE
+              reconstructed_data[[i]] <- restore_column_class(
+                raw_values,
+                class_info = col_class_info
               )
+            }
 
-              # Set column names first if available
-              if (!is.null(saved_data$col_names)) {
-                names(reconstructed_data) <- saved_data$col_names
-              }
+            # Sæt data og completion flags FØR emit så downstream listeners
+            # ser korrekt state (men metadata restore sker EFTER flush).
+            set_current_data(app_state, reconstructed_data)
+            app_state$data$original_data <- reconstructed_data
+            app_state$session$file_uploaded <- TRUE
+            app_state$columns$auto_detect$completed <- TRUE
 
-              # Populate columns one by one
-              for (i in seq_along(saved_data$values)) {
-                reconstructed_data[[i]] <- saved_data$values[[i]]
-              }
-
-              # Restore column classes if available
-              if (!is.null(saved_data$class_info)) {
-                for (col_name in names(saved_data$class_info)) {
-                  if (col_name %in% names(reconstructed_data)) {
-                    target_class <- saved_data$class_info[[col_name]]
-                    if (target_class == "numeric") {
-                      reconstructed_data[[col_name]] <- as.numeric(reconstructed_data[[col_name]])
-                    } else if (target_class == "character") {
-                      reconstructed_data[[col_name]] <- as.character(reconstructed_data[[col_name]])
-                    } else if (target_class == "logical") {
-                      reconstructed_data[[col_name]] <- as.logical(reconstructed_data[[col_name]])
-                    }
-                  }
+            # FUND #1: Skriv kolonne-mappings til centraliseret state FØR
+            # emit, så listeners på data_updated (priority HIGH) ser korrekt
+            # mapping-state i første iteration. Selve selectize-selected
+            # opdateringen sker stadig i onFlushed nedenfor, fordi choices
+            # skal være populeret først.
+            if (!is.null(saved_state$metadata)) {
+              saved_meta <- saved_state$metadata
+              for (field in c("x_column", "y_column", "n_column",
+                "skift_column", "frys_column", "kommentar_column")) {
+                val <- saved_meta[[field]]
+                if (!is.null(val) && nzchar(val)) {
+                  app_state$columns$mappings[[field]] <- val
                 }
               }
 
-              # Dual-state sync during migration
-              set_current_data(app_state, reconstructed_data)
-              app_state$data$original_data <- reconstructed_data
-
-              # Emit consolidated event with context
-              emit$data_updated(context = "session_restore")
-            } else {
-              # Fallback for older save format
-              # Dual-state sync during migration
-              fallback_data <- as.data.frame(saved_state$data)
-              set_current_data(app_state, fallback_data)
-              app_state$data$original_data <- fallback_data
-
-              # Emit consolidated event with context
-              emit$data_updated(context = "session_restore")
+              # CRITICAL: Metadata restore skal ske EFTER selectize choices
+              # er populeret (sker i observer på data_updated). Vi bruger
+              # session$onFlushed(once = TRUE) så update-kaldene kører efter
+              # Shiny har flushed UI-opdateringer. Ellers peger
+              # updateSelectizeInput(selected="Dato") på en tom choices-liste
+              # og effekten er nul.
+              session$onFlushed(
+                function() {
+                  shiny::isolate({
+                    log_debug(
+                      "Restoring metadata after UI flush",
+                      .context = "SESSION_RESTORE"
+                    )
+                    restore_metadata(session, saved_meta, ui_service)
+                  })
+                },
+                once = TRUE
+              )
             }
 
-            # Unified state assignment only
-            app_state$session$file_uploaded <- TRUE
-            # Unified state assignment only
-            app_state$columns$auto_detect$completed <- TRUE
+            # Wizard-integration: Skip landing page og aktivér wizard-navigation.
+            # Landing page har body class "wizard-nav-active" skjult som default,
+            # hvilket skjuler navbar-trin. Vi skal eksplicit aktivere wizard-mode
+            # efter restore så navbar-trin er synlige.
+            session$sendCustomMessage("activate-wizard-mode", list())
 
-            # Restore metadata if available
-            if (!is.null(saved_state$metadata)) {
-              restore_metadata(session, saved_state$metadata)
+            # Navigér til korrekt tab baseret på gemt active_tab.
+            # Valider: kun kendte string-tab-navne accepteres.
+            # Numeriske værdier (fx 36 = nrows fra korrupt metadata) afvises
+            # → fallback til "analyser" så plot vises med det samme.
+            valid_restore_tabs <- c("analyser", "eksporter", "upload")
+            saved_tab_raw <- saved_state$metadata$active_tab
+            saved_tab <- if (
+              is.character(saved_tab_raw) &&
+                length(saved_tab_raw) == 1 &&
+                saved_tab_raw %in% valid_restore_tabs
+            ) saved_tab_raw else "analyser"
+
+            # Unlock wizard-trin 2 og navigér (gør det synligt straks)
+            session$sendCustomMessage("wizard-complete-step", 1)
+            session$sendCustomMessage("wizard-unlock-step", 2)
+            if (saved_tab == "eksporter") {
+              session$sendCustomMessage("wizard-complete-step", 2)
+              session$sendCustomMessage("wizard-unlock-step", 3)
             }
+            bslib::nav_select("main_navbar", selected = saved_tab, session = session)
+
+            # FINALLY emit event (listeners ser nu korrekt state)
+            emit$data_updated(context = "session_restore")
+
+            # Cleanup restoring_session flag AFTER alle data_updated-listeners
+            # har kørt. wizard_gates-observeren på data_updated fyrer i næste
+            # flush og må se restoring_session = TRUE så den skipper auto-nav
+            # til "analyser". onFlushed(once=TRUE) kører efter flush er done.
+            session$onFlushed(
+              function() {
+                shiny::isolate({
+                  app_state$session$restoring_session <- FALSE
+                  log_info(
+                    "restoring_session flag cleared after data_updated flush",
+                    .context = "SESSION_RESTORE"
+                  )
+                })
+              },
+              once = TRUE
+            )
 
             # Show notification about auto restore
-            data_rows <- if (!is.null(saved_state$data$nrows)) {
-              saved_state$data$nrows
-            } else {
-              nrow(saved_state$data)
-            }
+            data_rows <- saved_data$nrows %||% nrow(reconstructed_data)
 
             shiny::showNotification(
               paste(
-                "Tidligere session automatisk genindlæst:", data_rows, "datapunkter fra",
+                "Session genoprettet:", data_rows,
+                "datapunkter fra",
                 format(as.POSIXct(saved_state$timestamp), "%d-%m-%Y %H:%M")
               ),
               type = "message",
@@ -170,83 +316,36 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
     once = TRUE
   )
 
-  # Manual save handler
-  shiny::observeEvent(input$manual_save, {
-    # Unified state: Use centralized state for current data
-    current_data_check <- app_state$data$current_data
-    shiny::req(current_data_check)
-
-    metadata <- collect_metadata(input)
-
-    # H7: Wrap manual save in safe_operation with user feedback
-    result <- safe_operation(
-      "Manual save to local storage",
-      code = {
-        saveDataLocally(session, current_data_check, metadata)
-      },
-      fallback = function(e) {
-        log_error(
-          paste("Manuel gem fejlede:", e$message),
-          .context = "MANUAL_SAVE"
-        )
-        shiny::showNotification(
-          "Kunne ikke gemme sessionen lokalt. Prøv igen eller brug Download-funktionen.",
-          type = "error",
-          duration = 5
-        )
-        return(FALSE)
-      },
-      error_type = "local_storage"
-    )
-
-    # Only update timestamp and show success if save worked
-    if (!identical(result, FALSE)) {
-      # Unified state assignment only
-      app_state$session$last_save_time <- Sys.time()
-      shiny::showNotification("Session gemt lokalt!", type = "message", duration = 2)
-    }
-  })
-
   # Clear saved handler
   shiny::observeEvent(input$clear_saved, {
     handle_clear_saved_request(input, session, app_state, emit, ui_service)
   })
-
-  # Upload modal handler
-  shiny::observeEvent(input$show_upload_modal, {
-    show_upload_modal()
-  })
-
-  # Kolonnemapping modal fjernet — felterne er nu inline over datatabellen
 
   # Confirm clear saved handler
   shiny::observeEvent(input$confirm_clear_saved, {
     handle_confirm_clear_saved(session, app_state, emit, ui_service)
   })
 
-  # Save status display
-  output$save_status_display <- shiny::renderUI({
-    # Unified state: Use centralized state for last save time
-    last_save_time_check <- app_state$session$last_save_time
-
-    if (!is.null(last_save_time_check)) {
-      time_diff <- as.numeric(difftime(Sys.time(), last_save_time_check, units = "mins"))
-      if (time_diff < 1) {
-        shiny::span(shiny::icon("check"), " Gemt lige nu", style = "color: green;")
-      } else if (time_diff < 60) {
-        shiny::span(shiny::icon("clock"), paste(" Gemt for", round(time_diff), "min siden"))
-      } else {
-        shiny::span(shiny::icon("clock"), " Gemt for mere end 1 time siden")
-      }
-    }
-  })
-
   # NOTE: output$dataLoaded is now handled in server_helpers.R with smart logic
+  # NOTE: manual_save, show_upload_modal og save_status_display observers
+  # blev fjernet i Issue #193 (OpenSpec add-session-persistence-autosave).
+  # Auto-save hvert 2s gør manuel save-knap overflødig; status-display erstattes
+  # af en diskret indikator i wizard-bjælken (se Fase 5).
 }
 
 # Helper functions for session management
 restore_metadata <- function(session, metadata, ui_service = NULL) {
   shiny::isolate({
+    # Diagnostisk: log hvilke felter der faktisk er gemt
+    present_fields <- names(metadata)[
+      vapply(metadata, function(v) !is.null(v) && !identical(v, ""), logical(1))
+    ]
+    log_info(
+      sprintf("restore_metadata called with %d non-empty fields: %s",
+        length(present_fields), paste(present_fields, collapse = ", ")),
+      .context = "SESSION_RESTORE"
+    )
+
     if (!is.null(ui_service)) {
       # Use centralized UI service for metadata restoration
       ui_service$update_form_fields(metadata)
@@ -291,23 +390,81 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       if (!is.null(metadata$y_axis_unit)) {
         shiny::updateSelectizeInput(session, "y_axis_unit", selected = metadata$y_axis_unit)
       }
+      if (!is.null(metadata$indicator_title)) {
+        shiny::updateTextInput(session, "indicator_title", value = metadata$indicator_title)
+      }
+      if (!is.null(metadata$indicator_description)) {
+        shiny::updateTextAreaInput(session, "indicator_description", value = metadata$indicator_description)
+      }
     }
   })
 }
 
-collect_metadata <- function(input) {
+collect_metadata <- function(input, app_state = NULL) {
   shiny::isolate({
+    # Hjælper: prefer input, fallback til app_state$columns$mappings når input
+    # er NULL eller "". Dette undgår race condition under session restore hvor
+    # updateSelectizeInput round-trip ikke er færdig, og vi ellers ville
+    # overskrive localStorage med tomme kolonner.
+    col_val <- function(input_key, mapping_key = input_key) {
+      v <- input[[input_key]]
+      if (!is.null(v) && !identical(v, "")) {
+        return(v)
+      }
+      if (!is.null(app_state)) {
+        m <- app_state$columns$mappings[[mapping_key]]
+        if (!is.null(m) && !identical(m, "")) {
+          return(m)
+        }
+      }
+      ""
+    }
+
     list(
-      x_column = if (is.null(input$x_column) || input$x_column == "") "" else input$x_column,
-      y_column = if (is.null(input$y_column) || input$y_column == "") "" else input$y_column,
-      n_column = if (is.null(input$n_column) || input$n_column == "") "" else input$n_column,
-      skift_column = if (is.null(input$skift_column) || input$skift_column == "") "" else input$skift_column,
-      frys_column = if (is.null(input$frys_column) || input$frys_column == "") "" else input$frys_column,
-      kommentar_column = if (is.null(input$kommentar_column) || input$kommentar_column == "") "" else input$kommentar_column,
+      # Trin 2 (Analyser) — kolonne-mapping og chart-indstillinger
+      x_column = col_val("x_column"),
+      y_column = col_val("y_column"),
+      n_column = col_val("n_column"),
+      skift_column = col_val("skift_column"),
+      frys_column = col_val("frys_column"),
+      kommentar_column = col_val("kommentar_column"),
       chart_type = input$chart_type,
-      target_value = input$target_value,
-      centerline_value = input$centerline_value,
-      y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit
+      # NULL-safe: jsonlite::toJSON dropper list-elementer med NULL, så vi
+      # falder tilbage til "" for at sikre roundtrip ved tomme felter.
+      target_value = if (is.null(input$target_value)) "" else input$target_value,
+      centerline_value = if (is.null(input$centerline_value)) "" else input$centerline_value,
+      y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit,
+      # Unit-type system (select/custom) og tilhørende værdier.
+      # Disse triggerer autosave og opdateres i update_form_fields(),
+      # så de skal også gemmes i metadata for korrekt roundtrip.
+      # NULL-safe: jsonlite::toJSON serialiserer NULL som {} (tomt object)
+      # selvom auto_unbox = TRUE, hvilket giver uforudsigelig decoding i JS.
+      # Fallback til "" sikrer korrekt roundtrip.
+      unit_type = if (is.null(input$unit_type)) "" else input$unit_type,
+      unit_select = if (is.null(input$unit_select)) "" else input$unit_select,
+      unit_custom = if (is.null(input$unit_custom)) "" else input$unit_custom,
+      indicator_title = if (is.null(input$indicator_title)) "" else input$indicator_title,
+      indicator_description = if (is.null(input$indicator_description)) "" else input$indicator_description,
+
+      # Trin 3 (Eksporter) — export-modulets felter (namespaced med "export-")
+      # NULL-safe: ellers dropper jsonlite::toJSON elementerne når modulet
+      # endnu ikke er renderet (inputs = NULL før første visning af trin 3).
+      export_title = if (is.null(input[["export-export_title"]])) "" else input[["export-export_title"]],
+      export_department = if (is.null(input[["export-export_department"]])) "" else input[["export-export_department"]],
+      export_format = if (is.null(input[["export-export_format"]])) "" else input[["export-export_format"]],
+      pdf_description = if (is.null(input[["export-pdf_description"]])) "" else input[["export-pdf_description"]],
+      pdf_improvement = if (is.null(input[["export-pdf_improvement"]])) "" else input[["export-pdf_improvement"]],
+      png_size_preset = if (is.null(input[["export-png_size_preset"]])) "" else input[["export-png_size_preset"]],
+      png_dpi = if (is.null(input[["export-png_dpi"]])) "" else input[["export-png_dpi"]],
+
+      # Wizard navigation state (Issue #193)
+      # Valider: kun kendte string-værdier gemmes for at undgå at nrows (36)
+      # eller andre numeriske værdier sniger sig ind via reactive edge cases.
+      active_tab = {
+        tab <- input$main_navbar %||% "analyser"
+        valid_nav_tabs <- c("analyser", "eksporter", "upload", "start")
+        if (is.character(tab) && length(tab) == 1 && tab %in% valid_nav_tabs) tab else "analyser"
+      }
     )
   })
 }
@@ -438,50 +595,6 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
 
   # Unified state only
   app_state$data$updating_table <- FALSE
-}
-
-show_upload_modal <- function() {
-  # Get hospital colors using the proper package function
-  hospital_colors <- get_hospital_colors()
-
-  shiny::showModal(shiny::modalDialog(
-    title = shiny::div(
-      shiny::icon("upload"),
-      " Upload datafil",
-      style = paste("color:", hospital_colors$primary)
-    ),
-    size = "m",
-    shiny::div(
-      style = "margin: 20px 0;",
-
-      # File input i modal
-      shiny::fileInput(
-        "data_file",
-        "Vælg datafil:",
-        accept = c(".xlsx", ".xls", ".csv", ".CSV"),
-        placeholder = "Ingen fil valgt...",
-        width = "100%"
-      ),
-      shiny::hr(),
-      shiny::div(
-        style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; font-size: 0.9rem;",
-        shiny::h6("Understøttede filformater:", style = "font-weight: 500; margin-bottom: 10px;"),
-        shiny::tags$ul(
-          style = "margin-bottom: 0;",
-          shiny::tags$li(shiny::strong("Excel filer:"), " .xlsx, .xls - med automatisk kolonnedetekttion"),
-          shiny::tags$li(shiny::strong("CSV filer:"), " .csv - danske indstillinger (semikolon, komma som decimal)")
-        ),
-        shiny::br(),
-        shiny::div(
-          style = "font-size: 0.8rem; color: #666;",
-          shiny::icon("info-circle"),
-          " Filer med 'Data' og 'Metadata' sheets genindlæser komplette sessioner automatisk."
-        )
-      )
-    ),
-    footer = shiny::modalButton("Annuller"),
-    easyClose = TRUE
-  ))
 }
 
 show_clear_confirmation_modal <- function(has_data, has_settings, app_state) {

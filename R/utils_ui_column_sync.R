@@ -187,7 +187,14 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       )
       cache_val <- normalize_selection_value(cache_val_raw)
 
-      state_val_raw <- tryCatch(shiny::isolate(app_state$columns[[col]]), error = function(...) NULL)
+      # FIX: Mappings ligger under app_state$columns$mappings$<col>, ikke
+      # app_state$columns$<col>. Den forkerte sti gjorde at state-fallback
+      # altid returnerede NULL under session restore og satte selected=""
+      # på selectize-inputs inden restore_metadata fik fyldt dem.
+      state_val_raw <- tryCatch(
+        shiny::isolate(app_state$columns$mappings[[col]]),
+        error = function(...) NULL
+      )
       state_val <- normalize_selection_value(state_val_raw)
 
       candidates <- if (identical(reason, "edit")) {

@@ -35,6 +35,8 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
         display: block !important;
       }
+      /* Flash-mitigation: undgå tom landing mens peek-resultatet afklares */
+      #landing-landing_body:empty { min-height: 60vh; }
     ")),
     # Your application UI logic
     bslib::page_navbar(

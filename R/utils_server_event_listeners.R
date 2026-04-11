@@ -881,10 +881,24 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # Export-side reads from mappings, not from reactive
             app_state$columns$mappings$y_axis_unit <- ui_type
 
-            y_col <- shiny::isolate(app_state$columns$y_column)
+            y_col <- shiny::isolate(app_state$columns$mappings$y_column)
             data <- shiny::isolate(app_state$data$current_data)
             n_points <- if (!is.null(data)) nrow(data) else NA_integer_
-            n_present <- !is.null(input$n_column) && nzchar(input$n_column)
+
+            # Review fund #2: Læs n_column fra mappings-state som fallback
+            # når input$n_column endnu ikke er landet (typisk under session
+            # restore hvor updateSelectizeInput beskeder ikke har roundtrippet).
+            # Uden fallback logger observeren falsk "N-kolonne kræves" warning.
+            n_from_input <- !is.null(input$n_column) && nzchar(input$n_column)
+            if (n_from_input) {
+              n_present <- TRUE
+            } else {
+              n_from_state <- tryCatch(
+                shiny::isolate(app_state$columns$mappings$n_column),
+                error = function(...) NULL
+              )
+              n_present <- !is.null(n_from_state) && nzchar(n_from_state)
+            }
 
             y_vals <- if (!is.null(y_col) && !is.null(data) && y_col %in% names(data)) data[[y_col]] else NULL
 
@@ -1022,7 +1036,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 y_sample <- NULL
                 if (is.null(y_unit) || y_unit == "") {
                   data <- shiny::isolate(app_state$data$current_data)
-                  y_col <- shiny::isolate(app_state$columns$y_column)
+                  y_col <- shiny::isolate(app_state$columns$mappings$y_column)
                   if (!is.null(data) && !is.null(y_col) && y_col %in% names(data)) {
                     y_data <- data[[y_col]]
                     y_sample <- parse_danish_number(y_data)
@@ -1259,11 +1273,22 @@ setup_wizard_gates <- function(input, app_state, session) {
       if (has_data) {
         session$sendCustomMessage("wizard-complete-step", 1)
         session$sendCustomMessage("wizard-unlock-step", 2)
-        bslib::nav_select(
-          "main_navbar",
-          selected = "analyser",
-          session = session
-        )
+        # Skip auto-navigation under session restore: restore-observer har
+        # allerede valgt korrekt tab (saved_tab), og vi må ikke overskrive
+        # brugerens gemte valg med default "analyser". Issue #193.
+        restoring <- isTRUE(shiny::isolate(app_state$session$restoring_session))
+        if (!restoring) {
+          bslib::nav_select(
+            "main_navbar",
+            selected = "analyser",
+            session = session
+          )
+        } else {
+          log_info(
+            "wizard_gates: skipper auto-nav til analyser (restoring_session = TRUE)",
+            .context = "SESSION_RESTORE"
+          )
+        }
       } else {
         session$sendCustomMessage("wizard-lock-step", 2)
         session$sendCustomMessage("wizard-lock-step", 3)
@@ -1595,6 +1620,22 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
 
   # Wizard navigation gates
   setup_wizard_gates(input, app_state, session)
+
+  # Issue #193: Bridge manuel tab-skift til event-bus.
+  # Uden denne observer invalideres module_data_reactive ikke når brugeren
+  # manuelt skifter faneblad, og suspendede outputs (fx anhoej_rules_boxes på
+  # Trin 2) viser stale data efter session restore der navigerer direkte til
+  # fx "eksporter".
+  register_observer(
+    "main_navbar_manual",
+    shiny::observeEvent(input$main_navbar,
+      ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+      {
+        emit$navigation_changed()
+      }
+    )
+  )
 
   # Paste data og sample data observers
   setup_paste_data_observers(input, output, app_state, session, emit)

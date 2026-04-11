@@ -68,8 +68,24 @@ initialize_runtime_config <- function(override_options = list(), use_environment
 setup_development_config <- function(override_options = list()) {
   dev_config <- list()
 
-  # Auto restore settings - environment aware
-  dev_config$auto_restore_enabled <- determine_auto_restore_setting(override_options)
+  # Session persistence — læs fra golem-config.yml via get_session_config()
+  # (single source of truth for Issue #193). Fallback til defaults hvis
+  # golem options endnu ikke er klar ved boot.
+  session_config <- tryCatch(
+    get_session_config(),
+    error = function(e) {
+      list(
+        auto_save_enabled = TRUE,
+        auto_restore_session = FALSE,
+        save_interval_ms = 2000,
+        settings_save_interval_ms = 1000
+      )
+    }
+  )
+  dev_config$auto_restore_enabled <- session_config$auto_restore_session
+  dev_config$auto_save_enabled <- session_config$auto_save_enabled
+  dev_config$save_interval_ms <- session_config$save_interval_ms
+  dev_config$settings_save_interval_ms <- session_config$settings_save_interval_ms
 
   # Default development port
   dev_config$default_port <- get_override_or_default(override_options, "default_port", 3838)
@@ -253,6 +269,18 @@ apply_runtime_config <- function(config) {
     claudespc_env$AUTO_RESTORE_ENABLED <- config$development$auto_restore_enabled
   }
 
+  if (!is.null(config$development$auto_save_enabled)) {
+    claudespc_env$AUTO_SAVE_ENABLED <- config$development$auto_save_enabled
+  }
+
+  if (!is.null(config$development$save_interval_ms)) {
+    claudespc_env$SAVE_INTERVAL_MS <- config$development$save_interval_ms
+  }
+
+  if (!is.null(config$development$settings_save_interval_ms)) {
+    claudespc_env$SETTINGS_SAVE_INTERVAL_MS <- config$development$settings_save_interval_ms
+  }
+
   if (!is.null(config$testing$auto_load_enabled)) {
     claudespc_env$TEST_MODE_AUTO_LOAD <- config$testing$auto_load_enabled
   }
@@ -296,29 +324,6 @@ get_override_or_default <- function(override_options, key, default) {
   }
 
   return(default)
-}
-
-#' Determine Auto Restore Setting
-#'
-#' Environment-aware auto restore configuration.
-#'
-#' @param override_options Override options
-#' @return Boolean for auto restore setting
-determine_auto_restore_setting <- function(override_options) {
-  # Check explicit override first
-  explicit_setting <- get_override_or_default(override_options, "auto_restore", NULL)
-  if (!is.null(explicit_setting)) {
-    return(explicit_setting)
-  }
-
-  # Environment-based defaults
-  if (exists("is_prod_mode", mode = "function") && is_prod_mode()) {
-    return(TRUE) # Enable in production for user convenience
-  } else if (exists("is_dev_mode", mode = "function") && is_dev_mode()) {
-    return(FALSE) # Disable in development for clean testing
-  } else {
-    return(FALSE) # Safe default
-  }
 }
 
 #' Determine Test Mode Setting
@@ -464,6 +469,9 @@ convert_profile_to_legacy_config <- function(profile) {
     # Development configuration
     development = list(
       auto_restore_enabled = profile$session$auto_restore_session,
+      auto_save_enabled = profile$session$auto_save_enabled %||% TRUE,
+      save_interval_ms = profile$session$save_interval_ms %||% 2000,
+      settings_save_interval_ms = profile$session$settings_save_interval_ms %||% 1000,
       default_port = 3838, # Default value
       hot_reload_enabled = profile$ui$enable_hot_reload,
       enhanced_debugging = profile$logging$enable_debug_mode

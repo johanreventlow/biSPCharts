@@ -72,7 +72,10 @@ default:
 
   # Session management
   session:
-    auto_restore_session: false
+    auto_save_enabled: true             # Kontinuerlig auto-save til browser localStorage
+    auto_restore_session: true          # Genindlæs ved next session start
+    save_interval_ms: 2000              # Debounce for data changes
+    settings_save_interval_ms: 1000     # Debounce for settings changes
     save_session_on_exit: false
     enable_session_debugging: false
     cleanup_on_disconnect: true
@@ -165,7 +168,10 @@ development:
 
   # Session management (convenient for development)
   session:
-    auto_restore_session: false   # Clean slate for testing
+    auto_save_enabled: true         # Test auto-save lokalt
+    auto_restore_session: true      # Test auto-restore lokalt
+    save_interval_ms: 2000
+    settings_save_interval_ms: 1000
     save_session_on_exit: false
     enable_session_debugging: true
     cleanup_on_disconnect: true
@@ -248,10 +254,13 @@ production:
 
   # Session management (user-friendly for production)
   session:
-    auto_restore_session: true     # User convenience
+    auto_save_enabled: true           # Auto-save hvert 2 s
+    auto_restore_session: true        # User convenience — automatisk genindlæs
+    save_interval_ms: 2000
+    settings_save_interval_ms: 1000
     save_session_on_exit: true
     enable_session_debugging: false
-    cleanup_on_disconnect: false    # Preserve user work
+    cleanup_on_disconnect: false      # Preserve user work
 
   # AI configuration (production settings)
   ai:
@@ -332,7 +341,10 @@ testing:
 
   # Session management (clean for testing)
   session:
-    auto_restore_session: false    # Clean state for each test
+    auto_save_enabled: false        # Ingen auto-save interferens i tests
+    auto_restore_session: false     # Clean state for each test
+    save_interval_ms: 2000
+    settings_save_interval_ms: 1000
     save_session_on_exit: false
     enable_session_debugging: true
     cleanup_on_disconnect: true     # Clean up after tests

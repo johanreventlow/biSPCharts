@@ -179,7 +179,11 @@ create_app_state <- function() {
 
     # Navigation status (migrated from reactiveVal)
     dataLoaded_status = "FALSE",
-    has_data_status = "false"
+    has_data_status = "false",
+
+    # Brugerstyret session restore (Issue #193)
+    # NULL = endnu ikke afklaret (JS peek ikke ankommet), list(has_payload = FALSE/TRUE, ...)
+    peek_result = NULL
   )
 
   # Test Mode Management with Startup Optimization

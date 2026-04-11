@@ -46,6 +46,48 @@ get_ai_config <- function() {
   return(result)
 }
 
+#' Get Session Persistence Configuration from golem-config.yml
+#'
+#' Reads session persistence settings (auto-save, auto-restore) from the
+#' active golem-config profile. Returns sensible defaults if config section
+#' is missing. Single source of truth for Issue #193.
+#'
+#' @return Named list with session configuration:
+#'   - auto_save_enabled: Kontinuerlig auto-save hvert save_interval_ms
+#'   - auto_restore_session: Genindlæs ved session start
+#'   - save_interval_ms: Debounce for data changes (default 2000)
+#'   - settings_save_interval_ms: Debounce for settings changes (default 1000)
+#'
+#' @keywords internal
+get_session_config <- function() {
+  # NB: Brug get_golem_config (lokal wrapper, læser fra YAML via config::get)
+  # i stedet for golem::get_golem_options (som læser fra runtime-options).
+  # Dette sikrer at YAML er single source of truth.
+  session_config <- tryCatch(
+    {
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("session")
+      } else {
+        NULL
+      }
+    },
+    error = function(e) NULL
+  )
+
+  defaults <- list(
+    auto_save_enabled = TRUE,
+    auto_restore_session = FALSE,
+    save_interval_ms = 2000,
+    settings_save_interval_ms = 1000
+  )
+
+  if (is.null(session_config)) {
+    return(defaults)
+  }
+
+  modifyList(defaults, session_config)
+}
+
 #' Get RAG Configuration from golem-config.yml
 #'
 #' Reads RAG configuration settings from golem-config.yml.

@@ -42,6 +42,8 @@ build_spc_excel <- function(data, metadata) {
     }, character(1)),
     stringsAsFactors = FALSE
   )
+  # Metadata fra række 3 (række 1: kommentar, række 2: header-linje).
+  # VIGTIGT: parse_spc_excel() bruger skip = 2 baseret på denne konstant.
   openxlsx::writeData(wb, sheet = "Indstillinger",
     x = meta_df, startRow = 3, rowNames = FALSE)
 
@@ -64,7 +66,7 @@ parse_spc_excel <- function(file_path) {
       return(NULL)
     }
 
-    # skip = 2: spring kommentarcelleblok (række 1) og tom linje (række 2) over
+    # skip = 2: startRow = 3 i build_spc_excel() (række 1: kommentar, række 2: header).
     raw <- suppressMessages(
       readxl::read_excel(file_path, sheet = "Indstillinger",
         skip = 2, col_names = TRUE)

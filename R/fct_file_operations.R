@@ -929,20 +929,58 @@ validate_excel_file <- function(file_path) {
         errors <- c(errors, "Excel fil indeholder ingen ark")
       }
 
-      # Regular Excel file - validate first sheet
-      safe_operation(
-        "Validate regular Excel file",
-        code = {
-          data <- readxl::read_excel(file_path, n_max = 1)
-          if (ncol(data) == 0) {
-            errors <- c(errors, "Excel fil indeholder ingen kolonner")
-          }
-        },
-        fallback = function(e) {
-          errors <<- c(errors, paste("Kan ikke læse Excel-fil:", e$message))
-        },
-        error_type = "processing"
-      )
+      # biSPCharts gem-format: Data + Indstillinger. Validér begge ark her
+      # så beskadigede save-filer fanges tidligt i stedet for at falde
+      # igennem til fallback-stien i handle_excel_upload().
+      if (all(c("Data", "Indstillinger") %in% sheets)) {
+        safe_operation(
+          "Validate biSPCharts Data sheet",
+          code = {
+            data <- readxl::read_excel(file_path, sheet = "Data", n_max = 1)
+            if (ncol(data) == 0) {
+              errors <- c(errors, "Data-ark er tomt")
+            }
+          },
+          fallback = function(e) {
+            errors <<- c(errors, paste("Kan ikke l\u00e6se Data-ark:", e$message))
+          },
+          error_type = "processing"
+        )
+
+        safe_operation(
+          "Validate biSPCharts Indstillinger sheet",
+          code = {
+            settings <- readxl::read_excel(
+              file_path,
+              sheet = "Indstillinger",
+              skip = INDSTILLINGER_HEADER_ROWS,
+              col_names = c("key", "value")
+            )
+            if (ncol(settings) == 0 || nrow(settings) == 0) {
+              errors <- c(errors, "Indstillinger-ark er tomt eller ugyldigt")
+            }
+          },
+          fallback = function(e) {
+            errors <<- c(errors, paste("Kan ikke l\u00e6se Indstillinger-ark:", e$message))
+          },
+          error_type = "processing"
+        )
+      } else {
+        # Regular Excel file - validate first sheet
+        safe_operation(
+          "Validate regular Excel file",
+          code = {
+            data <- readxl::read_excel(file_path, n_max = 1)
+            if (ncol(data) == 0) {
+              errors <- c(errors, "Excel fil indeholder ingen kolonner")
+            }
+          },
+          fallback = function(e) {
+            errors <<- c(errors, paste("Kan ikke l\u00e6se Excel-fil:", e$message))
+          },
+          error_type = "processing"
+        )
+      }
     },
     fallback = function(e) {
       errors <<- c(errors, paste("Excel fil er beskadiget eller ugyldig:", e$message))

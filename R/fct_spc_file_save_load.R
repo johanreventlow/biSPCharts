@@ -36,7 +36,9 @@ build_spc_excel <- function(data, metadata) {
   meta_df <- data.frame(
     Felt   = names(metadata),
     Vaerdi = vapply(metadata, function(x) {
-      if (is.null(x) || (length(x) == 1 && is.na(x))) "" else as.character(x)
+      if (is.null(x) || (length(x) == 0)) return("")
+      x_clean <- x[!is.na(x)]
+      if (length(x_clean) == 0) "" else paste(x_clean, collapse = ", ")
     }, character(1)),
     stringsAsFactors = FALSE
   )

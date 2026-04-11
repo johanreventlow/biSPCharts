@@ -348,15 +348,24 @@ mod_export_ui <- function(id) {
       )
     )
   ),
-  # Tilbage/Eksportér knapper under cards
+  # Tilbage/Gem/Eksportér knapper under cards
   shiny::div(
-    style = "display: flex; justify-content: space-between;",
+    style = "display: flex; justify-content: space-between; align-items: center;",
     shiny::actionButton(
       ns("back_to_analysis"),
       shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
       class = "btn-secondary",
       style = "width: 200px;",
       title = "Gå tilbage til analyse"
+    ),
+    shinyjs::disabled(
+      shiny::downloadButton(
+        "download_spc_file_step3",
+        "Gem til fil",
+        class = "btn-outline-secondary",
+        style = "width: 200px;",
+        title = "Gem data og indstillinger til Excel-fil"
+      )
     ),
     shiny::downloadButton(
       ns("download_export"),

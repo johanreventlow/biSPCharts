@@ -28,7 +28,7 @@ Imports:
     ggpp (>= 0.5.0),
     ggrepel (>= 0.9.0),
     geomtextpath (>= 0.1.0),
-    BFHcharts (>= 0.6.1),
+    BFHcharts (>= 0.4.0),
     readr (>= 2.0.0),
     readxl (>= 1.4.0),
     scales (>= 1.2.0),
@@ -55,7 +55,8 @@ Imports:
     config (>= 0.3.0),
     systemfonts (>= 1.0.0),
     ragg (>= 1.2.0),
-    pdftools (>= 3.3.0)
+    pdftools (>= 3.3.0),
+    svglite (>= 2.1.0)
 Suggests:
     testthat (>= 3.0.0),
     shinytest2,

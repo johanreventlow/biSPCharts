@@ -1315,6 +1315,49 @@ setup_wizard_gates <- function(input, app_state, session) {
     }
   })
 
+  # Gem-knap: aktiv når data er uploadet
+  shiny::observe({
+    has_data <- isTRUE(app_state$session$file_uploaded) ||
+      (!is.null(app_state$data$current_data) &&
+        nrow(shiny::isolate(app_state$data$current_data)) > 0)
+
+    if (has_data) {
+      shinyjs::enable("download_spc_file")
+    } else {
+      shinyjs::disable("download_spc_file")
+    }
+  })
+
+  # Gem til fil: download handler
+  output$download_spc_file <- shiny::downloadHandler(
+    filename = function() {
+      md <- collect_metadata(input, app_state)
+      title <- md$indicator_title
+      if (is.null(title) || nchar(trimws(title)) == 0) {
+        return("data_biSPCharts.xlsx")
+      }
+      safe_title <- title |>
+        stringr::str_replace_all("[^\\w\\s\\-\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]", "") |>
+        stringr::str_replace_all("\\s+", "_") |>
+        stringr::str_trunc(50, ellipsis = "")
+      paste0(safe_title, "_biSPCharts.xlsx")
+    },
+    content = function(file) {
+      safe_operation(
+        "Gem til fil",
+        code = {
+          data <- shiny::isolate(app_state$data$current_data)
+          metadata <- collect_metadata(input, app_state)
+          temp_path <- build_spc_excel(data, metadata)
+          file.copy(temp_path, file)
+        },
+        error_type = "processing",
+        session = session,
+        show_user = TRUE
+      )
+    }
+  )
+
   # Tilbage-knap: Trin 2 -> Trin 1
   shiny::observeEvent(input$back_to_upload, {
     bslib::nav_select("main_navbar", selected = "upload", session = session)

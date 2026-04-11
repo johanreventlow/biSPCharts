@@ -228,6 +228,16 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # Auto-generer analysetekst når SPC-resultat er tilgængeligt
     shiny::observeEvent(export_plot(), {
+      # Review fund #3: Auto-genereret analysetekst bruges KUN i PDF-eksport
+      # (pdf_improvement-feltet). Når formatet er png/pptx er analysen
+      # irrelevant, og den resulterende updateTextAreaInput trigger en ny
+      # preview-render uden reel brugerændring. Guard på format sparer
+      # unødig reactive chain (preview → autosave → debounce → preview).
+      fmt <- shiny::isolate(input$export_format) %||% "pdf"
+      if (!identical(fmt, "pdf")) {
+        return()
+      }
+
       result <- export_plot()
       if (is.null(result) || is.null(result$bfh_qic_result)) {
         return()

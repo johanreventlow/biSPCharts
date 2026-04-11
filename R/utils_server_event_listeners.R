@@ -884,7 +884,21 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             y_col <- shiny::isolate(app_state$columns$y_column)
             data <- shiny::isolate(app_state$data$current_data)
             n_points <- if (!is.null(data)) nrow(data) else NA_integer_
-            n_present <- !is.null(input$n_column) && nzchar(input$n_column)
+
+            # Review fund #2: Læs n_column fra mappings-state som fallback
+            # når input$n_column endnu ikke er landet (typisk under session
+            # restore hvor updateSelectizeInput beskeder ikke har roundtrippet).
+            # Uden fallback logger observeren falsk "N-kolonne kræves" warning.
+            n_from_input <- !is.null(input$n_column) && nzchar(input$n_column)
+            if (n_from_input) {
+              n_present <- TRUE
+            } else {
+              n_from_state <- tryCatch(
+                shiny::isolate(app_state$columns$mappings$n_column),
+                error = function(...) NULL
+              )
+              n_present <- !is.null(n_from_state) && nzchar(n_from_state)
+            }
 
             y_vals <- if (!is.null(y_col) && !is.null(data) && y_col %in% names(data)) data[[y_col]] else NULL
 

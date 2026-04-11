@@ -80,6 +80,22 @@ setup_visualization <- function(input, output, session, app_state) {
       ))
     }
 
+    # Issue #193 fallback: Under session restore skrives mappings til
+    # app_state$columns$mappings FØR input$<col> har fået sin round-trip
+    # fra updateSelectizeInput. manual_config ser derfor NULL og
+    # auto_detect har aldrig kørt efter restore. Uden denne fallback fejler
+    # chart_config req → plot rendrer ikke før brugeren manuelt trigger
+    # auto-mapping. Læs mappings-state som sidste fallback.
+    mapped_y <- app_state$columns$mappings$y_column
+    if (!is.null(mapped_y) && nzchar(mapped_y)) {
+      return(list(
+        x_col = app_state$columns$mappings$x_column,
+        y_col = mapped_y,
+        n_col = app_state$columns$mappings$n_column,
+        chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
+      ))
+    }
+
     # No valid config available
     return(NULL)
   })

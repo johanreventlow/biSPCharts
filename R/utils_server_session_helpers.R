@@ -231,7 +231,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
         any(!is.na(current_data_check))) {
         list(
           data = current_data_check,
-          metadata = collect_metadata(input),
+          metadata = collect_metadata(input, app_state = app_state),
           timestamp = Sys.time()
         )
       } else {
@@ -261,6 +261,36 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # PERFORMANCE OPTIMIZED: Reaktiv debounced settings save med performance monitoring
   settings_save_trigger <- shiny::debounce(
     shiny::reactive({
+      # KRITISK: Skab eksplicitte reactive deps på input-felterne ved at læse
+      # dem HER, udenfor isolate. Uden disse reads bliver reactiven kun
+      # invalideret af app_state-deps, og collect_metadata(input, app_state = app_state) returnerer
+      # stale metadata fordi alle input-reads inde i funktionen er isolated.
+      # Dette er årsagen til at fx export_title og active_tab ikke blev
+      # persisteret selv om bindEvent korrekt fyrede observeren.
+      force(input$main_navbar)
+      force(input$indicator_title)
+      force(input$unit_type)
+      force(input$unit_select)
+      force(input$unit_custom)
+      force(input$indicator_description)
+      force(input$x_column)
+      force(input$y_column)
+      force(input$n_column)
+      force(input$skift_column)
+      force(input$frys_column)
+      force(input$kommentar_column)
+      force(input$chart_type)
+      force(input$target_value)
+      force(input$centerline_value)
+      force(input$y_axis_unit)
+      force(input[["export-export_title"]])
+      force(input[["export-export_department"]])
+      force(input[["export-export_format"]])
+      force(input[["export-pdf_description"]])
+      force(input[["export-pdf_improvement"]])
+      force(input[["export-png_size_preset"]])
+      force(input[["export-png_dpi"]])
+
       # Samme guards som data auto-gem
       # Use unified state management
       updating_table_check <- app_state$data$updating_table
@@ -285,9 +315,32 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       current_data_check <- app_state$data$current_data
 
       if (!is.null(current_data_check)) {
+        md <- collect_metadata(input, app_state = app_state)
+        # Diagnostik (Issue #193): verificér at felter rent faktisk fanges ved
+        # save-tidspunkt — både target, trin 3-felter og active_tab.
+        log_info(
+          sprintf(
+            paste0(
+              "settings_save capture: active_tab='%s', target='%s', ",
+              "export_title='%s', export_department='%s', export_format='%s', ",
+              "pdf_description='%s', pdf_improvement='%s', ",
+              "png_size_preset='%s', png_dpi='%s'"
+            ),
+            md$active_tab %||% "<NULL>",
+            md$target_value %||% "<NULL>",
+            md$export_title %||% "<NULL>",
+            md$export_department %||% "<NULL>",
+            md$export_format %||% "<NULL>",
+            md$pdf_description %||% "<NULL>",
+            md$pdf_improvement %||% "<NULL>",
+            md$png_size_preset %||% "<NULL>",
+            md$png_dpi %||% "<NULL>"
+          ),
+          .context = "AUTO_SAVE"
+        )
         list(
           data = current_data_check,
-          metadata = collect_metadata(input),
+          metadata = md,
           timestamp = Sys.time()
         )
       } else {
@@ -298,6 +351,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   )
 
   obs_settings_save <- if (auto_save_feature_enabled) {
+    # Ingen bindEvent her: settings_save_trigger har nu selv eksplicitte
+    # input-deps, så den fyrer via sin egen debounce når inputs ændres.
+    # Observeren reagerer på trigger-invalidering og sparer dermed ikke stale
+    # metadata (tidligere fejl: bindEvent fyrede observer før debounce kunne
+    # re-computere reactiven → stale cached value blev gemt).
     shiny::observe({
       save_data <- settings_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
@@ -306,37 +364,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       # når JS-siden bekræfter success — ikke her.
       autoSaveAppState(session, save_data$data, save_data$metadata,
         app_state = app_state)
-    }) |> bindEvent(
-      {
-        list(
-          # Trin 2 (Analyser) felter
-          input$indicator_title,
-          input$unit_type,
-          input$unit_select,
-          input$unit_custom,
-          input$indicator_description,
-          input$x_column,
-          input$y_column,
-          input$n_column,
-          input$skift_column,
-          input$frys_column,
-          input$kommentar_column,
-          input$chart_type,
-          input$target_value,
-          input$centerline_value,
-          input$y_axis_unit,
-          # Trin 3 (Eksporter) felter — namespaced med "export-" prefix
-          input[["export-export_title"]],
-          input[["export-export_department"]],
-          input[["export-export_format"]],
-          input[["export-pdf_description"]],
-          input[["export-pdf_improvement"]],
-          input[["export-png_size_preset"]],
-          input[["export-png_dpi"]]
-        )
-      },
-      ignoreInit = TRUE
-    )
+    })
   } else {
     NULL
   }

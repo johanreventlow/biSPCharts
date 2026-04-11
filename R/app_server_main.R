@@ -216,7 +216,7 @@ main_app_server <- function(input, output, session) {
   mod_help_server("help")
 
   ## Landing page modul
-  mod_landing_server("landing", parent_session = session)
+  mod_landing_server("landing", parent_session = session, app_state = app_state)
 
   # Wizard-trin skjules ved start via wizard-nav.js (shiny:connected handler)
   # Logo-klik håndteres også i wizard-nav.js (se logo_home_link handler)

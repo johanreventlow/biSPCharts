@@ -310,22 +310,31 @@ create_ui_main_content <- function() {
         )
       )
     ),
-    # Tilbage/Fortsæt knapper under cards
+    # Tilbage/Gem/Fortsæt knapper under cards
     shiny::div(
-      style = "display: flex; justify-content: space-between;",
+      style = "display: flex; justify-content: space-between; align-items: center;",
       shiny::actionButton(
         "back_to_upload",
         shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
         class = "btn-secondary",
         style = "width: 200px;",
-        title = "Gå tilbage til upload"
+        title = "G\u00e5 tilbage til upload"
+      ),
+      shinyjs::disabled(
+        shiny::downloadButton(
+          "download_spc_file",
+          shiny::tagList(shiny::icon("download"), " Gem til fil"),
+          class = "btn-outline-secondary",
+          style = "width: 200px;",
+          title = "Gem data og indstillinger til Excel-fil"
+        )
       ),
       shiny::actionButton(
         "continue_to_export",
-        shiny::tagList("Fortsæt ", shiny::icon("arrow-right")),
+        shiny::tagList("Forts\u00e6t ", shiny::icon("arrow-right")),
         class = "btn-primary",
         style = "width: 200px;",
-        title = "Gå til eksport"
+        title = "G\u00e5 til eksport"
       )
     )
   )

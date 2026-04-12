@@ -30,7 +30,6 @@
 
 visualizationModuleServer <- function(
     id,
-    data_reactive,
     column_config_reactive,
     chart_type_reactive,
     target_value_reactive,
@@ -58,13 +57,6 @@ visualizationModuleServer <- function(
 
     # === STAGE 5: Observers & Side Effects (mod_spc_chart_observers.R) ===
     register_viewport_observer(app_state, session, ns)
-
-    # Initialize data at startup if available
-    if (!is.null(shiny::isolate(app_state$data$current_data))) {
-      initial_data <- get_module_data()
-      app_state$visualization$module_data_cache <- initial_data
-      app_state$visualization$module_cached_data <- initial_data
-    }
 
     # Helper functions for app_state visualization management
     set_plot_state <- function(key, value) {

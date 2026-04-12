@@ -125,7 +125,6 @@ setup_visualization <- function(input, output, session, app_state) {
   # Initialiser visualiserings modul - no debouncing for valuebox stability
   visualization <- visualizationModuleServer(
     "visualization",
-    data_reactive = NULL, # Module uses its own event-driven data access
     column_config_reactive = column_config,
     chart_type_reactive = chart_type_reactive,
     target_value_reactive = shiny::debounce(shiny::reactive({

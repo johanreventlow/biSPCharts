@@ -42,9 +42,8 @@ create_data_ready_reactive <- function(module_data_reactive) {
     # Guard: kræv mindst 3 rækker med reelle data (SPC kræver minimum 3 punkter)
     data_cols <- setdiff(names(data), c("Skift", "Frys"))
     if (length(data_cols) > 0) {
-      rows_with_values <- sum(apply(data[, data_cols, drop = FALSE], 1, function(row) {
-        any(!is.na(row) & nzchar(as.character(row)))
-      }))
+      data_subset <- data[, data_cols, drop = FALSE]
+      rows_with_values <- sum(rowSums(!is.na(data_subset) & data_subset != "") > 0)
       shiny::req(rows_with_values >= 3)
     }
     data

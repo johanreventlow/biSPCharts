@@ -8,7 +8,10 @@ build_export_plot(
   app_state,
   title_input,
   dept_input,
-  plot_context = "export_pdf"
+  plot_context = "export_pdf",
+  override_width_px = NULL,
+  override_height_px = NULL,
+  override_dpi = NULL
 )
 }
 \arguments{
@@ -19,6 +22,12 @@ build_export_plot(
 \item{dept_input}{Character. Export department input}
 
 \item{plot_context}{Character. Plot context ("export_preview", "export_pdf")}
+
+\item{override_width_px}{Optional integer. Override viewport width (for PNG custom sizes)}
+
+\item{override_height_px}{Optional integer. Override viewport height (for PNG custom sizes)}
+
+\item{override_dpi}{Optional integer. Override DPI (for PNG export with user-selected DPI)}
 }
 \value{
 Plot object eller NULL ved fejl

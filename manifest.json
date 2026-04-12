@@ -5129,7 +5129,7 @@
       "checksum": "9c39c4ea3db8be6bbe44510db7be739a"
     },
     ".claude/settings.local.json": {
-      "checksum": "8a39ba854aa7c492e389c6e19667a581"
+      "checksum": "0048b8491c769a9a751065533f8f0263"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -18566,7 +18566,7 @@
       "checksum": "6df1bcc93de858211a1ed26097bc4a44"
     },
     "DESCRIPTION": {
-      "checksum": "4616dc308c4ef5488d15de68870f3f74"
+      "checksum": "fa8b4200e504aac11cd7317fbbdd68c4"
     },
     "dev/ARCHITECTURE_ANALYSIS.md": {
       "checksum": "596f533ca4698ce24f1666046cdf8d84"

@@ -16,8 +16,8 @@ mod_landing_ui <- function(id) {
   shiny::div(
     style = paste0(
       "display: flex; flex-direction: column; align-items: center; ",
-      "justify-content: center; min-height: calc(100vh - 100px); ",
-      "text-align: center; padding: 10px 20px;"
+      "justify-content: flex-start; min-height: calc(100vh - 100px); ",
+      "text-align: center; padding: 8vh 20px 20px 20px;"
     ),
     shiny::uiOutput(ns("landing_body"))
   )
@@ -30,7 +30,7 @@ landing_default_ui <- function(ns) {
   shiny::tagList(
     # Logo
     shiny::div(
-      style = "margin-bottom: 15px;",
+      style = "margin-bottom: 12px;",
       shiny::img(
         src = get_hospital_logo_path(),
         height = "80px",
@@ -52,13 +52,19 @@ landing_default_ui <- function(ns) {
 
     # Feature-highlights
     shiny::div(
-      style = "display: flex; gap: 30px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center;",
-      landing_feature_card("upload", "Upload data",
-        "Upload CSV/Excel eller inds\u00e6t direkte fra regneark"),
-      landing_feature_card("chart-line", "Analys\u00e9r med SPC",
-        "Seriediagrammer og kontroldiagrammer med automatisk signaldetektion"),
-      landing_feature_card("file-export", "Eksport\u00e9r diagram",
-        "Diagrammer i PDF, PNG eller MS PowerPoint-format")
+      style = "display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;",
+      landing_feature_card(
+        "upload", "Upload data",
+        "Upload CSV/Excel eller inds\u00e6t direkte fra regneark"
+      ),
+      landing_feature_card(
+        "chart-line", "Analys\u00e9r med SPC",
+        "Seriediagrammer og kontroldiagrammer med automatisk signaldetektion"
+      ),
+      landing_feature_card(
+        "file-export", "Eksport\u00e9r diagram",
+        "Diagrammer i PDF, PNG eller MS PowerPoint-format"
+      )
     ),
 
     # CTA-knap
@@ -102,7 +108,7 @@ landing_restore_ui <- function(ns, peek) {
   shiny::tagList(
     # Logo
     shiny::div(
-      style = "margin-bottom: 15px;",
+      style = "margin-bottom: 12px;",
       shiny::img(
         src = get_hospital_logo_path(),
         height = "80px",

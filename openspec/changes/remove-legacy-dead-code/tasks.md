@@ -38,6 +38,17 @@
 - [ ] 7.2 Start app manuelt og verificer kernefunktionalitet — **[MANUELT TRIN]**
 - [ ] 7.3 Verificer at ingen warnings om manglende funktioner opstår — **[MANUELT TRIN]**
 
+## 8. Fase 6: Codex Review — Yderligere død kode (tilføjet 2026-04-12)
+
+Identificeret via Codex statisk code review.
+
+- [ ] 8.1 Slet `add_ui_update_events()` og `add_ui_update_emit_functions()` i `R/utils_ui_ui_updates.R` (~linje 514-550+) — ingen runtime-kaldesteder, overlapper eksisterende event/emit-logik i `R/state_management.R`
+- [ ] 8.2 Undersøg `R/plot_config_objects.R` — verificér at `spc_plot_config`/`viewport_dims`/`phase_config`/`generateSPCPlot_v2` API'et ikke bruges af runtime-kode. Slet filen hvis ubrugt, eller flyt til BFHcharts hvis tænkt som offentlig kontrakt.
+- [ ] 8.3 Færdiggør task 4.4 — slet deprecated `create_cached_reactive()`, `create_performance_debounced()` og `clear_performance_cache()` i `R/utils_performance.R` (kanoniske versioner findes i `R/utils_performance_caching.R`)
+- [ ] 8.4 Kør `devtools::document()` og opdater NAMESPACE
+- [ ] 8.5 Kør test-suite — verificér ingen regressioner
+- [ ] 8.6 Commit: `chore: fjern yderligere død kode (Codex review findings)`
+
 ## Resultat
 - **12.631 linjer fjernet** på tværs af 241 filer
 - 5 commits, ingen nye test-fejl

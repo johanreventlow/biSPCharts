@@ -90,3 +90,35 @@ Shiny.addCustomMessageHandler('discardPendingRestore', function(_message) {
   console.log('[SPC] discardPendingRestore: clearing cached payload');
   window.__pendingRestore = null;
 });
+
+// Issue #185: Tilføj tooltips til Skift/Frys kolonne-headers i excelR tabel
+// MutationObserver sikrer at tooltips tilføjes efter excelR rendering
+(function() {
+  var tooltipMap = {
+    'Skift': 'Opdeler diagrammet i faser ved kendte proces\u00e6ndringer',
+    'Frys': 'L\u00e5ser kontrolgr\u00e6nser baseret p\u00e5 en baseline-periode'
+  };
+
+  function addTableHeaderTooltips() {
+    var headers = document.querySelectorAll('.jexcel > thead > tr > td');
+    headers.forEach(function(td) {
+      var text = (td.textContent || '').trim();
+      if (tooltipMap[text] && !td.getAttribute('title')) {
+        td.setAttribute('title', tooltipMap[text]);
+        td.style.cursor = 'help';
+      }
+    });
+  }
+
+  var observer = new MutationObserver(function() {
+    addTableHeaderTooltips();
+  });
+
+  $(document).on('shiny:sessioninitialized', function() {
+    var target = document.getElementById('main_data_table');
+    if (target) {
+      observer.observe(target, { childList: true, subtree: true });
+    }
+    addTableHeaderTooltips();
+  });
+})();

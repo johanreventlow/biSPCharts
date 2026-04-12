@@ -375,7 +375,11 @@ register_cache_aware_observer <- function(
     set_plot_state,
     get_plot_state,
     skift_config_reactive) {
-  shiny::observe({
+  shiny::observeEvent(
+    list(spc_results_reactive(), skift_config_reactive()),
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$UI_SYNC,
+    {
     result <- spc_results_reactive()
     qic_data <- result$qic_data
 

@@ -98,7 +98,6 @@ describe("Reactive Chains", {
 
     # Simulate module server
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(test_data),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",
@@ -222,7 +221,6 @@ describe("Error Handling", {
     app_state <- create_mock_app_state()
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(NULL),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",
@@ -248,7 +246,6 @@ describe("Error Handling", {
     empty_data <- data.frame()
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(empty_data),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",
@@ -292,7 +289,6 @@ describe("UI Rendering", {
     test_data <- create_test_data_for_module()
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(test_data),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",
@@ -318,7 +314,6 @@ describe("UI Rendering", {
     app_state$visualization$plot_warnings <- c("Test warning")
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(NULL),
       column_config_reactive = reactive(list()),
       chart_type_reactive = reactive("p"),
       target_value_reactive = reactive(NULL),
@@ -340,7 +335,6 @@ describe("UI Rendering", {
     test_data <- create_test_data_for_module()
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(test_data),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",
@@ -446,7 +440,6 @@ describe("Viewport Dimensions", {
     # Module should use defaults (800x600)
 
     testServer(visualizationModuleServer, args = list(
-      data_reactive = reactive(test_data),
       column_config_reactive = reactive(list(
         x_col = "Dato",
         y_col = "Tæller",

@@ -1,6 +1,279 @@
 # biSPCharts Configuration Guide
 
-This document covers configuration options and dependencies for biSPCharts.
+Complete guide to biSPCharts configuration system with unified precedence rules, getter functions, and environment-specific settings.
+
+## Configuration Overview
+
+biSPCharts uses a **unified configuration system** with clear precedence rules:
+
+1. **Environment Variables** (highest priority — runtime overrides)
+2. **Golem Config YAML** (`inst/golem-config.yml`)
+3. **Constant Defaults** (built-in defaults)
+
+All configuration is accessed through **centralized getter functions** that support future YAML-based configuration without code changes.
+
+---
+
+## Logging Configuration
+
+### Setting Log Levels
+
+The logging system uses **unified precedence** to resolve log levels:
+
+```r
+# Priority 1: Environment Variable (overrides everything)
+Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
+
+# Priority 2: Golem Config YAML (if no env var)
+# inst/golem-config.yml:
+# default:
+#   logging:
+#     level: "WARN"
+# development:
+#   logging:
+#     level: "DEBUG"
+
+# Priority 3: Default (fallback)
+# Default: "INFO"
+```
+
+### Available Log Levels
+
+| Level  | Numeric | Description |
+|--------|---------|-------------|
+| DEBUG  | 1       | Detailed debug information |
+| INFO   | 2       | General information |
+| WARN   | 3       | Warnings |
+| ERROR  | 4       | Error messages |
+
+### Accessing Log Configuration
+
+```r
+# Get effective log level (respects precedence)
+get_effective_log_level()
+
+# Get log level name
+get_log_level_name()
+
+# Helper functions for common configurations
+set_log_level_development()  # DEBUG
+set_log_level_production()   # WARN
+set_log_level_quiet()        # ERROR
+set_log_level_info()         # INFO
+set_log_level("CUSTOM")      # Custom level
+
+# Set debug context filtering (reduce token usage)
+set_debug_context(c("state", "data", "ai"))
+get_debug_context()
+show_debug_contexts()
+```
+
+---
+
+## Performance Configuration
+
+All performance constants are accessed via getter functions supporting future YAML configuration.
+
+### Debounce Delays
+
+```r
+get_debounce_delay(operation)
+```
+
+**Available operations:**
+- `"input_change"` → **150ms** (rapid user input)
+- `"file_select"` → **500ms** (file selection)
+- `"chart_update"` → **500ms** (chart rendering)
+- `"table_cleanup"` → **2000ms** (table operations)
+
+**Example:**
+```r
+user_input <- shiny::debounce(
+  reactive(input$dropdown),
+  millis = get_debounce_delay("input_change")
+)
+```
+
+### Operation Timeouts
+
+```r
+get_operation_timeout(operation)
+```
+
+**Available operations:**
+- `"file_read"` → **30,000ms (30s)**
+- `"chart_render"` → **10,000ms (10s)**
+- `"auto_detect"` → **5,000ms (5s)**
+- `"ui_update"` → **2,000ms (2s)**
+
+### Performance Thresholds
+
+```r
+get_performance_threshold(metric)
+```
+
+**Available metrics:**
+- `"reactive_warning"` → **0.5s**
+- `"debounce_warning"` → **1.0s**
+- `"memory_warning"` → **10MB**
+- `"cache_timeout_default"` → **300s (5 min)**
+
+### Cache Configuration
+
+```r
+get_cache_config(setting)
+```
+
+**Available settings:**
+- `"default_timeout_seconds"` → **300s (5 min)**
+- `"extended_timeout_seconds"` → **600s (10 min)**
+- `"short_timeout_seconds"` → **60s**
+- `"size_limit_entries"` → **50**
+- `"cleanup_interval_seconds"` → **300s**
+
+### Auto-Save Configuration
+
+```r
+get_autosave_delay(context)
+```
+
+- `"data_save"` → **2000ms (2s)**
+- `"settings_save"` → **1000ms (1s)**
+
+### UI Update Protection
+
+```r
+get_loop_protection_delay(scenario)
+```
+
+- `"default"` → **500ms**
+- `"conservative"` → **800ms** (slower browsers)
+- `"minimal"` → **200ms** (fast responses)
+- `"onFlushed_fallback"` → **1000ms** (fallback)
+
+### Test Mode Configuration
+
+```r
+get_test_mode_config(setting)
+```
+
+- `"ready_event_delay_seconds"` → **1.5s**
+- `"startup_debounce_ms"` → **300ms**
+- `"auto_detect_delay_ms"` → **250ms**
+- `"lazy_plot_generation"` → **TRUE**
+
+---
+
+## UI Configuration
+
+All UI constants are accessed via getter functions for responsive design support.
+
+### Column Layouts
+
+```r
+get_ui_column_width(layout_type)
+```
+
+- `"sidebar"` → `c(3, 9)` (sidebar + main)
+- `"half"` → `c(6, 6)` (50/50)
+- `"thirds"` → `c(4, 4, 4)` (33/33/33)
+- `"quarter"` → `c(6, 6, 6, 6)` (four equal)
+
+### Component Heights
+
+```r
+get_ui_height(component)
+```
+
+- `"logo"` → `"40px"`
+- `"modal_content"` → `"300px"`
+- `"chart_container"` → `"calc(50vh - 60px)"`
+- `"table_max"` → `"200px"`
+- `"sidebar_min"` → `"130px"`
+
+### Reusable CSS Styles
+
+```r
+get_ui_style(style_type)
+```
+
+- `"flex_column"` — Flexible column layout
+- `"scroll_auto"` — Scrollable container
+- `"full_width"` — Full width
+- `"right_align"` — Right-aligned text
+- `"margin_right"` — Right margin (10px)
+- `"position_absolute_right"` — Absolute positioned (top right)
+
+### Input Widths
+
+```r
+get_ui_input_width(width_type)
+```
+
+- `"full"` → `"100%"`
+- `"half"` → `"50%"`
+- `"quarter"` → `"25%"`
+- `"three_quarter"` → `"75%"`
+- `"auto"` → `"auto"`
+
+### Layout Proportions
+
+```r
+get_ui_layout_proportion(proportion_type)
+```
+
+- `"half"` → **0.5**
+- `"third"` → **0.333**
+- `"quarter"` → **0.25**
+- `"two_thirds"` → **0.667**
+- `"three_quarters"` → **0.75**
+
+### Font Scaling
+
+```r
+get_ui_font_scaling(parameter)
+```
+
+- `"divisor"` → **42** (lower = larger fonts)
+- `"min_size"` → **8** (points)
+- `"max_size"` → **64** (points)
+
+**Formula:** `base_size = max(min_size, min(max_size, diagonal / divisor))`
+
+### Viewport Defaults
+
+```r
+get_ui_viewport_default(parameter)
+```
+
+- `"width"` → **800px**
+- `"height"` → **600px**
+- `"dpi"` → **96**
+
+---
+
+## Environment Variables
+
+### Logging
+
+| Variable | Values | Default | Priority |
+|----------|--------|---------|----------|
+| `SPC_LOG_LEVEL` | `DEBUG`, `INFO`, `WARN`, `ERROR` | From YAML | 1 (highest) |
+
+### API Configuration
+
+| Variable | Purpose | Example | Default |
+|----------|---------|---------|---------|
+| `GOOGLE_API_KEY` | Google API authentication | `AIza...` | None |
+| `GEMINI_API_KEY` | Gemini LLM API (fallback) | `AIza...` | None |
+
+### Application
+
+| Variable | Values | Default | Purpose |
+|----------|--------|---------|---------|
+| `GOLEM_CONFIG_ACTIVE` | `development`, `testing`, `production`, `default` | `default` | Active configuration environment |
+
+---
 
 ## Dependencies
 

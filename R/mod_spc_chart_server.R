@@ -234,37 +234,6 @@ visualizationModuleServer <- function(
       }
     })
 
-    ## Data Status Value Box
-    output$plot_status_boxes <- shiny::renderUI({
-      plot_ready <- get_plot_state("plot_ready")
-      if (plot_ready) {
-        data <- shiny::isolate(module_data_reactive())
-        chart_type <- shiny::isolate(chart_type_reactive()) %||% "run"
-        data_count <- nrow(data)
-        chart_name <- switch(chart_type,
-          "run" = "Run Chart", "p" = "P-kort", "u" = "U-kort",
-          "i" = "I-kort", "mr" = "MR-kort", "Ukendt"
-        )
-        bslib::value_box(
-          title = "Data Overblik",
-          value = paste(data_count, "punkter"),
-          showcase = shiny::icon("chart-line"),
-          theme = if (data_count >= 15) "info" else "warning",
-          shiny::p(
-            class = "fs-7 text-muted mb-0",
-            paste(chart_name, if (data_count < 15) "| Få datapunkter" else "| Tilstrækkelig data")
-          )
-        )
-      } else {
-        bslib::value_box(
-          title = "Data Status",
-          value = "Ingen data",
-          showcase = shiny::icon("database"),
-          theme = "secondary",
-          shiny::p(class = "fs-7 text-muted mb-0", "Upload eller indtast data")
-        )
-      }
-    })
 
     ## Anhøj Rules Value Boxes
     # Delegated to utils_spc_chart_ui_helpers.R (Stage 6)
@@ -280,31 +249,6 @@ visualizationModuleServer <- function(
 
     outputOptions(output, "anhoej_rules_boxes", suspendWhenHidden = FALSE)
 
-    ## Data Quality Value Box (Placeholder)
-    output$data_quality_box <- shiny::renderUI({
-      data <- module_data_reactive()
-      if (is.null(data) || nrow(data) == 0) return(shiny::div())
-      bslib::value_box(
-        title = "Data Kvalitet",
-        value = "God",
-        showcase = shiny::icon("check-circle"),
-        theme = "success",
-        shiny::p(class = "fs-6 text-muted", "Automatisk kvalitetskontrol")
-      )
-    })
-
-    ## Report Status Value Box (Placeholder)
-    output$report_status_box <- shiny::renderUI({
-      data <- module_data_reactive()
-      if (is.null(data) || nrow(data) == 0) return(shiny::div())
-      bslib::value_box(
-        title = "Rapport Status",
-        value = "Klar",
-        showcase = shiny::icon("file-text"),
-        theme = "info",
-        shiny::p(class = "fs-6 text-muted", "Eksport og deling tilgængelig")
-      )
-    })
 
     # === RETURN VALUES ===
     list(

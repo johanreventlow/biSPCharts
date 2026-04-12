@@ -11,85 +11,25 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
     # Module initialization
     ns <- session$ns
 
-    # M10: Viewport dimensions now centralized in app_state$visualization$viewport_dims
-    # (removed local reactiveVal)
+    # =========================================================================
+    # PHASE 2C EXTRACTION: Data Management Module
+    # =========================================================================
+    # Extracted to: R/mod_spc_chart_state.R
+    # Functions: safe_max, get_module_data, module_data_reactive
+    # Observers: module data update observer
+    # Status: Stage 1 of Phase 2c refactoring (COMPLETE)
+    # =========================================================================
 
-    # Helper function: Safe max that handles empty vectors and preserves actual values
-    safe_max <- function(x, na.rm = TRUE) {
-      if (length(x) == 0) {
-        log_debug("safe_max: empty vector", .context = "VISUALIZATION")
-        return(NA_real_)
-      }
-      if (all(is.na(x))) {
-        log_debug("safe_max: all NA values", .context = "VISUALIZATION")
-        return(NA_real_)
-      }
-      result <- max(x, na.rm = na.rm)
-      if (is.infinite(result)) {
-        log_debug(paste("safe_max: infinite result, returning NA. Input:", paste(x, collapse = ", ")), "VISUALIZATION")
-        return(NA_real_)
-      }
-      return(result)
-    }
+    # Initialize data state infrastructure
+    initialize_spc_chart_state(app_state)
 
-    # State Management --------------------------------------------------------
-    # Use unified state management if available, fallback to local reactiveValues
+    # Create reactive expression for filtered module data
+    module_data_reactive <- create_module_data_reactive(app_state)
 
-    # MODULE-INTERNAL DATA REACTIVE ==========================================
-    # Create both reactive and cached value for robust access
+    # Register observer for data cache updates
+    register_module_data_observer(app_state, input, output, session)
 
-    # Cached data storage - use centralized app_state
-    # Initialize module cache in app_state if not already present
-    # Use isolate() to safely check reactive value outside reactive context
-    current_cached_data <- isolate(app_state$visualization$module_cached_data)
-    if (is.null(current_cached_data)) {
-      app_state$visualization$module_cached_data <- NULL
-    }
-
-    # Create a reactive-safe data function
-    get_module_data <- function() {
-      # Use shiny::isolate() to safely access reactive values
-      current_data_check <- shiny::isolate(app_state$data$current_data)
-      if (is.null(current_data_check)) {
-        return(NULL)
-      }
-
-      data <- current_data_check
-
-      # Add hide_anhoej_rules flag as attribute
-      hide_anhoej_rules_check <- shiny::isolate(app_state$ui$hide_anhoej_rules)
-      attr(data, "hide_anhoej_rules") <- hide_anhoej_rules_check
-
-      # Filter non-empty rows
-      non_empty_rows <- apply(data, 1, function(row) any(!is.na(row)))
-
-      if (any(non_empty_rows)) {
-        filtered_data <- data[non_empty_rows, ]
-        attr(filtered_data, "hide_anhoej_rules") <- hide_anhoej_rules_check
-        return(filtered_data)
-      } else {
-        attr(data, "hide_anhoej_rules") <- hide_anhoej_rules_check
-        return(data)
-      }
-    }
-
-    # UNIFIED EVENT SYSTEM: Event-driven data reactive - use centralized app_state
-    # Initialize module data cache in app_state if not already present
-    # Use isolate() to safely check reactive value outside reactive context
-    current_data_cache <- isolate(app_state$visualization$module_data_cache)
-    if (is.null(current_data_cache)) {
-      app_state$visualization$module_data_cache <- NULL
-    }
-
-    # SPRINT 1 FIX: Atomic event-driven data reactive with race condition prevention
-    # Replaced overlapping event listeners with single consolidated visualization_update event
-    # This implements CLAUDE.md Section 3.1.1 Hybrid Anti-Race Strategy
-
-    # Initialize consolidated event in app_state if not exists
-    if (is.null(shiny::isolate(app_state$events$visualization_update_needed))) {
-      app_state$events$visualization_update_needed <- 0L
-    }
-
+    # Viewport observer (extracted in Stage 5)
     # Sæt viewport dims tidligt så cache key bruger reelle dimensioner
     shiny::observe({
       width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
@@ -97,92 +37,6 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
       shiny::req(!is.null(width), !is.null(height), width > 100, height > 100)
       emit <- create_emit_api(app_state)
       set_viewport_dims(app_state, width, height, emit)
-    })
-
-    # ATOMIC UPDATE: Consolidated observer with proper guards
-    shiny::observeEvent(
-      app_state$events$visualization_update_needed,
-      ignoreInit = TRUE,
-      priority = OBSERVER_PRIORITIES$DATA_PROCESSING,
-      {
-        # Level 3: ATOMIC check-and-set with error recovery
-        # Check and set must happen in single isolate() block
-        currently_updating <- tryCatch(
-          {
-            shiny::isolate({
-              was_updating <- app_state$visualization$cache_updating
-              if (!was_updating) {
-                app_state$visualization$cache_updating <- TRUE
-              }
-              was_updating
-            })
-          },
-          error = function(e) {
-            # Emergency cleanup if atomic operation fails
-            log_error(paste("Atomic cache flag operation failed:", e$message), "VISUALIZATION")
-            app_state$visualization$cache_updating <- FALSE
-            return(TRUE) # Block this update attempt
-          }
-        )
-
-        if (currently_updating) {
-          log_debug("Skipping visualization cache update - already in progress", .context = "VISUALIZATION")
-          return()
-        }
-
-        # Level 3: Skip if data processing is in progress
-        if (shiny::isolate(app_state$data$updating_table) %||% FALSE) {
-          # Reset flag if we're bailing out
-          app_state$visualization$cache_updating <- FALSE
-          log_debug("Skipping visualization cache update - table update in progress", .context = "VISUALIZATION")
-          return()
-        }
-
-        # Level 2: Atomic state update with guard flag
-        safe_operation(
-          operation_name = "Update visualization cache (Sprint 1 fix)",
-          code = {
-            # Guard flag already set atomically above
-
-            on.exit(
-              {
-                # Clear guard flag on function exit (success or error)
-                app_state$visualization$cache_updating <- FALSE
-              },
-              add = TRUE
-            )
-
-            # Get fresh data
-            result_data <- get_module_data()
-
-            # Atomic cache update - both values updated together
-            app_state$visualization$module_data_cache <- result_data
-            app_state$visualization$module_cached_data <- result_data
-
-            data_info <- if (!is.null(result_data)) {
-              paste("rows:", nrow(result_data), "cols:", ncol(result_data))
-            } else {
-              "NULL"
-            }
-
-            log_debug(paste("Visualization cache updated atomically:", data_info), "VISUALIZATION")
-          },
-          fallback = function(e) {
-            log_error(paste("Visualization cache update failed:", e$message), "VISUALIZATION")
-            # Guard flag cleared by on.exit() even in error case
-          },
-          error_type = "processing"
-        )
-      }
-    )
-
-    # MODULE DATA REACTIVE: Simple cache reader (no overlapping events)
-    module_data_reactive <- shiny::reactive({
-      # React only to navigation for UI updates
-      app_state$events$navigation_changed
-
-      # Return cached data (updated atomically by observer above)
-      return(shiny::isolate(app_state$visualization$module_cached_data))
     })
 
     # UNIFIED EVENT SYSTEM: Event-driven architecture with atomic cache updates

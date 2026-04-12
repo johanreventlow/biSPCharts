@@ -42,11 +42,5 @@ has_content <- evaluate_data_content_cached(
 }
 
 }
-\seealso{
-Other performance: 
-\code{\link{clear_performance_cache}()},
-\code{\link{create_cached_reactive}()},
-\code{\link{create_performance_debounced}()}
-}
 \concept{performance}
 \keyword{internal}

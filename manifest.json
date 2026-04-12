@@ -17,7 +17,7 @@
   "packages": {
     "BFHcharts": {
       "Source": "github",
-      "Repository": "johanreventlow/BFHcharts",
+      "Repository": null,
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",

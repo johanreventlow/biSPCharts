@@ -80,137 +80,27 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
 
     # Plot Generering ---------------------------------------------------------
 
-    data_ready <- shiny::reactive({
-      data <- module_data_reactive()
-      shiny::req(shiny::isTruthy(data))
-      shiny::req(nrow(data) > 0)
-      # Guard: kræv mindst 3 rækker med reelle data (SPC kræver minimum 3 punkter)
-      data_cols <- setdiff(names(data), c("Skift", "Frys"))
-      if (length(data_cols) > 0) {
-        rows_with_values <- sum(apply(data[, data_cols, drop = FALSE], 1, function(row) {
-          any(!is.na(row) & nzchar(as.character(row)))
-        }))
-        shiny::req(rows_with_values >= 3)
-      }
-      data
-    })
+    # Data Validation - delegeret til mod_spc_chart_inputs.R
+    data_ready <- create_data_ready_reactive(
+      module_data_reactive = module_data_reactive
+    )
 
-    spc_inputs_raw <- shiny::reactive({
-      data <- data_ready()
-      config <- chart_config()
-      shiny::req(config)
-
-      # FIX: Hent y_axis_unit tidligt for at afgøre om n_col skal cleares
-      unit_value <- if (!is.null(y_axis_unit_reactive)) y_axis_unit_reactive() else "count"
-
-      # DEBUG: Log config BEFORE n_col clearing
-      log_debug_kv(
-        message = "CONFIG BEFORE n_col clearing",
-        chart_type = config$chart_type %||% "run",
-        y_axis_unit = unit_value,
-        x_col = config$x_col %||% "NULL",
-        y_col = config$y_col %||% "NULL",
-        n_col = config$n_col %||% "NULL",
-        .context = "[DEBUG_CONFIG]"
-      )
-
-      # FIX: For run charts med y_axis_unit = "count", clear n_col fra config
-      # Run charts kan kun bruge nævner (denominator) når y_axis_unit = "percent"
-      # Dette forhindrer plot generation failure når bruger skifter fra percent til count
-      qic_chart_type <- get_qic_chart_type(config$chart_type %||% "run")
-      if (identical(qic_chart_type, "run") && identical(unit_value, "count")) {
-        config$n_col <- NULL
-        log_debug_kv(
-          message = "Cleared n_col from config for run chart with count mode",
-          chart_type = qic_chart_type,
-          y_axis_unit = unit_value,
-          .context = "[SPC_CONFIG]"
-        )
-      }
-
-      # DEBUG: Log config AFTER n_col clearing
-      log_debug_kv(
-        message = "CONFIG AFTER n_col clearing",
-        chart_type = config$chart_type %||% "run",
-        y_axis_unit = unit_value,
-        x_col = config$x_col %||% "NULL",
-        y_col = config$y_col %||% "NULL",
-        n_col = config$n_col %||% "NULL",
-        .context = "[DEBUG_CONFIG]"
-      )
-
-      skift_config <- skift_config_reactive()
-      if (is.null(skift_config) || !is.list(skift_config)) {
-        skift_config <- list(show_phases = FALSE, skift_column = NULL)
-      }
-
-      frys_column <- frys_config_reactive()
-      title_value <- if (!is.null(chart_title_reactive)) chart_title_reactive() else NULL
-      kommentar_value <- if (!is.null(kommentar_column_reactive)) kommentar_column_reactive() else NULL
-      target_text_value <- if (!is.null(target_text_reactive)) target_text_reactive() else NULL
-
-      # VIEWPORT DIMENSIONS: Kræv faktiske clientData dimensioner.
-      # Blokerer evaluering indtil browseren har rapporteret reelle dimensioner.
-      # Eliminerer label-placering baseret på forkerte 800×600 defaults.
-      width_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
-      height_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
-      shiny::req(!is.null(width_px), !is.null(height_px), width_px > 100, height_px > 100)
-
-      if (getOption("spc.debug.label_placement", FALSE)) {
-        log_debug(
-          sprintf("Viewport: %d\u00d7%d px (clientData)", width_px, height_px),
-          "VIEWPORT_DIMENSIONS"
-        )
-      }
-
-      # Beregn responsive base_size baseret på viewport diagonal (geometric mean)
-      # Konfiguration i FONT_SCALING_CONFIG (R/config_ui.R)
-      #
-      # VIGTIG: Vi dividerer IKKE med pixelratio fordi Shiny's renderPlot()
-      # automatisk multiplicerer res med pixelratio (res = 96 * pixelratio).
-      # Dette sikrer at fonts har samme visuelle størrelse på både standard
-      # og Retina displays.
-      #
-      # GEOMETRIC MEAN APPROACH: sqrt(width_px * height_px) giver balanced scaling
-      # baseret på både bredde og højde. Dette sikrer at fonts skalerer intuitivt
-      # med den samlede plotstørrelse, ikke kun én dimension.
-      pixelratio <- session$clientData$pixelratio %||% 1
-      viewport_diagonal <- sqrt(width_px * height_px)
-      base_size <- max(
-        FONT_SCALING_CONFIG$min_size,
-        min(FONT_SCALING_CONFIG$max_size, viewport_diagonal / FONT_SCALING_CONFIG$divisor)
-      )
-
-      # DEBUG: Log font scaling metrics for cross-device analysis
-      log_info(
-        component = "[FONT_SCALING]",
-        message = sprintf(
-          "Font metrics | width_px=%.0f | height_px=%.0f | diagonal=%.0f | pixelratio=%.2f | divisor=%d | base_size=%.2f",
-          width_px, height_px, viewport_diagonal, pixelratio, FONT_SCALING_CONFIG$divisor, base_size
-        )
-      )
-
-      list(
-        data = data,
-        data_hash = digest::digest(data, algo = "xxhash64"),
-        config = config,
-        chart_type = config$chart_type %||% "run",
-        target_value = target_value_reactive(),
-        target_text = target_text_value,
-        centerline_value = centerline_value_reactive(),
-        skift_config = skift_config,
-        skift_hash = digest::digest(skift_config, algo = "xxhash64"),
-        frys_column = frys_column,
-        frys_hash = digest::digest(frys_column, algo = "xxhash64"),
-        title = title_value,
-        y_axis_unit = unit_value,
-        kommentar_column = kommentar_value,
-        base_size = base_size,
-        viewport_width_px = width_px,
-        viewport_height_px = height_px,
-        viewport_ready = TRUE
-      )
-    })
+    # SPC Input Building - delegeret til mod_spc_chart_inputs.R
+    # Bygger komplette parametre for SPC beregning
+    spc_inputs_raw <- create_spc_inputs_reactive(
+      data_ready_reactive = data_ready,
+      chart_config = chart_config,
+      session = session,
+      ns = ns,
+      y_axis_unit_reactive = y_axis_unit_reactive,
+      target_value_reactive = target_value_reactive,
+      target_text_reactive = target_text_reactive,
+      centerline_value_reactive = centerline_value_reactive,
+      skift_config_reactive = skift_config_reactive,
+      frys_config_reactive = frys_config_reactive,
+      chart_title_reactive = chart_title_reactive,
+      kommentar_column_reactive = kommentar_column_reactive
+    )
 
     # PERFORMANCE: Debounce spc_inputs to prevent redundant renders during rapid UI changes
     # Uses DEBOUNCE_DELAYS$file_select (500ms) to handle window resize, title editing, and other high-frequency updates

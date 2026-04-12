@@ -1,0 +1,223 @@
+# ==============================================================================
+# mod_export_ai.R
+# ==============================================================================
+# AI SUGGESTION INTEGRATION MODULE FOR EXPORT
+#
+# Purpose: Extract AI improvement suggestion logic from mod_export_server.R.
+#          Manages BFHllm integration, button state, and AI-generated analysis.
+#
+# Extracted from: mod_export_server.R (Phase 2b refactoring)
+# Depends on: app_state, session, input/output
+# ==============================================================================
+
+#' Register AI Button State Observer
+#'
+#' Sets up observer that manages AI suggestion button enabled/disabled state
+#' based on data availability and API key setup.
+#'
+#' @param session Shiny session object
+#' @param input Input object containing UI inputs
+#' @param output Output object for rendering
+#' @param app_state Global app state containing data and column mappings
+#'
+#' @return NULL (side effect: registers observer with Shiny)
+#'
+#' @keywords internal
+register_ai_button_state <- function(session, input, output, app_state) {
+  # Review fund #4: Cache BFHllm availability per session.
+  # is_bfhllm_available() kalder BFHllm::bfhllm_chat_available() som
+  # har log-sideeffekter ("BFHllm setup validated successfully") og evt.
+  # netværksarbejde. API-nøglen ændrer sig ikke under session-levetid,
+  # så vi cacher resultatet én gang per session. Det fjerner støj-loggen
+  # uden at ændre funktionaliteten.
+  bfhllm_available_cached <- NULL
+  get_bfhllm_available <- function() {
+    if (is.null(bfhllm_available_cached)) {
+      bfhllm_available_cached <<- isTRUE(is_bfhllm_available())
+    }
+    bfhllm_available_cached
+  }
+
+  # Manage AI button state based on data and API key availability
+  shiny::observe({
+    # Check prerequisites
+    has_data <- !is.null(app_state$data$current_data) &&
+      nrow(app_state$data$current_data) > 0
+    has_columns <- !is.null(app_state$columns$mappings$x_column) &&
+      !is.null(app_state$columns$mappings$y_column)
+    has_spc_data <- has_data && has_columns
+
+    # Validate BFHllm API setup (cached per session)
+    api_ready <- get_bfhllm_available()
+
+    # Button enabled only when both prerequisites met
+    can_use_ai <- has_spc_data && api_ready
+
+    # Toggle button state
+    shinyjs::toggleState("ai_generate_suggestion", can_use_ai)
+
+    # Update tooltip based on state
+    tooltip_js <- if (!has_spc_data) {
+      sprintf(
+        "$('#%s').attr('title', 'Generér først en SPC-graf for at bruge AI-forslag');",
+        session$ns("ai_generate_suggestion")
+      )
+    } else if (!api_ready) {
+      sprintf(
+        "$('#%s').attr('title', 'AI-funktionalitet kræver Google API-nøgle. Kontakt administrator.');",
+        session$ns("ai_generate_suggestion")
+      )
+    } else {
+      sprintf(
+        "$('#%s').attr('title', 'Klik for at generere en analyse med AI');",
+        session$ns("ai_generate_suggestion")
+      )
+    }
+
+    shinyjs::runjs(tooltip_js)
+
+    log_debug(
+      .context = "EXPORT_MODULE",
+      message = "AI button state updated",
+      details = list(
+        has_spc_data = has_spc_data,
+        api_ready = api_ready,
+        button_enabled = can_use_ai
+      )
+    )
+  }) |> shiny::bindEvent(
+    app_state$data$current_data,
+    app_state$columns$mappings$x_column,
+    app_state$columns$mappings$y_column
+  )
+}
+
+#' Register AI Suggestion Handler
+#'
+#' Sets up event listener for AI suggestion button click.
+#' Generates SPC plot, calls BFHcharts analysis with AI enabled, updates UI.
+#'
+#' @param session Shiny session object
+#' @param input Input object containing UI inputs
+#' @param output Output object for rendering
+#' @param app_state Global app state containing data and column mappings
+#'
+#' @return NULL (side effect: registers observer with Shiny)
+#'
+#' @keywords internal
+register_ai_suggestion_handler <- function(session, input, output, app_state) {
+  shiny::observeEvent(input$ai_generate_suggestion,
+    {
+      # Require SPC data
+      shiny::req(
+        app_state$data$current_data,
+        app_state$columns$mappings$x_column,
+        app_state$columns$mappings$y_column
+      )
+
+      # Disable button and show loading
+      shinyjs::disable("ai_generate_suggestion")
+      output$ai_loading_feedback <- shiny::renderUI({
+        shiny::div(
+          class = "text-muted",
+          style = "margin-top: 5px;",
+          shiny::icon("spinner", class = "fa-spin"),
+          " Genererer analyse..."
+        )
+      })
+
+      log_info(
+        .context = "EXPORT_MODULE",
+        message = "AI suggestion requested by user"
+      )
+
+      # Generer SPC result via fælles helper (deler cache med PDF context)
+      spc_result <- build_export_plot(
+        app_state = app_state,
+        title_input = input$export_title %||% "",
+        dept_input = input$export_department %||% "",
+        plot_context = "export_pdf"
+      )
+
+      # Check if SPC generation succeeded
+      if (is.null(spc_result)) {
+        log_error(
+          .context = "EXPORT_MODULE",
+          message = "SPC result generation failed - returning NULL"
+        )
+
+        shiny::showNotification(
+          "Kunne ikke analysere SPC-data. Prøv igen.",
+          type = "error",
+          duration = 5
+        )
+
+        # Re-enable button and clear loading
+        shinyjs::enable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI(NULL)
+
+        return()
+      }
+
+      # Gather context from inputs
+      context <- list(
+        data_definition = input$pdf_description %||% "",
+        chart_title = input$export_title %||% "",
+        target_value = normalize_mapping(app_state$columns$mappings$target_value)
+      )
+
+      analysis_metadata <- list(
+        data_definition = context$data_definition,
+        target = context$target_value,
+        chart_title = context$chart_title
+      )
+
+      suggestion <- safe_operation(
+        operation_name = "AI analysis generation",
+        code = {
+          shiny::req(spc_result$bfh_qic_result)
+          BFHcharts::bfh_generate_analysis(
+            spc_result$bfh_qic_result,
+            metadata = analysis_metadata,
+            use_ai = TRUE,
+            max_chars = 375
+          )
+        },
+        fallback = NULL,
+        error_type = "processing"
+      )
+
+      # Update UI based on result
+      if (!is.null(suggestion)) {
+        shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
+        shiny::showNotification(
+          "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
+          type = "message",
+          duration = 3
+        )
+        log_info(
+          .context = "EXPORT_MODULE",
+          message = "AI suggestion inserted",
+          details = list(length = nchar(suggestion))
+        )
+      } else {
+        # Failure: Show error
+        shiny::showNotification(
+          "Kunne ikke generere AI-analyse. Tjek internetforbindelse og prøv igen, eller skriv analysen manuelt.",
+          type = "error",
+          duration = 8
+        )
+
+        log_warn(
+          .context = "EXPORT_MODULE",
+          message = "AI suggestion generation failed"
+        )
+      }
+
+      # Re-enable button and clear loading
+      shinyjs::enable("ai_generate_suggestion")
+      output$ai_loading_feedback <- shiny::renderUI(NULL)
+    },
+    priority = OBSERVER_PRIORITIES$HIGH
+  )
+}

@@ -66,50 +66,13 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
     # Konfiguration og Validering ---------------------------------------------
 
     ## Chart Configuration
-    # Reaktiv konfiguration for chart setup
-    # Håndterer kolonne-validering og auto-detection
-    chart_config_raw <- shiny::reactive({
-      # Enhanced shiny::req() guards - stop execution if dependencies not ready
-      data <- module_data_reactive()
-      shiny::req(data)
-      shiny::req(is.data.frame(data))
-      shiny::req(nrow(data) > 0)
-      shiny::req(ncol(data) > 0)
-
-      config <- column_config_reactive()
-      shiny::req(config)
-      shiny::req(is.list(config))
-
-      chart_type <- chart_type_reactive() %||% "run" # Use %||% for cleaner fallback
-      shiny::req(chart_type)
-
-      # Valider at kolonner eksisterer i data - hvis ikke, fallback til NULL
-      if (!is.null(config$x_col) && !(config$x_col %in% names(data))) {
-        config$x_col <- NULL
-      }
-      if (!is.null(config$y_col) && !(config$y_col %in% names(data))) {
-        config$y_col <- NULL
-      }
-      if (!is.null(config$n_col) && !(config$n_col %in% names(data))) {
-        config$n_col <- NULL
-      }
-
-      # INGEN AUTO-DETECTION her - dropdown values respekteres altid
-      # Auto-detection sker kun ved data upload i server_column_management.R
-
-      # FIXED: Replace blocking shiny::req() with safe validation
-      # If y_col is not available, return NULL instead of hanging with shiny::req()
-      if (is.null(config$y_col) || !(config$y_col %in% names(data))) {
-        return(NULL)
-      }
-
-      return(list(
-        x_col = config$x_col,
-        y_col = config$y_col,
-        n_col = config$n_col,
-        chart_type = chart_type
-      ))
-    })
+    # Reaktiv konfiguration for chart setup - delegeret til mod_spc_chart_config.R
+    # Håndterer kolonne-validering og fallback-scenarier
+    chart_config_raw <- create_chart_config_reactive(
+      module_data_reactive = module_data_reactive,
+      column_config_reactive = column_config_reactive,
+      chart_type_reactive = chart_type_reactive
+    )
 
     # PERFORMANCE: Debounce chart_config to prevent redundant renders during rapid dropdown changes
     # Uses DEBOUNCE_DELAYS$input_change (300ms) to eliminate flickering when user rapidly changes column selections

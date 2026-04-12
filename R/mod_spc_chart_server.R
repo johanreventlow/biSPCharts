@@ -29,15 +29,16 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
     # Register observer for data cache updates
     register_module_data_observer(app_state, input, output, session)
 
-    # Viewport observer (extracted in Stage 5)
-    # Sæt viewport dims tidligt så cache key bruger reelle dimensioner
-    shiny::observe({
-      width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
-      height <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
-      shiny::req(!is.null(width), !is.null(height), width > 100, height > 100)
-      emit <- create_emit_api(app_state)
-      set_viewport_dims(app_state, width, height, emit)
-    })
+    # =========================================================================
+    # PHASE 2C EXTRACTION: Observers & Side Effects
+    # =========================================================================
+    # Extracted to: R/mod_spc_chart_observers.R
+    # Functions: register_viewport_observer
+    # Status: Stage 5 of Phase 2c refactoring (IN PROGRESS)
+    # =========================================================================
+
+    # Register viewport dimension observer (responsive font scaling)
+    register_viewport_observer(app_state, session, ns)
 
     # UNIFIED EVENT SYSTEM: Event-driven architecture with atomic cache updates
     # Implements Event Consolidation (CLAUDE.md Section 3.1.1)

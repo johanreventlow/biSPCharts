@@ -561,7 +561,7 @@ test_that("extract_anhoej_metadata() performs efficiently on large dataset", {
 
   expect_lt(result, 0.1)  # Less than 100ms
   expect_false(is.null(metadata))
-}
+})
 
 # ==============================================================================
 # Unit Tests: update_anhoej_results()
@@ -622,4 +622,4 @@ test_that("update_anhoej_results: preserves previous when no change and NA metri
   expect_equal(updated$longest_run, 9)
   expect_equal(updated$n_crossings, 3)
   expect_true(updated$has_valid_data)
-}))
+})

@@ -20,12 +20,6 @@
 
 # APPLICATION CONFIGURATION ===================================================
 
-#' Standard port for development server
-#'
-#' Port number brugt til udvikling af Shiny applikationen.
-#' @keywords internal
-DEFAULT_PORT <- 3838
-
 #' Auto restore funktion
 #'
 #' Bestemmer om session data automatisk skal gendannes ved app start.

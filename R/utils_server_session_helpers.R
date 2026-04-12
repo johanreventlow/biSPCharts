@@ -62,17 +62,17 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   # UNIFIED EVENT LISTENERS: Update dataLoaded status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
@@ -112,23 +112,23 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   # UNIFIED EVENT LISTENERS: Update has_data status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
   # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
-  shiny::observeEvent(TRUE, once = TRUE, priority = 2000, {
+  shiny::observeEvent(TRUE, once = TRUE, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
     initial_dataLoaded <- evaluate_dataLoaded_status()
     initial_has_data <- evaluate_has_data_status()
     app_state$session$dataLoaded_status <- initial_dataLoaded
@@ -140,46 +140,6 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$session$has_data_status
   })
   outputOptions(output, "has_data", suspendWhenHidden = FALSE)
-
-
-  # Data status visning
-  output$data_status_display <- shiny::renderUI({
-    # Use unified state management
-    file_uploaded_check <- app_state$session$file_uploaded
-
-    # UNIFIED EVENT SYSTEM: Direct access to current data
-    current_data_check <- app_state$data$current_data
-
-    if (is.null(current_data_check)) {
-      shiny::div(
-        shiny::span(class = "status-indicator status-warning"),
-        "Ingen data",
-        style = "font-size: 0.9rem;"
-      )
-    } else if (file_uploaded_check) {
-      data_rows <- sum(!is.na(current_data_check[[1]]))
-      shiny::div(
-        shiny::span(class = "status-indicator status-ready"),
-        paste("Fil uploadet -", data_rows, "datapunkter"),
-        style = "font-size: 0.9rem;"
-      )
-    } else {
-      data_rows <- sum(!is.na(current_data_check[[1]]))
-      if (data_rows > 0) {
-        shiny::div(
-          shiny::span(class = "status-indicator status-processing"),
-          paste("Manuel indtastning -", data_rows, "datapunkter"),
-          style = "font-size: 0.9rem;"
-        )
-      } else {
-        shiny::div(
-          shiny::span(class = "status-indicator status-warning"),
-          "Tom tabel - indtast data eller upload fil",
-          style = "font-size: 0.9rem;"
-        )
-      }
-    }
-  })
 
 
   # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi

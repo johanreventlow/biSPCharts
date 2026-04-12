@@ -142,46 +142,6 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   outputOptions(output, "has_data", suspendWhenHidden = FALSE)
 
 
-  # Data status visning
-  output$data_status_display <- shiny::renderUI({
-    # Use unified state management
-    file_uploaded_check <- app_state$session$file_uploaded
-
-    # UNIFIED EVENT SYSTEM: Direct access to current data
-    current_data_check <- app_state$data$current_data
-
-    if (is.null(current_data_check)) {
-      shiny::div(
-        shiny::span(class = "status-indicator status-warning"),
-        "Ingen data",
-        style = "font-size: 0.9rem;"
-      )
-    } else if (file_uploaded_check) {
-      data_rows <- sum(!is.na(current_data_check[[1]]))
-      shiny::div(
-        shiny::span(class = "status-indicator status-ready"),
-        paste("Fil uploadet -", data_rows, "datapunkter"),
-        style = "font-size: 0.9rem;"
-      )
-    } else {
-      data_rows <- sum(!is.na(current_data_check[[1]]))
-      if (data_rows > 0) {
-        shiny::div(
-          shiny::span(class = "status-indicator status-processing"),
-          paste("Manuel indtastning -", data_rows, "datapunkter"),
-          style = "font-size: 0.9rem;"
-        )
-      } else {
-        shiny::div(
-          shiny::span(class = "status-indicator status-warning"),
-          "Tom tabel - indtast data eller upload fil",
-          style = "font-size: 0.9rem;"
-        )
-      }
-    }
-  })
-
-
   # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi
   # oprettelsen af auto-save observers helt over. Dette gemmer både CPU og
   # gør debugging nemmere når funktionen er slået fra.

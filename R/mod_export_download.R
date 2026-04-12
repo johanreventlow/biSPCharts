@@ -1,0 +1,259 @@
+# ==============================================================================
+# mod_export_download.R
+# ==============================================================================
+# DOWNLOAD HANDLER MODULE FOR EXPORT
+#
+# Purpose: Extract download handler logic from mod_export_server.R.
+#          Manages PDF, PNG, and PowerPoint export file generation and download.
+#
+# Extracted from: mod_export_server.R (Phase 2b refactoring)
+# Depends on: app_state, input, session, build_export_plot (utils_export_helpers.R)
+# ==============================================================================
+
+#' Register Download Handler
+#'
+#' Sets up downloadHandler that generates export files in multiple formats
+#' (PDF via Typst, PNG, PowerPoint via officer).
+#'
+#' @param output Output object for rendering
+#' @param input Input object containing UI inputs
+#' @param session Shiny session object
+#' @param app_state Global app state containing data and column mappings
+#'
+#' @return NULL (side effect: registers output handler with Shiny)
+#'
+#' @keywords internal
+register_export_downloads <- function(output, input, session, app_state) {
+  output$download_export <- shiny::downloadHandler(
+    filename = function() {
+      format <- input$export_format %||% "pdf"
+      filename <- generate_export_filename(
+        format = format,
+        title = input$export_title %||% "",
+        department = input$export_department %||% ""
+      )
+
+      log_info(
+        .context = "EXPORT_MODULE",
+        message = "Download initiated",
+        details = list(format = format, filename = filename)
+      )
+
+      filename
+    },
+    content = function(file) {
+      shiny::req(app_state)
+      shiny::req(app_state$data$current_data)
+
+      format <- input$export_format %||% "pdf"
+
+      safe_operation(
+        operation_name = paste("Export", toupper(format)),
+        code = {
+          if (format == "pdf") {
+            generate_pdf_export(input, app_state, file)
+          } else if (format == "png") {
+            generate_png_export(input, app_state, file)
+          } else if (format == "pptx") {
+            generate_pptx_export(input, app_state, file)
+          } else {
+            stop(paste("Ukendt format:", format))
+          }
+
+          log_info(
+            .context = "EXPORT_MODULE",
+            message = "Export completed successfully",
+            details = list(format = format, file = basename(file))
+          )
+        },
+        fallback = function(e) {
+          log_error(
+            .context = "EXPORT_MODULE",
+            message = "Export failed",
+            details = list(format = format, error = e$message)
+          )
+          shiny::showNotification(
+            paste0(
+              "Eksport fejlede. Prøv igen, ",
+              "eller kontakt Dataenheden hvis problemet fortsætter."
+            ),
+            type = "error",
+            duration = 10
+          )
+        },
+        error_type = "processing"
+      )
+    }
+  )
+}
+
+# === FORMAT-SPECIFIC EXPORT FUNCTIONS =======================================
+
+#' Generate PDF Export
+#'
+#' @param input Shiny input object
+#' @param app_state Global app state
+#' @param file Output file path
+#' @keywords internal
+generate_pdf_export <- function(input, app_state, file) {
+  log_debug(.context = "EXPORT_MODULE", message = "PDF export starting")
+
+  validate_export_inputs(
+    format = "pdf",
+    title = input$export_title,
+    department = input$export_department
+  )
+
+  # Generer SPC plot via fælles helper
+  pdf_plot_result <- build_export_plot(
+    app_state = app_state,
+    title_input = input$export_title %||% "",
+    dept_input = input$export_department %||% "",
+    plot_context = "export_pdf"
+  )
+
+  if (is.null(pdf_plot_result) || is.null(pdf_plot_result$bfh_qic_result)) {
+    stop("Ingen plot tilgængeligt til eksport")
+  }
+
+  # PDF-specifik metadata til BFHcharts Typst-template
+  metadata <- list(
+    hospital = get_hospital_name_for_export(),
+    department = input$export_department,
+    title = input$export_title,
+    analysis = input$pdf_improvement,
+    data_definition = input$pdf_description,
+    author = Sys.getenv("USER"),
+    date = Sys.Date()
+  )
+
+  result <- BFHcharts::bfh_export_pdf(
+    x = pdf_plot_result$bfh_qic_result,
+    output = file,
+    metadata = metadata,
+    template = "bfh-diagram",
+    auto_analysis = FALSE
+  )
+
+  if (is.null(result) || !file.exists(file)) {
+    stop("PDF generation failed - file not created")
+  }
+
+  shiny::showNotification("PDF genereret og downloadet", type = "message", duration = 3)
+}
+
+#' Generate PNG Export
+#'
+#' @param input Shiny input object
+#' @param app_state Global app state
+#' @param file Output file path
+#' @keywords internal
+generate_png_export <- function(input, app_state, file) {
+  log_debug(.context = "EXPORT_MODULE", message = "PNG export starting")
+
+  dpi <- as.numeric(input$export_dpi %||% 96)
+  size_preset <- input$export_size_preset %||% "medium"
+
+  # Beregn dimensioner fra preset eller brugerdefinerede værdier
+  if (size_preset == "custom") {
+    width_px <- as.numeric(input$export_custom_width %||% 1200)
+    height_px <- as.numeric(input$export_custom_height %||% 900)
+    width_inches <- width_px / dpi
+    height_inches <- height_px / dpi
+  } else {
+    preset <- get_size_from_preset(size_preset)
+    if (preset$unit == "px") {
+      width_inches <- preset$width / preset$dpi
+      height_inches <- preset$height / preset$dpi
+    } else {
+      width_inches <- preset$width
+      height_inches <- preset$height
+    }
+  }
+
+  final_width_px <- round(width_inches * dpi)
+  final_height_px <- round(height_inches * dpi)
+
+  validate_export_inputs(
+    format = "png",
+    title = input$export_title,
+    department = input$export_department,
+    width = final_width_px,
+    height = final_height_px
+  )
+
+  # Generer SPC plot med PNG-specifik DPI og dimensioner
+  png_plot_result <- build_export_plot(
+    app_state = app_state,
+    title_input = input$export_title %||% "",
+    dept_input = input$export_department %||% "",
+    plot_context = "export_png",
+    override_width_px = final_width_px,
+    override_height_px = final_height_px,
+    override_dpi = dpi
+  )
+
+  # Konverter inches til mm (BFHcharts bruger mm)
+  result <- BFHcharts::bfh_export_png(
+    x = png_plot_result$bfh_qic_result,
+    output = file,
+    width_mm = width_inches * 25.4,
+    height_mm = height_inches * 25.4,
+    dpi = dpi
+  )
+
+  if (is.null(result) || !file.exists(file)) {
+    stop("PNG generation failed - file not created")
+  }
+
+  shiny::showNotification("PNG genereret og downloadet", type = "message", duration = 3)
+}
+
+#' Generate PowerPoint Export
+#'
+#' @param input Shiny input object
+#' @param app_state Global app state
+#' @param file Output file path
+#' @keywords internal
+generate_pptx_export <- function(input, app_state, file) {
+  log_debug(.context = "EXPORT_MODULE", message = "PowerPoint export starting")
+
+  validate_export_inputs(
+    format = "pptx",
+    title = input$export_title,
+    department = input$export_department
+  )
+
+  # Hospital template (valgfri)
+  template_path <- system.file("templates", "hospital_presentation.pptx", package = "biSPCharts")
+  if (!file.exists(template_path) || nchar(template_path) == 0) {
+    template_path <- NULL
+  }
+
+  # Generer SPC plot via fælles helper
+  pptx_plot_result <- build_export_plot(
+    app_state = app_state,
+    title_input = input$export_title %||% "",
+    dept_input = input$export_department %||% "",
+    plot_context = "export_pptx"
+  )
+
+  # PPTX titel med afdeling (simpelt format uden parentes-wrapping fra helper)
+  export_title <- input$export_title %||% ""
+  if (!is.null(input$export_department) && nchar(input$export_department) > 0) {
+    export_title <- paste0(export_title, " (", input$export_department, ")")
+  }
+
+  result <- generate_powerpoint_export(
+    plot_object = pptx_plot_result$plot,
+    title = export_title,
+    template_path = template_path,
+    output_path = file
+  )
+
+  if (is.null(result) || !file.exists(file)) {
+    stop("PowerPoint generation failed - file not created")
+  }
+
+  shiny::showNotification("PowerPoint genereret og downloadet", type = "message", duration = 3)
+}

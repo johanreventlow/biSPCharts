@@ -23,10 +23,16 @@ normalize_mapping <- function(value) {
 #' @param title_input Character. Export title input
 #' @param dept_input Character. Export department input
 #' @param plot_context Character. Plot context ("export_preview", "export_pdf")
+#' @param override_width_px Optional integer. Override viewport width (for PNG custom sizes)
+#' @param override_height_px Optional integer. Override viewport height (for PNG custom sizes)
+#' @param override_dpi Optional integer. Override DPI (for PNG export with user-selected DPI)
 #' @return Plot object eller NULL ved fejl
 #' @keywords internal
 build_export_plot <- function(app_state, title_input, dept_input,
-                              plot_context = "export_pdf") {
+                              plot_context = "export_pdf",
+                              override_width_px = NULL,
+                              override_height_px = NULL,
+                              override_dpi = NULL) {
   # Validate required data
   if (is.null(app_state$data$current_data)) {
     log_warn(
@@ -37,7 +43,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   }
 
   if (is.null(app_state$columns$mappings$x_column) ||
-    is.null(app_state$columns$mappings$y_column)) {
+        is.null(app_state$columns$mappings$y_column)) {
     log_warn(
       .context = "EXPORT_MODULE",
       message = "build_export_plot: Missing required column mappings"
@@ -100,8 +106,10 @@ build_export_plot <- function(app_state, title_input, dept_input,
   safe_operation(
     operation_name = paste("Generate", plot_context, "plot"),
     code = {
-      # Get dimensions for the specified context
+      # Get dimensions: use overrides if provided, otherwise context defaults
       context_dims <- get_context_dimensions(plot_context)
+      final_width <- override_width_px %||% context_dims$width_px
+      final_height <- override_height_px %||% context_dims$height_px
 
       # Get chart configuration from app_state
       config <- list(
@@ -110,8 +118,8 @@ build_export_plot <- function(app_state, title_input, dept_input,
         n_col = mappings_n_column
       )
 
-      # Regenerate plot with specified export context and dimensions
-      spc_result <- generateSPCPlot(
+      # Build generateSPCPlot arguments
+      spc_args <- list(
         data = app_state$data$current_data,
         config = config,
         chart_type = chart_type,
@@ -125,10 +133,16 @@ build_export_plot <- function(app_state, title_input, dept_input,
         y_axis_unit = mappings_y_axis_unit %||% "count",
         kommentar_column = mappings_kommentar_column,
         base_size = 14,
-        viewport_width = context_dims$width_px,
-        viewport_height = context_dims$height_px,
+        viewport_width = final_width,
+        viewport_height = final_height,
         plot_context = plot_context
       )
+      # PNG export: override DPI for correct dimension conversion (Issue #64)
+      if (!is.null(override_dpi)) {
+        spc_args$override_dpi <- override_dpi
+      }
+
+      spc_result <- do.call(generateSPCPlot, spc_args)
 
       # DEBUG: Log what generateSPCPlot returned
       log_debug(
@@ -175,6 +189,3 @@ build_export_plot <- function(app_state, title_input, dept_input,
     error_type = "processing"
   )
 }
-
-# EXPORT MODULE SERVER ========================================================
-

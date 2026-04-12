@@ -148,9 +148,6 @@ visualizationModuleServer <- function(
           viewport_height <- 600
         }
 
-        emit <- create_emit_api(app_state)
-        set_viewport_dims(app_state, viewport_width, viewport_height, emit)
-
         data <- module_data_reactive()
 
         # Guard: Require at least 3 rows with meaningful data (SPC minimum)

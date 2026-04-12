@@ -133,6 +133,14 @@ get_viewport_dims <- function(app_state) {
 #'
 #' @keywords internal
 set_viewport_dims <- function(app_state, width, height, emit = NULL) {
+  # Change detection: emit kun ved reel ændring i dimensioner
+  current <- shiny::isolate(app_state$visualization$viewport_dims)
+  dims_changed <- is.null(current) ||
+    !identical(current$width, width) ||
+    !identical(current$height, height)
+
+  if (!dims_changed) return(invisible(NULL))
+
   shiny::isolate({
     app_state$visualization$viewport_dims <- list(
       width = width,
@@ -141,7 +149,6 @@ set_viewport_dims <- function(app_state, width, height, emit = NULL) {
     )
   })
 
-  # Emit visualization update if emit API available
   if (!is.null(emit) && is.function(emit$visualization_update_needed)) {
     emit$visualization_update_needed()
   }

@@ -127,16 +127,13 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$session$has_data_status <- new_status
   })
 
-  # Initial evaluation to set correct startup state
-  shiny::observe(
-    {
-      initial_dataLoaded <- evaluate_dataLoaded_status()
-      initial_has_data <- evaluate_has_data_status()
-      app_state$session$dataLoaded_status <- initial_dataLoaded
-      app_state$session$has_data_status <- initial_has_data
-    },
-    priority = 2000
-  ) # High priority to run early
+  # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
+  shiny::observeEvent(TRUE, once = TRUE, priority = 2000, {
+    initial_dataLoaded <- evaluate_dataLoaded_status()
+    initial_has_data <- evaluate_has_data_status()
+    app_state$session$dataLoaded_status <- initial_dataLoaded
+    app_state$session$has_data_status <- initial_has_data
+  })
 
   output$has_data <- shiny::renderText({
     # UNIFIED EVENT SYSTEM: Return value from centralized app_state

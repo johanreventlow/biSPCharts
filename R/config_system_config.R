@@ -144,6 +144,23 @@ RATE_LIMITS <- list(
   session_save_seconds = 5 # Minimum seconds between session saves
 )
 
+#' Upload validation thresholds
+#' @keywords internal
+UPLOAD_LIMITS <- list(
+  max_file_size_mb = 50, # Maksimal filstørrelse i MB
+  max_line_count = 100000, # Maksimalt antal linjer (afvis upload)
+  warning_row_count = 50000 # Rækketærskel for advarselsbesked
+)
+
+#' @keywords internal
+get_max_file_size_mb <- function() UPLOAD_LIMITS$max_file_size_mb
+
+#' @keywords internal
+get_max_upload_line_count <- function() UPLOAD_LIMITS$max_line_count
+
+#' @keywords internal
+get_upload_warning_row_count <- function() UPLOAD_LIMITS$warning_row_count
+
 #' Auto-save debounce delays (milliseconds)
 #' @keywords internal
 AUTOSAVE_DELAYS <- list(

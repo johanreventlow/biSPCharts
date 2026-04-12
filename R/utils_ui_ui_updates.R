@@ -511,59 +511,6 @@ create_ui_update_service <- function(session, app_state) {
   )
 }
 
-#' Create UI Update Events
-#'
-#' Add UI update events to the existing app_state$events.
-#' These events trigger centralized UI updates through the event system.
-#'
-#' @param app_state Existing app state with events
-#'
-add_ui_update_events <- function(app_state) {
-  # Add UI update events to existing events
-  app_state$events$ui_update_needed <- 0L
-  app_state$events$column_choices_changed <- 0L
-  app_state$events$form_reset_needed <- 0L
-  app_state$events$form_restore_needed <- 0L
-
-  app_state
-}
-
-#' Add UI Update Emit Functions
-#'
-#' Add UI update emit functions to the existing emit API.
-#'
-#' @param emit Existing emit API
-#' @param app_state App state containing events
-#'
-add_ui_update_emit_functions <- function(emit, app_state) {
-  # Add UI update emit functions
-  emit$ui_update_needed <- function() {
-    shiny::isolate({
-      app_state$events$ui_update_needed <- app_state$events$ui_update_needed + 1L
-    })
-  }
-
-  emit$column_choices_changed <- function() {
-    shiny::isolate({
-      app_state$events$column_choices_changed <- app_state$events$column_choices_changed + 1L
-    })
-  }
-
-  emit$form_reset_needed <- function() {
-    shiny::isolate({
-      app_state$events$form_reset_needed <- app_state$events$form_reset_needed + 1L
-    })
-  }
-
-  emit$form_restore_needed <- function() {
-    shiny::isolate({
-      app_state$events$form_restore_needed <- app_state$events$form_restore_needed + 1L
-    })
-  }
-
-  emit
-}
-
 #' Safe Programmatic UI Update Wrapper (Enhanced with Intelligent Flag Clearing)
 #'
 #' Advanced wrapper function that prevents circular event loops during programmatic UI updates.

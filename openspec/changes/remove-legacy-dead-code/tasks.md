@@ -38,6 +38,17 @@
 - [ ] 7.2 Start app manuelt og verificer kernefunktionalitet — **[MANUELT TRIN]**
 - [ ] 7.3 Verificer at ingen warnings om manglende funktioner opstår — **[MANUELT TRIN]**
 
+## 8. Fase 6: Codex Review — Yderligere død kode (tilføjet 2026-04-12)
+
+Identificeret via Codex statisk code review.
+
+- [x] 8.1 Slet `add_ui_update_events()` og `add_ui_update_emit_functions()` i `R/utils_ui_ui_updates.R` — fjernet
+- [x] 8.2 Slet `R/plot_config_objects.R` — verificeret ubrugt runtime
+- [x] 8.3 Slet deprecated funktioner i `R/utils_performance.R` + duplikat PERFORMANCE_THRESHOLDS (~340 linjer)
+- [ ] 8.4 Kør `devtools::document()` og opdater NAMESPACE
+- [x] 8.5 Kør test-suite — ingen regressioner (543 FAIL = identisk med master)
+- [ ] 8.6 Commit
+
 ## Resultat
 - **12.631 linjer fjernet** på tværs af 241 filer
 - 5 commits, ingen nye test-fejl

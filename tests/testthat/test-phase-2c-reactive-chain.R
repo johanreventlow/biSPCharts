@@ -403,6 +403,50 @@ test_that("Viewport observer skips update when dimensions are too small", {
   expect_false(should_update)
 })
 
+test_that("set_viewport_dims emitter IKKE ved uændrede dimensioner", {
+  emit_count <- 0L
+
+  withr::with_options(list(shiny.testmode = TRUE), {
+    app_state <- shiny::reactiveValues(
+      visualization = shiny::reactiveValues(
+        viewport_dims = list(width = 800, height = 600, last_updated = Sys.time())
+      )
+    )
+
+    emit <- list(
+      visualization_update_needed = function() {
+        emit_count <<- emit_count + 1L
+      }
+    )
+
+    set_viewport_dims(app_state, 800, 600, emit)
+  })
+
+  expect_equal(emit_count, 0L, info = "Uændrede dimensioner bør ikke emitte")
+})
+
+test_that("set_viewport_dims emitter ved ændrede dimensioner", {
+  emit_count <- 0L
+
+  withr::with_options(list(shiny.testmode = TRUE), {
+    app_state <- shiny::reactiveValues(
+      visualization = shiny::reactiveValues(
+        viewport_dims = list(width = 800, height = 600, last_updated = Sys.time())
+      )
+    )
+
+    emit <- list(
+      visualization_update_needed = function() {
+        emit_count <<- emit_count + 1L
+      }
+    )
+
+    set_viewport_dims(app_state, 1024, 768, emit)
+  })
+
+  expect_equal(emit_count, 1L, info = "Ændrede dimensioner bør emitte")
+})
+
 test_that("Viewport change triggers spc_results recomputation", {
   # Simulates: app_state$visualization$viewport_dims change → spc_results dependency
   viewport_changed <- TRUE

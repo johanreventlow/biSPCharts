@@ -29,7 +29,11 @@ create_ui_update_service <- function(session, app_state) {
   # @param columns Vector of column input IDs to update
   # @param clear_selections If TRUE, clear all selections
   #
-  update_column_choices <- function(choices = NULL, selected = NULL, columns = c("x_column", "y_column", "n_column", "skift_column", "frys_column", "kommentar_column"), clear_selections = FALSE) {
+  update_column_choices <- function(
+      choices = NULL, selected = NULL,
+      columns = c("x_column", "y_column", "n_column",
+                  "skift_column", "frys_column", "kommentar_column"),
+      clear_selections = FALSE) {
     # Generate choices from current data if not provided
     if (is.null(choices)) {
       current_data <- app_state$data$current_data
@@ -99,7 +103,10 @@ create_ui_update_service <- function(session, app_state) {
   # @param selected Named list of selected values (e.g., list(x_column="Dato", y_column="Værdi"))
   # @param columns Vector of input IDs to update (defaults to all SPC columns)
   #
-  update_all_columns <- function(choices, selected = list(), columns = c("x_column", "y_column", "n_column", "skift_column", "frys_column", "kommentar_column")) {
+  update_all_columns <- function(
+      choices, selected = list(),
+      columns = c("x_column", "y_column", "n_column",
+                  "skift_column", "frys_column", "kommentar_column")) {
     safe_programmatic_ui_update(session, app_state, function() {
       for (col in columns) {
         selected_value <- if (col %in% names(selected)) selected[[col]] else ""
@@ -254,6 +261,7 @@ create_ui_update_service <- function(session, app_state) {
         code = {
           # Reset text inputs
           shiny::updateTextInput(session, "indicator_title", value = "")
+          shiny::updateTextAreaInput(session, "indicator_description", value = "")
           shiny::updateTextInput(session, "unit_custom", value = "")
           shiny::updateTextInput(session, "target_value", value = "")
           shiny::updateTextInput(session, "centerline_value", value = "")
@@ -370,7 +378,7 @@ create_ui_update_service <- function(session, app_state) {
       error_type = "processing"
     )
 
-    return(validation_results)
+    validation_results
   }
 
   # Show User Feedback
@@ -517,7 +525,7 @@ add_ui_update_events <- function(app_state) {
   app_state$events$form_reset_needed <- 0L
   app_state$events$form_restore_needed <- 0L
 
-  return(app_state)
+  app_state
 }
 
 #' Add UI Update Emit Functions
@@ -553,7 +561,7 @@ add_ui_update_emit_functions <- function(emit, app_state) {
     })
   }
 
-  return(emit)
+  emit
 }
 
 #' Safe Programmatic UI Update Wrapper (Enhanced with Intelligent Flag Clearing)
@@ -658,8 +666,7 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
           paste("UI update function fejlede:", e$message),
           .context = "UI_UPDATE_QUEUE"
         )
-        # Return NULL to continue queue processing
-        return(NULL)
+        NULL
       },
       error_type = "ui"
     )
@@ -767,7 +774,7 @@ enqueue_ui_update <- function(app_state, queue_entry) {
     # Queue operation completed
   }
 
-  return(invisible(TRUE))
+  invisible(TRUE)
 }
 
 #' Process UI Update Queue
@@ -832,7 +839,7 @@ process_ui_update_queue <- function(app_state) {
     }
   }
 
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Cleanup Expired Queue Updates
@@ -924,7 +931,8 @@ comprehensive_system_cleanup <- function(app_state) {
   cleanup_start <- Sys.time()
 
   # 1. Clean expired tokens
-  cleanup_expired_tokens(app_state, max_age_seconds = shiny::isolate(app_state$ui$memory_limits$token_cleanup_interval_sec))
+  max_age <- shiny::isolate(app_state$ui$memory_limits$token_cleanup_interval_sec)
+  cleanup_expired_tokens(app_state, max_age_seconds = max_age)
 
   # 2. Clean expired queue updates
   cleanup_expired_queue_updates(app_state, max_age_seconds = 30)
@@ -1006,7 +1014,7 @@ get_performance_report <- function(app_state) {
     "🚥 Health: ", report$health_status, "\n"
   )
 
-  return(report)
+  report
 }
 
 #' Reset Performance Metrics

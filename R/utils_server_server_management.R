@@ -15,7 +15,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
   # Log auto-restore feature flag ved session start (diagnostik)
   log_info(
     sprintf("auto_restore_data observer registered (auto_restore_enabled=%s)",
-      isTRUE(get_auto_restore_enabled())),
+            isTRUE(get_auto_restore_enabled())),
     .context = "SESSION_RESTORE"
   )
 
@@ -51,8 +51,8 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
       saved_version <- peek$version %||% "unknown"
       if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
         log_info(
-          paste("session_peek: version mismatch", saved_version, "≠", LOCAL_STORAGE_SCHEMA_VERSION,
-            "— ryder localStorage lydløst"),
+          paste("session_peek: version mismatch", saved_version, "\u2260", LOCAL_STORAGE_SCHEMA_VERSION,
+                "\u2014 ryder localStorage lydl\u00f8st"),
           .context = "SESSION_RESTORE"
         )
         clearDataLocally(session)
@@ -152,16 +152,16 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             max_cells <- 1e7 # 10 million total cells max
 
             if (is.null(saved_data$values) || is.null(saved_data$nrows) ||
-              is.null(saved_data$ncols)) {
+                  is.null(saved_data$ncols)) {
               stop("Invalid saved data format - missing required fields")
             }
 
             # Validate dimensions before reconstruction
             if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
-              saved_data$nrows < 0 || saved_data$ncols < 0 ||
-              saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
-              (saved_data$nrows * saved_data$ncols) > max_cells ||
-              length(saved_data$values) != saved_data$ncols) {
+                  saved_data$nrows < 0 || saved_data$ncols < 0 ||
+                  saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
+                  (saved_data$nrows * saved_data$ncols) > max_cells ||
+                  length(saved_data$values) != saved_data$ncols) {
               stop("Invalid data dimensions or structure - rejecting restoration payload")
             }
 
@@ -207,7 +207,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             if (!is.null(saved_state$metadata)) {
               saved_meta <- saved_state$metadata
               for (field in c("x_column", "y_column", "n_column",
-                "skift_column", "frys_column", "kommentar_column")) {
+                              "skift_column", "frys_column", "kommentar_column")) {
                 val <- saved_meta[[field]]
                 if (!is.null(val) && nzchar(val)) {
                   app_state$columns$mappings[[field]] <- val
@@ -342,7 +342,7 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
     ]
     log_info(
       sprintf("restore_metadata called with %d non-empty fields: %s",
-        length(present_fields), paste(present_fields, collapse = ", ")),
+              length(present_fields), paste(present_fields, collapse = ", ")),
       .context = "SESSION_RESTORE"
     )
 
@@ -396,6 +396,17 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       if (!is.null(metadata$indicator_description)) {
         shiny::updateTextAreaInput(session, "indicator_description", value = metadata$indicator_description)
       }
+    }
+
+    # Navigér til gemt tab (eller "analyser" som fallback)
+    # Samme validerede tab-liste som auto-restore observer (linje 247)
+    valid_restore_tabs <- c("analyser", "eksporter", "upload")
+    active_tab <- metadata$active_tab
+    if (!is.null(active_tab) && nzchar(active_tab) &&
+          active_tab %in% valid_restore_tabs) {
+      bslib::nav_select("main_navbar", selected = active_tab, session = session)
+    } else {
+      bslib::nav_select("main_navbar", selected = "analyser", session = session)
     }
   })
 }
@@ -572,7 +583,7 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
       shiny::updateTextInput(session, "centerline_value", value = "")
     }
 
-    shinyjs::reset("data_file")
+    shinyjs::reset("direct_file_upload")
   })
 
   # Force name-only detection på de nye standardkolonner efter UI opdatering

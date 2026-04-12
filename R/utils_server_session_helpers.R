@@ -62,17 +62,17 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   # UNIFIED EVENT LISTENERS: Update dataLoaded status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_dataLoaded_status()
     app_state$session$dataLoaded_status <- new_status
   })
@@ -112,23 +112,23 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   # UNIFIED EVENT LISTENERS: Update has_data status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = 1000, {
+  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
     new_status <- evaluate_has_data_status()
     app_state$session$has_data_status <- new_status
   })
 
   # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
-  shiny::observeEvent(TRUE, once = TRUE, priority = 2000, {
+  shiny::observeEvent(TRUE, once = TRUE, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
     initial_dataLoaded <- evaluate_dataLoaded_status()
     initial_has_data <- evaluate_has_data_status()
     app_state$session$dataLoaded_status <- initial_dataLoaded

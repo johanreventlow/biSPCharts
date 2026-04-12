@@ -84,6 +84,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 
   # Auto-gendan session data når tilgængelig (hvis aktiveret)
   shiny::observeEvent(input$auto_restore_data,
+    ignoreInit = TRUE,
     {
       shiny::req(input$auto_restore_data)
 

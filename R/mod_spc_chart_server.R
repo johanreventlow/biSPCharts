@@ -29,18 +29,19 @@
 # ==============================================================================
 
 visualizationModuleServer <- function(
-    id,
-    column_config_reactive,
-    chart_type_reactive,
-    target_value_reactive,
-    target_text_reactive,
-    centerline_value_reactive,
-    skift_config_reactive,
-    frys_config_reactive,
-    chart_title_reactive = NULL,
-    y_axis_unit_reactive = NULL,
-    kommentar_column_reactive = NULL,
-    app_state = NULL) {
+  id,
+  column_config_reactive,
+  chart_type_reactive,
+  target_value_reactive,
+  target_text_reactive,
+  centerline_value_reactive,
+  skift_config_reactive,
+  frys_config_reactive,
+  chart_title_reactive = NULL,
+  y_axis_unit_reactive = NULL,
+  kommentar_column_reactive = NULL,
+  app_state = NULL
+) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -171,17 +172,17 @@ visualizationModuleServer <- function(
           # Show contextual empty state with helpful message
           config <- tryCatch(column_config_reactive(), error = function(e) NULL)
           empty_state_msg <- if (is.null(config) || is.null(config$y_col)) {
-            "Vælg en numerisk Y-akse-kolonne\nfor at generere diagrammet."
+            "V\u00e6lg en numerisk Y-akse-kolonne\nfor at generere diagrammet."
           } else {
             y_col_data <- tryCatch(data[[config$y_col]], error = function(e) NULL)
             if (!is.null(y_col_data) && !is_column_numeric(y_col_data)) {
               "Den valgte Y-akse-kolonne indeholder\nikke numeriske data."
             } else {
-              NULL
+              "Diagrammet kunne ikke genereres.\nKontroll\u00e9r data og kolonnevalg."
             }
           }
           graphics::plot.new()
-          graphics::text(0.5, 0.5, empty_state_msg %||% "Beregner...", cex = 1.1, col = "#6c757d")
+          graphics::text(0.5, 0.5, empty_state_msg, cex = 1.1, col = "#6c757d")
           return(invisible(NULL))
         }
 

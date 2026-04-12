@@ -765,7 +765,7 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
   }
 
   # Enhanced file size validation med DoS protection
-  max_size_mb <- 50
+  max_size_mb <- get_max_file_size_mb()
   if (file_info$size > max_size_mb * 1024 * 1024) {
     # Log potential DoS attempt for large files
     if (file_info$size > 100 * 1024 * 1024) { # Over 100MB is suspicious
@@ -794,12 +794,11 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
         line_count <- 0
         while (length(readLines(con, n = 1)) > 0) {
           line_count <- line_count + 1
-          if (line_count > 100000) { # Stop counting at reasonable limit
+          if (line_count > get_max_upload_line_count()) { # Stop counting at reasonable limit
             break
           }
         }
-        # Maximum 50k rows for reasonable performance
-        if (line_count > 50000) {
+        if (line_count > get_upload_warning_row_count()) {
           log_warn(
             component = "[FILE_SECURITY]",
             message = "Large row count detected - performance risk",
@@ -808,7 +807,11 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
               estimated_rows = line_count
             )
           )
-          errors <- c(errors, "CSV fil har for mange rækker (maksimum 50,000)")
+          errors <- c(errors, paste0(
+            "CSV fil har for mange rækker (maksimum ",
+            format(get_upload_warning_row_count(), big.mark = "."),
+            ")"
+          ))
         }
       },
       fallback = function(e) {

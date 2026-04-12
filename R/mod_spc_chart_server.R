@@ -107,357 +107,38 @@ visualizationModuleServer <- function(id, data_reactive, column_config_reactive,
     # Eliminates 60-80% of redundant plot generations during rapid user interactions
     spc_inputs <- shiny::debounce(spc_inputs_raw, millis = DEBOUNCE_DELAYS$file_select)
 
-    spc_results <- shiny::reactive({
-      inputs <- spc_inputs()
+    # =========================================================================
+    # PHASE 2C EXTRACTION: SPC Computation Pipeline
+    # =========================================================================
+    # Extracted to: R/mod_spc_chart_compute.R
+    # Functions: create_spc_results_reactive, create_spc_plot_reactive,
+    #            register_cache_aware_observer
+    # Status: Stage 4 of Phase 2c refactoring (IN PROGRESS)
+    # =========================================================================
 
-      # Inkludér kolonnemapping i cache-key for at invalidere ved dropdownændringer
-      config_key <- paste0(
-        inputs$config$x_col %||% "NULL", "|",
-        inputs$config$y_col %||% "NULL", "|",
-        inputs$config$n_col %||% "NULL"
-      )
+    # Create SPC results reactive with caching and Anhøj rules extraction
+    spc_results <- create_spc_results_reactive(
+      spc_inputs_reactive = spc_inputs,
+      app_state = app_state,
+      set_plot_state = set_plot_state,
+      get_plot_state = get_plot_state
+    )
 
-      # M11: Context-aware cache key for plot isolation
-      # Issue #62: Separate cache per context to prevent dimension bleeding
-      plot_context <- "analysis" # Analyse-side always uses "analysis" context
-      vp_dims <- get_viewport_dims(app_state)
+    # Create SPC plot reactive (extracts plot from spc_results)
+    spc_plot <- create_spc_plot_reactive(
+      spc_results_reactive = spc_results,
+      spc_inputs_reactive = spc_inputs,
+      app_state = app_state
+    )
 
-      cache_key <- digest::digest(
-        list(
-          plot_context, # NEW: Context identifier for cache isolation
-          inputs$data_hash,
-          inputs$chart_type,
-          config_key,
-          inputs$target_value,
-          inputs$target_text, # CRITICAL: Include target_text for operator invalidation
-          inputs$centerline_value,
-          inputs$skift_hash,
-          inputs$frys_hash,
-          inputs$title,
-          inputs$y_axis_unit,
-          inputs$kommentar_column,
-          inputs$base_size, # FIX: Invalidér cache ved breddeændring/fuldskærm
-          vp_dims$width, # NEW: Viewport width for dimension-aware caching
-          vp_dims$height # NEW: Viewport height for dimension-aware caching
-        ),
-        algo = "xxhash64"
-      )
-
-      # Registrér om baseline/centerline er ændret (inkl. ryddet)
-      last_centerline <- shiny::isolate(app_state$visualization$last_centerline_value)
-      centerline_changed <- !identical(inputs$centerline_value, last_centerline)
-
-      log_debug(
-        sprintf(
-          "qic_startup_call chart=%s rows=%d",
-          inputs$chart_type,
-          nrow(inputs$data)
-        ),
-        .context = "SPC_PIPELINE"
-      )
-
-      set_plot_state("plot_ready", FALSE)
-      set_plot_state("plot_warnings", character(0))
-      set_plot_state("is_computing", TRUE)
-      set_plot_state("plot_generation_in_progress", TRUE)
-
-      on.exit(
-        {
-          set_plot_state("is_computing", FALSE)
-          set_plot_state("plot_generation_in_progress", FALSE)
-        },
-        add = TRUE
-      )
-
-      validation <- validateDataForChart(inputs$data, inputs$config, inputs$chart_type)
-
-      if (!validation$valid) {
-        set_plot_state("plot_warnings", validation$warnings)
-        set_plot_state("plot_ready", FALSE)
-        set_plot_state("anhoej_results", list(
-          longest_run = NA_real_,
-          longest_run_max = NA_real_,
-          n_crossings = NA_real_,
-          n_crossings_min = NA_real_,
-          out_of_control_count = 0L,
-          runs_signal = FALSE,
-          crossings_signal = FALSE,
-          anhoej_signal = FALSE,
-          any_signal = FALSE,
-          message = "Validering fejlede - kontroller data",
-          has_valid_data = FALSE
-        ))
-        set_plot_state("plot_object", NULL)
-        return(list(plot = NULL, qic_data = NULL, cache_key = cache_key))
-      }
-
-      set_plot_state("plot_warnings", character(0))
-
-      computation <- safe_operation(
-        "Generate SPC plot",
-        code = {
-          # M10: Hent viewport dimensions fra centraliseret state
-          vp_dims <- get_viewport_dims(app_state)
-
-          # SPRINT 4: Pass QIC cache for performance optimization
-          qic_cache <- if (!is.null(app_state) && !is.null(app_state$cache)) {
-            get_or_init_qic_cache(app_state)
-          } else {
-            NULL
-          }
-
-          spc_result <- generateSPCPlot(
-            data = inputs$data,
-            config = inputs$config,
-            chart_type = inputs$chart_type,
-            target_value = inputs$target_value,
-            target_text = inputs$target_text,
-            centerline_value = inputs$centerline_value,
-            show_phases = inputs$skift_config$show_phases %||% FALSE,
-            skift_column = inputs$skift_config$skift_column,
-            frys_column = inputs$frys_column,
-            chart_title_reactive = chart_title_reactive,
-            y_axis_unit = inputs$y_axis_unit,
-            kommentar_column = inputs$kommentar_column,
-            base_size = inputs$base_size,
-            viewport_width = vp_dims$width,
-            viewport_height = vp_dims$height,
-            qic_cache = qic_cache,
-            plot_context = "analysis" # M11: Analyse-side uses "analysis" context
-          )
-
-          # CRITICAL: Skip applyHospitalTheme() for BFHcharts plots
-          # BFHcharts applies its own theme and label layers which are incompatible
-          # with our theme system. Check metadata$backend flag to determine if plot
-          # came from BFHcharts or qicharts2.
-          is_bfhcharts <- !is.null(spc_result$metadata$backend) &&
-            spc_result$metadata$backend == "bfhcharts"
-
-          # Hospital theming now handled by BFHcharts backend
-          # qicharts2 fallback plots returned unstyled (theme handling moved to BFHcharts)
-          plot <- spc_result$plot
-
-          qic_data <- spc_result$qic_data
-
-          set_plot_state("plot_object", plot)
-          set_plot_state("plot_ready", TRUE)
-
-          if (!is.null(qic_data)) {
-            # Beregn runs_signal og crossings_signal først
-            runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
-
-            crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
-              n_cross <- safe_max(qic_data$n.crossings)
-              n_cross_min <- safe_max(qic_data$n.crossings.min)
-              !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-            } else {
-              FALSE
-            }
-
-            qic_results <- list(
-              any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-              out_of_control_count = sum(qic_data$sigma.signal, na.rm = TRUE),
-              runs_signal = runs_sig,
-              crossings_signal = crossings_sig,
-              anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
-              longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
-              longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
-              n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
-              n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_,
-              message = if (inputs$chart_type == "run") {
-                if (any(qic_data$sigma.signal, na.rm = TRUE)) "Særlig årsag detekteret" else "Ingen særlige årsager fundet"
-              } else {
-                if (any(qic_data$sigma.signal, na.rm = TRUE)) "Punkter uden for kontrol detekteret" else "Alle punkter inden for kontrol"
-              }
-            )
-
-            # NA-handling og bevar/opdater-politik centraliseret
-            current_anhoej <- get_plot_state("anhoej_results")
-            show_phases <- inputs$skift_config$show_phases %||% FALSE
-            updated_anhoej <- update_anhoej_results(current_anhoej, qic_results, centerline_changed,
-              qic_data = qic_data, show_phases = show_phases
-            )
-
-            # Log kun når vi reelt ændrer state (for at reducere støj)
-            if (!identical(updated_anhoej, current_anhoej)) {
-              log_debug(
-                sprintf(
-                  "Anhoej update (centerline_changed=%s): longest_run=%s n_crossings=%s",
-                  as.character(centerline_changed),
-                  as.character(updated_anhoej$longest_run),
-                  as.character(updated_anhoej$n_crossings)
-                ),
-                .context = "VISUALIZATION"
-              )
-              set_plot_state("anhoej_results", updated_anhoej)
-            }
-            # Opdater sidste kendte centerline værdi EFTER vi har brugt den til changed-detektion
-            app_state$visualization$last_centerline_value <- inputs$centerline_value
-          } else {
-            # No qic_data - set to default state with informative message
-            log_info("No qic_data available - setting default anhoej_results", .context = "VISUALIZATION")
-            set_plot_state("anhoej_results", list(
-              longest_run = NA_real_,
-              longest_run_max = NA_real_,
-              n_crossings = NA_real_,
-              n_crossings_min = NA_real_,
-              out_of_control_count = 0L,
-              runs_signal = FALSE,
-              crossings_signal = FALSE,
-              anhoej_signal = FALSE,
-              any_signal = FALSE,
-              message = "Ingen data at analysere",
-              has_valid_data = FALSE
-            ))
-          }
-
-          list(plot = plot, qic_data = qic_data)
-        },
-        fallback = function(e) {
-          set_plot_state("plot_warnings", c("Graf-generering fejlede:", e$message))
-          set_plot_state("plot_ready", FALSE)
-          set_plot_state("anhoej_results", list(
-            longest_run = NA_real_,
-            longest_run_max = NA_real_,
-            n_crossings = NA_real_,
-            n_crossings_min = NA_real_,
-            out_of_control_count = 0L,
-            runs_signal = FALSE,
-            crossings_signal = FALSE,
-            anhoej_signal = FALSE,
-            any_signal = FALSE,
-            message = paste("Fejl:", e$message),
-            has_valid_data = FALSE
-          ))
-          set_plot_state("plot_object", NULL)
-          list(plot = NULL, qic_data = NULL)
-        },
-        error_type = "processing"
-      )
-
-      list(
-        plot = computation$plot,
-        qic_data = computation$qic_data,
-        cache_key = cache_key
-      )
-    }) |>
-      bindCache({
-        inputs <- spc_inputs()
-        # M11: Context-aware cache binding
-        # Issue #62: Include context and viewport dimensions for cache isolation
-        plot_context <- "analysis"
-        vp_dims <- get_viewport_dims(app_state)
-
-        list(
-          "spc_results",
-          plot_context, # NEW: Context identifier ensures separate cache per context
-          inputs$data_hash,
-          inputs$chart_type,
-          paste0(inputs$config$x_col %||% "NULL", "|", inputs$config$y_col %||% "NULL", "|", inputs$config$n_col %||% "NULL"),
-          inputs$target_value,
-          inputs$target_text, # CRITICAL: Include target_text for operator invalidation
-          inputs$centerline_value,
-          inputs$skift_hash,
-          inputs$frys_hash,
-          inputs$title,
-          inputs$y_axis_unit,
-          inputs$kommentar_column,
-          inputs$base_size, # FIX: Invalidér cache ved breddeændring/fuldskærm
-          vp_dims$width, # NEW: Invalidate cache on viewport width change
-          vp_dims$height # NEW: Invalidate cache on viewport height change
-        )
-      })
-
-    spc_plot <- shiny::reactive({
-      result <- spc_results()
-      if (is.null(result$plot)) {
-        return(NULL)
-      }
-
-      log_debug(
-        sprintf("ggplot_startup_call cache_key=%s", result$cache_key),
-        .context = "SPC_PIPELINE"
-      )
-
-      result$plot
-    }) |>
-      bindCache({
-        result <- spc_results()
-        inputs <- spc_inputs()
-        list(
-          "spc_plot",
-          result$cache_key %||% "empty",
-          inputs$base_size # FIX: Eksplicit breddeafhængig invalidering
-        )
-      })
-
-    # Sikr at anhoej_results også opdateres ved cache hits
-    shiny::observe({
-      result <- spc_results()
-      qic_data <- result$qic_data
-
-      if (is.null(qic_data)) {
-        return()
-      }
-
-      # Cache hits: bindCache short-circuiter spc_results reactive body,
-      # så set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
-      # gyldigt result med qic_data her, så plot er de-facto klar.
-      # Issue #193: Uden dette viser anhøj-bokse "Behandler data og
-      # beregner..." permanent efter session restore.
-      if (!is.null(result$plot)) {
-        set_plot_state("plot_ready", TRUE)
-        set_plot_state("is_computing", FALSE)
-        set_plot_state("plot_object", result$plot)
-      }
-
-      # Udled metrics fra qic_data (samme logik som i computation-blokken)
-      runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
-
-      crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
-        n_cross <- safe_max(qic_data$n.crossings)
-        n_cross_min <- safe_max(qic_data$n.crossings.min)
-        !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-      } else {
-        FALSE
-      }
-
-      qic_results <- list(
-        any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-        out_of_control_count = sum(qic_data$sigma.signal, na.rm = TRUE),
-        runs_signal = runs_sig,
-        crossings_signal = crossings_sig,
-        anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
-        longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
-        longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
-        n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
-        n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_
-      )
-
-      current_anhoej <- get_plot_state("anhoej_results")
-
-      # Hent show_phases fra skift_config reactive
-      skift_config <- skift_config_reactive()
-      show_phases <- skift_config$show_phases %||% FALSE
-
-      # Opdater altid når vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
-      updated_anhoej <- update_anhoej_results(current_anhoej, qic_results,
-        centerline_changed = FALSE,
-        qic_data = qic_data, show_phases = show_phases
-      )
-
-      if (!identical(updated_anhoej, current_anhoej)) {
-        log_debug(
-          sprintf(
-            "Anhoej refresh (cache-aware): longest_run=%s n_crossings=%s",
-            as.character(updated_anhoej$longest_run),
-            as.character(updated_anhoej$n_crossings)
-          ),
-          .context = "VISUALIZATION"
-        )
-        set_plot_state("anhoej_results", updated_anhoej)
-      }
-    })
+    # Register cache-aware observer for Anhøj results updates on cache hits
+    register_cache_aware_observer(
+      spc_results_reactive = spc_results,
+      app_state = app_state,
+      set_plot_state = set_plot_state,
+      get_plot_state = get_plot_state,
+      skift_config_reactive = skift_config_reactive
+    )
 
     # Fjernet separat observer for last_centerline_value (flyttet inline i spc_results)
 

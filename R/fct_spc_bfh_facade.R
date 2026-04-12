@@ -138,7 +138,6 @@
 #' @seealso
 #' \code{\link{map_to_bfh_params}} for parameter transformation logic
 #' \code{\link{transform_bfh_output}} for output standardization
-#' \code{\link{add_comment_annotations}} for notes column handling
 #' @keywords internal
 #' @export
 compute_spc_results_bfh <- function(

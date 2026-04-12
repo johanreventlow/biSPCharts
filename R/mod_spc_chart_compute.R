@@ -260,7 +260,11 @@ create_spc_results_reactive <- function(
         list(plot = plot, qic_data = qic_data)
       },
       fallback = function(e) {
-        set_plot_state("plot_warnings", c("Graf-generering fejlede:", e$message))
+        log_error(
+          paste("Graf-generering fejlede:", e$message),
+          .context = "SPC_PIPELINE"
+        )
+        set_plot_state("plot_warnings", "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger.")
         set_plot_state("plot_ready", FALSE)
         set_plot_state("anhoej_results", list(
           longest_run = NA_real_,
@@ -272,7 +276,7 @@ create_spc_results_reactive <- function(
           crossings_signal = FALSE,
           anhoej_signal = FALSE,
           any_signal = FALSE,
-          message = paste("Fejl:", e$message),
+          message = "Grafgenerering fejlede. Kontroller data og indstillinger.",
           has_valid_data = FALSE
         ))
         set_plot_state("plot_object", NULL)
@@ -375,7 +379,11 @@ register_cache_aware_observer <- function(
     set_plot_state,
     get_plot_state,
     skift_config_reactive) {
-  shiny::observe({
+  shiny::observeEvent(
+    list(spc_results_reactive(), skift_config_reactive()),
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$UI_SYNC,
+    {
     result <- spc_results_reactive()
     qic_data <- result$qic_data
 

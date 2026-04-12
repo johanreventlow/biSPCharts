@@ -84,6 +84,5 @@ export_plot(customized_plot, filename = "spc_chart.png")
 \seealso{
 \code{\link{compute_spc_results_bfh}} for facade interface
 \code{\link{call_bfh_chart}} for BFHchart invocation
-\code{\link{add_comment_annotations}} for comment layer
 }
 \keyword{internal}

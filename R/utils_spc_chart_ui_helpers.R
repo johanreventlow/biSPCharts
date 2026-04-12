@@ -146,11 +146,11 @@ build_serielengde_box <- function(status_info, anhoej) {
     },
     value = if (status_info$status == "ready") {
       if (!is.null(anhoej$longest_run) && !is.na(anhoej$longest_run)) {
-        bslib::layout_column_wrap(width = 1/2, shiny::div(anhoej$longest_run_max), shiny::div(anhoej$longest_run))
+        bslib::layout_column_wrap(width = 1 / 2, shiny::div(anhoej$longest_run_max), shiny::div(anhoej$longest_run))
       } else if (!is.null(anhoej$has_valid_data) && !anhoej$has_valid_data) {
         shiny::span(style = "font-size:1.5em; color: #666666;", "Ingen metrics")
       } else {
-        shiny::span(style = "font-size:1.5em; color: #999999;", "Beregner...")
+        shiny::span(style = "font-size:1.5em; color: #999999;", "Afventer data")
       }
     } else {
       shiny::span(
@@ -172,7 +172,7 @@ build_serielengde_box <- function(status_info, anhoej) {
       class = "fs-7 text-muted mb-0",
       if (status_info$status == "ready") {
         if (!is.null(anhoej$longest_run_max) && !is.na(anhoej$longest_run_max)) {
-          bslib::layout_column_wrap(width = 1/2, shiny::div("Forventet (maksimum)"), shiny::div("Faktisk"))
+          bslib::layout_column_wrap(width = 1 / 2, shiny::div("Forventet (maksimum)"), shiny::div("Faktisk"))
         } else {
           "Anhøj rules analyse - serielængde"
         }
@@ -203,11 +203,11 @@ build_antal_kryds_box <- function(status_info, anhoej) {
     },
     value = if (status_info$status == "ready") {
       if (!is.null(anhoej$n_crossings) && !is.na(anhoej$n_crossings)) {
-        bslib::layout_column_wrap(width = 1/2, shiny::div(anhoej$n_crossings_min), shiny::div(anhoej$n_crossings))
+        bslib::layout_column_wrap(width = 1 / 2, shiny::div(anhoej$n_crossings_min), shiny::div(anhoej$n_crossings))
       } else if (!is.null(anhoej$has_valid_data) && !anhoej$has_valid_data) {
         shiny::span(style = "font-size:1.5em; color: #666666;", "Ingen metrics")
       } else {
-        shiny::span(style = "font-size:1.5em; color: #999999;", "Beregner...")
+        shiny::span(style = "font-size:1.5em; color: #999999;", "Afventer data")
       }
     } else {
       shiny::span(
@@ -229,7 +229,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
       class = "fs-7 text-muted mb-0",
       if (status_info$status == "ready") {
         if (!is.null(anhoej$n_crossings_min) && !is.na(anhoej$n_crossings_min)) {
-          bslib::layout_column_wrap(width = 1/2, shiny::div("Forventet (minimum)"), shiny::div("Faktisk"))
+          bslib::layout_column_wrap(width = 1 / 2, shiny::div("Forventet (minimum)"), shiny::div("Faktisk"))
         } else {
           "Anhøj rules analyse - median krydsninger"
         }

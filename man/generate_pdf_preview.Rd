@@ -54,7 +54,6 @@ if (!is.null(preview_path)) {
 \seealso{
 Other export_helpers: 
 \code{\link{extract_spc_statistics}()},
-\code{\link{generate_details_string}()},
 \code{\link{get_hospital_name_for_export}()},
 \code{\link{quarto_available}()}
 }

@@ -4,18 +4,18 @@
 \alias{setup_wizard_gates}
 \title{Setup Event Listeners}
 \usage{
-setup_wizard_gates(input, app_state, session)
+setup_wizard_gates(input, output, app_state, session)
 }
 \arguments{
 \item{input}{Shiny input}
+
+\item{output}{Shiny output}
 
 \item{app_state}{Centraliseret app state}
 
 \item{session}{Shiny session}
 
 \item{emit}{The emit API for triggering events}
-
-\item{output}{Shiny output}
 
 \item{ui_service}{UI service for UI updates (optional)}
 }

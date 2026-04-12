@@ -4,7 +4,7 @@
 \alias{setup_paste_data_observers}
 \title{Setup observers for paste data og sample data loading}
 \usage{
-setup_paste_data_observers(input, app_state, session, emit)
+setup_paste_data_observers(input, output, app_state, session, emit)
 }
 \arguments{
 \item{input}{Shiny input}

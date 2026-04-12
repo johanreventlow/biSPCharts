@@ -560,3 +560,209 @@ test_that("table edit event chain skips auto-detection", {
   expect_equal(event_log[2], "navigation_changed")
   expect_false("auto_detection_started" %in% event_log)
 })
+
+# === SECTION: Event-Driven Reactive Tests (merged from test-event-driven-reactive.R) ===
+
+test_that("Reactive values logic kan simuleres", {
+  mock_values <- list(
+    test_mode_auto_detect_ready = NULL,
+    auto_detect_trigger = NULL,
+    ui_sync_needed = NULL,
+    auto_detect_in_progress = FALSE
+  )
+
+  expect_null(mock_values$test_mode_auto_detect_ready)
+  expect_null(mock_values$auto_detect_trigger)
+  expect_null(mock_values$ui_sync_needed)
+  expect_false(mock_values$auto_detect_in_progress)
+
+  timestamp <- Sys.time()
+  mock_values$test_mode_auto_detect_ready <- timestamp
+  expect_equal(mock_values$test_mode_auto_detect_ready, timestamp)
+
+  mock_values$auto_detect_in_progress <- TRUE
+  expect_true(mock_values$auto_detect_in_progress)
+
+  sync_data <- list(
+    x_col = "Dato",
+    taeller_col = "Tæller",
+    col_choices = c("", "Dato", "Tæller"),
+    timestamp = Sys.time()
+  )
+  mock_values$ui_sync_needed <- sync_data
+  expect_equal(mock_values$ui_sync_needed$x_col, "Dato")
+  expect_equal(mock_values$ui_sync_needed$taeller_col, "Tæller")
+  expect_equal(length(mock_values$ui_sync_needed$col_choices), 3)
+
+  mock_values$ui_sync_needed <- NULL
+  expect_null(mock_values$ui_sync_needed)
+})
+
+test_that("Event-driven pattern logik er korrekt implementeret", {
+  events_log <- character(0)
+
+  test_mode_trigger <- function() {
+    events_log <<- c(events_log, "test_mode_set")
+    return(Sys.time())
+  }
+
+  auto_detect_trigger <- function(test_mode_ready) {
+    if (!is.null(test_mode_ready)) {
+      events_log <<- c(events_log, "auto_detect_triggered")
+      return(Sys.time())
+    }
+    return(NULL)
+  }
+
+  ui_sync_trigger <- function(auto_detect_done) {
+    if (!is.null(auto_detect_done)) {
+      events_log <<- c(events_log, "ui_sync_requested")
+      return(list(x_col = "TestCol", timestamp = Sys.time()))
+    }
+    return(NULL)
+  }
+
+  ui_sync_execute <- function(sync_request) {
+    if (!is.null(sync_request)) {
+      events_log <<- c(events_log, "ui_sync_completed")
+      return(TRUE)
+    }
+    return(FALSE)
+  }
+
+  expect_equal(length(events_log), 0)
+
+  step1 <- test_mode_trigger()
+  step2 <- auto_detect_trigger(step1)
+  step3 <- ui_sync_trigger(step2)
+  step4 <- ui_sync_execute(step3)
+
+  expected_events <- c("test_mode_set", "auto_detect_triggered", "ui_sync_requested", "ui_sync_completed")
+  expect_equal(events_log, expected_events)
+  expect_true(step4)
+})
+
+test_that("Auto-detection flag management fungerer", {
+  values <- list(
+    auto_detect_in_progress = FALSE,
+    initial_auto_detect_completed = FALSE
+  )
+
+  simulate_auto_detect_start <- function(values) {
+    values$auto_detect_in_progress <- TRUE
+    return(values)
+  }
+
+  simulate_auto_detect_complete <- function(values) {
+    values$initial_auto_detect_completed <- TRUE
+    values$auto_detect_in_progress <- FALSE
+    return(values)
+  }
+
+  expect_false(values$auto_detect_in_progress)
+  expect_false(values$initial_auto_detect_completed)
+
+  values <- simulate_auto_detect_start(values)
+  expect_true(values$auto_detect_in_progress)
+  expect_false(values$initial_auto_detect_completed)
+
+  values <- simulate_auto_detect_complete(values)
+  expect_false(values$auto_detect_in_progress)
+  expect_true(values$initial_auto_detect_completed)
+
+  can_auto_detect <- function(values) {
+    !values$initial_auto_detect_completed
+  }
+  expect_false(can_auto_detect(values))
+})
+
+test_that("UI sync data structure er valid", {
+  create_sync_data <- function() {
+    list(
+      x_col = "Dato",
+      taeller_col = "Tæller",
+      naevner_col = "Nævner",
+      skift_col = NULL,
+      frys_col = NULL,
+      kommentar_col = "Kommentar",
+      col_choices = c("", "Dato", "Tæller", "Nævner", "Kommentar"),
+      timestamp = Sys.time()
+    )
+  }
+
+  sync_data <- create_sync_data()
+
+  expected_fields <- c(
+    "x_col", "taeller_col", "naevner_col", "skift_col",
+    "frys_col", "kommentar_col", "col_choices", "timestamp"
+  )
+  expect_true(all(expected_fields %in% names(sync_data)))
+
+  expect_false(is.null(sync_data$x_col))
+  expect_false(is.null(sync_data$taeller_col))
+  expect_false(is.null(sync_data$col_choices))
+  expect_false(is.null(sync_data$timestamp))
+
+  expect_null(sync_data$skift_col)
+  expect_null(sync_data$frys_col)
+
+  expect_true(is.character(sync_data$col_choices))
+  expect_true(length(sync_data$col_choices) > 0)
+  expect_equal(sync_data$col_choices[1], "")
+
+  expect_true(difftime(Sys.time(), sync_data$timestamp, units = "secs") < 1)
+})
+
+test_that("Event-driven approach er timing-agnostic", {
+  values <- list(counter = 0)
+
+  immediate_update <- function(values, increment) {
+    values$counter <- values$counter + increment
+    values
+  }
+
+  expect_equal(values$counter, 0)
+
+  values <- immediate_update(values, 1)
+  expect_equal(values$counter, 1)
+
+  values <- immediate_update(values, 5)
+  expect_equal(values$counter, 6)
+
+  values <- immediate_update(values, -2)
+  expect_equal(values$counter, 4)
+
+  for (i in 1:10) {
+    values <- immediate_update(values, 1)
+  }
+  expect_equal(values$counter, 14)
+})
+
+test_that("Observer priority concept er forståelig", {
+  execution_queue <- list()
+
+  add_to_queue <- function(item, priority = 0) {
+    execution_queue <<- c(execution_queue, list(list(item = item, priority = priority)))
+  }
+
+  execute_queue <- function() {
+    if (length(execution_queue) == 0) return(character(0))
+
+    sorted <- execution_queue[order(sapply(execution_queue, function(x) {
+      if (x$priority < 0) 1000 + abs(x$priority) else -x$priority
+    }))]
+
+    sapply(sorted, function(x) x$item)
+  }
+
+  add_to_queue("high_priority_1", priority = 0)
+  add_to_queue("low_priority", priority = -10)
+  add_to_queue("high_priority_2", priority = 0)
+
+  result <- execute_queue()
+
+  expect_equal(length(result), 3)
+  expect_equal(result[3], "low_priority")
+  expect_true("high_priority_1" %in% result[1:2])
+  expect_true("high_priority_2" %in% result[1:2])
+})

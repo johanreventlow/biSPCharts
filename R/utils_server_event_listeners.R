@@ -133,7 +133,7 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   )
 
   # 8. Paste data og sample data observers (utils_server_paste_data.R)
-  setup_paste_data_observers(input, output, app_state, session, emit)
+  setup_paste_data_observers(input, output, app_state, session, emit, ui_service)
 
   # ============================================================================
   # OBSERVER CLEANUP ON SESSION END

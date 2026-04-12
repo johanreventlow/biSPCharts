@@ -6,7 +6,7 @@
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
 # ==============================================================================
 
-setup_paste_data_observers <- function(input, output, app_state, session, emit) {
+setup_paste_data_observers <- function(input, output, app_state, session, emit, ui_service = NULL) {
   # Observer: "Fortsæt" knap — indlæs pasted data
   shiny::observeEvent(input$load_paste_data, {
     shinyjs::disable("load_paste_data")
@@ -26,6 +26,11 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit) 
         ))
       )
     })
+    # Nulstil alle indstillinger inden nyt datasæt processeres
+    if (!is.null(ui_service)) {
+      ui_service$reset_form_fields()
+    }
+
     safe_operation(
       "Paste data parsing",
       code = {
@@ -154,21 +159,27 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit) 
       ext <- tolower(tools::file_ext(file_info$name))
 
       if (ext %in% c("xlsx", "xls")) {
-        # Excel: tjek for biSPCharts gem-fil (Data+Indstillinger) → direkte handler
         excel_sheets <- readxl::excel_sheets(file_info$datapath)
         if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
+          # biSPCharts gem-format: gendannelse direkte uden paste-felt
           handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
         } else {
-          # Standard Excel → konverter til tab-separeret tekst til preview
+          # Standard Excel: kolonne-aware formatering med komma-decimal
+          # Bevarer type-information (i modsætning til apply som koercerer til matrix)
           data <- readxl::read_excel(file_info$datapath, col_names = TRUE)
-          text_lines <- c(
-            paste(names(data), collapse = "\t"),
-            apply(data, 1, function(row) paste(row, collapse = "\t"))
-          )
-          shiny::updateTextAreaInput(
-            session, "paste_data_input",
-            value = paste(text_lines, collapse = "\n")
-          )
+          header <- paste(names(data), collapse = "\t")
+          rows <- vapply(seq_len(nrow(data)), function(i) {
+            vals <- vapply(names(data), function(col) {
+              v <- data[[col]][[i]]
+              if (is.na(v))                               ""
+              else if (is.numeric(v))                      format(v, decimal.mark = ",", scientific = FALSE)
+              else if (inherits(v, c("Date", "POSIXct"))) format(v, "%Y-%m-%d")
+              else                                        as.character(v)
+            }, character(1))
+            paste(vals, collapse = "\t")
+          }, character(1))
+          text_content <- paste(c(header, rows), collapse = "\n")
+          shiny::updateTextAreaInput(session, "paste_data_input", value = text_content)
           shiny::showNotification(
             paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
             type = "message", duration = 3

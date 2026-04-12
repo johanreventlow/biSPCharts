@@ -63,7 +63,12 @@ cat("\nKører styler code formatting...\n")
 
 for (path in paths_to_check) {
   if (file.exists(path) && !dir.exists(path)) {
-    style_file(path)
+    tryCatch(
+      style_file(path),
+      error = function(e) {
+        cat("  Styler fejl (ikke-kritisk):", conditionMessage(e), "\n")
+      }
+    )
   }
 }
 

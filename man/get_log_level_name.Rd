@@ -7,11 +7,12 @@
 get_log_level_name()
 }
 \value{
-Character string of current log level
+Character string of current log level ("DEBUG", "INFO", "WARN", or "ERROR")
 }
 \description{
 Returns the current log level as a string for easy checking
-and debugging purposes.
+and debugging purposes. Uses the same unified precedence rules as
+\code{get_effective_log_level()}.
 }
 \examples{
 \dontrun{

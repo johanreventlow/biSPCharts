@@ -59,13 +59,82 @@ get_log_level <- function() {
   if (is.null(lvl_num) || is.na(lvl_num)) LOG_LEVELS$INFO else lvl_num
 }
 
+#' Get effective log level with unified precedence rules
+#'
+#' Resolves log level following unified precedence rules:
+#'
+#' **Precedence (highest to lowest):**
+#' 1. Environment variable: `SPC_LOG_LEVEL` (override)
+#' 2. Golem config YAML: `logging.level` (configuration)
+#' 3. Default: `"INFO"` (fallback)
+#'
+#' This function provides a single source of truth for log level configuration.
+#'
+#' @return Character string of effective log level ("DEBUG", "INFO", "WARN", "ERROR")
+#'
+#' @examples
+#' \dontrun{
+#' # Default behavior: reads from YAML config
+#' get_effective_log_level()  # Returns "DEBUG" in dev, "ERROR" in prod
+#'
+#' # Environment variable overrides YAML
+#' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
+#' get_effective_log_level()  # Always returns "DEBUG" now
+#'
+#' # Clear override to use YAML again
+#' Sys.unsetenv("SPC_LOG_LEVEL")
+#' get_effective_log_level()  # Back to YAML config
+#' }
+#'
+#' @keywords internal
+get_effective_log_level <- function() {
+  # Priority 1: Environment variable (highest priority override)
+  env_override <- Sys.getenv("SPC_LOG_LEVEL", "")
+  if (nzchar(trimws(env_override))) {
+    env_val <- trimws(toupper(env_override))
+    # Validate it's a real log level
+    if (env_val %in% names(LOG_LEVELS)) {
+      return(env_val)
+    }
+  }
+
+  # Priority 2: Golem config YAML (configuration)
+  yaml_level <- tryCatch(
+    {
+      # Try to read from YAML config
+      if (exists("get_golem_config", mode = "function", where = -1) ||
+          exists("get_golem_config", mode = "function", inherits = TRUE)) {
+        config_val <- get_golem_config("logging")$level
+        if (!is.null(config_val) && nzchar(as.character(config_val))) {
+          trimws(toupper(as.character(config_val)))
+        } else {
+          NULL
+        }
+      } else {
+        NULL
+      }
+    },
+    error = function(e) NULL
+  )
+
+  if (!is.null(yaml_level) && yaml_level %in% names(LOG_LEVELS)) {
+    return(yaml_level)
+  }
+
+  # Priority 3: Default fallback
+  "INFO"
+}
+
 # intern hjælper (ikke-eksporteret)
 .should_log <- function(level_chr) {
   lvl <- LOG_LEVELS[[toupper(level_chr)]]
   if (is.null(lvl)) {
     return(FALSE)
   }
-  cur <- get_log_level()
+  # Use get_effective_log_level() for unified precedence
+  effective_level <- get_effective_log_level()
+  cur <- LOG_LEVELS[[effective_level]]
+  if (is.null(cur)) cur <- LOG_LEVELS$INFO
   lvl >= cur
 }
 
@@ -564,9 +633,10 @@ set_log_level <- function(level) {
 #' Get current log level name
 #'
 #' Returns the current log level as a string for easy checking
-#' and debugging purposes.
+#' and debugging purposes. Uses the same unified precedence rules as
+#' `get_effective_log_level()`.
 #'
-#' @return Character string of current log level
+#' @return Character string of current log level ("DEBUG", "INFO", "WARN", or "ERROR")
 #'
 #' @examples
 #' \dontrun{
@@ -576,9 +646,7 @@ set_log_level <- function(level) {
 #'
 #' @keywords internal
 get_log_level_name <- function() {
-  level_names <- c("DEBUG", "INFO", "WARN", "ERROR")
-  current_numeric <- get_log_level()
-  level_names[current_numeric]
+  get_effective_log_level()
 }
 
 #' Set debug context filtering

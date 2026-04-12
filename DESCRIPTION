@@ -75,5 +75,6 @@ Config/testthat/edition: 3
 Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration
 Remotes:
     johanreventlow/BFHcharts,
-    johanreventlow/BFHtheme
+    johanreventlow/BFHtheme,
+    johanreventlow/BFHllm
 VignetteBuilder: knitr

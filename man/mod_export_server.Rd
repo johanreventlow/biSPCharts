@@ -4,13 +4,15 @@
 \alias{mod_export_server}
 \title{Export Module Server}
 \usage{
-mod_export_server(id, app_state)
+mod_export_server(id, app_state, parent_session = NULL)
 }
 \arguments{
 \item{id}{Module ID}
 
 \item{app_state}{Reactive values. Global app state med data, columns og chart config.
 Tilgås read-only - ingen modificering af state.}
+
+\item{parent_session}{Shiny session. Parent session for navbar navigation (Tilbage-knap).}
 }
 \value{
 Liste med reactive values for module status

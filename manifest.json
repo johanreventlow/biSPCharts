@@ -38,6 +38,17 @@
         "Config/testthat/edition": "3",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "BFHcharts",
+        "RemoteUsername": "johanreventlow",
+        "RemotePkgRef": "johanreventlow/BFHcharts",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "11754b2b790d5f65d25191705b74f40aa16ce576",
+        "GithubRepo": "BFHcharts",
+        "GithubUsername": "johanreventlow",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "11754b2b790d5f65d25191705b74f40aa16ce576",
         "Built": "R 4.5.2; ; 2026-04-12 08:26:03 UTC; unix"
       }
     },

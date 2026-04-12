@@ -64,3 +64,5 @@ candidates_for_deletion
 
 # Git worktrees
 .worktrees/
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds

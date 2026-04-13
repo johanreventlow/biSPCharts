@@ -473,6 +473,8 @@ compute_spc_results_bfh <- function(
       )
 
       # 7b. Map parameters to BFHcharts format
+      # VIGTIGT: width/height/units forwarded til bfh_qic() for korrekt
+      # label-placering (bredde-baseret skalering i BFHcharts)
       bfh_params <- map_to_bfh_params(
         data = complete_data,
         x_var = x_var,
@@ -488,7 +490,10 @@ compute_spc_results_bfh <- function(
         chart_title = chart_title,
         y_axis_unit = y_axis_unit,
         target_text = target_text,
-        multiply = multiply
+        multiply = multiply,
+        width = extra_params$width,
+        height = extra_params$height,
+        units = extra_params$units
       )
 
       if (is.null(bfh_params)) {

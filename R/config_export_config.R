@@ -186,10 +186,17 @@ EXPORT_DESCRIPTION_MAX_LENGTH <- 2000
 
 #' Maximum character length for department name
 #'
-#' Begrænser afdeling/afsnit navn til 100 karakterer.
+#' Begrænser afdeling/afsnit navn til 250 karakterer.
 #'
 #' @keywords internal
-EXPORT_DEPARTMENT_MAX_LENGTH <- 100
+EXPORT_DEPARTMENT_MAX_LENGTH <- 250
+
+#' Maximum character length for hospital name
+#'
+#' Begrænser hospitalsnavn til 250 karakterer.
+#'
+#' @keywords internal
+EXPORT_HOSPITAL_MAX_LENGTH <- 250
 
 # FILENAME GENERATION CONSTANTS ================================================
 

@@ -56,6 +56,7 @@
 validate_export_inputs <- function(format,
                                    title = "",
                                    department = "",
+                                   hospital = "",
                                    description = "",
                                    width = NULL,
                                    height = NULL) {
@@ -64,6 +65,7 @@ validate_export_inputs <- function(format,
   # Convert NULL to empty string
   title <- title %||% ""
   department <- department %||% ""
+  hospital <- hospital %||% ""
   description <- description %||% ""
 
   # Character limit validation
@@ -88,6 +90,14 @@ validate_export_inputs <- function(format,
       "Afdeling må max være %d tegn (nuværende: %d)",
       EXPORT_DEPARTMENT_MAX_LENGTH,
       nchar(department)
+    ))
+  }
+
+  if (nchar(hospital) > EXPORT_HOSPITAL_MAX_LENGTH) {
+    errors <- c(errors, sprintf(
+      "Hospitalsnavn må max være %d tegn (nuværende: %d)",
+      EXPORT_HOSPITAL_MAX_LENGTH,
+      nchar(hospital)
     ))
   }
 

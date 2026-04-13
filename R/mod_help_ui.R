@@ -49,7 +49,7 @@ mod_help_ui <- function(id) {
       shiny::tags$p(
         "Kernebudskabet i SPC er enkelt: ",
         shiny::tags$em("Al data varierer. Sp\u00f8rgsm\u00e5let er om variationen er tilf\u00e6ldig eller meningsfuld."),
-        " Et seriediagram (run chart) g\u00f8r det muligt at skelne mellem de to."
+        " Et seriediagram g\u00f8r det muligt at skelne mellem de to."
       ),
       shiny::tags$div(
         class = "text-center my-3",
@@ -61,7 +61,7 @@ mod_help_ui <- function(id) {
         ),
         shiny::tags$p(
           class = "text-muted small mt-1",
-          "Et seriediagram (run chart) med en stabil proces. Punkterne varierer tilf\u00e6ldigt omkring medianen."
+          "Et seriediagram med en stabil proces. Punkterne varierer tilf\u00e6ldigt omkring medianen."
         )
       ),
       shiny::tags$hr()
@@ -257,22 +257,22 @@ mod_help_ui <- function(id) {
             shiny::tags$td("Ethvert m\u00e5l over tid")
           ),
           shiny::tags$tr(
-            shiny::tags$td("I-chart"),
+            shiny::tags$td("I-kort"),
             shiny::tags$td("Individuelle m\u00e5linger"),
             shiny::tags$td("Ventetid, temperatur")
           ),
           shiny::tags$tr(
-            shiny::tags$td("P-chart"),
+            shiny::tags$td("P-kort"),
             shiny::tags$td("Andele/procenter (kr\u00e6ver n\u00e6vner)"),
             shiny::tags$td("Andel patienter med komplikation")
           ),
           shiny::tags$tr(
-            shiny::tags$td("C-chart"),
+            shiny::tags$td("C-kort"),
             shiny::tags$td("T\u00e6llinger"),
             shiny::tags$td("Antal fald per m\u00e5ned")
           ),
           shiny::tags$tr(
-            shiny::tags$td("U-chart"),
+            shiny::tags$td("U-kort"),
             shiny::tags$td("Rater (kr\u00e6ver n\u00e6vner)"),
             shiny::tags$td("Infektioner per 1000 plejedage")
           )
@@ -282,13 +282,13 @@ mod_help_ui <- function(id) {
         class = "text-center my-3",
         shiny::tags$img(
           src = "www/help/05-p-chart.png",
-          alt = "P-chart med kontrolgr\u00e6nser",
+          alt = "P-kort med kontrolgr\u00e6nser",
           class = "img-fluid rounded shadow-sm",
           style = "max-width: 700px;"
         ),
         shiny::tags$p(
           class = "text-muted small mt-1",
-          "Et P-chart med kontrolgr\u00e6nser (de stiplede linjer). Punkter uden for gr\u00e6nserne er markeret."
+          "Et P-kort med kontrolgr\u00e6nser (de stiplede linjer). Punkter uden for gr\u00e6nserne er markeret."
         )
       ),
       shiny::tags$hr()

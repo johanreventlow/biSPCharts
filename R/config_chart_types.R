@@ -27,7 +27,7 @@
 #' @format Named list med dansk label → engelsk kode
 #' @keywords internal
 CHART_TYPES_DA <- list(
-  "Run \u2014 seriediagram over tid" = "run",
+  "Seriediagram (Run) \u2014 data over tid" = "run",
   "I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)" = "i",
   # "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
   "P-kort \u2014 andele/procenter (fx infektionsrate)" = "p",

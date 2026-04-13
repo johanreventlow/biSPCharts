@@ -43,7 +43,8 @@ create_data_ready_reactive <- function(module_data_reactive) {
     data_cols <- setdiff(names(data), c("Skift", "Frys"))
     if (length(data_cols) > 0) {
       data_subset <- data[, data_cols, drop = FALSE]
-      rows_with_values <- sum(rowSums(!is.na(data_subset) & data_subset != "") > 0)
+      # Brug kun !is.na() — undgå != "" som fejler for Date/POSIXct kolonner
+      rows_with_values <- sum(rowSums(!is.na(data_subset)) > 0)
       shiny::req(rows_with_values >= 3)
     }
     data
@@ -160,6 +161,7 @@ create_spc_inputs_reactive <- function(
     # Eliminerer label-placering baseret på forkerte 800×600 defaults.
     width_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
     height_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
+
     shiny::req(!is.null(width_px), !is.null(height_px), width_px > 100, height_px > 100)
 
     if (getOption("spc.debug.label_placement", FALSE)) {

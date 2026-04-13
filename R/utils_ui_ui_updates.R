@@ -178,9 +178,9 @@ create_ui_update_service <- function(session, app_state) {
         "skift_column", "frys_column", "kommentar_column",
         "target_value", "centerline_value", "y_axis_unit",
         # Trin 3 (Eksporter) — namespaced med "export-" prefix
-        "export_title", "export_department", "export_format",
+        "export_title", "export_hospital", "export_department", "export_footnote", "export_format",
         "pdf_description", "pdf_improvement",
-        "png_size_preset", "png_dpi"
+        "png_width", "png_height"
       )
     }
 
@@ -215,8 +215,12 @@ create_ui_update_service <- function(session, app_state) {
                 shiny::updateSelectizeInput(session, field, selected = metadata[[field]])
               } else if (field == "export_title") {
                 shiny::updateTextAreaInput(session, "export-export_title", value = metadata[[field]])
+              } else if (field == "export_hospital") {
+                shiny::updateTextInput(session, "export-export_hospital", value = metadata[[field]])
               } else if (field == "export_department") {
                 shiny::updateTextInput(session, "export-export_department", value = metadata[[field]])
+              } else if (field == "export_footnote") {
+                shiny::updateTextInput(session, "export-export_footnote", value = metadata[[field]])
               } else if (field == "export_format") {
                 # Issue #193 fund #3: export_format er en hidden input uden
                 # Shiny input binding. updateTextInput virker ikke — vi skal
@@ -233,10 +237,10 @@ create_ui_update_service <- function(session, app_state) {
                 shiny::updateTextAreaInput(session, "export-pdf_description", value = metadata[[field]])
               } else if (field == "pdf_improvement") {
                 shiny::updateTextAreaInput(session, "export-pdf_improvement", value = metadata[[field]])
-              } else if (field == "png_size_preset") {
-                shiny::updateSelectInput(session, "export-png_size_preset", selected = metadata[[field]])
-              } else if (field == "png_dpi") {
-                shiny::updateSelectInput(session, "export-png_dpi", selected = metadata[[field]])
+              } else if (field == "png_width") {
+                shiny::updateNumericInput(session, "export-png_width", value = as.numeric(metadata[[field]]))
+              } else if (field == "png_height") {
+                shiny::updateNumericInput(session, "export-png_height", value = as.numeric(metadata[[field]]))
               }
             }
           }

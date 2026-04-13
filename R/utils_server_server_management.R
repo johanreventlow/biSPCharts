@@ -462,12 +462,14 @@ collect_metadata <- function(input, app_state = NULL) {
       # NULL-safe: ellers dropper jsonlite::toJSON elementerne når modulet
       # endnu ikke er renderet (inputs = NULL før første visning af trin 3).
       export_title = if (is.null(input[["export-export_title"]])) "" else input[["export-export_title"]],
+      export_hospital = if (is.null(input[["export-export_hospital"]])) "" else input[["export-export_hospital"]],
       export_department = if (is.null(input[["export-export_department"]])) "" else input[["export-export_department"]],
+      export_footnote = if (is.null(input[["export-export_footnote"]])) "" else input[["export-export_footnote"]],
       export_format = if (is.null(input[["export-export_format"]])) "" else input[["export-export_format"]],
       pdf_description = if (is.null(input[["export-pdf_description"]])) "" else input[["export-pdf_description"]],
       pdf_improvement = if (is.null(input[["export-pdf_improvement"]])) "" else input[["export-pdf_improvement"]],
-      png_size_preset = if (is.null(input[["export-png_size_preset"]])) "" else input[["export-png_size_preset"]],
-      png_dpi = if (is.null(input[["export-png_dpi"]])) "" else input[["export-png_dpi"]],
+      png_width = if (is.null(input[["export-png_width"]])) "" else input[["export-png_width"]],
+      png_height = if (is.null(input[["export-png_height"]])) "" else input[["export-png_height"]],
 
       # Wizard navigation state (Issue #193)
       # Valider: kun kendte string-værdier gemmes for at undgå at nrows (36)

@@ -178,13 +178,21 @@
   });
 
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
-  var plotInputs = [
+  // Select-inputs: 'change' fyrer ved valg-ændring
+  var selectInputs = [
     'chart_type', 'y_axis_unit', 'x_column', 'y_column',
-    'n_column', 'skift_column', 'frys_column', 'target_value',
-    'centerline_value'
+    'n_column', 'skift_column', 'frys_column'
   ];
-  plotInputs.forEach(function(id) {
+  selectInputs.forEach(function(id) {
     $(document).on('change', '#' + id, function() {
+      $('.spc-plot-container').addClass('input-pending');
+    });
+  });
+  // Tekst-inputs: 'input' fyrer kun ved reel værdiændring (ikke ved blur)
+  // 'change' på tekstfelter fyrer ved blur selv uden ændring → dimmer plot permanent
+  var textInputs = ['target_value', 'centerline_value'];
+  textInputs.forEach(function(id) {
+    $(document).on('input', '#' + id, function() {
       $('.spc-plot-container').addClass('input-pending');
     });
   });

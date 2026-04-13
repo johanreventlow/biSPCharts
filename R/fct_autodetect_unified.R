@@ -165,6 +165,13 @@ autodetect_engine <- function(data = NULL,
   }
 
   # 4. STATE UPDATE & FREEZE
+  log_debug_kv(
+    autodetect_completed = TRUE,
+    x_col = results$x_col %||% "NULL",
+    y_col = results$y_col %||% "NULL",
+    n_col = results$n_col %||% "NULL",
+    .context = "UNIFIED_AUTODETECT"
+  )
   # Update all column mappings in unified location - pass app_state for direct updates
   app_state$columns <- update_all_column_mappings(results, app_state$columns, app_state)
 
@@ -349,10 +356,23 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
   }
 
   # 3. COMBINE RESULTS with preference for data-driven detection
+  final_y_col <- if (length(y_candidates) > 0) names(y_candidates)[1] else name_based_results$y_col
+
+  # Ekskludér y_col fra n_candidates — n_col skal være en ANDEN kolonne end y_col
+  if (!is.null(final_y_col) && length(n_candidates) > 0) {
+    n_candidates <- n_candidates[names(n_candidates) != final_y_col]
+  }
+
   results <- list(
     x_col = best_date_col %||% name_based_results$x_col,
-    y_col = if (length(y_candidates) > 0) names(y_candidates)[1] else name_based_results$y_col,
-    n_col = if (length(n_candidates) > 0) names(n_candidates)[1] else name_based_results$n_col,
+    y_col = final_y_col,
+    n_col = if (length(n_candidates) > 0) {
+      names(n_candidates)[1]
+    } else {
+      # Fallback til name-based, men aldrig samme som y_col
+      fallback_n <- name_based_results$n_col
+      if (!is.null(fallback_n) && identical(fallback_n, final_y_col)) NULL else fallback_n
+    },
     skift_col = name_based_results$skift_col,
     frys_col = name_based_results$frys_col,
     kommentar_col = name_based_results$kommentar_col,

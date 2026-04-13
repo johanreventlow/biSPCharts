@@ -101,7 +101,8 @@ generate_pdf_export <- function(input, app_state, file) {
   validate_export_inputs(
     format = "pdf",
     title = input$export_title,
-    department = input$export_department
+    department = input$export_department,
+    hospital = input$export_hospital
   )
 
   # Generer SPC plot via fælles helper
@@ -118,7 +119,7 @@ generate_pdf_export <- function(input, app_state, file) {
 
   # PDF-specifik metadata til BFHcharts Typst-template
   metadata <- list(
-    hospital = get_hospital_name_for_export(),
+    hospital = if (nzchar(input$export_hospital %||% "")) input$export_hospital else get_hospital_name_for_export(),
     department = input$export_department,
     title = input$export_title,
     analysis = input$pdf_improvement,
@@ -151,28 +152,16 @@ generate_pdf_export <- function(input, app_state, file) {
 generate_png_export <- function(input, app_state, file) {
   log_debug(.context = "EXPORT_MODULE", message = "PNG export starting")
 
-  dpi <- as.numeric(input$export_dpi %||% 96)
-  size_preset <- input$export_size_preset %||% "medium"
+  dpi <- 150
 
-  # Beregn dimensioner fra preset eller brugerdefinerede værdier
-  if (size_preset == "custom") {
-    width_px <- as.numeric(input$export_custom_width %||% 1200)
-    height_px <- as.numeric(input$export_custom_height %||% 900)
-    width_inches <- width_px / dpi
-    height_inches <- height_px / dpi
-  } else {
-    preset <- get_size_from_preset(size_preset)
-    if (preset$unit == "px") {
-      width_inches <- preset$width / preset$dpi
-      height_inches <- preset$height / preset$dpi
-    } else {
-      width_inches <- preset$width
-      height_inches <- preset$height
-    }
-  }
+  # Brugerens egne dimensioner (px)
+  width_px <- as.numeric(input$png_width %||% 1920)
+  height_px <- as.numeric(input$png_height %||% 1080)
+  width_inches <- width_px / dpi
+  height_inches <- height_px / dpi
 
-  final_width_px <- round(width_inches * dpi)
-  final_height_px <- round(height_inches * dpi)
+  final_width_px <- width_px
+  final_height_px <- height_px
 
   validate_export_inputs(
     format = "png",
@@ -192,6 +181,30 @@ generate_png_export <- function(input, app_state, file) {
     override_height_px = final_height_px,
     override_dpi = dpi
   )
+
+  if (is.null(png_plot_result) || is.null(png_plot_result$bfh_qic_result)) {
+    stop("Ingen plot tilg\u00e6ngeligt til PNG-eksport")
+  }
+
+  # Tilføj subtitle (hospital + afdeling) og margin til PNG-plottet
+  plot <- png_plot_result$bfh_qic_result$plot
+
+  dept_text <- trimws(input$export_department %||% "")
+  if (nchar(dept_text) > 0) {
+    plot <- plot + ggplot2::labs(subtitle = dept_text)
+  }
+
+  footnote_text <- trimws(input$export_footnote %||% "")
+  if (nchar(footnote_text) > 0) {
+    plot <- plot + ggplot2::labs(caption = footnote_text)
+  }
+
+  # Margin for pænere PNG-output (top, right, bottom, left)
+  plot <- plot + ggplot2::theme(
+    plot.margin = ggplot2::margin(8, 8, 8, 8, "mm")
+  )
+
+  png_plot_result$bfh_qic_result$plot <- plot
 
   # Konverter inches til mm (BFHcharts bruger mm)
   result <- BFHcharts::bfh_export_png(

@@ -26,9 +26,17 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
         ))
       )
     })
+    # Bevar chart_type fra eksempeldatasæt-valg (reset_form_fields sætter den til "run")
+    current_chart_type <- input$chart_type
+
     # Nulstil alle indstillinger inden nyt datasæt processeres
     if (!is.null(ui_service)) {
       ui_service$reset_form_fields()
+    }
+
+    # Gendan chart_type hvis den var sat (fx fra eksempeldatasæt)
+    if (!is.null(current_chart_type) && nzchar(current_chart_type) && current_chart_type != CHART_TYPES_EN$run) {
+      shiny::updateSelectizeInput(session, "chart_type", selected = current_chart_type)
     }
 
     safe_operation(

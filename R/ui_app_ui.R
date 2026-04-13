@@ -323,10 +323,10 @@ create_ui_main_content <- function() {
       shinyjs::disabled(
         shiny::downloadButton(
           "download_spc_file",
-          "Gem data og indstillinger",
+          "Gem kopi af data og indstillinger",
           class = "btn-outline-secondary",
           style = "width: auto; min-width: 200px;",
-          title = "Gem data og indstillinger til Excel-fil"
+          title = "Gem kopi af data og indstillinger til Excel-fil"
         )
       ),
       shiny::actionButton(

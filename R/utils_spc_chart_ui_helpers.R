@@ -270,7 +270,7 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
       shiny::div(
         style = "font-size:1em; color: #999999 !important; padding-bottom: 1em;",
         class = "fs-7 mb-0",
-        "Anvendes ikke ved analyse af seriediagrammer (run charts)"
+        "Anvendes ikke ved analyse af seriediagrammer"
       )
     } else {
       shiny::span(

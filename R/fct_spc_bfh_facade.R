@@ -493,7 +493,10 @@ compute_spc_results_bfh <- function(
         multiply = multiply,
         width = extra_params$width,
         height = extra_params$height,
-        units = extra_params$units
+        units = extra_params$units,
+        # Bevar base_size=14 — uden dette aktiverer width/height
+        # calculate_base_size() som giver base_size=8 (for lille)
+        base_size = 14
       )
 
       if (is.null(bfh_params)) {

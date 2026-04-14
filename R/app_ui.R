@@ -103,17 +103,17 @@ app_ui <- function(request) {
       # Visuelt skel mellem wizard-trin og hjælp
       bslib::nav_spacer(),
 
+      # Auto-save status i navbar (synlig fra alle wizard-trin)
+      bslib::nav_item(
+        shiny::uiOutput("session_save_status", inline = TRUE)
+      ),
+
       # Hjælp (adskilt fra wizard-flow)
       bslib::nav_panel(
         title = "Lær om SPC",
         icon = shiny::icon("book-open"),
         value = "hjaelp",
         mod_help_ui("help")
-      ),
-
-      # Auto-save status i navbar (synlig fra alle wizard-trin)
-      bslib::nav_item(
-        shiny::uiOutput("session_save_status", inline = TRUE)
       )
     )
   )

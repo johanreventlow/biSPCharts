@@ -147,21 +147,21 @@ inject_template_assets <- function(template_dir) {
         return(invisible(FALSE))
       }
 
-      # Kopier fonts — ekskludér alle Mari *.otf varianter.
-      # Typst bruger FreeType (Linux) som renderer tungere end CoreText (Mac).
-      # Ved kun at inkludere MariOffice TTF-filer (weight "light"/300) kompenserer
-      # vi for den tungere rendering. Template fallback: "Mari" → "Mari Office".
-      # På Mac finder Typst system-fonten "Mari" (CoreText). På Cloud falder den
-      # igennem til "Mari Office" fra MariOffice-Book.ttf (lettere).
+      # Kopier fonts — kun Mari Book + Bold (OTF) og Arial.
+      # Ekskluderer Mari Regular (visuelt identisk med Book pga. weight 400
+      # metadata, men Typst kan foretrække "Regular" style over "Book").
+      # MariOffice TTF udelades da Typst's weight-matching vælger Bold (700)
+      # som default i stedet for Book (300).
       src_fonts <- file.path(src_base, "fonts")
       dst_fonts <- file.path(template_dir, "fonts")
       if (dir.exists(src_fonts)) {
         if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
+        allowed <- c("Mari Book.otf", "Mari Bold.otf")
         font_files <- list.files(src_fonts, full.names = TRUE)
-        # Ekskludér Mari *.otf (weight 400) og MariOffice.ttf (Regular)
-        font_files <- font_files[!grepl("^Mari[^O]", basename(font_files))]
-        font_files <- font_files[basename(font_files) != "MariOffice.ttf"]
-        file.copy(font_files, dst_fonts, overwrite = FALSE)
+        # Inkludér: allowed Mari-varianter + alle Arial-filer
+        is_allowed <- basename(font_files) %in% allowed |
+          grepl("^ARI", basename(font_files), ignore.case = TRUE)
+        file.copy(font_files[is_allowed], dst_fonts, overwrite = FALSE)
       }
 
       # Kopier images

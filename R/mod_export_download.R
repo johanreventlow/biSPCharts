@@ -128,12 +128,21 @@ generate_pdf_export <- function(input, app_state, file) {
     date = Sys.Date()
   )
 
+  # Font path til Mari fonts (bundlet i biSPCharts, ikke i BFHcharts)
+  bfh_font_path <- system.file(
+    "templates/typst/bfh-template/fonts",
+    package = "biSPCharts"
+  )
+  if (!nzchar(bfh_font_path)) bfh_font_path <- NULL
+
   result <- BFHcharts::bfh_export_pdf(
     x = pdf_plot_result$bfh_qic_result,
     output = file,
     metadata = metadata,
     template = "bfh-diagram",
-    auto_analysis = FALSE
+    auto_analysis = FALSE,
+    font_path = bfh_font_path,
+    inject_assets = inject_template_assets
   )
 
   if (is.null(result) || !file.exists(file)) {

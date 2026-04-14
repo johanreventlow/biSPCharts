@@ -63,7 +63,7 @@ get_test_mode_auto_load <- function() {
 #' @return Boolean indicating if auto restore is enabled
 #' @keywords internal
 get_auto_restore_enabled <- function() {
-  get_package_config("AUTO_RESTORE_ENABLED", default = FALSE)
+  get_package_config("AUTO_RESTORE_ENABLED", default = TRUE)
 }
 
 #' Get auto save enabled setting

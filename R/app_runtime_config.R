@@ -76,7 +76,7 @@ setup_development_config <- function(override_options = list()) {
     error = function(e) {
       list(
         auto_save_enabled = TRUE,
-        auto_restore_session = FALSE,
+        auto_restore_session = TRUE,
         save_interval_ms = 2000,
         settings_save_interval_ms = 1000
       )

@@ -245,9 +245,12 @@ mod_export_ui <- function(id) {
                 "Brugerdefineret" = "custom"
               ),
               selected = "1920x1080",
-              width = "100%",
-              options = list(dropdownDirection = "up")
-            )
+              width = "100%"
+            ),
+            shiny::tags$style(shiny::HTML(paste0(
+              "#", ns("png_preset"),
+              "+ div>.selectize-dropdown{bottom: 100% !important; top:auto!important;}"
+            )))
           ),
           shiny::div(
             style = "margin-bottom: 15px;",

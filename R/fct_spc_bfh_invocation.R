@@ -39,7 +39,7 @@ call_bfh_chart <- function(bfh_params) {
       # 3b. CONSERVATIVE APPROACH: Only send core params
       # BFHcharts accepterer kun et subset af parametre.
       # plot_context sendes IKKE — BFHcharts bruger kun dimensioner i inches.
-      fields_to_keep <- c("data", "x", "y", "n", "chart_type", "freeze", "part", "multiply", "target_value", "target_text", "cl", "notes", "y_axis_unit", "width", "height")
+      fields_to_keep <- c("data", "x", "y", "n", "chart_type", "freeze", "part", "multiply", "target_value", "target_text", "cl", "notes", "y_axis_unit", "width", "height", "units", "base_size", "chart_title")
       bfh_params_clean <- bfh_params[names(bfh_params) %in% fields_to_keep]
 
       removed_fields <- setdiff(names(bfh_params), fields_to_keep)

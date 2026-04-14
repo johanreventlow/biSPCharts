@@ -580,9 +580,11 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         y_axis_unit = y_axis_unit,
         # CRITICAL: Pass viewport dimensions in INCHES (BFHcharts format)
         # Converted from pixels using context-specific DPI
-        # Note: plot_context is NOT needed in BFHcharts - only width/height matters
+        # units = "in" er nødvendigt så BFHcharts ikke gætter enheden
+        # via smart_convert_to_inches (som fejlagtigt antager cm for 10-100 range)
         width = viewport_width_inches,
-        height = viewport_height_inches
+        height = viewport_height_inches,
+        units = "in"
       )
     },
     error = function(e) {

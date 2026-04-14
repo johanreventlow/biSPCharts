@@ -103,8 +103,23 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       title_input <- input$export_title %||% ""
       dept_input <- input$export_department %||% ""
 
+      # Beregn preview-dimensioner (samme proportioner som brugerens valg,
+      # men skaleret til preview-bredde 800px). Disse SKAL matche renderPlot's
+      # width/height for at label-positioner passer korrekt.
+      user_w <- as.numeric(input$png_width %||% 1920)
+      user_h <- as.numeric(input$png_height %||% 1080)
+      if (is.na(user_w) || user_w < 100) user_w <- 1920
+      if (is.na(user_h) || user_h < 100) user_h <- 1080
+      ratio <- max(0.2, min(5, user_h / user_w))
+      preview_width <- 800
+      preview_height <- round(800 * ratio)
+
       # Issue #65: Use shared helper to reduce code duplication
-      build_export_plot(app_state, title_input, dept_input, "export_preview")
+      build_export_plot(
+        app_state, title_input, dept_input, "export_preview",
+        override_width_px = preview_width,
+        override_height_px = preview_height
+      )
     }) |> shiny::debounce(millis = 500) # Debounce metadata changes for performance
 
     # PDF EXPORT PLOT GENERATION ==============================================
@@ -177,12 +192,36 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           )
         }
 
-        # BFHcharts already includes hospital theme - just return plot directly
-        # Add zero margin for tight display (matches main chart rendering)
-        spc_result$plot + ggplot2::theme(plot.margin = ggplot2::margin(0, 0, 0, 0, "mm"))
+        # Tilføj subtitle (hospital + afdeling) og margin til PNG preview
+        plot <- spc_result$plot
+
+        dept_text <- trimws(input$export_department %||% "")
+        if (nchar(dept_text) > 0) {
+          plot <- plot + ggplot2::labs(subtitle = dept_text)
+        }
+
+        footnote_text <- trimws(input$export_footnote %||% "")
+        if (nchar(footnote_text) > 0) {
+          plot <- plot + ggplot2::labs(caption = footnote_text)
+        }
+
+        plot + ggplot2::theme(
+          plot.margin = ggplot2::margin(5, 5, 5, 5, "mm")
+        )
       },
-      width = 800, # Fixed 16:9 aspect ratio
-      height = 450,
+      width = function() {
+        800 # Fast preview-bredde
+      },
+      height = function() {
+        # Dynamisk højde baseret på brugerens proportioner
+        # Clamp til rimelige værdier for at undgå ragg max_dim fejl
+        # mens brugeren redigerer felterne
+        w <- as.numeric(input$png_width %||% 1920)
+        h <- as.numeric(input$png_height %||% 1080)
+        if (is.na(w) || is.na(h) || w < 100 || h < 100) return(450)
+        ratio <- max(0.2, min(5, h / w))
+        round(800 * ratio)
+      },
       res = 96
     )
 
@@ -198,6 +237,33 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # (Tidligere suspendWhenHidden = FALSE — se commit c4c0a5d for rollback)
     outputOptions(output, "export_preview", suspendWhenHidden = TRUE)
 
+    # PNG PRESET OBSERVERS ====================================================
+
+    # Opdater width/height når preset vælges
+    observeEvent(input$png_preset, {
+      preset <- input$png_preset
+      if (is.null(preset) || preset == "custom") return()
+
+      dims <- strsplit(preset, "x")[[1]]
+      if (length(dims) != 2) return()
+
+      shiny::updateNumericInput(session, "png_width", value = as.integer(dims[1]))
+      shiny::updateNumericInput(session, "png_height", value = as.integer(dims[2]))
+    }, ignoreInit = TRUE)
+
+    # Sæt dropdown til "Brugerdefineret" når brugeren ændrer dimensioner manuelt
+    observeEvent(list(input$png_width, input$png_height), {
+      w <- input$png_width
+      h <- input$png_height
+      preset <- input$png_preset
+      if (is.null(w) || is.null(h) || is.null(preset) || preset == "custom") return()
+
+      expected <- paste0(w, "x", h)
+      if (expected != preset) {
+        shiny::updateSelectInput(session, "png_preset", selected = "custom")
+      }
+    }, ignoreInit = TRUE)
+
     # PDF PREVIEW GENERATION ==================================================
 
     # PDF preview reactive - generates PNG preview of Typst PDF layout
@@ -205,6 +271,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Debounced metadata-inputs til PDF preview (undgår re-render per tastetryk)
     debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
     debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
+    debounced_hospital <- shiny::debounce(shiny::reactive(input$export_hospital %||% ""), millis = 1000)
 
     pdf_preview_image <- shiny::reactive({
       # Only generate for PDF format
@@ -227,14 +294,15 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
-      # Analyse og datadefinition er debounced reactives (1000ms)
+      # Analyse, datadefinition og hospital er debounced reactives (1000ms)
       # så preview opdateres når brugeren stopper med at skrive
       analysis_input <- debounced_analysis()
       data_def_input <- debounced_data_def()
+      hospital_input <- debounced_hospital()
 
       # Build metadata for PDF generation
       metadata <- list(
-        hospital = get_hospital_name_for_export(),
+        hospital = if (nzchar(hospital_input)) hospital_input else get_hospital_name_for_export(),
         department = dept_input,
         title = title_input,
         analysis = analysis_input,

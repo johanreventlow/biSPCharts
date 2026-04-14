@@ -151,3 +151,84 @@ register_roboto_font <- function() {
 
   return(invisible(NULL))
 }
+
+#' Register Mari Fonts (Regular and Bold)
+#'
+#' Registrerer bundlede Mari fonts med systemfonts pakken.
+#' Dette sikrer at BFHtheme vælger Mari (højeste prioritet) i stedet for
+#' fallback til Roboto/sans på systemer hvor Mari ikke er installeret
+#' (f.eks. Posit Connect Cloud).
+#'
+#' @return NULL (invisible). Registrerer fonts som sideeffekt.
+#'
+#' @details
+#' Mari fonts er bundlet i inst/templates/typst/bfh-template/fonts/ mappen.
+#' Fonten er proprietær (Bispebjerg og Frederiksberg Hospital) og må ikke
+#' distribueres i public packages — derfor ligger den i biSPCharts (private).
+#'
+#' @family font_registration
+#' @keywords internal
+register_mari_font <- function() {
+  if (exists(".mari_registered", envir = .GlobalEnv) &&
+    isTRUE(get(".mari_registered", envir = .GlobalEnv))) {
+    return(invisible(NULL))
+  }
+
+  if (!requireNamespace("systemfonts", quietly = TRUE)) {
+    return(invisible(NULL))
+  }
+
+  font_dir <- system.file(
+    "templates/typst/bfh-template/fonts",
+    package = "biSPCharts"
+  )
+  if (!nzchar(font_dir) || !dir.exists(font_dir)) {
+    font_dir <- file.path("inst", "templates", "typst", "bfh-template", "fonts")
+  }
+
+  font_plain <- file.path(font_dir, "MariOffice.ttf")
+  font_bold <- file.path(font_dir, "MariOffice-Bold.ttf")
+
+  if (!file.exists(font_plain)) {
+    log_warn(
+      component = "[FONT_REGISTRATION]",
+      message = "MariOffice.ttf ikke fundet — Mari font-registrering sprunget over",
+      details = list(expected_path = font_plain)
+    )
+    return(invisible(NULL))
+  }
+
+  safe_operation(
+    "Registrer Mari fonts",
+    code = {
+      bold_path <- if (file.exists(font_bold)) font_bold else font_plain
+
+      systemfonts::register_font(
+        name = "Mari",
+        plain = font_plain,
+        bold = bold_path
+      )
+
+      log_info(
+        component = "[FONT_REGISTRATION]",
+        message = "Mari font registreret succesfuldt",
+        details = list(
+          plain_path = font_plain,
+          bold_path = bold_path
+        )
+      )
+
+      assign(".mari_registered", TRUE, envir = .GlobalEnv)
+    },
+    fallback = function(e) {
+      log_warn(
+        component = "[FONT_REGISTRATION]",
+        message = "Mari font-registrering fejlede — BFHtheme vil bruge fallback",
+        details = list(error = e$message)
+      )
+    },
+    error_type = "processing"
+  )
+
+  return(invisible(NULL))
+}

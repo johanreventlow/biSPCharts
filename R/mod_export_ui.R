@@ -127,18 +127,37 @@ mod_export_ui <- function(id) {
             sprintf("Maksimalt %d karakterer", EXPORT_TITLE_MAX_LENGTH)
           )
         ),
+        shiny::conditionalPanel(
+          condition = sprintf("input['%s'] != 'png'", ns("export_format")),
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::textInput(
+              ns("export_hospital"),
+              "Hospital eller virksomhed:",
+              value = get_hospital_name(),
+              placeholder = "F.eks. 'Bispebjerg og Frederiksberg Hospital'",
+              width = "100%"
+            )
+          )
+        ),
         shiny::div(
           style = "margin-bottom: 15px;",
           shiny::textInput(
             ns("export_department"),
-            "Afdeling/Afsnit:",
+            "Afdeling eller afsnit:",
             value = "",
             placeholder = "F.eks. 'Medicinsk Afdeling'",
             width = "100%"
-          ),
-          shiny::tags$small(
-            class = "text-muted",
-            sprintf("Maksimalt %d karakterer", EXPORT_DEPARTMENT_MAX_LENGTH)
+          )
+        ),
+        shiny::div(
+          style = "margin-bottom: 15px;",
+          shiny::textInput(
+            ns("export_footnote"),
+            "Fodnote:",
+            value = "",
+            placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
+            width = "100%"
           )
         ),
 
@@ -212,33 +231,60 @@ mod_export_ui <- function(id) {
         shiny::conditionalPanel(
           condition = sprintf("input['%s'] == 'png'", ns("export_format")),
           shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::selectInput(
-              ns("png_size_preset"),
-              "Størrelse:",
+            style = "margin-bottom: 10px;",
+            shiny::selectizeInput(
+              ns("png_preset"),
+              "Format:",
               choices = c(
-                EXPORT_SIZE_PRESETS$small$label,
-                EXPORT_SIZE_PRESETS$medium$label,
-                EXPORT_SIZE_PRESETS$large$label
+                "HD 16:9 (1920 \u00d7 1080)" = "1920x1080",
+                "HD 16:9 (1280 \u00d7 720)" = "1280x720",
+                "4:3 (1600 \u00d7 1200)" = "1600x1200",
+                "4:3 (1024 \u00d7 768)" = "1024x768",
+                "Kvadrat (1080 \u00d7 1080)" = "1080x1080",
+                "A4 liggende (1754 \u00d7 1240)" = "1754x1240",
+                "Brugerdefineret" = "custom"
               ),
-              selected = EXPORT_SIZE_PRESETS$medium$label,
+              selected = "1920x1080",
               width = "100%"
-            )
+            ),
+            shiny::tags$style(shiny::HTML(paste0(
+              "#", ns("png_preset"),
+              "+ div>.selectize-dropdown{bottom: 100% !important; top:auto!important;}"
+            )))
           ),
           shiny::div(
             style = "margin-bottom: 15px;",
-            shiny::selectInput(
-              ns("png_dpi"),
-              "DPI (Opløsning):",
-              choices = EXPORT_DPI_OPTIONS,
-              selected = 96,
-              width = "100%"
-            ),
-            shiny::tags$small(
-              class = "text-muted",
-              "96 DPI: Skærm | 150 DPI: Medium print | 300 DPI: Høj kvalitet"
+            shiny::tags$label("Størrelse (px):", class = "control-label"),
+            shiny::div(
+              style = "display: flex; align-items: center; gap: 8px;",
+              shiny::numericInput(
+                ns("png_width"),
+                label = NULL,
+                value = 1920,
+                min = 400,
+                max = 4000,
+                step = 10,
+                width = "120px"
+              ),
+              shiny::tags$span(
+                style = "font-size: 1.1rem; color: #666; padding-bottom: 15px;",
+                "\u00d7"
+              ),
+              shiny::numericInput(
+                ns("png_height"),
+                label = NULL,
+                value = 1080,
+                min = 300,
+                max = 4000,
+                step = 10,
+                width = "120px"
+              ),
+              shiny::tags$span(
+                style = "color: #999; font-size: 0.85rem; padding-bottom: 15px;",
+                "px"
+              )
             )
-          )
+          ),
         ),
 
         ## PowerPoint-specific fields ----
@@ -329,20 +375,28 @@ mod_export_ui <- function(id) {
           condition = "output.plot_available == true && output.is_pdf_format == false",
           ns = ns,
           shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: auto; background-color: #f8f8f8; padding: 20px;",
+            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #f8f8f8; padding: 20px;",
             shiny::div(
               class = "export-preview-container",
               style = paste0(
                 "border: 1px solid #d2d2d2; border-radius: 4px; ",
                 "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
-                "background-color: white; position: relative;"
+                "background-color: white; position: relative; ",
+                "max-width: 100%; max-height: calc(100vh - 300px);"
               ),
               shiny::plotOutput(
                 ns("export_preview"),
-                width = "800px",
-                height = "450px"
+                width = "100%",
+                height = "auto"
               )
-            )
+            ),
+            # Skalér preview-billedet til at passe inden for rammen
+            shiny::tags$style(shiny::HTML(paste0(
+              "#", ns("export_preview"), " img { ",
+              "max-width: 100%; max-height: calc(100vh - 340px); ",
+              "width: auto; height: auto; ",
+              "object-fit: contain; display: block; }"
+            )))
           )
         )
       )

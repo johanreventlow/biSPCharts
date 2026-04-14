@@ -80,24 +80,16 @@ build_export_plot <- function(app_state, title_input, dept_input,
     app_state$columns$mappings$n_column
   )
 
-  # Construct chart title with export metadata
-  title_parts <- c()
-
-  if (!is.null(title_input) && nchar(title_input) > 0) {
-    # Convert newlines to CommonMark line breaks (backslash + newline)
-    title_processed <- gsub("\n", "\\\n", title_input, fixed = TRUE)
-    title_parts <- c(title_parts, title_processed)
-  }
-
-  if (!is.null(dept_input) && nchar(trimws(dept_input)) > 0) {
-    title_parts <- c(title_parts, paste0("(", trimws(dept_input), ")"))
-  }
-
-  # If no metadata, use default instructional title
-  export_title <- if (length(title_parts) > 0) {
-    paste(title_parts, collapse = " ")
+  # Construct chart title (kun brugerens titel — hospital/afdeling tilføjes
+  # som subtitle direkte på plottet i PNG-specifikke kontekster)
+  is_png_context <- plot_context %in% c("export_png", "export_preview")
+  export_title <- if (!is.null(title_input) && nchar(trimws(title_input)) > 0) {
+    gsub("\n", "\\\n", title_input, fixed = TRUE)
+  } else if (is_png_context) {
+    # PNG/preview: ingen default-titel — tom titel giver rent billede
+    NULL
   } else {
-    # Default title when field is empty - instructs user what to write
+    # PDF: instruktiv default-titel
     "Skriv en kort og sigende titel eller\n**konkluder hvad grafen viser**"
   }
 

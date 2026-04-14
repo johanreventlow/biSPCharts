@@ -241,12 +241,14 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       force(input$centerline_value)
       force(input$y_axis_unit)
       force(input[["export-export_title"]])
+      force(input[["export-export_hospital"]])
       force(input[["export-export_department"]])
+      force(input[["export-export_footnote"]])
       force(input[["export-export_format"]])
       force(input[["export-pdf_description"]])
       force(input[["export-pdf_improvement"]])
-      force(input[["export-png_size_preset"]])
-      force(input[["export-png_dpi"]])
+      force(input[["export-png_width"]])
+      force(input[["export-png_height"]])
 
       # Samme guards som data auto-gem
       # Use unified state management
@@ -279,19 +281,21 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
           sprintf(
             paste0(
               "settings_save capture: active_tab='%s', target='%s', ",
-              "export_title='%s', export_department='%s', export_format='%s', ",
+              "export_title='%s', export_hospital='%s', export_department='%s', export_footnote='%s', export_format='%s', ",
               "pdf_description='%s', pdf_improvement='%s', ",
-              "png_size_preset='%s', png_dpi='%s'"
+              "png_width='%s', png_height='%s'"
             ),
             md$active_tab %||% "<NULL>",
             md$target_value %||% "<NULL>",
             md$export_title %||% "<NULL>",
+            md$export_hospital %||% "<NULL>",
             md$export_department %||% "<NULL>",
+            md$export_footnote %||% "<NULL>",
             md$export_format %||% "<NULL>",
             md$pdf_description %||% "<NULL>",
             md$pdf_improvement %||% "<NULL>",
-            md$png_size_preset %||% "<NULL>",
-            md$png_dpi %||% "<NULL>"
+            md$png_width %||% "<NULL>",
+            md$png_height %||% "<NULL>"
           ),
           .context = "AUTO_SAVE"
         )

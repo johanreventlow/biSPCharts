@@ -61,9 +61,9 @@ devtools::load_all(helpers = FALSE)
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE"))
 # set_debug_context(c("EXPORT_MODULE"))
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE"))
-# set_debug_context(NULL)
+set_debug_context(NULL)
 # set_debug_context(c("SESSION_RESTORE", "COLUMN_CHOICES_UNIFIED", "VISUALIZATION"))
-set_debug_context(c("SESSION_RESTORE", "COLUMN_CHOICES_UNIFIED", "VISUALIZATION", "SPC_PIPELINE", "BFH_SERVICE"))
+# set_debug_context(c("SESSION_RESTORE", "COLUMN_CHOICES_UNIFIED", "VISUALIZATION", "SPC_PIPELINE", "BFH_SERVICE"))
 
 # Run app with test mode enabled for development
 

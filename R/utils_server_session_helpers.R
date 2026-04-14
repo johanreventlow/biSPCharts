@@ -362,7 +362,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   # Diskret save-status indikator i navbar (Issue #193)
   # R renderer kun containeren; JS (shiny-handlers.js) håndterer
-  # tidstælling client-side hvert 10 s for at undgå reactiveTimer
+  # tidstælling client-side hvert 5 s for at undgå reactiveTimer
   # keepalive-effekt på Connect Cloud.
   output$session_save_status <- shiny::renderUI({
     last_save <- app_state$session$last_save_time
@@ -385,8 +385,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     shiny::span(
       shiny::icon("check"),
       " ",
-      shiny::span(id = "save-elapsed-text", "Gemt"),
-      style = "color: #6c757d; font-size: 0.8rem;",
+      shiny::span(id = "save-elapsed-text", "Session gemt"),
+      style = "color: #ced4da; font-size: 0.8rem;",
       title = "Indstillinger og data gemmes automatisk i din browser"
     )
   })

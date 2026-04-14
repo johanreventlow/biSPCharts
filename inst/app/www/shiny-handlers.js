@@ -95,7 +95,7 @@ Shiny.addCustomMessageHandler('discardPendingRestore', function(_message) {
 });
 
 // Client-side save-elapsed timer (Issue #193)
-// Opdaterer #save-elapsed-text hvert 10 s uden server-roundtrip,
+// Opdaterer #save-elapsed-text hvert 5 s uden server-roundtrip,
 // så Connect Cloud idle-timeout ikke holdes kunstigt i live.
 window._spcLastSaveTime = null;
 
@@ -105,16 +105,16 @@ function _spcUpdateSaveElapsed() {
   var sec = Math.round((Date.now() - window._spcLastSaveTime) / 1000);
   var label;
   if (sec < 60) {
-    label = 'Gemt \u00b7 ' + sec + ' s siden';
+    label = 'Session gemt \u00b7 ' + sec + ' s siden';
   } else if (sec < 3600) {
-    label = 'Gemt \u00b7 ' + Math.round(sec / 60) + ' min siden';
+    label = 'Session gemt \u00b7 ' + Math.round(sec / 60) + ' min siden';
   } else {
-    label = 'Gemt \u00b7 tidligere';
+    label = 'Session gemt \u00b7 tidligere';
   }
   el.textContent = label;
 }
 
-setInterval(_spcUpdateSaveElapsed, 10000);
+setInterval(_spcUpdateSaveElapsed, 5000);
 
 // Issue #185: Tilføj tooltips til Skift/Frys kolonne-headers i excelR tabel
 // MutationObserver sikrer at tooltips tilføjes efter excelR rendering

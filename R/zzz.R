@@ -201,8 +201,13 @@ reset_qic_performance_counters <- function() {
   # Set up resource paths for static files
   setup_resource_paths()
 
-  # Register embedded Roboto Medium font for cross-platform compatibility
-  # This ensures consistent font rendering across all systems
+  # Registrer Mari font FØR Roboto — BFHtheme cacher første match,
+  # og Mari har højeste prioritet i get_bfh_font()
+  if (exists("register_mari_font", mode = "function")) {
+    register_mari_font()
+  }
+
+  # Register embedded Roboto Medium font as fallback
   if (exists("register_roboto_font", mode = "function")) {
     register_roboto_font()
   }

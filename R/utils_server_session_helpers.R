@@ -365,7 +365,9 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # tidstælling client-side hvert 5 s for at undgå reactiveTimer
   # keepalive-effekt på Connect Cloud.
   output$session_save_status <- shiny::renderUI({
-    last_save <- app_state$session$last_save_time
+    # Brug boolean flag i stedet for timestamp for at undgå re-render
+    # ved hvert save-cycle. JS ejer tidsteksten.
+    has_saved <- !is.null(app_state$session$last_save_time)
     auto_save_on <- app_state$session$auto_save_enabled
 
     if (isFALSE(auto_save_on)) {
@@ -377,11 +379,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       ))
     }
 
-    if (is.null(last_save)) {
+    if (!has_saved) {
       return(NULL)
     }
 
-    # Container med id som JS finder og opdaterer løbende
+    # Container — JS (_spcUpdateSaveElapsed) opdaterer teksten løbende
     shiny::span(
       shiny::icon("check"),
       " ",

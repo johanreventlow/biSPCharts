@@ -37,18 +37,18 @@
         "Config/testthat/edition": "3",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-14 10:14:31 UTC; unix",
+        "Built": "R 4.5.2; ; 2026-04-14 14:16:49 UTC; unix",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteUsername": "johanreventlow",
         "RemoteRepo": "BFHcharts",
         "RemoteRef": "main",
-        "RemoteSha": "4024980a3ecfff3992354bce4df449024580ba59",
+        "RemoteSha": "51169e4bbcfd66eb9abd03edcf48d05d1e029443",
         "GithubHost": "api.github.com",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
         "GithubRef": "main",
-        "GithubSHA1": "4024980a3ecfff3992354bce4df449024580ba59"
+        "GithubSHA1": "51169e4bbcfd66eb9abd03edcf48d05d1e029443"
       }
     },
     "BFHllm": {
@@ -5135,7 +5135,7 @@
       "checksum": "9c39c4ea3db8be6bbe44510db7be739a"
     },
     ".claude/settings.local.json": {
-      "checksum": "d41b6a88729e5f498b63c112270d443b"
+      "checksum": "e70fc1490a91474fefbd2a3209f427c0"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -24614,7 +24614,7 @@
       "checksum": "fd0e3d1e7eb609bc67728046efe81f8f"
     },
     "R/mod_export_download.R": {
-      "checksum": "d8565e30715e889f7cca023c25046431"
+      "checksum": "9b6ecd8173c0e74a4d2dcac390944c36"
     },
     "R/mod_export_server.R": {
       "checksum": "8730cee12f7a2f868bf211da00c8e25a"
@@ -24845,7 +24845,7 @@
       "checksum": "89ccf4736f70d8a8dd37d325856b478f"
     },
     "renv.lock": {
-      "checksum": "99652e0a9eca61fbf9b1a0fb34242081"
+      "checksum": "0647c0cad84fa4a9106e864cbefe69ee"
     },
     "Rplots.pdf": {
       "checksum": "fd0e5abc75cc4157139a67991fd97978"

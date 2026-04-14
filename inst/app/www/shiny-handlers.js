@@ -12,7 +12,10 @@ Shiny.addCustomMessageHandler('saveAppState', function(message) {
   console.log('[SPC] saveAppState handler called, key:', message.key, 'size:', dataLen);
   var success = window.saveAppState(message.key, message.data);
   console.log('[SPC] saveAppState success:', success);
-  if (!success) {
+  if (success) {
+    window._spcLastSaveTime = Date.now();
+    _spcUpdateSaveElapsed();
+  } else {
     console.error('saveAppState failed for key:', message.key);
   }
   Shiny.setInputValue('local_storage_save_result', {
@@ -90,6 +93,28 @@ Shiny.addCustomMessageHandler('discardPendingRestore', function(_message) {
   console.log('[SPC] discardPendingRestore: clearing cached payload');
   window.__pendingRestore = null;
 });
+
+// Client-side save-elapsed timer (Issue #193)
+// Opdaterer #save-elapsed-text hvert 10 s uden server-roundtrip,
+// så Connect Cloud idle-timeout ikke holdes kunstigt i live.
+window._spcLastSaveTime = null;
+
+function _spcUpdateSaveElapsed() {
+  var el = document.getElementById('save-elapsed-text');
+  if (!el || !window._spcLastSaveTime) return;
+  var sec = Math.round((Date.now() - window._spcLastSaveTime) / 1000);
+  var label;
+  if (sec < 60) {
+    label = 'Gemt \u00b7 ' + sec + ' s siden';
+  } else if (sec < 3600) {
+    label = 'Gemt \u00b7 ' + Math.round(sec / 60) + ' min siden';
+  } else {
+    label = 'Gemt \u00b7 tidligere';
+  }
+  el.textContent = label;
+}
+
+setInterval(_spcUpdateSaveElapsed, 10000);
 
 // Issue #185: Tilføj tooltips til Skift/Frys kolonne-headers i excelR tabel
 // MutationObserver sikrer at tooltips tilføjes efter excelR rendering

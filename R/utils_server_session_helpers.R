@@ -360,11 +360,10 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     obs_manager$add(obs_settings_save, "settings_auto_save")
   }
 
-  # Diskret save-status indikator i wizard-bjælken (Issue #193)
-  # Viser:
-  #   - Intet hvis last_save_time er NULL (ingen save endnu)
-  #   - "Gemt · N s siden" / "Gemt · N min siden" ved success
-  #   - "Automatisk lagring deaktiveret" når auto_save_enabled er FALSE
+  # Diskret save-status indikator i navbar (Issue #193)
+  # R renderer kun containeren; JS (shiny-handlers.js) håndterer
+  # tidstælling client-side hvert 10 s for at undgå reactiveTimer
+  # keepalive-effekt på Connect Cloud.
   output$session_save_status <- shiny::renderUI({
     last_save <- app_state$session$last_save_time
     auto_save_on <- app_state$session$auto_save_enabled
@@ -382,18 +381,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       return(NULL)
     }
 
-    diff_sec <- as.numeric(difftime(Sys.time(), last_save, units = "secs"))
-    label <- if (diff_sec < 60) {
-      paste0("Gemt \u00b7 ", round(diff_sec), " s siden")
-    } else if (diff_sec < 3600) {
-      paste0("Gemt \u00b7 ", round(diff_sec / 60), " min siden")
-    } else {
-      "Gemt \u00b7 tidligere"
-    }
-
+    # Container med id som JS finder og opdaterer løbende
     shiny::span(
       shiny::icon("check"),
-      " ", label,
+      " ",
+      shiny::span(id = "save-elapsed-text", "Gemt"),
       style = "color: #6c757d; font-size: 0.8rem;",
       title = "Indstillinger og data gemmes automatisk i din browser"
     )

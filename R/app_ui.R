@@ -20,14 +20,17 @@ app_ui <- function(request) {
       .navbar .nav-item:has(.nav-link[data-value='upload']),
       .navbar .nav-item:has(.nav-link[data-value='analyser']),
       .navbar .nav-item:has(.nav-link[data-value='eksporter']),
-      .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
+      .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
+      .navbar .nav-item:has(#session_save_status) {
         display: none !important;
       }
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='upload']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='analyser']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='eksporter']),
-      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']) {
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
+      body.wizard-nav-active .navbar .nav-item:has(#session_save_status) {
         display: flex !important;
+        align-items: center;
       }
       body.wizard-nav-active .navbar .nav-link[data-value='upload'],
       body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
@@ -106,6 +109,11 @@ app_ui <- function(request) {
         icon = shiny::icon("book-open"),
         value = "hjaelp",
         mod_help_ui("help")
+      ),
+
+      # Auto-save status i navbar (synlig fra alle wizard-trin)
+      bslib::nav_item(
+        shiny::uiOutput("session_save_status", inline = TRUE)
       )
     )
   )

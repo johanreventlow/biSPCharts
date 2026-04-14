@@ -147,12 +147,15 @@ inject_template_assets <- function(template_dir) {
         return(invisible(FALSE))
       }
 
-      # Kopier fonts
+      # Kopier fonts — ekskludér Mari Regular-varianter så Typst
+      # vælger Book (lettere) som default, konsistent med Mac system-font
       src_fonts <- file.path(src_base, "fonts")
       dst_fonts <- file.path(template_dir, "fonts")
       if (dir.exists(src_fonts)) {
         if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
         font_files <- list.files(src_fonts, full.names = TRUE)
+        mari_regular <- c("Mari.otf", "MariOffice.ttf")
+        font_files <- font_files[!basename(font_files) %in% mari_regular]
         file.copy(font_files, dst_fonts, overwrite = FALSE)
       }
 

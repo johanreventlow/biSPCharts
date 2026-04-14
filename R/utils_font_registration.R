@@ -186,13 +186,14 @@ register_mari_font <- function() {
     font_dir <- file.path("inst", "templates", "typst", "bfh-template", "fonts")
   }
 
-  font_plain <- file.path(font_dir, "MariOffice.ttf")
+  # Book-varianten matcher Mac system-default for "Mari" (lettere end Regular)
+  font_plain <- file.path(font_dir, "MariOffice-Book.ttf")
   font_bold <- file.path(font_dir, "MariOffice-Bold.ttf")
 
   if (!file.exists(font_plain)) {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "MariOffice.ttf ikke fundet — Mari font-registrering sprunget over",
+      message = "MariOffice-Book.ttf ikke fundet — Mari font-registrering sprunget over",
       details = list(expected_path = font_plain)
     )
     return(invisible(NULL))

@@ -60,7 +60,7 @@
       "RemoteUsername": "johanreventlow",
       "RemoteRepo": "BFHcharts",
       "RemoteRef": "main",
-      "RemoteSha": "bff108ece763083d8604e5b5e0ee484000f03dc4"
+      "RemoteSha": "b5f719b126e78259d4f886a3dfc1024ed749d1d0"
     },
     "BFHllm": {
       "Package": "BFHllm",

@@ -37,18 +37,18 @@
         "Config/testthat/edition": "3",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-14 14:33:40 UTC; unix",
+        "Built": "R 4.5.2; ; 2026-04-14 14:41:35 UTC; unix",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteUsername": "johanreventlow",
         "RemoteRepo": "BFHcharts",
         "RemoteRef": "main",
-        "RemoteSha": "bff108ece763083d8604e5b5e0ee484000f03dc4",
+        "RemoteSha": "b5f719b126e78259d4f886a3dfc1024ed749d1d0",
         "GithubHost": "api.github.com",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
         "GithubRef": "main",
-        "GithubSHA1": "bff108ece763083d8604e5b5e0ee484000f03dc4"
+        "GithubSHA1": "b5f719b126e78259d4f886a3dfc1024ed749d1d0"
       }
     },
     "BFHllm": {
@@ -24776,7 +24776,7 @@
       "checksum": "af9e37a623e61ce3043091ea00d7548a"
     },
     "R/utils_server_export.R": {
-      "checksum": "64d5d92e5849c2217541c9ef6046a626"
+      "checksum": "1783bcb0265491cdef17ae0a4cdb1fbc"
     },
     "R/utils_server_initialization.R": {
       "checksum": "5f0680929cd0c2400386d495a8c87b8c"
@@ -24845,7 +24845,7 @@
       "checksum": "89ccf4736f70d8a8dd37d325856b478f"
     },
     "renv.lock": {
-      "checksum": "59dda51e9bb87cbd87c25beee92498b9"
+      "checksum": "60432962ddec385db8e04ca7caf61e07"
     },
     "Rplots.pdf": {
       "checksum": "fd0e5abc75cc4157139a67991fd97978"

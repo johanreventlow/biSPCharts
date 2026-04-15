@@ -22,6 +22,6 @@ NULL (side effect: registers observers with Shiny)
 }
 \description{
 Sets up observers for automatic analysis text generation when SPC results change.
-Only generates for PDF format to avoid unnecessary re-renders for PNG/PPTX.
+Only generates for PDF format to avoid unnecessary re-renders for PNG.
 }
 \keyword{internal}

@@ -14,7 +14,7 @@
 #' Register Analysis Auto-Generation Observers
 #'
 #' Sets up observers for automatic analysis text generation when SPC results change.
-#' Only generates for PDF format to avoid unnecessary re-renders for PNG/PPTX.
+#' Only generates for PDF format to avoid unnecessary re-renders for PNG.
 #'
 #' @param session Shiny session object
 #' @param input Input object containing UI inputs
@@ -34,7 +34,7 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
   # Auto-generer analysetekst når SPC-resultat er tilgængeligt
   shiny::observeEvent(export_plot(), {
     # Review fund #3: Auto-genereret analysetekst bruges KUN i PDF-eksport
-    # (pdf_improvement-feltet). Når formatet er png/pptx er analysen
+    # (pdf_improvement-feltet). Når formatet er png er analysen
     # irrelevant, og den resulterende updateTextAreaInput trigger en ny
     # preview-render uden reel brugerændring. Guard på format sparer
     # unødig reactive chain (preview → autosave → debounce → preview).

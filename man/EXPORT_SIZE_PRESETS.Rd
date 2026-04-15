@@ -20,7 +20,6 @@ Presets inkluderer:
 \item small: 800x600px ved 96 DPI (lille web/email format)
 \item medium: 1200x900px ved 96 DPI (standard præsentation)
 \item large: 1920x1440px ved 96 DPI (høj opløsning)
-\item powerpoint: 10x7.5 tommer ved 96 DPI (optimal til PowerPoint slides)
 }
 }
 \keyword{internal}

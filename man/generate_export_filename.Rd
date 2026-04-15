@@ -7,7 +7,7 @@
 generate_export_filename(format, title = "", department = "")
 }
 \arguments{
-\item{format}{Export format ("pdf", "png", "powerpoint" eller "pptx")}
+\item{format}{Export format ("pdf" eller "png")}
 
 \item{title}{Chart titel (optional)}
 
@@ -32,7 +32,6 @@ Supported formats:
 \itemize{
 \item "pdf" → ".pdf"
 \item "png" → ".png"
-\item "powerpoint" eller "pptx" → ".pptx"
 \item Unknown → ".pdf" (default)
 }
 }
@@ -44,8 +43,6 @@ generate_export_filename("pdf", "Min Graf", "Kardiologi")
 generate_export_filename("png", "SPC Oversigt")
 # "SPC_SPC_Oversigt.png"
 
-generate_export_filename("pptx", "", "Hæmatologi Ø")
-# "SPC_Hæmatologi_Ø.pptx"
 }
 
 }

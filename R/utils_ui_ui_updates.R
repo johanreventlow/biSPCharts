@@ -227,7 +227,7 @@ create_ui_update_service <- function(session, app_state) {
                 # gå via JS setActiveExportBtn() så knap-state, hidden input
                 # og Shiny.setInputValue() alle synkroniseres.
                 fmt <- metadata[[field]]
-                if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png", "pptx")) {
+                if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png")) {
                   session$sendCustomMessage(
                     "set-export-format",
                     list(format = fmt)

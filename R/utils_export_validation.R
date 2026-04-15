@@ -13,7 +13,6 @@
 #   - Export module server (mod_export_server.R)
 #   - PDF export logic
 #   - PNG export logic
-#   - PowerPoint export logic
 #
 # SIKKERHED:
 #   - XSS protection gennem HTML escaping
@@ -23,10 +22,10 @@
 
 #' Validate Export Inputs
 #'
-#' Validerer alle export inputs før generering af PDF/PNG/PowerPoint.
+#' Validerer alle export inputs før generering af PDF/PNG.
 #' Tjekker character limits, dimension ranges og aspect ratios.
 #'
-#' @param format Export format ("pdf", "png", "pptx")
+#' @param format Export format ("pdf", "png")
 #' @param title Chart titel (max 200 tegn)
 #' @param department Afdeling/afsnit (max 100 tegn)
 #' @param description Indikator beskrivelse (max 2000 tegn)

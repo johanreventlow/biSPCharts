@@ -4,7 +4,7 @@
 # DOWNLOAD HANDLER MODULE FOR EXPORT
 #
 # Purpose: Extract download handler logic from mod_export_server.R.
-#          Manages PDF, PNG, and PowerPoint export file generation and download.
+#          Manages PDF and PNG export file generation and download.
 #
 # Extracted from: mod_export_server.R (Phase 2b refactoring)
 # Depends on: app_state, input, session, build_export_plot (utils_export_helpers.R)
@@ -13,7 +13,7 @@
 #' Register Download Handler
 #'
 #' Sets up downloadHandler that generates export files in multiple formats
-#' (PDF via Typst, PNG, PowerPoint via officer).
+#' (PDF via Typst, PNG).
 #'
 #' @param output Output object for rendering
 #' @param input Input object containing UI inputs
@@ -54,8 +54,6 @@ register_export_downloads <- function(output, input, session, app_state) {
             generate_pdf_export(input, app_state, file)
           } else if (format == "png") {
             generate_png_export(input, app_state, file)
-          } else if (format == "pptx") {
-            generate_pptx_export(input, app_state, file)
           } else {
             stop(paste("Ukendt format:", format))
           }
@@ -223,51 +221,3 @@ generate_png_export <- function(input, app_state, file) {
   shiny::showNotification("PNG genereret og downloadet", type = "message", duration = 3)
 }
 
-#' Generate PowerPoint Export
-#'
-#' @param input Shiny input object
-#' @param app_state Global app state
-#' @param file Output file path
-#' @keywords internal
-generate_pptx_export <- function(input, app_state, file) {
-  log_debug(.context = "EXPORT_MODULE", message = "PowerPoint export starting")
-
-  validate_export_inputs(
-    format = "pptx",
-    title = input$export_title,
-    department = input$export_department
-  )
-
-  # Hospital template (valgfri)
-  template_path <- system.file("templates", "hospital_presentation.pptx", package = "biSPCharts")
-  if (!file.exists(template_path) || nchar(template_path) == 0) {
-    template_path <- NULL
-  }
-
-  # Generer SPC plot via fælles helper
-  pptx_plot_result <- build_export_plot(
-    app_state = app_state,
-    title_input = input$export_title %||% "",
-    dept_input = input$export_department %||% "",
-    plot_context = "export_pptx"
-  )
-
-  # PPTX titel med afdeling (simpelt format uden parentes-wrapping fra helper)
-  export_title <- input$export_title %||% ""
-  if (!is.null(input$export_department) && nchar(input$export_department) > 0) {
-    export_title <- paste0(export_title, " (", input$export_department, ")")
-  }
-
-  result <- generate_powerpoint_export(
-    plot_object = pptx_plot_result$plot,
-    title = export_title,
-    template_path = template_path,
-    output_path = file
-  )
-
-  if (is.null(result) || !file.exists(file)) {
-    stop("PowerPoint generation failed - file not created")
-  }
-
-  shiny::showNotification("PowerPoint genereret og downloadet", type = "message", duration = 3)
-}

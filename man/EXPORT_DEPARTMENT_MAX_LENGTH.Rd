@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 EXPORT_DEPARTMENT_MAX_LENGTH
 }
 \description{
-Begrænser afdeling/afsnit navn til 100 karakterer.
+Begrænser afdeling/afsnit navn til 250 karakterer.
 }
 \keyword{internal}

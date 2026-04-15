@@ -8,7 +8,7 @@
 # ANVENDES AF:
 #   - Plot generation (generateSPCPlot med context parameter)
 #   - Cache keys (spc_results reactive)
-#   - Export functions (PDF, PNG, PowerPoint)
+#   - Export functions (PDF, PNG)
 #   - Label placement (BFHcharts)
 #
 # RELATERET:
@@ -29,15 +29,13 @@
 #' - **export_preview:** Export-side preview (fast 800×450px @ 96 DPI)
 #' - **export_pdf:** PDF export via Typst (200×120mm @ 300 DPI)
 #' - **export_png:** PNG export (variable dimensions, configurable DPI)
-#' - **export_pptx:** PowerPoint export (9×6.5 inches @ 96 DPI)
 #'
 #' @keywords internal
 PLOT_CONTEXTS <- list(
   ANALYSIS = "analysis",
   EXPORT_PREVIEW = "export_preview",
   EXPORT_PDF = "export_pdf",
-  EXPORT_PNG = "export_png",
-  EXPORT_PPTX = "export_pptx"
+  EXPORT_PNG = "export_png"
 )
 
 #' Get Dimensions for Plot Context
@@ -87,8 +85,7 @@ get_context_dimensions <- function(context,
     analysis = list(width_px = 800, height_px = 600, dpi = 96, unit = "px", responsive = TRUE),
     export_preview = list(width_px = 800, height_px = 450, dpi = 96, unit = "px", responsive = FALSE),
     export_pdf = list(width_mm = 200, height_mm = 120, dpi = 300, unit = "mm", responsive = FALSE),
-    export_png = list(width_px = 1200, height_px = 900, dpi = 96, unit = "px", responsive = FALSE),
-    export_pptx = list(width_inches = 9, height_inches = 6.5, dpi = 96, unit = "in", responsive = FALSE)
+    export_png = list(width_px = 1200, height_px = 900, dpi = 96, unit = "px", responsive = FALSE)
   )
 
   if (!context %in% names(context_defaults)) {

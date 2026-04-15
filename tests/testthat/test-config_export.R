@@ -14,7 +14,7 @@ test_that("EXPORT_SIZE_PRESETS has all required presets", {
   expect_type(EXPORT_SIZE_PRESETS, "list")
 
   # Verify all required presets are present
-  required_presets <- c("small", "medium", "large", "powerpoint")
+  required_presets <- c("small", "medium", "large")
   for (preset in required_presets) {
     expect_true(preset %in% names(EXPORT_SIZE_PRESETS),
                 info = paste("Preset", preset, "must be defined"))
@@ -62,18 +62,6 @@ test_that("EXPORT_SIZE_PRESETS large preset has correct structure", {
   expect_equal(preset$dpi, 96)
   expect_equal(preset$unit, "px")
   expect_equal(preset$label, "Stor (1920 × 1440 px)")
-})
-
-test_that("EXPORT_SIZE_PRESETS powerpoint preset has correct structure", {
-  # TEST: PowerPoint preset configuration
-  preset <- EXPORT_SIZE_PRESETS$powerpoint
-
-  expect_type(preset, "list")
-  expect_equal(preset$width, 10)
-  expect_equal(preset$height, 7.5)
-  expect_equal(preset$dpi, 96)
-  expect_equal(preset$unit, "in")
-  expect_equal(preset$label, "Optimal til PowerPoint (10 × 7.5 in)")
 })
 
 test_that("EXPORT_SIZE_PRESETS all presets have valid aspect ratios", {
@@ -220,12 +208,10 @@ test_that("EXPORT_FORMAT_OPTIONS has all required formats", {
   # Verify all required formats
   expect_true("PDF" %in% names(EXPORT_FORMAT_OPTIONS))
   expect_true("PNG" %in% names(EXPORT_FORMAT_OPTIONS))
-  expect_true("PowerPoint" %in% names(EXPORT_FORMAT_OPTIONS))
 
   # Verify format codes
   expect_equal(EXPORT_FORMAT_OPTIONS[["PDF"]], "pdf")
   expect_equal(EXPORT_FORMAT_OPTIONS[["PNG"]], "png")
-  expect_equal(EXPORT_FORMAT_OPTIONS[["PowerPoint"]], "pptx")
 })
 
 # PDF CONFIGURATION TESTS ======================================================
@@ -281,47 +267,6 @@ test_that("EXPORT_PNG_CONFIG has correct structure", {
   expect_equal(EXPORT_PNG_CONFIG$type, "cairo")
   expect_true(EXPORT_PNG_CONFIG$compression >= 0 && EXPORT_PNG_CONFIG$compression <= 9,
               "PNG compression should be between 0 and 9")
-})
-
-# POWERPOINT CONFIGURATION TESTS ===============================================
-
-test_that("EXPORT_POWERPOINT_CONFIG has correct structure", {
-  # TEST: PowerPoint configuration
-  expect_true(exists("EXPORT_POWERPOINT_CONFIG"),
-              "EXPORT_POWERPOINT_CONFIG constant must be defined")
-
-  expect_type(EXPORT_POWERPOINT_CONFIG, "list")
-
-  # Verify required fields
-  required_fields <- c("layout", "width", "height", "unit", "left_margin",
-                      "top_margin", "title_font_size", "subtitle_font_size",
-                      "body_font_size")
-  for (field in required_fields) {
-    expect_true(field %in% names(EXPORT_POWERPOINT_CONFIG),
-                info = paste("PowerPoint config missing field:", field))
-  }
-
-  # Verify specific values
-  expect_equal(EXPORT_POWERPOINT_CONFIG$layout, "Title and Content")
-  expect_equal(EXPORT_POWERPOINT_CONFIG$width, 10)
-  expect_equal(EXPORT_POWERPOINT_CONFIG$height, 7.5)
-  expect_equal(EXPORT_POWERPOINT_CONFIG$unit, "in")
-})
-
-test_that("EXPORT_POWERPOINT_CONFIG font sizes are reasonable", {
-  # TEST: Font sizes are in reasonable range
-  expect_true(EXPORT_POWERPOINT_CONFIG$title_font_size >= 16 &&
-              EXPORT_POWERPOINT_CONFIG$title_font_size <= 48)
-  expect_true(EXPORT_POWERPOINT_CONFIG$subtitle_font_size >= 12 &&
-              EXPORT_POWERPOINT_CONFIG$subtitle_font_size <= 32)
-  expect_true(EXPORT_POWERPOINT_CONFIG$body_font_size >= 10 &&
-              EXPORT_POWERPOINT_CONFIG$body_font_size <= 24)
-
-  # Title should be larger than subtitle, subtitle larger than body
-  expect_gt(EXPORT_POWERPOINT_CONFIG$title_font_size,
-            EXPORT_POWERPOINT_CONFIG$subtitle_font_size)
-  expect_gt(EXPORT_POWERPOINT_CONFIG$subtitle_font_size,
-            EXPORT_POWERPOINT_CONFIG$body_font_size)
 })
 
 # EXPORT VALIDATION RULES TESTS ================================================
@@ -406,7 +351,7 @@ test_that("Size presets are compatible with validation rules", {
   for (preset_name in names(EXPORT_SIZE_PRESETS)) {
     preset <- EXPORT_SIZE_PRESETS[[preset_name]]
 
-    # Skip non-pixel units (like PowerPoint inches)
+    # Skip non-pixel units
     if (preset$unit == "px") {
       expect_true(preset$width >= EXPORT_VALIDATION_RULES$min_width_px &&
                   preset$width <= EXPORT_VALIDATION_RULES$max_width_px,
@@ -438,7 +383,6 @@ test_that("All configuration constants are exported", {
     "EXPORT_FORMAT_OPTIONS",
     "EXPORT_PDF_CONFIG",
     "EXPORT_PNG_CONFIG",
-    "EXPORT_POWERPOINT_CONFIG",
     "EXPORT_VALIDATION_RULES"
   )
 
@@ -456,6 +400,5 @@ test_that("Configuration constants are immutable types", {
   expect_false(is.function(EXPORT_DPI_OPTIONS))
   expect_false(is.function(EXPORT_PDF_CONFIG))
   expect_false(is.function(EXPORT_PNG_CONFIG))
-  expect_false(is.function(EXPORT_POWERPOINT_CONFIG))
   expect_false(is.function(EXPORT_VALIDATION_RULES))
 })

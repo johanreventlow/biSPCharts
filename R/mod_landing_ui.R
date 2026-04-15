@@ -79,7 +79,7 @@ landing_default_ui <- function(ns) {
     # Discoveryability links
     shiny::div(
       style = paste0(
-        "margin-top: 28px; font-size: 0.9rem; color: ", muted_color, ";"
+        "margin-top: 48px; font-size: 0.9rem; color: ", muted_color, ";"
       ),
       "Ny her? ",
       shiny::tags$a(

@@ -16,6 +16,9 @@ mod_app_guide_ui <- function(id) {
     class = "container-fluid",
     style = "max-width: 900px; margin: 0 auto; padding: 30px 20px;",
 
+    # Tilbagelink til forrige side
+    help_back_link(ns),
+
     # Sidehoved
     shiny::tags$h1("S\u00e5dan bruger du appen"),
     shiny::tags$p(

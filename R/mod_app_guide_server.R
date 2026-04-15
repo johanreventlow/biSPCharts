@@ -1,17 +1,18 @@
 # mod_app_guide_server.R
-# Minimal server for app-vejledningsmodul
+# Server for app-vejledningsmodul med tilbagenavigation
 
 #' App Guide Module Server
 #'
-#' Minimal server logik for app-vejledningssiden.
-#' Indholdet er statisk, s\u00e5 ingen reaktivitet er n\u00f8dvendig.
+#' Server logik for app-vejledningssiden. Håndterer tilbagenavigation
+#' til den tab brugeren kom fra.
 #'
 #' @param id Module ID
-#' @return NULL (ingen outputs)
+#' @param parent_session Shiny session. Parent session for navbar navigation.
+#' @param previous_tab ReactiveVal. Den forrige tab brugeren var på.
+#' @return NULL
 #' @export
-mod_app_guide_server <- function(id) {
+mod_app_guide_server <- function(id, parent_session = NULL, previous_tab = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    # Statisk indhold - ingen server-logik n\u00f8dvendig
-    NULL
+    setup_help_back_navigation(input, parent_session, previous_tab)
   })
 }

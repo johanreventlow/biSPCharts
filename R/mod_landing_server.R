@@ -48,6 +48,21 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
       }
     })
 
+    # Discoveryability-links: navigér til hjælpefanerne uden at aktivere wizard-nav
+    shiny::observeEvent(input$goto_app_guide, {
+      if (!is.null(parent_session)) {
+        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+        bslib::nav_select("main_navbar", selected = "app_guide", session = parent_session)
+      }
+    })
+
+    shiny::observeEvent(input$goto_spc, {
+      if (!is.null(parent_session)) {
+        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+        bslib::nav_select("main_navbar", selected = "hjaelp", session = parent_session)
+      }
+    })
+
     # Bruger vælger "Gendan session"
     shiny::observeEvent(input$restore_saved_session, {
       log_info("Bruger valgte at gendanne gemt session", .context = "SESSION_RESTORE")

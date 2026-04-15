@@ -13,5 +13,5 @@ read_shinylogs_sessions(log_directory)
 data.frame med session-data (tom data.frame hvis ingen filer)
 }
 \description{
-Laes shinylogs session-filer til data.frame
+Delegerer til \code{read_shinylogs_all()} og returnerer kun sessions-elementet.
 }

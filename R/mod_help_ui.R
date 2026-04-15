@@ -29,7 +29,6 @@ mod_help_ui <- function(id) {
           shiny::tags$li(shiny::tags$a(href = "#spc-laes", "S\u00e5dan l\u00e6ser du et seriediagram")),
           shiny::tags$li(shiny::tags$a(href = "#spc-anhoej", "Anh\u00f8j-reglerne")),
           shiny::tags$li(shiny::tags$a(href = "#spc-kontrol", "Kontroldiagrammer")),
-          shiny::tags$li(shiny::tags$a(href = "#app-vejledning", "S\u00e5dan bruger du appen")),
           shiny::tags$li(shiny::tags$a(href = "#spc-raad", "Gode r\u00e5d")),
           shiny::tags$li(shiny::tags$a(href = "#spc-litteratur", "Videre l\u00e6sning"))
         )
@@ -294,58 +293,7 @@ mod_help_ui <- function(id) {
       shiny::tags$hr()
     ),
 
-    # Sektion 6: Sådan bruger du appen
-    shiny::tags$section(
-      id = "app-vejledning",
-      shiny::tags$h2("S\u00e5dan bruger du appen"),
-      shiny::tags$h4("Trin 1: Upload"),
-      shiny::tags$p(
-        "Upload en CSV- eller Excel-fil, eller inds\u00e6t data direkte fra Excel. ",
-        "Appen registrerer automatisk dine kolonner."
-      ),
-      shiny::tags$div(
-        class = "text-center my-3",
-        shiny::tags$img(
-          src = "www/help/06a-trin1-upload.png",
-          alt = "Upload-siden med data valgt",
-          class = "img-fluid rounded shadow-sm",
-          style = "max-width: 700px;"
-        )
-      ),
-      shiny::tags$h4("Trin 2: Analys\u00e9r"),
-      shiny::tags$p(
-        "V\u00e6lg x-akse (typisk dato), y-akse (din indikator), og eventuelt en n\u00e6vner ",
-        "(for andele/rater). V\u00e6lg charttype. Tilf\u00f8j valgfrit: target, ",
-        "skift-markering (ved kendte proces\u00e6ndringer), frysning af baseline."
-      ),
-      shiny::tags$div(
-        class = "text-center my-3",
-        shiny::tags$img(
-          src = "www/help/06b-trin2-analyser.png",
-          alt = "Analyse-siden med diagram",
-          class = "img-fluid rounded shadow-sm",
-          style = "max-width: 700px;"
-        )
-      ),
-      shiny::tags$h4("Trin 3: Eksport\u00e9r"),
-      shiny::tags$p(
-        "Se en preview af din PDF-rapport med automatisk genereret analysetekst. ",
-        "Rediger analysen efter behov, eller brug AI til at forfine den. ",
-        "Download som PDF eller PNG."
-      ),
-      shiny::tags$div(
-        class = "text-center my-3",
-        shiny::tags$img(
-          src = "www/help/06c-trin3-eksporter.png",
-          alt = "Eksport-siden med PDF preview",
-          class = "img-fluid rounded shadow-sm",
-          style = "max-width: 700px;"
-        )
-      ),
-      shiny::tags$hr()
-    ),
-
-    # Sektion 7: Gode råd
+    # Sektion 6: Gode råd
     shiny::tags$section(
       id = "spc-raad",
       shiny::tags$h2("Gode r\u00e5d"),

@@ -16,6 +16,9 @@ mod_help_ui <- function(id) {
     class = "container-fluid",
     style = "max-width: 900px; margin: 0 auto; padding: 30px 20px;",
 
+    # Tilbagelink til forrige side
+    help_back_link(ns),
+
     # Ankerlinks (indholdsfortegnelse)
     shiny::div(
       class = "card mb-4",

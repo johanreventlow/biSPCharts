@@ -1,17 +1,18 @@
 # mod_help_server.R
-# Minimal server for hjælpeside-modul
+# Server for hjælpeside-modul med tilbagenavigation
 
 #' Help Module Server
 #'
-#' Minimal server logik for hjælpesiden.
-#' Indholdet er statisk, så ingen reaktivitet er nødvendig.
+#' Server logik for hjælpesiden. Håndterer tilbagenavigation
+#' til den tab brugeren kom fra.
 #'
 #' @param id Module ID
-#' @return NULL (ingen outputs)
+#' @param parent_session Shiny session. Parent session for navbar navigation.
+#' @param previous_tab ReactiveVal. Den forrige tab brugeren var på.
+#' @return NULL
 #' @export
-mod_help_server <- function(id) {
+mod_help_server <- function(id, parent_session = NULL, previous_tab = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    # Statisk indhold - ingen server-logik nødvendig
-    NULL
+    setup_help_back_navigation(input, parent_session, previous_tab)
   })
 }

@@ -114,7 +114,7 @@
 
     var acceptBtn = document.createElement('button');
     acceptBtn.className = 'spc-cookie-banner__btn spc-cookie-banner__btn--accept';
-    acceptBtn.textContent = 'Accepter';
+    acceptBtn.textContent = 'Accept\u00e9r';
 
     buttonsDiv.appendChild(rejectBtn);
     buttonsDiv.appendChild(acceptBtn);

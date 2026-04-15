@@ -200,7 +200,11 @@ mod_export_ui <- function(id) {
             style = "margin-bottom: 15px;",
             shiny::textAreaInput(
               ns("pdf_description"),
-              "Datadefinition:",
+              shiny::tagList(
+                "Datadefinition:",
+                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                  bslib::tooltip("Beskriv hvad indikatoren m\u00e5ler og hvordan data er opgjort. Fx: \u201cAndel patienter m\u00f8dt til ambulant aftale (m\u00f8dt/tilkaldt), opgjort m\u00e5nedligt.\u201d")
+              ),
               value = "",
               placeholder = "Beskriv hvad indikatoren måler og hvordan data opgøres",
               width = "100%",
@@ -216,7 +220,11 @@ mod_export_ui <- function(id) {
             style = "margin-bottom: 15px;",
             shiny::textAreaInput(
               ns("pdf_improvement"),
-              "Analyse af processen:",
+              shiny::tagList(
+                "Analyse af processen:",
+                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                  bslib::tooltip("Beskriv hvad diagrammet viser \u2014 er processen stabil? Er der signaler? Hvad kan forklare eventuelle udsving?")
+              ),
               value = "",
               placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
               width = "100%",

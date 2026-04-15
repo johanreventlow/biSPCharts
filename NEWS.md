@@ -119,7 +119,6 @@ BFHcharts::bfh_export_png(
 ```
 
 **What Stays the Same:**
-- PowerPoint export (`fct_export_powerpoint.R`) unchanged
 - Export size presets (`EXPORT_SIZE_PRESETS`) unchanged
 - `get_size_from_preset()` still available in biSPCharts
 - Export UI and workflow unchanged for end users
@@ -181,7 +180,7 @@ BFHcharts::bfh_export_png(
 ### Typst PDF Export (Issue #43)
 
 * Added professional PDF export functionality using Typst typesetting system via Quarto
-* New export format available in Export module alongside PNG and PowerPoint
+* New export format available in Export module alongside PNG
 * Generates A4 landscape PDFs with hospital branding (BFH template)
 * Includes comprehensive metadata:
   - Hospital name and department

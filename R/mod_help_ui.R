@@ -331,7 +331,7 @@ mod_help_ui <- function(id) {
       shiny::tags$p(
         "Se en preview af din PDF-rapport med automatisk genereret analysetekst. ",
         "Rediger analysen efter behov, eller brug AI til at forfine den. ",
-        "Download som PDF, PNG eller PowerPoint."
+        "Download som PDF eller PNG."
       ),
       shiny::tags$div(
         class = "text-center my-3",

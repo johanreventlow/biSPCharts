@@ -7,7 +7,7 @@
 get_size_from_preset(preset_name)
 }
 \arguments{
-\item{preset_name}{Character preset name ("small", "medium", "large", "powerpoint")}
+\item{preset_name}{Character preset name ("small", "medium", "large")}
 }
 \value{
 Named list med width, height, dpi, unit, label
@@ -29,7 +29,6 @@ Available presets (fra EXPORT_SIZE_PRESETS):
 \item small: 800×600px @ 96 DPI (lille web/email format)
 \item medium: 1200×900px @ 96 DPI (standard præsentation)
 \item large: 1920×1440px @ 96 DPI (høj opløsning)
-\item powerpoint: 10×7.5 inches @ 96 DPI (optimal til PowerPoint slides)
 }
 
 Default fallback: medium preset hvis preset_name ikke findes
@@ -39,10 +38,6 @@ Default fallback: medium preset hvis preset_name ikke findes
 # Get small preset
 preset <- get_size_from_preset("small")
 # Returns: list(width = 800, height = 600, dpi = 96, unit = "px", label = "Lille")
-
-# Get powerpoint preset
-preset <- get_size_from_preset("powerpoint")
-# Returns: list(width = 10, height = 7.5, dpi = 96, unit = "in", label = "PowerPoint")
 
 # Unknown preset falls back to medium
 preset <- get_size_from_preset("unknown")

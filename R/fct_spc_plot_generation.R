@@ -468,7 +468,7 @@ execute_qic_call <- function(qic_args, chart_type, config, qic_cache = NULL) {
 #' @inheritParams generateSPCPlot
 #' @param plot_context Character. Plot context identifier (default
 #'   "analysis"). Valid contexts: "analysis", "export_preview",
-#'   "export_pdf", "export_png", "export_pptx". Context determines cache
+#'   "export_pdf", "export_png". Context determines cache
 #'   isolation and enables context-aware label placement. Use PLOT_CONTEXTS
 #'   constants from config_plot_contexts.R.
 #' @param override_dpi Numeric. Override DPI for dimension conversion

@@ -8,13 +8,14 @@ validate_export_inputs(
   format,
   title = "",
   department = "",
+  hospital = "",
   description = "",
   width = NULL,
   height = NULL
 )
 }
 \arguments{
-\item{format}{Export format ("pdf", "png", "pptx")}
+\item{format}{Export format ("pdf", "png")}
 
 \item{title}{Chart titel (max 200 tegn)}
 
@@ -30,7 +31,7 @@ validate_export_inputs(
 TRUE hvis alle validations passerer
 }
 \description{
-Validerer alle export inputs før generering af PDF/PNG/PowerPoint.
+Validerer alle export inputs før generering af PDF/PNG.
 Tjekker character limits, dimension ranges og aspect ratios.
 }
 \examples{

@@ -132,6 +132,7 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
 #'
 #' @keywords internal
 build_serielengde_box <- function(status_info, anhoej) {
+  muted_color <- get_hospital_colors()$ui_grey_soft
   bslib::value_box(
     title = shiny::span(
       "Serielængde",
@@ -140,7 +141,7 @@ build_serielengde_box <- function(status_info, anhoej) {
       "Længste serie af punkter på samme side af centerlinjen. Hvis den overstiger grænsen, kan der være en systematisk ændring i processen."
     ),
     style = if (status_info$status == "insufficient_data") {
-      "flex: 1; background-color: white !important; color: #999999;"
+      paste0("flex: 1; background-color: white !important; color: ", muted_color, ";")
     } else {
       "flex: 1;"
     },
@@ -148,13 +149,13 @@ build_serielengde_box <- function(status_info, anhoej) {
       if (!is.null(anhoej$longest_run) && !is.na(anhoej$longest_run)) {
         bslib::layout_column_wrap(width = 1 / 2, shiny::div(anhoej$longest_run_max), shiny::div(anhoej$longest_run))
       } else if (!is.null(anhoej$has_valid_data) && !anhoej$has_valid_data) {
-        shiny::span(style = "font-size:1.5em; color: #666666;", "Ingen metrics")
+        shiny::span(style = paste0("font-size:1.5em; color: ", muted_color, ";"), "Ingen metrics")
       } else {
-        shiny::span(style = "font-size:1.5em; color: #999999;", "Afventer data")
+        shiny::span(style = paste0("font-size:1.5em; color: ", muted_color, ";"), "Afventer data")
       }
     } else {
       shiny::span(
-        style = "font-size:1.5em; color: #999999 !important;",
+        style = paste0("font-size:1.5em; color: ", muted_color, " !important;"),
         switch(status_info$status,
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
@@ -177,7 +178,7 @@ build_serielengde_box <- function(status_info, anhoej) {
           "Anhøj rules analyse - serielængde"
         }
       } else {
-        shiny::span(style = "color: #999999;", status_info$message)
+        shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
       }
     )
   )
@@ -189,6 +190,7 @@ build_serielengde_box <- function(status_info, anhoej) {
 #'
 #' @keywords internal
 build_antal_kryds_box <- function(status_info, anhoej) {
+  muted_color <- get_hospital_colors()$ui_grey_soft
   bslib::value_box(
     title = shiny::span(
       "Antal kryds",
@@ -197,7 +199,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
       "Antal gange datapunkterne krydser centerlinjen. For få krydsninger kan tyde på trends eller skift i processen."
     ),
     style = if (status_info$status == "insufficient_data") {
-      "flex: 1; background-color: white !important; color: #999999;"
+      paste0("flex: 1; background-color: white !important; color: ", muted_color, ";")
     } else {
       "flex: 1;"
     },
@@ -205,13 +207,13 @@ build_antal_kryds_box <- function(status_info, anhoej) {
       if (!is.null(anhoej$n_crossings) && !is.na(anhoej$n_crossings)) {
         bslib::layout_column_wrap(width = 1 / 2, shiny::div(anhoej$n_crossings_min), shiny::div(anhoej$n_crossings))
       } else if (!is.null(anhoej$has_valid_data) && !anhoej$has_valid_data) {
-        shiny::span(style = "font-size:1.5em; color: #666666;", "Ingen metrics")
+        shiny::span(style = paste0("font-size:1.5em; color: ", muted_color, ";"), "Ingen metrics")
       } else {
-        shiny::span(style = "font-size:1.5em; color: #999999;", "Afventer data")
+        shiny::span(style = paste0("font-size:1.5em; color: ", muted_color, ";"), "Afventer data")
       }
     } else {
       shiny::span(
-        style = "font-size:1.5em; color: #999999 !important;",
+        style = paste0("font-size:1.5em; color: ", muted_color, " !important;"),
         switch(status_info$status,
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
@@ -234,7 +236,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
           "Anhøj rules analyse - median krydsninger"
         }
       } else {
-        shiny::span(style = "color: #999999;", status_info$message)
+        shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
       }
     )
   )
@@ -246,9 +248,10 @@ build_antal_kryds_box <- function(status_info, anhoej) {
 #'
 #' @keywords internal
 build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
+  muted_color <- get_hospital_colors()$ui_grey_soft
   bslib::value_box(
     title = if (status_info$status == "ready" && chart_type == "run") {
-      shiny::div("Uden for kontrolgrænser", style = "color: #999999 !important;")
+      shiny::div("Uden for kontrolgrænser", style = paste0("color: ", muted_color, " !important;"))
     } else {
       shiny::span(
         "Uden for kontrolgrænser",
@@ -258,9 +261,9 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
       )
     },
     style = if (status_info$status == "ready" && chart_type == "run") {
-      "flex: 1; background-color: white !important; color: #999999 !important;"
+      paste0("flex: 1; background-color: white !important; color: ", muted_color, " !important;")
     } else if (status_info$status == "insufficient_data") {
-      "flex: 1; background-color: white !important; color: #999999;"
+      paste0("flex: 1; background-color: white !important; color: ", muted_color, ";")
     } else {
       "flex: 1;"
     },
@@ -268,13 +271,13 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
       anhoej$out_of_control_count
     } else if (status_info$status == "ready" && chart_type == "run") {
       shiny::div(
-        style = "font-size:1em; color: #999999 !important; padding-bottom: 1em;",
+        style = paste0("font-size:1em; color: ", muted_color, " !important; padding-bottom: 1em;"),
         class = "fs-7 mb-0",
         "Anvendes ikke ved analyse af seriediagrammer"
       )
     } else {
       shiny::span(
-        style = "font-size:1.5em; color: #999999 !important;",
+        style = paste0("font-size:1.5em; color: ", muted_color, " !important;"),
         switch(status_info$status,
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
@@ -294,11 +297,11 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
     },
     shiny::p(
       class = if (status_info$status == "ready" && chart_type == "run") "fs-7 mb-0" else "fs-7 text-muted mb-0",
-      style = if (status_info$status == "ready" && chart_type == "run") "color: #999999 !important;" else NULL,
+      style = if (status_info$status == "ready" && chart_type == "run") paste0("color: ", muted_color, " !important;") else NULL,
       if (status_info$status == "ready") {
         if (chart_type == "run") "" else "Punkter uden for kontrolgrænser"
       } else {
-        shiny::span(style = "color: #999999;", status_info$message)
+        shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
       }
     )
   )

@@ -27,7 +27,7 @@
 #' Export Module Server
 #'
 #' Server logik for eksport af SPC charts.
-#' Håndterer live preview og download af charts i PDF, PNG og PowerPoint formater.
+#' Håndterer live preview og download af charts i PDF og PNG formater.
 #'
 #' @param id Module ID
 #' @param app_state Reactive values. Global app state med data, columns og chart config.
@@ -90,7 +90,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # NOTE: We do NOT require app_state$visualization$plot_object here because:
       # 1. export_plot() regenerates independently (doesn't clone Analyse-side plot)
       # 2. All required data is in app_state$columns$mappings (set by autodetection)
-      # 3. Requiring plot_object would block PNG/PPTX preview when user navigates
+      # 3. Requiring plot_object would block PNG preview when user navigates
       #    directly to Export-side before visiting Analyse-side
 
       log_debug(
@@ -186,7 +186,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
                 y = 0.5,
                 label = "Ingen graf tilgængelig.\nGå til hovedsiden for at oprette en SPC-graf.",
                 size = 6,
-                color = "#858585"
+                color = get_hospital_colors()$ui_grey_dark
               ) +
               ggplot2::theme_void()
           )

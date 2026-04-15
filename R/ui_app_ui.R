@@ -321,7 +321,7 @@ create_ui_main_content <- function() {
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
       col_widths = c(6, 6),
-      height = "calc(100vh - 160px)",
+      height = "calc(100vh - 175px)",
 
       # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),

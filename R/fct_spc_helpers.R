@@ -29,10 +29,13 @@ is_column_numeric <- function(col, threshold = 0.5) {
 #' @return Character. bslib theme navn.
 #' @keywords internal
 value_box_signal_theme <- function(status_info, signal) {
+  colors <- get_hospital_colors()
   if (status_info$status == "ready" && isTRUE(signal)) {
-    "dark"
+    # Signal detekteret: mørkere grå baggrund med hvid tekst
+    bslib::value_box_theme(bg = colors$ui_grey_dark, fg = "#ffffff")
   } else if (status_info$status == "ready") {
-    "light"
+    # Ingen signal (OK): lys grå baggrund med mørk tekst
+    bslib::value_box_theme(bg = colors$ui_grey_light, fg = colors$dark)
   } else {
     status_info$theme
   }

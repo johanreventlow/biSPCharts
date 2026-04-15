@@ -163,7 +163,7 @@ visualizationModuleServer <- function(
         }
         if (rows_with_data < 3) {
           graphics::plot.new()
-          graphics::text(0.5, 0.5, "Indtast data", cex = 1.3, col = "#6c757d")
+          graphics::text(0.5, 0.5, "Indtast data", cex = 1.3, col = get_hospital_colors()$ui_grey_dark)
           return(invisible(NULL))
         }
 
@@ -182,7 +182,7 @@ visualizationModuleServer <- function(
             }
           }
           graphics::plot.new()
-          graphics::text(0.5, 0.5, empty_state_msg, cex = 1.1, col = "#6c757d")
+          graphics::text(0.5, 0.5, empty_state_msg, cex = 1.1, col = get_hospital_colors()$ui_grey_dark)
           return(invisible(NULL))
         }
 

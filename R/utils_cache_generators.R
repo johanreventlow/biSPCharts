@@ -18,11 +18,11 @@ get_hospital_branding_config <- function() {
         branding_config$colors <- get_hospital_colors()
       } else {
         branding_config$colors <- list(
-          primary = "#375a7f",
-          secondary = "#6c757d",
-          success = "#28a745",
-          warning = "#ffc107",
-          danger = "#dc3545",
+          primary = "#007dbb",
+          secondary = "#646c6f",
+          success = "#4f8325",
+          warning = "#f9b928",
+          danger = "#dc202b",
           accent = "#FF6B35"
         )
       }
@@ -44,7 +44,7 @@ get_hospital_branding_config <- function() {
     fallback = function(e) {
       log_warn(paste("Failed to generate hospital branding cache:", e$message), "CACHE_GENERATOR")
       return(list(
-        colors = list(primary = "#375a7f", secondary = "#6c757d"),
+        colors = list(primary = "#007dbb", secondary = "#646c6f"),
         name = "biSPCharts SPC",
         generated_at = Sys.time(),
         version = "1.0.0"

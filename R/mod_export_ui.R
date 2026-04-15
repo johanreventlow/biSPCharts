@@ -9,7 +9,7 @@
 
 #' Opret en eksportformat-knap med ikon
 #' @param ns Namespace-funktion fra modulet
-#' @param suffix Format-suffix ("pdf", "png", "pptx")
+#' @param suffix Format-suffix ("pdf", "png")
 #' @param icon_name FontAwesome ikon-navn
 #' @param label_text Tekst vist under ikonet
 #' @return shiny.tag
@@ -39,7 +39,7 @@ export_format_button <- function(ns, suffix, icon_name, label_text) {
 #' Export Module UI
 #'
 #' Brugerinterface til eksport af SPC charts.
-#' Understøtter PDF, PNG og PowerPoint formater med live preview.
+#' Understøtter PDF og PNG formater med live preview.
 #'
 #' Layout:
 #' - Venstre panel (40%): Format selector, metadata input fields
@@ -88,24 +88,26 @@ mod_export_ui <- function(id) {
           shiny::div(
             style = "display: flex; gap: 12px; justify-content: center;",
             export_format_button(ns, "pdf", "file-pdf", "PDF"),
-            export_format_button(ns, "png", "file-image", "PNG"),
-            export_format_button(ns, "pptx", "file-powerpoint", "PowerPoint")
+            export_format_button(ns, "png", "file-image", "PNG")
           ),
-          shiny::tags$style(htmltools::HTML("
-            .export-format-btn {
-              transition: all 0.15s ease;
-            }
-            .export-format-btn:hover {
-              background-color: #fff !important;
-              border-color: #828c8d !important;
-              color: #828c8d !important;
-            }
-            .export-format-btn.upload-btn-active {
-              background-color: #95a5a6 !important;
-              border-color: #95a5a6 !important;
-              color: #fff !important;
-            }
-          "))
+          {
+            colors <- get_hospital_colors()
+            shiny::tags$style(htmltools::HTML(paste0("
+              .export-format-btn {
+                transition: all 0.15s ease;
+              }
+              .export-format-btn:hover {
+                background-color: #fff !important;
+                border-color: ", colors$ui_grey_dark, " !important;
+                color: ", colors$ui_grey_dark, " !important;
+              }
+              .export-format-btn.upload-btn-active {
+                background-color: ", colors$ui_grey_mid, " !important;
+                border-color: ", colors$ui_grey_mid, " !important;
+                color: #fff !important;
+              }
+            ")))
+          }
         ),
         shiny::hr(),
 
@@ -150,14 +152,18 @@ mod_export_ui <- function(id) {
             width = "100%"
           )
         ),
-        shiny::div(
-          style = "margin-bottom: 15px;",
-          shiny::textInput(
-            ns("export_footnote"),
-            "Fodnote:",
-            value = "",
-            placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
-            width = "100%"
+        ## Fodnote: kun synlig for PNG (PDF har sin egen layout)
+        shiny::conditionalPanel(
+          condition = sprintf("input['%s'] == 'png'", ns("export_format")),
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::textInput(
+              ns("export_footnote"),
+              "Fodnote:",
+              value = "",
+              placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
+              width = "100%"
+            )
           )
         ),
 
@@ -205,9 +211,10 @@ mod_export_ui <- function(id) {
               " Auto-genereret analyse \u2014 rediger for at tilpasse"
             ),
           ),
-          # AI Suggestion Button
+          # AI Suggestion Button — midlertidigt skjult, genaktiveres senere
+          # Funktionaliteten er intakt i mod_export_server.R og fct_ai_improvement_suggestions.R
           shiny::div(
-            style = "margin-bottom: 15px;",
+            style = "display: none;",
             shiny::actionButton(
               ns("ai_generate_suggestion"),
               label = "Generér forslag med AI",
@@ -215,9 +222,7 @@ mod_export_ui <- function(id) {
               class = "btn-primary btn-sm",
               style = "margin-top: 5px;"
             ),
-            # Loading feedback (dynamic)
             shiny::uiOutput(ns("ai_loading_feedback")),
-            # Help text
             shiny::tags$p(
               class = "text-muted",
               style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
@@ -267,7 +272,7 @@ mod_export_ui <- function(id) {
                 width = "120px"
               ),
               shiny::tags$span(
-                style = "font-size: 1.1rem; color: #666; padding-bottom: 15px;",
+                style = paste0("font-size: 1.1rem; color: ", get_hospital_colors()$ui_grey_dark, "; padding-bottom: 15px;"),
                 "\u00d7"
               ),
               shiny::numericInput(
@@ -280,37 +285,13 @@ mod_export_ui <- function(id) {
                 width = "120px"
               ),
               shiny::tags$span(
-                style = "color: #999; font-size: 0.85rem; padding-bottom: 15px;",
+                style = paste0("color: ", get_hospital_colors()$ui_grey_mid, "; font-size: 0.85rem; padding-bottom: 15px;"),
                 "px"
               )
             )
           ),
         ),
 
-        ## PowerPoint-specific fields ----
-        shiny::conditionalPanel(
-          condition = sprintf("input['%s'] == 'pptx'", ns("export_format")),
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::tags$p(
-              class = "text-muted",
-              style = "font-size: 0.9rem; margin-bottom: 10px;",
-              shiny::icon("info-circle"),
-              " Chart eksporteres med optimal størrelse til PowerPoint slides."
-            ),
-            shiny::tags$p(
-              class = "text-muted",
-              style = "font-size: 0.85rem;",
-              sprintf(
-                "Standard: %g × %g %s ved %d DPI",
-                EXPORT_POWERPOINT_CONFIG$width,
-                EXPORT_POWERPOINT_CONFIG$height,
-                EXPORT_POWERPOINT_CONFIG$unit,
-                EXPORT_SIZE_PRESETS$powerpoint$dpi
-              )
-            )
-          )
-        )
       )
     ),
 
@@ -327,7 +308,7 @@ mod_export_ui <- function(id) {
       ),
       bslib::card_body(
         fill = TRUE,
-        style = "background-color: #f8f8f8!important;",
+        style = "background-color: var(--bs-light, #f8f8f8)!important;",
         # Conditional panels for preview availability
         # Show warning when no plot available
         shiny::conditionalPanel(
@@ -345,11 +326,11 @@ mod_export_ui <- function(id) {
           condition = "output.plot_available == true && output.is_pdf_format == true",
           ns = ns,
           shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f8f8f8; padding: 10px;",
+            style = "height: 100%; display: flex; align-items: center; justify-content: center; background-color: var(--bs-light, #f8f8f8); padding: 10px;",
             shiny::div(
               class = "export-preview-container",
               style = paste0(
-                "border: 1px solid #d2d2d2; border-radius: 4px; ",
+                "border: 1px solid #ccd3dd; border-radius: 4px; ",
                 "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
                 "background-color: white; ",
                 "max-width: 100%; max-height: 100%; ",
@@ -370,16 +351,16 @@ mod_export_ui <- function(id) {
             )
           )
         ),
-        # Show ggplot preview when PNG/PPTX format selected
+        # Show ggplot preview when PNG format selected
         shiny::conditionalPanel(
           condition = "output.plot_available == true && output.is_pdf_format == false",
           ns = ns,
           shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #f8f8f8; padding: 20px;",
+            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: var(--bs-light, #f8f8f8); padding: 20px;",
             shiny::div(
               class = "export-preview-container",
               style = paste0(
-                "border: 1px solid #d2d2d2; border-radius: 4px; ",
+                "border: 1px solid #ccd3dd; border-radius: 4px; ",
                 "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
                 "background-color: white; position: relative; ",
                 "max-width: 100%; max-height: calc(100vh - 300px);"

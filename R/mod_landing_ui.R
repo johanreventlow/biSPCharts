@@ -27,6 +27,7 @@ mod_landing_ui <- function(id) {
 # Intern helper: standard-landing (vis altid når ingen gemt session)
 # ---------------------------------------------------------------------------
 landing_default_ui <- function(ns) {
+  muted_color <- get_hospital_colors()$ui_grey_mid
   shiny::tagList(
     # Logo
     shiny::div(
@@ -44,7 +45,7 @@ landing_default_ui <- function(ns) {
       style = "font-weight: 700; margin-bottom: 10px;"
     ),
     shiny::tags$p(
-      style = "font-size: 1.15rem; color: #6c757d; max-width: 600px; margin-bottom: 25px;",
+      style = paste0("font-size: 1.15rem; color: ", muted_color, "; max-width: 600px; margin-bottom: 25px;"),
       "Statistisk proceskontrol til klinisk kvalitetsarbejde p\u00e5 Bispebjerg og Frederiksberg Hospital.",
       "Upload dine data, analys\u00e9r med seriediagrammer og kontroldiagrammer, ",
       "og eksport\u00e9r f\u00e6rdige diagrammer i regionalt layout."
@@ -63,7 +64,7 @@ landing_default_ui <- function(ns) {
       ),
       landing_feature_card(
         "file-export", "Eksport\u00e9r diagram",
-        "Diagrammer i PDF, PNG eller MS PowerPoint-format"
+        "Diagrammer i PDF eller PNG-format"
       )
     ),
 
@@ -81,6 +82,7 @@ landing_default_ui <- function(ns) {
 # Intern helper: restore-landing (vis når gemt session er tilgængelig)
 # ---------------------------------------------------------------------------
 landing_restore_ui <- function(ns, peek) {
+  muted_color <- get_hospital_colors()$ui_grey_mid
   # Formater timestamp hvis tilgængeligt. R's jsonlite serialiserer Sys.time()
   # som ISO-streng ("2026-04-11 18:46:15"), ikke ms-epoch, så vi parser direkte.
   ts_label <- tryCatch(
@@ -122,7 +124,7 @@ landing_restore_ui <- function(ns, peek) {
       style = "font-weight: 700; margin-bottom: 10px;"
     ),
     shiny::tags$p(
-      style = "font-size: 1.15rem; color: #6c757d; max-width: 600px; margin-bottom: 25px;",
+      style = paste0("font-size: 1.15rem; color: ", muted_color, "; max-width: 600px; margin-bottom: 25px;"),
       "Der er fundet en tidligere gemt session. Vil du forts\u00e6tte hvor du slap, ",
       "eller starte helt fra begyndelsen?"
     ),
@@ -173,15 +175,16 @@ landing_restore_ui <- function(ns, peek) {
 #' @return shiny.tag
 #' @noRd
 landing_feature_card <- function(icon_name, title, description) {
+  muted_color <- get_hospital_colors()$ui_grey_mid
   shiny::div(
     style = "width: 200px; text-align: center;",
     shiny::div(
       style = "margin-bottom: 10px;",
-      shiny::icon(icon_name, class = "fa-2x", style = "color: #95a5a6;")
+      shiny::icon(icon_name, class = "fa-2x", style = paste0("color: ", muted_color, ";"))
     ),
     shiny::tags$h5(title, style = "font-weight: 600;"),
     shiny::tags$p(
-      style = "font-size: 0.9rem; color: #6c757d;",
+      style = paste0("font-size: 0.9rem; color: ", muted_color, ";"),
       description
     )
   )

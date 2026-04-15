@@ -200,6 +200,16 @@ LOG_CONTEXTS <- list(
     microbenchmark = "MICROBENCHMARK"
   ),
 
+  # === Analytics & Consent ===
+  analytics = list(
+    consent = "ANALYTICS_CONSENT",
+    tracking = "ANALYTICS_TRACKING",
+    metadata = "ANALYTICS_METADATA",
+    performance = "ANALYTICS_PERF",
+    pins = "ANALYTICS_PINS",
+    rotation = "ANALYTICS_ROTATION"
+  ),
+
   # === Miscellaneous ===
   misc = list(
     emit_api = "EMIT_API",

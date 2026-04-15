@@ -16,10 +16,12 @@ app_ui <- function(request) {
       .navbar .nav-link[data-value='upload'],
       .navbar .nav-link[data-value='analyser'],
       .navbar .nav-link[data-value='eksporter'],
+      .navbar .nav-link[data-value='app_guide'],
       .navbar .nav-link[data-value='hjaelp'],
       .navbar .nav-item:has(.nav-link[data-value='upload']),
       .navbar .nav-item:has(.nav-link[data-value='analyser']),
       .navbar .nav-item:has(.nav-link[data-value='eksporter']),
+      .navbar .nav-item:has(.nav-link[data-value='app_guide']),
       .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
       .navbar .nav-item:has(#session_save_status) {
         display: none !important;
@@ -27,6 +29,7 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='upload']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='analyser']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='eksporter']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='app_guide']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
       body.wizard-nav-active .navbar .nav-item:has(#session_save_status) {
         display: flex !important;
@@ -35,11 +38,15 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='upload'],
       body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
       body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
+      body.wizard-nav-active .navbar .nav-link[data-value='app_guide'],
       body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
         display: block !important;
       }
       /* Flash-mitigation: undgå tom landing mens peek-resultatet afklares */
       #landing-landing_body:empty { min-height: 60vh; }
+      /* Grå linkfarve på hjælpesider (matcher download-template-link) */
+      .tab-pane a { color: #666666; }
+      .tab-pane a:hover { color: #333333; }
     ")),
     # Your application UI logic
     bslib::page_navbar(
@@ -106,6 +113,14 @@ app_ui <- function(request) {
       # Auto-save status i navbar (synlig fra alle wizard-trin)
       bslib::nav_item(
         shiny::uiOutput("session_save_status", inline = TRUE)
+      ),
+
+      # App-vejledning (adskilt fra wizard-flow)
+      bslib::nav_panel(
+        title = "S\u00e5dan bruger du appen",
+        icon = shiny::icon("circle-question"),
+        value = "app_guide",
+        mod_app_guide_ui("app_guide")
       ),
 
       # Hjælp (adskilt fra wizard-flow)

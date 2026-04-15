@@ -56,3 +56,45 @@ sanitize_selection <- function(input_value) {
   }
   return(input_value)
 }
+
+# NAVIGATION UTILITIES =========================================
+
+#' Tilbagelink til forrige side
+#'
+#' Genanvendeligt "← Tilbage" actionLink til brug øverst på hjælpesider.
+#'
+#' @param ns Namespace-funktion fra modulet
+#' @return shiny.tag actionLink med diskret styling
+#' @noRd
+help_back_link <- function(ns) {
+  shiny::actionLink(
+    ns("go_back"),
+    shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
+    style = paste0(
+      "font-size: 0.9rem; color: ", get_hospital_colors()$ui_grey_dark, "; ",
+      "text-decoration: none; display: inline-block; margin-bottom: 16px;"
+    )
+  )
+}
+
+#' Opsæt tilbagenavigation for hjælpeside-modul
+#'
+#' Registrerer en observeEvent på input$go_back der navigerer til
+#' den forrige tab via bslib::nav_select. Fjerner wizard-nav-active
+#' klassen hvis destinationen er forsiden.
+#'
+#' @param input Shiny input
+#' @param parent_session Parent session for navbar navigation
+#' @param previous_tab ReactiveVal med den forrige tab
+#' @noRd
+setup_help_back_navigation <- function(input, parent_session, previous_tab) {
+  shiny::observeEvent(input$go_back, {
+    if (!is.null(parent_session) && !is.null(previous_tab)) {
+      dest <- previous_tab()
+      if (dest == "start") {
+        shinyjs::runjs("document.body.classList.remove('wizard-nav-active');")
+      }
+      bslib::nav_select("main_navbar", selected = dest, session = parent_session)
+    }
+  })
+}

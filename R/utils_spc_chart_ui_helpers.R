@@ -138,7 +138,7 @@ build_serielengde_box <- function(status_info, anhoej) {
       "Serielængde",
       shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
     ) |> bslib::tooltip(
-      "Længste serie af punkter på samme side af centerlinjen. Hvis den overstiger grænsen, kan der være en systematisk ændring i processen."
+      "Antal p\u00e5 hinanden f\u00f8lgende punkter p\u00e5 samme side af centrallinjen. Hvis det faktiske tal overstiger det forventede, er der tegn p\u00e5 et skift i processen."
     ),
     style = if (status_info$status == "insufficient_data") {
       paste0("flex: 1; background-color: white !important; color: ", muted_color, ";")
@@ -196,7 +196,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
       "Antal kryds",
       shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
     ) |> bslib::tooltip(
-      "Antal gange datapunkterne krydser centerlinjen. For få krydsninger kan tyde på trends eller skift i processen."
+      "Antal gange linjen krydser centrallinjen. Hvis det faktiske tal er lavere end det forventede, er der tegn p\u00e5 clustering eller trends i data."
     ),
     style = if (status_info$status == "insufficient_data") {
       paste0("flex: 1; background-color: white !important; color: ", muted_color, ";")
@@ -257,7 +257,7 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
         "Uden for kontrolgrænser",
         shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
       ) |> bslib::tooltip(
-        "Antal datapunkter der ligger uden for kontrolgrænserne. Disse punkter kan indikere særlige årsager til variation."
+        "Antal datapunkter der ligger uden for kontrolgr\u00e6nserne. Disse punkter er st\u00e6rke signaler om s\u00e6rlig variation. Kun relevant for kontroldiagrammer (I-/P-/U-/C-kort)."
       )
     },
     style = if (status_info$status == "ready" && chart_type == "run") {

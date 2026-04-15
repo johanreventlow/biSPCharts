@@ -73,9 +73,24 @@ initialize_shinylogs_tracking <- function(session,
   # Initializing shinylogs tracking
 
   # Start tracking with correct API
+  # Filtrerer stoej fra: excelR tabeldata, interne session-inputs,
+  # Shiny clientdata, og analytics-egne inputs
   shinylogs::track_usage(
     storage_mode = shinylogs::store_json(path = log_directory),
     what = c("session", "input", "output", "error"),
+    exclude_input_id = c(
+      "main_data_table",          # excelR tabeldata (stor payload, hyppige updates)
+      "auto_restore_data",        # Session restore payload (kan vaere stor)
+      "loaded_app_state",         # localStorage payload
+      "session_peek",             # Session metadata peek
+      "local_storage_save_result" # Save result callback
+    ),
+    exclude_input_regex = paste0(
+      "^(\\.clientdata|",         # Shiny interne clientdata inputs
+      "analytics_consent|",       # Analytics-egne consent inputs
+      "analytics_client_metadata|", # Analytics metadata
+      "analytics_performance)"    # Analytics performance timing
+    ),
     app_name = app_name,
     session = session
   )

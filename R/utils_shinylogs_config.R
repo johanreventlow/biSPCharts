@@ -87,9 +87,7 @@ initialize_shinylogs_tracking <- function(session,
     ),
     exclude_input_regex = paste0(
       "^(\\.clientdata|",         # Shiny interne clientdata inputs
-      "analytics_consent|",       # Analytics-egne consent inputs
-      "analytics_client_metadata|", # Analytics metadata
-      "analytics_performance)"    # Analytics performance timing
+      "analytics_consent)"        # Analytics consent input (ikke data)
     ),
     app_name = app_name,
     session = session

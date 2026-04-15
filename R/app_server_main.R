@@ -212,8 +212,24 @@ main_app_server <- function(input, output, session) {
   # Pass app_state (read-only) to export module for chart access
   export_module_status <- mod_export_server("export", app_state, parent_session = session)
 
-  ## Hjælpeside modul (statisk indhold)
-  mod_help_server("help")
+  ## Track forrige tab for kontekstuel tilbagenavigation på hjælpesider
+  current_tab <- shiny::reactiveVal("start")
+  previous_tab <- shiny::reactiveVal("start")
+  shiny::observeEvent(input$main_navbar, ignoreInit = TRUE, {
+    new_tab <- input$main_navbar
+    old_tab <- current_tab()
+    help_tabs <- c("app_guide", "hjaelp")
+    if (new_tab %in% help_tabs) {
+      previous_tab(old_tab)
+    }
+    current_tab(new_tab)
+  })
+
+  ## App-vejledning modul (tilbagenavigation til forrige tab)
+  mod_app_guide_server("app_guide", parent_session = session, previous_tab = previous_tab)
+
+  ## Hjælpeside modul (tilbagenavigation til forrige tab)
+  mod_help_server("help", parent_session = session, previous_tab = previous_tab)
 
   ## Landing page modul
   mod_landing_server("landing", parent_session = session, app_state = app_state)

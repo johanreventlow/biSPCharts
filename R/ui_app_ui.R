@@ -291,13 +291,74 @@ create_ui_header <- function() {
 create_ui_main_content <- function() {
   shiny::div(
     style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
+
+    # Sammenklapbar hjælp (minimal footprint når sammenklappet)
+    shiny::div(
+      style = "flex-shrink: 0;",
+      shiny::tags$button(
+        class = "btn btn-sm btn-link text-muted p-0",
+        style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
+        onclick = "$('#analyser_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
+        shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
+        "Hj\u00e6lp til dette trin"
+      ),
+      shiny::div(
+        id = "analyser_help_content",
+        style = "display: none;",
+        shiny::div(
+          class = "alert alert-light border mt-1 mb-1",
+          style = "font-size: 0.82rem; padding: 8px 12px;",
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Datatabel (venstre side)"),
+            shiny::tags$br(),
+            "Du kan redigere data direkte i tabellen ved at klikke p\u00e5 en celle. ",
+            "Brug ", shiny::tags$em("+ R\u00e6kke"), " for at tilf\u00f8je nye datapunkter, og ",
+            shiny::tags$em("+ Kolonne"), " for at tilf\u00f8je kolonner ",
+            "(fx Skift eller Frys, som altid skal v\u00e6re til stede). ",
+            "Brug ", shiny::tags$em("Omd\u00f8b"), " for at give kolonner mere beskrivende navne."
+          ),
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Kolonnetildelinger (\u00f8verst)"),
+            shiny::tags$br(),
+            "Klik ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
+            " for at lade appen g\u00e6tte hvilke kolonner der er X-akse, Y-akse osv. ",
+            "Du kan altid \u00e6ndre tildelingerne manuelt via dropdown-menuerne. ",
+            "X-akse (typisk dato) og Y-akse (den v\u00e6rdi der f\u00f8lges) er p\u00e5kr\u00e6vede. ",
+            "V\u00e6lg en N\u00e6vner hvis du arbejder med andele eller rater."
+          ),
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Indstillinger og diagramtype (h\u00f8jre side)"),
+            shiny::tags$br(),
+            "V\u00e6lg diagramtype under ", shiny::tags$em("Indstillinger"),
+            ". Start med ", shiny::tags$em("Seriediagram (Run)"),
+            " hvis du er i tvivl \u2014 det er den simpleste og mest robuste type."
+          ),
+          shiny::tags$p(
+            class = "mb-0",
+            shiny::tags$strong("V\u00e6rdibokse (nederst til h\u00f8jre)"),
+            shiny::tags$br(),
+            "De tre bokse viser resultater fra Anh\u00f8j-reglerne: ",
+            shiny::tags$em("Seriel\u00e6ngde"),
+            " (l\u00e6ngste serie p\u00e5 samme side af centrallinjen), ",
+            shiny::tags$em("Antal kryds"),
+            " (krydsninger af centrallinjen) og ",
+            shiny::tags$em("Kontrolgr\u00e6nser"),
+            ". Boksene skifter farve n\u00e5r der er et signal."
+          )
+        )
+      )
+    ),
+
     # Layout: 6-6 grid (fylder det meste, men ikke helt til bunden)
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
       col_widths = c(6, 6),
-      height = "calc(100vh - 160px)",
+      height = "calc(100vh - 175px)",
 
       # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),
@@ -404,7 +465,11 @@ create_chart_settings_card_compact <- function() {
       ),
       shiny::textInput(
         "target_value",
-        "Udviklingsmål:",
+        shiny::tagList(
+          "Udviklingsm\u00e5l:",
+          shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+            bslib::tooltip("En vandret linje der viser jeres m\u00e5ls\u00e6tning. P\u00e5virker ikke beregninger eller signaldetektion.")
+        ),
         value = "",
         placeholder = "fx >=90%, <25 eller >",
         width = "100%"

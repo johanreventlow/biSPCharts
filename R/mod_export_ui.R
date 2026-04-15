@@ -111,6 +111,29 @@ mod_export_ui <- function(id) {
         ),
         shiny::hr(),
 
+        # Sammenklapbar hjælp (minimal footprint når sammenklappet)
+        shiny::div(
+          shiny::tags$button(
+            class = "btn btn-sm btn-link text-muted p-0",
+            style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
+            onclick = "$('#eksporter_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
+            shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
+            "Hj\u00e6lp til dette trin"
+          ),
+          shiny::div(
+            id = "eksporter_help_content",
+            style = "display: none;",
+            shiny::div(
+              class = "alert alert-light border mt-1 mb-1",
+              style = "font-size: 0.82rem; padding: 8px 12px;",
+              shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " V\u00e6lg format (PDF for rapporter, PNG for pr\u00e6sentationer)."),
+              shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " Skriv en kort titel der opsummerer hvad diagrammet viser."),
+              shiny::tags$p(class = "mb-1", shiny::tags$strong("3."), " Udfyld datadefinition og analyse af processen."),
+              shiny::tags$p(class = "mb-0", shiny::tags$strong("Tip:"), " Brug AI-funktionen til at generere et udkast til analyseteksten, og redig\u00e9r derefter.")
+            )
+          )
+        ),
+
         # Metadata fields (alle formater) ----
         shiny::div(
           style = "margin-bottom: 15px;",
@@ -176,7 +199,11 @@ mod_export_ui <- function(id) {
             style = "margin-bottom: 15px;",
             shiny::textAreaInput(
               ns("pdf_description"),
-              "Datadefinition:",
+              shiny::tagList(
+                "Datadefinition:",
+                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                  bslib::tooltip("Beskriv hvad indikatoren m\u00e5ler og hvordan data er opgjort. Fx: \u201cAndel patienter m\u00f8dt til ambulant aftale (m\u00f8dt/tilkaldt), opgjort m\u00e5nedligt.\u201d")
+              ),
               value = "",
               placeholder = "Beskriv hvad indikatoren måler og hvordan data opgøres",
               width = "100%",
@@ -192,7 +219,11 @@ mod_export_ui <- function(id) {
             style = "margin-bottom: 15px;",
             shiny::textAreaInput(
               ns("pdf_improvement"),
-              "Analyse af processen:",
+              shiny::tagList(
+                "Analyse af processen:",
+                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                  bslib::tooltip("Beskriv hvad diagrammet viser \u2014 er processen stabil? Er der signaler? Hvad kan forklare eventuelle udsving?")
+              ),
               value = "",
               placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
               width = "100%",

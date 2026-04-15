@@ -74,6 +74,35 @@ landing_default_ui <- function(ns) {
       shiny::tagList("Kom i gang ", shiny::icon("arrow-right")),
       class = "btn-primary btn-lg",
       style = "padding: 12px 40px; font-size: 1.1rem;"
+    ),
+
+    # Discoveryability links
+    shiny::div(
+      style = paste0(
+        "margin-top: 48px; font-size: 0.9rem; color: ", muted_color, ";"
+      ),
+      "Ny her? ",
+      shiny::tags$a(
+        href = "#",
+        onclick = sprintf(
+          "Shiny.setInputValue('%s', Math.random()); return false;",
+          ns("goto_app_guide")
+        ),
+        style = paste0("text-decoration: underline; color: ",
+          get_hospital_colors()$ui_grey_dark, ";"),
+        "S\u00e5dan bruger du appen"
+      ),
+      " \u00b7 ",
+      shiny::tags$a(
+        href = "#",
+        onclick = sprintf(
+          "Shiny.setInputValue('%s', Math.random()); return false;",
+          ns("goto_spc")
+        ),
+        style = paste0("text-decoration: underline; color: ",
+          get_hospital_colors()$ui_grey_dark, ";"),
+        "L\u00e6r om SPC"
+      )
     )
   )
 }

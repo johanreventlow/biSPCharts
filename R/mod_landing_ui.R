@@ -79,7 +79,7 @@ landing_default_ui <- function(ns) {
     # Discoveryability links
     shiny::div(
       style = paste0(
-        "margin-top: 16px; font-size: 0.9rem; color: ", muted_color, ";"
+        "margin-top: 28px; font-size: 0.9rem; color: ", muted_color, ";"
       ),
       "Ny her? ",
       shiny::tags$a(
@@ -88,7 +88,8 @@ landing_default_ui <- function(ns) {
           "Shiny.setInputValue('%s', Math.random()); return false;",
           ns("goto_app_guide")
         ),
-        style = "text-decoration: underline;",
+        style = paste0("text-decoration: underline; color: ",
+          get_hospital_colors()$primary, ";"),
         "S\u00e5dan bruger du appen"
       ),
       " \u00b7 ",
@@ -98,7 +99,8 @@ landing_default_ui <- function(ns) {
           "Shiny.setInputValue('%s', Math.random()); return false;",
           ns("goto_spc")
         ),
-        style = "text-decoration: underline;",
+        style = paste0("text-decoration: underline; color: ",
+          get_hospital_colors()$primary, ";"),
         "L\u00e6r om SPC"
       )
     )
@@ -190,33 +192,6 @@ landing_restore_ui <- function(ns, peek) {
             class = "btn-outline-secondary btn-lg"
           )
         )
-      )
-    ),
-
-    # Discoveryability links
-    shiny::div(
-      style = paste0(
-        "margin-top: 16px; font-size: 0.9rem; color: ", muted_color, ";"
-      ),
-      "Ny her? ",
-      shiny::tags$a(
-        href = "#",
-        onclick = sprintf(
-          "Shiny.setInputValue('%s', Math.random()); return false;",
-          ns("goto_app_guide")
-        ),
-        style = "text-decoration: underline;",
-        "S\u00e5dan bruger du appen"
-      ),
-      " \u00b7 ",
-      shiny::tags$a(
-        href = "#",
-        onclick = sprintf(
-          "Shiny.setInputValue('%s', Math.random()); return false;",
-          ns("goto_spc")
-        ),
-        style = "text-decoration: underline;",
-        "L\u00e6r om SPC"
       )
     )
   )

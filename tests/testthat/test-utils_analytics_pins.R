@@ -63,6 +63,8 @@ test_that("read_shinylogs_all() returnerer liste med 4 data.frames", {
   expect_s3_class(result$errors, "data.frame")
   expect_true(nrow(result$sessions) >= 1)
   expect_true(nrow(result$inputs) >= 1)
+  expect_true(nrow(result$outputs) >= 1)
+  expect_true(nrow(result$errors) >= 1)
 })
 
 test_that("read_shinylogs_all() haandterer tomme mapper", {

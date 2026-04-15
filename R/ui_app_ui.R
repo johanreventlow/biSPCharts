@@ -292,22 +292,22 @@ create_ui_main_content <- function() {
   shiny::div(
     style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
 
-    # Sammenklapbar hjælp
+    # Sammenklapbar hjælp (minimal footprint når sammenklappet)
     shiny::div(
-      class = "mb-2",
+      style = "flex-shrink: 0;",
       shiny::tags$button(
         class = "btn btn-sm btn-link text-muted p-0",
-        style = "text-decoration: none; font-size: 0.85rem;",
+        style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
         onclick = "$('#analyser_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
-        shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.7em; margin-right: 4px;"),
+        shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
         "Hj\u00e6lp til dette trin"
       ),
       shiny::div(
         id = "analyser_help_content",
         style = "display: none;",
         shiny::div(
-          class = "alert alert-light border mt-1 mb-0",
-          style = "font-size: 0.85rem; padding: 10px 14px;",
+          class = "alert alert-light border mt-1 mb-1",
+          style = "font-size: 0.82rem; padding: 8px 12px;",
           shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " Tjek at kolonnerne er tildelt korrekt (X-akse, Y-akse, evt. n\u00e6vner)."),
           shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " V\u00e6lg diagramtype. Start med seriediagram hvis du er i tvivl."),
           shiny::tags$p(class = "mb-0", shiny::tags$strong("3."), " Tjek v\u00e6rdiboksene under diagrammet \u2014 de viser om der er signaler i dine data.")

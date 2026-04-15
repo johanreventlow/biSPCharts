@@ -111,22 +111,21 @@ mod_export_ui <- function(id) {
         ),
         shiny::hr(),
 
-        # Sammenklapbar hjælp
+        # Sammenklapbar hjælp (minimal footprint når sammenklappet)
         shiny::div(
-          class = "mb-2",
           shiny::tags$button(
             class = "btn btn-sm btn-link text-muted p-0",
-            style = "text-decoration: none; font-size: 0.85rem;",
+            style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
             onclick = "$('#eksporter_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
-            shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.7em; margin-right: 4px;"),
+            shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
             "Hj\u00e6lp til dette trin"
           ),
           shiny::div(
             id = "eksporter_help_content",
             style = "display: none;",
             shiny::div(
-              class = "alert alert-light border mt-1 mb-0",
-              style = "font-size: 0.85rem; padding: 10px 14px;",
+              class = "alert alert-light border mt-1 mb-1",
+              style = "font-size: 0.82rem; padding: 8px 12px;",
               shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " V\u00e6lg format (PDF for rapporter, PNG for pr\u00e6sentationer)."),
               shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " Skriv en kort titel der opsummerer hvad diagrammet viser."),
               shiny::tags$p(class = "mb-1", shiny::tags$strong("3."), " Udfyld datadefinition og analyse af processen."),

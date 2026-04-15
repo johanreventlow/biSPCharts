@@ -44,9 +44,9 @@ app_ui <- function(request) {
       }
       /* Flash-mitigation: undgå tom landing mens peek-resultatet afklares */
       #landing-landing_body:empty { min-height: 60vh; }
-      /* Hospitalsbla linkfarve på hjælpesider */
-      .tab-pane a { color: #007dbb; }
-      .tab-pane a:hover { color: #005a8c; }
+      /* Grå linkfarve på hjælpesider (matcher download-template-link) */
+      .tab-pane a { color: #666666; }
+      .tab-pane a:hover { color: #333333; }
     ")),
     # Your application UI logic
     bslib::page_navbar(

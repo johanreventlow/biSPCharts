@@ -212,6 +212,9 @@ main_app_server <- function(input, output, session) {
   # Pass app_state (read-only) to export module for chart access
   export_module_status <- mod_export_server("export", app_state, parent_session = session)
 
+  ## App-vejledning modul (statisk indhold)
+  mod_app_guide_server("app_guide")
+
   ## Hjælpeside modul (statisk indhold)
   mod_help_server("help")
 

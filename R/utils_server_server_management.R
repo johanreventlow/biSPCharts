@@ -138,7 +138,8 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             on.exit(
               {
                 app_state$data$updating_table <- FALSE
-                app_state$session$auto_save_enabled <- TRUE
+                # auto_save_enabled genaktiveres i session$onFlushed() nedenfor
+                # for at undgå at stale input$main_navbar overskriver active_tab
                 app_state$data$table_operation_cleanup_needed <- TRUE
               },
               add = TRUE
@@ -273,8 +274,9 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
               function() {
                 shiny::isolate({
                   app_state$session$restoring_session <- FALSE
+                  app_state$session$auto_save_enabled <- TRUE
                   log_info(
-                    "restoring_session flag cleared after data_updated flush",
+                    "restoring_session flag cleared and auto_save re-enabled after flush",
                     .context = "SESSION_RESTORE"
                   )
                 })

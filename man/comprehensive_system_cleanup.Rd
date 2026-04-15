@@ -10,7 +10,7 @@ comprehensive_system_cleanup(app_state)
 \item{app_state}{The centralized app state object}
 }
 \description{
-Performs full cleanup of all token and queue systems.
+Performs cleanup of queue system.
 Should be called periodically to maintain system health.
 }
 \keyword{internal}

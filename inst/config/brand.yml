@@ -33,56 +33,34 @@ logo:
 
 color:
   palette:
-    # Exakte Flatly theme farver
-    primary: "#375a7f"      # Flatly primary blå
-    secondary: "#6c757d"    # Flatly secondary grå
-    
-    success: "#00891a"      # Flatly success grøn
-    warning: "#f9b928"      # Flatly warning gul
-    danger: "#c10000"       # Flatly danger rød
-    info: "#009ce8"         # Flatly info cyan
-    light: "#f8f8f8"        # Flatly light
-    dark: "#202020"         # Flatly dark
-    accent: "#FF6B35"       # Hospital orange accent (behold)
-    
-    hospitalblue: "#009ce8"     # Region H Hospitalblå
-    darkgrey: "#565656"         # BFH mørk grå
-    lightgrey: "#AEAEAE"        # BFH light grå
-    mediumgrey: "#858585"       # BFH mediumgrey grå
-    regionhblue: "#00293d"     # BFH Prussian Blue for navbar
-    
-    
-    # Exakte RegionH theme farver
-    # primary: "#007dbb"      # Region H primary blå
-    # hospitalblue: "#009ce8"      # Region H Hospitalblå
-    # prussianblue: "#00293d"     # BFH Prussian Blue for navbar
-    # secondary: "#646c6f"    # Region H secondary grå
-    # 
-    # success: "#4f8325"      # Region H success grøn
-    # warning: "#f9b928"      # Region H warning gul
-    # danger: "#dc202b"       # Region H danger rød  
-    # info: "#497d83"         # Region H info cyan
-    # light: "#f8f8f8"        # Region H light
-    # dark: "#202020"         # Region H dark
-    # accent: "#FF6B35"       # Hospital orange accent (behold)
+    # BFHtheme officielle hospitalsfarver
+    primary: "#007dbb"        # BFHtheme hospital_primary (identitetsfarve)
+    secondary: "#646c6f"      # BFHtheme hospital_grey
+    success: "#4f8325"        # Region H success grøn
+    warning: "#f9b928"        # Behold (ingen hospital-specifik)
+    danger: "#dc202b"         # Region H danger rød
+    info: "#009ce8"           # BFHtheme hospital_blue
+    light: "#f8f8f8"          # Neutral lys
+    dark: "#333333"           # BFHtheme hospital_dark_grey
+    accent: "#FF6B35"         # Hospital orange accent (behold)
+
+    hospitalblue: "#009ce8"   # BFHtheme hospital_blue
+    darkgrey: "#333333"       # BFHtheme hospital_dark_grey
+    lightgrey: "#ccd3dd"      # BFHtheme regionh_light_grey1
+    mediumgrey: "#646c6f"     # BFHtheme hospital_grey
+    regionhblue: "#002555"    # BFHtheme regionh_primary (navbar)
+    ui_grey_light: "#ebebeb"  # BFHtheme ui_grey_light — baggrunde, subtle borders
+    ui_grey_soft: "#b8b8b8"   # BFHtheme ui_grey_soft — disabled, dividers
+    ui_grey_mid: "#8f8f8f"    # BFHtheme ui_grey_mid — knapper, ikoner normal
+    ui_grey_dark: "#666666"   # BFHtheme ui_grey_dark — sekundær tekst, hover
 
 
 typography:
-  fonts:
-    - family: "Lato"
-      source: "google" 
-      weights: [300, 400, 700]
-  base: "Lato"
+  base: "Mari, Arial, Helvetica, sans-serif"
   headings:
-    family: "Lato"
-    weight: 400
-    
-defaults:
-  # bootstrap:
-  #   navbar-bg: "#00293dff"
-  #   navbar-brand-color: white
-  #   navbar-nav-link-color: white
-  #   navbar-nav-link-hover-color: white
-  shiny:
-    theme:
-      preset: flatly
+    family: "Mari, Arial, Helvetica, sans-serif"
+    weight: 700
+
+# Theme bygges programmatisk i create_brand_theme() (config_branding_getters.R)
+# baseret på color.palette værdierne ovenfor.
+# Flatly preset bruges som base, med alle farver og navbar overskrevet.

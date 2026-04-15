@@ -13,7 +13,6 @@
 #   - Export module server (mod_export_server.R)
 #   - PDF export logic
 #   - PNG export logic
-#   - PowerPoint export logic
 #
 # KONVENTIONER:
 #   - Prefix: "SPC" (fra EXPORT_FILENAME_PREFIX)
@@ -28,7 +27,7 @@
 #' Genererer sanitized filnavn til export baseret på format, titel og afdeling.
 #' Inkluderer korrekt file extension og håndterer danske karakterer.
 #'
-#' @param format Export format ("pdf", "png", "powerpoint" eller "pptx")
+#' @param format Export format ("pdf" eller "png")
 #' @param title Chart titel (optional)
 #' @param department Afdeling/afsnit navn (optional)
 #'
@@ -43,7 +42,6 @@
 #' Supported formats:
 #' - "pdf" → ".pdf"
 #' - "png" → ".png"
-#' - "powerpoint" eller "pptx" → ".pptx"
 #' - Unknown → ".pdf" (default)
 #'
 #' @examples
@@ -54,8 +52,6 @@
 #' generate_export_filename("png", "SPC Oversigt")
 #' # "SPC_SPC_Oversigt.png"
 #'
-#' generate_export_filename("pptx", "", "Hæmatologi Ø")
-#' # "SPC_Hæmatologi_Ø.pptx"
 #' }
 #'
 #' @keywords internal
@@ -90,8 +86,6 @@ generate_export_filename <- function(format, title = "", department = "") {
   extension <- switch(tolower(format),
     "pdf" = ".pdf",
     "png" = ".png",
-    "powerpoint" = ".pptx",
-    "pptx" = ".pptx",
     ".pdf" # default fallback
   )
 

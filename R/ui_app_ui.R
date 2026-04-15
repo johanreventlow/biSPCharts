@@ -25,6 +25,20 @@ create_ui_header <- function() {
       # Inline CSS styles
       shiny::tags$style(htmltools::HTML(paste0("
 
+      /* Mari hospital font via @font-face */
+      @font-face {
+        font-family: 'Mari';
+        src: url('fonts/MariOffice-Book.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Mari';
+        src: url('fonts/MariOffice-Bold.ttf') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+      }
+
       /* Navigation and Tab Styling */
     .nav-link {
       padding: .5rem 1rem !important;
@@ -32,7 +46,7 @@ create_ui_header <- function() {
 
     /* Tab styling - ikke-aktive tabs */
     .nav-tabs .nav-link:not(.active) {
-      color: #009ce8 !important;
+      color: ", hospital_colors$info, " !important;
     }
 
     /* Tab styling - aktive tabs (behold standard) */
@@ -69,7 +83,7 @@ create_ui_header <- function() {
     }
 
     .jexcel tbody tr:hover {
-      background-color: #f0f8ff !important;
+      background-color: #d8eef9 !important;
     }
 
     .jexcel td {
@@ -79,8 +93,8 @@ create_ui_header <- function() {
 
     /* Aktiv celle styling */
     .jexcel .highlight {
-      background-color: #cce7ff !important;
-      border: 2px solid #0066cc !important;
+      background-color: #99d8f6 !important;
+      border: 2px solid ", hospital_colors$primary, " !important;
     }
 
     .jexcel_content {
@@ -162,11 +176,11 @@ create_ui_header <- function() {
       flex-shrink: 0;
     }
 
-    /* Aktiv tab: filled cirkel med tab-farve som baggrund, hvidt tal */
+    /* Aktiv tab: hvid cirkel med header-farvet tal */
     .navbar-nav .nav-link.active[data-step]::before {
-      background-color: currentColor;
-      border-color: currentColor;
-      -webkit-text-fill-color: white;
+      background-color: white;
+      border-color: white;
+      -webkit-text-fill-color: var(--bs-primary);
     }
 
     /* Locked tab styling */
@@ -183,8 +197,8 @@ create_ui_header <- function() {
     /* Gennemfoert wizard-trin: checkmark med tema-farve */
     .navbar-nav .nav-link.wizard-completed[data-step]::before {
       content: '\\2713';
-      background-color: var(--bs-success);
-      border-color: var(--bs-success);
+      background-color: transparent;
+      border-color: white;
       -webkit-text-fill-color: white;
       color: white;
     }
@@ -538,6 +552,7 @@ create_status_value_boxes <- function() {
 #' Ingen cards — rent, fladt layout.
 #' @export
 create_ui_upload_page <- function() {
+  hospital_colors <- get_hospital_colors()
   # Hjælpefunktion: kvadratisk knap med ikon og tekst
   # Alle knapper har samme base-styling. CSS class "upload-btn-active" styrer valgt-tilstand.
   square_button <- function(id, label, icon_name, title_text) {
@@ -556,30 +571,44 @@ create_ui_upload_page <- function() {
 
   shiny::tagList(
     # CSS for upload-knap active/hover tilstande
-    shiny::tags$style(htmltools::HTML("
-      /* Alle upload-source knapper: normal tilstand */
-      .upload-source-btn {
+    shiny::tags$style(htmltools::HTML(paste0("
+      /* Alle upload-source knapper: normal tilstand — lys grå */
+      .btn-outline-secondary.upload-source-btn {
         transition: all 0.15s ease;
+        border-color: ", hospital_colors$ui_grey_mid, " !important;
+        color: ", hospital_colors$ui_grey_mid, " !important;
+      }
+      .btn-outline-secondary.upload-source-btn .fa-2x,
+      .btn-outline-secondary.upload-source-btn span {
+        color: ", hospital_colors$ui_grey_mid, " !important;
       }
 
-      /* Hover ikke-valgt: hvid baggrund, mørkere tekst */
-      .upload-source-btn:hover {
+      /* Hover ikke-valgt: mørkere border+tekst+ikoner */
+      .btn-outline-secondary.upload-source-btn:hover {
         background-color: #fff !important;
-        border-color: #828c8d !important;
-        color: #828c8d !important;
+        border-color: ", hospital_colors$ui_grey_dark, " !important;
+        color: ", hospital_colors$ui_grey_dark, " !important;
+      }
+      .btn-outline-secondary.upload-source-btn:hover .fa-2x,
+      .btn-outline-secondary.upload-source-btn:hover span {
+        color: ", hospital_colors$ui_grey_dark, " !important;
       }
 
       /* Hover valgt knap: mørkere baggrund, hvid tekst */
-      .upload-source-btn.upload-btn-active:hover {
-        background-color: #828c8d !important;
-        border-color: #828c8d !important;
+      .btn-outline-secondary.upload-source-btn.upload-btn-active:hover {
+        background-color: ", hospital_colors$ui_grey_dark, " !important;
+        border-color: ", hospital_colors$ui_grey_dark, " !important;
+        color: #fff !important;
+      }
+      .btn-outline-secondary.upload-source-btn.upload-btn-active:hover .fa-2x,
+      .btn-outline-secondary.upload-source-btn.upload-btn-active:hover span {
         color: #fff !important;
       }
 
-      /* Valgt knap: præcis Flatly btn-outline-secondary:hover (permanent) */
+      /* Valgt knap: medium grå baggrund */
       .upload-source-btn.upload-btn-active {
-        background-color: #95a5a6 !important;
-        border-color: #95a5a6 !important;
+        background-color: ", hospital_colors$ui_grey_mid, " !important;
+        border-color: ", hospital_colors$ui_grey_mid, " !important;
         color: #fff !important;
       }
       .upload-source-btn.upload-btn-active .fa-2x,
@@ -609,7 +638,7 @@ create_ui_upload_page <- function() {
         padding: 8px 16px;
         cursor: pointer;
         text-decoration: none;
-        color: #333;
+        color: ", hospital_colors$dark, ";
         font-size: 0.82rem;
         border: none;
         background: none;
@@ -618,9 +647,9 @@ create_ui_upload_page <- function() {
         line-height: 1.4;
       }
       .sample-data-item:hover {
-        background-color: #f5f5f5;
+        background-color: ", hospital_colors$light, ";
         text-decoration: none;
-        color: #333;
+        color: ", hospital_colors$dark, ";
       }
       .sample-data-item .sample-label {
         font-weight: 600;
@@ -628,14 +657,14 @@ create_ui_upload_page <- function() {
       }
       .sample-data-item .sample-desc {
         font-size: 0.75rem;
-        color: #888;
+        color: ", hospital_colors$ui_grey_dark, ";
         display: block;
       }
 
       /* Download skabelon link */
       .download-template-link {
         font-size: 0.8rem;
-        color: #888;
+        color: ", hospital_colors$ui_grey_dark, ";
         text-decoration: none;
         display: inline-flex;
         align-items: center;
@@ -643,10 +672,10 @@ create_ui_upload_page <- function() {
         margin-top: 8px;
       }
       .download-template-link:hover {
-        color: #555;
+        color: ", hospital_colors$dark, ";
         text-decoration: underline;
       }
-    ")),
+    "))),
     # Luk dropdown ved klik udenfor
     shiny::tags$script(htmltools::HTML("
       document.addEventListener('click', function(e) {

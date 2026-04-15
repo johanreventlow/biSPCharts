@@ -7,7 +7,7 @@
 #   - BFHcharts::bfh_export_png() integration
 #   - get_size_from_preset() - Size preset til dimension conversion
 #   - Dimension conversion (inches → mm)
-#   - Size presets (small, medium, large, powerpoint)
+#   - Size presets (small, medium, large)
 #   - Custom dimensions
 #
 # MIGRATION NOTE:
@@ -28,8 +28,7 @@ if (!exists("EXPORT_SIZE_PRESETS")) {
   EXPORT_SIZE_PRESETS <- list(
     small = list(width = 800, height = 600, dpi = 96, unit = "px", label = "Lille"),
     medium = list(width = 1200, height = 900, dpi = 96, unit = "px", label = "Medium"),
-    large = list(width = 1920, height = 1440, dpi = 96, unit = "px", label = "Stor"),
-    powerpoint = list(width = 10, height = 7.5, dpi = 96, unit = "in", label = "PowerPoint")
+    large = list(width = 1920, height = 1440, dpi = 96, unit = "px", label = "Stor")
   )
 }
 
@@ -61,15 +60,6 @@ test_that("get_size_from_preset returns correct large preset", {
   expect_equal(preset$height, 1440)
   expect_equal(preset$dpi, 96)
   expect_equal(preset$unit, "px")
-})
-
-test_that("get_size_from_preset returns correct powerpoint preset", {
-  preset <- get_size_from_preset("powerpoint")
-
-  expect_equal(preset$width, 10)
-  expect_equal(preset$height, 7.5)
-  expect_equal(preset$dpi, 96)
-  expect_equal(preset$unit, "in")
 })
 
 test_that("get_size_from_preset returns medium as default for unknown preset", {
@@ -114,21 +104,6 @@ test_that("PNG export integration uses correct dimension conversion", {
 
   expect_equal(width_mm, 317.5)  # 12.5 * 25.4
   expect_equal(height_mm, 238.125)  # 9.375 * 25.4
-})
-
-test_that("PowerPoint preset uses inch-to-mm conversion", {
-  preset <- get_size_from_preset("powerpoint")
-
-  # PowerPoint preset is already in inches
-  expect_equal(preset$width, 10)
-  expect_equal(preset$height, 7.5)
-
-  # Convert to mm
-  width_mm <- preset$width * 25.4
-  height_mm <- preset$height * 25.4
-
-  expect_equal(width_mm, 254)  # 10 * 25.4
-  expect_equal(height_mm, 190.5)  # 7.5 * 25.4
 })
 
 test_that("Small preset dimension conversion is correct", {

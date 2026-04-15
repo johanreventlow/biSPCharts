@@ -98,9 +98,6 @@ test_that("mod_export_ui contains format-specific conditional panels", {
   expect_true(grepl("test-export_format", html) && grepl("pdf", html))
   expect_true(grepl("test-export_format", html) && grepl("png", html))
 
-  # PowerPoint conditional panel exists (has informational text, no input fields)
-  expect_true(grepl("PowerPoint", html))
-  expect_true(grepl("optimal størrelse", html))
 })
 
 test_that("mod_export_ui uses correct layout proportions", {

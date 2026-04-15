@@ -60,7 +60,7 @@ app_ui <- function(request) {
         )
       ),
       theme = get_bootstrap_theme(),
-      navbar_options = bslib::navbar_options(theme = "light", underline = FALSE),
+      navbar_options = bslib::navbar_options(theme = "dark", underline = FALSE),
 
       # Header-komponenter
       header = create_ui_header(),

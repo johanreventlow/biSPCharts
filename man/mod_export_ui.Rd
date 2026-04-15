@@ -14,7 +14,7 @@ Shiny UI element
 }
 \description{
 Brugerinterface til eksport af SPC charts.
-Understøtter PDF, PNG og PowerPoint formater med live preview.
+Understøtter PDF og PNG formater med live preview.
 }
 \details{
 Layout:

@@ -16,6 +16,13 @@
 #   - See: docs/CONFIGURATION.md for complete guide
 # ==============================================================================
 
+# BFHtheme color mapping reference:
+#   primary    = BFHtheme::bfh_cols("hospital_primary")   = #007dbb
+#   secondary  = BFHtheme::bfh_cols("hospital_grey")      = #646c6f
+#   info       = BFHtheme::bfh_cols("hospital_blue")      = #009ce8
+#   dark       = BFHtheme::bfh_cols("hospital_dark_grey")  = #333333
+#   navbar-bg  = BFHtheme::bfh_cols("hospital_primary")    = #007dbb
+
 # Package environment for storing initialized branding
 claudespc_branding <- new.env(parent = emptyenv())
 
@@ -65,20 +72,24 @@ load_brand_config <- function() {
       ),
       color = list(
         palette = list(
-          primary = "#375a7f",
-          secondary = "#6c757d",
+          primary = "#007dbb",
+          secondary = "#646c6f",
           accent = "#FF6B35",
-          success = "#00891a",
+          success = "#4f8325",
           warning = "#f9b928",
-          danger = "#c10000",
+          danger = "#dc202b",
           info = "#009ce8",
           light = "#f8f8f8",
-          dark = "#202020",
+          dark = "#333333",
           hospitalblue = "#009ce8",
-          darkgrey = "#565656",
-          lightgrey = "#AEAEAE",
-          mediumgrey = "#858585",
-          regionhblue = "#00293d"
+          darkgrey = "#333333",
+          lightgrey = "#ccd3dd",
+          mediumgrey = "#646c6f",
+          regionhblue = "#002555",
+          ui_grey_light = "#ebebeb",
+          ui_grey_soft = "#b8b8b8",
+          ui_grey_mid = "#8f8f8f",
+          ui_grey_dark = "#666666"
         )
       )
     ))
@@ -98,25 +109,65 @@ load_brand_config <- function() {
 
 #' Create Bootstrap Theme from Brand Configuration
 #'
+#' Bygger et custom bslib theme baseret på brand.yml farver.
+#' Bruger Flatly som base-preset og overskriver alle farver og
+#' navbar-styling med hospitalets officielle BFHtheme-værdier.
+#'
 #' @noRd
-create_brand_theme <- function() {
-  brand_path <- get_brand_config_path()
-
-  if (is.null(brand_path)) {
-    # Create default theme if no brand file
-    return(bslib::bs_theme(
-      version = 5,
-      preset = "flatly"
-    ))
-  }
+create_brand_theme <- function(config = NULL) {
+  if (is.null(config)) config <- load_brand_config()
+  colors <- config$color$palette
 
   tryCatch(
     {
-      # Brug absolut sti saa bslib kan finde brand filen korrekt
-      bslib::bs_theme(brand = normalizePath(brand_path, mustWork = TRUE))
+      bslib::bs_theme(
+        version = 5,
+        preset = "flatly",
+
+        # Semantiske farver fra BFHtheme
+        primary = colors$primary %||% "#007dbb",
+        secondary = colors$secondary %||% "#646c6f",
+        success = colors$success %||% "#4f8325",
+        warning = colors$warning %||% "#f9b928",
+        danger = colors$danger %||% "#dc202b",
+        info = colors$info %||% "#009ce8",
+        light = colors$light %||% "#f8f8f8",
+        dark = colors$dark %||% "#333333",
+
+        # Navbar: hospital primary blå med hvid tekst
+        "navbar-bg" = colors$primary %||% "#007dbb",
+        "navbar-dark-color" = "rgba(255,255,255,0.85)",
+        "navbar-dark-hover-color" = "white",
+        "navbar-dark-active-color" = "white",
+        "navbar-dark-brand-color" = "white",
+
+        # Typografi: Mari med Arial-fallback
+        "font-family-base" = "Mari, Arial, Helvetica, sans-serif",
+        "headings-font-family" = "Mari, Arial, Helvetica, sans-serif",
+        "headings-font-weight" = 400
+      ) |>
+        # Knapper: lysere sekundær-knapper end koncern-grå
+        bslib::bs_add_rules(paste0(
+          ".btn-secondary {",
+          "  --bs-btn-bg: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-border-color: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-hover-bg: ", colors$ui_grey_dark %||% "#666666", ";",
+          "  --bs-btn-hover-border-color: ", colors$ui_grey_dark %||% "#666666", ";",
+          "}",
+          ".btn-outline-secondary {",
+          "  --bs-btn-color: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-border-color: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-hover-color: #fff;",
+          "  --bs-btn-hover-bg: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-hover-border-color: ", colors$ui_grey_mid %||% "#8f8f8f", ";",
+          "  --bs-btn-active-color: #fff;",
+          "  --bs-btn-active-bg: ", colors$ui_grey_dark %||% "#666666", ";",
+          "  --bs-btn-active-border-color: ", colors$ui_grey_dark %||% "#666666", ";",
+          "}"
+        ))
     },
     error = function(e) {
-      warning(paste("Failed to create theme from brand file:", e$message, ". Using default theme."))
+      warning(paste("Failed to create custom theme:", e$message, ". Using default theme."))
       bslib::bs_theme(
         version = 5,
         preset = "flatly"
@@ -136,7 +187,7 @@ initialize_branding <- function() {
 
   # Store in package environment
   claudespc_branding$config <- brand_config
-  claudespc_branding$theme <- create_brand_theme()
+  claudespc_branding$theme <- create_brand_theme(brand_config)
   claudespc_branding$hospital_name <- brand_config$meta$name
   claudespc_branding$logo_path <- brand_config$logo$images$small %||% brand_config$logo$image
 
@@ -155,7 +206,11 @@ initialize_branding <- function() {
     darkgrey = brand_config$color$palette$darkgrey,
     lightgrey = brand_config$color$palette$lightgrey,
     mediumgrey = brand_config$color$palette$mediumgrey,
-    regionhblue = brand_config$color$palette$regionhblue
+    regionhblue = brand_config$color$palette$regionhblue,
+    ui_grey_light = brand_config$color$palette$ui_grey_light,
+    ui_grey_soft = brand_config$color$palette$ui_grey_soft,
+    ui_grey_mid = brand_config$color$palette$ui_grey_mid,
+    ui_grey_dark = brand_config$color$palette$ui_grey_dark
   )
 
   invisible()
@@ -203,8 +258,8 @@ get_hospital_colors <- function() {
     initialize_branding()
   }
   claudespc_branding$colors %||% list(
-    primary = "#375a7f",
-    secondary = "#6c757d",
+    primary = "#007dbb",
+    secondary = "#646c6f",
     accent = "#FF6B35"
   )
 }

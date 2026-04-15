@@ -374,7 +374,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       return(shiny::span(
         shiny::icon("triangle-exclamation"),
         " Automatisk lagring deaktiveret",
-        style = "color: #b33a3a; font-size: 0.8rem;",
+        style = paste0("color: ", get_hospital_colors()$danger, "; font-size: 0.8rem;"),
         title = "Browseren har ikke plads til mere. Din data er stadig i appen."
       ))
     }
@@ -388,7 +388,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       shiny::icon("check"),
       " ",
       shiny::span(id = "save-elapsed-text", "Session gemt"),
-      style = "color: #ced4da; font-size: 0.8rem;",
+      style = paste0("color: ", get_hospital_colors()$lightgrey, "; font-size: 0.8rem;"),
       title = "Indstillinger og data gemmes automatisk i din browser"
     )
   })

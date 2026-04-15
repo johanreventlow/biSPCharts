@@ -1,7 +1,7 @@
 # ==============================================================================
 # CONFIG_EXPORT_CONFIG.R
 # ==============================================================================
-# FORMÅL: Export-specifikke konstanter for PDF, PNG og PowerPoint eksport.
+# FORMÅL: Export-specifikke konstanter for PDF og PNG eksport.
 #         Centraliserer alle export defaults, size presets, DPI options og
 #         metadata limitations.
 #
@@ -30,7 +30,6 @@
 #' - small: 800x600px ved 96 DPI (lille web/email format)
 #' - medium: 1200x900px ved 96 DPI (standard præsentation)
 #' - large: 1920x1440px ved 96 DPI (høj opløsning)
-#' - powerpoint: 10x7.5 tommer ved 96 DPI (optimal til PowerPoint slides)
 #'
 #' @keywords internal
 EXPORT_SIZE_PRESETS <- list(
@@ -54,13 +53,6 @@ EXPORT_SIZE_PRESETS <- list(
     dpi = 96,
     unit = "px",
     label = "Stor (1920 × 1440 px)"
-  ),
-  powerpoint = list(
-    width = 10,
-    height = 7.5,
-    dpi = 96,
-    unit = "in",
-    label = "Optimal til PowerPoint (10 × 7.5 in)"
   )
 )
 
@@ -69,7 +61,7 @@ EXPORT_SIZE_PRESETS <- list(
 #' Konverterer en size preset navn til konkrete dimensioner og DPI værdier.
 #' Bruges til at mappe UI dropdown værdier til faktiske export parametre.
 #'
-#' @param preset_name Character preset name ("small", "medium", "large", "powerpoint")
+#' @param preset_name Character preset name ("small", "medium", "large")
 #'
 #' @return Named list med width, height, dpi, unit, label
 #'   - width: Numeric width (pixels eller inches afhængig af unit)
@@ -83,7 +75,6 @@ EXPORT_SIZE_PRESETS <- list(
 #' - small: 800×600px @ 96 DPI (lille web/email format)
 #' - medium: 1200×900px @ 96 DPI (standard præsentation)
 #' - large: 1920×1440px @ 96 DPI (høj opløsning)
-#' - powerpoint: 10×7.5 inches @ 96 DPI (optimal til PowerPoint slides)
 #'
 #' Default fallback: medium preset hvis preset_name ikke findes
 #'
@@ -92,10 +83,6 @@ EXPORT_SIZE_PRESETS <- list(
 #' # Get small preset
 #' preset <- get_size_from_preset("small")
 #' # Returns: list(width = 800, height = 600, dpi = 96, unit = "px", label = "Lille")
-#'
-#' # Get powerpoint preset
-#' preset <- get_size_from_preset("powerpoint")
-#' # Returns: list(width = 10, height = 7.5, dpi = 96, unit = "in", label = "PowerPoint")
 #'
 #' # Unknown preset falls back to medium
 #' preset <- get_size_from_preset("unknown")
@@ -224,35 +211,7 @@ EXPORT_FILENAME_SEPARATOR <- "_"
 #' @keywords internal
 EXPORT_FORMAT_OPTIONS <- c(
   "PDF" = "pdf",
-  "PNG" = "png",
-  "PowerPoint" = "pptx"
-)
-
-# POWERPOINT-SPECIFIC CONFIGURATION ============================================
-
-#' PowerPoint export configuration
-#'
-#' Standard indstillinger for PowerPoint eksport.
-#'
-#' @format Named list med PowerPoint settings
-#' @keywords internal
-EXPORT_POWERPOINT_CONFIG <- list(
-  # Slide layout type
-  layout = "Title and Content",
-
-  # Default slide size (følger preset)
-  width = 10,
-  height = 7.5,
-  unit = "in",
-
-  # Content positioning på slide
-  left_margin = 0.5,
-  top_margin = 1.0,
-
-  # Font settings for metadata
-  title_font_size = 28,
-  subtitle_font_size = 18,
-  body_font_size = 14
+  "PNG" = "png"
 )
 
 # EXPORT VALIDATION CONFIGURATION ==============================================

@@ -19,21 +19,18 @@ test_that("PLOT_CONTEXTS contains all required contexts", {
   expect_true("EXPORT_PREVIEW" %in% names(PLOT_CONTEXTS))
   expect_true("EXPORT_PDF" %in% names(PLOT_CONTEXTS))
   expect_true("EXPORT_PNG" %in% names(PLOT_CONTEXTS))
-  expect_true("EXPORT_PPTX" %in% names(PLOT_CONTEXTS))
-
   # Verify context values
   expect_equal(PLOT_CONTEXTS$ANALYSIS, "analysis")
   expect_equal(PLOT_CONTEXTS$EXPORT_PREVIEW, "export_preview")
   expect_equal(PLOT_CONTEXTS$EXPORT_PDF, "export_pdf")
   expect_equal(PLOT_CONTEXTS$EXPORT_PNG, "export_png")
-  expect_equal(PLOT_CONTEXTS$EXPORT_PPTX, "export_pptx")
 })
 
 test_that("PLOT_CONTEXT_DIMENSIONS contains all required contexts", {
   expect_type(PLOT_CONTEXT_DIMENSIONS, "list")
 
   # All contexts should have dimension configs
-  contexts <- c("analysis", "export_preview", "export_pdf", "export_png", "export_pptx")
+  contexts <- c("analysis", "export_preview", "export_pdf", "export_png")
   for (ctx in contexts) {
     expect_true(ctx %in% names(PLOT_CONTEXT_DIMENSIONS),
       info = sprintf("Context '%s' should exist in PLOT_CONTEXT_DIMENSIONS", ctx)
@@ -66,12 +63,6 @@ test_that("PLOT_CONTEXT_DIMENSIONS have correct structure", {
   expect_equal(pdf$unit, "mm")
   expect_equal(pdf$dpi, 300)
 
-  # PowerPoint context (inches)
-  pptx <- PLOT_CONTEXT_DIMENSIONS$export_pptx
-  expect_true("width_inches" %in% names(pptx))
-  expect_true("height_inches" %in% names(pptx))
-  expect_equal(pptx$unit, "in")
-  expect_equal(pptx$dpi, 96)
 })
 
 # GET_CONTEXT_DIMENSIONS =======================================================
@@ -90,7 +81,7 @@ test_that("get_context_dimensions returns correct structure", {
 })
 
 test_that("get_context_dimensions works for all contexts", {
-  contexts <- c("analysis", "export_preview", "export_pdf", "export_png", "export_pptx")
+  contexts <- c("analysis", "export_preview", "export_pdf", "export_png")
 
   for (ctx in contexts) {
     dims <- get_context_dimensions(ctx)
@@ -112,20 +103,6 @@ test_that("get_context_dimensions converts mm to pixels correctly", {
   expect_equal(pdf_dims$width_px, expected_width)
   expect_equal(pdf_dims$height_px, expected_height)
   expect_equal(pdf_dims$dpi, 300)
-})
-
-test_that("get_context_dimensions converts inches to pixels correctly", {
-  # PowerPoint context uses inches
-  pptx_dims <- get_context_dimensions("export_pptx")
-
-  # 9 inches * 96 DPI = 864 pixels
-  # 6.5 inches * 96 DPI = 624 pixels
-  expected_width <- round(9 * 96)
-  expected_height <- round(6.5 * 96)
-
-  expect_equal(pptx_dims$width_px, expected_width)
-  expect_equal(pptx_dims$height_px, expected_height)
-  expect_equal(pptx_dims$dpi, 96)
 })
 
 test_that("get_context_dimensions accepts overrides", {
@@ -152,7 +129,7 @@ test_that("get_context_dimensions fails on invalid context", {
 # VALIDATE_PLOT_CONTEXT ========================================================
 
 test_that("validate_plot_context accepts valid contexts", {
-  valid_contexts <- c("analysis", "export_preview", "export_pdf", "export_png", "export_pptx")
+  valid_contexts <- c("analysis", "export_preview", "export_pdf", "export_png")
 
   for (ctx in valid_contexts) {
     expect_true(validate_plot_context(ctx, stop_on_invalid = FALSE))
@@ -215,7 +192,7 @@ test_that("generateSPCPlot works with all context types", {
     n_col = NULL
   )
 
-  contexts <- c("analysis", "export_preview", "export_pdf", "export_png", "export_pptx")
+  contexts <- c("analysis", "export_preview", "export_pdf", "export_png")
 
   for (ctx in contexts) {
     dims <- get_context_dimensions(ctx)
@@ -344,10 +321,6 @@ test_that("Export contexts have appropriate dimensions", {
   pdf <- get_context_dimensions("export_pdf")
   expect_equal(pdf$dpi, 300) # Print quality
 
-  # PowerPoint should match slide dimensions
-  pptx <- get_context_dimensions("export_pptx")
-  expect_equal(pptx$dpi, 96) # Presentation DPI
-  expect_true(pptx$width_px > pptx$height_px) # Landscape orientation
 })
 
 # REGRESSION TESTS =============================================================

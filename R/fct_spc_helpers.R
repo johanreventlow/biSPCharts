@@ -31,8 +31,8 @@ is_column_numeric <- function(col, threshold = 0.5) {
 value_box_signal_theme <- function(status_info, signal) {
   colors <- get_hospital_colors()
   if (status_info$status == "ready" && isTRUE(signal)) {
-    # Signal detekteret: mørkere grå baggrund med hvid tekst
-    bslib::value_box_theme(bg = colors$ui_grey_dark, fg = "#ffffff")
+    # Signal detekteret: medium grå baggrund med hvid tekst (matcher btn-secondary)
+    bslib::value_box_theme(bg = colors$ui_grey_mid, fg = "#ffffff")
   } else if (status_info$status == "ready") {
     # Ingen signal (OK): lys grå baggrund med mørk tekst
     bslib::value_box_theme(bg = colors$ui_grey_light, fg = colors$dark)

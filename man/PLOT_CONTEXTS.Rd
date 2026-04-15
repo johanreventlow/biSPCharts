@@ -21,7 +21,6 @@ Kontekster:
 \item \strong{export_preview:} Export-side preview (fast 800×450px @ 96 DPI)
 \item \strong{export_pdf:} PDF export via Typst (200×120mm @ 300 DPI)
 \item \strong{export_png:} PNG export (variable dimensions, configurable DPI)
-\item \strong{export_pptx:} PowerPoint export (9×6.5 inches @ 96 DPI)
 }
 }
 \keyword{internal}

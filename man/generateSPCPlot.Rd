@@ -28,7 +28,7 @@ generateSPCPlot(
 \arguments{
 \item{plot_context}{Character. Plot context identifier (default
 "analysis"). Valid contexts: "analysis", "export_preview",
-"export_pdf", "export_png", "export_pptx". Context determines cache
+"export_pdf", "export_png". Context determines cache
 isolation and enables context-aware label placement. Use PLOT_CONTEXTS
 constants from config_plot_contexts.R.}
 

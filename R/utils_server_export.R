@@ -1,6 +1,6 @@
 # utils_server_export.R
 # Export helper utilities for server-side operations
-# Provides data extraction and formatting for PDF/PowerPoint/PNG exports
+# Provides data extraction and formatting for PDF/PNG exports
 
 # EXTRACT SPC STATISTICS ======================================================
 

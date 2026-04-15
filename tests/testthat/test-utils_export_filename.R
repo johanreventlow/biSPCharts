@@ -167,25 +167,6 @@ test_that("generate_export_filename creates PNG filename", {
   expect_match(result, "^SPC_")
 })
 
-test_that("generate_export_filename creates PowerPoint filename", {
-  result <- generate_export_filename(
-    format = "powerpoint",
-    title = "Test Chart"
-  )
-
-  expect_match(result, "\\.pptx$")
-  expect_match(result, "^SPC_")
-})
-
-test_that("generate_export_filename handles pptx format variant", {
-  result <- generate_export_filename(
-    format = "pptx",
-    title = "Test Chart"
-  )
-
-  expect_match(result, "\\.pptx$")
-})
-
 test_that("generate_export_filename uses prefix constant", {
   result <- generate_export_filename(
     format = "pdf",

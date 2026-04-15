@@ -19,7 +19,7 @@ Liste med reactive values for module status
 }
 \description{
 Server logik for eksport af SPC charts.
-Håndterer live preview og download af charts i PDF, PNG og PowerPoint formater.
+Håndterer live preview og download af charts i PDF og PNG formater.
 }
 \seealso{
 Other export_modules: 

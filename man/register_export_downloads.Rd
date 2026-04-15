@@ -20,6 +20,6 @@ NULL (side effect: registers output handler with Shiny)
 }
 \description{
 Sets up downloadHandler that generates export files in multiple formats
-(PDF via Typst, PNG, PowerPoint via officer).
+(PDF via Typst, PNG).
 }
 \keyword{internal}

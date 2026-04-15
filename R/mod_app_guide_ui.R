@@ -401,6 +401,16 @@ mod_app_guide_ui <- function(id) {
           class = "col-sm-9",
           "Diagrammets overskrift \u2014 vises \u00f8verst i b\u00e5de PDF og PNG"
         ),
+        shiny::tags$dt(class = "col-sm-3", "Hospital"),
+        shiny::tags$dd(
+          class = "col-sm-9",
+          "Udfyldes automatisk med hospitalets navn. Kan \u00e6ndres."
+        ),
+        shiny::tags$dt(class = "col-sm-3", "Afdeling"),
+        shiny::tags$dd(
+          class = "col-sm-9",
+          "Angiv dit afsnit eller afdeling."
+        ),
         shiny::tags$dt(class = "col-sm-3", "Datadefinition"),
         shiny::tags$dd(
           class = "col-sm-9",

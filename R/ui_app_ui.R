@@ -308,9 +308,46 @@ create_ui_main_content <- function() {
         shiny::div(
           class = "alert alert-light border mt-1 mb-1",
           style = "font-size: 0.82rem; padding: 8px 12px;",
-          shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " Tjek at kolonnerne er tildelt korrekt (X-akse, Y-akse, evt. n\u00e6vner)."),
-          shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " V\u00e6lg diagramtype. Start med seriediagram hvis du er i tvivl."),
-          shiny::tags$p(class = "mb-0", shiny::tags$strong("3."), " Tjek v\u00e6rdiboksene under diagrammet \u2014 de viser om der er signaler i dine data.")
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Datatabel (venstre side)"),
+            shiny::tags$br(),
+            "Du kan redigere data direkte i tabellen ved at klikke p\u00e5 en celle. ",
+            "Brug ", shiny::tags$em("+ R\u00e6kke"), " for at tilf\u00f8je nye datapunkter, og ",
+            shiny::tags$em("+ Kolonne"), " for at tilf\u00f8je kolonner ",
+            "(fx Skift eller Frys, som altid skal v\u00e6re til stede). ",
+            "Brug ", shiny::tags$em("Omd\u00f8b"), " for at give kolonner mere beskrivende navne."
+          ),
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Kolonnetildelinger (\u00f8verst)"),
+            shiny::tags$br(),
+            "Klik ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
+            " for at lade appen g\u00e6tte hvilke kolonner der er X-akse, Y-akse osv. ",
+            "Du kan altid \u00e6ndre tildelingerne manuelt via dropdown-menuerne. ",
+            "X-akse (typisk dato) og Y-akse (den v\u00e6rdi der f\u00f8lges) er p\u00e5kr\u00e6vede. ",
+            "V\u00e6lg en N\u00e6vner hvis du arbejder med andele eller rater."
+          ),
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Indstillinger og diagramtype (h\u00f8jre side)"),
+            shiny::tags$br(),
+            "V\u00e6lg diagramtype under ", shiny::tags$em("Indstillinger"),
+            ". Start med ", shiny::tags$em("Seriediagram (Run)"),
+            " hvis du er i tvivl \u2014 det er den simpleste og mest robuste type."
+          ),
+          shiny::tags$p(
+            class = "mb-0",
+            shiny::tags$strong("V\u00e6rdibokse (nederst til h\u00f8jre)"),
+            shiny::tags$br(),
+            "De tre bokse viser resultater fra Anh\u00f8j-reglerne: ",
+            shiny::tags$em("Seriel\u00e6ngde"),
+            " (l\u00e6ngste serie p\u00e5 samme side af centrallinjen), ",
+            shiny::tags$em("Antal kryds"),
+            " (krydsninger af centrallinjen) og ",
+            shiny::tags$em("Kontrolgr\u00e6nser"),
+            ". Boksene skifter farve n\u00e5r der er et signal."
+          )
         )
       )
     ),

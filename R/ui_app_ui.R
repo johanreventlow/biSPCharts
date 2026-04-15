@@ -281,7 +281,17 @@ create_ui_header <- function() {
         });
         observer.observe(document.body, {childList: true, subtree: true});
       })();
-    "))
+    ")),
+    # Cookie-indstillinger link (synlig i bunden af siden)
+    shiny::tags$div(
+      style = "position: fixed; bottom: 4px; right: 12px; z-index: 999;",
+      shiny::tags$a(
+        href = "javascript:void(0)",
+        onclick = "if(window.spcShowCookieSettings) window.spcShowCookieSettings();",
+        class = "spc-cookie-settings-link",
+        "Cookie-indstillinger"
+      )
+    )
   )
 }
 # R/ui/ui_main_content.R

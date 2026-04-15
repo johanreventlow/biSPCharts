@@ -60,24 +60,16 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
   ui_service <- create_ui_update_service(session, app_state)
   log_debug("UI update service initialized", .context = "APP_INIT")
 
-  # SHINYLOGS: Setup advanced web-based logging (if enabled)
+  # ANALYTICS: Setup consent gate (erstatter direkte shinylogs init)
+  # shinylogs initialiseres KUN naar bruger har givet consent via cookie-banner
   if (should_enable_shinylogs()) {
-    setup_shinylogs(
-      enable_tracking = TRUE,
-      enable_errors = TRUE,
-      enable_performances = TRUE,
+    setup_analytics_consent(
+      input = session$input,
+      session = session,
+      hashed_token = hashed_token,
       log_directory = "logs/"
     )
-    initialize_shinylogs_tracking(
-      session = session,
-      app_name = "SPC_Analysis_Tool"
-    )
-    log_debug_kv(
-      message = "shinylogs advanced logging activated",
-      log_directory = "logs/",
-      session_id = hashed_token,
-      .context = "APP_INIT"
-    )
+    log_debug("Analytics consent gate registered", .context = "APP_INIT")
   }
 
   # EVENT SYSTEM: Set up reactive event listeners AFTER shinylogs setup

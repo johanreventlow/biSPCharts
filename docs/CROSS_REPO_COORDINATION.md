@@ -245,166 +245,24 @@ Use decision tree to answer:
 
 ## Version Coordination
 
-### Semantic Versioning Policy
+**Autoritativ kilde:** `~/.claude/rules/VERSIONING_POLICY.md` dækker semver-regler,
+NEWS-format, git-tags, pre-release checklist og cross-repo bump-protokollen for
+hele BFH-økosystemet (biSPCharts, BFHcharts, BFHllm, BFHtheme).
 
-BFHcharts follows semantic versioning (semver):
+### Kort sammenfatning for biSPCharts ↔ BFHcharts
 
-- **Major (X.0.0):** Breaking API changes
-- **Minor (0.X.0):** New features, backward compatible
-- **Patch (0.0.X):** Bug fixes, backward compatible
+- **Pin-strategi:** Lower-bound `>=` (fx `BFHcharts (>= 0.7.2)`). Ingen øvre
+  grænse, ingen `Remotes:` SHA-pinning.
+- **Når BFHcharts bumper:** Opret separat PR i biSPCharts med commit
+  `chore(deps): bump BFHcharts to X.Y.Z` der opdaterer `DESCRIPTION` lower-bound.
+  PR-beskrivelsen refererer BFHcharts NEWS-entry.
+- **Hvis MAJOR bump i BFHcharts:** Tilføj migration-note i biSPCharts NEWS:
+  `* **Breaking change i BFHcharts X.0.0:** denne version bruger nyt API for Y.`
+  Tilpas facade-laget (`R/fct_spc_bfh_service.R`) før bump.
+- **Tag-format:** Begge repos bruger `vX.Y.Z` (annoteret). biSPCharts udfaser
+  legacy `-dev`-suffix.
 
-biSPCharts DESCRIPTION must specify appropriate constraints.
-
-### Dependency Strategies
-
-#### Strategy 1: Minimum Version (Development Phase)
-
-**Use during:** Active migration, frequent BFHcharts updates
-
-```r
-# DESCRIPTION
-Imports:
-    BFHcharts (>= 0.2.0)
-```
-
-**Pros:**
-- Flexible, allows patch updates
-- Easy to test with latest BFHcharts
-- Minimal DESCRIPTION churn
-
-**Cons:**
-- Risk of breaking changes in minor updates
-- Less predictable behavior across environments
-
-**When to use:**
-- Development and testing phase
-- When BFHcharts is pre-1.0.0 (unstable API)
-- When actively coordinating features
-
-#### Strategy 2: Major Version Pinning (Stable Release)
-
-**Use during:** Post-migration, stable production
-
-```r
-# DESCRIPTION
-Imports:
-    BFHcharts (>= 1.0.0, < 2.0.0)
-```
-
-**Pros:**
-- Allows minor/patch updates
-- Protects against breaking changes
-- Follows semver conventions
-
-**Cons:**
-- Requires major version upgrade planning
-- May delay access to new BFHcharts features
-
-**When to use:**
-- BFHcharts 1.0.0+ (stable API)
-- Production releases
-- Long-term support versions
-
-#### Strategy 3: Exact Version Pinning (Critical Production)
-
-**Use during:** Critical production, regulatory compliance
-
-```r
-# DESCRIPTION
-Imports:
-    BFHcharts (== 1.2.3)
-```
-
-**Pros:**
-- Maximum stability
-- Reproducible builds
-- No surprise updates
-
-**Cons:**
-- Manual upgrade required for all updates
-- May miss critical security patches
-- High maintenance burden
-
-**When to use:**
-- Regulatory/compliance requirements
-- Critical production environments
-- Docker/containerized deployments
-
-### Version Update Workflow
-
-#### Minor/Patch Updates
-
-1. **Monitor BFHcharts releases:**
-   - Subscribe to BFHcharts repository notifications
-   - Review CHANGELOG for each release
-   - Assess impact on biSPCharts
-
-2. **Evaluate update:**
-   ```bash
-   # In biSPCharts development environment
-   remotes::install_github("user/BFHcharts@v0.2.1")
-
-   # Run biSPCharts test suite
-   devtools::test()
-
-   # Manual testing
-   # - Launch app
-   # - Test critical paths
-   # - Verify chart rendering
-   ```
-
-3. **Update if safe:**
-   ```r
-   # Update DESCRIPTION minimum version
-   Imports:
-       BFHcharts (>= 0.2.1)  # Was: >= 0.2.0
-   ```
-
-4. **Document in CHANGELOG:**
-   ```markdown
-   ## [Unreleased]
-
-   ### Changed
-   - Updated BFHcharts dependency to >= 0.2.1 for bug fixes
-   ```
-
-#### Major Version Updates
-
-Major updates require coordinated planning:
-
-1. **Pre-release planning:**
-   - Review BFHcharts 2.0.0 migration guide
-   - Identify breaking changes
-   - Estimate facade layer changes
-   - Plan testing strategy
-
-2. **Create migration branch:**
-   ```bash
-   git checkout -b feat/bfhcharts-2.0-migration
-   ```
-
-3. **Update facade layer:**
-   - Adapt to new API
-   - Update parameter mappings
-   - Refactor deprecated calls
-   - Add compatibility shims if needed
-
-4. **Comprehensive testing:**
-   - All integration tests
-   - Regression test suite
-   - Manual UAT with stakeholders
-   - Performance benchmarks
-
-5. **Update DESCRIPTION:**
-   ```r
-   Imports:
-       BFHcharts (>= 2.0.0, < 3.0.0)
-   ```
-
-6. **Document migration:**
-   - Update CHANGELOG with breaking changes
-   - Create migration guide if user-facing
-   - Update documentation
+Se VERSIONING_POLICY.md §D for fuld pre-release checklist (9 trin).
 
 ---
 

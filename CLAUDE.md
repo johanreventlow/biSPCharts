@@ -207,6 +207,16 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 - **NAMESPACE** uden explicit godkendelse (brug `devtools::document()`)
 - Breaking changes uden major version bump
 
+### Versioning
+
+biSPCharts og sibling-pakker (BFHcharts, BFHllm, BFHtheme) følger
+`~/.claude/rules/VERSIONING_POLICY.md`:
+- Strict semver (`vX.Y.Z`-tags), pre-1.0 tillader breaking i MINOR
+- NEWS.md på dansk efter standard template
+- Lower-bound deps (`BFHcharts (>= X.Y.Z)`), ingen øvre grænse
+- Pre-release checklist (9 trin) køres før hver tag/push
+- Cross-repo bump: separat `chore(deps):`-PR efter sibling-release
+
 ---
 
 ## 4) Cross-Repository Coordination

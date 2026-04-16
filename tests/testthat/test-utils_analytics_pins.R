@@ -26,6 +26,58 @@ test_that("read_shinylogs_sessions() haandterer tom mappe", {
   expect_equal(nrow(result), 0)
 })
 
+test_that("read_shinylogs_all() returnerer liste med 4 data.frames", {
+  tmp_dir <- withr::local_tempdir()
+
+  for (subdir in c("sessions", "inputs", "outputs", "errors")) {
+    dir.create(file.path(tmp_dir, subdir), recursive = TRUE)
+  }
+
+  jsonlite::write_json(
+    list(app = "SPC", server_connected = "2026-04-15T10:00:00Z",
+         server_disconnected = "2026-04-15T10:15:00Z", session_duration = 900),
+    file.path(tmp_dir, "sessions", "session_test.json")
+  )
+  jsonlite::write_json(
+    list(session = "abc", name = "chart_type", value = "run",
+         timestamp = "2026-04-15T10:05:00Z"),
+    file.path(tmp_dir, "inputs", "input_test.json")
+  )
+  jsonlite::write_json(
+    list(session = "abc", name = "spc_plot", timestamp = "2026-04-15T10:06:00Z"),
+    file.path(tmp_dir, "outputs", "output_test.json")
+  )
+  jsonlite::write_json(
+    list(session = "abc", name = "render_error", error = "Missing column",
+         timestamp = "2026-04-15T10:07:00Z"),
+    file.path(tmp_dir, "errors", "error_test.json")
+  )
+
+  result <- read_shinylogs_all(tmp_dir)
+
+  expect_true(is.list(result))
+  expect_equal(sort(names(result)), c("errors", "inputs", "outputs", "sessions"))
+  expect_s3_class(result$sessions, "data.frame")
+  expect_s3_class(result$inputs, "data.frame")
+  expect_s3_class(result$outputs, "data.frame")
+  expect_s3_class(result$errors, "data.frame")
+  expect_true(nrow(result$sessions) >= 1)
+  expect_true(nrow(result$inputs) >= 1)
+  expect_true(nrow(result$outputs) >= 1)
+  expect_true(nrow(result$errors) >= 1)
+})
+
+test_that("read_shinylogs_all() haandterer tomme mapper", {
+  tmp_dir <- withr::local_tempdir()
+  result <- read_shinylogs_all(tmp_dir)
+
+  expect_true(is.list(result))
+  expect_equal(nrow(result$sessions), 0)
+  expect_equal(nrow(result$inputs), 0)
+  expect_equal(nrow(result$outputs), 0)
+  expect_equal(nrow(result$errors), 0)
+})
+
 test_that("rotate_log_files() komprimerer gamle filer", {
   tmp_dir <- withr::local_tempdir()
 

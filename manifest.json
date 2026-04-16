@@ -19298,6 +19298,27 @@
     ".superpowers/brainstorm/48246-1774075108/wizard-layout.html": {
       "checksum": "f4471f6cdbc40487a35ff675c51155d3"
     },
+    ".superpowers/brainstorm/94371-1776289300/state/server.log": {
+      "checksum": "3b042a5622b4dce739e75309c49d3d42"
+    },
+    ".superpowers/brainstorm/94371-1776289300/state/server.pid": {
+      "checksum": "c9fffba9de22d823de3350dac3074abf"
+    },
+    ".superpowers/brainstorm/94537-1776289338/content/dashboard-layout.html": {
+      "checksum": "9527d795128e377492c743841d81f25b"
+    },
+    ".superpowers/brainstorm/94537-1776289338/content/waiting.html": {
+      "checksum": "fd55f2a5f00dcc53607aad48a5d538aa"
+    },
+    ".superpowers/brainstorm/94537-1776289338/state/server-stopped": {
+      "checksum": "11cdca0e6c83241d665cd88e01ac26cd"
+    },
+    ".superpowers/brainstorm/94537-1776289338/state/server.log": {
+      "checksum": "2f0fafab0239741b1b4a9540b5dfcd48"
+    },
+    ".superpowers/brainstorm/94537-1776289338/state/server.pid": {
+      "checksum": "d5448f5034d730a9c7c7051f6b42b813"
+    },
     ".worktrees/spc_wizard/docs/reviews/2026-03-25-gemini-ux-review.md": {
       "checksum": "4a61fb6ed0ff7fa5ba40c78f6bbd44a2"
     },
@@ -19445,6 +19466,9 @@
     "docs/superpowers/plans/2026-04-15-help-information-architecture.md": {
       "checksum": "c418bbee86e41f4b074f11e88f377cbd"
     },
+    "docs/superpowers/plans/2026-04-16-analytics-dashboard.md": {
+      "checksum": "3e2c6ef891fd6ea4263f5ba731df505f"
+    },
     "docs/superpowers/specs/2026-04-11-save-load-design.md": {
       "checksum": "89b8e59f66365ddb4eaa3feb12c8b77a"
     },
@@ -19456,6 +19480,9 @@
     },
     "docs/superpowers/specs/2026-04-15-help-information-architecture-design.md": {
       "checksum": "646cd053d1568152aa18bb8bd2f24e3f"
+    },
+    "docs/superpowers/specs/2026-04-16-analytics-dashboard-design.md": {
+      "checksum": "863a058672df19235604dd28f20ec01f"
     },
     "docs/USER_GUIDE.md": {
       "checksum": "9558c1b892794698483b124dd521e61d"
@@ -21413,6 +21440,15 @@
     "logs/shinylogs_SPC_Analysis_Tool_1776285604604008913.json": {
       "checksum": "0aa5beb541fdc8da066fcbca3dffa311"
     },
+    "logs/shinylogs_SPC_Analysis_Tool_1776286197537476063.json": {
+      "checksum": "046546fd5bc5056e811c3462fa968248"
+    },
+    "logs/shinylogs_SPC_Analysis_Tool_1776288997150343895.json": {
+      "checksum": "f229cb0b882a15b6725584b8aeec6dde"
+    },
+    "logs/shinylogs_SPC_Analysis_Tool_1776291319355241060.json": {
+      "checksum": "10d69e51f1f95d5ea6b29011f938e46a"
+    },
     "Makefile": {
       "checksum": "88a582018f62caa919051b1f1942e76b"
     },
@@ -22262,8 +22298,11 @@
     "man/RATE_LIMITS.Rd": {
       "checksum": "8f5ec58427b692d4c4a4edb20c5bdb5d"
     },
+    "man/read_shinylogs_all.Rd": {
+      "checksum": "eb6a63a9c95ec70a0c75a6eff86f64f6"
+    },
     "man/read_shinylogs_sessions.Rd": {
-      "checksum": "af67cf4a30fa113f90fe2aa03b610fd3"
+      "checksum": "bf4566a9b068c7f6948b9aa0068426e8"
     },
     "man/RECOMMENDED_SPC_POINTS.Rd": {
       "checksum": "536d3fa970a263e73cf1e2db73140b5d"
@@ -22608,7 +22647,7 @@
       "checksum": "518b52c1f7154ad0627d320c6da79439"
     },
     "NAMESPACE": {
-      "checksum": "f286742cd0ba3984c43ca32a3746d7d2"
+      "checksum": "f4b5adafd133859ab1520f131b02e150"
     },
     "NAMESPACE.backup": {
       "checksum": "dc1693229c42f8ba5e0c8995632dac22"
@@ -22887,7 +22926,7 @@
       "checksum": "90407129dd6e32bce05e49a9b0e60d21"
     },
     "R/utils_analytics_pins.R": {
-      "checksum": "7cca6aebfb9a8060eeee61313e86d56f"
+      "checksum": "eb5f5de5ede0f024323165e15640e52b"
     },
     "R/utils_anhoej_results.R": {
       "checksum": "135a3f83977281974bac557346f6d0ae"
@@ -23022,7 +23061,7 @@
       "checksum": "a5c5ffe31d62fa223448aa5eba415127"
     },
     "R/utils_shinylogs_config.R": {
-      "checksum": "a1eb53cc76d6ce1f4bfeb37d8f3b662f"
+      "checksum": "234e1b49626b3e981266bf2b6715f54e"
     },
     "R/utils_spc_cache.R": {
       "checksum": "8f77e46d5b80284e8f7327c391c0bcbf"
@@ -23475,7 +23514,7 @@
       "checksum": "53096f0dbca4ae357668f69cccfbe749"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "05230a731096ea71e399d73b0f7c5a43"
+      "checksum": "1dfb5d04a4be945c888e6c0d5e198738"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
       "checksum": "5b5377680c8912b7973824466bf25f8f"
@@ -23784,7 +23823,7 @@
       "checksum": "6423711ad69fa6c9300a62ef276afd47"
     },
     "tests/testthat/test-utils_analytics_pins.R": {
-      "checksum": "c7ced8f4eedfd8de2a87affc13dd6692"
+      "checksum": "e528b781cfd27f638672188cd7b19896"
     },
     "tests/testthat/test-utils_data_signatures.R": {
       "checksum": "5a1de58ae2f4c61bf6f34f2055e469c8"

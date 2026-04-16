@@ -3,38 +3,57 @@
 
 #' Laes shinylogs session-filer til data.frame
 #'
+#' Delegerer til \code{read_shinylogs_all()} og returnerer kun sessions-elementet.
+#'
 #' @param log_directory Sti til log-mappe
 #' @return data.frame med session-data (tom data.frame hvis ingen filer)
 #' @export
 read_shinylogs_sessions <- function(log_directory) {
-  sessions_dir <- file.path(log_directory, "sessions")
-  if (!dir.exists(sessions_dir)) return(data.frame())
+  read_shinylogs_all(log_directory)$sessions
+}
 
-  files <- list.files(sessions_dir, pattern = "\\.json$", full.names = TRUE)
-  if (length(files) == 0) return(data.frame())
+#' Laes alle shinylogs kategorier til navngivet liste
+#'
+#' Laeser sessions, inputs, outputs og errors fra shinylogs log-directory.
+#'
+#' @param log_directory Sti til log-mappe
+#' @return Navngivet liste med 4 data.frames: sessions, inputs, outputs, errors
+#' @export
+read_shinylogs_all <- function(log_directory) {
+  categories <- c("sessions", "inputs", "outputs", "errors")
 
-  sessions <- lapply(files, function(f) {
+  result <- lapply(stats::setNames(categories, categories), function(cat) {
+    cat_dir <- file.path(log_directory, cat)
+    if (!dir.exists(cat_dir)) return(data.frame())
+
+    files <- list.files(cat_dir, pattern = "\\.json$", full.names = TRUE)
+    if (length(files) == 0) return(data.frame())
+
+    entries <- lapply(files, function(f) {
+      tryCatch(
+        jsonlite::fromJSON(f, simplifyVector = TRUE),
+        error = function(e) {
+          log_warn(paste("Kunne ikke laese", cat, "fil:", basename(f)),
+                   .context = LOG_CONTEXTS$analytics$pins)
+          NULL
+        }
+      )
+    })
+
+    entries <- Filter(Negate(is.null), entries)
+    if (length(entries) == 0) return(data.frame())
+
     tryCatch(
-      jsonlite::fromJSON(f, simplifyVector = TRUE),
+      dplyr::bind_rows(entries),
       error = function(e) {
-        log_warn(paste("Kunne ikke laese session-fil:", basename(f)),
+        log_warn(paste("bind_rows fejlede for", cat, ":", e$message),
                  .context = LOG_CONTEXTS$analytics$pins)
-        NULL
+        data.frame()
       }
     )
   })
 
-  sessions <- Filter(Negate(is.null), sessions)
-  if (length(sessions) == 0) return(data.frame())
-
-  tryCatch(
-    dplyr::bind_rows(sessions),
-    error = function(e) {
-      log_warn(paste("bind_rows fejlede:", e$message),
-               .context = LOG_CONTEXTS$analytics$pins)
-      data.frame()
-    }
-  )
+  result
 }
 
 #' Roter log-filer (komprimer gamle, slet meget gamle)
@@ -78,10 +97,11 @@ rotate_log_files <- function(log_directory,
 #' @export
 aggregate_and_pin_logs <- function(log_directory = "logs/") {
   config <- get_analytics_config()
-  sessions <- read_shinylogs_sessions(log_directory)
+  all_data <- read_shinylogs_all(log_directory)
 
-  if (nrow(sessions) == 0) {
-    log_debug("Ingen sessions at aggregere",
+  total_rows <- sum(vapply(all_data, nrow, integer(1)))
+  if (total_rows == 0) {
+    log_debug("Ingen data at aggregere",
               .context = LOG_CONTEXTS$analytics$pins)
     return(invisible(NULL))
   }
@@ -91,10 +111,20 @@ aggregate_and_pin_logs <- function(log_directory = "logs/") {
     code = {
       if (requireNamespace("pins", quietly = TRUE) && nchar(Sys.getenv("CONNECT_SERVER")) > 0) {
         board <- pins::board_connect()
-        pins::pin_write(board, sessions, config$pin_name,
+        pins::pin_write(board, all_data, config$pin_name,
                         type = "rds",
-                        description = "biSPCharts analytics session data")
-        log_info(paste("Analytics pin opdateret:", nrow(sessions), "sessions"),
+                        description = paste(
+                          "biSPCharts analytics:",
+                          nrow(all_data$sessions), "sessions,",
+                          nrow(all_data$inputs), "inputs,",
+                          nrow(all_data$outputs), "outputs,",
+                          nrow(all_data$errors), "errors"
+                        ))
+        log_info(paste("Analytics pin opdateret:",
+                       nrow(all_data$sessions), "sessions,",
+                       nrow(all_data$inputs), "inputs,",
+                       nrow(all_data$outputs), "outputs,",
+                       nrow(all_data$errors), "errors"),
                  .context = LOG_CONTEXTS$analytics$pins)
       } else {
         log_debug("Pins ikke tilgaengelig (ikke paa Connect Cloud)",

@@ -54,45 +54,45 @@ mod_export_ui <- function(id) {
 
   # Hovedlayout: To-kolonne layout + navigationsknapper
   shiny::tagList(
-  bslib::layout_columns(
-    col_widths = c(4, 8), # 40% / 60% split
-    height = "auto",
-    min_height = "calc(100vh - 200px)",
+    bslib::layout_columns(
+      col_widths = c(4, 8), # 40% / 60% split
+      height = "auto",
+      min_height = "calc(100vh - 200px)",
 
-    # VENSTRE PANEL: Format selector og metadata ----
-    bslib::card(
-      full_screen = FALSE,
-      height = "100%",
-      bslib::card_header(
-        shiny::div(
-          shiny::icon("file-export"),
-          " Eksport Indstillinger"
-        )
-      ),
-      bslib::card_body(
-        # Format selector (ikonknapper) ----
-        shiny::div(
-          style = "margin-bottom: 20px;",
-          shiny::tags$label(
-            "Eksport Format:",
-            class = "control-label",
-            style = "font-weight: 500; margin-bottom: 10px; display: block;"
-          ),
-          # Hidden input — værdi styres udelukkende af JS via Shiny.setInputValue()
-          shiny::tags$input(
-            type = "hidden",
-            id = ns("export_format"),
-            name = ns("export_format"),
-            value = "pdf"
-          ),
+      # VENSTRE PANEL: Format selector og metadata ----
+      bslib::card(
+        full_screen = FALSE,
+        height = "100%",
+        bslib::card_header(
           shiny::div(
-            style = "display: flex; gap: 12px; justify-content: center;",
-            export_format_button(ns, "pdf", "file-pdf", "PDF"),
-            export_format_button(ns, "png", "file-image", "PNG")
-          ),
-          {
-            colors <- get_hospital_colors()
-            shiny::tags$style(htmltools::HTML(paste0("
+            shiny::icon("file-export"),
+            " Eksport Indstillinger"
+          )
+        ),
+        bslib::card_body(
+          # Format selector (ikonknapper) ----
+          shiny::div(
+            style = "margin-bottom: 20px;",
+            shiny::tags$label(
+              "Eksport Format:",
+              class = "control-label",
+              style = "font-weight: 500; margin-bottom: 10px; display: block;"
+            ),
+            # Hidden input — værdi styres udelukkende af JS via Shiny.setInputValue()
+            shiny::tags$input(
+              type = "hidden",
+              id = ns("export_format"),
+              name = ns("export_format"),
+              value = "pdf"
+            ),
+            shiny::div(
+              style = "display: flex; gap: 12px; justify-content: center;",
+              export_format_button(ns, "pdf", "file-pdf", "PDF"),
+              export_format_button(ns, "png", "file-image", "PNG")
+            ),
+            {
+              colors <- get_hospital_colors()
+              shiny::tags$style(htmltools::HTML(paste0("
               .export-format-btn {
                 transition: all 0.15s ease;
               }
@@ -107,339 +107,338 @@ mod_export_ui <- function(id) {
                 color: #fff !important;
               }
             ")))
-          }
-        ),
-        shiny::hr(),
-
-        # Sammenklapbar hjælp (minimal footprint når sammenklappet)
-        shiny::div(
-          shiny::tags$button(
-            class = "btn btn-sm btn-link text-muted p-0",
-            style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
-            onclick = "$('#eksporter_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
-            shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
-            "Hj\u00e6lp til dette trin"
+            }
           ),
-          shiny::div(
-            id = "eksporter_help_content",
-            style = "display: none;",
-            shiny::div(
-              class = "alert alert-light border mt-1 mb-1",
-              style = "font-size: 0.82rem; padding: 8px 12px;",
-              shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " V\u00e6lg format (PDF for rapporter, PNG for pr\u00e6sentationer)."),
-              shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " Skriv en kort titel der opsummerer hvad diagrammet viser."),
-              shiny::tags$p(class = "mb-1", shiny::tags$strong("3."), " Udfyld datadefinition og analyse af processen."),
-              shiny::tags$p(class = "mb-0", shiny::tags$strong("Tip:"), " Brug AI-funktionen til at generere et udkast til analyseteksten, og redig\u00e9r derefter.")
-            )
-          )
-        ),
+          shiny::hr(),
 
-        # Metadata fields (alle formater) ----
-        shiny::div(
-          style = "margin-bottom: 15px;",
-          shiny::textAreaInput(
-            ns("export_title"),
-            "Titel:",
-            value = "",
-            # placeholder = "Skriv en kort og sigende titel,\n**eller konkludér, hvad grafen viser**",
-            placeholder = "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**",
-            width = "100%",
-            rows = 2,
-            resize = "vertical"
-          ),
-          shiny::tags$small(
-            class = "text-muted",
-            sprintf("Maksimalt %d karakterer", EXPORT_TITLE_MAX_LENGTH)
-          )
-        ),
-        shiny::conditionalPanel(
-          condition = sprintf("input['%s'] != 'png'", ns("export_format")),
+          # Sammenklapbar hjælp (minimal footprint når sammenklappet)
           shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::textInput(
-              ns("export_hospital"),
-              "Hospital eller virksomhed:",
-              value = get_hospital_name(),
-              placeholder = "F.eks. 'Bispebjerg og Frederiksberg Hospital'",
-              width = "100%"
-            )
-          )
-        ),
-        shiny::div(
-          style = "margin-bottom: 15px;",
-          shiny::textInput(
-            ns("export_department"),
-            "Afdeling eller afsnit:",
-            value = "",
-            placeholder = "F.eks. 'Medicinsk Afdeling'",
-            width = "100%"
-          )
-        ),
-        ## Fodnote: kun synlig for PNG (PDF har sin egen layout)
-        shiny::conditionalPanel(
-          condition = sprintf("input['%s'] == 'png'", ns("export_format")),
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::textInput(
-              ns("export_footnote"),
-              "Fodnote:",
-              value = "",
-              placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
-              width = "100%"
-            )
-          )
-        ),
-
-        # Conditional panels for format-specific fields ----
-
-        ## PDF-specific fields ----
-        shiny::conditionalPanel(
-          condition = sprintf("input['%s'] == 'pdf'", ns("export_format")),
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::textAreaInput(
-              ns("pdf_description"),
-              shiny::tagList(
-                "Datadefinition:",
-                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-                  bslib::tooltip("Beskriv hvad indikatoren m\u00e5ler og hvordan data er opgjort. Fx: \u201cAndel patienter m\u00f8dt til ambulant aftale (m\u00f8dt/tilkaldt), opgjort m\u00e5nedligt.\u201d")
-              ),
-              value = "",
-              placeholder = "Beskriv hvad indikatoren måler og hvordan data opgøres",
-              width = "100%",
-              rows = 4,
-              resize = "vertical"
-            ),
-            shiny::tags$small(
-              class = "text-muted",
-              sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
-            )
-          ),
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::textAreaInput(
-              ns("pdf_improvement"),
-              shiny::tagList(
-                "Analyse af processen:",
-                shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-                  bslib::tooltip("Beskriv hvad diagrammet viser \u2014 er processen stabil? Er der signaler? Hvad kan forklare eventuelle udsving?")
-              ),
-              value = "",
-              placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
-              width = "100%",
-              rows = 4,
-              resize = "vertical"
-            ),
-            shiny::tags$small(
-              class = "text-muted",
-              sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
+            shiny::tags$button(
+              class = "btn btn-sm btn-link text-muted p-0",
+              style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
+              onclick = "$('#eksporter_help_content').slideToggle(200); $(this).find('.chevron-icon').toggleClass('fa-chevron-down fa-chevron-up');",
+              shiny::icon("chevron-down", class = "chevron-icon", style = "font-size: 0.65em; margin-right: 3px;"),
+              "Hj\u00e6lp til dette trin"
             ),
             shiny::div(
-              id = ns("analysis_auto_indicator"),
-              class = "text-muted",
-              style = "font-size: 0.8rem; font-style: italic; margin-top: 4px;",
-              shiny::icon("magic"),
-              " Auto-genereret analyse \u2014 rediger for at tilpasse"
-            ),
-          ),
-          # AI Suggestion Button — midlertidigt skjult, genaktiveres senere
-          # Funktionaliteten er intakt i mod_export_server.R og fct_ai_improvement_suggestions.R
-          shiny::div(
-            style = "display: none;",
-            shiny::actionButton(
-              ns("ai_generate_suggestion"),
-              label = "Generér forslag med AI",
-              icon = shiny::icon("wand-magic-sparkles"),
-              class = "btn-primary btn-sm",
-              style = "margin-top: 5px;"
-            ),
-            shiny::uiOutput(ns("ai_loading_feedback")),
-            shiny::tags$p(
-              class = "text-muted",
-              style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
-              shiny::icon("info-circle"),
-              " AI kan hjælpe med at formulere en mere detaljeret analyse af processen. Teksten kan redigeres efter behov."
-            )
-          )
-        ),
-
-        ## PNG-specific fields ----
-        shiny::conditionalPanel(
-          condition = sprintf("input['%s'] == 'png'", ns("export_format")),
-          shiny::div(
-            style = "margin-bottom: 10px;",
-            shiny::selectizeInput(
-              ns("png_preset"),
-              "Format:",
-              choices = c(
-                "HD 16:9 (1920 \u00d7 1080)" = "1920x1080",
-                "HD 16:9 (1280 \u00d7 720)" = "1280x720",
-                "4:3 (1600 \u00d7 1200)" = "1600x1200",
-                "4:3 (1024 \u00d7 768)" = "1024x768",
-                "Kvadrat (1080 \u00d7 1080)" = "1080x1080",
-                "A4 liggende (1754 \u00d7 1240)" = "1754x1240",
-                "Brugerdefineret" = "custom"
-              ),
-              selected = "1920x1080",
-              width = "100%"
-            ),
-            shiny::tags$style(shiny::HTML(paste0(
-              "#", ns("png_preset"),
-              "+ div>.selectize-dropdown{bottom: 100% !important; top:auto!important;}"
-            )))
-          ),
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::tags$label("Størrelse (px):", class = "control-label"),
-            shiny::div(
-              style = "display: flex; align-items: center; gap: 8px;",
-              shiny::numericInput(
-                ns("png_width"),
-                label = NULL,
-                value = 1920,
-                min = 400,
-                max = 4000,
-                step = 10,
-                width = "120px"
-              ),
-              shiny::tags$span(
-                style = paste0("font-size: 1.1rem; color: ", get_hospital_colors()$ui_grey_dark, "; padding-bottom: 15px;"),
-                "\u00d7"
-              ),
-              shiny::numericInput(
-                ns("png_height"),
-                label = NULL,
-                value = 1080,
-                min = 300,
-                max = 4000,
-                step = 10,
-                width = "120px"
-              ),
-              shiny::tags$span(
-                style = paste0("color: ", get_hospital_colors()$ui_grey_mid, "; font-size: 0.85rem; padding-bottom: 15px;"),
-                "px"
+              id = "eksporter_help_content",
+              style = "display: none;",
+              shiny::div(
+                class = "alert alert-light border mt-1 mb-1",
+                style = "font-size: 0.82rem; padding: 8px 12px;",
+                shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " V\u00e6lg format (PDF for rapporter, PNG for pr\u00e6sentationer)."),
+                shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " Skriv en kort titel der opsummerer hvad diagrammet viser."),
+                shiny::tags$p(class = "mb-1", shiny::tags$strong("3."), " Udfyld datadefinition og analyse af processen."),
+                shiny::tags$p(class = "mb-0", shiny::tags$strong("Tip:"), " Brug AI-funktionen til at generere et udkast til analyseteksten, og redig\u00e9r derefter.")
               )
             )
           ),
-        ),
 
-      )
-    ),
+          # Metadata fields (alle formater) ----
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::textAreaInput(
+              ns("export_title"),
+              "Titel:",
+              value = "",
+              # placeholder = "Skriv en kort og sigende titel,\n**eller konkludér, hvad grafen viser**",
+              placeholder = "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**",
+              width = "100%",
+              rows = 2,
+              resize = "vertical"
+            ),
+            shiny::tags$small(
+              class = "text-muted",
+              sprintf("Maksimalt %d karakterer", EXPORT_TITLE_MAX_LENGTH)
+            )
+          ),
+          shiny::conditionalPanel(
+            condition = sprintf("input['%s'] != 'png'", ns("export_format")),
+            shiny::div(
+              style = "margin-bottom: 15px;",
+              shiny::textInput(
+                ns("export_hospital"),
+                "Hospital eller virksomhed:",
+                value = get_hospital_name(),
+                placeholder = "F.eks. 'Bispebjerg og Frederiksberg Hospital'",
+                width = "100%"
+              )
+            )
+          ),
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::textInput(
+              ns("export_department"),
+              "Afdeling eller afsnit:",
+              value = "",
+              placeholder = "F.eks. 'Medicinsk Afdeling'",
+              width = "100%"
+            )
+          ),
+          ## Fodnote: kun synlig for PNG (PDF har sin egen layout)
+          shiny::conditionalPanel(
+            condition = sprintf("input['%s'] == 'png'", ns("export_format")),
+            shiny::div(
+              style = "margin-bottom: 15px;",
+              shiny::textInput(
+                ns("export_footnote"),
+                "Fodnote:",
+                value = "",
+                placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
+                width = "100%"
+              )
+            )
+          ),
 
-    # HØJRE PANEL: Live preview ----
-    bslib::card(
-      full_screen = TRUE,
-      height = "100%",
-      fillable = TRUE,
-      bslib::card_header(
-        shiny::div(
-          shiny::icon("eye"),
-          " Preview"
+          # Conditional panels for format-specific fields ----
+
+          ## PDF-specific fields ----
+          shiny::conditionalPanel(
+            condition = sprintf("input['%s'] == 'pdf'", ns("export_format")),
+            shiny::div(
+              style = "margin-bottom: 15px;",
+              shiny::textAreaInput(
+                ns("pdf_description"),
+                shiny::tagList(
+                  "Datadefinition:",
+                  shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                    bslib::tooltip("Beskriv hvad indikatoren m\u00e5ler og hvordan data er opgjort. Fx: \u201cAndel patienter m\u00f8dt til ambulant aftale (m\u00f8dt/tilkaldt), opgjort m\u00e5nedligt.\u201d")
+                ),
+                value = "",
+                placeholder = "Beskriv hvad indikatoren måler og hvordan data opgøres",
+                width = "100%",
+                rows = 4,
+                resize = "vertical"
+              ),
+              shiny::tags$small(
+                class = "text-muted",
+                sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
+              )
+            ),
+            shiny::div(
+              style = "margin-bottom: 15px;",
+              shiny::textAreaInput(
+                ns("pdf_improvement"),
+                shiny::tagList(
+                  "Analyse af processen:",
+                  shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                    bslib::tooltip("Beskriv hvad diagrammet viser \u2014 er processen stabil? Er der signaler? Hvad kan forklare eventuelle udsving?")
+                ),
+                value = "",
+                placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
+                width = "100%",
+                rows = 4,
+                resize = "vertical"
+              ),
+              shiny::tags$small(
+                class = "text-muted",
+                sprintf("Maksimalt %d karakterer", EXPORT_DESCRIPTION_MAX_LENGTH)
+              ),
+              shiny::div(
+                id = ns("analysis_auto_indicator"),
+                class = "text-muted",
+                style = "font-size: 0.8rem; font-style: italic; margin-top: 4px;",
+                shiny::icon("magic"),
+                " Auto-genereret analyse \u2014 rediger for at tilpasse"
+              ),
+            ),
+            # AI Suggestion Button — midlertidigt skjult, genaktiveres senere
+            # Funktionaliteten er intakt i mod_export_server.R og fct_ai_improvement_suggestions.R
+            shiny::div(
+              style = "display: none;",
+              shiny::actionButton(
+                ns("ai_generate_suggestion"),
+                label = "Generér forslag med AI",
+                icon = shiny::icon("wand-magic-sparkles"),
+                class = "btn-primary btn-sm",
+                style = "margin-top: 5px;"
+              ),
+              shiny::uiOutput(ns("ai_loading_feedback")),
+              shiny::tags$p(
+                class = "text-muted",
+                style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
+                shiny::icon("info-circle"),
+                " AI kan hjælpe med at formulere en mere detaljeret analyse af processen. Teksten kan redigeres efter behov."
+              )
+            )
+          ),
+
+          ## PNG-specific fields ----
+          shiny::conditionalPanel(
+            condition = sprintf("input['%s'] == 'png'", ns("export_format")),
+            shiny::div(
+              style = "margin-bottom: 10px;",
+              shiny::selectizeInput(
+                ns("png_preset"),
+                "Format:",
+                choices = c(
+                  "HD 16:9 (1920 \u00d7 1080)" = "1920x1080",
+                  "HD 16:9 (1280 \u00d7 720)" = "1280x720",
+                  "4:3 (1600 \u00d7 1200)" = "1600x1200",
+                  "4:3 (1024 \u00d7 768)" = "1024x768",
+                  "Kvadrat (1080 \u00d7 1080)" = "1080x1080",
+                  "A4 liggende (1754 \u00d7 1240)" = "1754x1240",
+                  "Brugerdefineret" = "custom"
+                ),
+                selected = "1920x1080",
+                width = "100%"
+              ),
+              shiny::tags$style(shiny::HTML(paste0(
+                "#", ns("png_preset"),
+                "+ div>.selectize-dropdown{bottom: 100% !important; top:auto!important;}"
+              )))
+            ),
+            shiny::div(
+              style = "margin-bottom: 15px;",
+              shiny::tags$label("Størrelse (px):", class = "control-label"),
+              shiny::div(
+                style = "display: flex; align-items: center; gap: 8px;",
+                shiny::numericInput(
+                  ns("png_width"),
+                  label = NULL,
+                  value = 1920,
+                  min = 400,
+                  max = 4000,
+                  step = 10,
+                  width = "120px"
+                ),
+                shiny::tags$span(
+                  style = paste0("font-size: 1.1rem; color: ", get_hospital_colors()$ui_grey_dark, "; padding-bottom: 15px;"),
+                  "\u00d7"
+                ),
+                shiny::numericInput(
+                  ns("png_height"),
+                  label = NULL,
+                  value = 1080,
+                  min = 300,
+                  max = 4000,
+                  step = 10,
+                  width = "120px"
+                ),
+                shiny::tags$span(
+                  style = paste0("color: ", get_hospital_colors()$ui_grey_mid, "; font-size: 0.85rem; padding-bottom: 15px;"),
+                  "px"
+                )
+              )
+            ),
+          ),
         )
       ),
-      bslib::card_body(
-        fill = TRUE,
-        style = "background-color: var(--bs-light, #f8f8f8)!important;",
-        # Conditional panels for preview availability
-        # Show warning when no plot available
-        shiny::conditionalPanel(
-          condition = "output.plot_available == false",
-          ns = ns,
+
+      # HØJRE PANEL: Live preview ----
+      bslib::card(
+        full_screen = TRUE,
+        height = "100%",
+        fillable = TRUE,
+        bslib::card_header(
           shiny::div(
-            class = "alert alert-warning",
-            style = "margin: 20px; padding: 20px;",
-            shiny::icon("exclamation-triangle"),
-            " Ingen graf er genereret endnu. Gå til hovedsiden for at oprette en SPC-graf først."
+            shiny::icon("eye"),
+            " Preview"
           )
         ),
-        # Show PDF preview when PDF format selected
-        shiny::conditionalPanel(
-          condition = "output.plot_available == true && output.is_pdf_format == true",
-          ns = ns,
-          shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; background-color: var(--bs-light, #f8f8f8); padding: 10px;",
+        bslib::card_body(
+          fill = TRUE,
+          style = "background-color: var(--bs-light, #f8f8f8)!important;",
+          # Conditional panels for preview availability
+          # Show warning when no plot available
+          shiny::conditionalPanel(
+            condition = "output.plot_available == false",
+            ns = ns,
             shiny::div(
-              class = "export-preview-container",
-              style = paste0(
-                "border: 1px solid #ccd3dd; border-radius: 4px; ",
-                "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
-                "background-color: white; ",
-                "max-width: 100%; max-height: 100%; ",
-                "position: relative;"
+              class = "alert alert-warning",
+              style = "margin: 20px; padding: 20px;",
+              shiny::icon("exclamation-triangle"),
+              " Ingen graf er genereret endnu. Gå til hovedsiden for at oprette en SPC-graf først."
+            )
+          ),
+          # Show PDF preview when PDF format selected
+          shiny::conditionalPanel(
+            condition = "output.plot_available == true && output.is_pdf_format == true",
+            ns = ns,
+            shiny::div(
+              style = "height: 100%; display: flex; align-items: center; justify-content: center; background-color: var(--bs-light, #f8f8f8); padding: 10px;",
+              shiny::div(
+                class = "export-preview-container",
+                style = paste0(
+                  "border: 1px solid #ccd3dd; border-radius: 4px; ",
+                  "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
+                  "background-color: white; ",
+                  "max-width: 100%; max-height: 100%; ",
+                  "position: relative;"
+                ),
+                shiny::imageOutput(
+                  ns("pdf_preview"),
+                  width = "100%",
+                  height = "100%"
+                ),
+                # CSS: fit preview image within container without scrolling
+                shiny::tags$style(shiny::HTML(paste0(
+                  "#", ns("pdf_preview"), " img { ",
+                  "max-width: 100%; max-height: calc(100vh - 350px); ",
+                  "width: auto; height: auto; ",
+                  "object-fit: contain; display: block; }"
+                )))
+              )
+            )
+          ),
+          # Show ggplot preview when PNG format selected
+          shiny::conditionalPanel(
+            condition = "output.plot_available == true && output.is_pdf_format == false",
+            ns = ns,
+            shiny::div(
+              style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: var(--bs-light, #f8f8f8); padding: 20px;",
+              shiny::div(
+                class = "export-preview-container",
+                style = paste0(
+                  "border: 1px solid #ccd3dd; border-radius: 4px; ",
+                  "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
+                  "background-color: white; position: relative; ",
+                  "max-width: 100%; max-height: calc(100vh - 300px);"
+                ),
+                shiny::plotOutput(
+                  ns("export_preview"),
+                  width = "100%",
+                  height = "auto"
+                )
               ),
-              shiny::imageOutput(
-                ns("pdf_preview"),
-                width = "100%",
-                height = "100%"
-              ),
-              # CSS: fit preview image within container without scrolling
+              # Skalér preview-billedet til at passe inden for rammen
               shiny::tags$style(shiny::HTML(paste0(
-                "#", ns("pdf_preview"), " img { ",
-                "max-width: 100%; max-height: calc(100vh - 350px); ",
+                "#", ns("export_preview"), " img { ",
+                "max-width: 100%; max-height: calc(100vh - 340px); ",
                 "width: auto; height: auto; ",
                 "object-fit: contain; display: block; }"
               )))
             )
           )
-        ),
-        # Show ggplot preview when PNG format selected
-        shiny::conditionalPanel(
-          condition = "output.plot_available == true && output.is_pdf_format == false",
-          ns = ns,
-          shiny::div(
-            style = "height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: var(--bs-light, #f8f8f8); padding: 20px;",
-            shiny::div(
-              class = "export-preview-container",
-              style = paste0(
-                "border: 1px solid #ccd3dd; border-radius: 4px; ",
-                "box-shadow: 0 2px 8px rgba(0,0,0,0.1); ",
-                "background-color: white; position: relative; ",
-                "max-width: 100%; max-height: calc(100vh - 300px);"
-              ),
-              shiny::plotOutput(
-                ns("export_preview"),
-                width = "100%",
-                height = "auto"
-              )
-            ),
-            # Skalér preview-billedet til at passe inden for rammen
-            shiny::tags$style(shiny::HTML(paste0(
-              "#", ns("export_preview"), " img { ",
-              "max-width: 100%; max-height: calc(100vh - 340px); ",
-              "width: auto; height: auto; ",
-              "object-fit: contain; display: block; }"
-            )))
-          )
         )
       )
-    )
-  ),
-  # Tilbage/Gem/Eksportér knapper under cards
-  shiny::div(
-    style = "display: flex; justify-content: space-between; align-items: center;",
-    shiny::actionButton(
-      ns("back_to_analysis"),
-      shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
-      class = "btn-secondary",
-      style = "width: 200px;",
-      title = "Gå tilbage til analyse"
     ),
-    shinyjs::disabled(
+    # Tilbage/Gem/Eksportér knapper under cards
+    shiny::div(
+      style = "display: flex; justify-content: space-between; align-items: center;",
+      shiny::actionButton(
+        ns("back_to_analysis"),
+        shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
+        class = "btn-secondary",
+        style = "width: 200px;",
+        title = "Gå tilbage til analyse"
+      ),
+      shinyjs::disabled(
+        shiny::downloadButton(
+          "download_spc_file_step3",
+          "Gem kopi af data og indstillinger",
+          class = "btn-outline-secondary",
+          style = "width: auto; min-width: 200px;",
+          title = "Gem kopi af data og indstillinger til Excel-fil"
+        )
+      ),
       shiny::downloadButton(
-        "download_spc_file_step3",
-        "Gem kopi af data og indstillinger",
-        class = "btn-outline-secondary",
-        style = "width: auto; min-width: 200px;",
-        title = "Gem kopi af data og indstillinger til Excel-fil"
+        ns("download_export"),
+        "Eksportér",
+        icon = shiny::icon("file-export"),
+        class = "btn-primary",
+        style = "width: 200px; text-align: center; color: white !important;"
       )
-    ),
-    shiny::downloadButton(
-      ns("download_export"),
-      "Eksportér",
-      icon = shiny::icon("file-export"),
-      class = "btn-primary",
-      style = "width: 200px; text-align: center;"
     )
-  )
   )
 }

@@ -296,7 +296,13 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
       value_box_signal_theme(status_info, !is.null(anhoej$out_of_control_count) && (anhoej$out_of_control_count > 0))
     },
     shiny::p(
-      class = if (status_info$status == "ready" && chart_type == "run") "fs-7 mb-0" else "fs-7 text-muted mb-0",
+      class = if (status_info$status == "ready" && chart_type == "run") {
+        "fs-7 mb-0"
+      } else if (status_info$status == "ready" && !is.null(anhoej$out_of_control_count) && anhoej$out_of_control_count > 0) {
+        "fs-7 mb-0"
+      } else {
+        "fs-7 text-muted mb-0"
+      },
       style = if (status_info$status == "ready" && chart_type == "run") paste0("color: ", muted_color, " !important;") else NULL,
       if (status_info$status == "ready") {
         if (chart_type == "run") "" else "Punkter uden for kontrolgrænser"

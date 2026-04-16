@@ -218,7 +218,9 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         # mens brugeren redigerer felterne
         w <- as.numeric(input$png_width %||% 1920)
         h <- as.numeric(input$png_height %||% 1080)
-        if (is.na(w) || is.na(h) || w < 100 || h < 100) return(450)
+        if (is.na(w) || is.na(h) || w < 100 || h < 100) {
+          return(450)
+        }
         ratio <- max(0.2, min(5, h / w))
         round(800 * ratio)
       },
@@ -240,29 +242,41 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # PNG PRESET OBSERVERS ====================================================
 
     # Opdater width/height når preset vælges
-    observeEvent(input$png_preset, {
-      preset <- input$png_preset
-      if (is.null(preset) || preset == "custom") return()
+    observeEvent(input$png_preset,
+      {
+        preset <- input$png_preset
+        if (is.null(preset) || preset == "custom") {
+          return()
+        }
 
-      dims <- strsplit(preset, "x")[[1]]
-      if (length(dims) != 2) return()
+        dims <- strsplit(preset, "x")[[1]]
+        if (length(dims) != 2) {
+          return()
+        }
 
-      shiny::updateNumericInput(session, "png_width", value = as.integer(dims[1]))
-      shiny::updateNumericInput(session, "png_height", value = as.integer(dims[2]))
-    }, ignoreInit = TRUE)
+        shiny::updateNumericInput(session, "png_width", value = as.integer(dims[1]))
+        shiny::updateNumericInput(session, "png_height", value = as.integer(dims[2]))
+      },
+      ignoreInit = TRUE
+    )
 
     # Sæt dropdown til "Brugerdefineret" når brugeren ændrer dimensioner manuelt
-    observeEvent(list(input$png_width, input$png_height), {
-      w <- input$png_width
-      h <- input$png_height
-      preset <- input$png_preset
-      if (is.null(w) || is.null(h) || is.null(preset) || preset == "custom") return()
+    observeEvent(list(input$png_width, input$png_height),
+      {
+        w <- input$png_width
+        h <- input$png_height
+        preset <- input$png_preset
+        if (is.null(w) || is.null(h) || is.null(preset) || preset == "custom") {
+          return()
+        }
 
-      expected <- paste0(w, "x", h)
-      if (expected != preset) {
-        shiny::updateSelectInput(session, "png_preset", selected = "custom")
-      }
-    }, ignoreInit = TRUE)
+        expected <- paste0(w, "x", h)
+        if (expected != preset) {
+          shiny::updateSelectInput(session, "png_preset", selected = "custom")
+        }
+      },
+      ignoreInit = TRUE
+    )
 
     # PDF PREVIEW GENERATION ==================================================
 
@@ -301,16 +315,24 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       hospital_input <- debounced_hospital()
 
       # Build metadata for PDF generation
+      # Bemærk: bfh_create_typst_document() (preview-vejen) auto-genererer ikke
+      # details — det gør kun bfh_export_pdf(). Vi sætter derfor selv details
+      # via BFHcharts::bfh_generate_details() så preview matcher eksport.
       metadata <- list(
         hospital = if (nzchar(hospital_input)) hospital_input else get_hospital_name_for_export(),
         department = dept_input,
         title = title_input,
         analysis = analysis_input,
+        details = safe_operation(
+          operation_name = "Generate PDF preview details",
+          code = BFHcharts::bfh_generate_details(pdf_result$bfh_qic_result),
+          fallback = NULL,
+          error_type = "processing"
+        ),
         data_definition = data_def_input,
         author = Sys.getenv("USER"),
         date = Sys.Date()
       )
-      # details udeladt — BFHcharts auto-genererer via bfh_generate_details()
 
       # Generate PDF preview PNG using BFHcharts
       safe_operation(

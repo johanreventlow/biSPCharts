@@ -437,7 +437,7 @@ mod_export_ui <- function(id) {
         "Eksportér",
         icon = shiny::icon("file-export"),
         class = "btn-primary",
-        style = "width: 200px; text-align: center;"
+        style = "width: 200px; text-align: center; color: white !important;"
       )
     )
   )

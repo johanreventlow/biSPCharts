@@ -45,6 +45,36 @@ safe_max <- function(x, na.rm = TRUE) {
   return(result)
 }
 
+#' Count Outliers in Latest Part of qic_data
+#'
+#' Beregner antal outliers (`sigma.signal == TRUE`) inden for seneste part af
+#' `qic_data`. Matcher BFHcharts' `bfh_extract_spc_stats.bfh_qic_result()` så
+#' trin 2 value box ("OBS. UDEN FOR KONTROLGRÆNSE") og trin 3 Typst-tabel
+#' viser samme tal.
+#'
+#' Ved phases/skift filtreres til rækker med `part == max(part)`. Uden `part`
+#' kolonne tælles hele datasættet.
+#'
+#' @param qic_data Data frame fra qicharts2 med `sigma.signal` og evt. `part`.
+#'
+#' @return Integer med antal outliers, eller 0L hvis `sigma.signal` mangler.
+#'
+#' @keywords internal
+count_outliers_latest_part <- function(qic_data) {
+  if (is.null(qic_data) || nrow(qic_data) == 0 ||
+        !"sigma.signal" %in% names(qic_data)) {
+    return(0L)
+  }
+
+  qd <- qic_data
+  if ("part" %in% names(qd)) {
+    latest_part <- max(qd$part, na.rm = TRUE)
+    qd <- qd[qd$part == latest_part, ]
+  }
+
+  as.integer(sum(qd$sigma.signal, na.rm = TRUE))
+}
+
 #' Get Filtered Module Data
 #'
 #' Retrieves and filters the current data from app_state, applying:

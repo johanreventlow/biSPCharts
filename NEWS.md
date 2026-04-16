@@ -16,7 +16,16 @@
   ny helper `count_outliers_latest_part()` i
   [R/mod_spc_chart_state.R](R/mod_spc_chart_state.R).
 
-Kræver BFHcharts >= 0.7.0.
+Kræver BFHcharts >= 0.7.1.
+
+### Analysetekst præciseret (via BFHcharts 0.7.1)
+
+Outlier-tekstem i PDF-analysen signalerer nu eksplicit at tallet kun omfatter
+nylige observationer, f.eks. "2 af de seneste observationer ligger uden for
+kontrolgrænserne". Tidligere kunne formuleringen forveksles med totalen i
+PDF-tabellen. Tabel-tallet (total i seneste part) og tekst-tallet (seneste
+6 obs) kan nu adskille sig, og teksten gør det klart at den kun beskriver
+aktuelle outliers.
 
 ## Features
 

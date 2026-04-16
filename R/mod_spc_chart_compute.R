@@ -202,7 +202,8 @@ create_spc_results_reactive <- function(
 
           qic_results <- list(
             any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-            out_of_control_count = sum(qic_data$sigma.signal, na.rm = TRUE),
+            # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
+            out_of_control_count = count_outliers_latest_part(qic_data),
             runs_signal = runs_sig,
             crossings_signal = crossings_sig,
             anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
@@ -415,7 +416,8 @@ register_cache_aware_observer <- function(
 
     qic_results <- list(
       any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-      out_of_control_count = sum(qic_data$sigma.signal, na.rm = TRUE),
+      # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
+      out_of_control_count = count_outliers_latest_part(qic_data),
       runs_signal = runs_sig,
       crossings_signal = crossings_sig,
       anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal

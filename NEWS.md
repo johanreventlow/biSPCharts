@@ -1,5 +1,23 @@
 # biSPCharts (development version)
 
+## Bug fixes
+
+### Outlier-count i trin 3 preview og trin 2 value box
+
+- **Trin 3 Typst-preview viser nu korrekt antal outliers i tabellen**
+  "OBS. UDEN FOR KONTROLGRÆNSE". Tidligere blev `bfh_extract_spc_stats()`
+  kaldt med `bfh_qic_result$summary` alene, hvilket altid returnerede
+  `outliers_actual = NULL`, og rækken blev skjult. Vi kalder nu den nye
+  S3-dispatch `bfh_extract_spc_stats(bfh_qic_result)` som udfylder
+  outlier-tallet.
+- **Trin 2 value box "OBS. UDEN FOR KONTROLGRÆNSE" er nu konsistent med
+  tabellen.** `out_of_control_count` filtreres nu til seneste part
+  (matcher `bfh_extract_spc_stats.bfh_qic_result()` i BFHcharts 0.7.0) via
+  ny helper `count_outliers_latest_part()` i
+  [R/mod_spc_chart_state.R](R/mod_spc_chart_state.R).
+
+Kræver BFHcharts >= 0.7.0.
+
 ## Features
 
 ### Session Persistence via Browser localStorage (Issue #193)

@@ -318,8 +318,12 @@ generate_pdf_preview <- function(bfh_qic_result,
           device = "png"
         )
 
-        # 2. Extract SPC stats using BFHcharts public API
-        spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result$summary)
+        # 2. Extract SPC stats using BFHcharts public API.
+        #    Send hele bfh_qic_result (ikke kun $summary) så S3-dispatch sender
+        #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
+        #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
+        #    ville tabellen "OBS. UDEN FOR KONTROLGRÆNSE" være tom i preview.
+        spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
 
         # 3. Merge metadata with chart title
         metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)

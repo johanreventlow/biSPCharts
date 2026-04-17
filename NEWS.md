@@ -19,8 +19,11 @@
 
 * **Publish-gate er fortsat delvist blokeret:** Ca. 302 pre-existing failures
   fra green-partial testfiler (ikke relateret til denne oprydning). Håndteres
-  separat i `refactor-test-suite` Change 2 Fase 3. Midlertidig emergency-publish
-  kræver manuel håndtering af maintainer indtil Fase 3 er komplet.
+  separat i `refactor-test-suite` Change 2 Fase 3. Ved nødpublish inden Fase 3:
+  maintainer kan køre `devtools::test(stop_on_failure = FALSE)` manuelt før
+  `rsconnect::writeManifest()` og `deployApp()`, eller midlertidigt genindføre
+  `--skip-tests`-flaget lokalt (se commit 20b4724 for reference) og revert
+  efter deployment.
 
 # biSPCharts (development version)
 

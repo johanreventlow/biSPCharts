@@ -588,7 +588,11 @@ create_inline_column_mapping <- function() {
     ))),
     compact_select(
       "x_column", "X-akse",
-      "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned)"
+      paste0(
+        "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned). ",
+        "Underst\u00f8ttede datoformater: 15-03-2024, 15/03/2024, 15.03.2024, 2024-03-15 ",
+        "eller \"15 mar 2024\". Andre tekster bruges som observationsnumre."
+      )
     ),
     compact_select(
       "y_column", "Y-akse",

@@ -19,8 +19,8 @@ metadata:
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 0
-    unreviewed: 125
+    reviewed: 48
+    unreviewed: 77
     needs_triage: 26
 files:
   - file: test-100x-mismatch-prevention.R
@@ -32,12 +32,16 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-anhoej-rules.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-app-basic.R
     audit_category: stub
     type: e2e
@@ -52,12 +56,16 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-autodetect-tidyverse-integration.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-autodetect-unified-comprehensive.R
     audit_category: green-partial
     type: unit
@@ -107,7 +115,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-clean-qic-call-args.R
     audit_category: stub
     type: unit
@@ -122,17 +132,23 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-comprehensive-ui-sync.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-config_analytics.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-config_chart_types.R
     audit_category: green-partial
     type: unit
@@ -147,12 +163,16 @@ files:
     audit_category: green
     type: benchmark
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-config-ui-getters.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-constants-architecture.R
     audit_category: green-partial
     type: unit
@@ -182,22 +202,30 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-csv-parsing.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-csv-sanitization.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-danish-clinical-edge-cases.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-data-validation.R
     audit_category: green-partial
     type: unit
@@ -207,7 +235,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-denominator-field-toggle.R
     audit_category: stub
     type: unit
@@ -237,7 +267,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-event-system-emit.R
     audit_category: green-partial
     type: unit
@@ -252,22 +284,30 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-fct_ai_improvement_suggestions.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-fct_export_png.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-fct_spc_file_save_load.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-file-io-comprehensive.R
     audit_category: green-partial
     type: unit
@@ -282,7 +322,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-file-upload.R
     audit_category: green-partial
     type: unit
@@ -292,7 +334,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-generateSPCPlot-comprehensive.R
     audit_category: green-partial
     type: snapshot
@@ -307,12 +351,16 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-integration-workflows.R
     audit_category: green
     type: integration
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-label-formatting.R
     audit_category: green-partial
     type: unit
@@ -342,17 +390,23 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-logging-standardization.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-logging-system.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-mod_export.R
     audit_category: green-partial
     type: unit
@@ -377,7 +431,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-npc-mapper.R
     audit_category: green-partial
     type: unit
@@ -392,7 +448,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-package-initialization.R
     audit_category: green-partial
     type: unit
@@ -422,7 +480,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-plot-core.R
     audit_category: green-partial
     type: unit
@@ -442,7 +502,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-reactive-batching.R
     audit_category: green-partial
     type: unit
@@ -452,7 +514,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-run-app.R
     audit_category: stub
     type: unit
@@ -462,7 +526,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-runtime-config-comprehensive.R
     audit_category: green-partial
     type: unit
@@ -472,7 +538,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-security-session-tokens.R
     audit_category: green-partial
     type: unit
@@ -482,7 +550,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-session-token-sanitization.R
     audit_category: green-partial
     type: unit
@@ -517,7 +587,9 @@ files:
     audit_category: green
     type: snapshot
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-state-management-hierarchical.R
     audit_category: green-partial
     type: unit
@@ -532,7 +604,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-ui-token-management.R
     audit_category: stub
     type: unit
@@ -542,32 +616,44 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_analytics_github.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_analytics_pins.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_data_signatures.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_error_handling.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_export_filename.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_export_validation.R
     audit_category: green-partial
     type: unit
@@ -577,7 +663,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_performance_caching.R
     audit_category: green-partial
     type: benchmark
@@ -587,12 +675,16 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_server_export.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_validation_guards.R
     audit_category: broken-missing-fn
     type: unit
@@ -612,7 +704,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-visualization-server.R
     audit_category: green-partial
     type: unit
@@ -622,7 +716,9 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-y-axis-formatting.R
     audit_category: green-partial
     type: unit
@@ -648,4 +744,3 @@ files:
     type: unit
     handling: fix-in-phase-3
     reviewed: no
-

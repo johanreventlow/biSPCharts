@@ -1,10 +1,10 @@
 # Test Audit Report
 
-**Dato:** 2026-04-17T20:31:43+0200
+**Dato:** 2026-04-17T20:47:07+0200
 **biSPCharts version:** 0.2.0
 **R version:** 4.5.2
 **Total filer:** 121
-**Total koerselstid:** 266.2 s
+**Total koerselstid:** 269.5 s
 
 ---
 
@@ -253,7 +253,7 @@ Adding another scale for
 ### `test-critical-fixes-integration.R`
 - LOC: 373
 - Test-blokke: 6
-- Pass/Fail/Skip: 37 / 4 / 2
+- Pass/Fail/Skip: 39 / 4 / 1
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -635,9 +635,9 @@ App state memory usage: 0.40 MB (target: <100MB)
 Auto-detection for 100 rows: 0.10 MB
 Auto-detection for 500 rows: 0.10 MB
 Auto-detection for 1000 rows: 0.00 MB
-Process 1000 rows: 4.03 ms (target: <200ms)
-Danish character overhead: -18.9% (target: <10%)
-Auto-detection: 1.48 ms (target: <100ms)
+Process 1000 rows: 4.23 ms (target: <200ms)
+Danish character overhead: -18.5% (target: <10%)
+Auto-detection: 1.53 ms (target: <100ms)
 Ambiguous 
 ```
 
@@ -711,7 +711,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing session token hashing security improvements implemented 2025-09-26
 Security fix: Session tokens are now hashed before logging
 Prevents: Session token exposure in logs and potential session hijacking
-Session token hashing performance: single=0.000084s, 100x=0.001s
+Session token hashing performance: single=0.000104s, 100x=0.001s
 Hash collision test: 1000 tokens, 1000 unique hashes, 0.00% collision rate
 End-to
 ```
@@ -1443,7 +1443,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing logging system standardization implemented 2025-09-26
 Improvement: Unified logging API with backward compatibility
 372+ logging calls across 34 files standardized
-Logging performance: single=0.000126s, 100x=0.006s
+Logging performance: single=0.000132s, 100x=0.006s
 End-to-end logging system test successful
 ```
 

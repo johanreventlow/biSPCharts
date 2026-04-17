@@ -312,11 +312,16 @@ test_that("time_breaks haandterer konstante og tomme inputs", {
 })
 
 test_that("time_breaks snapper til interval-grid", {
-  # Input range 45-155 → snap til 30m-grid
+  # Input range 45-155 → snap til 30m-grid. Floor-snap på begge ender giver
+  # 30-150 (ggplot2's expand udvider selv aksen, så y_max=155 er synligt
+  # over sidste tick).
   breaks <- time_breaks(c(45, 155))
   expect_true(all(breaks %% 30 == 0))
   expect_true(min(breaks) <= 45)
-  expect_true(max(breaks) >= 155)
+  expect_true(max(breaks) >= 150)
+  # Sidste tick skal være indenfor én intervalafstand af y_max
+  # (ellers er aksen for sparsomt dækket)
+  expect_true(max(breaks) >= 155 - 30)
 })
 ```
 
@@ -335,18 +340,20 @@ Tilføj efter `format_time_composite_single`:
 
 #' Generér tids-naturlige tick-breaks
 #'
-#' Vaelger det mindste interval fra TIME_BREAK_CANDIDATES der giver target_n
-#' (plusminus 2) ticks inden for data-range. Ticks snappes til multipla af
-#' intervallet, saa de starter og slutter paa paene vaerdier — ikke paa
-#' data-min/max.
+#' Vaelger det STOERSTE interval fra TIME_BREAK_CANDIDATES der stadig giver
+#' mindst `target_n` ticks inden for data-range. Kriteriet resulterer i
+#' naturligt grovere ticks for store ranges og finere for smalle ranges.
+#' Begge ender snappes med floor() til multipla af det valgte interval
+#' (ggplot2 udvider selv aksen med expansion(), saa y_max er stadig synligt).
 #'
 #' @param y_values numeric. Data-range at generere ticks til.
-#' @param target_n integer. Maal-antal ticks. Default 5L. Accepterer 4-7.
+#' @param target_n integer. Minimums-antal ticks. Default 5L.
 #' @return numeric vektor. Tick-positioner i minutter.
 #' @keywords internal
 #' @examples
-#' time_breaks(c(0, 120))   # 0 30 60 90 120
-#' time_breaks(c(0, 480))   # 0 120 240 360 480
+#' time_breaks(c(0, 120))    # 0 30 60 90 120
+#' time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
+#' time_breaks(c(0, 480))    # 0 120 240 360 480
 time_breaks <- function(y_values, target_n = 5L) {
   # Defensiv: filtrer NA og tomme inputs
   y_clean <- y_values[!is.na(y_values)]
@@ -362,30 +369,42 @@ time_breaks <- function(y_values, target_n = 5L) {
     return(y_min)
   }
 
-  range_span <- y_max - y_min
-
-  # Find mindste interval der giver target_n +/- 2 ticks
-  min_ticks <- max(3L, target_n - 2L)
-  max_ticks <- target_n + 2L
-
+  # Primaer: stoerste interval med >= target_n ticks.
+  # Intervallerne itereres fra lille til stor; n_ticks falder monotont, saa
+  # vi kan break ud af loekken saa snart n_ticks falder under target_n.
   chosen_interval <- NULL
   for (interval in TIME_BREAK_CANDIDATES) {
-    n_ticks <- floor(range_span / interval) + 1L
-    if (n_ticks >= min_ticks && n_ticks <= max_ticks) {
+    start <- floor(y_min / interval) * interval
+    end <- floor(y_max / interval) * interval
+    n_ticks <- (end - start) / interval + 1L
+    if (n_ticks >= target_n) {
       chosen_interval <- interval
+    } else if (!is.null(chosen_interval)) {
+      # Vi har et valg; videre intervaller vil kun give faerre ticks
       break
     }
   }
 
-  # Fallback: vaelg taettest paa target_n hvis intet passer
+  # Fallback 1: meget smal range — brug mindste interval med >= 2 ticks
   if (is.null(chosen_interval)) {
-    diffs <- abs(floor(range_span / TIME_BREAK_CANDIDATES) + 1L - target_n)
-    chosen_interval <- TIME_BREAK_CANDIDATES[which.min(diffs)]
+    for (interval in TIME_BREAK_CANDIDATES) {
+      start <- floor(y_min / interval) * interval
+      end <- floor(y_max / interval) * interval
+      n_ticks <- (end - start) / interval + 1L
+      if (n_ticks >= 2L) {
+        chosen_interval <- interval
+        break
+      }
+    }
   }
 
-  # Snap start og slut til grid af chosen_interval
+  # Fallback 2: patologisk case — brug mindste kandidat
+  if (is.null(chosen_interval)) {
+    chosen_interval <- TIME_BREAK_CANDIDATES[[1]]
+  }
+
   start <- floor(y_min / chosen_interval) * chosen_interval
-  end <- ceiling(y_max / chosen_interval) * chosen_interval
+  end <- floor(y_max / chosen_interval) * chosen_interval
 
   seq(start, end, by = chosen_interval)
 }

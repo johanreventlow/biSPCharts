@@ -93,44 +93,12 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
     }
   }
 
-  # Time formatting (input: minutes) - kontekst-aware
+  # Time formatting (input: minutes) - komposit-format
+  # Bruger format_time_composite() for konsistens med format_y_axis_time().
+  # y_range-parameteren er ikke laengere relevant — komposit-format haandterer
+  # minutter/timer/dage automatisk (0m, 30m, 1t, 1t 30m, 1d, 2d 13t).
   if (y_unit == "time") {
-    # Hvis y_range ikke er givet, kan vi ikke bestemme kontekst
-    if (is.null(y_range) || length(y_range) < 2) {
-      warning("format_y_value: y_range mangler for 'time' unit, bruger default formatering")
-      if (val == round(val)) {
-        return(format(round(val), decimal.mark = ","))
-      } else {
-        return(format(val, decimal.mark = ",", nsmall = 1))
-      }
-    }
-
-    max_minutes <- max(y_range, na.rm = TRUE)
-
-    if (max_minutes < 60) {
-      # Minutes
-      if (val == round(val)) {
-        return(paste0(round(val), " min"))
-      } else {
-        return(paste0(format(val, decimal.mark = ",", nsmall = 1), " min"))
-      }
-    } else if (max_minutes < 1440) {
-      # Hours
-      hours <- val / 60
-      if (hours == round(hours)) {
-        return(paste0(round(hours), " timer"))
-      } else {
-        return(paste0(format(hours, decimal.mark = ",", nsmall = 1), " timer"))
-      }
-    } else {
-      # Days
-      days <- val / 1440
-      if (days == round(days)) {
-        return(paste0(round(days), " dage"))
-      } else {
-        return(paste0(format(days, decimal.mark = ",", nsmall = 1), " dage"))
-      }
-    }
+    return(format_time_composite(val))
   }
 
   # Default formatting - dansk notation

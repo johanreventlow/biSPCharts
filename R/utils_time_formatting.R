@@ -97,8 +97,10 @@ format_time_composite_single <- function(v) {
 #' time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
 #' time_breaks(c(0, 480))    # 0 120 240 360 480
 time_breaks <- function(y_values, target_n = 5L) {
-  # Defensiv: filtrer NA og tomme inputs
-  y_clean <- y_values[!is.na(y_values)]
+  # Defensiv: filtrer ikke-finite (NA, NaN, Inf, -Inf) og tomme inputs.
+  # ggplot2 passerer undertiden Inf/-Inf under layout; seq() ville senere
+  # crashe med 'to' must be a finite number uden denne filtrering.
+  y_clean <- y_values[is.finite(y_values)]
   if (length(y_clean) == 0L) {
     return(numeric(0))
   }
@@ -112,8 +114,8 @@ time_breaks <- function(y_values, target_n = 5L) {
   }
 
   # Primaer: stoerste interval med >= target_n ticks.
-  # Intervallerne itereres fra lille til stor; n_ticks falder monotont, saa
-  # vi kan break ud af loekken saa snart n_ticks falder under target_n.
+  # Itererer alle kandidater (floor-snap kan give non-monotonisk n_ticks
+  # i sjaeldne tilfaelde for smaa target_n — omkostningen er ubetydelig).
   chosen_interval <- NULL
   for (interval in TIME_BREAK_CANDIDATES) {
     start <- floor(y_min / interval) * interval
@@ -121,9 +123,6 @@ time_breaks <- function(y_values, target_n = 5L) {
     n_ticks <- (end - start) / interval + 1L
     if (n_ticks >= target_n) {
       chosen_interval <- interval
-    } else if (!is.null(chosen_interval)) {
-      # Vi har et valg; videre intervaller vil kun give faerre ticks
-      break
     }
   }
 
@@ -140,9 +139,10 @@ time_breaks <- function(y_values, target_n = 5L) {
     }
   }
 
-  # Fallback 2: patologisk case — brug mindste kandidat
+  # Fallback 2: sub-unit range (f.eks. 0.3-0.9 min) — returnér
+  # data-bracketing tick-par saa aksen ikke bliver blank.
   if (is.null(chosen_interval)) {
-    chosen_interval <- TIME_BREAK_CANDIDATES[[1]]
+    return(c(y_min, y_max))
   }
 
   start <- floor(y_min / chosen_interval) * chosen_interval

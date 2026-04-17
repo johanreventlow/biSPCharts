@@ -116,4 +116,6 @@ test_that("time_breaks snapper til interval-grid", {
   expect_true(max(breaks) >= 150)
   # Sidste tick skal vaere indenfor én interval-afstand af y_max
   expect_true(max(breaks) >= 155 - 30)
+  # Mindstekrav: target_n=5 skal opfyldes for typiske ranges
+  expect_gte(length(breaks), 5)
 })

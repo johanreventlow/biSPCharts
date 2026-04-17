@@ -251,3 +251,33 @@ describe("classify_file()", {
     expect_equal(classify_file(static, dynamic), "stub")
   })
 })
+
+source(file.path(audit_dir, "reporter.R"))
+
+describe("write_json_report()", {
+  it("skriver valid JSON med forventede felter", {
+    results <- list(
+      run_timestamp = "2026-04-17T10:00:00+02:00",
+      biSPCharts_version = "0.2.0",
+      r_version = "4.5.2",
+      total_files = 2L,
+      total_elapsed_s = 5.2,
+      summary = list(green = 1L, `broken-missing-fn` = 1L),
+      top_missing_functions = list(
+        list(fn = "missing_fn", n_files = 1L, files = list("test-foo.R"))
+      ),
+      files = list(
+        list(file = "test-foo.R", category = "broken-missing-fn", n_tests = 5L)
+      )
+    )
+
+    tmp <- tempfile(fileext = ".json")
+    on.exit(unlink(tmp), add = TRUE)
+    write_json_report(results, tmp)
+
+    parsed <- jsonlite::fromJSON(tmp, simplifyVector = FALSE)
+    expect_equal(parsed$total_files, 2L)
+    expect_equal(parsed$summary$green, 1L)
+    expect_equal(parsed$files[[1]]$file, "test-foo.R")
+  })
+})

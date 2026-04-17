@@ -61,7 +61,19 @@ run_test_file_isolated <- function(file, timeout = 60, pkg_root = getwd()) {
   start_time <- Sys.time()
 
   r_code <- sprintf(
-    'setwd("%s"); pkgload::load_all(quiet = TRUE); res <- testthat::test_file("%s", reporter = testthat::SilentReporter$new(), stop_on_failure = FALSE); df <- as.data.frame(res); cat(sprintf("[ FAIL %%d | WARN %%d | SKIP %%d | PASS %%d ]\\n", sum(df$failed), sum(df$warning, na.rm = TRUE), sum(df$skipped), sum(df$passed)))',
+    paste0(
+      'setwd("%s"); ',
+      'pkgload::load_all(quiet = TRUE); ',
+      'res <- testthat::test_file("%s", reporter = testthat::SilentReporter$new(), stop_on_failure = FALSE); ',
+      'df <- as.data.frame(res); ',
+      # df$error er logical: TRUE naar en test fejler med en uhandteret fejl (fx "could not find function").
+      # Disse taeller som failures, men fremgaar ikke af df$failed.
+      'n_err <- if ("error" %%in%% names(df)) sum(as.logical(df$error), na.rm = TRUE) else 0L; ',
+      'n_total_fail <- sum(df$failed) + n_err; ',
+      'cat(sprintf("[ FAIL %%d | WARN %%d | SKIP %%d | PASS %%d ]\\n", n_total_fail, sum(df$warning, na.rm = TRUE), sum(df$skipped), sum(df$passed))); ',
+      # Udskriv fejlbeskeder fra error-tests via res-objektet (ikke df) saa extract_missing_functions() kan parse dem fra stderr
+      'if (n_err > 0) { for (test_result in res) { for (exp in test_result$results) { if (inherits(exp, "expectation_error")) message(conditionMessage(exp)) } } }'
+    ),
     pkg_root, file
   )
 

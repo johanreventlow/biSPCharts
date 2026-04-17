@@ -10,7 +10,9 @@
 #'
 #' @param val numeric værdi at formatere
 #' @param y_unit character enhedstype ("count", "percent", "rate", "time", eller andet)
-#' @param y_range numeric(2) y-akse range (kun brugt for "time" unit context)
+#' @param y_range numeric(2) legacy-parameter, ikke laengere brugt. Bevaret
+#'   for bagudkompatibilitet — tidligere brugt til kontekst-baseret enhedsvalg
+#'   for "time"-enheden.
 #' @return character formateret string
 #'
 #' @details
@@ -18,7 +20,7 @@
 #' - **count**: K/M/mia notation for store tal, dansk decimal/tusind separator
 #' - **percent**: scales::label_percent() formatering
 #' - **rate**: dansk decimal notation, decimaler kun hvis nødvendigt
-#' - **time**: kontekst-aware formatering (min/timer/dage baseret på range)
+#' - **time**: komposit-format via format_time_composite() (0m, 30m, 1t, 1t 30m, 1d, 2d 13t)
 #' - **default**: dansk decimal notation
 #'
 #' @examples
@@ -29,8 +31,8 @@
 #' format_y_value(0.456, "percent")
 #' # Returns: "46%"
 #'
-#' format_y_value(120, "time", y_range = c(0, 200))
-#' # Returns: "2 timer"
+#' format_y_value(90, "time")
+#' # Returns: "1t 30m"
 #' }
 #'
 #' @keywords internal

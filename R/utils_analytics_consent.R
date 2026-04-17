@@ -10,8 +10,12 @@
 #' @export
 should_track_analytics <- function(consent = NULL) {
   analytics_enabled <- getOption("spc.analytics.enabled", default = ANALYTICS_CONFIG$enabled)
-  if (!analytics_enabled) return(FALSE)
-  if (is.null(consent) || !isTRUE(consent)) return(FALSE)
+  if (!analytics_enabled) {
+    return(FALSE)
+  }
+  if (is.null(consent) || !isTRUE(consent)) {
+    return(FALSE)
+  }
   TRUE
 }
 
@@ -23,7 +27,9 @@ should_track_analytics <- function(consent = NULL) {
 #' @return List med formateret metadata, eller NULL
 #' @export
 format_analytics_metadata <- function(raw_metadata) {
-  if (is.null(raw_metadata)) return(NULL)
+  if (is.null(raw_metadata)) {
+    return(NULL)
+  }
   list(
     visitor_id = raw_metadata$visitor_id,
     browser = raw_metadata$user_agent,
@@ -54,69 +60,89 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
   config <- get_analytics_config()
   session$sendCustomMessage("spc_set_consent_version", config$consent_version)
 
-  shiny::observeEvent(input$analytics_consent, {
-    consent <- input$analytics_consent
+  shiny::observeEvent(input$analytics_consent,
+    {
+      consent <- input$analytics_consent
 
-    if (should_track_analytics(consent)) {
-      safe_operation(
-        "Initialize shinylogs after consent",
-        code = {
-          setup_shinylogs(
-            enable_tracking = TRUE,
-            enable_errors = TRUE,
-            enable_performances = TRUE,
-            log_directory = log_directory
-          )
-          initialize_shinylogs_tracking(
-            session = session,
-            app_name = "SPC_Analysis_Tool"
-          )
-          session$sendCustomMessage("spc_start_analytics", list())
-          log_info("Analytics tracking aktiveret efter consent",
-                   .context = LOG_CONTEXTS$analytics$consent)
-        },
-        fallback = function(e) {
-          log_error(paste("shinylogs init fejlede:", e$message),
-                    .context = LOG_CONTEXTS$analytics$consent)
-        },
-        error_type = "processing"
-      )
-    } else {
-      log_debug("Analytics afvist af bruger",
-                .context = LOG_CONTEXTS$analytics$consent)
-    }
-  }, once = TRUE, ignoreNULL = TRUE)
+      if (should_track_analytics(consent)) {
+        safe_operation(
+          "Initialize shinylogs after consent",
+          code = {
+            setup_shinylogs(
+              enable_tracking = TRUE,
+              enable_errors = TRUE,
+              enable_performances = TRUE,
+              log_directory = log_directory
+            )
+            initialize_shinylogs_tracking(
+              session = session,
+              app_name = "SPC_Analysis_Tool"
+            )
+            session$sendCustomMessage("spc_start_analytics", list())
+            log_info("Analytics tracking aktiveret efter consent",
+              .context = LOG_CONTEXTS$analytics$consent
+            )
+          },
+          fallback = function(e) {
+            log_error(paste("shinylogs init fejlede:", e$message),
+              .context = LOG_CONTEXTS$analytics$consent
+            )
+          },
+          error_type = "processing"
+        )
+      } else {
+        log_debug("Analytics afvist af bruger",
+          .context = LOG_CONTEXTS$analytics$consent
+        )
+      }
+    },
+    once = TRUE,
+    ignoreNULL = TRUE
+  )
 
-  shiny::observeEvent(input$analytics_client_metadata, {
-    metadata <- format_analytics_metadata(input$analytics_client_metadata)
-    if (!is.null(metadata)) {
-      log_info("Client metadata modtaget",
-               .context = LOG_CONTEXTS$analytics$metadata)
-      session$userData$analytics_metadata <- metadata
-    }
-  }, once = TRUE, ignoreNULL = TRUE)
+  shiny::observeEvent(input$analytics_client_metadata,
+    {
+      metadata <- format_analytics_metadata(input$analytics_client_metadata)
+      if (!is.null(metadata)) {
+        log_info("Client metadata modtaget",
+          .context = LOG_CONTEXTS$analytics$metadata
+        )
+        session$userData$analytics_metadata <- metadata
+      }
+    },
+    once = TRUE,
+    ignoreNULL = TRUE
+  )
 
-  shiny::observeEvent(input$analytics_performance, {
-    perf <- input$analytics_performance
-    if (!is.null(perf)) {
-      log_debug_kv(
-        message = paste("Performance:", perf$type),
-        .context = LOG_CONTEXTS$analytics$performance,
-        type = perf$type,
-        duration_ms = perf$duration_ms %||% NA_real_
-      )
-    }
-  }, ignoreNULL = TRUE)
+  shiny::observeEvent(input$analytics_performance,
+    {
+      perf <- input$analytics_performance
+      if (!is.null(perf)) {
+        log_debug_kv(
+          message = paste("Performance:", perf$type),
+          .context = LOG_CONTEXTS$analytics$performance,
+          type = perf$type,
+          duration_ms = perf$duration_ms %||% NA_real_
+        )
+      }
+    },
+    ignoreNULL = TRUE
+  )
+
+  # Capture session token UDEN for onSessionEnded — session$token er
+  # ikke altid tilgaengelig efter session-exit
+  session_token <- tryCatch(session$token, error = function(e) NULL)
 
   session$onSessionEnded(function() {
     safe_operation(
       "Aggregate analytics on session end",
       code = {
-        aggregate_and_pin_logs(log_directory)
+        aggregate_and_pin_logs(log_directory, session_id = session_token)
       },
       fallback = function(e) {
         log_error(paste("Log aggregering fejlede:", e$message),
-                  .context = LOG_CONTEXTS$analytics$pins)
+          .context = LOG_CONTEXTS$analytics$pins
+        )
       },
       error_type = "processing"
     )

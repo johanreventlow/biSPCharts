@@ -86,15 +86,17 @@ Tilføjer `Tid (minutter)`, `Tid (timer)`, `Tid (dage)` som eksplicitte y-enhede
 1440m (=1d), 2880m (=2d), 10080m (=7d), 43200m (=30d)
 ```
 
-**Valg-logik:** Givet data-range `[ymin, ymax]`, find det mindste interval fra listen hvor `floor((ymax - ymin) / interval)` giver **4–7 ticks**. Generér ticks som:
+**Valg-logik:** Givet data-range `[ymin, ymax]`, vælg det **største interval** fra listen der stadig giver mindst `target_n` ticks (default 5). Begge ender snappes med `floor()` til grid-multipla:
 
 ```r
-seq(floor(ymin / interval) * interval,
-    ceiling(ymax / interval) * interval,
-    by = interval)
+start <- floor(y_min / interval) * interval
+end <- floor(y_max / interval) * interval
+breaks <- seq(start, end, by = interval)
 ```
 
-Ticks starter og slutter på et multiplum af intervallet, ikke på data-min/max.
+Kriteriet "største interval med ≥ target_n ticks" vælger naturligt grovere intervaller når data-range stiger (færre ticks af større enhed), og finere intervaller når data er tæt (flere ticks af mindre enhed). Det undgår overfyldte akser uden at kræve et eksplicit maksimum.
+
+`end` snappes med `floor()` (ikke `ceiling()`) for at undgå "ekstra tom plads" på toppen af aksen. Ggplot2 udvider selv aksen med `expansion(mult = c(.25, .25))` så sidste datapunkt stadig er synligt over sidste tick.
 
 **Eksempler:**
 
@@ -102,10 +104,11 @@ Ticks starter og slutter på et multiplum af intervallet, ikke på data-min/max.
 |---|---|---|
 | 0–120 min | 30m | `0, 30m, 60m, 90m, 120m` |
 | 15–185 min | 30m | `0, 30m, 60m, 90m, 120m, 150m, 180m` |
+| 45–155 min | 30m | `30m, 60m, 90m, 120m, 150m` |
 | 0–480 min (=0–8t) | 120m | `0, 2t, 4t, 6t, 8t` |
 | 0–7200 min (=0–5d) | 1440m | `0, 1d, 2d, 3d, 4d, 5d` |
 
-**Fallback:** Hvis ingen kandidat giver 4–7 ticks (fx tom eller konstant data), fald tilbage til ggplot2's default med log-besked.
+**Fallback:** Hvis ingen kandidat giver ≥ `target_n` ticks (meget smal range), brug det mindste interval der giver mindst 2 ticks. Hvis intet virker, brug første kandidat. Log fallback-hændelser.
 
 **Integration:** Implementér som `time_breaks(y_values, target_n = 5L)` funktion brugt i `scale_y_continuous(breaks = ...)`.
 

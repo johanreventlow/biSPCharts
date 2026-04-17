@@ -420,3 +420,50 @@ test_that("validate_manifest: forældet entry", {
   expect_false(result$valid)
   expect_true(any(grepl("forældet|eksisterer ikke", result$errors, ignore.case = TRUE)))
 })
+
+# ---- render_report ----
+
+test_that("render_report producerer markdown med forventede sektioner", {
+  manifest <- list(
+    metadata = list(total_files = 2L, audit_run = "2026-04-17T14:00:00+0200",
+      manifest_schema_version = "1.0",
+      review_status = list(reviewed = 2L, unreviewed = 0L, needs_triage = 0L)),
+    files = list(
+      list(file = "test-a.R", audit_category = "green", type = "unit",
+           handling = "keep", reviewed = TRUE,
+           reviewer = "j", reviewed_date = "2026-04-17"),
+      list(file = "test-b.R", audit_category = "stub", type = "policy-guard",
+           handling = "keep", rationale = "Policy-guard",
+           reviewed = TRUE, reviewer = "j", reviewed_date = "2026-04-17")
+    )
+  )
+
+  audit_data <- list(
+    run_timestamp = "2026-04-17T14:00:00+0200",
+    total_files = 2L, total_elapsed_s = 120,
+    summary = list(green = 1L, stub = 1L),
+    files = list(
+      list(file = "test-a.R", category = "green",
+           n_pass = 10L, n_fail = 0L, stderr_snippet = ""),
+      list(file = "test-b.R", category = "stub",
+           n_pass = 1L, n_fail = 0L, stderr_snippet = "")
+    )
+  )
+
+  tmp <- tempfile(fileext = ".md")
+  on.exit(unlink(tmp), add = TRUE)
+  render_report(manifest, audit_data, tmp)
+
+  content <- paste(readLines(tmp), collapse = "\n")
+  expect_match(content, "# Test Suite Audit Report")
+  expect_match(content, "## 1. Executive summary")
+  expect_match(content, "## 2. Kritiske fund")
+  expect_match(content, "## 3. Pr-fil klassifikations-tabel")
+  expect_match(content, "## 4. Handling-oversigt")
+  expect_match(content, "## 5. Top-10 fejlmønstre")
+  expect_match(content, "## 6. Foreslået sekvens")
+  expect_match(content, "## 7. Audit-classifier-limitationer")
+  expect_match(content, "## 8. Appendix")
+  expect_match(content, "test-a\\.R")
+  expect_match(content, "test-b\\.R")
+})

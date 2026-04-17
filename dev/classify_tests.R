@@ -126,7 +126,13 @@ main <- function() {
       quit(save = "no", status = 1)
     }
   } else if (args$mode == "render-report") {
-    stop("render-report-mode ikke implementeret endnu (Task 10)")
+    cat("Læser manifest:", args$output, "\n")
+    manifest <- read_manifest(args$output)
+    cat("Læser audit-JSON:", args$input, "\n")
+    audit_data <- jsonlite::fromJSON(args$input, simplifyVector = FALSE)
+    cat("Renderer rapport:", args$report_output, "\n")
+    render_report(manifest, audit_data, args$report_output)
+    cat("Færdig.\n")
   }
 }
 

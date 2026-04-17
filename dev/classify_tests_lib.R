@@ -267,3 +267,141 @@ validate_manifest <- function(manifest, tests_dir, audit_data = NULL) {
 
   list(valid = length(errors) == 0, errors = errors)
 }
+
+#' Render udvidet markdown-rapport.
+render_report <- function(manifest, audit_data, output_path) {
+  lines <- character()
+  add <- function(...) lines <<- c(lines, paste0(...))
+
+  # Header
+  add("# Test Suite Audit Report")
+  add("")
+  add("**Audit-kørsel:** ", audit_data$run_timestamp)
+  add("**Total filer:** ", audit_data$total_files)
+  add("**Total kørselstid:** ", round(audit_data$total_elapsed_s %||% 0, 1), " s")
+  add("**Issue:** #203")
+  add("**Manifest:** `dev/audit-output/test-classification.yaml`")
+  add("")
+  add("---")
+  add("")
+
+  # 1. Executive summary
+  add("## 1. Executive summary")
+  add("")
+  add("### Audit-kategorier")
+  add("")
+  add("| Kategori | Antal | % |")
+  add("|---|---|---|")
+  total <- audit_data$total_files
+  for (cat_name in sort(names(audit_data$summary))) {
+    n <- audit_data$summary[[cat_name]]
+    add(sprintf("| `%s` | %d | %.1f%% |", cat_name, n, 100 * n / total))
+  }
+  add("")
+  add("### Manifest-typer")
+  add("")
+  types <- vapply(manifest$files, `[[`, character(1), "type")
+  add("| Type | Antal | % |")
+  add("|---|---|---|")
+  for (t in sort(unique(types))) {
+    n <- sum(types == t)
+    add(sprintf("| `%s` | %d | %.1f%% |", t, n, 100 * n / length(types)))
+  }
+  add("")
+
+  # 2. Kritiske fund
+  add("## 2. Kritiske fund")
+  add("")
+  add("- Audit-classifier's `n_test_blocks < 3 → stub`-heuristik misklassificerer")
+  add("  værdifulde policy-tests. Alle 9 \"stubs\" verificeret som aktive.")
+  add("- De 2 `skipped-all` filer er bevidste E2E-gates, ikke obsolete.")
+  add("- Manifest-klassifikationen er menneske-verificeret ground truth.")
+  add("")
+
+  # 3. Pr-fil tabel
+  add("## 3. Pr-fil klassifikations-tabel")
+  add("")
+  add("| Fil | Kategori | Type | Handling | Rationale |")
+  add("|---|---|---|---|---|")
+  handling_order <- c("blocked-by-change-1", "archive", "merge-in-phase-2",
+                      "rewrite", "fix-in-phase-3", "needs-triage", "keep")
+  sorted_files <- manifest$files[order(match(
+    vapply(manifest$files, `[[`, character(1), "handling"),
+    handling_order
+  ))]
+  for (entry in sorted_files) {
+    rationale <- entry$rationale %||% ""
+    add(sprintf("| `%s` | %s | %s | %s | %s |",
+      entry$file, entry$audit_category, entry$type, entry$handling,
+      gsub("\\|", "\\\\|", rationale)))
+  }
+  add("")
+
+  # 4. Handling-oversigt
+  add("## 4. Handling-oversigt")
+  add("")
+  for (h in handling_order) {
+    matching <- Filter(function(e) e$handling == h, manifest$files)
+    if (length(matching) == 0) next
+    add(sprintf("### %s (%d filer)", h, length(matching)))
+    add("")
+    for (entry in matching) {
+      r <- if (!is.null(entry$rationale)) paste0(" — ", entry$rationale) else ""
+      add(sprintf("- `%s`%s", entry$file, r))
+    }
+    add("")
+  }
+
+  # 5. Top fejlmønstre
+  add("## 5. Top-10 fejlmønstre")
+  add("")
+  all_stderr <- vapply(audit_data$files, function(f) f$stderr_snippet %||% "",
+                       character(1))
+  patterns <- list(
+    "cannot open the connection (fixtures mangler)" = "cannot open the connection",
+    "could not find function (API drift)" = "could not find function",
+    "unused argument (testthat API-drift)" = "unused argument",
+    "missing value where TRUE/FALSE" = "missing value where TRUE",
+    "invalid input (data-drift)" = "invalid input|Invalid input",
+    "encoding (æøå)" = "UTF-?8|encoding"
+  )
+  add("| Mønster | Filer |")
+  add("|---|---|")
+  for (p_name in names(patterns)) {
+    n <- sum(grepl(patterns[[p_name]], all_stderr, ignore.case = TRUE))
+    add(sprintf("| %s | %d |", p_name, n))
+  }
+  add("")
+
+  # 6. Sekvens
+  add("## 6. Foreslået sekvens for Fase 2-4")
+  add("")
+  add("1. **Fase 2 (konsolidering):** `archive` + `merge-in-phase-2`")
+  add("2. **Fase 3 (fix):** `fix-in-phase-3` + `rewrite`, batched efter sektion 5-mønstre")
+  add("3. **Fase 4 (standarder):** test-arkitektur-docs + evt. CI-check")
+  add("")
+
+  # 7. Limitationer
+  add("## 7. Audit-classifier-limitationer")
+  add("")
+  add("- `n_test_blocks < 3 → stub` er for aggressiv; misklassificerer policy-tests")
+  add("- Subproces-kørsel aktiverer `skip_on_ci()` lokalt (ENV-detektion)")
+  add("")
+
+  # 8. Appendix
+  add("## 8. Appendix: Audit-kategori-fuldtabel")
+  add("")
+  for (cat_name in sort(names(audit_data$summary))) {
+    matching <- Filter(function(f) f$category == cat_name, audit_data$files)
+    add(sprintf("### %s (%d filer)", cat_name, length(matching)))
+    add("")
+    for (f in matching) {
+      add(sprintf("- `%s` — %d pass / %d fail",
+        f$file, f$n_pass %||% 0, f$n_fail %||% 0))
+    }
+    add("")
+  }
+
+  writeLines(lines, output_path)
+  invisible(output_path)
+}

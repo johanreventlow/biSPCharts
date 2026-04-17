@@ -19,8 +19,8 @@ metadata:
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 57
-    unreviewed: 68
+    reviewed: 63
+    unreviewed: 62
     needs_triage: 26
 files:
   - file: test-100x-mismatch-prevention.R
@@ -84,7 +84,10 @@ files:
     audit_category: skipped-all
     type: e2e
     handling: keep
-    reviewed: no
+    reviewed: yes
+    rationale: skip_if_not_installed('shinytest2'); snapshot-tests for BFHchart.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-bfhcharts-integration.R
     audit_category: green-partial
     type: unit
@@ -272,7 +275,10 @@ files:
     audit_category: skipped-all
     type: e2e
     handling: keep
-    reviewed: no
+    reviewed: yes
+    rationale: Bevidst skip_on_ci(); kører lokalt med shinytest2.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-e2e-workflows.R
     audit_category: green-partial
     type: integration
@@ -492,7 +498,10 @@ files:
     audit_category: broken-missing-fn
     type: unit
     handling: blocked-by-change-1
-    reviewed: no
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører clear_panel_height_cache.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-parse-danish-target-unit-conversion.R
     audit_category: green-partial
     type: unit
@@ -517,9 +526,12 @@ files:
     reviewed: no
   - file: test-plot-diff.R
     audit_category: broken-missing-fn
-    type: snapshot
+    type: unit
     handling: blocked-by-change-1
-    reviewed: no
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører plot-state-snapshot-funktioner.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-plot-generation-performance.R
     audit_category: green-partial
     type: e2e
@@ -723,7 +735,10 @@ files:
     audit_category: broken-missing-fn
     type: unit
     handling: blocked-by-change-1
-    reviewed: no
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører validation-guard-familien.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils-state-accessors.R
     audit_category: green-partial
     type: unit
@@ -733,7 +748,11 @@ files:
     audit_category: broken-missing-fn
     type: unit
     handling: blocked-by-change-1
-    reviewed: no
+    reviewed: yes
+    rationale: Duplikat af test-utils_validation_guards.R — markér til Fase 2 merge
+      eller archive.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-visualization-dimensions.R
     audit_category: green
     type: unit

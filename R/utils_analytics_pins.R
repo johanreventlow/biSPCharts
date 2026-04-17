@@ -121,11 +121,35 @@ rotate_log_files <- function(log_directory,
 aggregate_and_pin_logs <- function(log_directory = "logs/",
                                    session_id = NULL) {
   config <- get_analytics_config()
+
+  log_info(
+    paste(
+      "aggregate_and_pin_logs kaldt | log_dir:", log_directory,
+      "| exists:", dir.exists(log_directory),
+      "| wd:", getwd()
+    ),
+    .context = LOG_CONTEXTS$analytics$pins
+  )
+
   all_data <- read_shinylogs_all(log_directory)
 
   total_rows <- sum(vapply(all_data, nrow, integer(1)))
+  log_info(
+    sprintf(
+      "Log-aggregering: %d sessions, %d inputs, %d outputs, %d errors (total=%d)",
+      nrow(all_data$sessions), nrow(all_data$inputs),
+      nrow(all_data$outputs), nrow(all_data$errors), total_rows
+    ),
+    .context = LOG_CONTEXTS$analytics$pins
+  )
+
   if (total_rows == 0) {
-    log_debug("Ingen data at aggregere",
+    log_warn(
+      paste(
+        "Ingen shinylogs data fundet i", log_directory,
+        "— pin sync overspringes. Tjek om shinylogs::track_usage",
+        "faktisk flushes foer onSessionEnded."
+      ),
       .context = LOG_CONTEXTS$analytics$pins
     )
     return(invisible(NULL))

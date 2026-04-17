@@ -1,0 +1,1013 @@
+# Test Classification Manifest
+#
+# Audit source: dev/audit-output/test-audit.json
+# Purpose: Ground truth for test-file classification
+#
+# Fields:
+#   audit_category: read-only reference (sync'd fra test-audit.json)
+#   type:           policy-guard|unit|integration|e2e|benchmark|snapshot|fixture-based
+#   handling:       keep|fix-in-phase-3|merge-in-phase-2|archive|rewrite|blocked-by-change-1|needs-triage
+#   merge_with:     (optional) liste af filnavne
+#   rationale:      (påkrævet når handling != keep)
+#   reviewed:       bool
+#   reviewer:       github-username (når reviewed: true)
+#   reviewed_date:  ISO date (når reviewed: true)
+
+
+metadata:
+  total_files: 125
+  audit_run: 2026-04-17T16:32:41+0200
+  manifest_schema_version: '1.0'
+  review_status:
+    reviewed: 125
+    unreviewed: 0
+    needs_triage: 0
+files:
+  - file: test-100x-mismatch-prevention.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 5/52 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-anhoej-metadata-local.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-anhoej-rules.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-app-basic.R
+    audit_category: stub
+    type: integration
+    handling: keep
+    reviewed: yes
+    rationale: E2E-smoke med AppDriver-mock fallback (2 blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-app-initialization.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/10 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-audit-classifier.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-autodetect-tidyverse-integration.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-autodetect-unified-comprehensive.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 20/158 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-bfh-error-handling.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (6/42 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-bfh-module-integration.R
+    audit_category: skipped-all
+    type: e2e
+    handling: keep
+    reviewed: yes
+    rationale: skip_if_not_installed('shinytest2'); snapshot-tests for BFHchart.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-bfhcharts-integration.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 10/15 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-branding-globals.R
+    audit_category: stub
+    type: policy-guard
+    handling: keep
+    reviewed: yes
+    rationale: Legacy-constant tilgængelighed (HOSPITAL_COLORS bruges stadig i R/zzz.R,
+      R/app_run.R).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-cache-collision-fix.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 4/5 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-cache-data-signature-bugs.R
+    audit_category: green-partial
+    type: e2e
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'testthat API-drift: argumenter ikke understoettet (2/25 fejl). Fix-in-phase-3
+      efter API-opdatering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-cache-invalidation-sprint3.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (1/62 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-cache-reactive-lazy-evaluation.R
+    audit_category: green-partial
+    type: e2e
+    handling: rewrite
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (7/8 fejl). Rewrite efter
+      API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-centerline-handling.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-clean-qic-call-args.R
+    audit_category: stub
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Reel unit-test på freeze-adjustment (2 test_that-blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-column-observer-consolidation.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 4/14 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-comment-row-mapping.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-comprehensive-ui-sync.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-config_analytics.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-config_chart_types.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 16/35 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-config_export.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 10/141 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-config-performance-getters.R
+    audit_category: green
+    type: benchmark
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-config-ui-getters.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-constants-architecture.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-context-aware-plots.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: ggplot warning (4/83 fejl) - ikke-kritisk men kraever scale-haandtering.
+      Fix-in-phase-3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-critical-fixes-integration.R
+    audit_category: green-partial
+    type: snapshot
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 4/43 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-critical-fixes-regression.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 14/137 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-critical-fixes-security.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'testthat API-drift: argumenter ikke understoettet (21/63 fejl). Fix-in-phase-3
+      efter API-opdatering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-cross-component-reactive.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-csv-parsing.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-csv-sanitization.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-danish-clinical-edge-cases.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-data-validation.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (3/15 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-debug-context-filtering.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-denominator-field-toggle.R
+    audit_category: stub
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på chart-type/denominator-mapping (2 blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-dependency-namespace.R
+    audit_category: stub
+    type: policy-guard
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod library()-kald på 15 pakker i R/. Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-e2e-user-workflows.R
+    audit_category: skipped-all
+    type: e2e
+    handling: keep
+    reviewed: yes
+    rationale: Bevidst skip_on_ci(); kører lokalt med shinytest2.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-e2e-workflows.R
+    audit_category: green-partial
+    type: integration
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 5/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-edge-cases-comprehensive.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 3/66 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-error-handling.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-event-system-emit.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 7/50 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-event-system-observers.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/128 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-excelr-data-reconstruction.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-fct_ai_improvement_suggestions.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-fct_export_png.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-fct_spc_file_save_load.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-file-io-comprehensive.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 3/30 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-file-operations-tidyverse.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/25 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-file-operations.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-file-upload.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-foreign-column-names.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-generateSPCPlot-comprehensive.R
+    audit_category: green-partial
+    type: snapshot
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: ggplot warning (9/156 fejl) - ikke-kritisk men kraever scale-haandtering.
+      Fix-in-phase-3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-input-debouncing-comprehensive.R
+    audit_category: green-partial
+    type: e2e
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (5/11 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-input-sanitization.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-integration-workflows.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-label-formatting.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/34 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-label-height-estimation.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-label-placement-bounds.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-label-placement-core.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-logging-debug-cat.R
+    audit_category: stub
+    type: policy-guard
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod cat("DEBUG...")-statements. Misklassificeret som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-logging-precedence.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-logging-standardization.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-logging-system.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-mod_export.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 3/44 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-mod-spc-chart-comprehensive.R
+    audit_category: green-partial
+    type: integration
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 16/43 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-mod-spc-chart-integration.R
+    audit_category: green-partial
+    type: integration
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 4/22 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-namespace-integrity.R
+    audit_category: stub
+    type: policy-guard
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod simple NAMESPACE-eksporter. Misklassificeret som stub
+      pga. 1 test_that-block.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-no-file-dependencies.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-npc-mapper.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-observer-cleanup.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-outlier-count-latest-part.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-package-initialization.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 4/45 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-package-namespace-validation.R
+    audit_category: green-partial
+    type: policy-guard
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'testthat API-drift: argumenter ikke understoettet (2/10 fejl). Fix-in-phase-3
+      efter API-opdatering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-panel-height-cache.R
+    audit_category: broken-missing-fn
+    type: unit
+    handling: blocked-by-change-1
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører clear_panel_height_cache.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-parse-danish-target-unit-conversion.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (65/73 fejl). Rewrite efter
+      API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-performance-benchmarks.R
+    audit_category: green-partial
+    type: benchmark
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 9/16 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-phase-2c-reactive-chain.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-plot-core.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-plot-diff.R
+    audit_category: broken-missing-fn
+    type: unit
+    handling: blocked-by-change-1
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører plot-state-snapshot-funktioner.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-plot-generation-performance.R
+    audit_category: green-partial
+    type: e2e
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/14 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-plot-generation.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-reactive-batching.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (7/17 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-recent-functionality.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-run-app.R
+    audit_category: stub
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på run_app port-forwarding (1 blok). Misklassificeret som
+      stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-run-chart-denominator-stability.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-runtime-config-comprehensive.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'testthat API-drift: argumenter ikke understoettet (21/58 fejl). Fix-in-phase-3
+      efter API-opdatering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-safe-operation-comprehensive.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-security-session-tokens.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/55 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-session-persistence.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-session-token-sanitization.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/22 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-shared-data-signatures.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/27 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-spc-bfh-service.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 20/78 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-spc-cache-integration.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (3/32 fejl). Fix-in-phase-3
+      efter API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-spc-plot-generation-comprehensive.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: ggplot warning (12/61 fejl) - ikke-kritisk men kraever scale-haandtering.
+      Fix-in-phase-3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-spc-regression-bfh-vs-qic.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: 'testthat API-drift: argumenter ikke understoettet (10/46 fejl). Fix-in-phase-3
+      efter API-opdatering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-startup-optimization.R
+    audit_category: green
+    type: snapshot
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-state-management-hierarchical.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 14/55 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-tidyverse-purrr-operations.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/24 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-ui-synchronization.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-ui-token-management.R
+    audit_category: stub
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på token counter-logik (2 blokke). Misklassificeret som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_analytics_consent.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_analytics_github.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_analytics_pins.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_data_signatures.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_error_handling.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_export_filename.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_export_validation.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 2/50 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_input_sanitization.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_performance_caching.R
+    audit_category: green-partial
+    type: benchmark
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/11 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_qic_caching.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_server_export.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils_validation_guards.R
+    audit_category: broken-missing-fn
+    type: unit
+    handling: blocked-by-change-1
+    reviewed: yes
+    rationale: Venter på Change 1 der genindfører validation-guard-familien.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-utils-state-accessors.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: 'API-drift: refererede funktioner fjernet (26/36 fejl). Rewrite efter
+      API-stabilisering.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-validation-guards.R
+    audit_category: broken-missing-fn
+    type: unit
+    handling: blocked-by-change-1
+    reviewed: yes
+    rationale: Duplikat af test-utils_validation_guards.R — markér til Fase 2 merge
+      eller archive.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-visualization-dimensions.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-visualization-server.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 3/14 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-wizard.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-y-axis-formatting.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 5/59 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-y-axis-mapping.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (3/3 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-y-axis-model.R
+    audit_category: green-partial
+    type: unit
+    handling: rewrite
+    reviewed: yes
+    rationale: Fixture-filer mangler (3/3 fejl). Rewrite forventet efter fixtures-oprydning
+      i Fase 3.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-y-axis-scaling-overhaul.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 7/76 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-yaml-config-adherence.R
+    audit_category: green-partial
+    type: unit
+    handling: fix-in-phase-3
+    reviewed: yes
+    rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+

@@ -8,6 +8,14 @@ Code quality audit identified three major areas for improvement:
 
 These issues compound maintenance burden, increase testing complexity, and create hidden coupling between modules.
 
+> **⚠️ Phase 1 (Test Consolidation) ARKIVERET 2026-04-17:**
+> Overhalet af audit-data (#203) der viser kun 9 reelle stubs, og disse er
+> ved nærmere undersøgelse værdifulde policy-tests der IKKE skal slettes.
+> Test-consolidation håndteres i nyt arbejdsstrøm `refactor-test-suite`
+> Fase 2 baseret på `dev/audit-output/test-classification.yaml`.
+>
+> Phase 2-4 (R-fil-split, config) fortsætter uændret.
+
 ## What Changes
 
 - **Phase 1 (Week 1-2):** Consolidate 146 test files → ~100 files by merging redundant clusters and deleting stub files. Preserve all 1196+ test cases.

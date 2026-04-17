@@ -283,13 +283,18 @@ create_ui_header <- function() {
       })();
     ")),
     # Cookie-indstillinger link (synlig i bunden af siden)
-    shiny::tags$div(
-      style = "position: fixed; bottom: 4px; right: 12px; z-index: 999;",
-      shiny::tags$a(
-        href = "javascript:void(0)",
-        onclick = "if(window.spcShowCookieSettings) window.spcShowCookieSettings();",
-        class = "spc-cookie-settings-link",
-        "Cookie-indstillinger"
+    # Skjules på trin 2 (analyser) og 3 (eksporter) for at undgå kollision
+    # med højre-justerede actionknapper ("Fortsæt" / "Eksportér").
+    shiny::conditionalPanel(
+      condition = "input.main_navbar !== 'analyser' && input.main_navbar !== 'eksporter'",
+      shiny::tags$div(
+        style = "position: fixed; bottom: 4px; right: 12px; z-index: 999;",
+        shiny::tags$a(
+          href = "javascript:void(0)",
+          onclick = "if(window.spcShowCookieSettings) window.spcShowCookieSettings();",
+          class = "spc-cookie-settings-link",
+          "Cookie-indstillinger"
+        )
       )
     )
   )
@@ -583,7 +588,11 @@ create_inline_column_mapping <- function() {
     ))),
     compact_select(
       "x_column", "X-akse",
-      "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned)"
+      paste0(
+        "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned). ",
+        "Underst\u00f8ttede datoformater: 15-03-2024, 15/03/2024, 15.03.2024, 2024-03-15 ",
+        "eller \"15 mar 2024\". Andre tekster bruges som observationsnumre."
+      )
     ),
     compact_select(
       "y_column", "Y-akse",

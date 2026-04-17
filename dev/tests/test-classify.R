@@ -196,3 +196,84 @@ test_that("write_manifest/read_manifest round-tripper", {
   expect_length(restored$files, 1)
   expect_equal(restored$files[[1]]$type, "unit")
 })
+
+# ---- merge_with_existing ----
+
+test_that("merge_with_existing bevarer reviewed: true entries", {
+  existing_entry <- list(
+    file = "test-a.R", audit_category = "stub",
+    type = "policy-guard", handling = "keep",
+    rationale = "Policy-guard misklassificeret", reviewed = TRUE,
+    reviewer = "johanreventlow", reviewed_date = "2026-04-17"
+  )
+  auto_entry <- list(
+    file = "test-a.R", audit_category = "stub",
+    type = "unit", handling = "needs-triage", reviewed = FALSE
+  )
+
+  result <- merge_with_existing(
+    auto_entries = list(auto_entry),
+    existing_manifest = list(files = list(existing_entry))
+  )
+
+  expect_length(result, 1)
+  expect_equal(result[[1]]$type, "policy-guard")
+  expect_equal(result[[1]]$handling, "keep")
+  expect_true(result[[1]]$reviewed)
+  expect_equal(result[[1]]$reviewer, "johanreventlow")
+})
+
+test_that("merge_with_existing synker audit_category fra auto til reviewed entries", {
+  existing_entry <- list(
+    file = "test-a.R", audit_category = "broken-missing-fn",
+    type = "unit", handling = "blocked-by-change-1",
+    rationale = "Venter på Change 1", reviewed = TRUE,
+    reviewer = "j", reviewed_date = "2026-04-10"
+  )
+  auto_entry <- list(
+    file = "test-a.R", audit_category = "green",
+    type = "unit", handling = "keep", reviewed = FALSE
+  )
+
+  result <- merge_with_existing(
+    list(auto_entry), list(files = list(existing_entry))
+  )
+  expect_equal(result[[1]]$audit_category, "green")
+  expect_true(result[[1]]$reviewed)
+})
+
+test_that("merge_with_existing tilføjer nye auto-entries", {
+  auto_entries <- list(
+    list(file = "test-old.R", audit_category = "green", type = "unit",
+         handling = "keep", reviewed = FALSE),
+    list(file = "test-new.R", audit_category = "green", type = "unit",
+         handling = "keep", reviewed = FALSE)
+  )
+  existing <- list(files = list(
+    list(file = "test-old.R", audit_category = "green", type = "unit",
+         handling = "keep", reviewed = TRUE, reviewer = "j", reviewed_date = "2026-04-17")
+  ))
+
+  result <- merge_with_existing(auto_entries, existing)
+  expect_length(result, 2)
+})
+
+test_that("merge_with_existing overskriver reviewed:false entries", {
+  existing_entry <- list(
+    file = "test-a.R", audit_category = "x", type = "unit",
+    handling = "needs-triage", reviewed = FALSE
+  )
+  auto_entry <- list(
+    file = "test-a.R", audit_category = "green-partial",
+    type = "policy-guard", handling = "fix-in-phase-3", reviewed = FALSE
+  )
+
+  result <- merge_with_existing(list(auto_entry), list(files = list(existing_entry)))
+  expect_equal(result[[1]]$type, "policy-guard")
+})
+
+test_that("merge_with_existing håndterer NULL existing_manifest", {
+  auto <- list(list(file = "test-a.R", type = "unit", handling = "keep", reviewed = FALSE))
+  result <- merge_with_existing(auto, NULL)
+  expect_equal(result, auto)
+})

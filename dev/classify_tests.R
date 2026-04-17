@@ -77,7 +77,16 @@ main <- function() {
     cat("Auto-klassificerer", length(audit_data$files), "filer...\n")
     auto_entries <- auto_classify(audit_data, args$tests_dir)
 
-    reviewed_count <- 0L
+    existing <- if (file.exists(args$output)) {
+      cat("Læser eksisterende manifest (bevarer reviewed: true)...\n")
+      read_manifest(args$output)
+    } else {
+      NULL
+    }
+    auto_entries <- merge_with_existing(auto_entries, existing)
+
+    reviewed_count <- sum(vapply(auto_entries,
+      function(e) isTRUE(e$reviewed), logical(1)))
     needs_triage_count <- sum(vapply(auto_entries,
       function(e) e$handling == "needs-triage", logical(1)))
 
@@ -97,6 +106,7 @@ main <- function() {
 
     cat("Skriver manifest:", args$output, "\n")
     write_manifest(manifest, args$output)
+    cat("  Reviewed:", reviewed_count, "\n")
     cat("  Needs triage:", needs_triage_count, "\n")
     cat("Færdig.\n")
   } else if (args$mode == "validate") {

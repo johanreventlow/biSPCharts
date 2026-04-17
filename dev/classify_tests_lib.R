@@ -141,3 +141,25 @@ read_manifest <- function(path) {
   }
   yaml::read_yaml(path)
 }
+
+#' Merge auto-klassifikation med eksisterende manifest, bevarer reviewed: true.
+merge_with_existing <- function(auto_entries, existing_manifest) {
+  if (is.null(existing_manifest) || is.null(existing_manifest$files)) {
+    return(auto_entries)
+  }
+
+  existing_by_file <- setNames(
+    existing_manifest$files,
+    vapply(existing_manifest$files, `[[`, character(1), "file")
+  )
+
+  lapply(auto_entries, function(auto) {
+    existing <- existing_by_file[[auto$file]]
+    if (is.null(existing) || !isTRUE(existing$reviewed)) {
+      return(auto)
+    }
+    # Bevar existing, men sync audit_category fra auto
+    existing$audit_category <- auto$audit_category
+    existing
+  })
+}

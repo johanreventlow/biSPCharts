@@ -1,0 +1,161 @@
+Loading biSPCharts package...
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+[13:17:02] ERROR: [ERROR_HANDLING_PROCESSING] Registrer Mari fonts fejlede: A system font called `Mari` already exists [operation=Registrer Mari fonts, error_class=simpleError, error_message=A system font called `Mari` already exists]
+[13:17:02] WARN: [[FONT_REGISTRATION]] Mari font-registrering fejlede — BFHtheme vil bruge fallback [error=A system font called `Mari` already exists]
+[13:17:02] INFO: [[FONT_REGISTRATION]] Roboto fonts registreret succesfuldt (Medium + Bold) [medium_path=/Users/johanreventlow/R/biSPCharts/inst/fonts/Roboto-Medium.ttf, bold_path=/Users/johanreventlow/R/biSPCharts/inst/fonts/Roboto-Bold.ttf, medium_size_kb=342.6, bold_size_kb=342.9]
+Scanning testfiler...
+  Fundet 124 filer.
+Henter R-exports...
+  Fundet 422 funktioner i R/.
+
+Koerer audit (timeout 60s pr. fil)...
+  [1/124] test-100x-mismatch-prevention.R ... green-partial (3.7s)
+  [2/124] test-anhoej-metadata-local.R ... green (3.1s)
+  [3/124] test-anhoej-rules.R ... green (3.4s)
+  [4/124] test-app-basic.R ... stub (1.6s)
+  [5/124] test-app-initialization.R ... green-partial (1.6s)
+  [6/124] test-audit-classifier.R ... green (1.6s)
+  [7/124] test-autodetect-tidyverse-integration.R ... green (2.3s)
+  [8/124] test-autodetect-unified-comprehensive.R ... green-partial (3.3s)
+  [9/124] test-bfh-error-handling.R ... green-partial (2.3s)
+  [10/124] test-bfh-module-integration.R ... skipped-all (1.6s)
+  [11/124] test-bfhcharts-integration.R ... green-partial (1.6s)
+  [12/124] test-branding-globals.R ... stub (1.5s)
+  [13/124] test-cache-collision-fix.R ... green-partial (1.6s)
+  [14/124] test-cache-data-signature-bugs.R ... green-partial (1.8s)
+  [15/124] test-cache-invalidation-sprint3.R ... green-partial (3.7s)
+  [16/124] test-cache-reactive-lazy-evaluation.R ... green-partial (1.8s)
+  [17/124] test-centerline-handling.R ... green (1.5s)
+  [18/124] test-clean-qic-call-args.R ... stub (1.5s)
+  [19/124] test-column-observer-consolidation.R ... green-partial (1.6s)
+  [20/124] test-comment-row-mapping.R ... green (1.5s)
+  [21/124] test-comprehensive-ui-sync.R ... green (1.8s)
+  [22/124] test-config_analytics.R ... green (1.5s)
+  [23/124] test-config_chart_types.R ... green-partial (1.6s)
+  [24/124] test-config_export.R ... green-partial (1.7s)
+  [25/124] test-config-performance-getters.R ... green (1.7s)
+  [26/124] test-config-ui-getters.R ... green (1.6s)
+  [27/124] test-constants-architecture.R ... green-partial (1.5s)
+  [28/124] test-context-aware-plots.R ... green-partial (4.0s)
+  [29/124] test-critical-fixes-integration.R ... green-partial (2.6s)
+  [30/124] test-critical-fixes-regression.R ... green-partial (1.9s)
+  [31/124] test-critical-fixes-security.R ... green-partial (2.1s)
+  [32/124] test-cross-component-reactive.R ... green (1.6s)
+  [33/124] test-csv-parsing.R ... green (1.7s)
+  [34/124] test-csv-sanitization.R ... green (1.5s)
+  [35/124] test-danish-clinical-edge-cases.R ... green (1.7s)
+  [36/124] test-data-validation.R ... green-partial (1.6s)
+  [37/124] test-debug-context-filtering.R ... green (1.8s)
+  [38/124] test-denominator-field-toggle.R ... stub (1.7s)
+  [39/124] test-dependency-namespace.R ... stub (1.6s)
+  [40/124] test-e2e-user-workflows.R ... skipped-all (1.7s)
+  [41/124] test-e2e-workflows.R ... green-partial (1.9s)
+  [42/124] test-edge-cases-comprehensive.R ... green-partial (3.3s)
+  [43/124] test-error-handling.R ... green (1.6s)
+  [44/124] test-event-system-emit.R ... green-partial (2.0s)
+  [45/124] test-event-system-observers.R ... green-partial (1.7s)
+  [46/124] test-excelr-data-reconstruction.R ... green (1.6s)
+  [47/124] test-fct_ai_improvement_suggestions.R ... green (1.6s)
+  [48/124] test-fct_export_png.R ... green (1.6s)
+  [49/124] test-fct_spc_file_save_load.R ... green (2.1s)
+  [50/124] test-file-io-comprehensive.R ... green-partial (1.8s)
+  [51/124] test-file-operations-tidyverse.R ... green-partial (1.8s)
+  [52/124] test-file-operations.R ... green (2.4s)
+  [53/124] test-file-upload.R ... green-partial (1.8s)
+  [54/124] test-foreign-column-names.R ... green (1.6s)
+  [55/124] test-generateSPCPlot-comprehensive.R ... green-partial (9.4s)
+  [56/124] test-input-debouncing-comprehensive.R ... green-partial (1.6s)
+  [57/124] test-input-sanitization.R ... green (1.6s)
+  [58/124] test-integration-workflows.R ... green (2.7s)
+  [59/124] test-label-formatting.R ... green-partial (1.6s)
+  [60/124] test-label-height-estimation.R ... green-partial (1.5s)
+  [61/124] test-label-placement-bounds.R ... green-partial (1.5s)
+  [62/124] test-label-placement-core.R ... green-partial (1.5s)
+  [63/124] test-logging-debug-cat.R ... stub (1.6s)
+  [64/124] test-logging-precedence.R ... green (1.5s)
+  [65/124] test-logging-standardization.R ... green (1.6s)
+  [66/124] test-logging-system.R ... green (1.6s)
+  [67/124] test-mod_export.R ... green-partial (2.1s)
+  [68/124] test-mod-spc-chart-comprehensive.R ... green-partial (2.7s)
+  [69/124] test-mod-spc-chart-integration.R ... green-partial (2.2s)
+  [70/124] test-namespace-integrity.R ... stub (1.5s)
+  [71/124] test-no-file-dependencies.R ... green (1.5s)
+  [72/124] test-npc-mapper.R ... green-partial (1.5s)
+  [73/124] test-observer-cleanup.R ... green-partial (2.0s)
+  [74/124] test-outlier-count-latest-part.R ... green (1.5s)
+  [75/124] test-package-initialization.R ... green-partial (2.2s)
+  [76/124] test-package-namespace-validation.R ... green-partial (1.5s)
+  [77/124] test-panel-height-cache.R ... broken-missing-fn (1.5s)
+  [78/124] test-parse-danish-target-unit-conversion.R ... green-partial (1.9s)
+  [79/124] test-performance-benchmarks.R ... green-partial (3.4s)
+  [80/124] test-phase-2c-reactive-chain.R ... green (1.6s)
+  [81/124] test-plot-core.R ... green-partial (1.6s)
+  [82/124] test-plot-diff.R ... broken-missing-fn (1.6s)
+  [83/124] test-plot-generation-performance.R ... green-partial (1.9s)
+  [84/124] test-plot-generation.R ... green (2.0s)
+  [85/124] test-reactive-batching.R ... green-partial (1.6s)
+  [86/124] test-recent-functionality.R ... green (1.6s)
+  [87/124] test-run-app.R ... stub (1.5s)
+  [88/124] test-run-chart-denominator-stability.R ... green (3.2s)
+  [89/124] test-runtime-config-comprehensive.R ... green-partial (1.7s)
+  [90/124] test-safe-operation-comprehensive.R ... green (1.6s)
+  [91/124] test-security-session-tokens.R ... green-partial (1.8s)
+  [92/124] test-session-persistence.R ... green (1.9s)
+  [93/124] test-session-token-sanitization.R ... green-partial (1.6s)
+  [94/124] test-shared-data-signatures.R ... green-partial (1.7s)
+  [95/124] test-spc-bfh-service.R ... green-partial (10.2s)
+  [96/124] test-spc-cache-integration.R ... green-partial (3.3s)
+  [97/124] test-spc-plot-generation-comprehensive.R ... green-partial (8.2s)
+  [98/124] test-spc-regression-bfh-vs-qic.R ... green-partial (10.6s)
+  [99/124] test-startup-optimization.R ... green (1.6s)
+  [100/124] test-state-management-hierarchical.R ... green-partial (1.9s)
+  [101/124] test-tidyverse-purrr-operations.R ... green-partial (2.0s)
+  [102/124] test-ui-synchronization.R ... green (1.8s)
+  [103/124] test-ui-token-management.R ... stub (1.6s)
+  [104/124] test-utils_analytics_consent.R ... green (1.5s)
+  [105/124] test-utils_analytics_pins.R ... green (1.5s)
+  [106/124] test-utils_data_signatures.R ... green (1.6s)
+  [107/124] test-utils_error_handling.R ... green (1.5s)
+  [108/124] test-utils_export_filename.R ... green (1.6s)
+  [109/124] test-utils_export_validation.R ... green-partial (1.6s)
+  [110/124] test-utils_input_sanitization.R ... green (1.6s)
+  [111/124] test-utils_performance_caching.R ... green-partial (1.5s)
+  [112/124] test-utils_qic_caching.R ... green (1.6s)
+  [113/124] test-utils_server_export.R ... green (1.7s)
+  [114/124] test-utils_validation_guards.R ... broken-missing-fn (1.7s)
+  [115/124] test-utils-state-accessors.R ... green-partial (1.9s)
+  [116/124] test-validation-guards.R ... broken-missing-fn (1.6s)
+  [117/124] test-visualization-dimensions.R ... green (1.5s)
+  [118/124] test-visualization-server.R ... green-partial (1.9s)
+  [119/124] test-wizard.R ... green (1.9s)
+  [120/124] test-y-axis-formatting.R ... green-partial (1.8s)
+  [121/124] test-y-axis-mapping.R ... green-partial (1.5s)
+  [122/124] test-y-axis-model.R ... green-partial (1.5s)
+  [123/124] test-y-axis-scaling-overhaul.R ... green-partial (1.7s)
+  [124/124] test-yaml-config-adherence.R ... green-partial (1.7s)
+
+========================================
+  Test Audit Summary
+========================================
+Total filer:     124
+Koerselstid:     262.8 s
+
+Fordeling pr. kategori:
+  broken-missing-fn      4
+  green                  47
+  green-partial          62
+  skipped-all            2
+  stub                   9
+========================================
+
+JSON: dev/audit-output/test-audit.json
+MD:   docs/superpowers/specs/2026-04-17-test-audit-report.md
+Advarselsbesked:
+── Conflicts ─────────────────────────────────────────── biSPCharts conflicts
+──
+✖ `%||%` masks `biSPCharts::%||%()`.
+ℹ Did you accidentally source a file rather than using `load_all()`?
+  Run `rm(list = c("%||%"))` to remove the conflicts. 

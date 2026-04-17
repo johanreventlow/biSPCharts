@@ -66,3 +66,7 @@ candidates_for_deletion
 .worktrees/
 tests/testthat/_problems/
 tests/testthat/testthat-problems.rds
+
+# Test audit output (rapporter genereres on-demand)
+dev/audit-output/*.json
+!dev/audit-output/.gitkeep

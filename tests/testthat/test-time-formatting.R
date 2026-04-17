@@ -68,3 +68,52 @@ test_that("format_time_composite: regression test for 0,8541667 timer-bugget", {
   minutes_51 <- 0.8541667 * 60
   expect_equal(format_time_composite(minutes_51), "51m")
 })
+
+test_that("time_breaks vaelger paene intervaller for typiske ranges", {
+  # Range 0-120 min -> 30m interval -> 5 ticks
+  breaks <- time_breaks(c(0, 120))
+  expect_equal(breaks, c(0, 30, 60, 90, 120))
+
+  # Range 15-185 min -> 30m interval (floor-snap begge ender)
+  breaks <- time_breaks(c(15, 185))
+  expect_equal(breaks, c(0, 30, 60, 90, 120, 150, 180))
+
+  # Range 0-480 min (0-8t) -> 2t interval
+  breaks <- time_breaks(c(0, 480))
+  expect_equal(breaks, c(0, 120, 240, 360, 480))
+
+  # Range 0-7200 min (0-5d) -> 1d interval
+  breaks <- time_breaks(c(0, 7200))
+  expect_equal(breaks, c(0, 1440, 2880, 4320, 5760, 7200))
+})
+
+test_that("time_breaks respekterer target_n argument", {
+  # target_n = 3 giver grovere intervaller
+  breaks <- time_breaks(c(0, 120), target_n = 3L)
+  # Stoerste interval med >= 3 ticks for range 120: interval=60 (3 ticks)
+  expect_equal(breaks, c(0, 60, 120))
+})
+
+test_that("time_breaks haandterer konstante og tomme inputs", {
+  # Konstant range (min == max): returnér enkelt vaerdi
+  breaks <- time_breaks(c(60, 60))
+  expect_equal(breaks, 60)
+
+  # NA input -> numeric(0)
+  breaks_na <- time_breaks(c(NA_real_, NA_real_))
+  expect_equal(breaks_na, numeric(0))
+
+  # Tom input
+  expect_equal(time_breaks(numeric(0)), numeric(0))
+})
+
+test_that("time_breaks snapper til interval-grid", {
+  # Input range 45-155 -> snap til 30m-grid. Floor-snap paa begge ender giver
+  # 30-150. Ggplot2's expansion() daekker y_max synligt over sidste tick.
+  breaks <- time_breaks(c(45, 155))
+  expect_true(all(breaks %% 30 == 0))
+  expect_true(min(breaks) <= 45)
+  expect_true(max(breaks) >= 150)
+  # Sidste tick skal vaere indenfor én interval-afstand af y_max
+  expect_true(max(breaks) >= 155 - 30)
+})

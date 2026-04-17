@@ -77,3 +77,76 @@ format_time_composite_single <- function(v) {
 
   paste0(sign_prefix, result)
 }
+
+# TICK-BREAKS =================================================================
+
+#' Generér tids-naturlige tick-breaks
+#'
+#' Vaelger det STOERSTE interval fra TIME_BREAK_CANDIDATES der stadig giver
+#' mindst `target_n` ticks inden for data-range. Kriteriet resulterer i
+#' naturligt grovere ticks for store ranges og finere for smalle ranges.
+#' Begge ender snappes med floor() til multipla af det valgte interval
+#' (ggplot2 udvider selv aksen med expansion(), saa y_max er stadig synligt).
+#'
+#' @param y_values numeric. Data-range at generere ticks til.
+#' @param target_n integer. Minimums-antal ticks. Default 5L.
+#' @return numeric vektor. Tick-positioner i minutter.
+#' @keywords internal
+#' @examples
+#' time_breaks(c(0, 120))    # 0 30 60 90 120
+#' time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
+#' time_breaks(c(0, 480))    # 0 120 240 360 480
+time_breaks <- function(y_values, target_n = 5L) {
+  # Defensiv: filtrer NA og tomme inputs
+  y_clean <- y_values[!is.na(y_values)]
+  if (length(y_clean) == 0L) {
+    return(numeric(0))
+  }
+
+  y_min <- min(y_clean)
+  y_max <- max(y_clean)
+
+  # Konstant range: returnér enkelt tick paa vaerdien
+  if (y_min == y_max) {
+    return(y_min)
+  }
+
+  # Primaer: stoerste interval med >= target_n ticks.
+  # Intervallerne itereres fra lille til stor; n_ticks falder monotont, saa
+  # vi kan break ud af loekken saa snart n_ticks falder under target_n.
+  chosen_interval <- NULL
+  for (interval in TIME_BREAK_CANDIDATES) {
+    start <- floor(y_min / interval) * interval
+    end <- floor(y_max / interval) * interval
+    n_ticks <- (end - start) / interval + 1L
+    if (n_ticks >= target_n) {
+      chosen_interval <- interval
+    } else if (!is.null(chosen_interval)) {
+      # Vi har et valg; videre intervaller vil kun give faerre ticks
+      break
+    }
+  }
+
+  # Fallback 1: meget smal range — brug mindste interval med >= 2 ticks
+  if (is.null(chosen_interval)) {
+    for (interval in TIME_BREAK_CANDIDATES) {
+      start <- floor(y_min / interval) * interval
+      end <- floor(y_max / interval) * interval
+      n_ticks <- (end - start) / interval + 1L
+      if (n_ticks >= 2L) {
+        chosen_interval <- interval
+        break
+      }
+    }
+  }
+
+  # Fallback 2: patologisk case — brug mindste kandidat
+  if (is.null(chosen_interval)) {
+    chosen_interval <- TIME_BREAK_CANDIDATES[[1]]
+  }
+
+  start <- floor(y_min / chosen_interval) * chosen_interval
+  end <- floor(y_max / chosen_interval) * chosen_interval
+
+  seq(start, end, by = chosen_interval)
+}

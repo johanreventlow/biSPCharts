@@ -79,3 +79,65 @@ auto_classify_handling <- function(category, n_pass, n_fail) {
 
   "needs-triage"
 }
+
+#' Orkestrér auto-klassifikation for alle filer i audit-JSON.
+#'
+#' @param audit_data list: parsed audit-JSON
+#' @param tests_dir character(1): sti til tests/testthat/
+#' @return list af manifest-entries
+auto_classify <- function(audit_data, tests_dir) {
+  lapply(audit_data$files, function(f) {
+    file_path <- file.path(tests_dir, f$file)
+    contents <- if (file.exists(file_path)) {
+      paste(readLines(file_path, warn = FALSE), collapse = "\n")
+    } else {
+      ""
+    }
+
+    list(
+      file = f$file,
+      audit_category = f$category,
+      type = auto_classify_type(f$file, contents),
+      handling = auto_classify_handling(
+        f$category,
+        f$n_pass %||% 0L,
+        f$n_fail %||% 0L
+      ),
+      reviewed = FALSE
+    )
+  })
+}
+
+MANIFEST_HEADER <- c(
+  "# Test Classification Manifest",
+  "#",
+  "# Audit source: dev/audit-output/test-audit.json",
+  "# Purpose: Ground truth for test-file classification",
+  "#",
+  "# Fields:",
+  "#   audit_category: read-only reference (sync'd fra test-audit.json)",
+  "#   type:           policy-guard|unit|integration|e2e|benchmark|snapshot|fixture-based",
+  "#   handling:       keep|fix-in-phase-3|merge-in-phase-2|archive|rewrite|blocked-by-change-1|needs-triage",
+  "#   merge_with:     (optional) liste af filnavne",
+  "#   rationale:      (påkrævet når handling != keep)",
+  "#   reviewed:       bool",
+  "#   reviewer:       github-username (når reviewed: true)",
+  "#   reviewed_date:  ISO date (når reviewed: true)",
+  "",
+  ""
+)
+
+#' Skriv manifest til YAML med header-kommentar.
+write_manifest <- function(manifest, path) {
+  yaml_body <- yaml::as.yaml(manifest, indent = 2, indent.mapping.sequence = TRUE)
+  writeLines(c(MANIFEST_HEADER, yaml_body), path)
+  invisible(path)
+}
+
+#' Læs manifest fra YAML-fil.
+read_manifest <- function(path) {
+  if (!file.exists(path)) {
+    stop("Manifest ikke fundet: ", path)
+  }
+  yaml::read_yaml(path)
+}

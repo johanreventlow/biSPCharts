@@ -1,10 +1,10 @@
 # Test Audit Report
 
-**Dato:** 2026-04-17T13:21:25+0200
+**Dato:** 2026-04-17T16:32:41+0200
 **biSPCharts version:** 0.2.0
 **R version:** 4.5.2
-**Total filer:** 124
-**Total koerselstid:** 262.8 s
+**Total filer:** 125
+**Total koerselstid:** 259.3 s
 
 ---
 
@@ -13,10 +13,10 @@
 | Kategori | Antal | % af total |
 |----------|-------|-----------|
 | `broken-missing-fn` | 4 | 3.2% |
-| `green` | 47 | 37.9% |
-| `green-partial` | 62 | 50.0% |
+| `green` | 48 | 38.4% |
+| `green-partial` | 62 | 49.6% |
 | `skipped-all` | 2 | 1.6% |
-| `stub` | 9 | 7.3% |
+| `stub` | 9 | 7.2% |
 
 ---
 
@@ -703,13 +703,13 @@ Registered S3 methods overwritten by 'ggpp':
   heightDetails.titleGrob ggplot2
   widthDetails.titleGrob  ggplot2
 Cache: 0.10 ms, Compute: 0.00 ms, Speedup: 0.0x
-App state memory usage: 0.30 MB (target: <100MB)
-Auto-detection for 100 rows: 0.20 MB
-Auto-detection for 500 rows: 0.00 MB
+App state memory usage: 0.40 MB (target: <100MB)
+Auto-detection for 100 rows: 0.10 MB
+Auto-detection for 500 rows: 0.10 MB
 Auto-detection for 1000 rows: 0.00 MB
-Process 1000 rows: 4.08 ms (target: <200ms)
-Danish character overhead: -18.6% (target: <10%)
-Auto-detection: 1.47 ms (target: <100ms)
+Process 1000 rows: 4.01 ms (target: <200ms)
+Danish character overhead: -17.2% (target: <10%)
+Auto-detection: 1.44 ms (target: <100ms)
 Ambiguous 
 ```
 
@@ -783,7 +783,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing session token hashing security improvements implemented 2025-09-26
 Security fix: Session tokens are now hashed before logging
 Prevents: Session token exposure in logs and potential session hijacking
-Session token hashing performance: single=0.000081s, 100x=0.001s
+Session token hashing performance: single=0.000092s, 100x=0.001s
 Hash collision test: 1000 tokens, 1000 unique hashes, 0.00% collision rate
 End-to
 ```
@@ -1176,7 +1176,7 @@ Registered S3 methods overwritten by 'ggpp':
 
 ---
 
-## Kategori: `green` (47 filer)
+## Kategori: `green` (48 filer)
 
 ### `test-anhoej-metadata-local.R`
 - LOC: 449
@@ -1515,7 +1515,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing logging system standardization implemented 2025-09-26
 Improvement: Unified logging API with backward compatibility
 372+ logging calls across 34 files standardized
-Logging performance: single=0.000142s, 100x=0.006s
+Logging performance: single=0.000130s, 100x=0.006s
 End-to-end logging system test successful
 ```
 
@@ -1671,6 +1671,18 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
+### `test-utils_analytics_github.R`
+- LOC: 103
+- Test-blokke: 9
+- Pass/Fail/Skip: 12 / 0 / 0
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-utils_analytics_pins.R`
 - LOC: 96
 - Test-blokke: 5
@@ -1791,9 +1803,9 @@ i Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more
 
 ## Scope-forslag
 
-- **Green:** 109 af 124 (88%)
-- **Broken:** 4 af 124 (3%)
-- **Stubs/skipped:** 11 af 124 (9%)
+- **Green:** 110 af 125 (88%)
+- **Broken:** 4 af 125 (3%)
+- **Stubs/skipped:** 11 af 125 (9%)
 
 **Anbefaling: Minimal scope** - fokuser paa de faa braekkede filer.
 

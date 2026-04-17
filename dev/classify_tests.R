@@ -110,7 +110,21 @@ main <- function() {
     cat("  Needs triage:", needs_triage_count, "\n")
     cat("Færdig.\n")
   } else if (args$mode == "validate") {
-    stop("validate-mode ikke implementeret endnu (Task 9)")
+    cat("Læser manifest:", args$output, "\n")
+    manifest <- read_manifest(args$output)
+    cat("Læser audit-JSON:", args$input, "\n")
+    audit_data <- jsonlite::fromJSON(args$input, simplifyVector = FALSE)
+
+    result <- validate_manifest(manifest, args$tests_dir, audit_data)
+
+    if (result$valid) {
+      cat("✓ Manifest er valid (", length(manifest$files), "filer).\n")
+      quit(save = "no", status = 0)
+    } else {
+      cat("✗ Manifest har", length(result$errors), "fejl:\n", sep = "")
+      for (err in result$errors) cat("  -", err, "\n")
+      quit(save = "no", status = 1)
+    }
   } else if (args$mode == "render-report") {
     stop("render-report-mode ikke implementeret endnu (Task 10)")
   }

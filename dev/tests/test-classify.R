@@ -277,3 +277,146 @@ test_that("merge_with_existing håndterer NULL existing_manifest", {
   result <- merge_with_existing(auto, NULL)
   expect_equal(result, auto)
 })
+
+# ---- validate_manifest ----
+
+valid_entry <- function(overrides = list()) {
+  base <- list(
+    file = "test-x.R", audit_category = "green",
+    type = "unit", handling = "keep", reviewed = FALSE
+  )
+  modifyList(base, overrides)
+}
+
+mock_audit <- function(files_cats) {
+  list(files = lapply(names(files_cats), function(f) {
+    list(file = f, category = files_cats[[f]])
+  }))
+}
+
+setup_test_dir <- function(files) {
+  tmp <- tempfile("testfiles-")
+  dir.create(tmp)
+  for (f in files) writeLines("", file.path(tmp, f))
+  tmp
+}
+
+test_that("validate_manifest passerer gyldigt manifest", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  manifest <- list(files = list(valid_entry()))
+  result <- validate_manifest(manifest, tmp, mock_audit(list("test-x.R" = "green")))
+  expect_true(result$valid)
+})
+
+test_that("validate_manifest: ukendt type", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  result <- validate_manifest(
+    list(files = list(valid_entry(list(type = "ufo")))),
+    tmp, mock_audit(list("test-x.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("ukendt type", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: ukendt handling", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  result <- validate_manifest(
+    list(files = list(valid_entry(list(handling = "invalid")))),
+    tmp, mock_audit(list("test-x.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("ukendt handling", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: reviewed:true + needs-triage", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  entry <- valid_entry(list(
+    handling = "needs-triage", reviewed = TRUE,
+    reviewer = "j", reviewed_date = "2026-04-17"
+  ))
+  result <- validate_manifest(list(files = list(entry)), tmp,
+    mock_audit(list("test-x.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("placeholder", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: asymmetrisk merge_with", {
+  tmp <- setup_test_dir(c("test-a.R", "test-b.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  entry_a <- valid_entry(list(file = "test-a.R", handling = "merge-in-phase-2",
+    merge_with = list("test-b.R"), rationale = "x"))
+  entry_b <- valid_entry(list(file = "test-b.R"))
+  result <- validate_manifest(list(files = list(entry_a, entry_b)), tmp,
+    mock_audit(list("test-a.R" = "green", "test-b.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("asymmetrisk", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: merge_with uden merge-handling", {
+  tmp <- setup_test_dir(c("test-a.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  entry <- valid_entry(list(file = "test-a.R", handling = "keep",
+    merge_with = list("test-b.R")))
+  result <- validate_manifest(list(files = list(entry)), tmp,
+    mock_audit(list("test-a.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("merge_with", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: audit-kategori-mismatch", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  result <- validate_manifest(
+    list(files = list(valid_entry(list(audit_category = "green")))),
+    tmp, mock_audit(list("test-x.R" = "green-partial")))
+  expect_false(result$valid)
+  expect_true(any(grepl("audit_category", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: handling != keep uden rationale", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  entry <- valid_entry(list(
+    handling = "fix-in-phase-3", reviewed = TRUE,
+    reviewer = "j", reviewed_date = "2026-04-17"
+  ))
+  result <- validate_manifest(list(files = list(entry)), tmp,
+    mock_audit(list("test-x.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("rationale", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: reviewed:true uden reviewer", {
+  tmp <- setup_test_dir(c("test-x.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  entry <- valid_entry(list(reviewed = TRUE, reviewed_date = "2026-04-17"))
+  result <- validate_manifest(list(files = list(entry)), tmp,
+    mock_audit(list("test-x.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("reviewer", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: manglende fil i manifest", {
+  tmp <- setup_test_dir(c("test-a.R", "test-b.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  result <- validate_manifest(
+    list(files = list(valid_entry(list(file = "test-a.R")))),
+    tmp, mock_audit(list("test-a.R" = "green", "test-b.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("mangler", result$errors, ignore.case = TRUE)))
+})
+
+test_that("validate_manifest: forældet entry", {
+  tmp <- setup_test_dir(c("test-a.R"))
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
+  manifest <- list(files = list(
+    valid_entry(list(file = "test-a.R")),
+    valid_entry(list(file = "test-b.R"))
+  ))
+  result <- validate_manifest(manifest, tmp,
+    mock_audit(list("test-a.R" = "green")))
+  expect_false(result$valid)
+  expect_true(any(grepl("forældet|eksisterer ikke", result$errors, ignore.case = TRUE)))
+})

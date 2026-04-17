@@ -163,3 +163,107 @@ merge_with_existing <- function(auto_entries, existing_manifest) {
     existing
   })
 }
+
+#' Validér manifest mod schema + konsistens-regler.
+#' @return list(valid = bool, errors = character vector)
+validate_manifest <- function(manifest, tests_dir, audit_data = NULL) {
+  errors <- character()
+
+  audit_by_file <- if (!is.null(audit_data)) {
+    setNames(
+      vapply(audit_data$files, `[[`, character(1), "category"),
+      vapply(audit_data$files, `[[`, character(1), "file")
+    )
+  } else NULL
+
+  manifest_files <- vapply(manifest$files, `[[`, character(1), "file")
+
+  for (entry in manifest$files) {
+    file <- entry$file
+
+    if (!entry$type %in% VALID_TYPES) {
+      errors <- c(errors, sprintf("[%s] ukendt type: '%s'", file, entry$type))
+    }
+
+    if (!entry$handling %in% VALID_HANDLINGS) {
+      errors <- c(errors, sprintf("[%s] ukendt handling: '%s'", file, entry$handling))
+    }
+
+    if (isTRUE(entry$reviewed) && entry$handling == "needs-triage") {
+      errors <- c(errors, sprintf(
+        "[%s] reviewed:true må ikke have placeholder handling 'needs-triage'", file))
+    }
+
+    has_merge_with <- !is.null(entry$merge_with) && length(entry$merge_with) > 0
+    if (has_merge_with && entry$handling != "merge-in-phase-2") {
+      errors <- c(errors, sprintf(
+        "[%s] merge_with udfyldt men handling '%s' (forventet 'merge-in-phase-2')",
+        file, entry$handling))
+    }
+
+    if (!is.null(audit_by_file) && file %in% names(audit_by_file)) {
+      expected <- audit_by_file[[file]]
+      if (!is.null(expected) && !is.null(entry$audit_category) &&
+          entry$audit_category != expected) {
+        errors <- c(errors, sprintf(
+          "[%s] audit_category '%s' matcher ikke JSON '%s'",
+          file, entry$audit_category, expected))
+      }
+    }
+
+    if (!is.null(entry$handling) && entry$handling != "keep" &&
+        entry$handling != "needs-triage" &&
+        (is.null(entry$rationale) || nchar(entry$rationale) == 0)) {
+      errors <- c(errors, sprintf(
+        "[%s] handling '%s' kræver rationale", file, entry$handling))
+    }
+
+    if (isTRUE(entry$reviewed)) {
+      if (is.null(entry$reviewer) || nchar(entry$reviewer) == 0) {
+        errors <- c(errors, sprintf("[%s] reviewed:true kræver reviewer", file))
+      }
+      if (is.null(entry$reviewed_date) || nchar(entry$reviewed_date) == 0) {
+        errors <- c(errors, sprintf("[%s] reviewed:true kræver reviewed_date", file))
+      }
+    }
+  }
+
+  # Symmetrisk merge_with
+  for (entry in manifest$files) {
+    if (!is.null(entry$merge_with) && length(entry$merge_with) > 0) {
+      for (target_file in entry$merge_with) {
+        target_entries <- Filter(function(e) e$file == target_file, manifest$files)
+        if (length(target_entries) == 0) {
+          errors <- c(errors, sprintf(
+            "[%s] merge_with peger på '%s' der mangler i manifest",
+            entry$file, target_file))
+        } else {
+          target <- target_entries[[1]]
+          if (is.null(target$merge_with) || !(entry$file %in% target$merge_with)) {
+            errors <- c(errors, sprintf(
+              "[%s <-> %s] asymmetrisk merge_with-relation",
+              entry$file, target_file))
+          }
+        }
+      }
+    }
+  }
+
+  # Filer i filesystem dækket
+  filesystem_files <- list.files(tests_dir, pattern = "^test-.*\\.R$")
+  missing_in_manifest <- setdiff(filesystem_files, manifest_files)
+  if (length(missing_in_manifest) > 0) {
+    errors <- c(errors, sprintf(
+      "Filer i %s mangler i manifest: %s",
+      tests_dir, paste(missing_in_manifest, collapse = ", ")))
+  }
+
+  orphaned <- setdiff(manifest_files, filesystem_files)
+  if (length(orphaned) > 0) {
+    errors <- c(errors, sprintf(
+      "Forældet entry (fil eksisterer ikke): %s",
+      paste(orphaned, collapse = ", ")))
+  }
+
+  list(valid = length(errors) == 0, errors = errors)
+}

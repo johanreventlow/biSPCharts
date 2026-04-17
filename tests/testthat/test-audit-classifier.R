@@ -124,3 +124,70 @@ describe("scan_test_files()", {
     expect_true(all(grepl("^test-", basename(files))))
   })
 })
+
+source(file.path(audit_dir, "dynamic_runner.R"))
+
+describe("parse_testthat_output()", {
+  it("parser standard testthat-summary", {
+    stdout <- c(
+      "Loading biSPCharts",
+      "Testing foo.R",
+      "[ FAIL 2 | WARN 0 | SKIP 1 | PASS 15 ]"
+    )
+    result <- parse_testthat_output(stdout)
+    expect_equal(result$n_pass, 15L)
+    expect_equal(result$n_fail, 2L)
+    expect_equal(result$n_skip, 1L)
+  })
+
+  it("haandterer manglende summary", {
+    stdout <- c("Loading biSPCharts", "Error in test")
+    result <- parse_testthat_output(stdout)
+    expect_equal(result$n_pass, 0L)
+    expect_equal(result$n_fail, 0L)
+    expect_equal(result$n_skip, 0L)
+  })
+})
+
+describe("extract_missing_functions()", {
+  it("ekstraherer funktionsnavne fra could-not-find-function", {
+    stderr <- c(
+      'Error in foo() : could not find function "my_missing_fn"',
+      'Error: could not find function "another_missing"'
+    )
+    fns <- extract_missing_functions(stderr)
+    expect_true(all(c("my_missing_fn", "another_missing") %in% fns))
+  })
+
+  it("returnerer character(0) hvis ingen match", {
+    stderr <- c("Error: some other error")
+    expect_equal(extract_missing_functions(stderr), character(0))
+  })
+
+  it("deduplikerer gentagne manglende funktioner", {
+    stderr <- c(
+      'could not find function "foo"',
+      'could not find function "foo"',
+      'could not find function "bar"'
+    )
+    fns <- extract_missing_functions(stderr)
+    expect_equal(sort(fns), c("bar", "foo"))
+  })
+})
+
+describe("detect_api_drift()", {
+  it("detekterer unused argument", {
+    stderr <- c("Error: unused argument (some_param = 5)")
+    expect_true(detect_api_drift(stderr))
+  })
+
+  it("detekterer argument missing", {
+    stderr <- c('Error: argument "x" is missing, with no default')
+    expect_true(detect_api_drift(stderr))
+  })
+
+  it("returnerer FALSE for missing-function fejl", {
+    stderr <- c('could not find function "foo"')
+    expect_false(detect_api_drift(stderr))
+  })
+})

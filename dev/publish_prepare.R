@@ -16,6 +16,36 @@
 #   0 = success (fase færdig)
 #   1 = forventet fejl (pre-flight, tests, osv.)
 
+ensure_writable_libpath <- function() {
+  writable <- vapply(.libPaths(), function(p) file.access(p, 2) == 0,
+                     logical(1))
+  if (any(writable)) return(invisible(NULL))
+
+  user_lib <- Sys.getenv("R_LIBS_USER", unset = "")
+  if (!nzchar(user_lib)) {
+    cat("FEJL: ingen skrivbar libpath og R_LIBS_USER er ikke sat.\n")
+    quit(status = 1)
+  }
+  user_lib <- path.expand(user_lib)
+  if (!dir.exists(user_lib)) {
+    cat(sprintf("Opretter R_LIBS_USER: %s\n", user_lib))
+    ok <- dir.create(user_lib, recursive = TRUE, showWarnings = FALSE)
+    if (!ok || !dir.exists(user_lib)) {
+      cat(sprintf("FEJL: kunne ikke oprette %s\n", user_lib))
+      quit(status = 1)
+    }
+  }
+  .libPaths(c(user_lib, .libPaths()))
+  if (file.access(user_lib, 2) != 0) {
+    cat(sprintf("FEJL: %s er stadig ikke skrivbar efter oprettelse.\n",
+                user_lib))
+    quit(status = 1)
+  }
+  invisible(NULL)
+}
+
+ensure_writable_libpath()
+
 suppressPackageStartupMessages({
   required_pkgs <- c("remotes", "rsconnect", "devtools", "desc")
   missing_pkgs <- required_pkgs[!vapply(required_pkgs, requireNamespace,
@@ -107,19 +137,26 @@ is_major_bump <- function(new, old) {
   ma > mb
 }
 
-current_lower_bound <- function(pkg) {
+current_dep_info <- function(pkg) {
   d <- desc::desc(file = "DESCRIPTION")
   deps <- d$get_deps()
   row <- deps[deps$package == pkg, ]
-  if (nrow(row) == 0) return(NA_character_)
+  if (nrow(row) == 0) {
+    return(list(version = NA_character_, type = NA_character_))
+  }
   ver <- row$version[1]
-  if (is.na(ver) || ver == "*") return(NA_character_)
-  sub("^>=\\s*", "", ver)
+  type <- row$type[1]
+  if (is.na(ver) || ver == "*") {
+    return(list(version = NA_character_, type = type))
+  }
+  list(version = sub("^>=\\s*", "", ver), type = type)
 }
 
-bump_description <- function(pkg, new_version) {
+current_lower_bound <- function(pkg) current_dep_info(pkg)$version
+
+bump_description <- function(pkg, new_version, dep_type) {
   d <- desc::desc(file = "DESCRIPTION")
-  d$set_dep(pkg, type = "Imports", version = sprintf(">= %s", new_version))
+  d$set_dep(pkg, type = dep_type, version = sprintf(">= %s", new_version))
   d$write()
 }
 
@@ -130,9 +167,9 @@ phase_install <- function() {
   tag_info <- lapply(names(SIBLINGS), function(pkg) {
     repo <- SIBLINGS[[pkg]]
     tag <- fetch_latest_tag(repo)
-    current <- current_lower_bound(pkg)
+    dep <- current_dep_info(pkg)
     list(pkg = pkg, repo = repo, tag = tag, version = strip_v(tag),
-         current_lower = current)
+         current_lower = dep$version, dep_type = dep$type)
   })
   for (info in tag_info) {
     log_info(sprintf("%-12s seneste=%s  DESCRIPTION-lower=%s",
@@ -140,17 +177,29 @@ phase_install <- function() {
                      ifelse(is.na(info$current_lower), "(ingen)", info$current_lower)))
   }
 
-  log_step(2, total, "Advar ved MAJOR-bumps")
+  log_step(2, total, "Valider tag-versioner mod DESCRIPTION")
+  behind <- character(0)
   any_major <- FALSE
   for (info in tag_info) {
-    if (!is.na(info$current_lower) &&
-        is_major_bump(info$version, info$current_lower)) {
+    if (is.na(info$current_lower)) next
+    # GitHub-tag er ældre end DESCRIPTION lower-bound -> downgrade-risiko
+    if (!semver_ge(info$version, info$current_lower) &&
+        !identical(info$version, info$current_lower)) {
+      behind <- c(behind, sprintf("%s: DESCRIPTION kræver >= %s, men seneste GitHub-tag er %s",
+                                  info$pkg, info$current_lower, info$tag))
+    }
+    if (is_major_bump(info$version, info$current_lower)) {
       log_warn(sprintf("MAJOR-bump for %s: %s → %s (kan indeholde breaking changes)",
                        info$pkg, info$current_lower, info$version))
       any_major <- TRUE
     }
   }
-  if (!any_major) log_ok("Ingen MAJOR-bumps detekteret")
+  if (length(behind) > 0) {
+    cat("\n")
+    for (b in behind) log_warn(b)
+    log_fail("GitHub-tags er bagud ift. DESCRIPTION. Push manglende tags til sibling-repoer først.")
+  }
+  if (!any_major) log_ok("Ingen MAJOR-bumps, ingen bagud-tags")
 
   log_step(3, total, "Installér siblings fra tags")
   for (info in tag_info) {
@@ -176,11 +225,12 @@ phase_install <- function() {
     }
     if (!identical(info$version, info$current_lower) &&
         semver_ge(info$version, info$current_lower)) {
-      bump_description(info$pkg, info$version)
-      bumps <- c(bumps, sprintf("%s %s → %s", info$pkg,
-                                info$current_lower, info$version))
-      log_ok(sprintf("%s: bumpet %s → %s", info$pkg,
-                     info$current_lower, info$version))
+      bump_description(info$pkg, info$version, info$dep_type)
+      bumps <- c(bumps, sprintf("%s %s → %s (%s)", info$pkg,
+                                info$current_lower, info$version,
+                                info$dep_type))
+      log_ok(sprintf("%s: bumpet %s → %s i %s", info$pkg,
+                     info$current_lower, info$version, info$dep_type))
     } else {
       log_info(sprintf("%s: ingen bump nødvendig (DESCRIPTION har %s)",
                        info$pkg, info$current_lower))

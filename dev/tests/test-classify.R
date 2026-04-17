@@ -101,3 +101,37 @@ test_that("auto_classify_type e2e vinder over integration-filnavn", {
   )
   expect_equal(result, "e2e")
 })
+
+# ---- auto_classify_handling ----
+
+test_that("auto_classify_handling returns keep for green", {
+  expect_equal(auto_classify_handling("green", 10, 0), "keep")
+})
+
+test_that("auto_classify_handling returns fix-in-phase-3 for low-fail green-partial", {
+  expect_equal(auto_classify_handling("green-partial", 10, 3), "fix-in-phase-3")
+})
+
+test_that("auto_classify_handling returns needs-triage for high-fail green-partial", {
+  expect_equal(auto_classify_handling("green-partial", 2, 8), "needs-triage")
+})
+
+test_that("auto_classify_handling returns needs-triage for stub", {
+  expect_equal(auto_classify_handling("stub", 0, 0), "needs-triage")
+})
+
+test_that("auto_classify_handling returns keep for skipped-all", {
+  expect_equal(auto_classify_handling("skipped-all", 0, 0), "keep")
+})
+
+test_that("auto_classify_handling returns blocked-by-change-1 for broken-missing-fn", {
+  expect_equal(auto_classify_handling("broken-missing-fn", 0, 0), "blocked-by-change-1")
+})
+
+test_that("auto_classify_handling returns needs-triage for ukendt kategori", {
+  expect_equal(auto_classify_handling("broken-other", 0, 0), "needs-triage")
+})
+
+test_that("auto_classify_handling 50% boundary er needs-triage", {
+  expect_equal(auto_classify_handling("green-partial", 5, 5), "needs-triage")
+})

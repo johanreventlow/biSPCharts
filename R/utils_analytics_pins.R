@@ -14,55 +14,96 @@ read_shinylogs_sessions <- function(log_directory) {
 
 #' Laes alle shinylogs kategorier til navngivet liste
 #'
-#' Laeser sessions, inputs, outputs og errors fra shinylogs log-directory.
+#' Laeser `shinylogs_*.json`-filer som shinylogs::store_json skriver
+#' direkte i log_directory (én fil per session, samlet struktur:
+#' session/inputs/outputs/errors). Delegerer til
+#' shinylogs::read_json_logs hvis pakken er tilgaengelig, ellers
+#' fallback til manuel parsing.
 #'
 #' @param log_directory Sti til log-mappe
 #' @return Navngivet liste med 4 data.frames: sessions, inputs, outputs, errors
 #' @export
 read_shinylogs_all <- function(log_directory) {
-  categories <- c("sessions", "inputs", "outputs", "errors")
+  empty_result <- list(
+    sessions = data.frame(),
+    inputs = data.frame(),
+    outputs = data.frame(),
+    errors = data.frame()
+  )
 
-  result <- lapply(stats::setNames(categories, categories), function(cat) {
-    cat_dir <- file.path(log_directory, cat)
-    if (!dir.exists(cat_dir)) {
-      return(data.frame())
-    }
+  if (!dir.exists(log_directory)) {
+    return(empty_result)
+  }
 
-    files <- list.files(cat_dir, pattern = "\\.json$", full.names = TRUE)
-    if (length(files) == 0) {
-      return(data.frame())
-    }
+  json_files <- list.files(
+    log_directory,
+    pattern = "^shinylogs_.*\\.json$",
+    full.names = TRUE,
+    recursive = FALSE
+  )
+  json_files <- json_files[file.size(json_files) > 0]
+  if (length(json_files) == 0) {
+    return(empty_result)
+  }
 
-    entries <- lapply(files, function(f) {
-      tryCatch(
-        jsonlite::fromJSON(f, simplifyVector = TRUE),
-        error = function(e) {
-          log_warn(paste("Kunne ikke laese", cat, "fil:", basename(f)),
-            .context = LOG_CONTEXTS$analytics$pins
-          )
-          NULL
-        }
-      )
-    })
-
-    entries <- Filter(Negate(is.null), entries)
-    if (length(entries) == 0) {
-      return(data.frame())
-    }
-
-    tryCatch(
-      dplyr::bind_rows(entries),
+  # Brug shinylogs' egen parser hvis tilgaengelig — den haandterer
+  # to_dt-konverteringer og setTime-parsing korrekt
+  if (requireNamespace("shinylogs", quietly = TRUE)) {
+    parsed <- tryCatch(
+      shinylogs::read_json_logs(log_directory),
       error = function(e) {
-        log_warn(paste("bind_rows fejlede for", cat, ":", e$message),
+        log_warn(paste("shinylogs::read_json_logs fejlede:", e$message),
           .context = LOG_CONTEXTS$analytics$pins
         )
-        data.frame()
+        NULL
+      }
+    )
+    if (!is.null(parsed)) {
+      # shinylogs returnerer session/inputs/errors/outputs (session singular)
+      # — vi normaliserer til sessions/inputs/outputs/errors
+      return(list(
+        sessions = as.data.frame(parsed$session %||% data.frame()),
+        inputs = as.data.frame(parsed$inputs %||% data.frame()),
+        outputs = as.data.frame(parsed$outputs %||% data.frame()),
+        errors = as.data.frame(parsed$errors %||% data.frame())
+      ))
+    }
+  }
+
+  # Fallback: manuel parsing hvis shinylogs ikke er tilgaengelig
+  entries <- lapply(json_files, function(f) {
+    tryCatch(
+      jsonlite::fromJSON(f, simplifyVector = TRUE),
+      error = function(e) {
+        log_warn(paste("Kunne ikke laese", basename(f), ":", e$message),
+          .context = LOG_CONTEXTS$analytics$pins
+        )
+        NULL
       }
     )
   })
+  entries <- Filter(Negate(is.null), entries)
+  if (length(entries) == 0) {
+    return(empty_result)
+  }
 
-  result
+  bind_safe <- function(lst) {
+    dfs <- Filter(function(x) !is.null(x), lst)
+    if (length(dfs) == 0) {
+      return(data.frame())
+    }
+    tryCatch(dplyr::bind_rows(dfs), error = function(e) data.frame())
+  }
+
+  list(
+    sessions = bind_safe(lapply(entries, function(e) as.data.frame(e$session))),
+    inputs = bind_safe(lapply(entries, function(e) as.data.frame(e$inputs))),
+    outputs = bind_safe(lapply(entries, function(e) as.data.frame(e$outputs))),
+    errors = bind_safe(lapply(entries, function(e) as.data.frame(e$errors)))
+  )
 }
+
+`%||%` <- function(x, y) if (is.null(x)) y else x
 
 #' Roter log-filer (komprimer gamle, slet meget gamle)
 #'

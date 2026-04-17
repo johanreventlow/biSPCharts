@@ -71,7 +71,34 @@ main <- function() {
   args <- parse_args(commandArgs(trailingOnly = TRUE))
 
   if (args$mode == "classify") {
-    stop("classify-mode ikke implementeret endnu (Task 7)")
+    cat("Læser audit-JSON:", args$input, "\n")
+    audit_data <- jsonlite::fromJSON(args$input, simplifyVector = FALSE)
+
+    cat("Auto-klassificerer", length(audit_data$files), "filer...\n")
+    auto_entries <- auto_classify(audit_data, args$tests_dir)
+
+    reviewed_count <- 0L
+    needs_triage_count <- sum(vapply(auto_entries,
+      function(e) e$handling == "needs-triage", logical(1)))
+
+    manifest <- list(
+      metadata = list(
+        total_files = length(auto_entries),
+        audit_run = audit_data$run_timestamp,
+        manifest_schema_version = "1.0",
+        review_status = list(
+          reviewed = reviewed_count,
+          unreviewed = length(auto_entries) - reviewed_count,
+          needs_triage = needs_triage_count
+        )
+      ),
+      files = auto_entries
+    )
+
+    cat("Skriver manifest:", args$output, "\n")
+    write_manifest(manifest, args$output)
+    cat("  Needs triage:", needs_triage_count, "\n")
+    cat("Færdig.\n")
   } else if (args$mode == "validate") {
     stop("validate-mode ikke implementeret endnu (Task 9)")
   } else if (args$mode == "render-report") {

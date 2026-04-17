@@ -135,3 +135,64 @@ test_that("auto_classify_handling returns needs-triage for ukendt kategori", {
 test_that("auto_classify_handling 50% boundary er needs-triage", {
   expect_equal(auto_classify_handling("green-partial", 5, 5), "needs-triage")
 })
+
+# ---- auto_classify ----
+
+test_that("auto_classify processerer alle filer i audit-JSON", {
+  mock_audit <- list(
+    run_timestamp = "2026-04-17T14:00:00+0200",
+    files = list(
+      list(file = "test-namespace-integrity.R", category = "stub",
+           n_pass = 1L, n_fail = 0L, n_skip = 0L),
+      list(file = "test-parse.R", category = "green",
+           n_pass = 10L, n_fail = 0L, n_skip = 0L)
+    )
+  )
+
+  tmp_dir <- tempfile("testfiles-")
+  dir.create(tmp_dir)
+  on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+  writeLines("test_that('x', { expect_equal(1,1) })",
+             file.path(tmp_dir, "test-namespace-integrity.R"))
+  writeLines("test_that('y', { expect_equal(2,2) })",
+             file.path(tmp_dir, "test-parse.R"))
+
+  result <- auto_classify(mock_audit, tmp_dir)
+
+  expect_length(result, 2)
+  ns_entry <- Filter(function(e) e$file == "test-namespace-integrity.R", result)[[1]]
+  expect_equal(ns_entry$type, "policy-guard")
+  expect_equal(ns_entry$handling, "needs-triage")
+  expect_equal(ns_entry$reviewed, FALSE)
+  expect_equal(ns_entry$audit_category, "stub")
+
+  p_entry <- Filter(function(e) e$file == "test-parse.R", result)[[1]]
+  expect_equal(p_entry$type, "unit")
+  expect_equal(p_entry$handling, "keep")
+})
+
+# ---- write_manifest / read_manifest ----
+
+test_that("write_manifest/read_manifest round-tripper", {
+  manifest <- list(
+    metadata = list(total_files = 1L, audit_run = "t",
+      manifest_schema_version = "1.0",
+      review_status = list(reviewed = 0L, unreviewed = 1L, needs_triage = 0L)),
+    files = list(
+      list(file = "test-a.R", audit_category = "green", type = "unit",
+           handling = "keep", reviewed = FALSE)
+    )
+  )
+
+  tmp <- tempfile(fileext = ".yaml")
+  on.exit(unlink(tmp), add = TRUE)
+
+  write_manifest(manifest, tmp)
+  expect_true(file.exists(tmp))
+  content <- paste(readLines(tmp), collapse = "\n")
+  expect_match(content, "Test Classification Manifest")
+
+  restored <- read_manifest(tmp)
+  expect_length(restored$files, 1)
+  expect_equal(restored$files[[1]]$type, "unit")
+})

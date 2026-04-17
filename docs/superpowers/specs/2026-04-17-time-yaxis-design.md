@@ -113,11 +113,12 @@ Ticks starter og slutter på et multiplum af intervallet, ikke på data-min/max.
 
 **Algoritme** (input: minutter som `double`, maks 2 komponenter):
 
-1. `d <- floor(V / 1440)` (hele dage)
-2. `rem <- V - d * 1440`
-3. `t <- floor(rem / 60)` (hele timer)
-4. `m <- round(rem - t * 60)` (hele minutter — runder sub-minutter væk)
-5. Komponér ikke-nul dele, maks 2 komponenter:
+1. `V_int <- round(V)` (afrund til hele minutter FØRST — forhindrer overflow i sub-komponenter som ellers kunne give `60m` i stedet for `1t` når fx `V = 59,7`)
+2. `d <- V_int %/% 1440` (hele dage)
+3. `rem <- V_int %% 1440`
+4. `t <- rem %/% 60` (hele timer)
+5. `m <- rem %% 60` (hele minutter)
+6. Komponér ikke-nul dele, maks 2 komponenter:
    - `d > 0, t > 0` → `"Xd Yt"` (minutter ignoreres ved dage-skala)
    - `d > 0, t = 0` → `"Xd"`
    - `d = 0, t > 0, m > 0` → `"Xt Ym"`
@@ -127,7 +128,7 @@ Ticks starter og slutter på et multiplum af intervallet, ikke på data-min/max.
 
 **Negative værdier:** `V < 0` → præfix med `-`, absolut værdi formateres som ovenfor.
 
-**Rounding-fix:** Step 4 runder til heltal minutter. Det eliminerer `0,8541667 timer`-bugget i komposit-form: sub-minut-decimaler forsvinder helt fra akse-labels.
+**Rounding-fix:** Step 1 runder til heltal minutter før komponentopdeling. Det eliminerer `0,8541667 timer`-bugget i komposit-form: sub-minut-decimaler forsvinder helt fra akse-labels, og overflow-scenarier (59,7 min → `1t` ikke `60m`) håndteres korrekt.
 
 **Eksempler:**
 
@@ -260,7 +261,7 @@ Når auto-detect identificerer en tids-kolonne: **altid default til `Tid (minutt
 ### Enhedstests
 
 **`test-time-formatting.R` (Fase 1):**
-- `format_time_composite()`: 0, 1m, 59m, 60m (=1t), 90m (=1t 30m), 1439m, 1440m (=1d), 3660m (=2d 13t), negative værdier, NA, sub-minut (0,25m → 0m), afrundings-edge-cases (59,5m → 1t, 60,4m → 1t).
+- `format_time_composite()`: 0, 1m, 59m, 60m (=1t), 90m (=1t 30m), 1439m, 1440m (=1d), 3660m (=2d 13t), negative værdier, NA, sub-minut (0,25m → 0m), overflow-edge-cases (59,7m → `1t` ikke `60m`; 1439,7m → `1d` ikke `24t`; 60,4m → `1t`).
 - `time_breaks()`: Range [0, 120] → 30m/5 ticks; [15, 185] → snap til 30m-grid; [0, 480] → 2t-interval; tom/NA/konstant → fallback.
 - **Regressions-test:** input 51 minutter → `"51m"` (ikke `"0,8541667 timer"`).
 

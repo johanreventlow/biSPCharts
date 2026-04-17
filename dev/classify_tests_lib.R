@@ -57,3 +57,25 @@ auto_classify_type <- function(filename, file_contents) {
   # Default
   "unit"
 }
+
+#' Auto-klassificér handling-dimension fra audit-kategori.
+#'
+#' @param category character(1): audit-kategori
+#' @param n_pass integer
+#' @param n_fail integer
+#' @return character(1)
+auto_classify_handling <- function(category, n_pass, n_fail) {
+  if (category == "green") return("keep")
+  if (category == "skipped-all") return("keep")
+  if (category == "broken-missing-fn") return("blocked-by-change-1")
+  if (category == "stub") return("needs-triage")
+
+  if (category == "green-partial") {
+    total <- n_pass + n_fail
+    if (total == 0) return("needs-triage")
+    if (n_fail / total >= 0.5) return("needs-triage")
+    return("fix-in-phase-3")
+  }
+
+  "needs-triage"
+}

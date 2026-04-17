@@ -24,6 +24,15 @@
 # See docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md for complete list of all contexts
 # ==============================================================================
 
+# remove.packages("BFHcharts")
+# remove.packages("BFHtheme")
+# remove.packages("BFHllm")
+# 
+# pak::pkg_install(c(
+#   "johanreventlow/BFHtheme",
+#   "johanreventlow/BFHcharts",
+#   "johanreventlow/BFHllm"))
+
 # ==============================================================================
 # DEV-LOADING AF SIBLING-PAKKER
 # ==============================================================================

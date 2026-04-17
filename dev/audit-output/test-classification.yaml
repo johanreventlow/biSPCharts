@@ -19,8 +19,8 @@ metadata:
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 48
-    unreviewed: 77
+    reviewed: 57
+    unreviewed: 68
     needs_triage: 26
 files:
   - file: test-100x-mismatch-prevention.R
@@ -44,9 +44,13 @@ files:
     reviewed_date: '2026-04-17'
   - file: test-app-basic.R
     audit_category: stub
-    type: e2e
-    handling: needs-triage
-    reviewed: no
+    type: integration
+    handling: keep
+    reviewed: yes
+    rationale: E2E-smoke med AppDriver-mock fallback (2 blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-app-initialization.R
     audit_category: green-partial
     type: unit
@@ -88,9 +92,13 @@ files:
     reviewed: no
   - file: test-branding-globals.R
     audit_category: stub
-    type: unit
-    handling: needs-triage
-    reviewed: no
+    type: policy-guard
+    handling: keep
+    reviewed: yes
+    rationale: Legacy-constant tilgængelighed (HOSPITAL_COLORS bruges stadig i R/zzz.R,
+      R/app_run.R).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-cache-collision-fix.R
     audit_category: green-partial
     type: unit
@@ -121,8 +129,12 @@ files:
   - file: test-clean-qic-call-args.R
     audit_category: stub
     type: unit
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Reel unit-test på freeze-adjustment (2 test_that-blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-column-observer-consolidation.R
     audit_category: green-partial
     type: unit
@@ -241,13 +253,21 @@ files:
   - file: test-denominator-field-toggle.R
     audit_category: stub
     type: unit
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på chart-type/denominator-mapping (2 blokke). Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-dependency-namespace.R
     audit_category: stub
     type: policy-guard
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod library()-kald på 15 pakker i R/. Misklassificeret
+      som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-e2e-user-workflows.R
     audit_category: skipped-all
     type: e2e
@@ -384,8 +404,11 @@ files:
   - file: test-logging-debug-cat.R
     audit_category: stub
     type: policy-guard
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod cat("DEBUG...")-statements. Misklassificeret som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-logging-precedence.R
     audit_category: green
     type: unit
@@ -425,8 +448,12 @@ files:
   - file: test-namespace-integrity.R
     audit_category: stub
     type: policy-guard
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Policy-guard mod simple NAMESPACE-eksporter. Misklassificeret som stub
+      pga. 1 test_that-block.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-no-file-dependencies.R
     audit_category: green
     type: unit
@@ -520,8 +547,12 @@ files:
   - file: test-run-app.R
     audit_category: stub
     type: unit
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på run_app port-forwarding (1 blok). Misklassificeret som
+      stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-run-chart-denominator-stability.R
     audit_category: green
     type: unit
@@ -610,8 +641,11 @@ files:
   - file: test-ui-token-management.R
     audit_category: stub
     type: unit
-    handling: needs-triage
-    reviewed: no
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test på token counter-logik (2 blokke). Misklassificeret som stub.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-utils_analytics_consent.R
     audit_category: green
     type: unit

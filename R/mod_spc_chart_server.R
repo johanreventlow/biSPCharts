@@ -162,8 +162,12 @@ visualizationModuleServer <- function(
           }
         }
         if (rows_with_data < 3) {
+          empty_state_msg <- sprintf(
+            "Indtast mindst 3 datapunkter\nfor at se diagrammet\n(%d af 3 indtastet)",
+            rows_with_data
+          )
           graphics::plot.new()
-          graphics::text(0.5, 0.5, "Indtast data", cex = 1.3, col = get_hospital_colors()$ui_grey_dark)
+          graphics::text(0.5, 0.5, empty_state_msg, cex = 1.1, col = get_hospital_colors()$ui_grey_dark)
           return(invisible(NULL))
         }
 

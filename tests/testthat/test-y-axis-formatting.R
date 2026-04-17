@@ -160,7 +160,7 @@ test_that("Extracted formatting produces identical output to original", {
   expect_equal(format_scaled_number(test_val_m, 1e6, "M"), "2,5M")
 
   # Time formatting backward-compatibility cases flyttet til
-  # test-utils_time_formatting.R (format_time_composite)
+  # test-time-formatting.R (format_time_composite)
 })
 
 # TEST: DRY Principle Validation ============================================

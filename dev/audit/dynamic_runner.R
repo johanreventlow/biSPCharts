@@ -61,7 +61,7 @@ run_test_file_isolated <- function(file, timeout = 60, pkg_root = getwd()) {
   start_time <- Sys.time()
 
   r_code <- sprintf(
-    'setwd("%s"); pkgload::load_all(quiet = TRUE); testthat::test_file("%s", reporter = testthat::ProgressReporter$new(show_praise = FALSE), stop_on_failure = FALSE)',
+    'setwd("%s"); pkgload::load_all(quiet = TRUE); res <- testthat::test_file("%s", reporter = testthat::SilentReporter$new(), stop_on_failure = FALSE); df <- as.data.frame(res); cat(sprintf("[ FAIL %%d | WARN %%d | SKIP %%d | PASS %%d ]\\n", sum(df$failed), sum(df$warning, na.rm = TRUE), sum(df$skipped), sum(df$passed)))',
     pkg_root, file
   )
 

@@ -70,3 +70,5 @@ tests/testthat/testthat-problems.rds
 # Test audit output (rapporter genereres on-demand)
 dev/audit-output/*.json
 !dev/audit-output/.gitkeep
+# Undtagelse: test-audit.json er input til classify_tests.R + validation
+!dev/audit-output/test-audit.json

@@ -1,6 +1,12 @@
 # Implementation Tasks
 
-## Phase 1: Test File Consolidation (Week 1-2)
+## Phase 1: Test File Consolidation (ARKIVERET 2026-04-17)
+
+> **Overhalet af `refactor-test-suite` Fase 2** — se
+> `docs/superpowers/plans/2026-04-17-refactor-test-suite-phase1.md`
+> og `dev/audit-output/test-classification.yaml`.
+>
+> Tasks bevaret for historisk reference. Udfør IKKE.
 
 Goal: Reduce 146 test files → ~100 files by consolidating redundant test clusters. Maintain all 1196 test cases.
 

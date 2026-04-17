@@ -6620,7 +6620,7 @@
       "checksum": "1e0492e8b0e14e3aadc5e71c4dbf0e34"
     },
     ".claude/settings.local.json": {
-      "checksum": "1b5592bf88b195c7bd17c2edf022caa5"
+      "checksum": "2513729d373bf6a64a0faa310a1e9623"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -20015,7 +20015,7 @@
       "checksum": "676a6a35af56225ff0fb01dc8eadc939"
     },
     ".Renviron.example": {
-      "checksum": "4f1988adb29721fd7dd981eb0436827b"
+      "checksum": "dca8c9449987695a0862f66667f48b6e"
     },
     ".superpowers/brainstorm/46098-1774072610/.server-stopped": {
       "checksum": "9efdd5f1c1696c9743d7c204747245f6"
@@ -20059,6 +20059,531 @@
     ".superpowers/brainstorm/94537-1776289338/state/server.pid": {
       "checksum": "d5448f5034d730a9c7c7051f6b42b813"
     },
+    ".worktrees/empty-state-counter/_brand.yml": {
+      "checksum": "cbfb22d6dafe610562099fc8b031f058"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/architecture-validator.md": {
+      "checksum": "2cd36d5212cecb09c2c83711b7d76b77"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/configuration-reviewer.md": {
+      "checksum": "24f1fb635990e31b009b2e416a6c7a45"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/error-handling-reviewer.md": {
+      "checksum": "4c70a74823257f51a0b7f87dd6ff42f9"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/legacy-code-detector.md": {
+      "checksum": "b093eb663a12ed7ac638b94c99f77811"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/logging-reviewer.md": {
+      "checksum": "2db34a9a5c80ae52b3949fd06cee5ec1"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/performance-optimizer.md": {
+      "checksum": "453c747fbf76f873114c3bd2ba1da197"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/refactoring-advisor.md": {
+      "checksum": "be618ff2d649a57d17ba26055d5bb643"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/security-reviewer.md": {
+      "checksum": "b9ef5a5f33e2b585c4d1625c1a2a521d"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/shiny-code-reviewer.md": {
+      "checksum": "f5ed7cd8a83bcce9bcb891dc2845ea62"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/test-coverage-analyzer.md": {
+      "checksum": "fd2fd200dc18f7a8d2473d3eccf98c1e"
+    },
+    ".worktrees/empty-state-counter/.claude/agents/tidyverse-code-reviewer.md": {
+      "checksum": "69937af58d0cf46ca0318b7c6ffa70fc"
+    },
+    ".worktrees/empty-state-counter/.claude/GLOBAL_RULES.md": {
+      "checksum": "7f00f65344553ea1eef52346632ee65e"
+    },
+    ".worktrees/empty-state-counter/.github/ISSUE_BFHCHARTS_y_axis_unit.md": {
+      "checksum": "d1147d6071772d7fc561247b77c68932"
+    },
+    ".worktrees/empty-state-counter/.github/ISSUE_TEMPLATE/bfhchart-feature-request.md": {
+      "checksum": "83f8f6dcab7897c2701cf838edb9f973"
+    },
+    ".worktrees/empty-state-counter/.Renviron.example": {
+      "checksum": "4f1988adb29721fd7dd981eb0436827b"
+    },
+    ".worktrees/empty-state-counter/app.R": {
+      "checksum": "f7fa710eba8d9f6076c63a9f6f1f5f09"
+    },
+    ".worktrees/empty-state-counter/CLAUDE.md": {
+      "checksum": "aa1719933d5ef440fa3fad1c2b37ad46"
+    },
+    ".worktrees/empty-state-counter/DESCRIPTION": {
+      "checksum": "87d82029c6bfb057afd1b5e388a5ae84"
+    },
+    ".worktrees/empty-state-counter/dev/ARCHITECTURE_OVERVIEW.md": {
+      "checksum": "ffcd6f72f78e599c57553b505b6127d8"
+    },
+    ".worktrees/empty-state-counter/dev/ARCHITECTURE.md": {
+      "checksum": "71ac4d574ad0ce8b174fc122defdb619"
+    },
+    ".worktrees/empty-state-counter/dev/DEVELOPER_GUIDE.md": {
+      "checksum": "bbbb21551bf0388f62813a18d441fe61"
+    },
+    ".worktrees/empty-state-counter/dev/lint_and_style.R": {
+      "checksum": "59318f9f08de38f35228772e882c92c5"
+    },
+    ".worktrees/empty-state-counter/dev/MODULE_STRUCTURE.md": {
+      "checksum": "93b432dc27d2b2565a7e74252ae16a96"
+    },
+    ".worktrees/empty-state-counter/dev/package_validation.R": {
+      "checksum": "be69c4cd86f9cccf65b95bf7974e4d4b"
+    },
+    ".worktrees/empty-state-counter/dev/PROFILING_GUIDE.md": {
+      "checksum": "cbbfe79a6c0cdc5fdf771efbcf21994e"
+    },
+    ".worktrees/empty-state-counter/dev/publish_prepare.R": {
+      "checksum": "91831ca078c6fd2677d900bc8c617c90"
+    },
+    ".worktrees/empty-state-counter/dev/run_dev.R": {
+      "checksum": "b0c735f800e54f50aac42abf848ea14d"
+    },
+    ".worktrees/empty-state-counter/dev/TESTING_PROTOCOL.md": {
+      "checksum": "ca5f7af8d99b8aeb115e60017ef63f9b"
+    },
+    ".worktrees/empty-state-counter/docs/adr/ADR-001-pure-bfhcharts-workflow.md": {
+      "checksum": "cd7d2068ab199981bfe49286fb678620"
+    },
+    ".worktrees/empty-state-counter/docs/adr/ADR-002-ui-sync-throttle-250ms.md": {
+      "checksum": "753ee774739755987f656ced29ab8ea8"
+    },
+    ".worktrees/empty-state-counter/docs/adr/ADR-014-deprecate-optimized-event-pipeline.md": {
+      "checksum": "def53e2286bd2f82cd0554af03eacb7c"
+    },
+    ".worktrees/empty-state-counter/docs/adr/ADR-015-bfhchart-migrering.md": {
+      "checksum": "8c6b34b1091b6861394c4ee5119d04a7"
+    },
+    ".worktrees/empty-state-counter/docs/adr/ADR-016-gemini-integration.md": {
+      "checksum": "fd28966961c8605a7502e893cd845332"
+    },
+    ".worktrees/empty-state-counter/docs/adr/README.md": {
+      "checksum": "7ce2b4e21f363601f6ec0899e04d8d29"
+    },
+    ".worktrees/empty-state-counter/docs/architecture/service-layer-pattern.md": {
+      "checksum": "c26c9397a12bfb8886efc4dec1846ff5"
+    },
+    ".worktrees/empty-state-counter/docs/BFHCHARTS_FEATURE_REQUEST_y_axis_unit.md": {
+      "checksum": "3cca24b9cd745989917f1d7a63ac28ba"
+    },
+    ".worktrees/empty-state-counter/docs/BFHCHARTS_LIMITATIONS.md": {
+      "checksum": "e67421ce744c04dd3bb692c1c8f19c0c"
+    },
+    ".worktrees/empty-state-counter/docs/BFHCHARTS_MIGRATION_GUIDE.md": {
+      "checksum": "91506680d711d358dc0e7498997c8168"
+    },
+    ".worktrees/empty-state-counter/docs/CONFIGURATION.md": {
+      "checksum": "5119065893c37ed170006c275386d82b"
+    },
+    ".worktrees/empty-state-counter/docs/CROSS_REPO_COORDINATION.md": {
+      "checksum": "12e86331b81abf20c99ff06951016e61"
+    },
+    ".worktrees/empty-state-counter/docs/DEBUG_CONTEXT_FILTERING.md": {
+      "checksum": "feff1f619caeeaa679fe0dc1b2cfd477"
+    },
+    ".worktrees/empty-state-counter/docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md": {
+      "checksum": "f1a5891492a183088862a653593f7b3e"
+    },
+    ".worktrees/empty-state-counter/docs/DEPLOYMENT.md": {
+      "checksum": "d2e118a2721c2fe1bfcae1b8fd080903"
+    },
+    ".worktrees/empty-state-counter/docs/GITHUB_LABELS_SETUP.md": {
+      "checksum": "b558dd9359aaaf169b8621e75a988eed"
+    },
+    ".worktrees/empty-state-counter/docs/issues/bfhchart-feasibility-findings.md": {
+      "checksum": "b71eb718d778d2a6e3425c5f9daa2dab"
+    },
+    ".worktrees/empty-state-counter/docs/issues/bfhchart-transition-issues.md": {
+      "checksum": "585473dc823d7db43210f929e22e35b9"
+    },
+    ".worktrees/empty-state-counter/docs/issues/bfhcharts-integration-findings.md": {
+      "checksum": "78b8a2dd5efa275cfac0bcf93df1a8eb"
+    },
+    ".worktrees/empty-state-counter/docs/issues/bfhcharts-label-compatibility-fix.md": {
+      "checksum": "0c0316f776528c1ff1f5a0024ca66209"
+    },
+    ".worktrees/empty-state-counter/docs/issues/bfhcharts-renderplot-error.md": {
+      "checksum": "fa5a784491d092e9399c93161792dcc9"
+    },
+    ".worktrees/empty-state-counter/docs/issues/target-line-manual-test-guide.md": {
+      "checksum": "e4df220f2af481a5fef22300510fdfbf"
+    },
+    ".worktrees/empty-state-counter/docs/LOGGING_GUIDE.md": {
+      "checksum": "4b405b3567c7f78ca1fd4877ad82db5d"
+    },
+    ".worktrees/empty-state-counter/docs/PHASE_2C_EXECUTION_PLAN.md": {
+      "checksum": "eac2002177f94c2edcb6d52f3894290d"
+    },
+    ".worktrees/empty-state-counter/docs/PHASE_2C_REACTIVE_DEPENDENCY_MAP.md": {
+      "checksum": "253ab0fd20f6c25c6e67588a940b45df"
+    },
+    ".worktrees/empty-state-counter/docs/plans/2026-04-09-connect-cloud-deployment-design.md": {
+      "checksum": "a20d026714146c96649ae103e07b163c"
+    },
+    ".worktrees/empty-state-counter/docs/plans/2026-04-09-connect-cloud-deployment-plan.md": {
+      "checksum": "665accf3552340c58d37d80decaf5b58"
+    },
+    ".worktrees/empty-state-counter/docs/SPCify_Frontend_Design_Brief.md": {
+      "checksum": "23d0f96aac7a060c95d34cba74912a4c"
+    },
+    ".worktrees/empty-state-counter/docs/STARTUP_CONTRACT.md": {
+      "checksum": "ef93d83bc2b48df8e876a4bf0c8b2a83"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/plans/2026-04-11-save-load-file.md": {
+      "checksum": "8daeb00b3753359c3578438d93de5b33"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/plans/2026-04-15-analytics-cookie-consent.md": {
+      "checksum": "43d6376a37b564b2e310abd4e4bee2a2"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/plans/2026-04-15-help-information-architecture.md": {
+      "checksum": "c418bbee86e41f4b074f11e88f377cbd"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/plans/2026-04-16-analytics-dashboard.md": {
+      "checksum": "3e2c6ef891fd6ea4263f5ba731df505f"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/specs/2026-04-11-save-load-design.md": {
+      "checksum": "89b8e59f66365ddb4eaa3feb12c8b77a"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/specs/2026-04-15-analytics-cookie-consent-design.md": {
+      "checksum": "596fb5962e39c63b683ccb83bf621258"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/specs/2026-04-15-help-back-navigation-design.md": {
+      "checksum": "d2e0ce446dd9ac30f87eb31b374cfb4c"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/specs/2026-04-15-help-information-architecture-design.md": {
+      "checksum": "646cd053d1568152aa18bb8bd2f24e3f"
+    },
+    ".worktrees/empty-state-counter/docs/superpowers/specs/2026-04-16-analytics-dashboard-design.md": {
+      "checksum": "863a058672df19235604dd28f20ec01f"
+    },
+    ".worktrees/empty-state-counter/docs/USER_GUIDE.md": {
+      "checksum": "9558c1b892794698483b124dd521e61d"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/analytics-client.js": {
+      "checksum": "a026dd823c74ace114c7e892922b683c"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/BISPCHARTS.png": {
+      "checksum": "2b4446c6fc018b83919a15e41e225cf0"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/cookie-consent.css": {
+      "checksum": "8ab295a08b9d4e69130b76d377b9d776"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/cookie-consent.js": {
+      "checksum": "a378cf488549f6c864f650279f2f08b6"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/fonts/MariOffice-Bold.ttf": {
+      "checksum": "a6df7b27d2a6ccfbd4690f7a0cff0e20"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/fonts/MariOffice-Book.ttf": {
+      "checksum": "b22b59ab0cb85a0cba92ad076a56d30a"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/01-run-chart-stabil.png": {
+      "checksum": "09201a8c8cc7623b622d2dd9f1bde626"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/02-variation-sammenligning.png": {
+      "checksum": "9ca0b83e521d5751ba9a11bd459c5704"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/03-diagram-annoteret.png": {
+      "checksum": "8fdd71c1c90d0eaa6b441589b3caeb44"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/04-anhoej-signal.png": {
+      "checksum": "c25e22603cbc59de70a0f12151087bfa"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/05-p-chart.png": {
+      "checksum": "b7933561b2de61e4521fd155571627b3"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/06a-trin1-upload.png": {
+      "checksum": "3a4005cff1d6a97725d5bb1fff7017a1"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/06b-trin2-analyser.png": {
+      "checksum": "26febb23639c6770fd0191b1ab3b10c6"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/help/06c-trin3-eksporter.png": {
+      "checksum": "781e14b31f6ad4cb8abe1a0c1f23f8de"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/hospital_logo.png": {
+      "checksum": "c652ae32097799977cbbd103e8cb3a2c"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/local-storage.js": {
+      "checksum": "b1fc92ef9616601997588581088d5809"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/shiny-handlers.js": {
+      "checksum": "86073d9b15511549d496b74c2e3c372e"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/SPCify.png": {
+      "checksum": "add4ce5c2fc35cef938e935ad4f873f4"
+    },
+    ".worktrees/empty-state-counter/inst/app/www/wizard-nav.js": {
+      "checksum": "cbda0302a7b36823f6b04325b0075de9"
+    },
+    ".worktrees/empty-state-counter/inst/config/brand.yml": {
+      "checksum": "8097b52693ae309bf2bd587bb6a487b9"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_c.csv": {
+      "checksum": "754d8d80b545bf90842892c40fedea44"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_g.csv": {
+      "checksum": "fdbfd0e8f57659ba48cb34a6c0868812"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_i_mr.csv": {
+      "checksum": "0a0569612c2ce4bf19fd8421e3de2347"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_p.csv": {
+      "checksum": "f85cd2e63272f8ff2e565a2055c4734c"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_pp.csv": {
+      "checksum": "ac8a5cac4cf75613c160f657ea864af7"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_run.csv": {
+      "checksum": "31659605e5e73729ac19bbe61c7f6929"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_spc_data.csv": {
+      "checksum": "63a6810d13568aebaf0ea0a9a2ae2132"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_t.csv": {
+      "checksum": "aa3d95a96ed048ed5d54b79f39170af2"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_u.csv": {
+      "checksum": "bc43b1470c60521dd690ba2542732e3b"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/sample_up.csv": {
+      "checksum": "aadcfa3a68c28a2e95849b2278b771cc"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/spc_exampledata_utf8.csv": {
+      "checksum": "948baf92ad30f422a7b9049af46cbbd8"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/spc_exampledata.csv": {
+      "checksum": "bbecb64486db3e1f07b180e5334046b6"
+    },
+    ".worktrees/empty-state-counter/inst/extdata/SPC_test_data_forskellige.csv": {
+      "checksum": "72feb6fef51f3898baa4746313b3d94a"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/Lato-Bold.ttf": {
+      "checksum": "26af1ab89ca07c82f244395a9849e150"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/Lato-Light.ttf": {
+      "checksum": "a3ba535f79c84f435ff448876032a5f5"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/Lato-Regular.ttf": {
+      "checksum": "c5c3b9b91ff2c85ab6dcf666f5d852b0"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/LICENSE": {
+      "checksum": "86d3f3a95c324c9479bd8986968f4327"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/Roboto-Bold.ttf": {
+      "checksum": "8ce868dab82f3f36896915aff1ff0dab"
+    },
+    ".worktrees/empty-state-counter/inst/fonts/Roboto-Medium.ttf": {
+      "checksum": "c9436ead5ef4f265e585d9e4c27db08f"
+    },
+    ".worktrees/empty-state-counter/inst/golem-config.yml": {
+      "checksum": "99d6603f935217562045aba2036eb8c7"
+    },
+    ".worktrees/empty-state-counter/inst/powerpointskabelon.pptx": {
+      "checksum": "b5542f0b880d47cfa0d3b81e6e127d5b"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh_horisonal.typ": {
+      "checksum": "b6be97cd59c8d78460506639a8fd798b"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/bfh-template.typ": {
+      "checksum": "fc2a5b2af2f51e6a4dd814c126be5d27"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIAL.TTF": {
+      "checksum": "fa3228aadde0db988e1822c2f736c131"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALBD.TTF": {
+      "checksum": "858f5a50a4c3e5e6559a0c9b128eee60"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALBI.TTF": {
+      "checksum": "b04eb00031bf4d82265b30855d7a314f"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALI.TTF": {
+      "checksum": "97f1aa85e8ce271cd2a65759cb230397"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALN.TTF": {
+      "checksum": "d20ba4eaaf26b7033da05fd59ed020ab"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALNB.TTF": {
+      "checksum": "6debd7b47fbf196d9aea1dc4235439bb"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALNBI.TTF": {
+      "checksum": "56e394b38fbf81afb437bc00884544f8"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIALNI.TTF": {
+      "checksum": "989670c4c82248bb6a8cec3558212374"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARIBLK.TTF": {
+      "checksum": "ec8b4d9c0e68604dfbeda73d0213c82e"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/ARLRDBD.TTF": {
+      "checksum": "2d1068a7f51e1fc2c63d81165bf52422"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari Bold.otf": {
+      "checksum": "8603a8b95d29b030b66d1d4f68ab2b72"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari Book.otf": {
+      "checksum": "d891294df978554740a1996b1040468f"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari Heavy.otf": {
+      "checksum": "a8911c6c90f788e17831fc9075a821f0"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari Light.otf": {
+      "checksum": "bbbf1fe0cb1ff169970a39ac9a069ce6"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari Poster.otf": {
+      "checksum": "5a058c77c06cfec678030c353cbcc3e8"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/Mari.otf": {
+      "checksum": "2e9b3d0385a8462bea22f3b2b80422e7"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice-Bold.ttf": {
+      "checksum": "a6df7b27d2a6ccfbd4690f7a0cff0e20"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice-Book.ttf": {
+      "checksum": "b22b59ab0cb85a0cba92ad076a56d30a"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice-Heavy.ttf": {
+      "checksum": "d81d6f49c135ae3bd22a76acf20ee6e1"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice-Light.ttf": {
+      "checksum": "8cca5b564b57d0a084569f273fcf5a2d"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice-Poster.ttf": {
+      "checksum": "79fd2077ce69faf565d6406810b698b4"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/fonts/MariOffice.ttf": {
+      "checksum": "5668b54b76c9999c826f3e20f2aa261d"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/BFH_medicin.png": {
+      "checksum": "f5219f8241215cba6cf24c0ee94d9cca"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Hospital_Maerke_RGB_A1_str.png": {
+      "checksum": "13e95f724e48fa4349e5b2e4c350dea1"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_neg_png.png": {
+      "checksum": "c6394765a629c4560911aa16f72a1e05"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og Frederiksberg_RGB_neg.png": {
+      "checksum": "6f298bb47a8b404b66351ef4c9d5448c"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og Frederiksberg_RGB.png": {
+      "checksum": "bc22fbe491384f9e5c8585111a2d95a9"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og-Frederiksberg_web.png": {
+      "checksum": "e36727d1a97fe247bd0e8f60c19e859a"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_png.png": {
+      "checksum": "8ad39ee39a8a8c61fd76ecc6fb72e689"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/README.md": {
+      "checksum": "aea794434a74d42d6eaf071df163c2cb"
+    },
+    ".worktrees/empty-state-counter/inst/templates/typst/test_output.pdf": {
+      "checksum": "759c5310e2d8d5997b9cd06ceebac3ce"
+    },
+    ".worktrees/empty-state-counter/NAMESPACE": {
+      "checksum": "f4b5adafd133859ab1520f131b02e150"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/add-session-persistence-autosave/design.md": {
+      "checksum": "29c96828447cf8f8e28f3ed3d203d410"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/add-session-persistence-autosave/proposal.md": {
+      "checksum": "b9de3999a17c6a847d3034170a286b9a"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/add-session-persistence-autosave/specs/session-persistence/spec.md": {
+      "checksum": "bb3095e8972b1327fa01aaa90c9fd80c"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/add-session-persistence-autosave/tasks.md": {
+      "checksum": "a6b3b42edc26e094a145add65ff41081"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-centerline-label-rounding/proposal.md": {
+      "checksum": "8b40ea293ef46ff56d0b960254fb5f73"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-centerline-label-rounding/tasks.md": {
+      "checksum": "1ff2d6ca8768de5e9df3fbac7746df9d"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-export-code-review-issues/proposal.md": {
+      "checksum": "bcb659d5478b0b45e9fd517912378967"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-export-code-review-issues/tasks.md": {
+      "checksum": "66be233231229e617870d73ca2b8fd5c"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-export-preview-blank/proposal.md": {
+      "checksum": "6201e954d34d994d831200bd41025fbf"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-fix-export-preview-blank/tasks.md": {
+      "checksum": "faada71fd3e8cbe6c5c54c8be2041879"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/proposal.md": {
+      "checksum": "bab2f14c0aff2aaafd0bb2085ef37b77"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/specs/export-api/spec.md": {
+      "checksum": "e09b0b2e7d7af72dfae401078c54da78"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/tasks.md": {
+      "checksum": "bc53f1a65cd3796d155cd722695f34ee"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/proposal.md": {
+      "checksum": "deff832e81940178102f8426febacae0"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/specs/export-api/spec.md": {
+      "checksum": "44823cbc8e515a03ad7ca83d294837ad"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/tasks.md": {
+      "checksum": "0e564ddc619afd79cbb9d497824a6736"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-02-extract-ai-to-bfhllm/proposal.md": {
+      "checksum": "0b14ad523951847321d1d27c125c2f11"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/archive/2025-12-02-extract-ai-to-bfhllm/tasks.md": {
+      "checksum": "3b1df05bcfb589b92458ecd9c326d77d"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/design.md": {
+      "checksum": "a6a3a8e09995c104ca50ce06a911487e"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/proposal.md": {
+      "checksum": "455b1e63e5f88f474f41bc9720753205"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/specs/code-organization/spec.md": {
+      "checksum": "731387c1558d44fc1158fd2bd5b7bf33"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/specs/configuration-management/spec.md": {
+      "checksum": "8153bc25855a62ea37d73fe13737957b"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/specs/test-infrastructure/spec.md": {
+      "checksum": "20be9108e568cbb7815ae465a74857fd"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-code-quality/tasks.md": {
+      "checksum": "4e784dd4c23ed5189e0ef7cb3f5992ce"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-viewport-emit-optimization/proposal.md": {
+      "checksum": "048d27f003d7e3d01e9bf4167fc22ccb"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-viewport-emit-optimization/specs/spc-visualization/spec.md": {
+      "checksum": "01b38d1933e0f63551a8d9decd67f770"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/refactor-viewport-emit-optimization/tasks.md": {
+      "checksum": "ab0843525c4db144832cd1e4ce3283b0"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/remove-legacy-dead-code/proposal.md": {
+      "checksum": "fa4431c1f235bb501579584d9d5f6919"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/remove-legacy-dead-code/specs/code-hygiene/spec.md": {
+      "checksum": "72bf88c202d6f4c1860bde6b4fcec181"
+    },
+    ".worktrees/empty-state-counter/openspec/changes/remove-legacy-dead-code/tasks.md": {
+      "checksum": "d764bc23ff5390c3b564f1a07eba67c9"
+    },
+    ".worktrees/empty-state-counter/openspec/project.md": {
+      "checksum": "4fab2c9bb76baf8bd3b6e0fcd9586350"
+    },
+    ".worktrees/empty-state-counter/README.md": {
+      "checksum": "89ccf4736f70d8a8dd37d325856b478f"
+    },
     ".worktrees/spc_wizard/docs/reviews/2026-03-25-gemini-ux-review.md": {
       "checksum": "4a61fb6ed0ff7fa5ba40c78f6bbd44a2"
     },
@@ -20075,7 +20600,7 @@
       "checksum": "6df1bcc93de858211a1ed26097bc4a44"
     },
     "DESCRIPTION": {
-      "checksum": "87d82029c6bfb057afd1b5e388a5ae84"
+      "checksum": "f3be42e0de71345ab727de1bbab8ad07"
     },
     "dev/ARCHITECTURE_ANALYSIS.md": {
       "checksum": "596f533ca4698ce24f1666046cdf8d84"
@@ -20085,6 +20610,9 @@
     },
     "dev/ARCHITECTURE.md": {
       "checksum": "71ac4d574ad0ce8b174fc122defdb619"
+    },
+    "dev/audit-output/test-audit.json": {
+      "checksum": "47ca1ccae5bfd18b057358869284da62"
     },
     "dev/DEVELOPER_GUIDE.md": {
       "checksum": "bbbb21551bf0388f62813a18d441fe61"
@@ -20226,6 +20754,12 @@
     },
     "docs/superpowers/specs/2026-04-16-analytics-dashboard-design.md": {
       "checksum": "863a058672df19235604dd28f20ec01f"
+    },
+    "docs/superpowers/specs/2026-04-17-refactor-test-suite-phase1-design.md": {
+      "checksum": "b8f675fe0e76d945656523be0a72a02e"
+    },
+    "docs/superpowers/specs/2026-04-17-test-audit-design.md": {
+      "checksum": "e0e08145a4735cf72c42c881d77912c4"
     },
     "docs/USER_GUIDE.md": {
       "checksum": "9558c1b892794698483b124dd521e61d"
@@ -22195,6 +22729,12 @@
     "logs/shinylogs_SPC_Analysis_Tool_1776375771247397900.json": {
       "checksum": "6482265f44a426d210f0bb659425ccda"
     },
+    "logs/shinylogs_SPC_Analysis_Tool_1776423387448333979.json": {
+      "checksum": "3f4580b1df75d5adc5087037413ce202"
+    },
+    "logs/shinylogs_SPC_Analysis_Tool_1776431882071053028.json": {
+      "checksum": "7866d8103194be427630e451d9b090b6"
+    },
     "Makefile": {
       "checksum": "88a582018f62caa919051b1f1942e76b"
     },
@@ -23648,7 +24188,7 @@
       "checksum": "dbbda153c324dbc796ed1092cec6bf64"
     },
     "R/mod_spc_chart_server.R": {
-      "checksum": "faa06ffbbcc85ac52ec33d22a2329a49"
+      "checksum": "69d34500eb3a1c4de34a231edcb3457d"
     },
     "R/mod_spc_chart_state.R": {
       "checksum": "5a706208cc1d89bb290fce5abbbcaac6"
@@ -23663,16 +24203,19 @@
       "checksum": "5894c918cbab34f405e888ec2c251c0f"
     },
     "R/ui_app_ui.R": {
-      "checksum": "a78875b3bc1a87f6b8164a0a52be6566"
+      "checksum": "bf5770198e31a450a94add3a13f5930b"
     },
     "R/utils_advanced_debug.R": {
       "checksum": "b58eab3f78fed2b6668eb798d4707935"
     },
     "R/utils_analytics_consent.R": {
-      "checksum": "90407129dd6e32bce05e49a9b0e60d21"
+      "checksum": "8c845ee48abc992b72e1f15844cdedce"
+    },
+    "R/utils_analytics_github.R": {
+      "checksum": "1ce9185710a53f17fd87b03b57ebcf34"
     },
     "R/utils_analytics_pins.R": {
-      "checksum": "eb5f5de5ede0f024323165e15640e52b"
+      "checksum": "cb0322738957afee0a74dc62144e6c92"
     },
     "R/utils_anhoej_results.R": {
       "checksum": "135a3f83977281974bac557346f6d0ae"
@@ -24257,7 +24800,7 @@
       "checksum": "53096f0dbca4ae357668f69cccfbe749"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "0c2b2aa2ae4610acd5019f53c8779b75"
+      "checksum": "2ae3a6d5cfb9500d869ec6bb8cf0379e"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
       "checksum": "5b5377680c8912b7973824466bf25f8f"
@@ -24567,6 +25110,9 @@
     },
     "tests/testthat/test-utils_analytics_consent.R": {
       "checksum": "6423711ad69fa6c9300a62ef276afd47"
+    },
+    "tests/testthat/test-utils_analytics_github.R": {
+      "checksum": "d6d3ce3b7c4f372b8397a5b1b0c6732a"
     },
     "tests/testthat/test-utils_analytics_pins.R": {
       "checksum": "e528b781cfd27f638672188cd7b19896"

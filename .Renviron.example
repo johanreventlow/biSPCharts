@@ -9,3 +9,13 @@
 #
 # Note: .Renviron is gitignored to keep your API key secure
 GOOGLE_API_KEY=your_api_key_here
+
+# ----------------------------------------------------------------------
+# Analytics pipeline (valgfri — kun relevant hvis du koerer med sync)
+# ----------------------------------------------------------------------
+# Fine-grained GitHub PAT med contents:write paa bispcharts-analytics-data
+# Bruges af session$onSessionEnded() til at pushe shinylogs-aggregat.
+# Hvis ikke sat, preserveres data kun lokalt i logs/.
+GITHUB_PAT=ghp_your_fine_grained_token_here
+PIN_REPO_URL=https://github.com/johanreventlow/bispcharts-analytics-data.git
+# PIN_REPO_BRANCH=main  # valgfri, default: main

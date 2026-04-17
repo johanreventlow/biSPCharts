@@ -46,3 +46,81 @@ describe("extract_function_calls()", {
     expect_false("commented_fn" %in% calls)
   })
 })
+
+describe("count_test_blocks()", {
+  it("taeller test_that-blokke", {
+    tmp <- tempfile(fileext = ".R")
+    on.exit(unlink(tmp), add = TRUE)
+    writeLines(c(
+      'test_that("foo", { expect_true(TRUE) })',
+      'test_that("bar", { expect_true(TRUE) })',
+      'test_that("baz", { expect_true(TRUE) })'
+    ), tmp)
+
+    expect_equal(count_test_blocks(tmp), 3L)
+  })
+
+  it("taeller describe/it-blokke", {
+    tmp <- tempfile(fileext = ".R")
+    on.exit(unlink(tmp), add = TRUE)
+    writeLines(c(
+      'describe("group", {',
+      '  it("first", { expect_true(TRUE) })',
+      '  it("second", { expect_true(TRUE) })',
+      '})'
+    ), tmp)
+
+    expect_equal(count_test_blocks(tmp), 2L)
+  })
+
+  it("ignorerer udkommenterede test-blokke", {
+    tmp <- tempfile(fileext = ".R")
+    on.exit(unlink(tmp), add = TRUE)
+    writeLines(c(
+      'test_that("real", { expect_true(TRUE) })',
+      '# test_that("commented", { expect_true(TRUE) })'
+    ), tmp)
+
+    expect_equal(count_test_blocks(tmp), 1L)
+  })
+})
+
+describe("detect_deprecation_marker()", {
+  it("detekterer DEPRECATED oeverst i fil", {
+    tmp <- tempfile(fileext = ".R")
+    on.exit(unlink(tmp), add = TRUE)
+    writeLines(c(
+      "# DEPRECATED: 2025-10-10",
+      "# This file will be removed"
+    ), tmp)
+
+    expect_true(detect_deprecation_marker(tmp))
+  })
+
+  it("returnerer FALSE for normale filer", {
+    tmp <- tempfile(fileext = ".R")
+    on.exit(unlink(tmp), add = TRUE)
+    writeLines(c(
+      "# Normal testfil",
+      'test_that("foo", { expect_true(TRUE) })'
+    ), tmp)
+
+    expect_false(detect_deprecation_marker(tmp))
+  })
+})
+
+describe("scan_test_files()", {
+  it("finder alle test-*.R filer i en mappe", {
+    tmp_dir <- tempfile()
+    dir.create(tmp_dir)
+    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    file.create(file.path(tmp_dir, "test-foo.R"))
+    file.create(file.path(tmp_dir, "test-bar.R"))
+    file.create(file.path(tmp_dir, "helper.R"))
+    file.create(file.path(tmp_dir, "setup.R"))
+
+    files <- scan_test_files(tmp_dir)
+    expect_equal(length(files), 2L)
+    expect_true(all(grepl("^test-", basename(files))))
+  })
+})

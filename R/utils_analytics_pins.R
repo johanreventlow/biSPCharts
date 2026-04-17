@@ -131,6 +131,25 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
     .context = LOG_CONTEXTS$analytics$pins
   )
 
+  # Disk-introspection: hvad indeholder log_directory og undermapper?
+  if (dir.exists(log_directory)) {
+    all_files <- list.files(log_directory,
+      recursive = TRUE,
+      full.names = FALSE, all.files = TRUE,
+      include.dirs = FALSE, no.. = TRUE
+    )
+    subdirs <- list.dirs(log_directory, recursive = FALSE, full.names = FALSE)
+    log_info(
+      paste(
+        "Disk-introspection |",
+        "subdirs:", if (length(subdirs) > 0) paste(subdirs, collapse = ",") else "(ingen)",
+        "| files:", length(all_files),
+        if (length(all_files) > 0) paste("| first:", all_files[1]) else ""
+      ),
+      .context = LOG_CONTEXTS$analytics$pins
+    )
+  }
+
   all_data <- read_shinylogs_all(log_directory)
 
   total_rows <- sum(vapply(all_data, nrow, integer(1)))

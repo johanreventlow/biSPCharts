@@ -283,13 +283,18 @@ create_ui_header <- function() {
       })();
     ")),
     # Cookie-indstillinger link (synlig i bunden af siden)
-    shiny::tags$div(
-      style = "position: fixed; bottom: 4px; right: 12px; z-index: 999;",
-      shiny::tags$a(
-        href = "javascript:void(0)",
-        onclick = "if(window.spcShowCookieSettings) window.spcShowCookieSettings();",
-        class = "spc-cookie-settings-link",
-        "Cookie-indstillinger"
+    # Skjules på trin 2 (analyser) og 3 (eksporter) for at undgå kollision
+    # med højre-justerede actionknapper ("Fortsæt" / "Eksportér").
+    shiny::conditionalPanel(
+      condition = "input.main_navbar !== 'analyser' && input.main_navbar !== 'eksporter'",
+      shiny::tags$div(
+        style = "position: fixed; bottom: 4px; right: 12px; z-index: 999;",
+        shiny::tags$a(
+          href = "javascript:void(0)",
+          onclick = "if(window.spcShowCookieSettings) window.spcShowCookieSettings();",
+          class = "spc-cookie-settings-link",
+          "Cookie-indstillinger"
+        )
       )
     )
   )

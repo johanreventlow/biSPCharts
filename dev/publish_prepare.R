@@ -6,9 +6,8 @@
 # Script'et kører i to faser (hver i egen R-session for at undgå
 # inkonsistent session-state mellem install og writeManifest):
 #
-#   Rscript dev/publish_prepare.R install                # Installér siblings + bump DESCRIPTION
-#   Rscript dev/publish_prepare.R manifest               # Kør tests + regenerér manifest.json
-#   Rscript dev/publish_prepare.R manifest --skip-tests  # Spring tests over (nødpublish, anti-pattern)
+#   Rscript dev/publish_prepare.R install   # Installér siblings + bump DESCRIPTION
+#   Rscript dev/publish_prepare.R manifest  # Kør tests + regenerér manifest.json
 #
 # Orkestreres af /publish-to-connect slash-kommandoen, men kan også
 # køres standalone (så skal git-operationer håndteres manuelt bagefter).
@@ -249,7 +248,7 @@ phase_install <- function() {
   cat("\n[FASE install FÆRDIG]\n")
 }
 
-phase_manifest <- function(skip_tests = FALSE) {
+phase_manifest <- function() {
   total <- 3
 
   log_step(1, total, "Load biSPCharts (devtools::load_all)")
@@ -260,22 +259,16 @@ phase_manifest <- function(skip_tests = FALSE) {
   }
   log_ok("Pakken loader uden fejl")
 
-  if (skip_tests) {
-    log_step(2, total, "Kør testthat-tests")
-    log_warn("--skip-tests aktiveret: springer test-suite over (anti-pattern)")
-    log_warn("Denne kørsel bør kun bruges til nødpublish mens test-refactor er i gang")
-  } else {
-    log_step(2, total, "Kør testthat-tests")
-    test_res <- tryCatch(
-      devtools::test(".", stop_on_failure = TRUE, stop_on_warning = FALSE,
-                     reporter = testthat::SummaryReporter$new()),
-      error = function(e) e
-    )
-    if (inherits(test_res, "error")) {
-      log_fail(sprintf("Tests fejlede: %s", test_res$message))
-    }
-    log_ok("Alle tests bestået")
+  log_step(2, total, "Kør testthat-tests")
+  test_res <- tryCatch(
+    devtools::test(".", stop_on_failure = TRUE, stop_on_warning = FALSE,
+                   reporter = testthat::SummaryReporter$new()),
+    error = function(e) e
+  )
+  if (inherits(test_res, "error")) {
+    log_fail(sprintf("Tests fejlede: %s", test_res$message))
   }
+  log_ok("Alle tests bestået")
 
   log_step(3, total, "Regenerér manifest.json")
   res <- tryCatch(
@@ -294,11 +287,10 @@ phase_manifest <- function(skip_tests = FALSE) {
 main <- function() {
   args <- commandArgs(trailingOnly = TRUE)
   if (length(args) < 1) {
-    cat("Brug: Rscript dev/publish_prepare.R <install|manifest> [--skip-tests]\n")
+    cat("Brug: Rscript dev/publish_prepare.R <install|manifest>\n")
     quit(status = 1)
   }
   phase <- args[1]
-  skip_tests <- "--skip-tests" %in% args[-1]
 
   if (!file.exists("DESCRIPTION") ||
       !grepl("Package:\\s*biSPCharts", readLines("DESCRIPTION", n = 5))[1]) {
@@ -307,7 +299,7 @@ main <- function() {
 
   switch(phase,
     "install"  = phase_install(),
-    "manifest" = phase_manifest(skip_tests = skip_tests),
+    "manifest" = phase_manifest(),
     {
       cat(sprintf("Ukendt fase: %s (forventet: install|manifest)\n", phase))
       quit(status = 1)

@@ -1,3 +1,30 @@
+# biSPCharts 0.2.0-dev (development)
+
+## Interne ændringer
+
+* **Publish-gate oprydning (#203):** Fjernede 4 forældede testfiler med
+  referencer til funktioner der var dead-code eller migreret. Resultat:
+  audit-kategori `broken-missing-fn = 0`.
+  - `test-panel-height-cache.R` slettet (orphan efter label-placement-migration
+    til BFHcharts — `clear_panel_height_cache` migreret i commit d5724aa)
+  - `test-plot-diff.R` slettet (orphan efter bevidst fjernelse af
+    `utils_plot_diff.R` med 6 funktioner i commit 0d4041e)
+  - `test-utils_validation_guards.R` + `test-validation-guards.R` slettet
+    (orphans — `utils_validation_guards.R` med 7 funktioner bevidst fjernet
+    som ubrugt abstraktionslag i commit 0d4041e)
+  - `--skip-tests`-flag fjernet fra `dev/publish_prepare.R` (anti-pattern
+    fra commit 20b4724 der maskerede test-fejl)
+
+## Bemærkninger
+
+* **Publish-gate er fortsat delvist blokeret:** Ca. 302 pre-existing failures
+  fra green-partial testfiler (ikke relateret til denne oprydning). Håndteres
+  separat i `refactor-test-suite` Change 2 Fase 3. Ved nødpublish inden Fase 3:
+  maintainer kan køre `devtools::test(stop_on_failure = FALSE)` manuelt før
+  `rsconnect::writeManifest()` og `deployApp()`, eller midlertidigt genindføre
+  `--skip-tests`-flaget lokalt (se commit 20b4724 for reference) og revert
+  efter deployment.
+
 # biSPCharts (development version)
 
 ## Bug fixes

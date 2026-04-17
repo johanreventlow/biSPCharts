@@ -82,6 +82,26 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
             log_info("Analytics tracking aktiveret efter consent",
               .context = LOG_CONTEXTS$analytics$consent
             )
+
+            # Registrer pin-sync EFTER shinylogs::track_usage har
+            # registreret sin egen onSessionEnded — ellers loeber
+            # vores callback foer shinylogs har skrevet JSON-filerne
+            # til disk, og vi laeser tom logs/ mappe.
+            session_token <- tryCatch(session$token, error = function(e) NULL)
+            session$onSessionEnded(function() {
+              safe_operation(
+                "Aggregate analytics on session end",
+                code = {
+                  aggregate_and_pin_logs(log_directory, session_id = session_token)
+                },
+                fallback = function(e) {
+                  log_error(paste("Log aggregering fejlede:", e$message),
+                    .context = LOG_CONTEXTS$analytics$pins
+                  )
+                },
+                error_type = "processing"
+              )
+            })
           },
           fallback = function(e) {
             log_error(paste("shinylogs init fejlede:", e$message),
@@ -128,25 +148,6 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
     },
     ignoreNULL = TRUE
   )
-
-  # Capture session token UDEN for onSessionEnded — session$token er
-  # ikke altid tilgaengelig efter session-exit
-  session_token <- tryCatch(session$token, error = function(e) NULL)
-
-  session$onSessionEnded(function() {
-    safe_operation(
-      "Aggregate analytics on session end",
-      code = {
-        aggregate_and_pin_logs(log_directory, session_id = session_token)
-      },
-      fallback = function(e) {
-        log_error(paste("Log aggregering fejlede:", e$message),
-          .context = LOG_CONTEXTS$analytics$pins
-        )
-      },
-      error_type = "processing"
-    )
-  })
 
   invisible(NULL)
 }

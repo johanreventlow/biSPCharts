@@ -63,6 +63,7 @@ test_that("classify_error_source handles unknown errors gracefully", {
 
 # Test: Structured logging utilities
 test_that("sanitize_log_details removes sensitive data", {
+  skip("sanitize_log_details blev fjernet i logging-refactor. Ansvaret er flyttet til log_info/log_warn/log_error som strukturerer details internt.")
   details <- list(
     data = data.frame(x = 1:100, y = rnorm(100)),
     session_token = "abc123def456ghi789",
@@ -99,6 +100,7 @@ test_that("sanitize_log_details removes sensitive data", {
 })
 
 test_that("sanitize_log_details handles edge cases", {
+  skip("sanitize_log_details blev fjernet i logging-refactor.")
   # NULL details
   expect_equal(length(sanitize_log_details(NULL)), 0)
 
@@ -110,6 +112,7 @@ test_that("sanitize_log_details handles edge cases", {
 })
 
 test_that("log_with_throttle prevents log spam", {
+  skip("log_with_throttle blev fjernet. Throttling håndteres nu af logger-backend via options(spc.log.level) og .context-filtrering.")
   # Track calls to log function
   log_calls <- 0
   mock_log_fn <- function(...) {
@@ -136,6 +139,7 @@ test_that("log_with_throttle prevents log spam", {
 })
 
 test_that("log_with_throttle validates parameters", {
+  skip("log_with_throttle blev fjernet i logging-refactor.")
   # Invalid log_fn
   expect_error(
     log_with_throttle("key", 60, "not a function", "message"),
@@ -249,6 +253,7 @@ test_that("Errors are logged with correct component tags", {
 
 # Test: Production safeguards
 test_that("No PII is leaked in error logs", {
+  skip("sanitize_log_details blev fjernet i logging-refactor — PII-filtrering sker nu implicit i log_*-kald og tests for dette ligger i test-logging-*.R.")
   # Create data with potentially sensitive info
   sensitive_data <- data.frame(
     patient_id = c("123-45-6789", "987-65-4321"),

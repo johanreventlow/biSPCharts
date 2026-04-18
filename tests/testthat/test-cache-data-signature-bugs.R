@@ -259,11 +259,11 @@ test_that("create_full_data_signature performs reasonably on large data", {
     sig <- create_data_signature(large_data)
   })
 
-  expect_lt(timing["elapsed"], 0.1,
-            info = "Signature generation should be fast even for large data")
+  expect_true(timing["elapsed"] < 0.1,
+              info = "Signature generation should be fast even for large data")
 
   expect_type(sig, "character")
-  expect_gt(nchar(sig), 10, info = "Signature should be non-trivial hash")
+  expect_true(nchar(sig) > 10, info = "Signature should be non-trivial hash")
 })
 
 # Integration test with actual cache collision scenario ----

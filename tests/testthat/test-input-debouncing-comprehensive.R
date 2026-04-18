@@ -38,7 +38,7 @@ test_that("Debouncing reducerer redundante chart renders ved hurtige input ændr
 
   # Verificer timing
   time_window <- max(input_times) - min(input_times)
-  expect_lt(time_window, 0.6,
+  expect_true(time_window < 0.6,
     info = "Input ændringer skal være inden for 500ms vindue")
 
   # I production med debouncing skulle kun sidste værdi renderes
@@ -64,9 +64,9 @@ test_that("Debounce delays er korrekt konfigureret i DEBOUNCE_DELAYS", {
   if (exists("DEBOUNCE_DELAYS")) {
     for (delay_name in names(DEBOUNCE_DELAYS)) {
       delay_value <- DEBOUNCE_DELAYS[[delay_name]]
-      expect_gte(delay_value, 100,
+      expect_true(delay_value >= 100,
         info = paste(delay_name, "skal være mindst 100ms"))
-      expect_lte(delay_value, 3000,
+      expect_true(delay_value <= 3000,
         info = paste(delay_name, "skal være max 3000ms"))
     }
   }
@@ -102,7 +102,7 @@ test_that("Chart update debouncing forhindrer excessive plot regeneration", {
   elapsed_time <- as.numeric(Sys.time() - start_time, units = "secs")
 
   # Verificer at ændringer sker hurtigt nok til at debouncing er relevant
-  expect_lt(elapsed_time, 1.0,
+  expect_true(elapsed_time < 1.0,
     info = "Parameter changes skal ske hurtigt nok til debouncing benefit")
 
   # Med debouncing skulle kun 1 plot generation ske efter delay
@@ -167,7 +167,7 @@ test_that("File selection debouncing håndterer Windows file dialogs", {
   total_time <- max(selection_times) - min(selection_times)
 
   # Verificer at selections sker hurtigt nok til debouncing benefit
-  expect_lt(total_time, 0.5,
+  expect_true(total_time < 0.5,
     info = "File selections inden for debounce window")
 
   # Med 500ms debounce skulle kun sidste fil processeres
@@ -228,7 +228,7 @@ test_that("Debouncing performance målinger viser 60-80% improvement", {
 
     # FORVENTET: 60-80% improvement
     # Dette er en simplified test - actual improvement afhænger af render complexity
-    expect_gt(improvement_pct, 0,
+    expect_true(improvement_pct > 0,
       info = "Debouncing skal give performance improvement")
   }
 })
@@ -278,14 +278,14 @@ test_that("Debouncing dokumentation er tilstede i konfiguration", {
     # Tjek for dokumentation af debounce delays
     debounce_section <- grep("DEBOUNCE_DELAYS", config_content, value = TRUE)
 
-    expect_gt(length(debounce_section), 0,
+    expect_true(length(debounce_section) > 0,
       info = "DEBOUNCE_DELAYS skal være defineret i config")
 
     # Tjek for kommentarer der forklarer delays
     comment_lines <- grep("#.*debounce|#.*delay", config_content,
                          ignore.case = TRUE, value = TRUE)
 
-    expect_gt(length(comment_lines), 0,
+    expect_true(length(comment_lines) > 0,
       info = "Debounce delays skal være dokumenteret med kommentarer")
   }
 })

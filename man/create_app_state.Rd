@@ -47,6 +47,7 @@ Centraliseret state structure:
 }
 }
 \examples{
+\dontrun{
 # Opret standard app state
 app_state <- create_app_state()
 
@@ -57,6 +58,7 @@ names(app_state) # "data", "columns", "test_mode", "session", "ui"
 app_state$data$current_data <- data.frame(Dato = Sys.Date(), Værdi = 10)
 app_state$columns$mappings$x_column <- "Dato"
 
+}
 }
 \seealso{
 \itemize{

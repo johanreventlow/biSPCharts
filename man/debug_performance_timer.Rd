@@ -18,9 +18,11 @@ Timer object med checkpoint og completion methods
 High-precision timing for workflow operations
 }
 \examples{
+\dontrun{
 timer <- debug_performance_timer("file_upload_workflow")
 # ... upload operations ...
 timer$checkpoint("upload_complete")
 # ... processing operations ...
 timer$complete("workflow_complete")
+}
 }

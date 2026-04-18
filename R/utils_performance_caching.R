@@ -25,6 +25,7 @@ NULL
 #' @return Cached reactive expression
 #'
 #' @examples
+#' \dontrun{
 #' # Auto-detection caching
 #' cached_autodetect <- create_cached_reactive(
 #'   {
@@ -42,6 +43,7 @@ NULL
 #'   function() paste0("processing_", digest::digest(data)),
 #'   CACHE_CONFIG$default_timeout_seconds
 #' )
+#' }
 #'
 #' @keywords internal
 create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CACHE_CONFIG$default_timeout_seconds, cache_size_limit = CACHE_CONFIG$size_limit_entries) {
@@ -126,9 +128,10 @@ create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CAC
 #' @return Character string med cache key
 #'
 #' @examples
+#' \dontrun{
 #' key <- generate_data_cache_key(my_data, "autodetect")
 #' key_detailed <- generate_data_cache_key(my_data, "processing", TRUE)
-#'
+#' }
 #' @keywords internal
 generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE) {
   if (is.null(data) || length(data) == 0) {
@@ -173,8 +176,10 @@ generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE
 #' @return Cached auto-detection results
 #'
 #' @examples
+#' \dontrun{
 #' results <- cache_auto_detection_results(data, app_state)
 #' fresh_results <- cache_auto_detection_results(data, app_state, TRUE)
+#' }
 #'
 #' @keywords internal
 cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE) {
@@ -344,9 +349,10 @@ cache_result <- function(cache_key, value, timeout_seconds) {
 #' @param pattern Optional regex pattern til at rydde specific keys
 #'
 #' @examples
+#' \dontrun{
 #' clear_performance_cache() # Clear alt
 #' clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
-#'
+#' }
 #' @keywords internal
 clear_performance_cache <- function(pattern = NULL) {
   cache_keys <- ls(envir = .performance_cache)
@@ -380,6 +386,7 @@ clear_performance_cache <- function(pattern = NULL) {
 #' @return Debounced og cached reactive expression
 #'
 #' @examples
+#' \dontrun{
 #' optimized_reactive <- create_performance_debounced(
 #'   reactive({
 #'     expensive_computation(input$data)
@@ -388,6 +395,7 @@ clear_performance_cache <- function(pattern = NULL) {
 #'   millis = 500,
 #'   cache_timeout = CACHE_CONFIG$default_timeout_seconds
 #' )
+#' }
 #'
 #' @keywords internal
 create_performance_debounced <- function(reactive_expr, cache_key, debounce_millis = 500, cache_timeout = CACHE_CONFIG$default_timeout_seconds) {

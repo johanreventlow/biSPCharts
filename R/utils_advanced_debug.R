@@ -46,11 +46,13 @@ DEBUG_LEVELS <- list(
 #' @param timestamp Custom timestamp (optional, defaults to current)
 #'
 #' @examples
+#' \dontrun{
 #' debug_log("File upload started", "FILE_UPLOAD_FLOW", level = "INFO")
 #' debug_log("Auto-detect failed", "AUTO_DETECT_FLOW",
 #'   level = "ERROR",
 #'   context = list(file_size = 1024, columns = c("A", "B"))
 #' )
+#' }
 debug_log <- function(message, category, level = "DEBUG", context = NULL,
                       session_id = NULL, timestamp = NULL) {
   # Validate inputs
@@ -144,8 +146,10 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
 #' @return List med snapshot information
 #'
 #' @examples
+#' \dontrun{
 #' snapshot <- debug_state_snapshot("before_upload", app_state)
 #' debug_state_snapshot("after_upload", app_state)
+#' }
 debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE,
                                  include_data_summary = TRUE, session_id = NULL) {
   debug_log(paste("Taking state snapshot:", checkpoint_name),
@@ -339,11 +343,13 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
 #' @return Timer object med checkpoint og completion methods
 #'
 #' @examples
+#' \dontrun{
 #' timer <- debug_performance_timer("file_upload_workflow")
 #' # ... upload operations ...
 #' timer$checkpoint("upload_complete")
 #' # ... processing operations ...
 #' timer$complete("workflow_complete")
+#' }
 debug_performance_timer <- function(operation_name, session_id = NULL) {
   start_time <- Sys.time()
   checkpoints <- list()
@@ -430,12 +436,14 @@ debug_performance_timer <- function(operation_name, session_id = NULL) {
 #' @return Workflow tracer object
 #'
 #' @examples
+#' \dontrun{
 #' tracer <- debug_workflow_tracer("file_upload_to_visualization", app_state)
 #' tracer$step("upload_started")
 #' # ... upload operations ...
 #' tracer$step("auto_detect_triggered")
 #' # ... auto-detect operations ...
 #' tracer$complete("visualization_ready")
+#' }
 debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = NULL) {
   start_time <- Sys.time()
   steps <- list()

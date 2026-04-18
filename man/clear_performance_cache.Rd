@@ -14,8 +14,10 @@ Rydder hele performance cache. Bruges ved session cleanup
 og efter store data changes.
 }
 \examples{
+\dontrun{
 clear_performance_cache() # Clear alt
 clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
 
+}
 }
 \keyword{internal}

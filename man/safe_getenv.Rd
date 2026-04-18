@@ -21,7 +21,9 @@ Safely retrieve environment variables with fallback values
 and type conversion.
 }
 \examples{
+\dontrun{
 safe_getenv("DEBUG_MODE", FALSE, "logical")
 safe_getenv("MAX_ROWS", 1000, "numeric")
+}
 }
 \keyword{internal}

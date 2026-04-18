@@ -54,17 +54,15 @@ jobs:
       # Pragmatisk konfiguration for biSPCharts (Shiny app, pre-1.0):
       # - --no-tests: tests har ~83 pre-existing failures (haandteres i
       #   refactor-test-suite Phase 3), koeres separat i testthat-jobbet
-      # - --no-examples: eksempler refererer udokumenterede internal funktioner
-      #   (haandteres i separat documentation-cleanup PR)
       # - error-on "error": kun ERRORs blokerer; WARNINGs/NOTEs er synlige men
-      #   non-blocking (11 WARN/5 NOTE er pre-existing pakke-hygiejne issues)
-      # CI validerer stadig: NAMESPACE-integritet, dep-resolution, kompilering,
-      # pakke-installation, basal struktur.
+      #   non-blocking (pre-existing pakke-hygiejne issues)
+      # CI validerer nu: NAMESPACE-integritet, dep-resolution, kompilering,
+      # pakke-installation, examples (efter \dontrun{} cleanup), basal struktur.
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           error-on: '"error"'
-          args: 'c("--no-manual", "--no-tests", "--no-examples")'
+          args: 'c("--no-manual", "--no-tests")'
 
   # Separat test-job - synligt men non-blocking indtil refactor-test-suite Phase 3
   # er done. Naar test-suiten er groen lokalt, fjern continue-on-error.

@@ -20,9 +20,10 @@ NULL
 #' @return Sanitized column name suitable for R data.frame operations
 #'
 #' @examples
+#' \dontrun{
 #' sanitize_column_name("Dato & tid") # Returns "Dato  tid"
 #' sanitize_column_name("Y-værdi_1") # Returns "Y-værdi_1"
-#'
+#' }
 #' @keywords internal
 sanitize_column_name <- function(column_name) {
   sanitize_user_input(
@@ -43,10 +44,11 @@ sanitize_column_name <- function(column_name) {
 #' @return TRUE hvis valid, FALSE hvis invalid eller potentielt malicious
 #'
 #' @examples
+#' \dontrun{
 #' validate_file_extension("csv") # TRUE
 #' validate_file_extension(".xlsx") # TRUE
 #' validate_file_extension("exe") # FALSE
-#'
+#' }
 #' @keywords internal
 validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xlsx", "xls")) {
   if (is.null(file_ext) || length(file_ext) == 0) {
@@ -94,9 +96,10 @@ validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xls
 #' @return Formatted warning message suitable for shiny UI
 #'
 #' @examples
+#' \dontrun{
 #' create_security_warning("Kolonne navn", "invalid_chars")
 #' create_security_warning("Fil navn", "too_long", "Maksimum 100 karakterer")
-#'
+#' }
 #' @keywords internal
 create_security_warning <- function(field_name, issue_type, additional_info = NULL) {
   # Sanitize field_name først for at undgå XSS i error messages

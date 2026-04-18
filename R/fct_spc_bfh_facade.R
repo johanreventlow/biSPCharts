@@ -483,6 +483,34 @@ compute_spc_results_bfh <- function(
       )
       target_text <- extra_params$target_text
 
+      # Formatér target_text som komposit-tid hvis y-enheden er en tids-enhed.
+      # target_text er brugerens rå input (fx "90" eller "<90"). Vi bevarer
+      # evt. operator-prefix og erstatter den numeriske del med komposit-format
+      # baseret på target_value (skaleret til minutter ovenfor).
+      # Eksempel: bruger skriver target=90 med "Tid (dage)" → label viser "90d";
+      # 90 timer → label viser "3d 18t".
+      original_y_unit <- extra_params$y_axis_unit %||% "count"
+      if (is_time_unit(original_y_unit) &&
+          !is.null(target_text) &&
+          !is.null(target_value) &&
+          length(target_value) > 0) {
+        operator_match <- regmatches(
+          target_text,
+          regexpr("^[<>=]+", target_text)
+        )
+        operator_prefix <- if (length(operator_match) > 0) operator_match else ""
+        formatted_value <- format_time_composite(target_value)
+        new_target_text <- paste0(operator_prefix, formatted_value)
+        log_debug(
+          paste0(
+            "Formaterer target_text '", target_text, "' -> '",
+            new_target_text, "' (y_axis_unit=", original_y_unit, ")"
+          ),
+          .context = "BFH_SERVICE"
+        )
+        target_text <- new_target_text
+      }
+
       # Guard: Fjern nævner for chart types der ikke bruger den.
       # Forhindrer at BFHcharts dividerer y med n (giver alle værdier = 1).
       if (!is.null(n_var) && !chart_type_requires_denominator(validated_chart_type)) {

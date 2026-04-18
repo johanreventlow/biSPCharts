@@ -448,9 +448,9 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_error("Kunne ikke læse fil", .context = "FILE_UPLOAD")
 #' log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))
-#' \dontrun{
 #' tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 #' }
 #' @keywords internal

@@ -20,8 +20,10 @@ Formatted warning message suitable for shiny UI
 Standardiseret creation af sikkerhedsrelaterede warning messages til UI.
 }
 \examples{
+\dontrun{
 create_security_warning("Kolonne navn", "invalid_chars")
 create_security_warning("Fil navn", "too_long", "Maksimum 100 karakterer")
 
+}
 }
 \keyword{internal}

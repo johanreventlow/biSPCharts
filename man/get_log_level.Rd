@@ -15,10 +15,12 @@ Understøtter både navne (f.eks. \code{"DEBUG"}) og tal (f.eks. \code{"1"}).
 Fald tilbage til \code{INFO} ved ugyldig værdi.
 }
 \examples{
+\dontrun{
 get_log_level()
 Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 get_log_level()
 Sys.setenv(SPC_LOG_LEVEL = "1")
 get_log_level()
+}
 }
 \keyword{internal}

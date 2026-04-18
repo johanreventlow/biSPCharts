@@ -178,12 +178,13 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
 #' edge case errors in downstream processing.
 #'
 #' @examples
+#' \dontrun{
 #' normalize_column_input(NULL) # ""
 #' normalize_column_input(character(0)) # ""
 #' normalize_column_input("") # ""
 #' normalize_column_input("dato") # "dato"
 #' normalize_column_input(c("dato", "x")) # "dato"
-#'
+#' }
 #' @keywords internal
 normalize_column_input <- function(value) {
   # Handle NULL or empty vector

@@ -30,6 +30,8 @@ List med snapshot information
 Creates detailed snapshot af app_state for debugging og comparison
 }
 \examples{
+\dontrun{
 snapshot <- debug_state_snapshot("before_upload", app_state)
 debug_state_snapshot("after_upload", app_state)
+}
 }

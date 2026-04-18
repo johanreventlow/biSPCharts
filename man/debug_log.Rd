@@ -30,9 +30,11 @@ debug_log(
 Comprehensive logging med category, level og context information
 }
 \examples{
+\dontrun{
 debug_log("File upload started", "FILE_UPLOAD_FLOW", level = "INFO")
 debug_log("Auto-detect failed", "AUTO_DETECT_FLOW",
   level = "ERROR",
   context = list(file_size = 1024, columns = c("A", "B"))
 )
+}
 }

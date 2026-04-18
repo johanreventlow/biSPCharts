@@ -21,8 +21,10 @@ Genererer cache key baseret på data content ved hjælp af digest.
 Sikrer at cache keys ændres når data ændres.
 }
 \examples{
+\dontrun{
 key <- generate_data_cache_key(my_data, "autodetect")
 key_detailed <- generate_data_cache_key(my_data, "processing", TRUE)
 
+}
 }
 \keyword{internal}

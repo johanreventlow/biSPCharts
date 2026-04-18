@@ -215,8 +215,10 @@ validate_exists <- function(..., error_message = "Required objects not found") {
 #'
 #' @return Environment variable value converted to specified type, or default
 #' @examples
+#' \dontrun{
 #' safe_getenv("DEBUG_MODE", FALSE, "logical")
 #' safe_getenv("MAX_ROWS", 1000, "numeric")
+#' }
 #' @keywords internal
 safe_getenv <- function(var_name, default = "", type = "character") {
   value <- Sys.getenv(var_name, unset = default)

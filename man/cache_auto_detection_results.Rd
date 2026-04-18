@@ -21,8 +21,10 @@ Specialiseret caching for auto-detection operations med intelligent
 cache invalidation baseret på data changes og column structure.
 }
 \examples{
+\dontrun{
 results <- cache_auto_detection_results(data, app_state)
 fresh_results <- cache_auto_detection_results(data, app_state, TRUE)
+}
 
 }
 \keyword{internal}

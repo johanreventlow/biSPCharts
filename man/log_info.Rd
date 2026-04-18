@@ -26,7 +26,9 @@ Convenience-funktion til logging af INFO-beskeder.
 Understøtter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
 }
 \examples{
+\dontrun{
 log_info("Fil uploaded succesfuldt", .context = "FILE_UPLOAD")
 log_info(message = "Data processeret", component = "[DATA_PROCESSING]", details = list(rows = 100))
+}
 }
 \keyword{internal}

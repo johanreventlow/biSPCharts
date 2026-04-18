@@ -18,9 +18,9 @@
 #'
 #' @keywords internal
 TIME_BREAK_CANDIDATES <- c(
-  1, 2, 5, 10, 15, 20, 30,       # minutter
-  60, 120, 180, 240, 360, 720,   # timer (1t, 2t, 3t, 4t, 6t, 12t)
-  1440, 2880, 10080, 43200       # dage (1d, 2d, 7d, 30d)
+  1, 2, 5, 10, 15, 20, 30, # minutter
+  60, 120, 180, 240, 360, 720, # timer (1t, 2t, 3t, 4t, 6t, 12t)
+  1440, 2880, 10080, 43200 # dage (1d, 2d, 7d, 30d)
 )
 
 #' Tilladte kandidat-intervaller pr. input-enhed
@@ -49,10 +49,12 @@ TIME_BREAK_CANDIDATES_BY_UNIT <- list(
 #' @return character. Komposit-formateret streng. NA_character_ hvis input er NA.
 #' @keywords internal
 #' @examples
-#' format_time_composite(90)    # "1t 30m"
-#' format_time_composite(51)    # "51m"
-#' format_time_composite(3660)  # "2d 13t"
-#' format_time_composite(-30)   # "-30m"
+#' \dontrun{
+#' format_time_composite(90) # "1t 30m"
+#' format_time_composite(51) # "51m"
+#' format_time_composite(3660) # "2d 13t"
+#' format_time_composite(-30) # "-30m"
+#' }
 format_time_composite <- function(minutes) {
   if (length(minutes) == 0) {
     return(character(0))
@@ -111,9 +113,11 @@ format_time_composite_single <- function(v) {
 #' @return numeric vektor. Tick-positioner i minutter.
 #' @keywords internal
 #' @examples
-#' time_breaks(c(0, 120))    # 0 30 60 90 120
-#' time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
-#' time_breaks(c(0, 480))    # 0 120 240 360 480
+#' \dontrun{
+#' time_breaks(c(0, 120)) # 0 30 60 90 120
+#' time_breaks(c(15, 185)) # 0 30 60 90 120 150 180
+#' time_breaks(c(0, 480)) # 0 120 240 360 480
+#' }
 time_breaks <- function(y_values, target_n = 5L, input_unit = NULL) {
   # Defensiv: filtrer ikke-finite (NA, NaN, Inf, -Inf) og tomme inputs.
   # ggplot2 passerer undertiden Inf/-Inf under layout; seq() ville senere
@@ -133,7 +137,7 @@ time_breaks <- function(y_values, target_n = 5L, input_unit = NULL) {
 
   # Vaelg kandidat-liste baseret paa input_unit
   candidates <- if (!is.null(input_unit) &&
-                    input_unit %in% names(TIME_BREAK_CANDIDATES_BY_UNIT)) {
+    input_unit %in% names(TIME_BREAK_CANDIDATES_BY_UNIT)) {
     TIME_BREAK_CANDIDATES_BY_UNIT[[input_unit]]
   } else {
     TIME_BREAK_CANDIDATES
@@ -147,14 +151,16 @@ time_breaks <- function(y_values, target_n = 5L, input_unit = NULL) {
   # Fallback 1: prøv ufiltreret liste hvis filtreret ikke gav resultat
   if (is.null(chosen_interval) && !identical(candidates, TIME_BREAK_CANDIDATES)) {
     chosen_interval <- pick_break_interval(
-      y_min, y_max, TIME_BREAK_CANDIDATES, min_ticks = target_n
+      y_min, y_max, TIME_BREAK_CANDIDATES,
+      min_ticks = target_n
     )
   }
 
   # Fallback 2: meget smal range — brug mindste interval med >= 2 ticks
   if (is.null(chosen_interval)) {
     chosen_interval <- pick_break_interval(
-      y_min, y_max, TIME_BREAK_CANDIDATES, min_ticks = 2L, pick_first = TRUE
+      y_min, y_max, TIME_BREAK_CANDIDATES,
+      min_ticks = 2L, pick_first = TRUE
     )
   }
 

@@ -26,6 +26,7 @@ Når \code{spc.debug.context} option er sat, logges kun debug-beskeder hvis dere
 relevante områder uden at øge token-forbrug.
 }
 \examples{
+\dontrun{
 log_debug("Status:", TRUE, .context = "RENDER_PLOT")
 log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
 
@@ -33,5 +34,6 @@ log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
 options(spc.debug.context = c("state", "data", "ai"))
 log_debug("Dette logges", .context = "state") # Log
 log_debug("Dette logges ikke", .context = "performance") # Skip
+}
 }
 \keyword{internal}

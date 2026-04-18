@@ -20,10 +20,12 @@ Workflow tracer object
 End-to-end workflow tracking med state snapshots og performance metrics
 }
 \examples{
+\dontrun{
 tracer <- debug_workflow_tracer("file_upload_to_visualization", app_state)
 tracer$step("upload_started")
 # ... upload operations ...
 tracer$step("auto_detect_triggered")
 # ... auto-detect operations ...
 tracer$complete("visualization_ready")
+}
 }

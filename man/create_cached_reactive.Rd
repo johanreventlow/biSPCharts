@@ -28,6 +28,7 @@ Wrapper around reactive expressions med caching til expensive operations.
 Implementerer memoization med digest-based cache keys.
 }
 \examples{
+\dontrun{
 # Auto-detection caching
 cached_autodetect <- create_cached_reactive(
   {
@@ -45,6 +46,7 @@ cached_processing <- create_cached_reactive(
   function() paste0("processing_", digest::digest(data)),
   CACHE_CONFIG$default_timeout_seconds
 )
+}
 
 }
 \keyword{internal}

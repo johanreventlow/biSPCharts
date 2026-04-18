@@ -30,6 +30,7 @@ Handles the following cases:
 }
 }
 \examples{
+\dontrun{
 sanitize_selection(NULL) # → NULL
 sanitize_selection(character(0)) # → NULL
 sanitize_selection(c(NA, NA)) # → NULL
@@ -38,6 +39,7 @@ sanitize_selection("") # → NULL
 sanitize_selection("  ") # → NULL
 sanitize_selection("valid") # → "valid"
 
+}
 }
 \concept{input_validation}
 \keyword{internal}

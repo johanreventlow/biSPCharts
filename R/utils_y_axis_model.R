@@ -137,3 +137,30 @@ chart_type_to_ui_type <- function(chart_type) {
   # i, mr, c, g og fallback
   return("count")
 }
+
+#' Foreslå default tids-enhed for en korttype
+#'
+#' Bruges af UI-laget til at pre-vælge en passende tids-enhed når
+#' brugeren skifter korttype. Returnerer NULL for korttyper der ikke
+#' typisk bruger tid på y-aksen — caller falder så tilbage til eget default.
+#'
+#' @param chart_type character. qicharts2-kode eller dansk label.
+#' @return character eller NULL.
+#' @keywords internal
+default_time_unit_for_chart <- function(chart_type) {
+  if (is.null(chart_type) || length(chart_type) == 0L) {
+    return(NULL)
+  }
+  if (is.na(chart_type)) {
+    return(NULL)
+  }
+  # "t" er endnu ikke i CHART_TYPES_EN; matcher direkte før get_qic_chart_type().
+  if (identical(chart_type, "t")) {
+    return("time_days")
+  }
+  ct <- get_qic_chart_type(chart_type)
+  if (identical(ct, "t")) {
+    return("time_days")
+  }
+  NULL
+}

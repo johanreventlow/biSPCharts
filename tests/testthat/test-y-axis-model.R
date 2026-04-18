@@ -61,3 +61,15 @@ test_that("determine_internal_class bruger is_time_unit for alle tids-enheder", 
 test_that("chart_type_to_ui_type returnerer time_days for t-kort", {
   expect_equal(chart_type_to_ui_type("t"), "time_days")
 })
+
+test_that("default_time_unit_for_chart returnerer passende enhed pr. korttype", {
+  expect_equal(default_time_unit_for_chart("t"), "time_days")
+  # For ikke-tids-specifikke korttyper returneres NULL
+  expect_null(default_time_unit_for_chart("i"))
+  expect_null(default_time_unit_for_chart("p"))
+  expect_null(default_time_unit_for_chart("c"))
+  expect_null(default_time_unit_for_chart("u"))
+  # NA / NULL input
+  expect_null(default_time_unit_for_chart(NULL))
+  expect_null(default_time_unit_for_chart(NA_character_))
+})

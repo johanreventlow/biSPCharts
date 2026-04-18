@@ -227,6 +227,62 @@ cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE)
 #' Cache Management Functions
 #'
 
+#' Manage Cache Size (LRU eviction)
+#'
+#' Sikrer at antallet af entries i `.performance_cache` ikke overstiger
+#' `size_limit`. Bruger LRU-strategi: den ældst-tilgåede entry fjernes
+#' først, når grænsen er nået.
+#'
+#' @param size_limit Maximum antal cache entries der må eksistere
+#'   (default: CACHE_CONFIG$size_limit_entries eller 50).
+#'
+#' @return Invisible NULL
+#'
+#' @keywords internal
+manage_cache_size <- function(size_limit = NULL) {
+  if (is.null(size_limit)) {
+    size_limit <- tryCatch(
+      CACHE_CONFIG$size_limit_entries,
+      error = function(e) 50L
+    )
+  }
+
+  cache_keys <- ls(envir = .performance_cache)
+  n_entries <- length(cache_keys)
+
+  if (n_entries <= size_limit) {
+    return(invisible(NULL))
+  }
+
+  # Hent last_access-tidsstempel for alle entries (LRU-orden)
+  access_times <- vapply(cache_keys, function(k) {
+    entry <- get(k, envir = .performance_cache)
+    if (!is.null(entry$last_access)) {
+      as.numeric(entry$last_access)
+    } else {
+      0
+    }
+  }, numeric(1L))
+
+  # Fjern de ældste (mindst nyligt tilgåede) entries
+  n_to_remove <- n_entries - size_limit
+  oldest_keys <- cache_keys[order(access_times)[seq_len(n_to_remove)]]
+
+  rm(list = oldest_keys, envir = .performance_cache)
+
+  log_debug(
+    "LRU cache eviction gennemfort",
+    .context = "PERFORMANCE_CACHE"
+  )
+  log_debug_kv(
+    removed_count = n_to_remove,
+    remaining_count = length(ls(envir = .performance_cache)),
+    .context = "PERFORMANCE_CACHE"
+  )
+
+  invisible(NULL)
+}
+
 #' Get Cached Result
 #'
 #' Henter cached result hvis det eksisterer og ikke er expired.

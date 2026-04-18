@@ -47,6 +47,9 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
         return()
       }
 
+      # Silent forward-migration 2.0 → 3.0 (time → time_minutes)
+      peek <- migrate_time_yaxis_unit(peek)
+
       # Schema version-check → ryd lydløst og vis default landing
       saved_version <- peek$version %||% "unknown"
       if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
@@ -106,6 +109,9 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
         "Auto restore session data",
         code = {
           saved_state <- input$auto_restore_data
+
+          # Silent forward-migration 2.0 → 3.0 (time → time_minutes)
+          saved_state <- migrate_time_yaxis_unit(saved_state)
 
           if (!is.null(saved_state$data)) {
             # Version-check: Ryd inkompatibel data og spring restore over

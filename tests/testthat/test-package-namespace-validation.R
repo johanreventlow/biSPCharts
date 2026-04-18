@@ -10,7 +10,7 @@ test_that("Core functions can be loaded via pkgload", {
   # Pakken er allerede loaded via helper.R — verificer blot at namespace er aktiv.
   # VIGTIGT: Kald ALDRIG load_all() uden helpers=FALSE i testfiler,
   # da det trigger helper.R rekursivt og kan hænge.
-  expect_true("biSPCharts" %in% loadedNamespaces() || "claudespc" %in% loadedNamespaces())
+  expect_true("biSPCharts" %in% loadedNamespaces())
 
   # TEST: Kritiske funktioner er tilgængelige via namespace
   core_functions <- c(
@@ -36,7 +36,7 @@ test_that("Package DESCRIPTION and NAMESPACE are consistent", {
   desc <- read.dcf(desc_path)
 
   # TEST: Package name er korrekt
-  expect_equal(desc[1, "Package"], "claudespc")
+  expect_equal(desc[1, "Package"], "biSPCharts")
 
   # TEST: Version følger semantic versioning
   version <- desc[1, "Version"]

@@ -3,42 +3,42 @@
 
 test_that("sanitize_selection handles edge case inputs correctly", {
   skip_if(
-    !exists("sanitize_selection", where = asNamespace("claudespc"), mode = "function"),
+    !exists("sanitize_selection", where = asNamespace("biSPCharts"), mode = "function"),
     "sanitize_selection function not available in package namespace"
   )
 
   # Test character(0)
-  expect_null(claudespc:::sanitize_selection(character(0)))
+  expect_null(biSPCharts:::sanitize_selection(character(0)))
 
   # Test NULL
-  expect_null(claudespc:::sanitize_selection(NULL))
+  expect_null(biSPCharts:::sanitize_selection(NULL))
 
   # Test empty string
-  expect_null(claudespc:::sanitize_selection(""))
+  expect_null(biSPCharts:::sanitize_selection(""))
 
   # Test whitespace only
-  expect_null(claudespc:::sanitize_selection("   "))
+  expect_null(biSPCharts:::sanitize_selection("   "))
 
   # Test NA variants
-  expect_null(claudespc:::sanitize_selection(NA_character_))
-  expect_null(claudespc:::sanitize_selection(NA))
+  expect_null(biSPCharts:::sanitize_selection(NA_character_))
+  expect_null(biSPCharts:::sanitize_selection(NA))
 
   # Test vector with all NAs
-  expect_null(claudespc:::sanitize_selection(c(NA_character_, NA_character_)))
+  expect_null(biSPCharts:::sanitize_selection(c(NA_character_, NA_character_)))
 
   # Test valid inputs
-  expect_equal(claudespc:::sanitize_selection("valid"), "valid")
-  expect_equal(claudespc:::sanitize_selection(c("valid", "second")), "valid")
+  expect_equal(biSPCharts:::sanitize_selection("valid"), "valid")
+  expect_equal(biSPCharts:::sanitize_selection(c("valid", "second")), "valid")
 
   # Test mixed vectors
-  expect_null(claudespc:::sanitize_selection(c(NA_character_, "valid")))
-  expect_equal(claudespc:::sanitize_selection(c("valid", NA_character_)), "valid")
+  expect_null(biSPCharts:::sanitize_selection(c(NA_character_, "valid")))
+  expect_equal(biSPCharts:::sanitize_selection(c("valid", NA_character_)), "valid")
 })
 
 test_that("Reactive expressions handle character(0) inputs without crashing", {
   skip_if_not_installed("shiny")
   skip_if(
-    !exists("sanitize_selection", where = asNamespace("claudespc"), mode = "function"),
+    !exists("sanitize_selection", where = asNamespace("biSPCharts"), mode = "function"),
     "sanitize_selection function not available"
   )
 
@@ -61,7 +61,7 @@ test_that("Reactive expressions handle character(0) inputs without crashing", {
 
       # Reactive that should handle edge cases safely
       safe_x_column <- shiny::reactive({
-        claudespc:::sanitize_selection(values$x_column)
+        biSPCharts:::sanitize_selection(values$x_column)
       })
 
       output$test_result <- shiny::renderText({
@@ -107,10 +107,10 @@ test_that("Performance ikke påvirkes af character(0) handling", {
 
   # Benchmark character(0) handling
   benchmark_result <- microbenchmark::microbenchmark(
-    char_zero = claudespc:::sanitize_selection(character(0)),
-    null_input = claudespc:::sanitize_selection(NULL),
-    empty_string = claudespc:::sanitize_selection(""),
-    valid_input = claudespc:::sanitize_selection("valid"),
+    char_zero = biSPCharts:::sanitize_selection(character(0)),
+    null_input = biSPCharts:::sanitize_selection(NULL),
+    empty_string = biSPCharts:::sanitize_selection(""),
+    valid_input = biSPCharts:::sanitize_selection("valid"),
     times = 100
   )
 

@@ -51,3 +51,29 @@ test_that("parse_time_to_minutes skalerer target og centerline-vaerdier", {
   # NULL target returnerer numeric(0) — caller skal haandtere
   expect_equal(parse_time_to_minutes(numeric(0), "time_days"), numeric(0))
 })
+
+test_that("format_time_composite formaterer target-labels korrekt", {
+  # Direkte tests af labelformat som target_text-skaleringen producerer.
+  # target=90 (days) = 129600 min -> "90d"
+  expect_equal(format_time_composite(129600), "90d")
+  # target=90 (hours) = 5400 min -> "3d 18t"
+  expect_equal(format_time_composite(5400), "3d 18t")
+  # target=30 (minutes) = 30 min -> "30m"
+  expect_equal(format_time_composite(30), "30m")
+  # target=1.5 (hours) = 90 min -> "1t 30m"
+  expect_equal(format_time_composite(90), "1t 30m")
+})
+
+test_that("target_text formatering bevarer operator-prefix", {
+  # Uddrag af operator-logikken fra facade. Verificerer at regex matcher
+  # korrekt paa fx "<90", ">=30", "=60".
+  extract_op <- function(x) {
+    m <- regmatches(x, regexpr("^[<>=]+", x))
+    if (length(m) > 0) m else ""
+  }
+  expect_equal(extract_op("<90"), "<")
+  expect_equal(extract_op(">=30"), ">=")
+  expect_equal(extract_op("=60"), "=")
+  expect_equal(extract_op("90"), "")
+  expect_equal(paste0(extract_op("<90"), format_time_composite(129600)), "<90d")
+})

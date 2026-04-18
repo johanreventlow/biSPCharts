@@ -6,9 +6,10 @@
 
 test_that("config_plot_contexts.R is loaded", {
   expect_true(exists("PLOT_CONTEXTS"))
-  expect_true(exists("PLOT_CONTEXT_DIMENSIONS"))
   expect_true(exists("get_context_dimensions"))
   expect_true(exists("validate_plot_context"))
+  # PLOT_CONTEXT_DIMENSIONS blev fjernet — get_context_dimensions() har nu
+  # hardcoded defaults per context (se config_plot_contexts.R:83).
 })
 
 # PLOT CONTEXTS CONFIGURATION ==================================================
@@ -27,42 +28,11 @@ test_that("PLOT_CONTEXTS contains all required contexts", {
 })
 
 test_that("PLOT_CONTEXT_DIMENSIONS contains all required contexts", {
-  expect_type(PLOT_CONTEXT_DIMENSIONS, "list")
-
-  # All contexts should have dimension configs
-  contexts <- c("analysis", "export_preview", "export_pdf", "export_png")
-  for (ctx in contexts) {
-    expect_true(ctx %in% names(PLOT_CONTEXT_DIMENSIONS),
-      info = sprintf("Context '%s' should exist in PLOT_CONTEXT_DIMENSIONS", ctx)
-    )
-  }
+  skip("PLOT_CONTEXT_DIMENSIONS blev fjernet. get_context_dimensions() bruger hardcoded defaults — se test 'get_context_dimensions returns correct structure' nedenfor for erstatning.")
 })
 
 test_that("PLOT_CONTEXT_DIMENSIONS have correct structure", {
-  # Analysis context
-  analysis <- PLOT_CONTEXT_DIMENSIONS$analysis
-  expect_true("width_px" %in% names(analysis))
-  expect_true("height_px" %in% names(analysis))
-  expect_true("dpi" %in% names(analysis))
-  expect_true("unit" %in% names(analysis))
-  expect_true("responsive" %in% names(analysis))
-  expect_equal(analysis$unit, "px")
-  expect_true(analysis$responsive)
-
-  # Export preview context
-  preview <- PLOT_CONTEXT_DIMENSIONS$export_preview
-  expect_equal(preview$width_px, 800)
-  expect_equal(preview$height_px, 450)
-  expect_equal(preview$dpi, 96)
-  expect_false(preview$responsive)
-
-  # PDF context (mm units)
-  pdf <- PLOT_CONTEXT_DIMENSIONS$export_pdf
-  expect_true("width_mm" %in% names(pdf))
-  expect_true("height_mm" %in% names(pdf))
-  expect_equal(pdf$unit, "mm")
-  expect_equal(pdf$dpi, 300)
-
+  skip("PLOT_CONTEXT_DIMENSIONS blev fjernet. Struktur-validering sker nu via get_context_dimensions(context).")
 })
 
 # GET_CONTEXT_DIMENSIONS =======================================================
@@ -301,7 +271,8 @@ test_that("Same context and dimensions produce same cache key", {
 test_that("Context system integrates with config system", {
   # Verify that context configs can be accessed alongside other configs
   expect_true(exists("PLOT_CONTEXTS"))
-  expect_true(exists("PLOT_CONTEXT_DIMENSIONS"))
+  # PLOT_CONTEXT_DIMENSIONS blev fjernet — integration verificeres via
+  # get_context_dimensions() i stedet.
 
   # Should be able to combine context dimensions with UI config
   if (exists("UI_CONFIG")) {
@@ -320,7 +291,6 @@ test_that("Export contexts have appropriate dimensions", {
   # PDF should be high resolution
   pdf <- get_context_dimensions("export_pdf")
   expect_equal(pdf$dpi, 300) # Print quality
-
 })
 
 # REGRESSION TESTS =============================================================

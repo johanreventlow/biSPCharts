@@ -24,6 +24,7 @@
 #' - Valid values → unchanged
 #'
 #' @examples
+#' \dontrun{
 #' sanitize_selection(NULL) # → NULL
 #' sanitize_selection(character(0)) # → NULL
 #' sanitize_selection(c(NA, NA)) # → NULL
@@ -31,7 +32,7 @@
 #' sanitize_selection("") # → NULL
 #' sanitize_selection("  ") # → NULL
 #' sanitize_selection("valid") # → "valid"
-#'
+#' }
 #' @family input_validation
 #' @keywords internal
 sanitize_selection <- function(input_value) {

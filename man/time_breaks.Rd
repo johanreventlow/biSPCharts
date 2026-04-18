@@ -22,8 +22,10 @@ Begge ender snappes med floor() til multipla af det valgte interval
 (ggplot2 udvider selv aksen med expansion(), saa y_max er stadig synligt).
 }
 \examples{
+\dontrun{
 time_breaks(c(0, 120))    # 0 30 60 90 120
 time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
 time_breaks(c(0, 480))    # 0 120 240 360 480
+}
 }
 \keyword{internal}

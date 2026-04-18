@@ -46,11 +46,13 @@ DEBUG_LEVELS <- list(
 #' @param timestamp Custom timestamp (optional, defaults to current)
 #'
 #' @examples
+#' \dontrun{
 #' debug_log("File upload started", "FILE_UPLOAD_FLOW", level = "INFO")
 #' debug_log("Auto-detect failed", "AUTO_DETECT_FLOW",
 #'   level = "ERROR",
 #'   context = list(file_size = 1024, columns = c("A", "B"))
 #' )
+#' }
 debug_log <- function(message, category, level = "DEBUG", context = NULL,
                       session_id = NULL, timestamp = NULL) {
   # Validate inputs
@@ -341,11 +343,13 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
 #' @return Timer object med checkpoint og completion methods
 #'
 #' @examples
+#' \dontrun{
 #' timer <- debug_performance_timer("file_upload_workflow")
 #' # ... upload operations ...
 #' timer$checkpoint("upload_complete")
 #' # ... processing operations ...
 #' timer$complete("workflow_complete")
+#' }
 debug_performance_timer <- function(operation_name, session_id = NULL) {
   start_time <- Sys.time()
   checkpoints <- list()

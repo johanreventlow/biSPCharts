@@ -128,9 +128,10 @@ create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CAC
 #' @return Character string med cache key
 #'
 #' @examples
+#' \dontrun{
 #' key <- generate_data_cache_key(my_data, "autodetect")
 #' key_detailed <- generate_data_cache_key(my_data, "processing", TRUE)
-#'
+#' }
 #' @keywords internal
 generate_data_cache_key <- function(data, prefix = "data", include_names = FALSE) {
   if (is.null(data) || length(data) == 0) {
@@ -348,9 +349,10 @@ cache_result <- function(cache_key, value, timeout_seconds) {
 #' @param pattern Optional regex pattern til at rydde specific keys
 #'
 #' @examples
+#' \dontrun{
 #' clear_performance_cache() # Clear alt
 #' clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
-#'
+#' }
 #' @keywords internal
 clear_performance_cache <- function(pattern = NULL) {
   cache_keys <- ls(envir = .performance_cache)

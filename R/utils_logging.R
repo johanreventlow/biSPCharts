@@ -39,11 +39,13 @@ LOG_LEVELS <- list(
 #'
 #' @return Heltalsværdi svarende til log-niveau (se `LOG_LEVELS`)
 #' @examples
+#' \dontrun{
 #' get_log_level()
 #' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 #' get_log_level()
 #' Sys.setenv(SPC_LOG_LEVEL = "1")
 #' get_log_level()
+#' }
 #' @keywords internal
 get_log_level <- function() {
   env_raw <- safe_getenv("SPC_LOG_LEVEL", "INFO", "character")
@@ -75,15 +77,15 @@ get_log_level <- function() {
 #' @examples
 #' \dontrun{
 #' # Default behavior: reads from YAML config
-#' get_effective_log_level()  # Returns "DEBUG" in dev, "ERROR" in prod
+#' get_effective_log_level() # Returns "DEBUG" in dev, "ERROR" in prod
 #'
 #' # Environment variable overrides YAML
 #' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
-#' get_effective_log_level()  # Always returns "DEBUG" now
+#' get_effective_log_level() # Always returns "DEBUG" now
 #'
 #' # Clear override to use YAML again
 #' Sys.unsetenv("SPC_LOG_LEVEL")
-#' get_effective_log_level()  # Back to YAML config
+#' get_effective_log_level() # Back to YAML config
 #' }
 #'
 #' @keywords internal
@@ -103,7 +105,7 @@ get_effective_log_level <- function() {
     {
       # Try to read from YAML config
       if (exists("get_golem_config", mode = "function", where = -1) ||
-          exists("get_golem_config", mode = "function", inherits = TRUE)) {
+        exists("get_golem_config", mode = "function", inherits = TRUE)) {
         config_val <- get_golem_config("logging")$level
         if (!is.null(config_val) && nzchar(as.character(config_val))) {
           trimws(toupper(as.character(config_val)))
@@ -248,10 +250,12 @@ get_effective_log_level <- function() {
 #'
 #' @return `invisible(NULL)`. Beskeder skrives til konsol hvis niveauet tillader det.
 #' @examples
+#' \dontrun{
 #' log_msg("System startet", "INFO")
 #' log_msg("Data læst", "INFO", "FILE_UPLOAD")
 #' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 #' log_msg("Detaljer", "DEBUG", "DATA_PROC")
+#' }
 #' @keywords internal
 log_msg <- function(message, level = "INFO", component = NULL) {
   if (!.should_log(level)) {
@@ -288,6 +292,7 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_debug("Status:", TRUE, .context = "RENDER_PLOT")
 #' log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
 #'
@@ -295,6 +300,7 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #' options(spc.debug.context = c("state", "data", "ai"))
 #' log_debug("Dette logges", .context = "state") # Log
 #' log_debug("Dette logges ikke", .context = "performance") # Skip
+#' }
 #' @keywords internal
 log_debug <- function(..., .context = NULL) {
   if (!.should_log("DEBUG")) {
@@ -349,8 +355,10 @@ log_debug <- function(..., .context = NULL) {
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_info("Fil uploaded succesfuldt", .context = "FILE_UPLOAD")
 #' log_info(message = "Data processeret", component = "[DATA_PROCESSING]", details = list(rows = 100))
+#' }
 #' @keywords internal
 log_info <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
@@ -393,8 +401,10 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_warn("Manglende data i kolonne", .context = "DATA_VALIDATION")
 #' log_warn(message = "Input sanitized", component = "[INPUT_SANITIZATION]", details = list(original_length = 100))
+#' }
 #' @keywords internal
 log_warn <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
   # Support both component and .context for consistency with log_debug
@@ -484,9 +494,11 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_debug_block("COLUMN_MGMT", "Starting column detection")
 #' # ... kode ...
 #' log_debug_block("COLUMN_MGMT", "Column detection completed", type = "stop")
+#' }
 #' @keywords internal
 log_debug_block <- function(context, action, type = "start") {
   if (!.should_log("DEBUG")) {
@@ -522,8 +534,10 @@ log_debug_block <- function(context, action, type = "start") {
 #'
 #' @return `invisible(NULL)`.
 #' @examples
+#' \dontrun{
 #' log_debug_kv(trigger_value = 1, status = "active", .context = "DATA_TABLE")
 #' log_debug_kv(.list_data = list(rows = 100, cols = 5), .context = "DATA_PROC")
+#' }
 #' @keywords internal
 log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
   if (!.should_log("DEBUG")) {
@@ -562,9 +576,11 @@ log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
 #'
 #' @return invisible(NULL). The environment variable is set as a side effect.
 #' @examples
+#' \dontrun{
 #' set_log_level_development() # Enables all DEBUG messages
 #' set_log_level_production() # Only WARN and ERROR in production
 #' set_log_level_quiet() # Only ERROR messages
+#' }
 #' @keywords internal
 set_log_level_development <- function() {
   Sys.setenv(SPC_LOG_LEVEL = "DEBUG")

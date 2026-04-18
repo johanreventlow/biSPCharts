@@ -38,6 +38,7 @@
 #' - user_started_session: Bruger session state
 #'
 #' @examples
+#' \dontrun{
 #' # Opret standard app state
 #' app_state <- create_app_state()
 #'
@@ -47,7 +48,7 @@
 #' # Opdater data
 #' app_state$data$current_data <- data.frame(Dato = Sys.Date(), Værdi = 10)
 #' app_state$columns$mappings$x_column <- "Dato"
-#'
+#' }
 #' @seealso
 #' - ARCHITECTURE_OVERVIEW.md for Phase 4 detaljer
 #' - test-phase4-centralized-state.R for eksempler

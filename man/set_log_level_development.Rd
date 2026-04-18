@@ -24,8 +24,10 @@ log level configurations. These set the \code{SPC_LOG_LEVEL} environment
 variable for the current R session.
 }
 \examples{
+\dontrun{
 set_log_level_development() # Enables all DEBUG messages
 set_log_level_production() # Only WARN and ERROR in production
 set_log_level_quiet() # Only ERROR messages
+}
 }
 \keyword{internal}

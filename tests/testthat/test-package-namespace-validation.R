@@ -50,7 +50,7 @@ test_that("Package DESCRIPTION and NAMESPACE are consistent", {
 
   # TEST: NAMESPACE indeholder export statements
   exports <- grep("^export\\(", namespace_lines, value = TRUE)
-  expect_gt(length(exports), 0, info = "NAMESPACE should contain export statements")
+  expect_true(length(exports) > 0, info = "NAMESPACE should contain export statements")
 
   # TEST: Key exports er til stede
   key_exports <- c("run_app", "initialize_app")

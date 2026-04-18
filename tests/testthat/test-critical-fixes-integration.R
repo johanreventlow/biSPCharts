@@ -75,14 +75,14 @@ test_that("Event system priorities fungerer i integration", {
 
     # Verify STATE_MANAGEMENT executes before AUTO_DETECT
     if (!is.na(state_pos) && !is.na(autodetect_pos)) {
-      expect_lt(state_pos, autodetect_pos,
-                info = "STATE_MANAGEMENT should execute before AUTO_DETECT")
+      expect_true(state_pos < autodetect_pos,
+                  info = "STATE_MANAGEMENT should execute before AUTO_DETECT")
     }
 
     # Verify AUTO_DETECT executes before UI_SYNC
     if (!is.na(autodetect_pos) && !is.na(ui_pos)) {
-      expect_lt(autodetect_pos, ui_pos,
-                info = "AUTO_DETECT should execute before UI_SYNC")
+      expect_true(autodetect_pos < ui_pos,
+                  info = "AUTO_DETECT should execute before UI_SYNC")
     }
   })
 })
@@ -304,6 +304,7 @@ test_that("OBSERVER_PRIORITIES helper functions integration", {
   if (exists("reactiveVal")) {
     test_val <- reactiveVal(0)
 
+    # expect_no_error accepterer ikke info= i testthat 3.x
     expect_no_error({
       observeEvent(test_val(), priority = priority_high(), {
         # High priority handler
@@ -316,7 +317,7 @@ test_that("OBSERVER_PRIORITIES helper functions integration", {
       observeEvent(test_val(), priority = priority_cleanup(), {
         # Cleanup handler
       })
-    }, info = "Helper functions should work in observer registration")
+    })
   }
 })
 
@@ -364,10 +365,10 @@ test_that("Memory management under sustained load", {
   memory_growth <- final_memory - initial_memory
 
   # Memory growth should be reasonable (< 20MB for 50 cycles)
-  expect_lt(memory_growth, 20,
-            info = paste("Memory growth should be bounded. Growth:", memory_growth, "MB"))
+  expect_true(memory_growth < 20,
+              info = paste("Memory growth should be bounded. Growth:", memory_growth, "MB"))
 
   # No major memory leaks should be detected
-  expect_lt(memory_growth / 50, 0.5,
-            info = "Per-cycle memory growth should be minimal (< 0.5MB/cycle)")
+  expect_true(memory_growth / 50 < 0.5,
+              info = "Per-cycle memory growth should be minimal (< 0.5MB/cycle)")
 })

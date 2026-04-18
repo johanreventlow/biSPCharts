@@ -1,5 +1,44 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Interne ændringer (Fase 2 — test-suite konsolidering, #203)
+
+* **Test-suite reduceret fra 121 til 113 filer** (-8) gennem archive, merge
+  og rewrite. Total fail-count reduceret fra 302 til 292 (mål om <200 ikke
+  opnået — flere tests blev SKIP med TODO til Fase 3 i stedet for fixes).
+* **46 tests skipped med TODO-marker** (`TODO Fase 3: ... #203-followup`) pga.
+  R-bugs afsløret under rewrite. Håndteres i Fase 3 eller som separate fixes.
+
+### Arkiveret (3 filer — rewrite auto-downgrade uden R-target)
+
+* `test-constants-architecture.R`
+* `test-label-height-estimation.R`
+* `test-npc-mapper.R`
+
+### Merged (2 klustre + 1 special)
+
+* **y-axis-kluster:** konsolideret `test-y-axis-formatting.R`,
+  `test-y-axis-mapping.R`, `test-y-axis-model.R` ind i
+  `test-y-axis-scaling-overhaul.R` med sektion-kommentarer
+* **mod-spc-kluster:** konsolideret `test-mod-spc-chart-integration.R` ind i
+  `test-mod-spc-chart-comprehensive.R`
+* **label-placement-bounds** merged ind i `test-label-placement-core.R`
+  efter salvage-rewrite (fixture-issue fixed, 18+6 tests bevaret)
+
+### Rewritten (10 filer)
+
+* **TDD (store):** `test-parse-danish-target-unit-conversion.R`,
+  `test-utils-state-accessors.R`, `test-performance-benchmarks.R`
+* **Salvage (mellem):** `test-plot-core.R`, `test-bfhcharts-integration.R`,
+  `test-cache-collision-fix.R`, `test-cache-reactive-lazy-evaluation.R`,
+  `test-e2e-workflows.R`, `test-file-upload.R`, `test-observer-cleanup.R`
+
+### Manifest-sync
+
+Manifest `dev/audit-output/test-classification.yaml` er synket (113 filer).
+Audit-rapport re-genereret.
+
+---
+
 ## Interne ændringer
 
 * **Publish-gate oprydning (#203):** Fjernede 4 forældede testfiler med

@@ -64,8 +64,11 @@ apply_y_axis_formatting <- function(plot, y_axis_unit = "count", qic_data = NULL
     return(plot + format_y_axis_count())
   } else if (y_axis_unit == "rate") {
     return(plot + format_y_axis_rate())
-  } else if (y_axis_unit == "time") {
-    return(plot + format_y_axis_time(qic_data))
+  } else if (is_time_unit(y_axis_unit)) {
+    # Dækker legacy "time" og nye time_minutes/time_hours/time_days.
+    # Kandidat-intervaller filtreres per input-enhed for "naturlig"
+    # tick-afstand (fx time_days bruger kun >= 12t intervaller).
+    return(plot + format_y_axis_time(qic_data, input_unit = y_axis_unit))
   }
 
   # Default: no special formatting (use ggplot2 defaults)
@@ -180,10 +183,13 @@ format_y_axis_rate <- function() {
 #' intern enhed).
 #'
 #' @param qic_data Data frame with qic data containing y column (time values in minutes)
+#' @param input_unit character eller NULL. En af 'time_minutes',
+#'   'time_hours', 'time_days' (eller legacy 'time'). Bruges til at
+#'   filtrere kandidat-intervaller i time_breaks(). NULL = alle kandidater.
 #'
 #' @return ggplot2 scale_y_continuous layer for time formatting
 #' @keywords internal
-format_y_axis_time <- function(qic_data) {
+format_y_axis_time <- function(qic_data, input_unit = NULL) {
   if (is.null(qic_data) || !"y" %in% names(qic_data)) {
     log_warn(
       "format_y_axis_time: missing qic_data or y column, using default formatting",
@@ -193,7 +199,7 @@ format_y_axis_time <- function(qic_data) {
   }
 
   y_values <- qic_data$y
-  breaks <- time_breaks(y_values)
+  breaks <- time_breaks(y_values, input_unit = input_unit)
 
   ggplot2::scale_y_continuous(
     expand = ggplot2::expansion(mult = c(.25, .25)),

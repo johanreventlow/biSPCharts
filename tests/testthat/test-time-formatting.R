@@ -119,3 +119,31 @@ test_that("time_breaks snapper til interval-grid", {
   # Mindstekrav: target_n=5 skal opfyldes for typiske ranges
   expect_gte(length(breaks), 5)
 })
+
+test_that("time_breaks filtrerer intervaller per input_unit", {
+  # time_hours: 1m/2m/5m/10m/15m/20m kandidater skal skippes.
+  # Range 0-300 min (= 0-5t) giver 30m-interval med target_n=5 (11 ticks).
+  breaks_hours <- time_breaks(c(0, 300), input_unit = "time_hours")
+  expect_true(all(breaks_hours %% 30 == 0))
+
+  # time_days: kun intervaller >= 12t (720 min). Range 0-14400 min (0-10 dage)
+  # giver 1d (1440 min) eller 2d (2880 min).
+  breaks_days <- time_breaks(c(0, 14400), input_unit = "time_days")
+  expect_true(all(breaks_days %% 720 == 0))
+
+  # time_minutes: alle kandidater tilgaengelige (samme som uden input_unit)
+  breaks_min <- time_breaks(c(0, 120), input_unit = "time_minutes")
+  expect_equal(breaks_min, c(0, 30, 60, 90, 120))
+})
+
+test_that("time_breaks falder tilbage til ufiltreret liste hvis filtreret er for grov", {
+  # Meget smal range i time_days — filtrerede kandidater (720+) giver
+  # ingen gyldige ticks; fallback til ufiltreret TIME_BREAK_CANDIDATES.
+  breaks <- time_breaks(c(0, 60), input_unit = "time_days")
+  expect_true(length(breaks) >= 2)
+})
+
+test_that("time_breaks uden input_unit er bagudkompatibel", {
+  breaks <- time_breaks(c(0, 120))
+  expect_equal(breaks, c(0, 30, 60, 90, 120))
+})

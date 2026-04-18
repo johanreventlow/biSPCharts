@@ -46,12 +46,12 @@ test_that("place_two_labels_npc validerer label_height_npc positiv", {
   )
 })
 
-test_that("TODO Fase 3: place_two_labels_npc validerer label_height_npc øvre grænse", {
+test_that("BFHcharts-followup: place_two_labels_npc validerer label_height_npc øvre grænse", {
   skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — place_two_labels_npc() validerer ikke label_height_npc > 0.5 ",
+    "BFHcharts-followup: place_two_labels_npc() validerer ikke label_height_npc > 0.5 ",
     "i nuvaerende BFHcharts-version. Funktionen accepterer vaerdier >= 0.5 og degraderer gracefully ",
-    "i stedet for at kaste fejl (#203-followup)\n",
-    "Forventet: stop('label_height_npc maa ikke overstige 0.5')"
+    "i stedet for at kaste fejl. Eskalering krævet til BFHcharts-maintainer. ",
+    "Tag: BFHcharts#203-followup"
   ))
   expect_error(
     BFHcharts:::place_two_labels_npc(yA_npc = 0.5, yB_npc = 0.6, label_height_npc = 0.6),
@@ -254,11 +254,12 @@ test_that("place_two_labels_npc NIVEAU 1: gap reduction fungerer", {
   expect_gte(abs(result$yA - result$yB), label_h * 0.95)
 })
 
-test_that("TODO Fase 3: place_two_labels_npc NIVEAU 2: label flip strategier", {
+test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 2 label flip strategier", {
   skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — yA=0.30, yB=0.38, label_h=0.18 loeses af ",
+    "BFHcharts-followup: yA=0.30, yB=0.38, label_h=0.18 loeses af ",
     "over/under-strategien uden at udloese NIVEAU-fallback i nuvaerende BFHcharts-version. ",
-    "Inputparametre til at udloese NIVEAU 2 er ikke dokumenterede (#203-followup)"
+    "Inputparametre til at udloese NIVEAU 2 er ikke dokumenterede. ",
+    "Eskalering krævet til BFHcharts-maintainer. Tag: BFHcharts#203-followup"
   ))
 
   label_h <- 0.18 # Større label
@@ -281,11 +282,12 @@ test_that("TODO Fase 3: place_two_labels_npc NIVEAU 2: label flip strategier", {
   expect_gte(abs(result$yA - result$yB), label_h * 0.95)
 })
 
-test_that("TODO Fase 3: place_two_labels_npc NIVEAU 3: shelf placement", {
+test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 3 shelf placement", {
   skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — yA=0.50, yB=0.52, label_h=0.35 giver quality='optimal' ",
+    "BFHcharts-followup: yA=0.50, yB=0.52, label_h=0.35 giver quality='optimal' ",
     "i nuvaerende BFHcharts-version — shelf/NIVEAU-3-fallback udloeses ikke. ",
-    "Funktionen haandterer disse inputs via coincident-strategi uden degraded quality (#203-followup)"
+    "Funktionen haandterer disse inputs via coincident-strategi uden degraded quality. ",
+    "Eskalering krævet til BFHcharts-maintainer. Tag: BFHcharts#203-followup"
   ))
 
   label_h <- 0.35 # Ekstremt stor label

@@ -46,5 +46,5 @@ test_that("no system.file() calls in app_server", {
 
 test_that("main_app_server is properly exported", {
   # Verify main_app_server is in package namespace
-  expect_true("main_app_server" %in% getNamespaceExports("claudespc"))
+  expect_true("main_app_server" %in% getNamespaceExports("biSPCharts"))
 })

@@ -23,8 +23,7 @@ test_that("parse_danish_target returnerer NULL for tom streng", {
   expect_null(parse_danish_target("", NULL, "percent"))
 })
 
-test_that("TODO Fase 3: parse_danish_target haandterer NULL input uden fejl", {
-  skip("TODO Fase 3: R-bug afsloeret — parse_danish_target(NULL) kaster fejl i normalize_axis_value if-check (#203-followup)")
+test_that("parse_danish_target haandterer NULL input uden fejl", {
   expect_null(parse_danish_target(NULL, NULL, "percent"))
 })
 

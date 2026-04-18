@@ -69,18 +69,19 @@ test_that("clear_performance_cache eksisterer og kan kaldes uden fejl", {
   expect_no_error(clear_performance_cache())
 })
 
-test_that("TODO Fase 3: create_cached_reactive cache-navne i GlobalEnv", {
+test_that("TODO K1: create_cached_reactive cache-navne i GlobalEnv", {
   skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — create_cached_reactive() opretter ikke laengere ",
-    "process-specifikke navngivne caches i .GlobalEnv (#203-followup)\n",
+    "TODO K1 (depender paa manage_cache_size fix): create_cached_reactive() bruger ",
+    "session-scoped cache (ikke .GlobalEnv navngivne caches) (#203-followup)\n",
     "Nuvaerende impl: reactive() wrapper med intern get_session_cache()"
   ))
   cached_func <- create_cached_reactive(
     reactive_expr = function() Sys.time(),
-    cache_key = "process_test_cache"
+    cache_key = "process_test_cache_scoped"
   )
   shiny::isolate(cached_func())
+  # Nuvaerende impl bruger module-level .performance_cache (ikke .GlobalEnv navngivne caches)
   pattern <- paste0(".performance_cache_fallback_", Sys.getpid(), "_")
-  existing_caches <- ls(pattern = pattern, envir = .GlobalEnv, all.names = TRUE)
-  expect_true(length(existing_caches) > 0)
+  globalenv_caches <- ls(pattern = pattern, envir = .GlobalEnv, all.names = TRUE)
+  expect_equal(length(globalenv_caches), 0L)
 })

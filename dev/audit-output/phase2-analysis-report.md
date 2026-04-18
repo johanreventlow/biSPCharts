@@ -159,6 +159,16 @@ tests/testthat/test-utils_server_export.R      (BFHcharts::)
 **Tvivlstilfælde (kræver bruger-beslutning):**
 - `test-label-placement-core.R`: YAML siger 1 test/100% fail, men filen indeholder 18 test_that-blokke. Sandsynligvis er kun 1 test kørende pga. source-fejl. Bruger bør afgøre: auto-DG-merge (som ved 1-test analyse) eller salvage-rewrite (som ved 18-test analyse).
 
+### R-kildefiler for TDD-rewrites
+
+| Fil | R-kildefiler der testes |
+|---|---|
+| test-parse-danish-target-unit-conversion.R | R/utils_danish_locale.R |
+| test-performance-benchmarks.R | R/utils_performance_caching.R, R/utils_microbenchmark.R, R/config_performance_getters.R, R/utils_performance_monitoring.R |
+| test-utils-state-accessors.R | R/utils_state_accessors.R, R/state_management.R, R/mod_spc_chart_state.R |
+
+**Verificeret:** 2026-04-17. Auto-downgrade-regler anvendt automatisk via manifest + audit-JSON data.
+
 ---
 
 ## 4. Net-effekt

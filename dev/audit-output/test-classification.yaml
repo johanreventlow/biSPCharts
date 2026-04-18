@@ -81,12 +81,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-autodetect-unified-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 20/158 fejl. Handling=fix-in-phase-3 baseret paa
-      fail-ratio.
+    rationale: 'Green-partial med 20/158 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-bfh-error-handling.R
@@ -207,20 +207,21 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-config_chart_types.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 16/35 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 16/35 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-config_export.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 10/141 fejl. Handling=fix-in-phase-3 baseret paa
-      fail-ratio.
+    rationale: 'Green-partial med 10/141 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-config-performance-getters.R
@@ -255,21 +256,21 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-critical-fixes-regression.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 14/137 fejl. Handling=fix-in-phase-3 baseret paa
-      fail-ratio.
+    rationale: 'Green-partial med 14/137 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-critical-fixes-security.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'testthat API-drift: argumenter ikke understoettet (21/63 fejl). Fix-in-phase-3
-      efter API-opdatering.'
+      efter API-opdatering. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cross-component-reactive.R
@@ -368,11 +369,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-event-system-emit.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 7/50 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 7/50 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+      [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-event-system-observers.R
@@ -452,12 +454,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-generateSPCPlot-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: snapshot
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: ggplot warning (9/156 fejl) - ikke-kritisk men kraever scale-haandtering.
-      Fix-in-phase-3.
+    rationale: 'ggplot warning (9/156 fejl) - ikke-kritisk men kraever scale-haandtering.
+      Fix-in-phase-3. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-input-debouncing-comprehensive.R
@@ -540,12 +542,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-mod-spc-chart-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: integration
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'Green-partial med 16/43 fejl. Handling=fix-in-phase-3 baseret paa
-      fail-ratio. [Fase 2: merged test-mod-spc-chart-integration.R]'
+      fail-ratio. [Fase 2: merged test-mod-spc-chart-integration.R] [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-namespace-integrity.R
@@ -608,7 +610,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-performance-benchmarks.R
-    audit_category: green-partial
+    audit_category: green
     type: benchmark
     handling: keep
     reviewed: yes
@@ -648,12 +650,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-reactive-batching.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'API-drift: refererede funktioner fjernet (7/17 fejl). Fix-in-phase-3
-      efter API-stabilisering.'
+      efter API-stabilisering. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-recent-functionality.R
@@ -680,12 +682,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-runtime-config-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'testthat API-drift: argumenter ikke understoettet (21/58 fejl). Fix-in-phase-3
-      efter API-opdatering.'
+      efter API-opdatering. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-safe-operation-comprehensive.R
@@ -727,11 +729,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-bfh-service.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 20/78 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 20/78 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-cache-integration.R
@@ -744,21 +747,21 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-plot-generation-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: ggplot warning (12/61 fejl) - ikke-kritisk men kraever scale-haandtering.
-      Fix-in-phase-3.
+    rationale: 'ggplot warning (12/61 fejl) - ikke-kritisk men kraever scale-haandtering.
+      Fix-in-phase-3. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-regression-bfh-vs-qic.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'testthat API-drift: argumenter ikke understoettet (10/46 fejl). Fix-in-phase-3
-      efter API-opdatering.'
+      efter API-opdatering. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-startup-optimization.R
@@ -769,11 +772,12 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-state-management-hierarchical.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 14/55 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 14/55 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-tidyverse-purrr-operations.R
@@ -911,12 +915,13 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-y-axis-scaling-overhaul.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
     rationale: 'Green-partial med 7/76 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
-      [Fase 2: merged test-y-axis-formatting.R + test-y-axis-mapping.R + test-y-axis-model.R]'
+      [Fase 2: merged test-y-axis-formatting.R + test-y-axis-mapping.R + test-y-axis-model.R]
+      [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-yaml-config-adherence.R

@@ -11,6 +11,22 @@ INTERNAL_CLASSES <- list(
   COUNT_BETWEEN = "COUNT_BETWEEN"
 )
 
+#' Afgør om en y-akse UI-type tilhører tids-familien
+#'
+#' Omfatter legacy `"time"` og de nye enheds-varianter fra Fase 2.
+#' Bruges af `determine_internal_class()` og `default_time_unit_for_chart()`.
+#'
+#' @param ui_type Character vektor eller NULL.
+#' @return Logical vektor samme længde som ui_type. FALSE for NA/tom.
+#' @keywords internal
+is_time_unit <- function(ui_type) {
+  if (is.null(ui_type) || length(ui_type) == 0L) {
+    return(logical(0))
+  }
+  ui <- tolower(as.character(ui_type))
+  !is.na(ui) & ui %in% c("time", "time_minutes", "time_hours", "time_days")
+}
+
 #' Afgør intern klasse ud fra UI-type og data
 #'
 #' @param ui_type En af {"count" (TAL), "percent" (PROCENT), "rate" (RATE), "time" (TID)}
@@ -29,7 +45,7 @@ determine_internal_class <- function(ui_type, y, n_present = FALSE) {
     return(INTERNAL_CLASSES$RATE_INTERNAL)
   }
 
-  if (ui == "time") {
+  if (is_time_unit(ui)) {
     return(INTERNAL_CLASSES$TIME_BETWEEN)
   }
 
@@ -102,6 +118,12 @@ decide_default_y_axis_ui_type <- function(chart_type, n_present) {
 #' @return one of {"count","percent","rate","time"}
 #' @keywords internal
 chart_type_to_ui_type <- function(chart_type) {
+  # "t" er en kendt qic-kode, men ikke i CHART_TYPES_EN endnu, så vi
+  # matcher den direkte før kaldet til get_qic_chart_type() (som ville
+  # falde tilbage til "run").
+  if (identical(chart_type, "t")) {
+    return("time_days")
+  }
   ct <- get_qic_chart_type(chart_type)
   if (ct %in% c("p", "pp")) {
     return("percent")
@@ -110,7 +132,7 @@ chart_type_to_ui_type <- function(chart_type) {
     return("rate")
   }
   if (ct == "t") {
-    return("time")
+    return("time_days")
   }
   # i, mr, c, g og fallback
   return("count")

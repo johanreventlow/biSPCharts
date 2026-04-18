@@ -100,6 +100,19 @@ tests/testthat/test-utils_server_export.R      (BFHcharts::)
 
 **Bemærkning:** De 4 lille rewrite-filer i y-axis og label-placement klustrene (test-y-axis-mapping.R, test-y-axis-model.R, test-label-placement-bounds.R, test-label-placement-core.R) behandles via auto-downgrade i Task 4.
 
+**Verificeret:** 2026-04-17. LOC-totaler beregnet med `wc -l` per kluster. Type-data fra manifest. Canonical-fil per kluster identificeret ved max test_that-count (se tabel nedenfor).
+
+### Canonical-fil per kluster (højeste test_that-count)
+
+| Cluster | Canonical | Tests |
+|---|---|---|
+| y-axis | test-y-axis-scaling-overhaul.R | 16 tests |
+| event-system | test-event-system-observers.R | 23 tests |
+| label-placement | test-label-placement-core.R | 18 tests (1 failing) |
+| file-operations | test-file-operations.R | 0 test_that (describe/it-syntax) |
+| mod-spc | test-mod-spc-chart-comprehensive.R | 7 tests |
+| plot-generation | test-plot-generation.R | 11 tests |
+
 ---
 
 ## 3. Rewrite-hybrid-auto-downgrade

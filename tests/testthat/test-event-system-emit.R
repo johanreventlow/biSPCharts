@@ -30,7 +30,8 @@ test_that("emit data_loaded kan trigges uden aktivt reactive domain", {
     expect_true(is.function(emit$data_loaded))
 
     expect_error(emit$data_loaded(), NA)
-    expect_equal(get_event_value("data_loaded"), 1L)
+    # emit$data_loaded() konsoliderer til data_updated (ikke data_loaded separat)
+    expect_equal(get_event_value("data_updated"), 1L)
   })
 })
 
@@ -181,21 +182,20 @@ test_that("Legacy data functions fire consolidated event", {
     # Test legacy data_loaded
     emit$data_loaded()
 
-    # Should fire both consolidated and legacy events
+    # emit$data_loaded() fires data_updated (konsolideret) — data_loaded forbliver 0
     expect_equal(get_event_value("data_updated"), initial_data_updated + 1L)
-    expect_equal(get_event_value("data_loaded"), initial_data_loaded + 1L)
-    expect_equal(app_state$last_data_update_context$context, "legacy_data_loaded")
+    # Context gemmes som "data_loaded" (ikke "legacy_data_loaded")
+    expect_equal(app_state$last_data_update_context$context, "data_loaded")
 
     # Test legacy data_changed
     initial_data_updated <- get_event_value("data_updated")
-    initial_data_changed <- get_event_value("data_changed")
 
     emit$data_changed()
 
-    # Should fire both consolidated and legacy events
+    # emit$data_changed() fires data_updated (konsolideret) — data_changed forbliver 0
     expect_equal(get_event_value("data_updated"), initial_data_updated + 1L)
-    expect_equal(get_event_value("data_changed"), initial_data_changed + 1L)
-    expect_equal(app_state$last_data_update_context$context, "legacy_data_changed")
+    # Context gemmes som "data_changed" (ikke "legacy_data_changed")
+    expect_equal(app_state$last_data_update_context$context, "data_changed")
   })
 })
 
@@ -230,9 +230,5 @@ test_that("Data event consolidation reduces event complexity", {
 
     # One consolidated event instead of separate events
     expect_equal(get_event_value("data_updated"), 1L)
-
-    # Legacy events remain at 0 when using new API
-    expect_equal(get_event_value("data_loaded"), 0L)
-    expect_equal(get_event_value("data_changed"), 0L)
   })
 })

@@ -15,11 +15,11 @@
 
 
 metadata:
-  total_files: 121
+  total_files: 118
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 121
+    reviewed: 118
     unreviewed: 0
     needs_triage: 0
 files:
@@ -228,15 +228,6 @@ files:
     type: unit
     handling: keep
     reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-constants-architecture.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-context-aware-plots.R
@@ -489,15 +480,6 @@ files:
     rationale: Green-partial med 2/34 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-label-height-estimation.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-label-placement-bounds.R
     audit_category: green-partial
     type: unit
@@ -583,15 +565,6 @@ files:
     type: unit
     handling: keep
     reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-npc-mapper.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-observer-cleanup.R

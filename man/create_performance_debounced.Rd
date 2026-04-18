@@ -28,6 +28,7 @@ Kombinerer caching med debouncing for optimal performance på
 hyppigt-opdaterede reactive expressions.
 }
 \examples{
+\dontrun{
 optimized_reactive <- create_performance_debounced(
   reactive({
     expensive_computation(input$data)
@@ -36,6 +37,7 @@ optimized_reactive <- create_performance_debounced(
   millis = 500,
   cache_timeout = CACHE_CONFIG$default_timeout_seconds
 )
+}
 
 }
 \keyword{internal}

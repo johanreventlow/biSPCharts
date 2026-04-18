@@ -8,14 +8,15 @@ if (dir.exists(local_lib)) {
   .libPaths(c(local_lib, .libPaths()))
 }
 
-# NOTE: Cannot load biSPCharts package in its own tests due to circular dependency
-# Load components directly from source instead
-if (file.exists(file.path(project_root, "R/branding_globals.R"))) {
-  source(file.path(project_root, "R/branding_globals.R"), local = FALSE)
-}
+# NOTE: R/branding_globals.R blev fjernet i brandings-refactor — konstanter
+# sættes nu dynamisk via get_hospital_colors()/get_hospital_name() fra
+# R/config_branding_getters.R (kaldes i .onLoad i R/zzz.R).
 
-test_that("HOSPITAL_COLORS er tilgængelig globalt", {
-  expect_true(exists("HOSPITAL_COLORS", envir = globalenv()))
-  expect_true(is.list(HOSPITAL_COLORS))
-  expect_true(all(c("primary", "success", "warning", "danger") %in% names(HOSPITAL_COLORS)))
+test_that("HOSPITAL_COLORS er tilgængelig via branding-accessor", {
+  # get_hospital_colors() er den nye public API. Det legacy-globale
+  # HOSPITAL_COLORS sættes stadig ved package-load i zzz.R, men ligger
+  # i pakke-intern env (claudespc_env) — ikke globalenv().
+  colors <- get_hospital_colors()
+  expect_true(is.list(colors))
+  expect_true(all(c("primary", "success", "warning", "danger") %in% names(colors)))
 })

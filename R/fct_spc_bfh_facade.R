@@ -435,6 +435,36 @@ compute_spc_results_bfh <- function(
       centerline_value <- extra_params$centerline_value
       y_axis_unit <- extra_params$y_axis_unit %||% "count"
 
+      # Skalér target/centerline til kanoniske minutter hvis y-enheden er
+      # en tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90
+      # med time_days = 90 dage), men y-data er allerede i minutter efter
+      # step 4b. Uden denne skalering ville target = 90 blive plottet som
+      # 90 minutter i stedet for 90 dage (= 129600 min).
+      if (is_time_unit(y_axis_unit)) {
+        if (!is.null(target_value) && length(target_value) > 0) {
+          scaled_target <- parse_time_to_minutes(target_value, input_unit = y_axis_unit)
+          log_debug(
+            paste0(
+              "Skalerer target_value ", target_value, " (", y_axis_unit,
+              ") -> ", scaled_target, " min"
+            ),
+            .context = "BFH_SERVICE"
+          )
+          target_value <- scaled_target
+        }
+        if (!is.null(centerline_value) && length(centerline_value) > 0) {
+          scaled_cl <- parse_time_to_minutes(centerline_value, input_unit = y_axis_unit)
+          log_debug(
+            paste0(
+              "Skalerer centerline_value ", centerline_value, " (", y_axis_unit,
+              ") -> ", scaled_cl, " min"
+            ),
+            .context = "BFH_SERVICE"
+          )
+          centerline_value <- scaled_cl
+        }
+      }
+
       # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent",
       # "rate", "time". Map de nye biSPCharts-enheder (time_minutes/hours/days)
       # til den kanoniske "time" — data er allerede parsed til minutter (se 4b).

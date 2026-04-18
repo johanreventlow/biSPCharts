@@ -532,7 +532,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-mod_export.R
-    audit_category: broken-other
+    audit_category: green-partial
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -608,7 +608,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-performance-benchmarks.R
-    audit_category: green
+    audit_category: green-partial
     type: benchmark
     handling: keep
     reviewed: yes
@@ -657,7 +657,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-recent-functionality.R
-    audit_category: broken-other
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes

@@ -861,11 +861,11 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_performance_caching.R
-    audit_category: green-partial
+    audit_category: green
     type: benchmark
     handling: fix-in-phase-3
     reviewed: yes
-    rationale: Green-partial med 1/11 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: Green efter Fase 3 fix. Alle tests passer.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_qic_caching.R
@@ -930,6 +930,38 @@ files:
     handling: fix-in-phase-3
     reviewed: yes
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-facade-time-parsing.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 8 tests passer.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-local-storage-time-migration.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 10 tests passer.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-time-formatting.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 45 tests passer.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-time-parsing.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 28 tests passer.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
 

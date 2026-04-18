@@ -2,13 +2,21 @@
 % Please edit documentation in R/utils_analytics_pins.R
 \name{aggregate_and_pin_logs}
 \alias{aggregate_and_pin_logs}
-\title{Aggreger logs og publicer til Connect Cloud via pins}
+\title{Aggreger logs og sync til analytics-storage}
 \usage{
-aggregate_and_pin_logs(log_directory = "logs/")
+aggregate_and_pin_logs(log_directory = "logs/", session_id = NULL)
 }
 \arguments{
 \item{log_directory}{Sti til log-mappe}
+
+\item{session_id}{Shiny session token (bruges i filnavn for GitHub-backend)}
 }
 \description{
-Aggreger logs og publicer til Connect Cloud via pins
+Prioriteret backend:
+\enumerate{
+\item GitHub privat repo (GITHUB_PAT + PIN_REPO_URL sat) — append-model,
+hver session-afslutning skriver én .rds-fil til data-repo.
+\item Posit Connect Server pins (CONNECT_SERVER sat) — legacy/lokal dev.
+\item No-op hvis ingen backend er konfigureret.
+}
 }

@@ -13,5 +13,9 @@ read_shinylogs_all(log_directory)
 Navngivet liste med 4 data.frames: sessions, inputs, outputs, errors
 }
 \description{
-Laeser sessions, inputs, outputs og errors fra shinylogs log-directory.
+Laeser \code{shinylogs_*.json}-filer som shinylogs::store_json skriver
+direkte i log_directory (én fil per session, samlet struktur:
+session/inputs/outputs/errors). Delegerer til
+shinylogs::read_json_logs hvis pakken er tilgaengelig, ellers
+fallback til manuel parsing.
 }

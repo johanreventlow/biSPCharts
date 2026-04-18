@@ -123,6 +123,7 @@ test_that("session_reset event triggers cache invalidation", {
 })
 
 test_that("cache stats are accurate after operations", {
+  skip("get_cache_stats() blev fjernet. Intern .performance_cache er ikke længere eksponeret via public API — se manage_cache_size() og get_cached_result() for alternativer.")
   # Clear to start fresh
   clear_performance_cache()
 

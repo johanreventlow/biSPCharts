@@ -546,21 +546,6 @@ compute_spc_results_bfh <- function(
         standardized$plot <- standardized$plot + x_scale + x_theme
       }
 
-      # 7d3. [MIDLERTIDIG] Override BFHcharts y-akse-formatering for tids-enhed
-      # BFHcharts sætter selv scale_y_continuous med nsmall=1-lignende format
-      # ("0,6666667 timer"). Vi tilsidesætter med biSPCharts' komposit-format
-      # ("40m") via format_y_axis_time(). ggplot2 viser en "Scale already
-      # present"-besked, som undertrykkes her.
-      #
-      # FJERN: Når BFHcharts får indbygget komposit-tidsformat (se issue-tracker).
-      # Se: R/utils_y_axis_formatting.R::format_y_axis_time()
-      if (identical(y_axis_unit, "time") && !is.null(standardized$plot) &&
-        !is.null(standardized$qic_data)) {
-        standardized$plot <- suppressMessages(
-          standardized$plot + format_y_axis_time(standardized$qic_data)
-        )
-      }
-
       # 7e. Anhøj metadata: brug BFHcharts' allerede beregnede metadata
       # transform_bfh_output() udtrækker Anhøj-regler fra BFHcharts qic_data.
       # compute_anhoej_metadata_local() (qicharts2::qic) er FJERNET da den var

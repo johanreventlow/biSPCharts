@@ -73,3 +73,10 @@ test_that("default_time_unit_for_chart returnerer passende enhed pr. korttype", 
   expect_null(default_time_unit_for_chart(NULL))
   expect_null(default_time_unit_for_chart(NA_character_))
 })
+
+test_that("t-kort: korttype-skift foerer til time_days som default y-enhed", {
+  # Integration: UI's chart_type-observer kalder chart_type_to_ui_type()
+  # for at finde default y-enhed. "t" skal mappes til "time_days".
+  expect_equal(chart_type_to_ui_type("t"), "time_days")
+  expect_equal(default_time_unit_for_chart("t"), "time_days")
+})

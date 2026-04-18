@@ -23,6 +23,20 @@ TIME_BREAK_CANDIDATES <- c(
   1440, 2880, 10080, 43200       # dage (1d, 2d, 7d, 30d)
 )
 
+#' Tilladte kandidat-intervaller pr. input-enhed
+#'
+#' Filtrerer TIME_BREAK_CANDIDATES baseret paa hvilke der er "naturlige"
+#' i den valgte input-enhed. Fx time_hours tillader ikke 15m-intervaller
+#' (= 0.25 t) men tillader 30m (= 0.5 t). time_days kraever mindst 12t
+#' interval for at undgaa forvirrende sub-dag ticks.
+#'
+#' @keywords internal
+TIME_BREAK_CANDIDATES_BY_UNIT <- list(
+  time_minutes = TIME_BREAK_CANDIDATES,
+  time_hours   = c(30, 60, 120, 240, 360, 720, 1440, 2880, 10080, 43200),
+  time_days    = c(720, 1440, 2880, 10080, 43200)
+)
+
 # KOMPOSIT FORMATERING ========================================================
 
 #' Formatér minutter som komposit tidsstreng
@@ -90,13 +104,17 @@ format_time_composite_single <- function(v) {
 #'
 #' @param y_values numeric. Data-range at generere ticks til.
 #' @param target_n integer. Minimums-antal ticks. Default 5L.
+#' @param input_unit character eller NULL. En af 'time_minutes',
+#'   'time_hours', 'time_days'. Begraenser hvilke kandidat-intervaller
+#'   der overvejes (fx time_days bruger kun >= 12t intervaller).
+#'   Default NULL = alle kandidater (bagudkompatibel).
 #' @return numeric vektor. Tick-positioner i minutter.
 #' @keywords internal
 #' @examples
 #' time_breaks(c(0, 120))    # 0 30 60 90 120
 #' time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
 #' time_breaks(c(0, 480))    # 0 120 240 360 480
-time_breaks <- function(y_values, target_n = 5L) {
+time_breaks <- function(y_values, target_n = 5L, input_unit = NULL) {
   # Defensiv: filtrer ikke-finite (NA, NaN, Inf, -Inf) og tomme inputs.
   # ggplot2 passerer undertiden Inf/-Inf under layout; seq() ville senere
   # crashe med 'to' must be a finite number uden denne filtrering.
@@ -113,33 +131,34 @@ time_breaks <- function(y_values, target_n = 5L) {
     return(y_min)
   }
 
+  # Vaelg kandidat-liste baseret paa input_unit
+  candidates <- if (!is.null(input_unit) &&
+                    input_unit %in% names(TIME_BREAK_CANDIDATES_BY_UNIT)) {
+    TIME_BREAK_CANDIDATES_BY_UNIT[[input_unit]]
+  } else {
+    TIME_BREAK_CANDIDATES
+  }
+
   # Primaer: stoerste interval med >= target_n ticks.
   # Itererer alle kandidater (floor-snap kan give non-monotonisk n_ticks
   # i sjaeldne tilfaelde for smaa target_n — omkostningen er ubetydelig).
-  chosen_interval <- NULL
-  for (interval in TIME_BREAK_CANDIDATES) {
-    start <- floor(y_min / interval) * interval
-    end <- floor(y_max / interval) * interval
-    n_ticks <- (end - start) / interval + 1L
-    if (n_ticks >= target_n) {
-      chosen_interval <- interval
-    }
+  chosen_interval <- pick_break_interval(y_min, y_max, candidates, min_ticks = target_n)
+
+  # Fallback 1: prøv ufiltreret liste hvis filtreret ikke gav resultat
+  if (is.null(chosen_interval) && !identical(candidates, TIME_BREAK_CANDIDATES)) {
+    chosen_interval <- pick_break_interval(
+      y_min, y_max, TIME_BREAK_CANDIDATES, min_ticks = target_n
+    )
   }
 
-  # Fallback 1: meget smal range — brug mindste interval med >= 2 ticks
+  # Fallback 2: meget smal range — brug mindste interval med >= 2 ticks
   if (is.null(chosen_interval)) {
-    for (interval in TIME_BREAK_CANDIDATES) {
-      start <- floor(y_min / interval) * interval
-      end <- floor(y_max / interval) * interval
-      n_ticks <- (end - start) / interval + 1L
-      if (n_ticks >= 2L) {
-        chosen_interval <- interval
-        break
-      }
-    }
+    chosen_interval <- pick_break_interval(
+      y_min, y_max, TIME_BREAK_CANDIDATES, min_ticks = 2L, pick_first = TRUE
+    )
   }
 
-  # Fallback 2: sub-unit range (f.eks. 0.3-0.9 min) — returnér
+  # Fallback 3: sub-unit range (f.eks. 0.3-0.9 min) — returnér
   # data-bracketing tick-par saa aksen ikke bliver blank.
   if (is.null(chosen_interval)) {
     return(c(y_min, y_max))
@@ -149,4 +168,30 @@ time_breaks <- function(y_values, target_n = 5L) {
   end <- floor(y_max / chosen_interval) * chosen_interval
 
   seq(start, end, by = chosen_interval)
+}
+
+#' Vælg tick-interval fra en kandidat-liste
+#'
+#' @param y_min,y_max numeric. Range-grænser.
+#' @param candidates numeric. Kandidat-intervaller (stigende sorteret).
+#' @param min_ticks integer. Mindstekrav til antal ticks i det valgte interval.
+#' @param pick_first logical. TRUE = returnér første match; FALSE = returnér
+#'   største interval der stadig opfylder min_ticks-kravet (default).
+#' @return numeric eller NULL hvis intet interval passer.
+#' @keywords internal
+pick_break_interval <- function(y_min, y_max, candidates,
+                                min_ticks = 5L, pick_first = FALSE) {
+  chosen <- NULL
+  for (interval in candidates) {
+    start <- floor(y_min / interval) * interval
+    end <- floor(y_max / interval) * interval
+    n_ticks <- (end - start) / interval + 1L
+    if (n_ticks >= min_ticks) {
+      chosen <- interval
+      if (pick_first) {
+        break
+      }
+    }
+  }
+  chosen
 }

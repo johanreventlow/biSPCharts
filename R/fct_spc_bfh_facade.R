@@ -315,6 +315,25 @@ compute_spc_results_bfh <- function(
         ))
       }
 
+      # 4b. Parse tids-input til kanoniske minutter hvis y-enheden er en
+      # tids-enhed. Input kan være numeric, hms, difftime eller HH:MM-streng.
+      # Sker FØR parse_and_validate_spc_data for at undgå at HH:MM-strenge
+      # bliver til NA i as.numeric()-fallbacken.
+      y_axis_unit_early <- list(...)$y_axis_unit %||% "count"
+      if (is_time_unit(y_axis_unit_early)) {
+        complete_data[[y_var]] <- parse_time_to_minutes(
+          complete_data[[y_var]],
+          input_unit = y_axis_unit_early
+        )
+        log_debug(
+          paste0(
+            "Parsede tids-kolonne '", y_var,
+            "' til kanoniske minutter via input_unit='", y_axis_unit_early, "'"
+          ),
+          .context = "BFH_SERVICE"
+        )
+      }
+
       # 5. Parse and validate numeric data
       y_data_raw <- complete_data[[y_var]]
       n_data_raw <- if (!is.null(n_var)) complete_data[[n_var]] else NULL
@@ -415,6 +434,20 @@ compute_spc_results_bfh <- function(
       target_value <- extra_params$target_value
       centerline_value <- extra_params$centerline_value
       y_axis_unit <- extra_params$y_axis_unit %||% "count"
+
+      # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent",
+      # "rate", "time". Map de nye biSPCharts-enheder (time_minutes/hours/days)
+      # til den kanoniske "time" — data er allerede parsed til minutter (se 4b).
+      if (is_time_unit(y_axis_unit) && !identical(y_axis_unit, "time")) {
+        log_debug(
+          paste0(
+            "Mapper y_axis_unit='", y_axis_unit,
+            "' -> 'time' for BFHcharts (data er i kanoniske minutter)"
+          ),
+          .context = "BFH_SERVICE"
+        )
+        y_axis_unit <- "time"
+      }
       chart_title <- resolve_bfh_chart_title(
         extra_params$chart_title_reactive %||% extra_params$chart_title
       )

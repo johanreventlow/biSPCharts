@@ -80,6 +80,14 @@ Audit-rapport re-genereret.
 
 ## Interne ændringer
 
+* **CI pilot (GitHub Actions):** Tilføjet `.github/workflows/R-CMD-check.yaml`
+  (matrix: ubuntu + windows, R release) og `.github/workflows/lint.yaml`. Kører
+  ved push/PR mod `master` og automatiserer det meste af 9-trins pre-release
+  checklist. Cross-repo regressioner fra `Remotes:` sibling-pakker (BFHcharts,
+  BFHllm, BFHtheme) fanges passivt ved hver kørsel. shinytest2-baserede tests
+  guarded med `skip_on_ci()` (chromote hænger non-interaktivt). Replikering
+  til sibling-pakker dokumenteret i `docs/CI_SETUP_GUIDE.md`.
+
 * **Publish-gate oprydning (#203):** Fjernede 4 forældede testfiler med
   referencer til funktioner der var dead-code eller migreret. Resultat:
   audit-kategori `broken-missing-fn = 0`.

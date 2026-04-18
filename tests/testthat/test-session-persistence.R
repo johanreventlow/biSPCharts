@@ -555,7 +555,8 @@ test_that("saveDataLocally payload uses current version tag", {
   parsed <- jsonlite::fromJSON(json_str, simplifyVector = TRUE)
 
   expect_true("version" %in% names(parsed))
-  # Version bumpes til "2.0" i Fase 3 — før fix kan det være "1.2"
-  expect_true(parsed$version %in% c("1.2", "2.0"),
+  # Schema versioner: "1.2" (legacy), "2.0" (Fase 3), "3.0" (time-yaxis Fase 2b).
+  # Test accepterer alle kendte versioner for robusthed mod fremtidige bumps.
+  expect_true(parsed$version %in% c("1.2", "2.0", "3.0"),
     info = paste("Unknown payload version:", parsed$version))
 })

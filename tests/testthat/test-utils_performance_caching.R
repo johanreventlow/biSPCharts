@@ -48,9 +48,12 @@ test_that("cache_result og get_cached_result round-trips korrekt", {
   # Clear cache først
   clear_performance_cache()
 
-  cache_result("test_key_123", list(value = 42), timeout_seconds = 3600)
+  # get_cached_result returnerer hele cached_entry-strukturen
+  # (list(value, created_at, expires_at, last_access, size_estimate)).
+  # Stored value er her en liste, og entry$value bevarer den struktur.
+  cache_result("test_key_123", list(answer = 42), timeout_seconds = 3600)
   result <- get_cached_result("test_key_123")
-  expect_equal(result$value, 42)
+  expect_equal(result$value, list(answer = 42))
 
   # Cleanup
   clear_performance_cache()

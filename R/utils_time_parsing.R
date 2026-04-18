@@ -63,7 +63,18 @@ parse_time_to_minutes <- function(x, input_unit = "time_minutes") {
     return(x * scale)
   }
 
-  # Fremtidige paths (hms/difftime/character) tilføjes i senere tasks
+  # Character/factor-input: prøv HH:MM[:SS] parse først, fald tilbage til numeric
+  if (is.character(x) || is.factor(x)) {
+    x_char <- as.character(x)
+    hhmm_result <- parse_hhmm_strings(x_char)
+
+    # For værdier hvor HH:MM-parse fejler (NA), prøv numeric-parse
+    numeric_fallback <- suppressWarnings(as.numeric(x_char)) * scale
+    result <- ifelse(is.na(hhmm_result), numeric_fallback, hhmm_result)
+    return(result)
+  }
+
+  # Ukendt type — returnér NA med warning
   suppressWarnings({
     coerced <- as.numeric(as.character(x))
   })
@@ -71,8 +82,42 @@ parse_time_to_minutes <- function(x, input_unit = "time_minutes") {
     warning(
       "parse_time_to_minutes: kunne ikke parse input af type '",
       paste(class(x), collapse = "/"),
-      "' — returnerer NA. HH:MM og hms-support kommer i senere task."
+      "' — returnerer NA."
     )
   }
   coerced * scale
+}
+
+#' Parse HH:MM eller HH:MM:SS strenge til minutter
+#'
+#' Sekunder konverteres til brøkdele af minutter (rundes ikke her —
+#' det håndteres af format_time_composite() ved render-tid).
+#' Ugyldige strenge returnerer NA.
+#'
+#' @param x Character vektor.
+#' @return Numeric vektor med minutter.
+#' @keywords internal
+parse_hhmm_strings <- function(x) {
+  # Regex: optional negative sign, timer (1-3 cifre), minutter (1-2 cifre),
+  # valgfrit :SS hvor SS er 1-2 cifre.
+  pattern <- "^(-?)(\\d{1,3}):(\\d{1,2})(?::(\\d{1,2}))?$"
+
+  matches <- stringr::str_match(x, pattern)
+  # matches er en matrix med kolonner: [full, sign, hours, mins, secs]
+  n <- nrow(matches)
+  result <- vapply(seq_len(n), function(i) {
+    if (is.na(matches[i, 1])) {
+      return(NA_real_)
+    }
+    sign <- if (identical(matches[i, 2], "-")) -1 else 1
+    hours <- suppressWarnings(as.numeric(matches[i, 3]))
+    mins <- suppressWarnings(as.numeric(matches[i, 4]))
+    secs_str <- matches[i, 5]
+    secs <- if (is.na(secs_str)) 0 else suppressWarnings(as.numeric(secs_str))
+    if (any(is.na(c(hours, mins, secs)))) {
+      return(NA_real_)
+    }
+    sign * (hours * 60 + mins + secs / 60)
+  }, numeric(1))
+  result
 }

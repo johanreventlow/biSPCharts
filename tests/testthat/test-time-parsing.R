@@ -51,3 +51,42 @@ test_that("parse_time_to_minutes haandterer hms objekter", {
   h <- hms::hms(seconds = c(90 * 60, 30 * 60))  # 90 min og 30 min
   expect_equal(parse_time_to_minutes(h), c(90, 30))
 })
+
+test_that("parse_time_to_minutes haandterer HH:MM-strenge", {
+  expect_equal(parse_time_to_minutes("01:30"), 90)
+  expect_equal(parse_time_to_minutes("00:45"), 45)
+  expect_equal(parse_time_to_minutes("02:00"), 120)
+  # Værdier >24t er valide (kumulerede tider)
+  expect_equal(parse_time_to_minutes("25:15"), 25 * 60 + 15)
+  # Enkelt-cifre timer og minutter
+  expect_equal(parse_time_to_minutes("1:5"), 65)
+})
+
+test_that("parse_time_to_minutes haandterer HH:MM:SS", {
+  # Sekunder bevares som brøkdele af minutter
+  expect_equal(parse_time_to_minutes("01:30:15"), 90.25)
+  expect_equal(parse_time_to_minutes("01:30:45"), 90.75)
+  expect_equal(parse_time_to_minutes("00:00:30"), 0.5)
+})
+
+test_that("parse_time_to_minutes haandterer ugyldige strenge som NA", {
+  suppressWarnings({
+    expect_true(is.na(parse_time_to_minutes("invalid")))
+    expect_true(is.na(parse_time_to_minutes("abc:def")))
+    expect_true(is.na(parse_time_to_minutes("")))
+  })
+})
+
+test_that("parse_time_to_minutes haandterer blandet karakter-vektor", {
+  suppressWarnings({
+    result <- parse_time_to_minutes(c("01:30", "invalid", "00:45", NA))
+    expect_equal(result, c(90, NA_real_, 45, NA_real_))
+  })
+})
+
+test_that("parse_time_to_minutes kan stadig parse numeriske strenge", {
+  # Strenge der ser ud som numre (ingen ':' til HH:MM-parse)
+  # behandles som numeric med input_unit
+  expect_equal(parse_time_to_minutes("90", "time_minutes"), 90)
+  expect_equal(parse_time_to_minutes("1.5", "time_hours"), 90)
+})

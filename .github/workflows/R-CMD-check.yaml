@@ -44,18 +44,11 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      # Pre-install BFH sibling-pakker eksplicit fra GitHub.
-      # Workaround: BFHcharts/BFHllm har ikke selv Remotes for deres BFH-deps,
-      # saa pak kan ikke loese transitivt fra biSPCharts' Remotes alene.
-      # Den arkitektonisk korrekte fix er at tilfoeje Remotes til BFHcharts +
-      # BFHllm DESCRIPTION (gemmes til CI-replikation paa upstream-pakker).
+      # Cross-repo deps haandteres nu transitivt via Remotes-felter i
+      # biSPCharts (top-level), BFHcharts (>= 0.8.1) og BFHllm (>= 0.1.2).
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
-            any::rcmdcheck
-            github::johanreventlow/BFHtheme
-            github::johanreventlow/BFHllm
-            github::johanreventlow/BFHcharts
+          extra-packages: any::rcmdcheck
           needs: check
 
       # Pragmatisk konfiguration for biSPCharts (Shiny app, pre-1.0):
@@ -66,8 +59,7 @@ jobs:
       # - error-on "error": kun ERRORs blokerer; WARNINGs/NOTEs er synlige men
       #   non-blocking (11 WARN/5 NOTE er pre-existing pakke-hygiejne issues)
       # CI validerer stadig: NAMESPACE-integritet, dep-resolution, kompilering,
-      # pakke-installation, basal struktur. Dette er kerne-vaerdien af R CMD
-      # check for et Shiny-app-projekt der ikke targets CRAN.
+      # pakke-installation, basal struktur.
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
@@ -98,11 +90,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
-            any::testthat
-            github::johanreventlow/BFHtheme
-            github::johanreventlow/BFHllm
-            github::johanreventlow/BFHcharts
+          extra-packages: any::testthat
           needs: check
 
       - name: Install local package

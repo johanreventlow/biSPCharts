@@ -47,6 +47,17 @@ parse_time_to_minutes <- function(x, input_unit = "time_minutes") {
 
   scale <- TIME_INPUT_UNIT_SCALES[[input_unit]]
 
+  # hms: altid sekunder → divider med 60
+  # (hms ignorerer units-arg og returnerer altid sekunder via as.numeric)
+  if (inherits(x, "hms")) {
+    return(as.numeric(x) / 60)
+  }
+
+  # difftime: konvertér direkte til minutter via units-arg
+  if (inherits(x, "difftime")) {
+    return(as.numeric(x, units = "mins"))
+  }
+
   # Numeric path
   if (is.numeric(x)) {
     return(x * scale)

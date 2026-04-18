@@ -31,3 +31,23 @@ test_that("parse_time_to_minutes defaulter til time_minutes for ugyldig input_un
     expect_equal(parse_time_to_minutes(90, "bogus_unit"), 90)
   })
 })
+
+test_that("parse_time_to_minutes haandterer difftime med forskellige enheder", {
+  # difftime i minutter — input_unit ignoreres for difftime
+  dt_min <- as.difftime(c(30, 60, 90), units = "mins")
+  expect_equal(parse_time_to_minutes(dt_min, "time_hours"), c(30, 60, 90))
+
+  # difftime i timer
+  dt_hrs <- as.difftime(c(1, 2, 3), units = "hours")
+  expect_equal(parse_time_to_minutes(dt_hrs, "time_minutes"), c(60, 120, 180))
+
+  # difftime i sekunder (giver brøkdele af minutter)
+  dt_sec <- as.difftime(c(60, 120, 90), units = "secs")
+  expect_equal(parse_time_to_minutes(dt_sec), c(1, 2, 1.5))
+})
+
+test_that("parse_time_to_minutes haandterer hms objekter", {
+  skip_if_not_installed("hms")
+  h <- hms::hms(seconds = c(90 * 60, 30 * 60))  # 90 min og 30 min
+  expect_equal(parse_time_to_minutes(h), c(90, 30))
+})

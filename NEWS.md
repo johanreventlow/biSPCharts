@@ -1,5 +1,14 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Interne ændringer
+
+* **Cross-repo bump:** `BFHcharts (>= 0.8.1)` og `BFHllm (>= 0.1.2)`. Begge
+  sibling-pakker har nu egne `Remotes:`-felter, så pak kan løse transitive
+  BFH-deps uden eksplicit workaround. Workarounden i
+  `.github/workflows/R-CMD-check.yaml` (de fire `github::johanreventlow/...`
+  entries i `extra-packages`) er fjernet. CI er nu arkitektonisk korrekt
+  konfigureret og matcher VERSIONING_POLICY cross-repo bump-protokol.
+
 ## Interne ændringer (Fase 3 — TODO-resolution + targeted salvage, #203)
 
 * **Fail-count reduceret fra 292 til 80** (-212, target <200 **klart opnået**).

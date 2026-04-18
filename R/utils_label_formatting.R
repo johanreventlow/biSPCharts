@@ -95,11 +95,12 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
     }
   }
 
-  # Time formatting (input: minutes) - komposit-format
+  # Time formatting (input: kanoniske minutter) - komposit-format
+  # Dækker legacy "time" og nye time_minutes/time_hours/time_days.
   # Bruger format_time_composite() for konsistens med format_y_axis_time().
   # y_range-parameteren er ikke laengere relevant — komposit-format haandterer
   # minutter/timer/dage automatisk (0m, 30m, 1t, 1t 30m, 1d, 2d 13t).
-  if (y_unit == "time") {
+  if (is_time_unit(y_unit)) {
     return(format_time_composite(val))
   }
 

@@ -64,6 +64,16 @@ test_that("format_y_value returnerer NA for NA input", {
   expect_true(is.na(format_y_value(NA_real_, "time")))
 })
 
+test_that("format_y_value haandterer nye tids-enheder (time_minutes/hours/days)", {
+  # Alle tids-enheder giver komposit-format fordi input allerede er
+  # konverteret til kanoniske minutter af parse_time_to_minutes.
+  expect_equal(format_y_value(90, "time_minutes"), "1t 30m")
+  expect_equal(format_y_value(90, "time_hours"), "1t 30m")
+  expect_equal(format_y_value(90, "time_days"), "1t 30m")
+  expect_equal(format_y_value(1440, "time_days"), "1d")
+  expect_equal(format_y_value(0, "time_minutes"), "0m")
+})
+
 test_that("format_y_value() håndterer NA korrekt", {
   expect_true(is.na(format_y_value(NA, "count")))
   expect_true(is.na(format_y_value(NA, "percent")))

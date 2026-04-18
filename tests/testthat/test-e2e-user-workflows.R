@@ -9,7 +9,13 @@
 # - UI state verification
 
 library(testthat)
-library(shinytest2)
+# BEMÆRK: library(shinytest2) loades IKKE på CI (chromote hænger i
+# non-interaktive Rscript-miljøer). Hver test har skip_on_ci() længere nede.
+if (Sys.getenv("CI") != "true" && Sys.getenv("CI_SKIP_SHINYTEST2") != "true") {
+  if (requireNamespace("shinytest2", quietly = TRUE)) {
+    library(shinytest2)
+  }
+}
 
 # E2E TEST: Basic App Launch ===================================================
 

@@ -1,19 +1,24 @@
 # test-y-axis-scaling-overhaul.R
-# Comprehensive test suite for the new Y-axis scaling API
+# Comprehensive test suite for the Y-axis API
+# Merged Fase 2: test-y-axis-mapping.R + test-y-axis-model.R +
+#               test-y-axis-formatting.R -> test-y-axis-scaling-overhaul.R
+# Se NEWS.md for rationale.
+
+library(testthat)
+library(ggplot2)
+
+# =============================================================================
+# SEKTION 1: SCALING API (fra test-y-axis-scaling-overhaul.R originalt)
 # Tests the 3-layer architecture: Parsing → Unit Clarification → Conversion
-
-# Load the new functions through global.R
-# These tests validate the separation of concerns and deterministic behavior
-
 # =============================================================================
-# LAYER 1: PARSING TESTS
-# =============================================================================
+
+# LAYER 1: PARSING TESTS -------------------------------------------------------
 
 test_that("parse_number_da correctly parses Danish numbers with symbols", {
 
   # Basic symbol detection
   expect_equal(parse_number_da("80%"), list(value = 80, symbol = "percent"))
-  expect_equal(parse_number_da("8‰"), list(value = 8, symbol = "permille"))
+  expect_equal(parse_number_da("8\u2030"), list(value = 8, symbol = "permille"))
   expect_equal(parse_number_da("80"), list(value = 80, symbol = "none"))
 
   # Danish comma decimals
@@ -28,7 +33,7 @@ test_that("parse_number_da correctly parses Danish numbers with symbols", {
   # Edge cases
   expect_equal(parse_number_da(""), list(value = NA_real_, symbol = "none"))
   expect_equal(parse_number_da(NULL), list(value = numeric(0), symbol = character(0)))
-  expect_equal(parse_number_da("80%‰"), list(value = NA_real_, symbol = "invalid"))  # Both symbols
+  expect_equal(parse_number_da("80%\u2030"), list(value = NA_real_, symbol = "invalid"))  # Begge symboler
 
 })
 
@@ -50,7 +55,7 @@ test_that("parse_number_da is idempotent", {
 test_that("parse_number_da handles vectors correctly", {
 
   # Vector input should return vector output
-  inputs <- c("80%", "8‰", "75")
+  inputs <- c("80%", "8\u2030", "75")
   result <- parse_number_da(inputs)
 
   expect_equal(result$value, c(80, 8, 75))
@@ -58,9 +63,7 @@ test_that("parse_number_da handles vectors correctly", {
 
 })
 
-# =============================================================================
-# LAYER 2: UNIT CLARIFICATION TESTS
-# =============================================================================
+# LAYER 2: UNIT CLARIFICATION TESTS --------------------------------------------
 
 test_that("resolve_y_unit follows correct priority order", {
 
@@ -110,26 +113,24 @@ test_that("detect_unit_from_data uses clear heuristics", {
 
 })
 
-# =============================================================================
-# LAYER 3A: HARMONIZATION TESTS
-# =============================================================================
+# LAYER 3A: HARMONIZATION TESTS ------------------------------------------------
 
 test_that("coerce_to_target_unit uses deterministic conversion matrix", {
 
   # TO PROPORTION
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "proportion"), 0.8)
   expect_equal(coerce_to_target_unit(list(value = 8, symbol = "permille"), "proportion"), 0.008)
-  expect_equal(coerce_to_target_unit(list(value = 0.8, symbol = "none"), "proportion"), 0.8)  # No implicit scaling!
+  expect_equal(coerce_to_target_unit(list(value = 0.8, symbol = "none"), "proportion"), 0.8)  # No implicit scaling
 
   # TO PERCENT
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "percent"), 80)
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "permille"), "percent"), 8)
-  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "percent"), 80)  # No implicit scaling!
+  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "percent"), 80)  # No implicit scaling
 
   # TO PERMILLE
   expect_equal(coerce_to_target_unit(list(value = 8, symbol = "percent"), "permille"), 80)
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "permille"), "permille"), 80)
-  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "permille"), 80)  # No implicit scaling!
+  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "permille"), 80)  # No implicit scaling
 
   # TO ABSOLUTE
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "absolute"), 80)
@@ -149,9 +150,7 @@ test_that("coerce_to_target_unit handles edge cases", {
 
 })
 
-# =============================================================================
-# LAYER 3B: INTERNAL CONVERSION TESTS
-# =============================================================================
+# LAYER 3B: INTERNAL CONVERSION TESTS ------------------------------------------
 
 test_that("to_internal_scale converts deterministically", {
 
@@ -162,31 +161,26 @@ test_that("to_internal_scale converts deterministically", {
 
   # TO ABSOLUTE (internal canonical for count plots)
   expect_equal(to_internal_scale(80, "absolute", "absolute"), 80)  # Identity
-  expect_equal(to_internal_scale(80, "percent", "absolute"), 80)  # Should this be allowed?
+  expect_equal(to_internal_scale(80, "percent", "absolute"), 80)
 
   # Error cases
-  expect_true(is.na(to_internal_scale(80, "absolute", "proportion")))  # Can't convert absolute→proportion without context
+  expect_true(is.na(to_internal_scale(80, "absolute", "proportion")))
 
 })
 
-# =============================================================================
-# MAIN API TESTS
-# =============================================================================
+# MAIN API TESTS ---------------------------------------------------------------
 
 test_that("normalize_axis_value integrates all layers correctly", {
 
   # SCENARIO A: Input with % symbol, proportion internal unit
-  # User types "80%" → should become 0.8 in proportion scale
   result1 <- normalize_axis_value("80%", user_unit = "proportion", internal_unit = "proportion")
   expect_equal(result1, 0.8)
 
   # SCENARIO B: Input without symbol, percent target unit
-  # User types "80" → should become 80 in percent scale (no implicit scaling)
   result2 <- normalize_axis_value("80", user_unit = "percent", internal_unit = "percent")
   expect_equal(result2, 80)
 
   # SCENARIO C: Data-driven unit resolution
-  # No explicit unit, but Y-data suggests proportion scale
   decimal_y_data <- c(0.1, 0.2, 0.3, 0.8)
   result3 <- normalize_axis_value("80%", y_sample = decimal_y_data, internal_unit = "proportion")
   expect_equal(result3, 0.8)  # 80% → proportion 0.8
@@ -194,7 +188,7 @@ test_that("normalize_axis_value integrates all layers correctly", {
   # SCENARIO D: Data-driven unit resolution suggests percent
   percent_y_data <- c(10, 20, 30, 80)
   result4 <- normalize_axis_value("80%", y_sample = percent_y_data, internal_unit = "percent")
-  expect_equal(result4, 80)  # 80% → percent 80
+  expect_equal(result4, 80)  # Data suggests percent: 80% → 80 percent
 
 })
 
@@ -203,10 +197,9 @@ test_that("normalize_axis_value handles edge cases gracefully", {
   # Invalid input
   expect_null(normalize_axis_value(""))
   expect_null(normalize_axis_value("invalid"))
-  expect_null(normalize_axis_value("80%‰"))  # Both symbols
+  expect_null(normalize_axis_value("80%\u2030"))  # Begge symboler
 
   # Valid input but incompatible units
-  # Trying to force absolute→proportion without context should fail gracefully
   result <- normalize_axis_value("150", user_unit = "absolute", internal_unit = "proportion")
   expect_true(is.null(result) || !is.na(result))  # Should handle gracefully
 
@@ -226,9 +219,7 @@ test_that("normalize_axis_value is idempotent", {
 
 })
 
-# =============================================================================
-# VALIDATION TESTS
-# =============================================================================
+# VALIDATION TESTS -------------------------------------------------------------
 
 test_that("validate_axis_value enforces range constraints", {
 
@@ -248,14 +239,9 @@ test_that("validate_axis_value enforces range constraints", {
 
 })
 
-# =============================================================================
-# BACKWARDS COMPATIBILITY TESTS
-# =============================================================================
+# BACKWARDS COMPATIBILITY TESTS ------------------------------------------------
 
 test_that("parse_danish_target maintains backwards compatibility", {
-
-  # These tests should pass to ensure existing code still works
-  # Eventually these can be migrated to use normalize_axis_value directly
 
   # Decimal Y-data context
   decimal_y_data <- c(0.1, 0.3, 0.6, 0.8)
@@ -273,13 +259,9 @@ test_that("parse_danish_target maintains backwards compatibility", {
 
 })
 
-# =============================================================================
-# INTEGRATION AND CONSISTENCY TESTS
-# =============================================================================
+# INTEGRATION AND CONSISTENCY TESTS --------------------------------------------
 
 test_that("Key examples from design specification work correctly", {
-
-  # Your examples from the design document:
 
   # "80%" + target_unit=proportion → 0.8
   result1 <- normalize_axis_value("80%", user_unit = "proportion", internal_unit = "proportion")
@@ -297,32 +279,22 @@ test_that("Key examples from design specification work correctly", {
   result4 <- normalize_axis_value("0,8", user_unit = "proportion", internal_unit = "proportion")
   expect_equal(result4, 0.8)
 
-  # "8‰" + target_unit=proportion → 0.008
-  result5 <- normalize_axis_value("8‰", user_unit = "proportion", internal_unit = "proportion")
+  # "8\u2030" + target_unit=proportion → 0.008
+  result5 <- normalize_axis_value("8\u2030", user_unit = "proportion", internal_unit = "proportion")
   expect_equal(result5, 0.008)
 
-  # "8‰" + target_unit=percent → 0.8
-  result6 <- normalize_axis_value("8‰", user_unit = "percent", internal_unit = "percent")
+  # "8\u2030" + target_unit=percent → 0.8
+  result6 <- normalize_axis_value("8\u2030", user_unit = "percent", internal_unit = "percent")
   expect_equal(result6, 0.8)
 
 })
 
 test_that("No double-scaling occurs in typical qicharts2 workflows", {
 
-  # This test ensures that when we have proportion data [0,1]
-  # and send it to qicharts2, no additional /100 happens
-
-  # Typical proportion workflow:
-  # 1. User enters "80%" for a target in a p-chart context
-  # 2. We normalize to internal proportion scale: 0.8
-  # 3. This 0.8 should go directly to qicharts2 without further scaling
-
   proportion_y_data <- c(0.1, 0.2, 0.3, 0.8)  # Typical p-chart data
   target_normalized <- normalize_axis_value("80%", y_sample = proportion_y_data, internal_unit = "proportion")
 
   expect_equal(target_normalized, 0.8)
-  # This 0.8 can now safely go to qicharts2 target parameter
-  # No additional /100 should happen in downstream code
 
 })
 
@@ -339,4 +311,291 @@ test_that("Priority system works as designed", {
   result_heuristic <- normalize_axis_value("80%", y_sample = percent_looking_data, internal_unit = "percent")
   expect_equal(result_heuristic, 80)  # Data suggests percent: 80% → 80 percent
 
+})
+
+# =============================================================================
+# SEKTION 2: Y-AXIS MAPPING (fra test-y-axis-mapping.R)
+# Tests for chart_type_to_ui_type() og decide_default_y_axis_ui_type()
+# =============================================================================
+
+test_that("chart_type_to_ui_type mapping is correct", {
+  # Proportion charts → percent
+  expect_equal(chart_type_to_ui_type("p"), "percent")
+  expect_equal(chart_type_to_ui_type("pp"), "percent")
+
+  # Rate charts → rate
+  expect_equal(chart_type_to_ui_type("u"), "rate")
+  expect_equal(chart_type_to_ui_type("up"), "rate")
+
+  # Time between → time
+  expect_equal(chart_type_to_ui_type("t"), "time")
+
+  # Count/measurement/others → count
+  expect_equal(chart_type_to_ui_type("i"), "count")
+  expect_equal(chart_type_to_ui_type("mr"), "count")
+  expect_equal(chart_type_to_ui_type("c"), "count")
+  expect_equal(chart_type_to_ui_type("g"), "count")
+  expect_equal(chart_type_to_ui_type("unknown_type"), "count")
+})
+
+test_that("run chart default y-axis with denominator presence", {
+  # RUN + with N → percent
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")
+
+  # RUN + without N → count
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = FALSE), "count")
+})
+
+test_that("run chart denominator toggle semantics (unit-only)", {
+  # Conceptual toggle: blank → selected N should imply percent
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")
+
+  # Conceptual toggle: selected N → blank should imply count
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = FALSE), "count")
+})
+
+# =============================================================================
+# SEKTION 3: Y-AXIS MODEL (fra test-y-axis-model.R)
+# Tests for determine_internal_class() og suggest_chart_type()
+# =============================================================================
+
+test_that("UI-typer mapper korrekt til interne klasser", {
+  # TAL → COUNT hvis heltal >= 0, ellers MEASUREMENT
+  y_int <- c(0, 1, 2, 10)
+  y_dec <- c(1.2, 2.5, 3.0)
+  expect_equal(determine_internal_class("count", y_int, n_present = FALSE), "COUNT")
+  expect_equal(determine_internal_class("count", y_dec, n_present = FALSE), "MEASUREMENT")
+
+  # PROCENT → PROPORTION (kræver n)
+  expect_equal(determine_internal_class("percent", c(80, 90), n_present = TRUE), "PROPORTION")
+  expect_equal(determine_internal_class("percent", c(0.8, 0.9), n_present = TRUE), "PROPORTION")
+
+  # RATE → RATE_INTERNAL (kræver n som exposure)
+  expect_equal(determine_internal_class("rate", c(1, 3), n_present = TRUE), "RATE_INTERNAL")
+
+  # TID → TIME_BETWEEN
+  expect_equal(determine_internal_class("time", c(1, 5, 3), n_present = FALSE), "TIME_BETWEEN")
+})
+
+test_that("Kortvalg mapper korrekt fra intern klasse", {
+  expect_equal(suggest_chart_type("MEASUREMENT", n_present = FALSE, n_points = 20), "i")
+  expect_equal(suggest_chart_type("COUNT", n_present = FALSE, n_points = 20), "c")
+  expect_equal(suggest_chart_type("PROPORTION", n_present = TRUE, n_points = 20), "p")
+  expect_equal(suggest_chart_type("RATE_INTERNAL", n_present = TRUE, n_points = 20), "u")
+  expect_equal(suggest_chart_type("TIME_BETWEEN", n_present = FALSE, n_points = 20), "t")
+  expect_equal(suggest_chart_type("COUNT_BETWEEN", n_present = FALSE, n_points = 20), "g")
+
+  # Run chart for små serier
+  expect_equal(suggest_chart_type("MEASUREMENT", n_present = FALSE, n_points = 8), "run")
+})
+
+test_that("Default Y-akse UI-type for run chart", {
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")
+  expect_equal(decide_default_y_axis_ui_type("run", n_present = FALSE), "count")
+  expect_equal(decide_default_y_axis_ui_type("p", n_present = TRUE), "count")
+})
+
+# =============================================================================
+# SEKTION 4: Y-AXIS FORMATTING (fra test-y-axis-formatting.R)
+# Tests for apply_y_axis_formatting(), format_scaled_number() m.fl.
+# =============================================================================
+
+# TEST: apply_y_axis_formatting() ----------------------------------------------
+
+test_that("apply_y_axis_formatting handles all unit types", {
+  # Setup: Create base plot
+  test_data <- data.frame(x = 1:10, y = seq(0, 100, length.out = 10))
+  base_plot <- ggplot(test_data, aes(x = x, y = y)) + geom_point()
+
+  # Test percent formatting
+  plot_percent <- apply_y_axis_formatting(base_plot, "percent", test_data)
+  expect_s3_class(plot_percent, "ggplot")
+  expect_true(length(plot_percent$layers) > 0)
+
+  # Test count formatting
+  plot_count <- apply_y_axis_formatting(base_plot, "count", test_data)
+  expect_s3_class(plot_count, "ggplot")
+
+  # Test rate formatting
+  plot_rate <- apply_y_axis_formatting(base_plot, "rate", test_data)
+  expect_s3_class(plot_rate, "ggplot")
+
+  # Test time formatting (requires qic_data structure)
+  qic_data <- data.frame(x = 1:10, y = seq(0, 120, length.out = 10))
+  plot_time <- apply_y_axis_formatting(base_plot, "time", qic_data)
+  expect_s3_class(plot_time, "ggplot")
+})
+
+test_that("apply_y_axis_formatting handles invalid inputs gracefully", {
+  test_data <- data.frame(x = 1:10, y = 1:10)
+  base_plot <- ggplot(test_data, aes(x = x, y = y)) + geom_point()
+
+  # Test NULL y_axis_unit (should default to "count")
+  plot_null <- apply_y_axis_formatting(base_plot, NULL, test_data)
+  expect_s3_class(plot_null, "ggplot")
+
+  # Test invalid y_axis_unit (should default to "count")
+  plot_invalid <- apply_y_axis_formatting(base_plot, "invalid_unit", test_data)
+  expect_s3_class(plot_invalid, "ggplot")
+
+  # Test non-ggplot object (should return input unchanged)
+  not_a_plot <- list(data = test_data)
+  result <- apply_y_axis_formatting(not_a_plot, "percent", test_data)
+  expect_equal(result, not_a_plot)
+})
+
+# TEST: format_scaled_number() -------------------------------------------------
+
+test_that("format_scaled_number formats correctly with Danish notation", {
+  # Integer values (no decimals)
+  expect_equal(format_scaled_number(1000, 1e3, "K"), "1K")
+  expect_equal(format_scaled_number(5000, 1e3, "K"), "5K")
+  expect_equal(format_scaled_number(1000000, 1e6, "M"), "1M")
+  expect_equal(format_scaled_number(1000000000, 1e9, " mia."), "1 mia.")
+
+  # Decimal values (Danish decimal mark ",")
+  expect_equal(format_scaled_number(1500, 1e3, "K"), "1,5K")
+  expect_equal(format_scaled_number(2750, 1e3, "K"), "2,8K")
+  expect_equal(format_scaled_number(1250000, 1e6, "M"), "1,2M")
+  expect_equal(format_scaled_number(1500000000, 1e9, " mia."), "1,5 mia.")
+})
+
+# TEST: format_unscaled_number() -----------------------------------------------
+
+test_that("format_unscaled_number uses Danish notation", {
+  # Integer values (with thousand separator ".")
+  expect_equal(format_unscaled_number(100), "100")
+  expect_equal(format_unscaled_number(1000), "1.000")
+  expect_equal(format_unscaled_number(10000), "10.000")
+  expect_equal(format_unscaled_number(100000), "100.000")
+
+  # Decimal values (decimal mark "," and thousand separator ".")
+  expect_equal(format_unscaled_number(100.5), "100,5")
+  expect_equal(format_unscaled_number(1000.75), "1.000,8")
+})
+
+# TEST: format_time_with_unit() ------------------------------------------------
+
+test_that("format_time_with_unit consolidates duplication correctly", {
+  # Minutes formatting
+  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
+  expect_equal(format_time_with_unit(45.5, "minutes"), "45,5 min")
+  expect_equal(format_time_with_unit(59, "minutes"), "59 min")
+
+  # Hours formatting
+  expect_equal(format_time_with_unit(60, "hours"), "1 timer")
+  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
+  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
+  expect_equal(format_time_with_unit(150, "hours"), "2,5 timer")
+
+  # Days formatting
+  expect_equal(format_time_with_unit(1440, "days"), "1 dage")
+  expect_equal(format_time_with_unit(2160, "days"), "1,5 dage")
+  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
+  expect_equal(format_time_with_unit(4320, "days"), "3 dage")
+})
+
+test_that("format_time_with_unit handles NA values", {
+  expect_true(is.na(format_time_with_unit(NA, "minutes")))
+  expect_true(is.na(format_time_with_unit(NA, "hours")))
+  expect_true(is.na(format_time_with_unit(NA, "days")))
+})
+
+test_that("format_time_with_unit handles edge cases", {
+  # Zero values
+  expect_equal(format_time_with_unit(0, "minutes"), "0 min")
+  expect_equal(format_time_with_unit(0, "hours"), "0 timer")
+  expect_equal(format_time_with_unit(0, "days"), "0 dage")
+
+  # Very small decimals
+  expect_match(format_time_with_unit(0.1, "minutes"), "^0,1 min$")
+
+  # Large values
+  expect_equal(format_time_with_unit(10000, "days"), "6,9 dage")
+})
+
+# TEST: format_y_axis_time() ---------------------------------------------------
+
+test_that("format_y_axis_time selects correct unit based on data range", {
+  # Minutes range (< 60)
+  qic_data_minutes <- data.frame(x = 1:10, y = seq(1, 50, length.out = 10))
+  scale_minutes <- format_y_axis_time(qic_data_minutes)
+  expect_s3_class(scale_minutes, "ScaleContinuous")
+
+  # Hours range (60-1439)
+  qic_data_hours <- data.frame(x = 1:10, y = seq(60, 600, length.out = 10))
+  scale_hours <- format_y_axis_time(qic_data_hours)
+  expect_s3_class(scale_hours, "ScaleContinuous")
+
+  # Days range (>= 1440)
+  qic_data_days <- data.frame(x = 1:10, y = seq(1440, 5000, length.out = 10))
+  scale_days <- format_y_axis_time(qic_data_days)
+  expect_s3_class(scale_days, "ScaleContinuous")
+})
+
+test_that("format_y_axis_time handles missing or invalid data", {
+  # NULL qic_data
+  scale_null <- format_y_axis_time(NULL)
+  expect_s3_class(scale_null, "ScaleContinuous")
+
+  # Missing y column
+  qic_data_no_y <- data.frame(x = 1:10, z = 1:10)
+  scale_no_y <- format_y_axis_time(qic_data_no_y)
+  expect_s3_class(scale_no_y, "ScaleContinuous")
+})
+
+# TEST: Integration with ggplot2 -----------------------------------------------
+
+test_that("Y-axis formatting integrates correctly with ggplot2", {
+  # Create test data
+  test_data <- data.frame(
+    x = 1:20,
+    y = c(50, 75, 100, 125, 150, 175, 200, 225, 250, 275,
+          300, 325, 350, 375, 400, 425, 450, 475, 500, 525)
+  )
+
+  # Create base plot
+  base_plot <- ggplot(test_data, aes(x = x, y = y)) +
+    geom_line() +
+    geom_point()
+
+  # Apply formatting
+  formatted_plot <- apply_y_axis_formatting(base_plot, "count", test_data)
+
+  # Verify plot builds without errors
+  expect_s3_class(formatted_plot, "ggplot")
+  expect_error(ggplot_build(formatted_plot), NA)
+
+  # Verify y-axis scale was added
+  scales <- formatted_plot$scales$scales
+  has_y_scale <- any(sapply(scales, function(s) "y" %in% s$aesthetics))
+  expect_true(has_y_scale)
+})
+
+test_that("Extracted formatting produces identical output to original", {
+  # Test count formatting with K notation
+  test_val_k <- 5000
+  expect_equal(format_scaled_number(test_val_k, 1e3, "K"), "5K")
+
+  # Test count formatting with M notation
+  test_val_m <- 2500000
+  expect_equal(format_scaled_number(test_val_m, 1e6, "M"), "2,5M")
+
+  # Test time formatting minutes
+  expect_equal(format_time_with_unit(45, "minutes"), "45 min")
+
+  # Test time formatting hours
+  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
+})
+
+test_that("format_time_with_unit eliminates duplication effectively", {
+  # Consistent decimal handling across units
+  expect_match(format_time_with_unit(30.5, "minutes"), ",")
+  expect_match(format_time_with_unit(90, "hours"), ",")
+  expect_match(format_time_with_unit(2160, "days"), ",")
+
+  # Consistent integer handling across units
+  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
+  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
+  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
 })

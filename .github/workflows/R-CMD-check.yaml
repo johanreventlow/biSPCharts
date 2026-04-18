@@ -44,9 +44,18 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      # Pre-install BFH sibling-pakker eksplicit fra GitHub.
+      # Workaround: BFHcharts/BFHllm har ikke selv Remotes for deres BFH-deps,
+      # saa pak kan ikke loese transitivt fra biSPCharts' Remotes alene.
+      # Den arkitektonisk korrekte fix er at tilfoeje Remotes til BFHcharts +
+      # BFHllm DESCRIPTION (gemmes til CI-replikation paa upstream-pakker).
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: |
+            any::rcmdcheck
+            github::johanreventlow/BFHtheme
+            github::johanreventlow/BFHllm
+            github::johanreventlow/BFHcharts
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2

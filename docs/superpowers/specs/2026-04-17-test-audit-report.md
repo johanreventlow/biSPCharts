@@ -1,10 +1,10 @@
 # Test Audit Report
 
-**Dato:** 2026-04-17T20:47:07+0200
+**Dato:** 2026-04-18T06:27:54+0200
 **biSPCharts version:** 0.2.0
 **R version:** 4.5.2
-**Total filer:** 121
-**Total koerselstid:** 269.5 s
+**Total filer:** 113
+**Total koerselstid:** 957.8 s
 
 ---
 
@@ -12,10 +12,11 @@
 
 | Kategori | Antal | % af total |
 |----------|-------|-----------|
-| `green` | 48 | 39.7% |
-| `green-partial` | 62 | 51.2% |
-| `skipped-all` | 2 | 1.7% |
-| `stub` | 9 | 7.4% |
+| `broken-other` | 2 | 1.8% |
+| `green` | 58 | 51.3% |
+| `green-partial` | 42 | 37.2% |
+| `skipped-all` | 2 | 1.8% |
+| `stub` | 9 | 8.0% |
 
 ---
 
@@ -26,17 +27,45 @@
 | `appears_date` | 1 |
 | `appears_numeric` | 1 |
 | `clear_all_batches` | 1 |
-| `convert_by_unit_type` | 1 |
 | `detect_columns_with_cache` | 1 |
-| `detect_y_axis_scale` | 1 |
-| `get_autodetect_status` | 1 |
 | `get_cache_stats` | 1 |
-| `get_column_mapping` | 1 |
-| `get_column_mappings` | 1 |
+| `get_spc_cache_stats` | 1 |
+| `is_batch_pending` | 1 |
+| `log_with_throttle` | 1 |
+| `sanitize_log_details` | 1 |
+| `skip_on_ci_if_slow` | 1 |
 
 ---
 
-## Kategori: `green-partial` (62 filer)
+## Kategori: `broken-other` (2 filer)
+
+### `test-mod_export.R`
+- LOC: 355
+- Test-blokke: 22
+- Pass/Fail/Skip: 0 / 0 / 0
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-recent-functionality.R`
+- LOC: 513
+- Test-blokke: 8
+- Pass/Fail/Skip: 58 / 0 / 0
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+---
+
+## Kategori: `green-partial` (42 filer)
 
 ### `test-100x-mismatch-prevention.R`
 - LOC: 383
@@ -99,35 +128,6 @@ Error in `log_with_throttle("test_key", interval_sec = 1, log_fn = mock_log_fn, 
 Error in `log_with_throttle("key", 6
 ```
 
-### `test-bfhcharts-integration.R`
-- LOC: 157
-- Test-blokke: 5
-- Pass/Fail/Skip: 5 / 10 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error: 'spc_plot_config' is not an exported object from 'namespace:BFHcharts'
-```
-
-### `test-cache-collision-fix.R`
-- LOC: 144
-- Test-blokke: 4
-- Pass/Fail/Skip: 1 / 4 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `.getReactiveEnvironment()$currentContext()`: Operation not allowed without an active reactive context.
-* You tried to do something that can only be done from inside a reactive consumer.
-Error in `.getReactiveEnvironment()$currentContext()`: Operation not allowed without an active reactive context.
-* You tried to do something that can only be
-```
-
 ### `test-cache-data-signature-bugs.R`
 - LOC: 351
 - Test-blokke: 13
@@ -153,23 +153,6 @@ Registered S3 methods overwritten by 'ggpp':
   heightDetails.titleGrob ggplot2
   widthDetails.titleGrob  ggplot2
 Error in `get_cache_stats()`: could not find function "get_cache_stats"
-```
-
-### `test-cache-reactive-lazy-evaluation.R`
-- LOC: 258
-- Test-blokke: 7
-- Pass/Fail/Skip: 1 / 7 / 0
-- Manglende funktioner: `manage_cache_size`
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `manage_cache_size(cache_size_limit)`: could not find function "manage_cache_size"
-Error in `manage_cache_size(cache_size_limit)`: could not find function "manage_cache_size"
-Error in `manage_cache_size(cache_size_limit)`: could not find function "manage_cache_size"
-Error in `manage_cache_size(cache_size_limit)`: could not find function "mana
 ```
 
 ### `test-column-observer-consolidation.R`
@@ -215,19 +198,6 @@ Error in `eval(code, test_env)`: object 'EXPORT_PDF_CONFIG' not found
 Error in `eval(code, test_env)`: object 'EXPORT_PDF_CONFIG' not found
 Error in `eval(code, test_env)`: object 'EXPORT_PNG_CONFIG' not found
 Error in `eval(code, test_env)`: object 'EXPORT_PDF_CONFIG' not found
-```
-
-### `test-constants-architecture.R`
-- LOC: 219
-- Test-blokke: 10
-- Pass/Fail/Skip: 0 / 1 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
 ```
 
 ### `test-context-aware-plots.R`
@@ -310,22 +280,6 @@ Registered S3 methods overwritten by 'ggpp':
 Error in `validate_date_column(test_data, "dato_valid")`: could not find function "validate_date_column"
 ```
 
-### `test-e2e-workflows.R`
-- LOC: 332
-- Test-blokke: 4
-- Pass/Fail/Skip: 3 / 5 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `app_state$data$current_data`: Can't access reactive value 'current_data' outside of reactive consumer.
-i Do you need to wrap inside reactive() or observe()?
-<rlib_error_dots_nonempty/rlib_error_dots/rlang_error/error/condition>
-Error in `expect_no_error(test_function(), info = paste("Error recovery scenario:", scenario_name))`: `...` must be
-```
-
 ### `test-edge-cases-comprehensive.R`
 - LOC: 668
 - Test-blokke: 36
@@ -406,22 +360,6 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-file-upload.R`
-- LOC: 164
-- Test-blokke: 6
-- Pass/Fail/Skip: 4 / 4 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `handle_csv_upload(temp_file, NULL, NULL, NULL)`: attempt to apply non-function
-Error in `handle_excel_upload(temp_file, NULL, NULL, NULL, NULL)`: attempt to apply non-function
-Error in `file.exists(file_info$datapath)`: invalid 'file' argument
-Error in `emit$data_updated(context = "session_file_loaded")`: attempt to apply non-function
-```
-
 ### `test-generateSPCPlot-comprehensive.R`
 - LOC: 707
 - Test-blokke: 24
@@ -471,62 +409,10 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-label-height-estimation.R`
-- LOC: 149
-- Test-blokke: 7
-- Pass/Fail/Skip: 0 / 1 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
-### `test-label-placement-bounds.R`
-- LOC: 144
-- Test-blokke: 6
-- Pass/Fail/Skip: 0 / 1 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
-### `test-label-placement-core.R`
-- LOC: 413
-- Test-blokke: 18
-- Pass/Fail/Skip: 0 / 1 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
-### `test-mod_export.R`
-- LOC: 355
-- Test-blokke: 22
-- Pass/Fail/Skip: 41 / 3 / 12
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Loading required package: shiny
-```
-
 ### `test-mod-spc-chart-comprehensive.R`
-- LOC: 279
-- Test-blokke: 7
-- Pass/Fail/Skip: 27 / 16 / 0
+- LOC: 727
+- Test-blokke: 27
+- Pass/Fail/Skip: 45 / 20 / 5
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -535,48 +421,6 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 Error in `app_state$data$current_data`: Can't access reactive value 'current_data' outside of reactive consumer.
 i Do you need to wrap inside reactive() or observe()?
-```
-
-### `test-mod-spc-chart-integration.R`
-- LOC: 485
-- Test-blokke: 20
-- Pass/Fail/Skip: 18 / 4 / 5
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-```
-
-### `test-npc-mapper.R`
-- LOC: 285
-- Test-blokke: 15
-- Pass/Fail/Skip: 0 / 1 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
-### `test-observer-cleanup.R`
-- LOC: 291
-- Test-blokke: 4
-- Pass/Fail/Skip: 4 / 4 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Loading required package: shiny
-Error: object '' not found
-Error: object '' not found
-Error: object '' not found
-Error in `sum(sapply(observer_registry, is.null))`: invalid 'type' (list) of argument
 ```
 
 ### `test-package-initialization.R`
@@ -603,54 +447,6 @@ Registered S3 methods overwritten by 'ggpp':
   heightDetails.titleGrob ggplot2
   widthDetails.titleGrob  ggplot2
 Error in `expect_gt(length(exports), 0, info = "NAMESPACE should contain export statements")`: unused argument (info = "NAMESPACE should contain export statements")
-```
-
-### `test-parse-danish-target-unit-conversion.R`
-- LOC: 210
-- Test-blokke: 10
-- Pass/Fail/Skip: 8 / 65 / 0
-- Manglende funktioner: `detect_y_axis_scale`, `convert_by_unit_type`
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `if (is.na(parsed$value) || parsed$symbol == "invalid") {     log_debug("Invalid input in normalize_axis_value:", x, "parsed_value:", parsed$value, "symbol:", parsed$symbol, .context = "Y_AXIS_SCALING")     return(NULL) }`: missing value where TRUE/FALSE needed
-Error in `detect_y_axis_scale(pure_decimal)`: could not find function "detect_y_ax
-```
-
-### `test-performance-benchmarks.R`
-- LOC: 654
-- Test-blokke: 25
-- Pass/Fail/Skip: 7 / 9 / 9
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Cache: 0.10 ms, Compute: 0.00 ms, Speedup: 0.0x
-App state memory usage: 0.40 MB (target: <100MB)
-Auto-detection for 100 rows: 0.10 MB
-Auto-detection for 500 rows: 0.10 MB
-Auto-detection for 1000 rows: 0.00 MB
-Process 1000 rows: 4.23 ms (target: <200ms)
-Danish character overhead: -18.5% (target: <10%)
-Auto-detection: 1.53 ms (target: <100ms)
-Ambiguous 
-```
-
-### `test-plot-core.R`
-- LOC: 85
-- Test-blokke: 4
-- Pass/Fail/Skip: 4 / 4 / 2
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
 ```
 
 ### `test-plot-generation-performance.R`
@@ -711,7 +507,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing session token hashing security improvements implemented 2025-09-26
 Security fix: Session tokens are now hashed before logging
 Prevents: Session token exposure in logs and potential session hijacking
-Session token hashing performance: single=0.000104s, 100x=0.001s
+Session token hashing performance: single=0.000134s, 100x=0.002s
 Hash collision test: 1000 tokens, 1000 unique hashes, 0.00% collision rate
 End-to
 ```
@@ -826,7 +622,7 @@ Error in ``*tmp*`$mappings`
 ### `test-tidyverse-purrr-operations.R`
 - LOC: 280
 - Test-blokke: 8
-- Pass/Fail/Skip: 22 / 2 / 2
+- Pass/Fail/Skip: 23 / 1 / 2
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -860,23 +656,6 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-utils-state-accessors.R`
-- LOC: 555
-- Test-blokke: 29
-- Pass/Fail/Skip: 10 / 26 / 0
-- Manglende funktioner: `get_original_data`, `is_table_updating`, `get_autodetect_status`, `set_autodetect_in_progress`, `set_autodetect_completed`, `set_autodetect_results`, `set_autodetect_frozen`, `get_column_mappings`, `get_column_mapping`, `update_column_mapping`, `update_column_mappings`, `set_plot_ready`, `get_plot_warnings`, `get_plot_object`, `is_plot_generating`, `is_file_uploaded`, `is_user_session_started`, `get_last_error`, `get_error_count`, `is_test_mode_enabled`, `get_test_mode_startup_phase`, `is_anhoej_rules_hidden`, `is_y_axis_autoset_done`, `set_table_updating`
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `get_original_data(app_state)`: could not find function "get_original_data"
-Error in `is_table_updating(app_state)`: could not find function "is_table_updating"
-Error in `get_autodetect_status(app_state)`: could not find function "get_autodetect_status"
-Error in `set_autodetect_in_progress(app_state, TRUE)`: could not find function "set_autod
-```
-
 ### `test-visualization-server.R`
 - LOC: 141
 - Test-blokke: 5
@@ -889,52 +668,10 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-y-axis-formatting.R`
-- LOC: 218
-- Test-blokke: 12
-- Pass/Fail/Skip: 54 / 5 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-```
-
-### `test-y-axis-mapping.R`
-- LOC: 42
-- Test-blokke: 3
-- Pass/Fail/Skip: 0 / 3 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
-### `test-y-axis-model.R`
-- LOC: 40
-- Test-blokke: 3
-- Pass/Fail/Skip: 0 / 3 / 0
-
-```
-Registered S3 methods overwritten by 'ggpp':
-  method                  from   
-  heightDetails.titleGrob ggplot2
-  widthDetails.titleGrob  ggplot2
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-Error in `file(filename, "r", encoding = encoding)`: cannot open the connection
-```
-
 ### `test-y-axis-scaling-overhaul.R`
-- LOC: 342
-- Test-blokke: 16
-- Pass/Fail/Skip: 69 / 7 / 0
+- LOC: 601
+- Test-blokke: 34
+- Pass/Fail/Skip: 150 / 15 / 0
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -1104,7 +841,7 @@ Registered S3 methods overwritten by 'ggpp':
 
 ---
 
-## Kategori: `green` (48 filer)
+## Kategori: `green` (58 filer)
 
 ### `test-anhoej-metadata-local.R`
 - LOC: 449
@@ -1154,6 +891,42 @@ Registered S3 methods overwritten by 'ggpp':
 - LOC: 295
 - Test-blokke: 7
 - Pass/Fail/Skip: 65 / 0 / 0
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-bfhcharts-integration.R`
+- LOC: 155
+- Test-blokke: 6
+- Pass/Fail/Skip: 10 / 0 / 1
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-cache-collision-fix.R`
+- LOC: 86
+- Test-blokke: 7
+- Pass/Fail/Skip: 5 / 0 / 3
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-cache-reactive-lazy-evaluation.R`
+- LOC: 208
+- Test-blokke: 8
+- Pass/Fail/Skip: 2 / 0 / 7
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -1300,6 +1073,18 @@ Registered S3 methods overwritten by 'ggpp':
 [LOG_
 ```
 
+### `test-e2e-workflows.R`
+- LOC: 266
+- Test-blokke: 5
+- Pass/Fail/Skip: 24 / 0 / 1
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-error-handling.R`
 - LOC: 139
 - Test-blokke: 10
@@ -1382,6 +1167,18 @@ i Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more
 i Using "','" as decimal and "'.'" as grouping mark. 
 ```
 
+### `test-file-upload.R`
+- LOC: 131
+- Test-blokke: 8
+- Pass/Fail/Skip: 12 / 0 / 2
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-foreign-column-names.R`
 - LOC: 223
 - Test-blokke: 4
@@ -1418,6 +1215,18 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
+### `test-label-placement-core.R`
+- LOC: 575
+- Test-blokke: 25
+- Pass/Fail/Skip: 85 / 0 / 3
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-logging-precedence.R`
 - LOC: 136
 - Test-blokke: 9
@@ -1443,7 +1252,7 @@ Registered S3 methods overwritten by 'ggpp':
 Testing logging system standardization implemented 2025-09-26
 Improvement: Unified logging API with backward compatibility
 372+ logging calls across 34 files standardized
-Logging performance: single=0.000132s, 100x=0.006s
+Logging performance: single=0.000213s, 100x=0.010s
 End-to-end logging system test successful
 ```
 
@@ -1471,10 +1280,46 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
+### `test-observer-cleanup.R`
+- LOC: 133
+- Test-blokke: 5
+- Pass/Fail/Skip: 8 / 0 / 2
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-outlier-count-latest-part.R`
 - LOC: 38
 - Test-blokke: 4
 - Pass/Fail/Skip: 6 / 0 / 0
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-parse-danish-target-unit-conversion.R`
+- LOC: 143
+- Test-blokke: 17
+- Pass/Fail/Skip: 7 / 0 / 11
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
+### `test-performance-benchmarks.R`
+- LOC: 248
+- Test-blokke: 15
+- Pass/Fail/Skip: 12 / 0 / 9
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -1495,10 +1340,10 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-plot-generation.R`
-- LOC: 522
-- Test-blokke: 11
-- Pass/Fail/Skip: 56 / 0 / 0
+### `test-plot-core.R`
+- LOC: 80
+- Test-blokke: 5
+- Pass/Fail/Skip: 10 / 0 / 2
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -1507,10 +1352,10 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
-### `test-recent-functionality.R`
-- LOC: 513
-- Test-blokke: 8
-- Pass/Fail/Skip: 58 / 0 / 0
+### `test-plot-generation.R`
+- LOC: 522
+- Test-blokke: 11
+- Pass/Fail/Skip: 56 / 0 / 0
 
 ```
 Registered S3 methods overwritten by 'ggpp':
@@ -1695,6 +1540,18 @@ Registered S3 methods overwritten by 'ggpp':
   widthDetails.titleGrob  ggplot2
 ```
 
+### `test-utils-state-accessors.R`
+- LOC: 244
+- Test-blokke: 26
+- Pass/Fail/Skip: 13 / 0 / 17
+
+```
+Registered S3 methods overwritten by 'ggpp':
+  method                  from   
+  heightDetails.titleGrob ggplot2
+  widthDetails.titleGrob  ggplot2
+```
+
 ### `test-visualization-dimensions.R`
 - LOC: 29
 - Test-blokke: 4
@@ -1731,9 +1588,9 @@ i Using "','" as decimal and "'.'" as grouping mark. Use `read_delim()` for more
 
 ## Scope-forslag
 
-- **Green:** 110 af 121 (91%)
-- **Broken:** 0 af 121 (0%)
-- **Stubs/skipped:** 11 af 121 (9%)
+- **Green:** 100 af 113 (88%)
+- **Broken:** 2 af 113 (2%)
+- **Stubs/skipped:** 11 af 113 (10%)
 
 **Anbefaling: Minimal scope** - fokuser paa de faa braekkede filer.
 

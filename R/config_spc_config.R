@@ -70,12 +70,20 @@ Y_AXIS_UNITS_DA <- list(
 )
 
 #' UI-typer for Y-akse (simpel valg)
+#'
+#' Tids-enheder er eksplicit adskilt fra Fase 2 af
+#' docs/superpowers/specs/2026-04-17-time-yaxis-design.md. Legacy "time"
+#' er fjernet fra UI men accepteres stadig af is_time_unit() for
+#' bagudkompatibilitet og migration.
+#'
 #' @keywords internal
 Y_AXIS_UI_TYPES_DA <- list(
   "Tal" = "count",
   "Procent (%)" = "percent",
   "Rate" = "rate",
-  "Tid mellem hændelser" = "time"
+  "Tid (minutter)" = "time_minutes",
+  "Tid (timer)" = "time_hours",
+  "Tid (dage)" = "time_days"
 )
 
 # SPC VISUALIZATION CONSTANTS ===================================================

@@ -102,7 +102,10 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             } else {
               qic_ct <- get_qic_chart_type(ct)
               if (!identical(qic_ct, "run")) {
-                desired_ui <- chart_type_to_ui_type(qic_ct)
+                # Brug ct (original) ikke qic_ct, så "t" matches direkte i
+                # chart_type_to_ui_type() — get_qic_chart_type("t") fallbacker
+                # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
+                desired_ui <- chart_type_to_ui_type(ct)
                 current_ui <- input$y_axis_unit %||% "count"
                 if (!identical(current_ui, desired_ui)) {
                   safe_programmatic_ui_update(session, app_state, function() {

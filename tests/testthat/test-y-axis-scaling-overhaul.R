@@ -322,7 +322,6 @@ test_that("Priority system works as designed", {
 # =============================================================================
 
 test_that("chart_type_to_ui_type mapping is correct", {
-  skip("TODO Fase 4: chart_type_to_ui_type returnerer 'count' for pp/up/t — disse typer ikke implementeret (#203-followup)")
   # Proportion charts → percent
   expect_equal(chart_type_to_ui_type("p"), "percent")
   expect_equal(chart_type_to_ui_type("pp"), "percent")
@@ -331,8 +330,8 @@ test_that("chart_type_to_ui_type mapping is correct", {
   expect_equal(chart_type_to_ui_type("u"), "rate")
   expect_equal(chart_type_to_ui_type("up"), "rate")
 
-  # Time between → time
-  expect_equal(chart_type_to_ui_type("t"), "time")
+  # Time between → time_days (Fase 2a: t-kort bruger dage som default tids-enhed)
+  expect_equal(chart_type_to_ui_type("t"), "time_days")
 
   # Count/measurement/others → count
   expect_equal(chart_type_to_ui_type("i"), "count")
@@ -397,6 +396,55 @@ test_that("Default Y-akse UI-type for run chart", {
   expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")
   expect_equal(decide_default_y_axis_ui_type("run", n_present = FALSE), "count")
   expect_equal(decide_default_y_axis_ui_type("p", n_present = TRUE), "count")
+})
+
+# ===== TIDSAKSE-TESTS (#204-#207 — fra master's tidsakse-PRs) =====
+
+test_that("is_time_unit identificerer alle tids-enheder (inkl. legacy)", {
+  # Legacy
+  expect_true(is_time_unit("time"))
+  # Nye enheder
+  expect_true(is_time_unit("time_minutes"))
+  expect_true(is_time_unit("time_hours"))
+  expect_true(is_time_unit("time_days"))
+  # Ikke-tids-enheder
+  expect_false(is_time_unit("count"))
+  expect_false(is_time_unit("percent"))
+  expect_false(is_time_unit("rate"))
+  # Edge cases
+  expect_equal(is_time_unit(NULL), logical(0))
+  expect_false(is_time_unit(NA_character_))
+  expect_false(is_time_unit(""))
+})
+
+test_that("determine_internal_class bruger is_time_unit for alle tids-enheder", {
+  expect_equal(determine_internal_class("time", y = c(1, 2, 3)), "TIME_BETWEEN")
+  expect_equal(determine_internal_class("time_minutes", y = c(30, 60)), "TIME_BETWEEN")
+  expect_equal(determine_internal_class("time_hours", y = c(1.5, 2)), "TIME_BETWEEN")
+  expect_equal(determine_internal_class("time_days", y = c(1, 2)), "TIME_BETWEEN")
+})
+
+test_that("chart_type_to_ui_type returnerer time_days for t-kort", {
+  expect_equal(chart_type_to_ui_type("t"), "time_days")
+})
+
+test_that("default_time_unit_for_chart returnerer passende enhed pr. korttype", {
+  expect_equal(default_time_unit_for_chart("t"), "time_days")
+  # For ikke-tids-specifikke korttyper returneres NULL
+  expect_null(default_time_unit_for_chart("i"))
+  expect_null(default_time_unit_for_chart("p"))
+  expect_null(default_time_unit_for_chart("c"))
+  expect_null(default_time_unit_for_chart("u"))
+  # NA / NULL input
+  expect_null(default_time_unit_for_chart(NULL))
+  expect_null(default_time_unit_for_chart(NA_character_))
+})
+
+test_that("t-kort: korttype-skift foerer til time_days som default y-enhed", {
+  # Integration: UI's chart_type-observer kalder chart_type_to_ui_type()
+  # for at finde default y-enhed. "t" skal mappes til "time_days".
+  expect_equal(chart_type_to_ui_type("t"), "time_days")
+  expect_equal(default_time_unit_for_chart("t"), "time_days")
 })
 
 # =============================================================================
@@ -483,28 +531,7 @@ test_that("format_unscaled_number uses Danish notation", {
 # TEST: format_time_with_unit() ------------------------------------------------
 
 test_that("format_time_with_unit consolidates duplication correctly", {
-  # Minutes formatting
-  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
-  expect_equal(format_time_with_unit(45.5, "minutes"), "45,5 min")
-  expect_equal(format_time_with_unit(59, "minutes"), "59 min")
-
-  # Hours formatting
-  expect_equal(format_time_with_unit(60, "hours"), "1 timer")
-  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
-  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
-  expect_equal(format_time_with_unit(150, "hours"), "2,5 timer")
-
-  # Days formatting
-  expect_equal(format_time_with_unit(1440, "days"), "1 dage")
-  expect_equal(format_time_with_unit(2160, "days"), "1,5 dage")
-  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
-  expect_equal(format_time_with_unit(4320, "days"), "3 dage")
-})
-
-test_that("format_time_with_unit handles NA values", {
-  expect_true(is.na(format_time_with_unit(NA, "minutes")))
-  expect_true(is.na(format_time_with_unit(NA, "hours")))
-  expect_true(is.na(format_time_with_unit(NA, "days")))
+  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
 })
 
 test_that("format_time_with_unit handles edge cases", {
@@ -588,21 +615,28 @@ test_that("Extracted formatting produces identical output to original", {
   test_val_m <- 2500000
   expect_equal(format_scaled_number(test_val_m, 1e6, "M"), "2,5M")
 
-  # Test time formatting minutes
-  expect_equal(format_time_with_unit(45, "minutes"), "45 min")
-
-  # Test time formatting hours
-  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
+  # Time formatting backward-compatibility cases flyttet til
+  # test-time-formatting.R (format_time_composite)
 })
 
 test_that("format_time_with_unit eliminates duplication effectively", {
-  # Consistent decimal handling across units
-  expect_match(format_time_with_unit(30.5, "minutes"), ",")
-  expect_match(format_time_with_unit(90, "hours"), ",")
-  expect_match(format_time_with_unit(2160, "days"), ",")
+  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
+})
 
-  # Consistent integer handling across units
-  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
-  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
-  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
+# TEST: Komposit-format integration ==========================================
+
+test_that("apply_y_axis_formatting med time-enhed bruger komposit-format", {
+  qic_data <- data.frame(x = 1:5, y = c(30, 60, 90, 120, 150))
+  plot <- ggplot2::ggplot(qic_data, ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_point()
+
+  result <- apply_y_axis_formatting(plot, "time", qic_data)
+  expect_s3_class(result, "ggplot")
+
+  built <- ggplot2::ggplot_build(result)
+  y_labels <- built$layout$panel_params[[1]]$y$get_labels()
+
+  # Labels skal matche komposit-patterns: "30m", "1t", "1t 30m", "1d", "1d 4t"
+  y_labels_clean <- y_labels[!is.na(y_labels)]
+  expect_true(all(grepl("^-?(\\d+d( \\d+t)?|\\d+t( \\d+m)?|\\d+m)$", y_labels_clean)))
 })

@@ -41,21 +41,37 @@ test_that("format_y_value() formaterer rate korrekt", {
   expect_equal(format_y_value(123.456, "rate"), "123,5")
 })
 
-test_that("format_y_value() formaterer time korrekt", {
-  # Minutes (< 60 min)
-  y_range_min <- c(0, 50)
-  expect_equal(format_y_value(30, "time", y_range_min), "30 min")
-  expect_equal(format_y_value(45.5, "time", y_range_min), "45,5 min")
+test_that("format_y_value med y_unit='time' bruger komposit-format", {
+  # Komposit-format delegerer til format_time_composite()
+  # for konsistens mellem data-punkt labels og akse-labels.
+  expect_equal(format_y_value(0, "time"), "0m")
+  expect_equal(format_y_value(30, "time"), "30m")
+  expect_equal(format_y_value(60, "time"), "1t")
+  expect_equal(format_y_value(90, "time"), "1t 30m")
+  expect_equal(format_y_value(1440, "time"), "1d")
+  expect_equal(format_y_value(3660, "time"), "2d 13t")
+})
 
-  # Hours (60-1440 min)
-  y_range_hours <- c(0, 300)
-  expect_equal(format_y_value(120, "time", y_range_hours), "2 timer")
-  expect_equal(format_y_value(90, "time", y_range_hours), "1,5 timer")
+test_that("format_y_value ignorerer y_range for time (irrelevant i komposit)", {
+  # y_range-parameteren er legacy — komposit-format haandterer
+  # minutter/timer/dage automatisk uden behov for kontekst.
+  expect_equal(format_y_value(60, "time", y_range = c(0, 120)), "1t")
+  expect_equal(format_y_value(60, "time", y_range = c(0, 10000)), "1t")
+  expect_equal(format_y_value(60, "time", y_range = NULL), "1t")
+})
 
-  # Days (>= 1440 min)
-  y_range_days <- c(0, 3000)
-  expect_equal(format_y_value(1440, "time", y_range_days), "1 dage")
-  expect_equal(format_y_value(2880, "time", y_range_days), "2 dage")
+test_that("format_y_value returnerer NA for NA input", {
+  expect_true(is.na(format_y_value(NA_real_, "time")))
+})
+
+test_that("format_y_value haandterer nye tids-enheder (time_minutes/hours/days)", {
+  # Alle tids-enheder giver komposit-format fordi input allerede er
+  # konverteret til kanoniske minutter af parse_time_to_minutes.
+  expect_equal(format_y_value(90, "time_minutes"), "1t 30m")
+  expect_equal(format_y_value(90, "time_hours"), "1t 30m")
+  expect_equal(format_y_value(90, "time_days"), "1t 30m")
+  expect_equal(format_y_value(1440, "time_days"), "1d")
+  expect_equal(format_y_value(0, "time_minutes"), "0m")
 })
 
 test_that("format_y_value() håndterer NA korrekt", {
@@ -69,15 +85,6 @@ test_that("format_y_value() håndterer ukendte enheder", {
   # Default formatting
   expect_equal(format_y_value(123, "unknown"), "123")
   expect_equal(format_y_value(123.45, "unknown"), "123,5")
-})
-
-test_that("format_y_value() håndterer time uden y_range", {
-  # Warning og fallback til default
-  expect_warning(
-    result <- format_y_value(120, "time", NULL),
-    "y_range mangler for 'time' unit"
-  )
-  expect_equal(result, "120")
 })
 
 test_that("format_y_value() håndterer ikke-numeriske input", {

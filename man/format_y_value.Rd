@@ -11,7 +11,9 @@ format_y_value(val, y_unit, y_range = NULL)
 
 \item{y_unit}{character enhedstype ("count", "percent", "rate", "time", eller andet)}
 
-\item{y_range}{numeric(2) y-akse range (kun brugt for "time" unit context)}
+\item{y_range}{numeric(2) legacy-parameter, ikke laengere brugt. Bevaret
+for bagudkompatibilitet — tidligere brugt til kontekst-baseret enhedsvalg
+for "time"-enheden.}
 }
 \value{
 character formateret string
@@ -26,7 +28,7 @@ Formatering per enhedstype:
 \item \strong{count}: K/M/mia notation for store tal, dansk decimal/tusind separator
 \item \strong{percent}: scales::label_percent() formatering
 \item \strong{rate}: dansk decimal notation, decimaler kun hvis nødvendigt
-\item \strong{time}: kontekst-aware formatering (min/timer/dage baseret på range)
+\item \strong{time}: komposit-format via format_time_composite() (0m, 30m, 1t, 1t 30m, 1d, 2d 13t)
 \item \strong{default}: dansk decimal notation
 }
 }
@@ -38,8 +40,8 @@ format_y_value(1234, "count")
 format_y_value(0.456, "percent")
 # Returns: "46\%"
 
-format_y_value(120, "time", y_range = c(0, 200))
-# Returns: "2 timer"
+format_y_value(90, "time")
+# Returns: "1t 30m"
 }
 
 }

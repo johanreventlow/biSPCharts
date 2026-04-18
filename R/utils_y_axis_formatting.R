@@ -64,8 +64,11 @@ apply_y_axis_formatting <- function(plot, y_axis_unit = "count", qic_data = NULL
     return(plot + format_y_axis_count())
   } else if (y_axis_unit == "rate") {
     return(plot + format_y_axis_rate())
-  } else if (y_axis_unit == "time") {
-    return(plot + format_y_axis_time(qic_data))
+  } else if (is_time_unit(y_axis_unit)) {
+    # Dækker legacy "time" og nye time_minutes/time_hours/time_days.
+    # Kandidat-intervaller filtreres per input-enhed for "naturlig"
+    # tick-afstand (fx time_days bruger kun >= 12t intervaller).
+    return(plot + format_y_axis_time(qic_data, input_unit = y_axis_unit))
   }
 
   # Default: no special formatting (use ggplot2 defaults)
@@ -173,48 +176,42 @@ format_y_axis_rate <- function() {
   )
 }
 
-#' Format Y-Axis for Time Data (Minutes/Hours/Days)
+#' Format Y-Axis for Time Data (Composite Format: "1t 30m", "2d 4t")
+#'
+#' Uses tids-naturlige tick-breaks (time_breaks) og komposit label-format
+#' (format_time_composite). Input antages at vaere i minutter (kanonisk
+#' intern enhed).
 #'
 #' @param qic_data Data frame with qic data containing y column (time values in minutes)
+#' @param input_unit character eller NULL. En af 'time_minutes',
+#'   'time_hours', 'time_days' (eller legacy 'time'). Bruges til at
+#'   filtrere kandidat-intervaller i time_breaks(). NULL = alle kandidater.
 #'
 #' @return ggplot2 scale_y_continuous layer for time formatting
 #' @keywords internal
-format_y_axis_time <- function(qic_data) {
-  # Intelligent time formatting based on data range (input: minutes)
-  # Only shows decimals if present
-
+format_y_axis_time <- function(qic_data, input_unit = NULL) {
   if (is.null(qic_data) || !"y" %in% names(qic_data)) {
-    log_warn("format_y_axis_time: missing qic_data or y column, using default formatting", .context = "Y_AXIS_FORMAT")
+    log_warn(
+      "format_y_axis_time: missing qic_data or y column, using default formatting",
+      .context = "Y_AXIS_FORMAT"
+    )
     return(ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(.25, .25))))
   }
 
-  y_range <- range(qic_data$y, na.rm = TRUE)
-  max_minutes <- max(y_range, na.rm = TRUE)
+  y_values <- qic_data$y
+  breaks <- time_breaks(y_values, input_unit = input_unit)
 
-  # Determine appropriate time unit based on max value
-  if (max_minutes < 60) {
-    time_unit <- "minutes"
-  } else if (max_minutes < 1440) {
-    time_unit <- "hours"
-  } else {
-    time_unit <- "days"
-  }
-
-  # Return scale with consolidated formatting function
   ggplot2::scale_y_continuous(
     expand = ggplot2::expansion(mult = c(.25, .25)),
+    breaks = breaks,
     labels = function(x) {
-      # DEFENSIVE INPUT VALIDATION: Handle waiver objects
       if (inherits(x, "waiver")) {
         return(x)
       }
-
-      # Coerce to numeric if needed
       if (!is.numeric(x)) {
         x <- suppressWarnings(as.numeric(as.character(x)))
       }
-
-      sapply(x, function(val) format_time_with_unit(val, time_unit))
+      format_time_composite(x)
     }
   )
 }
@@ -258,45 +255,3 @@ format_unscaled_number <- function(val) {
   }
 }
 
-#' Format Time Value with Unit (CONSOLIDATES DUPLICATION)
-#'
-#' Consolidated time formatting function that replaces 3 duplicated
-#' code blocks (minutes/hours/days) from generateSPCPlot().
-#'
-#' This function reduces ~30 lines of duplicated formatting logic
-#' to a single reusable function following DRY principles.
-#'
-#' @param val_minutes Numeric time value in minutes
-#' @param time_unit Character string: "minutes", "hours", or "days"
-#'
-#' @return Formatted string with appropriate time unit (e.g., "30 min", "1,5 timer", "2 dage")
-#' @keywords internal
-format_time_with_unit <- function(val_minutes, time_unit) {
-  # Handle NA values
-  if (is.na(val_minutes)) {
-    return(NA_character_)
-  }
-
-  # Scale value to appropriate unit
-  scaled <- switch(time_unit,
-    minutes = val_minutes,
-    hours = val_minutes / 60,
-    days = val_minutes / 1440,
-    val_minutes # fallback
-  )
-
-  # Get Danish unit label
-  unit_label <- switch(time_unit,
-    minutes = " min",
-    hours = " timer",
-    days = " dage",
-    " min" # fallback
-  )
-
-  # Format with or without decimals (only show if present)
-  if (scaled == round(scaled)) {
-    paste0(round(scaled), unit_label)
-  } else {
-    paste0(format(scaled, decimal.mark = ",", nsmall = 1), unit_label)
-  }
-}

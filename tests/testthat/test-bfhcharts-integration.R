@@ -143,13 +143,9 @@ test_that("BFHcharts to-trins workflow: bfh_qic + get_plot", {
   expect_s3_class(plot, "ggplot")
 })
 
-test_that("TODO Fase 3: BFHcharts::create_spc_chart er ikke eksporteret", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — BFHcharts::create_spc_chart() ikke eksporteret (#203-followup)\n",
-    "Nuvaerende API: BFHcharts::bfh_qic() + BFHcharts::get_plot()\n",
-    "Gammel API er fjernet fra BFHcharts namespace"
-  ))
+test_that("BFHcharts::create_spc_chart er ikke i namespace (gammel API bekraeftelse)", {
   skip_if_not_installed("BFHcharts")
-  test_data <- data.frame(Dato = Sys.Date(), Taeller = 1L)
-  expect_no_error(BFHcharts::create_spc_chart(data = test_data, x = Dato, y = Taeller))
+  # Gammel API er fjernet — bfh_qic() er den nuvaerende entrypoint
+  expect_false(existsMethod("create_spc_chart", where = asNamespace("BFHcharts")) ||
+    exists("create_spc_chart", envir = asNamespace("BFHcharts"), inherits = FALSE))
 })

@@ -102,13 +102,10 @@ test_that("accessors kan kaldes uden fejl udenfor reaktiv kontekst", {
 })
 
 # =============================================================================
-# TESTS SKIPPED MED TODO: Accessor-funktioner ikke i namespace
-# Alle nedenstaaende SKIP'er dokumenterer spec-adfaerd der IKKE er
-# implementeret i nuvaerende state_management. Fase 3 followup.
+# DATA ACCESSORS — Fase 3 implementerede (skip fjernet)
 # =============================================================================
 
-test_that("TODO Fase 3: get_original_data getter eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get_original_data() ikke i namespace (#203-followup)\nKun set_original_data er implementeret, getter mangler")
+test_that("get_original_data getter eksisterer", {
   app_state <- create_app_state()
   original <- data.frame(original_col = c("a", "b", "c"))
   set_original_data(app_state, original)
@@ -116,61 +113,53 @@ test_that("TODO Fase 3: get_original_data getter eksisterer", {
   expect_equal(result, original)
 })
 
-test_that("TODO Fase 3: is_table_updating og set_table_updating eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_table_updating/set_table_updating ikke i namespace (#203-followup)")
+test_that("is_table_updating og set_table_updating eksisterer", {
   app_state <- create_app_state()
   expect_false(is_table_updating(app_state))
   set_table_updating(app_state, TRUE)
   expect_true(is_table_updating(app_state))
 })
 
-test_that("TODO Fase 3: get_autodetect_status returnerer korrekt struktur", {
-  skip("TODO Fase 3: R-bug afsloeret — get_autodetect_status() ikke i namespace (#203-followup)")
+test_that("get_autodetect_status returnerer korrekt struktur", {
   app_state <- create_app_state()
   status <- get_autodetect_status(app_state)
   expect_type(status, "list")
   expect_named(status, c("in_progress", "completed", "results", "frozen"))
 })
 
-test_that("TODO Fase 3: set_autodetect_in_progress eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — set_autodetect_in_progress() ikke i namespace (#203-followup)")
+test_that("set_autodetect_in_progress eksisterer", {
   app_state <- create_app_state()
   set_autodetect_in_progress(app_state, TRUE)
   expect_true(shiny::isolate(app_state$columns$auto_detect$in_progress))
 })
 
-test_that("TODO Fase 3: get_column_mappings og get_column_mapping eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get_column_mappings/get_column_mapping ikke i namespace (#203-followup)")
+test_that("get_column_mappings og get_column_mapping eksisterer", {
   app_state <- create_app_state()
   mappings <- get_column_mappings(app_state)
   expect_type(mappings, "list")
   expect_null(get_column_mapping(app_state, "x_column"))
 })
 
-test_that("TODO Fase 3: update_column_mapping eksisterer (singular)", {
-  skip("TODO Fase 3: R-bug afsloeret — update_column_mapping() (singular) ikke i namespace, kun update_all_column_mappings (#203-followup)")
+test_that("update_column_mapping eksisterer (singular)", {
   app_state <- create_app_state()
   update_column_mapping(app_state, "x_column", "Dato")
   expect_equal(get_column_mapping(app_state, "x_column"), "Dato")
 })
 
-test_that("TODO Fase 3: set_plot_ready eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — set_plot_ready() ikke i namespace (#203-followup)\nKun is_plot_ready er implementeret, setter mangler")
+test_that("set_plot_ready eksisterer", {
   app_state <- create_app_state()
   set_plot_ready(app_state, TRUE)
   expect_true(is_plot_ready(app_state))
 })
 
-test_that("TODO Fase 3: get_plot_warnings og set_plot_warnings eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get_plot_warnings/set_plot_warnings ikke i namespace (#203-followup)")
+test_that("get_plot_warnings og set_plot_warnings eksisterer", {
   app_state <- create_app_state()
   expect_equal(get_plot_warnings(app_state), character(0))
   set_plot_warnings(app_state, c("Advarsel 1"))
   expect_equal(get_plot_warnings(app_state), c("Advarsel 1"))
 })
 
-test_that("TODO Fase 3: get_plot_object og set_plot_object eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get_plot_object/set_plot_object ikke i namespace (#203-followup)")
+test_that("get_plot_object og set_plot_object eksisterer", {
   app_state <- create_app_state()
   expect_null(get_plot_object(app_state))
   mock_plot <- structure(list(), class = "gg")
@@ -178,32 +167,28 @@ test_that("TODO Fase 3: get_plot_object og set_plot_object eksisterer", {
   expect_s3_class(get_plot_object(app_state), "gg")
 })
 
-test_that("TODO Fase 3: is_plot_generating og set_plot_generating eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_plot_generating/set_plot_generating ikke i namespace (#203-followup)")
+test_that("is_plot_generating og set_plot_generating eksisterer", {
   app_state <- create_app_state()
   expect_false(is_plot_generating(app_state))
   set_plot_generating(app_state, TRUE)
   expect_true(is_plot_generating(app_state))
 })
 
-test_that("TODO Fase 3: is_file_uploaded og set_file_uploaded eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_file_uploaded/set_file_uploaded ikke i namespace (#203-followup)")
+test_that("is_file_uploaded og set_file_uploaded eksisterer", {
   app_state <- create_app_state()
   expect_false(is_file_uploaded(app_state))
   set_file_uploaded(app_state, TRUE)
   expect_true(is_file_uploaded(app_state))
 })
 
-test_that("TODO Fase 3: is_user_session_started og set_user_session_started eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_user_session_started/set_user_session_started ikke i namespace (#203-followup)")
+test_that("is_user_session_started og set_user_session_started eksisterer", {
   app_state <- create_app_state()
   expect_false(is_user_session_started(app_state))
   set_user_session_started(app_state, TRUE)
   expect_true(is_user_session_started(app_state))
 })
 
-test_that("TODO Fase 3: get_last_error, set_last_error og get_error_count eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get_last_error/set_last_error/get_error_count ikke i namespace (#203-followup)")
+test_that("get_last_error, set_last_error og get_error_count eksisterer", {
   app_state <- create_app_state()
   expect_null(get_last_error(app_state))
   expect_equal(get_error_count(app_state), 0L)
@@ -211,32 +196,28 @@ test_that("TODO Fase 3: get_last_error, set_last_error og get_error_count eksist
   expect_equal(get_error_count(app_state), 1L)
 })
 
-test_that("TODO Fase 3: is_test_mode_enabled og set_test_mode_enabled eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_test_mode_enabled/set_test_mode_enabled ikke i namespace (#203-followup)")
+test_that("is_test_mode_enabled og set_test_mode_enabled eksisterer", {
   app_state <- create_app_state()
   expect_false(is_test_mode_enabled(app_state))
   set_test_mode_enabled(app_state, TRUE)
   expect_true(is_test_mode_enabled(app_state))
 })
 
-test_that("TODO Fase 3: get_test_mode_startup_phase og set_test_mode_startup_phase eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — get/set_test_mode_startup_phase ikke i namespace (#203-followup)")
+test_that("get_test_mode_startup_phase og set_test_mode_startup_phase eksisterer", {
   app_state <- create_app_state()
   expect_equal(get_test_mode_startup_phase(app_state), "initializing")
   set_test_mode_startup_phase(app_state, "data_ready")
   expect_equal(get_test_mode_startup_phase(app_state), "data_ready")
 })
 
-test_that("TODO Fase 3: is_anhoej_rules_hidden og set_anhoej_rules_hidden eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_anhoej_rules_hidden/set_anhoej_rules_hidden ikke i namespace (#203-followup)")
+test_that("is_anhoej_rules_hidden og set_anhoej_rules_hidden eksisterer", {
   app_state <- create_app_state()
   expect_false(is_anhoej_rules_hidden(app_state))
   set_anhoej_rules_hidden(app_state, TRUE)
   expect_true(is_anhoej_rules_hidden(app_state))
 })
 
-test_that("TODO Fase 3: is_y_axis_autoset_done og set_y_axis_autoset_done eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — is_y_axis_autoset_done/set_y_axis_autoset_done ikke i namespace (#203-followup)")
+test_that("is_y_axis_autoset_done og set_y_axis_autoset_done eksisterer", {
   app_state <- create_app_state()
   expect_false(is_y_axis_autoset_done(app_state))
   set_y_axis_autoset_done(app_state, TRUE)

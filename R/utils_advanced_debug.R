@@ -144,8 +144,10 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
 #' @return List med snapshot information
 #'
 #' @examples
+#' \dontrun{
 #' snapshot <- debug_state_snapshot("before_upload", app_state)
 #' debug_state_snapshot("after_upload", app_state)
+#' }
 debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE,
                                  include_data_summary = TRUE, session_id = NULL) {
   debug_log(paste("Taking state snapshot:", checkpoint_name),
@@ -430,12 +432,14 @@ debug_performance_timer <- function(operation_name, session_id = NULL) {
 #' @return Workflow tracer object
 #'
 #' @examples
+#' \dontrun{
 #' tracer <- debug_workflow_tracer("file_upload_to_visualization", app_state)
 #' tracer$step("upload_started")
 #' # ... upload operations ...
 #' tracer$step("auto_detect_triggered")
 #' # ... auto-detect operations ...
 #' tracer$complete("visualization_ready")
+#' }
 debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = NULL) {
   start_time <- Sys.time()
   steps <- list()

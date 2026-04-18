@@ -25,11 +25,7 @@ test_that("create_cached_reactive returnerer en reactive", {
   expect_true(is.function(cached_func))
 })
 
-test_that("TODO Fase 3: create_cached_reactive cache er konsistent", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace, ",
-    "create_cached_reactive() kaster fejl ved kald (#203-followup)"
-  ))
+test_that("create_cached_reactive cache er konsistent", {
   counter <- 0L
   cached_func <- create_cached_reactive(
     reactive_expr = function() {
@@ -45,11 +41,7 @@ test_that("TODO Fase 3: create_cached_reactive cache er konsistent", {
   expect_lte(counter, 2L)
 })
 
-test_that("TODO Fase 3: multiple cache keys interfererer ikke", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace, ",
-    "create_cached_reactive() kaster fejl ved kald (#203-followup)"
-  ))
+test_that("multiple cache keys interfererer ikke", {
   cached_a <- create_cached_reactive(
     reactive_expr = function() paste0("result_a"),
     cache_key = "concurrent_test_a_salvage"

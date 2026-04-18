@@ -30,11 +30,7 @@ test_that("create_cached_reactive eksisterer og returnerer funktion", {
   expect_true(is.function(cached))
 })
 
-test_that("TODO Fase 3: create_cached_reactive evaluerer lazy", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace, ",
-    "create_cached_reactive() kaster fejl ved evaluering (#203-followup)"
-  ))
+test_that("create_cached_reactive evaluerer lazy", {
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -56,10 +52,8 @@ test_that("TODO Fase 3: create_cached_reactive evaluerer lazy", {
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive reagerer paa reaktive dependencies", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive reagerer paa reaktive dependencies", {
+  skip("TODO Fase 3: create_cached_reactive bruger digest-cache-key (string), ikke reaktiv tracking — val1(5) invaliderer ikke cachen korrekt (#203-followup)")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -80,10 +74,7 @@ test_that("TODO Fase 3: create_cached_reactive reagerer paa reaktive dependencie
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive cacher inden for timeout", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive cacher inden for timeout", {
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -107,10 +98,8 @@ test_that("TODO Fase 3: create_cached_reactive cacher inden for timeout", {
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive haandterer cache-udloeb", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive haandterer cache-udloeb", {
+  skip("TODO Fase 3: create_cached_reactive re-evaluerer ikke automatisk efter timeout — cache-key er statisk string, ikke tidsbaseret (#203-followup)")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -134,10 +123,7 @@ test_that("TODO Fase 3: create_cached_reactive haandterer cache-udloeb", {
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive med komplekse reaktive udtryk", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive med komplekse reaktive udtryk", {
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -156,10 +142,7 @@ test_that("TODO Fase 3: create_cached_reactive med komplekse reaktive udtryk", {
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive haandterer baade funktion og udtryk", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive haandterer baade funktion og udtryk", {
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -181,10 +164,7 @@ test_that("TODO Fase 3: create_cached_reactive haandterer baade funktion og udtr
   })
 })
 
-test_that("TODO Fase 3: create_cached_reactive giver performance-fordel", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — manage_cache_size() ikke i namespace (#203-followup)"
-  ))
+test_that("create_cached_reactive giver performance-fordel", {
   skip_if_not(exists("create_cached_reactive"))
   skip_on_ci()
 

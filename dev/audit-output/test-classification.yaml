@@ -15,11 +15,11 @@
 
 
 metadata:
-  total_files: 118
+  total_files: 114
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 118
+    reviewed: 114
     unreviewed: 0
     needs_triage: 0
 files:
@@ -540,15 +540,8 @@ files:
     type: integration
     handling: fix-in-phase-3
     reviewed: yes
-    rationale: Green-partial med 16/43 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-mod-spc-chart-integration.R
-    audit_category: green-partial
-    type: integration
-    handling: fix-in-phase-3
-    reviewed: yes
-    rationale: Green-partial med 4/22 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 16/43 fejl. Handling=fix-in-phase-3 baseret paa
+      fail-ratio. [Fase 2: merged test-mod-spc-chart-integration.R]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-namespace-integrity.R
@@ -908,38 +901,13 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-y-axis-formatting.R
-    audit_category: green-partial
-    type: unit
-    handling: fix-in-phase-3
-    reviewed: yes
-    rationale: Green-partial med 5/59 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-y-axis-mapping.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (3/3 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-y-axis-model.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (3/3 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-y-axis-scaling-overhaul.R
     audit_category: green-partial
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
-    rationale: Green-partial med 7/76 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: 'Green-partial med 7/76 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+      [Fase 2: merged test-y-axis-formatting.R + test-y-axis-mapping.R + test-y-axis-model.R]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-yaml-config-adherence.R

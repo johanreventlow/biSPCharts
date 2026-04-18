@@ -251,7 +251,7 @@ test_that("clear_spc_cache removes all entries", {
   }
 
   # Verify entries exist
-  stats_before <- get_spc_cache_stats(qic_cache)
+  stats_before <- get_qic_cache_stats(qic_cache)
   expect_equal(stats_before$size, 5)
 
   # Clear cache
@@ -259,7 +259,7 @@ test_that("clear_spc_cache removes all entries", {
   expect_true(success)
 
   # Verify cache is empty
-  stats_after <- get_spc_cache_stats(qic_cache)
+  stats_after <- get_qic_cache_stats(qic_cache)
   expect_equal(stats_after$size, 0)
 })
 
@@ -268,13 +268,13 @@ test_that("clear_spc_cache removes all entries", {
 # Test Suite 3: Cache Statistics
 # ====================================================================
 
-test_that("get_spc_cache_stats returns correct metrics", {
+test_that("get_qic_cache_stats returns correct metrics", {
   skip_if_not_installed("digest")
 
   qic_cache <- create_qic_cache(max_size = 10)
 
   # Initial stats
-  stats <- get_spc_cache_stats(qic_cache)
+  stats <- get_qic_cache_stats(qic_cache)
   expect_equal(stats$size, 0)
   expect_equal(stats$hits, 0)
   expect_equal(stats$misses, 0)
@@ -291,7 +291,7 @@ test_that("get_spc_cache_stats returns correct metrics", {
   # Cache miss
   get_cached_spc_result("nonexistent_key", qic_cache)
 
-  stats <- get_spc_cache_stats(qic_cache)
+  stats <- get_qic_cache_stats(qic_cache)
   expect_equal(stats$size, 1)
   expect_equal(stats$hits, 1)
   expect_equal(stats$misses, 1)
@@ -338,7 +338,7 @@ test_that("cache achieves >80% hit rate in typical workflow", {
   }
 
   # Check hit rate
-  stats <- get_spc_cache_stats(qic_cache)
+  stats <- get_qic_cache_stats(qic_cache)
 
   # Should achieve >80% hit rate
   expect_gte(stats$hit_rate_percent, 80)

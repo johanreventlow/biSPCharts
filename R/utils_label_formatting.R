@@ -10,7 +10,9 @@
 #'
 #' @param val numeric værdi at formatere
 #' @param y_unit character enhedstype ("count", "percent", "rate", "time", eller andet)
-#' @param y_range numeric(2) y-akse range (kun brugt for "time" unit context)
+#' @param y_range numeric(2) legacy-parameter, ikke laengere brugt. Bevaret
+#'   for bagudkompatibilitet — tidligere brugt til kontekst-baseret enhedsvalg
+#'   for "time"-enheden.
 #' @return character formateret string
 #'
 #' @details
@@ -18,7 +20,7 @@
 #' - **count**: K/M/mia notation for store tal, dansk decimal/tusind separator
 #' - **percent**: scales::label_percent() formatering
 #' - **rate**: dansk decimal notation, decimaler kun hvis nødvendigt
-#' - **time**: kontekst-aware formatering (min/timer/dage baseret på range)
+#' - **time**: komposit-format via format_time_composite() (0m, 30m, 1t, 1t 30m, 1d, 2d 13t)
 #' - **default**: dansk decimal notation
 #'
 #' @examples
@@ -29,8 +31,8 @@
 #' format_y_value(0.456, "percent")
 #' # Returns: "46%"
 #'
-#' format_y_value(120, "time", y_range = c(0, 200))
-#' # Returns: "2 timer"
+#' format_y_value(90, "time")
+#' # Returns: "1t 30m"
 #' }
 #'
 #' @keywords internal
@@ -93,44 +95,13 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
     }
   }
 
-  # Time formatting (input: minutes) - kontekst-aware
-  if (y_unit == "time") {
-    # Hvis y_range ikke er givet, kan vi ikke bestemme kontekst
-    if (is.null(y_range) || length(y_range) < 2) {
-      warning("format_y_value: y_range mangler for 'time' unit, bruger default formatering")
-      if (val == round(val)) {
-        return(format(round(val), decimal.mark = ","))
-      } else {
-        return(format(val, decimal.mark = ",", nsmall = 1))
-      }
-    }
-
-    max_minutes <- max(y_range, na.rm = TRUE)
-
-    if (max_minutes < 60) {
-      # Minutes
-      if (val == round(val)) {
-        return(paste0(round(val), " min"))
-      } else {
-        return(paste0(format(val, decimal.mark = ",", nsmall = 1), " min"))
-      }
-    } else if (max_minutes < 1440) {
-      # Hours
-      hours <- val / 60
-      if (hours == round(hours)) {
-        return(paste0(round(hours), " timer"))
-      } else {
-        return(paste0(format(hours, decimal.mark = ",", nsmall = 1), " timer"))
-      }
-    } else {
-      # Days
-      days <- val / 1440
-      if (days == round(days)) {
-        return(paste0(round(days), " dage"))
-      } else {
-        return(paste0(format(days, decimal.mark = ",", nsmall = 1), " dage"))
-      }
-    }
+  # Time formatting (input: kanoniske minutter) - komposit-format
+  # Dækker legacy "time" og nye time_minutes/time_hours/time_days.
+  # Bruger format_time_composite() for konsistens med format_y_axis_time().
+  # y_range-parameteren er ikke laengere relevant — komposit-format haandterer
+  # minutter/timer/dage automatisk (0m, 30m, 1t, 1t 30m, 1d, 2d 13t).
+  if (is_time_unit(y_unit)) {
+    return(format_time_composite(val))
   }
 
   # Default formatting - dansk notation

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_y_axis_formatting.R
 \name{format_y_axis_time}
 \alias{format_y_axis_time}
-\title{Format Y-Axis for Time Data (Minutes/Hours/Days)}
+\title{Format Y-Axis for Time Data (Composite Format: "1t 30m", "2d 4t")}
 \usage{
 format_y_axis_time(qic_data)
 }
@@ -13,6 +13,8 @@ format_y_axis_time(qic_data)
 ggplot2 scale_y_continuous layer for time formatting
 }
 \description{
-Format Y-Axis for Time Data (Minutes/Hours/Days)
+Uses tids-naturlige tick-breaks (time_breaks) og komposit label-format
+(format_time_composite). Input antages at vaere i minutter (kanonisk
+intern enhed).
 }
 \keyword{internal}

@@ -5,7 +5,46 @@
 
 # SCHEMA VERSION ==============================================================
 # Bumpes når payload-struktur ændres. Load-logik rydder ved version-mismatch.
-LOCAL_STORAGE_SCHEMA_VERSION <- "2.0"
+# 3.0: y_axis_unit "time" splittet til time_minutes/time_hours/time_days.
+#      Silent forward-migration via migrate_time_yaxis_unit().
+LOCAL_STORAGE_SCHEMA_VERSION <- "3.0"
+
+# MIGRATION ==================================================================
+
+#' Silent forward-migration: "time" → "time_minutes"
+#'
+#' Version 2.0 payloads har y_axis_unit = "time" med implicit antagelse
+#' om minutter. Version 3.0 kræver eksplicit time_minutes/time_hours/time_days.
+#' Migrationen bevarer klinisk data ved at mappe den implicitte antagelse
+#' til den eksplicitte `time_minutes`-enhed.
+#'
+#' Migrationen er idempotent: 3.0 payloads returneres uændret. Ukendte
+#' versioner (< 2.0) passeres igennem uændret — det er load-logikkens
+#' ansvar at rydde ved full schema-mismatch.
+#'
+#' @param saved_state List med 'version' og evt. 'metadata'. NULL returneres.
+#' @return Opdateret list med version = LOCAL_STORAGE_SCHEMA_VERSION for 2.0
+#'   payloads; ellers uændret.
+#' @keywords internal
+migrate_time_yaxis_unit <- function(saved_state) {
+  if (is.null(saved_state)) {
+    return(saved_state)
+  }
+
+  src_version <- saved_state$version %||% "unknown"
+
+  # Kun migrér 2.0 → 3.0. Nyere versioner returneres uændret.
+  if (identical(src_version, "2.0")) {
+    if (!is.null(saved_state$metadata) &&
+        !is.null(saved_state$metadata$y_axis_unit) &&
+        identical(saved_state$metadata$y_axis_unit, "time")) {
+      saved_state$metadata$y_axis_unit <- "time_minutes"
+    }
+    saved_state$version <- LOCAL_STORAGE_SCHEMA_VERSION
+  }
+
+  saved_state
+}
 
 # CLASS PRESERVATION HELPERS =================================================
 

@@ -107,7 +107,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-bfhcharts-integration.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -125,7 +125,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cache-collision-fix.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -153,7 +153,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cache-reactive-lazy-evaluation.R
-    audit_category: green-partial
+    audit_category: green
     type: e2e
     handling: keep
     reviewed: yes
@@ -343,7 +343,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-e2e-workflows.R
-    audit_category: green-partial
+    audit_category: green
     type: integration
     handling: keep
     reviewed: yes
@@ -435,7 +435,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-file-upload.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -492,14 +492,14 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-label-placement-core.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
-    rationale: 'Fase 2 salvage: source(utils_standalone...) fjernet — funktioner
-      tilgaas via BFHcharts:::. Absorberede test-label-placement-bounds.R (6 tests).
-      21 PASS, 3 SKIP+TODO (label_height oevre grænse + NIVEAU 2+3 fallback ikke
-      udloeserbare). Klar til CI.'
+    rationale: 'Fase 2 salvage: source(utils_standalone...) fjernet — funktioner tilgaas
+      via BFHcharts:::. Absorberede test-label-placement-bounds.R (6 tests). 21 PASS,
+      3 SKIP+TODO (label_height oevre grænse + NIVEAU 2+3 fallback ikke udloeserbare).
+      Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-logging-debug-cat.R
@@ -532,7 +532,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-mod_export.R
-    audit_category: green-partial
+    audit_category: broken-other
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -565,7 +565,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-observer-cleanup.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -599,7 +599,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-parse-danish-target-unit-conversion.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: rewrite
     reviewed: yes
@@ -608,7 +608,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-performance-benchmarks.R
-    audit_category: green-partial
+    audit_category: green
     type: benchmark
     handling: keep
     reviewed: yes
@@ -624,7 +624,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-plot-core.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -657,7 +657,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-recent-functionality.R
-    audit_category: green
+    audit_category: broken-other
     type: unit
     handling: keep
     reviewed: yes
@@ -879,7 +879,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils-state-accessors.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes

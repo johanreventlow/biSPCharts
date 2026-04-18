@@ -83,42 +83,8 @@ test_that("format_unscaled_number uses Danish notation", {
 
 # TEST: format_time_with_unit() ==============================================
 
-test_that("format_time_with_unit consolidates duplication correctly", {
-  # Minutes formatting
-  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
-  expect_equal(format_time_with_unit(45.5, "minutes"), "45,5 min")
-  expect_equal(format_time_with_unit(59, "minutes"), "59 min")
-
-  # Hours formatting
-  expect_equal(format_time_with_unit(60, "hours"), "1 timer")
-  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
-  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
-  expect_equal(format_time_with_unit(150, "hours"), "2,5 timer")
-
-  # Days formatting
-  expect_equal(format_time_with_unit(1440, "days"), "1 dage")
-  expect_equal(format_time_with_unit(2160, "days"), "1,5 dage")
-  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
-  expect_equal(format_time_with_unit(4320, "days"), "3 dage")
-})
-
-test_that("format_time_with_unit handles NA values", {
-  expect_true(is.na(format_time_with_unit(NA, "minutes")))
-  expect_true(is.na(format_time_with_unit(NA, "hours")))
-  expect_true(is.na(format_time_with_unit(NA, "days")))
-})
-
-test_that("format_time_with_unit handles edge cases", {
-  # Zero values
-  expect_equal(format_time_with_unit(0, "minutes"), "0 min")
-  expect_equal(format_time_with_unit(0, "hours"), "0 timer")
-  expect_equal(format_time_with_unit(0, "days"), "0 dage")
-
-  # Very small decimals
-  expect_match(format_time_with_unit(0.1, "minutes"), "^0,1 min$")
-
-  # Large values
-  expect_equal(format_time_with_unit(10000, "days"), "6,9 dage")
+test_that("format_time_with_unit er fjernet til fordel for format_time_composite", {
+  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
 })
 
 # TEST: format_y_axis_time() =================================================
@@ -193,26 +159,30 @@ test_that("Extracted formatting produces identical output to original", {
   test_val_m <- 2500000
   expect_equal(format_scaled_number(test_val_m, 1e6, "M"), "2,5M")
 
-  # Test time formatting minutes
-  expect_equal(format_time_with_unit(45, "minutes"), "45 min")
-
-  # Test time formatting hours
-  expect_equal(format_time_with_unit(90, "hours"), "1,5 timer")
+  # Time formatting backward-compatibility cases flyttet til
+  # test-time-formatting.R (format_time_composite)
 })
 
 # TEST: DRY Principle Validation ============================================
 
 test_that("format_time_with_unit eliminates duplication effectively", {
-  # This test validates that the single function replaces 3 duplicated blocks
-  # All three time units should use the same formatting logic
+  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
+})
 
-  # Test consistent decimal handling across units
-  expect_match(format_time_with_unit(30.5, "minutes"), ",")
-  expect_match(format_time_with_unit(90, "hours"), ",")
-  expect_match(format_time_with_unit(2160, "days"), ",")
+# TEST: Komposit-format integration ==========================================
 
-  # Test consistent integer handling across units
-  expect_equal(format_time_with_unit(30, "minutes"), "30 min")
-  expect_equal(format_time_with_unit(120, "hours"), "2 timer")
-  expect_equal(format_time_with_unit(2880, "days"), "2 dage")
+test_that("apply_y_axis_formatting med time-enhed bruger komposit-format", {
+  qic_data <- data.frame(x = 1:5, y = c(30, 60, 90, 120, 150))
+  plot <- ggplot2::ggplot(qic_data, ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_point()
+
+  result <- apply_y_axis_formatting(plot, "time", qic_data)
+  expect_s3_class(result, "ggplot")
+
+  built <- ggplot2::ggplot_build(result)
+  y_labels <- built$layout$panel_params[[1]]$y$get_labels()
+
+  # Labels skal matche komposit-patterns: "30m", "1t", "1t 30m", "1d", "1d 4t"
+  y_labels_clean <- y_labels[!is.na(y_labels)]
+  expect_true(all(grepl("^-?(\\d+d( \\d+t)?|\\d+t( \\d+m)?|\\d+m)$", y_labels_clean)))
 })

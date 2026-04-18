@@ -36,3 +36,18 @@ test_that("is_time_unit identificerer korrekt for BFHcharts-mapping", {
   expect_true(is_time_unit("time"))  # legacy
   expect_false(is_time_unit("count"))
 })
+
+test_that("parse_time_to_minutes skalerer target og centerline-vaerdier", {
+  # Bruger saetter target = 90 med y-enhed "time_days": target skal tolkes
+  # som 90 dage (= 129600 min), ikke 90 minutter.
+  expect_equal(parse_time_to_minutes(90, input_unit = "time_days"), 129600)
+
+  # Target = 5 timer skal tolkes som 300 min
+  expect_equal(parse_time_to_minutes(5, input_unit = "time_hours"), 300)
+
+  # Target = 60 minutter er 60 min
+  expect_equal(parse_time_to_minutes(60, input_unit = "time_minutes"), 60)
+
+  # NULL target returnerer numeric(0) — caller skal haandtere
+  expect_equal(parse_time_to_minutes(numeric(0), "time_days"), numeric(0))
+})

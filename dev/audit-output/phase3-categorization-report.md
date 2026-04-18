@@ -233,3 +233,450 @@ Ingen rene K2-cases identificeret. Alle undersøgte funktioner der "mangler i na
 5. **parse_danish_target (9 K1):** Relateret til én central designfejl — `normalize_axis_value()` er ikke unit-aware og `parse_danish_target()` sender ikke `y_axis_unit` videre korrekt.
 
 6. **generateSPCPlot gammel API (4 K3 + overlap tvivl):** Tests bruger den gamle pre-config signatur. Ny API kræver `config`-parameter. Test-fixes er mekaniske.
+
+---
+
+## Task 4 (K3) Status
+
+**Udført:** 2026-04-17
+
+| # | Fix | Fil | Linje | Status |
+|---|---|---|---|---|
+| 1 | generateSPCPlot gammel API → config-baseret | test-performance-benchmarks.R | 109 | DONE (commit da0a35b) |
+| 2 | generateSPCPlot stor data benchmark | test-performance-benchmarks.R | 130 | DONE (commit da0a35b) |
+| 3 | cache_startup_data(test_data) → ingen argumenter | test-performance-benchmarks.R | 150 | DONE (commit da0a35b) |
+| 4 | Benchmark-antagelse load_cached vs. get_hospital_colors | test-performance-benchmarks.R | 161 | DONE — ny assertion: load < build time (commit da0a35b) |
+| 5 | generateSPCPlot memory-test gammel API | test-performance-benchmarks.R | 197 | DONE (commit da0a35b) |
+| 6 | generateSPCPlot reproducerbarhedstest gammel API | test-performance-benchmarks.R | 226 | DONE (commit da0a35b) |
+| 7 | cache-collision GlobalEnv assertion | test-cache-collision-fix.R | 72 | RE-KATEGORISERET til K1 — crash på manage_cache_size, skip bevaret som "TODO K1" (commit 2303fbf) |
+| 8 | BFHcharts::create_spc_chart → bfh_qic + get_plot | test-bfhcharts-integration.R | 146 | DONE — bekræfter gammel API ikke i namespace (commit f566559) |
+
+**K3 fixes applied:** 7/10 (8 testet, 2 var K1 fra start)
+**Re-kategoriseret til K1:** 1 (cache-collision #72 — afhænger af manage_cache_size fix)
+**Rapporten K3-tæller opdateret:** 10 → 9 rene K3, 1 borderline K1
+
+---
+
+## Kategori 1 Patch-Proposals (batch-godkendelse)
+
+**Format:** Bruger markerer `[x]` apply / `[ ]` skip / `[ ]` modify per proposal.
+
+Alle K1-entries er grupperet efter root cause. Task 6 implementerer KUN godkendte proposals.
+
+---
+
+### Gruppe 1: State-accessor wrappers (17 TODOs)
+
+**Root cause:** `R/utils_state_accessors.R` indeholder kun 6 af ~30 forventede accessor-par. Alle 17 manglende funktioner er simple get/set-wrappers over eksisterende `app_state`-felter.
+
+**Approach:** Tilføj 17 nye funktioner i `R/utils_state_accessors.R`. Alle bruger `shiny::isolate()` konsistent med de 6 eksisterende.
+
+**State-skema verificeret:** Alle felter eksisterer i `create_app_state()` i `R/state_management.R`.
+
+**Foreslået diff (alle 17 funktioner):**
+
+```diff
+--- a/R/utils_state_accessors.R
++++ b/R/utils_state_accessors.R
+@@ -73,6 +73,14 @@ set_original_data <- function(app_state, value) {
+   })
+ }
+
++#' @keywords internal
++get_original_data <- function(app_state) {
++  shiny::isolate(app_state$data$original_data)
++}
++
++#' @keywords internal
++is_table_updating <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$data$updating_table))
++}
++
++#' @keywords internal
++set_table_updating <- function(app_state, value) {
++  shiny::isolate({ app_state$data$updating_table <- value })
++}
++
++#' @keywords internal
++get_autodetect_status <- function(app_state) {
++  shiny::isolate(list(
++    in_progress = isTRUE(app_state$columns$auto_detect$in_progress),
++    completed   = isTRUE(app_state$columns$auto_detect$completed),
++    results     = app_state$columns$auto_detect$results,
++    frozen      = isTRUE(app_state$columns$auto_detect$frozen_until_next_trigger)
++  ))
++}
++
++#' @keywords internal
++set_autodetect_in_progress <- function(app_state, value) {
++  shiny::isolate({ app_state$columns$auto_detect$in_progress <- value })
++}
++
++#' @keywords internal
++get_column_mappings <- function(app_state) {
++  shiny::isolate(as.list(app_state$columns$mappings))
++}
++
++#' @keywords internal
++get_column_mapping <- function(app_state, key) {
++  shiny::isolate(app_state$columns$mappings[[key]])
++}
++
++#' @keywords internal
++update_column_mapping <- function(app_state, key, value) {
++  shiny::isolate({ app_state$columns$mappings[[key]] <- value })
++}
++
++#' @keywords internal
++set_plot_ready <- function(app_state, value) {
++  shiny::isolate({ app_state$visualization$plot_ready <- value })
++}
++
++#' @keywords internal
++get_plot_warnings <- function(app_state) {
++  shiny::isolate(app_state$visualization$plot_warnings %||% character(0))
++}
++
++#' @keywords internal
++set_plot_warnings <- function(app_state, value) {
++  shiny::isolate({ app_state$visualization$plot_warnings <- value })
++}
++
++#' @keywords internal
++get_plot_object <- function(app_state) {
++  shiny::isolate(app_state$visualization$plot_object)
++}
++
++#' @keywords internal
++set_plot_object <- function(app_state, value) {
++  shiny::isolate({ app_state$visualization$plot_object <- value })
++}
++
++#' @keywords internal
++is_plot_generating <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$visualization$is_computing))
++}
++
++#' @keywords internal
++set_plot_generating <- function(app_state, value) {
++  shiny::isolate({ app_state$visualization$is_computing <- value })
++}
++
++#' @keywords internal
++is_file_uploaded <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$session$file_uploaded))
++}
++
++#' @keywords internal
++set_file_uploaded <- function(app_state, value) {
++  shiny::isolate({ app_state$session$file_uploaded <- value })
++}
++
++#' @keywords internal
++is_user_session_started <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$session$user_started_session))
++}
++
++#' @keywords internal
++set_user_session_started <- function(app_state, value) {
++  shiny::isolate({ app_state$session$user_started_session <- value })
++}
++
++#' @keywords internal
++get_last_error <- function(app_state) {
++  shiny::isolate(app_state$errors$last_error)
++}
++
++#' @keywords internal
++set_last_error <- function(app_state, value) {
++  shiny::isolate({
++    app_state$errors$last_error <- value
++    app_state$errors$error_count <- (app_state$errors$error_count %||% 0L) + 1L
++  })
++}
++
++#' @keywords internal
++get_error_count <- function(app_state) {
++  shiny::isolate(app_state$errors$error_count %||% 0L)
++}
++
++#' @keywords internal
++is_test_mode_enabled <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$test_mode$enabled))
++}
++
++#' @keywords internal
++set_test_mode_enabled <- function(app_state, value) {
++  shiny::isolate({ app_state$test_mode$enabled <- value })
++}
++
++#' @keywords internal
++get_test_mode_startup_phase <- function(app_state) {
++  shiny::isolate(app_state$test_mode$startup_phase %||% "initializing")
++}
++
++#' @keywords internal
++set_test_mode_startup_phase <- function(app_state, value) {
++  shiny::isolate({ app_state$test_mode$startup_phase <- value })
++}
++
++#' @keywords internal
++is_anhoej_rules_hidden <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$ui$hide_anhoej_rules))
++}
++
++#' @keywords internal
++set_anhoej_rules_hidden <- function(app_state, value) {
++  shiny::isolate({ app_state$ui$hide_anhoej_rules <- value })
++}
++
++#' @keywords internal
++is_y_axis_autoset_done <- function(app_state) {
++  shiny::isolate(isTRUE(app_state$ui$y_axis_unit_autoset_done))
++}
++
++#' @keywords internal
++set_y_axis_autoset_done <- function(app_state, value) {
++  shiny::isolate({ app_state$ui$y_axis_unit_autoset_done <- value })
++}
+```
+
+**Risiko:** Lav. Alle nye `@keywords internal` funktioner. Ingen eksisterende kode bruger dem (de mangler jo). Ingen brudflader.
+**Public API-ændring:** Nej (alle `@keywords internal`).
+**Anslået fail-reduktion:** 17 tests.
+
+**Bruger-valg:** `[ ]` apply alle / `[ ]` apply selective / `[ ]` skip
+
+---
+
+### Gruppe 2: manage_cache_size (9 TODOs)
+
+**Root cause:** `create_cached_reactive()` i `R/utils_performance_caching.R:101` kalder `manage_cache_size(cache_size_limit)`, men funktionen er aldrig defineret i R/.
+
+**Approach:** Tilføj `manage_cache_size(limit)` i `R/utils_performance_caching.R`. Implementeringen skal rydde ældste/udløbne entries fra `.performance_cache` når limit overskrides.
+
+**Foreslået diff:**
+
+```diff
+--- a/R/utils_performance_caching.R
++++ b/R/utils_performance_caching.R
+@@ -280,6 +280,39 @@ cache_result <- function(cache_key, value, timeout_seconds) {
+   assign(cache_key, cached_entry, envir = .performance_cache)
+ }
+
++#' Manage Cache Size
++#'
++#' Rydder udløbne og overskydende entries fra performance cache.
++#' Kaldet automatisk af create_cached_reactive() efter cache writes.
++#'
++#' @param limit Integer. Max antal entries i cache (default: CACHE_CONFIG$size_limit_entries)
++#' @keywords internal
++manage_cache_size <- function(limit = CACHE_CONFIG$size_limit_entries) {
++  cache_keys <- ls(envir = .performance_cache)
++  n_entries <- length(cache_keys)
++
++  if (n_entries == 0) return(invisible(NULL))
++
++  # Trin 1: Ryd udloebne entries
++  now <- Sys.time()
++  expired <- character(0)
++  for (key in cache_keys) {
++    entry <- get(key, envir = .performance_cache)
++    if (!is.null(entry$expires_at) && entry$expires_at < now) {
++      expired <- c(expired, key)
++    }
++  }
++  if (length(expired) > 0) {
++    rm(list = expired, envir = .performance_cache)
++    cache_keys <- setdiff(cache_keys, expired)
++  }
++
++  # Trin 2: Hvis stadig over limit — fjern aeldste entries (LRU)
++  n_remaining <- length(cache_keys)
++  if (n_remaining > limit) {
++    last_access_times <- vapply(cache_keys, function(key) {
++      entry <- get(key, envir = .performance_cache)
++      as.numeric(entry$last_access %||% entry$created_at)
++    }, numeric(1))
++    oldest <- cache_keys[order(last_access_times)[seq_len(n_remaining - limit)]]
++    rm(list = oldest, envir = .performance_cache)
++  }
++
++  invisible(NULL)
++}
+```
+
+**Risiko:** Medium. Funktionen aktiveres ved kald fra `create_cached_reactive()` der køres i reaktiv kontekst. Fejl i `manage_cache_size` vil crashe alle cached reactives. Implementation bruger samme `.performance_cache` miljø som resten af caching-systemet — ingen ny state.
+**Public API-ændring:** Nej (`@keywords internal`).
+**Anslået fail-reduktion:** 9 tests (7 fra test-cache-reactive-lazy-evaluation.R + 2 fra test-cache-collision-fix.R). Inkl. K3-entry der blev re-kategoriseret til K1.
+
+**Bruger-valg:** `[ ]` apply / `[ ]` skip / `[ ]` modify
+
+---
+
+### Gruppe 3: parse_danish_target unit-awareness (9 TODOs)
+
+**Root cause:** `parse_danish_target()` er en "legacy wrapper" i `R/utils_y_axis_scaling.R:470` der **ignorerer `y_axis_unit`-parameteret**. Den sender `user_unit = y_axis_unit` til `normalize_axis_value()`, men `normalize_axis_value()` kan ikke mappe unit-navne som "percent", "count", "permille", "rate_1000" korrekt.
+
+**Approach:** Refaktorér `parse_danish_target()` til at:
+1. Håndtere `NULL` input (test #18)
+2. Oversætte `y_axis_unit` til korrekt `internal_unit` (tests #19-#26)
+3. Fix fallback-path for symbolless tal uden y_data (test #26)
+
+OBS: Dette er **kompleks logik** med mange edge cases. Se separat diff-uddrag nedenfor.
+
+**Foreslået diff (parse_danish_target NULL-fix — lav risiko, test #18):**
+
+```diff
+--- a/R/utils_y_axis_scaling.R
++++ b/R/utils_y_axis_scaling.R
+@@ -470,6 +470,10 @@ parse_danish_target <- function(target_input, y_data = NULL, y_axis_unit = NULL)
++  # NULL input: returner NULL straks (normalize_axis_value crasher ellers)
++  if (is.null(target_input)) return(NULL)
++
+   # Determine internal unit based on y_data characteristics
+```
+
+**Foreslået diff (unit-aware mapping — høj risiko, tests #19-#26):**
+
+```diff
+--- a/R/utils_y_axis_scaling.R
++++ b/R/utils_y_axis_scaling.R
+@@ -470,6 +470,35 @@ parse_danish_target <- function(target_input, y_data = NULL, y_axis_unit = NULL)
++  if (is.null(target_input)) return(NULL)
++
++  # Map y_axis_unit til internal_unit for normalize_axis_value
++  internal_unit <- if (!is.null(y_axis_unit)) {
++    switch(y_axis_unit,
++      "percent"    = "percent",
++      "proportion" = "proportion",
++      "permille"   = "absolute",   # permille behandles som absolut skala
++      "rate_1000"  = "absolute",
++      "rate_100000"= "absolute",
++      "count"      = "absolute",
++      "days"       = "absolute",
++      "hours"      = "absolute",
++      "grams"      = "absolute",
++      "kg"         = "absolute",
++      "dkk"        = "absolute",
++      # Fallback: brug y_data-heuristik hvis unit er ukendt
++      if (!is.null(y_data)) {
++        detected_scale <- detect_unit_from_data(y_data)
++        if (detected_scale == "percent") "percent" else "proportion"
++      } else "proportion"
++    )
++  } else if (!is.null(y_data)) {
++    detected_scale <- detect_unit_from_data(y_data)
++    if (detected_scale == "percent") "percent" else "proportion"
++  } else {
++    "proportion"  # default
++  }
+```
+
+**BEMÆRKNING:** `normalize_axis_value` understøtter ikke `internal_unit = "absolute"` i nuværende implementation. Tilføjelse af "absolute" path i `normalize_axis_value` er yderligere scope (estimeret +2h). Anbefaling: implementér NULL-fix (lav risiko) som separat commit, lad resten afvente.
+
+**Risiko:** Høj for fuld unit-mapping. Lav for NULL-fix alene.
+**Public API-ændring:** Nej (begge er `@keywords internal`).
+**Anslået fail-reduktion:** 1 (NULL-fix) / 9 (fuld unit-mapping, kræver mere scope).
+
+**Bruger-valg for NULL-fix:** `[ ]` apply / `[ ]` skip / `[ ]` modify
+**Bruger-valg for fuld unit-mapping:** `[ ]` apply (med extend-scope) / `[ ]` skip / `[ ]` modify
+
+---
+
+### Gruppe 4: BFHcharts-eskalering (3 TODOs)
+
+**Root cause:** Tests i `test-label-placement-core.R:49,257,284` tester BFHcharts-intern adfærd (`BFHcharts:::place_two_labels_npc()`). Dette er udenfor biSPCharts scope.
+
+**Approach:** Opdater skip-markør til `BFHcharts-followup` pattern for at signalere at fixes hører til i BFHcharts-repo.
+
+**Foreslået change (test-label-placement-core.R):**
+
+```diff
+-  skip("TODO Fase 3: ... (#203-followup)")
++  skip("TODO BFHcharts-followup: place_two_labels_npc validering (#203)")
+```
+
+```diff
+-  skip("TODO Fase 3: ... (#203-followup)")
++  skip("TODO BFHcharts-followup: NIVEAU 2 label flip parametrisering (#203)")
+```
+
+```diff
+-  skip("TODO Fase 3: ... (#203-followup)")
++  skip("TODO BFHcharts-followup: NIVEAU 3 shelf placement parametrisering (#203)")
+```
+
+**Risiko:** Nul (kun kommentar-ændring).
+**Public API-ændring:** Nej.
+**Anslået fail-reduktion:** 0 (tests forbliver skipped).
+
+**Bruger-valg:** `[x]` apply anbefalet (ren bookkeeping)
+
+---
+
+### Gruppe 5: Tvivlstilfælde — NAMESPACE-exports (2 TODOs)
+
+**Tests:** `test-performance-benchmarks.R:171` og `test-performance-benchmarks.R:184`
+**Funktioner:** `detect_columns_full_analysis()` og `detect_columns_name_based()`
+
+**Status:** Begge funktioner eksisterer i `R/fct_autodetect_unified.R` (linje 309 og 212) med `@keywords internal`. Tests kalder dem med `col_names`-only signatur (ikke `app_state`-parameter), men funktionen accepterer `app_state = NULL`.
+
+**Anbefaling:** K2 (tilføj `@export` til begge + `devtools::document()`). Men tests-kaldet matcher signatur (`app_state = NULL` som default). Dog: eksponering af interne autodetect-funktioner som public API kræver designbeslutning.
+
+**Alternativ approach:** Tilføj `@export` men behold `@keywords internal`-dokumentation, eller opret public wrapper-funktioner.
+
+**Risiko:** Medium. Eksponering af interne autodetect-funktioner ændrer public API.
+**Public API-ændring:** Ja.
+**Anslået fail-reduktion:** 2 tests.
+
+**Bruger-valg (for `detect_columns_full_analysis`):** `[ ]` add @export / `[ ]` add public wrapper / `[ ]` skip
+**Bruger-valg (for `detect_columns_name_based`):** `[ ]` add @export / `[ ]` add public wrapper / `[ ]` skip
+
+---
+
+### Gruppe 6: Individuelle K1-fixes
+
+| # | Fil | Linje | Problem | Foreslået approach | Risiko | Anslået fail-reduktion | Bruger-valg |
+|---|---|---|---|---|---|---|---|
+| 1 | `R/fct_file_operations.R:588` | 588 | `handle_csv_upload()` læser `app_state$data$current_data` i `debug_state_change()` uden `isolate()` i non-reactive kontekst | Tilføj `shiny::isolate()` rundt om `app_state$data$current_data` i debug_state_change-kaldet | Lav | 1 | `[ ]` apply / `[ ]` skip |
+| 2 | `R/fct_file_operations.R` | ~350 | `handle_excel_upload()` tilsvarende problem | Find og tilføj `isolate()` i handle_excel_upload | Lav | 1 | `[ ]` apply / `[ ]` skip |
+| 3 | `R/config_chart_types.R:32` | 32 | "MR-kort" er kommenteret ud i `CHART_TYPES_DA`. Test forventer `"mr"` at være tilgængeligt. | Uncomment MR-kort linjer i `CHART_TYPES_DA` (linje 32) og `CHART_TYPES_EN` (linje 46) | Medium (UI-ændring: ny chart-type i dropdown) | 1 | `[ ]` apply / `[ ]` skip |
+| 4 | Ny fil: `R/utils_chart_validation.R` | N/A | `create_chart_validator()` eksisterer ikke | Opret ny funktion der returnerer `list(validate_chart_data = function(chart_config, data) {...})` | Lav | 1 | `[ ]` apply / `[ ]` skip |
+| 5 | `R/utils_event_system.R` + test | 101 | `setup_event_listeners()` kan ikke unit-testes med `testServer(app = ...)` pattern (shiny v1.7+ breaking change) | Opret moduleServer-wrapper ELLER tilføj alternativ testbar entry-point. Høj effort. | Høj | 2 | `[ ]` apply / `[ ]` skip |
+
+---
+
+### Tvivlstilfælde (4 entries — afklaret i rapporten)
+
+| # | Original anbefaling | Task 5-vurdering |
+|---|---|---|
+| 1 | `detect_columns_full_analysis` K2 ELLER K1 | Se Gruppe 5. K2 (add @export). Kræver designbeslutning. |
+| 2 | `detect_columns_name_based` K2 ELLER K1 | Se Gruppe 5. K2 (add @export). Kræver designbeslutning. |
+| 3 | `testServer` pattern K1 vs K3 | Bekræftet K1 — se Gruppe 6 #5. Høj effort, anbefales skip. |
+| 4 | `detect_y_axis_scale` / `convert_by_unit_type` K1 vs K3 | Bekræftet K1 — opret nye public-facing facade-funktioner. Del af Gruppe 3 scope. |
+
+---
+
+### Fail-reduktion estimat (hvis alle godkendes)
+
+| Gruppe | Max fail-reduktion |
+|---|---|
+| Gruppe 1: State accessors | 17 |
+| Gruppe 2: manage_cache_size | 9 |
+| Gruppe 3: parse_danish_target NULL-fix | 1 |
+| Gruppe 3: Fuld unit-mapping (ekstra scope) | 8 (kræver mere) |
+| Gruppe 4: BFHcharts-skip opdatering | 0 |
+| Gruppe 5: NAMESPACE-exports | 2 |
+| Gruppe 6: file-upload isolate-fix | 2 |
+| Gruppe 6: MR-kort uncomment | 1 |
+| Gruppe 6: create_chart_validator | 1 |
+| Gruppe 6: observer-cleanup testServer | 2 |
+| **Total (konservativ, excl. Gruppe 3 fuld)** | **35** |
+| **Total (optimistisk, inkl. Gruppe 3 fuld)** | **43** |
+
+**Forventet fail-count efter alle K1+K3 fixes:** 57 - 7 (K3 done) - 35 til 43 (K1 konservativ/optimistisk) = **7 til 15 resterende SKIPs**
+
+Baseline var 57 TODO-SKIPs. Alle kan potentielt fjernes med fuld scope (inkl. Gruppe 3 unit-mapping og Gruppe 6 observer-cleanup).
+
+**Note:** Disse estimater er for TODO-SKIP-fjernelse, ikke for overordnet fail-count fra test-audit.json. Den samlede fail-reduction afhænger af om de nu-passable tests faktisk består (kræver faktisk kørsel).

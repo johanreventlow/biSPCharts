@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_performance_caching.R
 \name{get_cached_result}
 \alias{get_cached_result}
-\title{Cache Management Functions}
+\title{Get Cached Result}
 \usage{
 get_cached_result(cache_key)
 }
@@ -13,8 +13,5 @@ get_cached_result(cache_key)
 Cached result eller NULL hvis ikke fundet/expired
 }
 \description{
-Get Cached Result
-}
-\details{
 Henter cached result hvis det eksisterer og ikke er expired.
 }

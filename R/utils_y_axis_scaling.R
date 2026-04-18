@@ -468,6 +468,11 @@ validate_axis_value <- function(value, internal_unit) {
 #' @return Numeric value (legacy format)
 #' @keywords internal
 parse_danish_target <- function(target_input, y_data = NULL, y_axis_unit = NULL) {
+  # NULL-guard: undgå fejl i normalize_axis_value if-check
+  if (is.null(target_input)) {
+    return(NULL)
+  }
+
   # Determine internal unit based on y_data characteristics
   # For now, use proportion as default (matches most existing behavior)
   internal_unit <- if (!is.null(y_data)) {

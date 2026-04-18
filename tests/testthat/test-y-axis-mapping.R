@@ -1,5 +1,4 @@
 test_that("chart_type_to_ui_type mapping is correct", {
-  source("R/utils_y_axis_model.R")
 
   # Proportion charts → percent
   expect_equal(chart_type_to_ui_type("p"), "percent")
@@ -9,8 +8,8 @@ test_that("chart_type_to_ui_type mapping is correct", {
   expect_equal(chart_type_to_ui_type("u"), "rate")
   expect_equal(chart_type_to_ui_type("up"), "rate")
 
-  # Time between → time
-  expect_equal(chart_type_to_ui_type("t"), "time")
+  # Time between → time_days (Fase 2a: t-kort bruger dage som default tids-enhed)
+  expect_equal(chart_type_to_ui_type("t"), "time_days")
 
   # Count/measurement/others → count
   expect_equal(chart_type_to_ui_type("i"), "count")
@@ -21,7 +20,6 @@ test_that("chart_type_to_ui_type mapping is correct", {
 })
 
 test_that("run chart default y-axis with denominator presence", {
-  source("R/utils_y_axis_model.R")
 
   # RUN + with N → percent
   expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")
@@ -31,7 +29,6 @@ test_that("run chart default y-axis with denominator presence", {
 })
 
 test_that("run chart denominator toggle semantics (unit-only)", {
-  source("R/utils_y_axis_model.R")
 
   # Conceptual toggle: blank → selected N should imply percent
   expect_equal(decide_default_y_axis_ui_type("run", n_present = TRUE), "percent")

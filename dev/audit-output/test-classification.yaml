@@ -15,11 +15,15 @@
 
 
 metadata:
-  total_files: 114
+  total_files: 113
   audit_run: 2026-04-17T16:32:41+0200
   manifest_schema_version: '1.0'
+  last_updated: '2026-04-17'
+  phase2_note: 'Fase 2 salvage komplet. test-label-placement-bounds.R mergeret ind
+    i test-label-placement-core.R og slettet. 10 filer rewrittet (handling: rewrite
+    -> keep).'
   review_status:
-    reviewed: 114
+    reviewed: 113
     unreviewed: 0
     needs_triage: 0
 files:
@@ -105,9 +109,10 @@ files:
   - file: test-bfhcharts-integration.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 10/15 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: BFHcharts::create_spc_chart() -> bfh_qic(). 5 PASS,
+      1 SKIP+TODO (API-aendring dokumenteret). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-branding-globals.R
@@ -122,9 +127,11 @@ files:
   - file: test-cache-collision-fix.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 4/5 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: create_cached_reactive() returnerer reactive(), ikke
+      direkte vaerdi. 4 PASS, 3 SKIP+TODO (manage_cache_size() mangler, cache-navne
+      aendret). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cache-data-signature-bugs.R
@@ -148,10 +155,10 @@ files:
   - file: test-cache-reactive-lazy-evaluation.R
     audit_category: green-partial
     type: e2e
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: 'API-drift: refererede funktioner fjernet (7/8 fejl). Rewrite efter
-      API-stabilisering.'
+    rationale: 'Fase 2 salvage: manage_cache_size() ikke i namespace — alle testServer-tests
+      SKIP+TODO. 2 PASS, 7 SKIP. Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-centerline-handling.R
@@ -338,9 +345,11 @@ files:
   - file: test-e2e-workflows.R
     audit_category: green-partial
     type: integration
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 5/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: tilfoejede isolate() til alle reaktive laesninger
+      udenfor reaktiv kontekst. 4 PASS, 1 SKIP+TODO (create_chart_validator() mangler).
+      Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-edge-cases-comprehensive.R
@@ -428,9 +437,11 @@ files:
   - file: test-file-upload.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: validate_uploaded_file() virker udenfor reaktiv kontekst;
+      handle_csv/excel_upload() kræver reaktiv kontekst (SKIP+TODO). 8 PASS, 2 SKIP.
+      Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-foreign-column-names.R
@@ -480,22 +491,15 @@ files:
     rationale: Green-partial med 2/34 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-label-placement-bounds.R
-    audit_category: green-partial
-    type: unit
-    handling: rewrite
-    reviewed: yes
-    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-label-placement-core.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Fixture-filer mangler (1/1 fejl). Rewrite forventet efter fixtures-oprydning
-      i Fase 3.
+    rationale: 'Fase 2 salvage: source(utils_standalone...) fjernet — funktioner
+      tilgaas via BFHcharts:::. Absorberede test-label-placement-bounds.R (6 tests).
+      21 PASS, 3 SKIP+TODO (label_height oevre grænse + NIVEAU 2+3 fallback ikke
+      udloeserbare). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-logging-debug-cat.R
@@ -563,9 +567,11 @@ files:
   - file: test-observer-cleanup.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: testServer(app = function(...)) virker ikke — observers
+      testes direkte. 6 PASS, 2 SKIP+TODO (setup_event_listeners kræver moduleServer).
+      Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-outlier-count-latest-part.R
@@ -604,9 +610,10 @@ files:
   - file: test-performance-benchmarks.R
     audit_category: green-partial
     type: benchmark
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 9/16 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: generateSPCPlot() signatur aendret til config-param;
+      detect_columns-funktioner ikke i namespace. 6 PASS, 9 SKIP+TODO. Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-phase-2c-reactive-chain.R
@@ -619,9 +626,10 @@ files:
   - file: test-plot-core.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 4/8 fejl. Handling=rewrite baseret paa fail-ratio.
+    rationale: 'Fase 2 salvage: CHART_TYPES_DA-navne opdateret til lange beskrivende
+      navne. 4 PASS, 2 SKIP+TODO (MR-kort ikke i CHART_TYPES_DA). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-plot-generation-performance.R
@@ -873,10 +881,11 @@ files:
   - file: test-utils-state-accessors.R
     audit_category: green-partial
     type: unit
-    handling: rewrite
+    handling: keep
     reviewed: yes
-    rationale: 'API-drift: refererede funktioner fjernet (26/36 fejl). Rewrite efter
-      API-stabilisering.'
+    rationale: 'Fase 2 TDD-rewrite: create_app_state() returnerer environment (ikke
+      reactivevalues); is_plot_ready() checker visualization$plot_ready. 12 PASS,
+      17 SKIP+TODO (30 accessor-funktioner mangler). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-visualization-dimensions.R

@@ -118,11 +118,17 @@ decide_default_y_axis_ui_type <- function(chart_type, n_present) {
 #' @return one of {"count","percent","rate","time"}
 #' @keywords internal
 chart_type_to_ui_type <- function(chart_type) {
-  # "t" er en kendt qic-kode, men ikke i CHART_TYPES_EN endnu, så vi
-  # matcher den direkte før kaldet til get_qic_chart_type() (som ville
-  # falde tilbage til "run").
+  # "t", "pp" og "up" er kendte qic-koder, men ikke i CHART_TYPES_EN endnu,
+  # så vi matcher dem direkte før kaldet til get_qic_chart_type() (som
+  # ville falde tilbage til "run" og give forkert UI-type).
   if (identical(chart_type, "t")) {
     return("time_days")
+  }
+  if (identical(chart_type, "pp")) {
+    return("percent")
+  }
+  if (identical(chart_type, "up")) {
+    return("rate")
   }
   ct <- get_qic_chart_type(chart_type)
   if (ct %in% c("p", "pp")) {

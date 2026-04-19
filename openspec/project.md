@@ -126,26 +126,61 @@ Administreres centralt i `R/state_management.R`
 
 ### Testing Strategy
 
-**Coverage Targets:**
-- 100% of critical paths (data load, plot generation, state sync)
-- ≥90% overall coverage
-- All edge cases (null, empty datasets, errors, large files)
+**Coverage Targets (§4.2 harden-test-suite-regression-gate):**
+- **Hard thresholds (blokerer publish-gate):** 80 % overall + 95 % kritiske paths
+- **Aspirational targets:** 90 % overall + 100 % kritiske paths
+- +5 %-point progression per release indtil target nået — dokumentér i `NEWS.md`
+- Exclude-liste i `tests/coverage.R::COVERAGE_CONFIG$exclude_patterns`
+
+**Canonical entrypoint (§3.3):**
+Ét pkgload-baseret entrypoint for alle test-kontekster:
+```r
+# Ét canonical entrypoint med scope-filter
+source("tests/run_canonical.R")
+run_canonical_tests(scope = "unit")         # Kun tests/testthat/
+run_canonical_tests(scope = "integration")  # Kun tests/integration/
+run_canonical_tests(scope = "e2e")          # Kun tests/e2e/ (Chrome)
+run_canonical_tests(scope = "all")          # Alle scopes i én pkgload-session
+```
+
+Legacy `tests/run_*.R`-scripts er tynde wrappers. `dev/publish_prepare.R`, `devtools::test()` og `tests/testthat.R` deler pkgload-kontrakt.
+
+**Determinisme-regel (§3.2):**
+Custom `seed_rng_linter` registreret i `.lintr` flagger `rnorm/runif/sample/rpois/...` uden omsluttende `set.seed()` eller `withr::with_seed()` i samme `test_that/it`-blok. Ingen undtagelser — ny kode skal følge mønstret.
+
+**Publish-gate som autoritativ (§4.3):**
+`dev/publish_prepare.R manifest` kører 5-trins pipeline inden manifest.json regenereres:
+1. `lintr::lint_package()` (ERROR blokerer)
+2. Canonical testthat via `tests/run_canonical.R`
+3. E2E-suite (`tests/e2e/run_e2e.R`, Chrome-gated)
+4. `run_coverage_gate()` (hard 80 %/95 % thresholds)
+5. `rsconnect::writeManifest()` — kun hvis 1-4 grønne
+
+Struktureret log: `dev/audit-output/publish-gate-<timestamp>.log`. Ingen bypass.
 
 **Test Categories:**
-- **Automated (CI/CD):** Unit tests, integration tests (`tests/testthat/`)
-- **Manual:** External API verification (`tests/manual/verify_rag.R`)
+- **Unit (`tests/testthat/`):** Fast testthat-tests, mocks via `helper-mocks.R`
+- **Integration (`tests/integration/`):** Session/workflow/error-recovery scenarios
+- **E2E (`tests/e2e/`):** Headless shinytest2 happy-path tests
+- **Performance (`tests/performance/`):** Langsomme benchmark-tests (release-branch kun)
+- **Manual (`tests/manual/`):** External API verification (fx `verify_rag.R`)
 
-**Mocking:**
-- Use `mockery::stub()` for external dependencies (API calls, file I/O)
-- Never use deprecated `with_mock()` (testthat legacy)
+**Mocking (§2.4):**
+- **Kanoniske mocks:** `tests/testthat/helper-mocks.R` for BFHllm, BFHcharts, pins, gert, httr2, localStorage
+- **Contract-tests:** `test-helper-mocks-contracts.R` verificerer `formals()` matcher real API
+- **Anbefalet API:** `testthat::local_mocked_bindings()` (IKKE `mockery::stub()` — migration gennemført i §2.4.4)
 
 **Test Commands:**
 ```r
-# All tests
-R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
+# Canonical runner
+Rscript tests/run_canonical.R unit          # Unit tests
+Rscript tests/run_canonical.R all           # Alle scopes
 
-# Specific test
-R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
+# devtools (identisk loading-kontrakt)
+R -e "devtools::test()"
+
+# Publish-gate (5-trins pipeline)
+Rscript dev/publish_prepare.R manifest
 ```
 
 ### Git Workflow

@@ -899,16 +899,39 @@ alle trin grønne.
 
 ## 5. Dokumentation
 
-- [ ] 5.1 Opdater `CLAUDE.md` §6 (pre-commit-tjekliste) med pre-push
+- [x] 5.1 Opdater `CLAUDE.md` §6 (pre-commit-tjekliste) med pre-push
       referencer.
-- [ ] 5.2 Opdater `tests/README.md` med ny struktur (e2e/, _archive/).
-- [ ] 5.3 Opdater `openspec/project.md` §Testing Strategy med:
+      **Leveret via §3.1.4 (commit `d1ccf3c`):** CLAUDE.md §6 udvidet
+      med "Git Hooks (pre-push gate)"-sektion inkl. installation,
+      bypass, og #239-note.
+- [x] 5.2 Opdater `tests/README.md` med ny struktur (e2e/, _archive/).
+      **Leveret 2026-04-19:** Directory Structure-diagram opdateret
+      til at inkludere helper-bootstrap/fixtures/mocks, fixtures/
+      subdirectory, e2e/-directory, _archive/-directory, og
+      `run_canonical.R`-entrypoint. Tre nye noter tilføjet: canonical
+      entrypoint, pre-push hook, publish-gate.
+- [x] 5.3 Opdater `openspec/project.md` §Testing Strategy med:
       - Determinisme-regel
       - Canonical entrypoint
       - Publish-gate som autoritativ
-- [ ] 5.4 Opdater `docs/CONFIGURATION.md` med git-hooks-installation.
-- [ ] 5.5 Nyt ADR: `docs/adr/ADR-NNN-test-regression-gate-design.md` der
+      **Leveret 2026-04-19:** §Testing Strategy fuldstændigt omskrevet.
+      Nye afsnit: Coverage Targets (hard 80/95 + target 90/100),
+      Canonical entrypoint (pkgload-kontrakt), Determinisme-regel
+      (seed_rng_linter), Publish-gate (5-trins pipeline), Test
+      Categories (unit/integration/e2e/performance/manual), Mocking
+      (kanoniske mocks + contract-tests + local_mocked_bindings).
+- [x] 5.4 Opdater `docs/CONFIGURATION.md` med git-hooks-installation.
+      **Leveret via §3.1.4 (commit `d1ccf3c`):** docs/CONFIGURATION.md
+      har nu komplet "Git Hooks"-afsnit med installation,
+      fast/full-tilstande, bypass-detaljer, og #239-blokker-note.
+- [x] 5.5 Nyt ADR: `docs/adr/ADR-NNN-test-regression-gate-design.md` der
       dokumenterer CI-fravalget og pre-push/publish-gate som kompensation.
+      **Leveret 2026-04-19:** `docs/adr/ADR-017-test-regression-gate-
+      design.md` — dokumenterer beslutningen om lokale gates
+      (pre-push + publish-prepare) som kompensation for midlertidig
+      `continue-on-error: true` i R-CMD-check.yaml. Specificerer
+      opfølgning ved #239-lukning (fjern CI-bypass) og ADR-gennemgang
+      ved pre-1.0 → 1.0-overgang.
 
 ---
 
@@ -932,15 +955,23 @@ alle trin grønne.
 
 ### 6.2 OpenSpec-validering
 
-- [ ] 6.2.1 Kør `openspec validate harden-test-suite-regression-gate --strict`
+- [x] 6.2.1 Kør `openspec validate harden-test-suite-regression-gate --strict`
       og resolver evt. issues.
-- [ ] 6.2.2 Bekræft at spec-deltas refererer eksisterende
+      **Udført 2026-04-19:** Se §6.3.1 arkivering-output.
+- [x] 6.2.2 Bekræft at spec-deltas refererer eksisterende
       `test-infrastructure`-capability korrekt.
-- [ ] 6.2.3 Request maintainer-approval før implementation starter
+      **Verificeret via §6.2.1.**
+- [x] 6.2.3 Request maintainer-approval før implementation starter
       (stage 2).
+      **N/A:** Implementation gennemført direkte pr. maintainer-
+      instruktion (Auto mode + continuous approval flow). Master-
+      issue #228 og 4 sub-issues (#229-#232) dokumenterer scope og
+      acceptance per fase. Alle 4 faser leveret og lukket.
 
 ### 6.3 Arkivering
 
-- [ ] 6.3.1 Efter alle faser deployeret: `openspec archive
+- [x] 6.3.1 Efter alle faser deployeret: `openspec archive
       harden-test-suite-regression-gate` og opdatér spec i
       `openspec/specs/test-infrastructure/spec.md`.
+      **Leveret 2026-04-19:** Se commit-historik på branch
+      `claude/continue-openspec-apply-Nj9yT` for arkivering.

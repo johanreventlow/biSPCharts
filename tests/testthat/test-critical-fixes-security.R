@@ -6,19 +6,67 @@
 # Use helper.R's pkgload setup instead of sourcing global.R
 # helper.R is automatically loaded by testthat
 
-test_that("Input sanitization forhindrer SQL injection patterns", {
-  # sanitize_user_input gør karakter-whitelist filtrering (ikke SQL injection prevention)
-  # SQL keywords som DROP, INSERT, SELECT bliver IKKE fjernet — kun tegn der ikke er i
-  # allowed_chars pattern fjernes. SQL injection prevention er ikke scope for denne funktion
-  # (appen bruger ikke SQL, kun CSV/Excel data).
-  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (SQL injection)")
+test_that("SQL injection scope: ikke relevant for biSPCharts threat-model", {
+  # RATIONALE (#244 Option B): biSPCharts er en intern hospitalsapp der
+  # konsumerer CSV/Excel uploads fra kvalitetsmedarbejdere. Der bruges
+  # ingen SQL direkte — al data-persistens er via filer + localStorage.
+  # SQL injection prevention er derfor ikke scope for sanitize_user_input.
+  #
+  # sanitize_user_input laver character-whitelist filtrering (XSS + kontrol-
+  # tegn), hvilket er den relevante beskyttelse for tekst-input i UI.
+  # Denne test dokumenterer bevidst at SQL-keywords IKKE filtreres — det
+  # er forventet adfærd for en app uden SQL-backend.
+  sql_like_input <- "SELECT name FROM patienter WHERE id = 1"
+  result <- sanitize_user_input(sql_like_input, html_escape = FALSE)
+  expect_true(nchar(result) > 0,
+    info = "SQL-keywords bevares (app bruger ikke SQL, så ingen risiko)"
+  )
 })
 
-test_that("Input sanitization forhindrer path traversal attacks", {
-  # sanitize_user_input laver ikke path traversal prevention.
-  # Dot-dot sekvenser (".." og "%2e%2e") bevares fordi de kan indgå i legitim tekst.
-  # Path traversal håndteres af validate_safe_path() (separat funktion).
-  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (path traversal)")
+test_that("validate_safe_file_path() blokerer path traversal attacks", {
+  # Path traversal beskyttelse leveres af validate_safe_file_path()
+  # (R/fct_file_operations.R) — ikke af sanitize_user_input som kun laver
+  # text-sanitization. Denne test verificerer den faktiske app-beskyttelse.
+  skip_if_not(
+    exists("validate_safe_file_path", mode = "function"),
+    "validate_safe_file_path not available"
+  )
+
+  # Path traversal-forsøg uden for allowed_bases → stop()
+  expect_error(
+    validate_safe_file_path("/etc/passwd"),
+    "Sikkerhedsfejl",
+    info = "Absolut sti uden for tempdir/data skal afvises"
+  )
+
+  expect_error(
+    validate_safe_file_path("../../etc/passwd"),
+    "Sikkerhedsfejl",
+    info = "Relative path traversal skal afvises"
+  )
+
+  # Input-validering: NULL/tom/multi-element afvises
+  expect_error(
+    validate_safe_file_path(NULL),
+    "Sikkerhedsfejl",
+    info = "NULL input skal afvises"
+  )
+
+  expect_error(
+    validate_safe_file_path(c("a", "b")),
+    "Sikkerhedsfejl",
+    info = "Multi-element vektor skal afvises"
+  )
+
+  # Legitim tempdir-fil skal accepteres
+  safe_temp_file <- tempfile(fileext = ".csv")
+  writeLines("a,b\n1,2", safe_temp_file)
+  on.exit(unlink(safe_temp_file), add = TRUE)
+
+  result <- validate_safe_file_path(safe_temp_file)
+  expect_true(is.character(result) && nchar(result) > 0,
+    info = "Legitim tempdir-sti skal valideres"
+  )
 })
 
 test_that("Input sanitization håndterer Unicode edge cases", {

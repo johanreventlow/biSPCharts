@@ -315,11 +315,11 @@ phase_manifest <- function() {
     lint_res <- tryCatch(
       {
         lints <- lintr::lint_package()
-        errors <- Filter(function(x) x$type == "error", lints)
+        errors <- purrr::keep(lints, ~ .x$type == "error")
         if (length(errors) > 0) {
           stop(sprintf("%d lintr ERROR(s) fundet", length(errors)))
         }
-        warnings_ct <- length(Filter(function(x) x$type == "warning", lints))
+        warnings_ct <- length(purrr::keep(lints, ~ .x$type == "warning"))
         list(ok = TRUE, warnings = warnings_ct)
       },
       error = function(e) e

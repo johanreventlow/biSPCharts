@@ -1,5 +1,12 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Bug fixes
+
+* **`log_error`-kald med ugyldige argumenter (#245):** `fct_spc_plot_generation.R`
+  kaldte `log_error()` med `session = NULL` og `show_user = TRUE` som ikke
+  eksisterer i logging-API'et — medførte at alle `generateSPCPlot()`-tests
+  fejlede. Fjernet ukendte argumenter.
+
 ## Interne ændringer
 
 * **Test-hygiene L1-L14 (#247):** Addresserer LOW findings fra automatisk review
@@ -24,6 +31,22 @@
     `dev/publish_prepare.R`
   - L13: `library()` wrappet i `suppressPackageStartupMessages()` i e2e/setup.R
   - L14: No-op — allerede fixet i `bda2a0a`
+
+* **Test-triage SPC-plot geom-assertions (#245):** 6 skips triageret mod
+  BFHcharts 0.8.0 API-ændringer. Alle skips opdateret med klare cross-repo
+  referencer:
+  - L294 + L329 (`test-spc-plot-generation-comprehensive.R`): `geom_marquee`
+    API-ændring — `type`-kolonne fjernet, `size` 4→6, `text_color`→`color`.
+    Skippet med migration-note til BFHcharts 0.8.0 (#245, #216).
+  - L471 (`test-generateSPCPlot-comprehensive.R`): Character x-kolonne
+    returnerer `integer` (ikke `factor`) fra BFHcharts. Cross-repo finding.
+  - L588 (`test-spc-plot-generation-comprehensive.R`): Tekstbaserede måneder
+    parses til `POSIXct` (ikke `factor`) af BFHcharts. Cross-repo finding.
+  - L59 (`test-generateSPCPlot-comprehensive.R`): Run charts returnerer
+    `ucl`/`lcl` fra BFHcharts — per SPC-domæneregel burde de være fraværende.
+    Cross-repo BFHcharts-bug.
+  - L261 (`test-generateSPCPlot-comprehensive.R`): Time-transformation
+    konverterer ikke værdier > 60 min — relateret til #238 time-format-refactor.
 
 ## Security
 

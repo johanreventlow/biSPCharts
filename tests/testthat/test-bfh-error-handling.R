@@ -160,91 +160,95 @@ test_that("log_with_throttle validates parameters", {
   )
 })
 
-# Test: safe_operation integration with BFH service
+# Test: Input-validering kaster fejl (opdateret efter #240)
+# Tidligere forventede testene NULL-return via safe_operation, men #240 indførte
+# eksplicit validate_spc_inputs() der kaster stop() FØR safe_operation-wrapper
+# — fejl propagerer nu til caller med danske fejlbeskeder.
 test_that("compute_spc_results_bfh handles missing required parameters", {
-  # Missing data parameter
-  result <- compute_spc_results_bfh(
-    data = NULL,
-    x_var = "dato",
-    y_var = "vaerdi",
-    chart_type = "run"
+  # Missing data parameter skal kaste fejl
+  expect_error(
+    compute_spc_results_bfh(
+      data = NULL,
+      x_var = "dato",
+      y_var = "vaerdi",
+      chart_type = "run"
+    ),
+    "data parameter er p.*kr.*vet"
   )
-
-  expect_null(result)
 })
 
 test_that("compute_spc_results_bfh handles invalid chart type", {
   data <- create_test_data()
 
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "dato",
-    y_var = "vaerdi",
-    chart_type = "invalid_type"
+  expect_error(
+    compute_spc_results_bfh(
+      data = data,
+      x_var = "dato",
+      y_var = "vaerdi",
+      chart_type = "invalid_type"
+    ),
+    "chart_type.*invalid|Must be one of"
   )
-
-  expect_null(result)
 })
 
 test_that("compute_spc_results_bfh handles empty data gracefully", {
   empty_data <- data.frame()
 
-  result <- compute_spc_results_bfh(
-    data = empty_data,
-    x_var = "dato",
-    y_var = "vaerdi",
-    chart_type = "run"
+  expect_error(
+    compute_spc_results_bfh(
+      data = empty_data,
+      x_var = "dato",
+      y_var = "vaerdi",
+      chart_type = "run"
+    ),
+    "r.*kker fundet|empty dataset|empty"
   )
-
-  expect_null(result)
 })
 
 test_that("compute_spc_results_bfh handles insufficient data points", {
-  # Only 2 points (minimum is 3)
+  # Only 2 points (minimum is 3 efter #241)
   small_data <- create_test_data(n = 2)
 
-  result <- compute_spc_results_bfh(
-    data = small_data,
-    x_var = "dato",
-    y_var = "vaerdi",
-    chart_type = "run"
+  expect_error(
+    compute_spc_results_bfh(
+      data = small_data,
+      x_var = "dato",
+      y_var = "vaerdi",
+      chart_type = "run"
+    ),
+    "For f.* datapunkter|too few|insufficient"
   )
-
-  expect_null(result)
 })
 
 test_that("compute_spc_results_bfh requires denominator for rate charts", {
   data <- create_test_data()
 
   # P-chart without n_var should fail
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "dato",
-    y_var = "vaerdi",
-    chart_type = "p",
-    n_var = NULL # Missing denominator
+  expect_error(
+    compute_spc_results_bfh(
+      data = data,
+      x_var = "dato",
+      y_var = "vaerdi",
+      chart_type = "p",
+      n_var = NULL # Missing denominator
+    ),
+    "n_var.*required|denominator.*required"
   )
-
-  expect_null(result)
 })
 
 # Test: Error logging integration
 test_that("Errors are logged with correct component tags", {
-  # Note: We cannot mock base::cat since it's locked
-  # Instead, we verify that safe_operation returns NULL on error
-  # and that error classification works correctly
-
-  # Trigger validation error
+  # Trigger validation error (missing column)
   data <- create_test_data()
-  result <- suppressMessages(compute_spc_results_bfh(
-    data = data,
-    x_var = "missing_column",
-    y_var = "vaerdi",
-    chart_type = "run"
-  ))
-
-  # Operation should return NULL on error (via safe_operation)
-  expect_null(result)
+  expect_error(
+    suppressMessages(compute_spc_results_bfh(
+      data = data,
+      x_var = "missing_column",
+      y_var = "vaerdi",
+      chart_type = "run"
+    )),
+    "missing_column.*ikke fundet|missing column"
+  )
 
   # Verify error classification for this type of error
   column_error <- simpleError("Missing required columns: missing_column")

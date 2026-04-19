@@ -275,9 +275,11 @@ test_that("performance of tidyverse vs base R operations", {
     large_data[1:3] |> purrr::map_int(~ sum(!is.na(.x)))
   })
 
-  # Both should complete successfully
-  expect_true(base_r_time["elapsed"] > 0)
-  expect_true(tidyverse_time["elapsed"] > 0)
+  # Begge operationer skal fuldføres uden fejl.
+  # system.time() kan returnere 0 for meget hurtige operationer på moderne hardware
+  # — brug >= 0 i stedet for > 0 for at undgå flaky tests.
+  expect_true(base_r_time["elapsed"] >= 0)
+  expect_true(tidyverse_time["elapsed"] >= 0)
 
   # Results should be equivalent
   base_result <- sapply(large_data[1:3], function(x) sum(!is.na(x)))

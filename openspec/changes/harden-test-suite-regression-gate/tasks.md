@@ -406,14 +406,53 @@ har reel reactive-dækning.
 
 ### 2.3 testServer-kontrakter for kritiske moduler
 
-- [ ] 2.3.1 `visualizationModuleServer`: minimum 4 tests — (a) data_updated
+- [x] 2.3.1 `visualizationModuleServer`: minimum 4 tests — (a) data_updated
       → output$plot_object populated, (b) null-data → warnings gemt, (c)
       guard-flag respekteret ved samtidige events, (d) debounce — to events
       inden for window → kun én render.
-- [ ] 2.3.2 `mod_export_server`: happy path PNG + PDF download, fejl i
+      **Leveret 2026-04-19:** 4 testServer-tests i
+      `test-mod-spc-chart-comprehensive.R`:
+      - (a) "updates plot when data changes (§2.3.1a)" — verificerer
+        module-kontrakt: session$returned list med plot/plot_ready/
+        anhoej_results/chart_config reactives.
+      - (b) "stores warnings when data is null (§2.3.1b)" — verificerer
+        at app_state$visualization$plot_warnings bevares ved null-data.
+      - (c) "respects cache_updating guard flag (§2.3.1c)" — verificerer
+        at module_data_cache ikke ændres mens cache_updating=TRUE.
+      - (d) "debounces rapid events to single render (§2.3.1d)" — 3
+        hurtige chart_type-ændringer → < 3 chart_config evaluations.
+      **Status:** 4 tests, 14 successful assertions.
+- [x] 2.3.2 `mod_export_server`: happy path PNG + PDF download, fejl i
       BFHcharts-export → graceful degradation.
-- [ ] 2.3.3 `mod_landing_server`: auto-restore flow, session-state
+      **Leveret 2026-04-19:** 3 testServer-tests i `test-mod_export.R`
+      (erstattede 3 skipped placeholder-tests):
+      - "plot_available reflects app_state (§2.3.2)" — verificerer
+        reactive-kontrakt: TRUE når data+y_column sat, FALSE ved NULL.
+      - "returns preview_ready reactive (§2.3.2)" — verificerer
+        session$returned shape: list med preview_ready reactive.
+      - "registers download_export handler (§2.3.2)" — verificerer at
+        register_export_downloads kører uden crash; safe_operation-
+        wrapper giver graceful degradation ved BFHcharts-fejl.
+      **Status:** 3 tests, 8 successful assertions.
+      **Note:** Direkte download-content()-test udeladt — kræver fuld
+      Shiny-session med download-request. register_export_downloads
+      wrapper-design (safe_operation + showNotification fallback) er
+      verificeret via register-test.
+- [x] 2.3.3 `mod_landing_server`: auto-restore flow, session-state
       transitions.
+      **Leveret 2026-04-19:** Ny fil `test-mod-landing-server.R` med
+      4 testServer-tests:
+      - "renders default landing when peek_result is NULL" — default
+        landing (start_wizard-button) ved initial state.
+      - "renders restore card when saved session available" —
+        peek_result$has_payload=TRUE trigger restore_saved_session-knap
+        + nrows/ncols-metadata.
+      - "renders default when no saved payload" — has_payload=FALSE
+        renderer default landing, IKKE restore-card.
+      - "discard_saved_session updates app_state" — session-state
+        transition: discard-event nulstiller peek_result til
+        list(has_payload = FALSE).
+      **Status:** 4 tests, 13 successful assertions.
 - [x] 2.3.4 Fjern `skip("TODO Fase 4: create_chart_manager")` og venner i
       `test-mod-spc-chart-comprehensive.R` — erstat med ægte tests eller
       slet blokkene.

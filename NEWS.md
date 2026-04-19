@@ -1,5 +1,29 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Interne ændringer (Fase 1 saneringsarbejde, #228/#229)
+
+* **Test-artefakter flyttet ud af aktiv suite** (jf. `harden-test-suite-
+  regression-gate` §1.3):
+  - `tests/testthat/archived/` (19 filer) → `tests/_archive/testthat-legacy/`,
+    kommer ud af testthat's auto-discovery-scope. Git-historik bevaret for
+    reference (commit `177e704`).
+  - `tests/testthat/_problems/` (20 testthat edition 3-artefakter) slettet
+    lokalt; allerede i `.gitignore`.
+* **Broken tests opryddet fra audit-rapport** (kategori `stub`):
+  - `test-app-basic.R` slettet — brugte globalt `AppDriver`-objekt der ikke
+    eksisterede, gav 2 errors per kørsel. Test-scope (app starter + velkomst-
+    side) flyttes til Fase 4 shinytest2-suite (commit `41e6fa7`).
+  - `test-denominator-field-toggle.R` fikset — fjernede assertions for
+    ikke-supporterede chart types (`mr`, `g`) hvor `get_qic_chart_type()`
+    fallback til `"run"` gav false positives (commit `f67f8a9`).
+  - `tests/performance/test_data_load_performance.R` fikset — "DEBUGGING:"-
+    overskrift renameret til "Debug-info:" for at undgå false positive match
+    mod `cat("DEBUG"`-regex i `test-logging-debug-cat.R` (commit `fdab691`).
+* **Kendt resterende arbejde i Fase 1:**
+  - §1.1.8 PR A3 (catch-all restende fjernede funktioner)
+  - §1.2 TODO-skips (92 kald — kræver reparér/slet/issue-reference-beslutning)
+  - §1.4 audit-kategorifordeling skal re-måles efter ovenstående
+
 ## Interne ændringer
 
 * **Cross-repo bump:** `BFHcharts (>= 0.8.1)` og `BFHllm (>= 0.1.2)`. Begge

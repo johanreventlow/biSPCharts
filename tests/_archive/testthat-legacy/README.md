@@ -23,8 +23,12 @@ Files in this directory are from earlier development phases and have been supers
 
 If you need to reference old test cases from archived files:
 
-1. Check git history: `git log --follow -- tests/testthat/archived/`
-2. View file at specific commit: `git show <commit>:tests/testthat/test-<name>.R`
+1. Check git history: `git log --follow -- tests/_archive/testthat-legacy/`
+2. View file at specific commit: `git show <commit>:tests/_archive/testthat-legacy/test-<name>.R`
+
+Note: Filerne blev oprindeligt arkiveret i `tests/testthat/archived/` og flyttet
+til `tests/_archive/testthat-legacy/` i 2026-04-19 for at komme ud af
+testthat's auto-discovery-scope (jf. `harden-test-suite-regression-gate` §1.3.3).
 
 All test logic has been preserved in current test files or was found to be redundant.
 
@@ -42,4 +46,4 @@ Don't archive:
 
 ---
 
-**Last updated:** 2026-04-12 (Phase 1a: Delete stub files)
+**Last updated:** 2026-04-19 (Moved from `tests/testthat/archived/` → `tests/_archive/testthat-legacy/` for at komme ud af testthat-scope)

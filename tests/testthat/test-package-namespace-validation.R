@@ -36,7 +36,9 @@ test_that("Package DESCRIPTION and NAMESPACE are consistent", {
   desc <- read.dcf(desc_path)
 
   # TEST: Package name er korrekt
-  expect_equal(desc[1, "Package"], "biSPCharts")
+  # NOTE (#239 — package/infra): read.dcf returnerer en navngivet character-matrix;
+  # as.character() fjerner names-attributten så expect_equal sammenligner værdier korrekt.
+  expect_equal(as.character(desc[1, "Package"]), "biSPCharts")
 
   # TEST: Version følger semantic versioning
   version <- desc[1, "Version"]
@@ -53,7 +55,10 @@ test_that("Package DESCRIPTION and NAMESPACE are consistent", {
   expect_true(length(exports) > 0, info = "NAMESPACE should contain export statements")
 
   # TEST: Key exports er til stede
-  key_exports <- c("run_app", "initialize_app")
+  # NOTE (#239 — package/infra): initialize_app() er @keywords internal og
+  # eksporteres IKKE i NAMESPACE — den er en intern hjælpefunktion.
+  # Kun run_app() er den offentlige API til at starte appen.
+  key_exports <- c("run_app")
   for (export in key_exports) {
     pattern <- paste0("^export\\(", export, "\\)")
     expect_true(

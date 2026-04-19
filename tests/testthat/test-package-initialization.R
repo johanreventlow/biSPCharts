@@ -2,7 +2,6 @@
 # Tests for package-based initialization without filesystem dependencies
 
 test_that("initialize_app() works with package loading", {
-
   # Test that initialize_app can run without requiring source() calls
   result <- initialize_app()
 
@@ -15,7 +14,6 @@ test_that("initialize_app() works with package loading", {
 })
 
 test_that("Package functions are available", {
-
   # Test that essential functions are loaded via package
   essential_functions <- c(
     "create_app_state",
@@ -28,30 +26,32 @@ test_that("Package functions are available", {
 
   for (func_name in essential_functions) {
     expect_true(exists(func_name, mode = "function"),
-                info = paste("Function", func_name, "should be available"))
+      info = paste("Function", func_name, "should be available")
+    )
   }
 })
 
 test_that("Branding configuration is available", {
+  # NOTE (#239 — package/infra): Branding-globals er migreret fra .GlobalEnv
+  # til `claudespc_env` (pakke-environment) for at undgå namespace-forurening.
+  # Tests bruger nu getter-funktioner i stedet for direkte exists()-tjek.
+  # Se R/config_branding_getters.R og R/zzz.R::initialize_package_globals().
 
-  # Test that branding globals are set by package .onLoad
-  expect_true(exists("HOSPITAL_NAME"))
-  expect_true(exists("my_theme"))
-  expect_true(exists("HOSPITAL_LOGO_PATH"))
+  # Test branding via getter-funktioner (nuværende API)
+  hospital_name <- get_hospital_name()
+  expect_type(hospital_name, "character")
+  expect_length(hospital_name, 1)
+  expect_true(nzchar(hospital_name))
 
-  # Test branding values
-  expect_type(HOSPITAL_NAME, "character")
-  expect_length(HOSPITAL_NAME, 1)
-  expect_true(nzchar(HOSPITAL_NAME))
+  hospital_theme <- get_bootstrap_theme()
+  expect_s3_class(hospital_theme, "bs_theme")
 
-  expect_s3_class(my_theme, "bs_theme")
-
-  expect_type(HOSPITAL_LOGO_PATH, "character")
-  expect_length(HOSPITAL_LOGO_PATH, 1)
+  logo_path <- get_hospital_logo_path()
+  expect_type(logo_path, "character")
+  expect_length(logo_path, 1)
 })
 
 test_that("initialize_app() returns valid configuration", {
-
   result <- initialize_app()
 
   # Test config structure
@@ -74,7 +74,6 @@ test_that("initialize_app() returns valid configuration", {
 })
 
 test_that("Initialization verification works correctly", {
-
   result <- initialize_app()
   verification <- result$verification
 
@@ -106,7 +105,6 @@ test_that("Initialization verification works correctly", {
 })
 
 test_that("get_initialization_status_report() works", {
-
   result <- initialize_app()
   status_report <- get_initialization_status_report(result)
 
@@ -124,7 +122,6 @@ test_that("get_initialization_status_report() works", {
 })
 
 test_that("No filesystem dependencies in initialization", {
-
   # Test that initialization doesn't try to source files
   # This is a regression test for the old source() chain
 
@@ -135,7 +132,7 @@ test_that("No filesystem dependencies in initialization", {
   unlockBinding("file.exists", baseenv())
   assign("file.exists", function(path) {
     if (any(grepl("^R/", path) | grepl("/R/", path))) {
-      return(FALSE)  # Simulate missing source files
+      return(FALSE) # Simulate missing source files
     }
     old_file_exists(path)
   }, envir = baseenv())
@@ -152,7 +149,6 @@ test_that("No filesystem dependencies in initialization", {
 })
 
 test_that("Package-based loading is robust", {
-
   # Test with missing config override
   result1 <- initialize_app(config_override = NULL)
   expect_type(result1, "list")
@@ -169,7 +165,6 @@ test_that("Package-based loading is robust", {
 })
 
 test_that("Performance optimizations work without file dependencies", {
-
   config <- list(
     testing = list(auto_load_enabled = TRUE),
     development = list(auto_restore_enabled = FALSE)

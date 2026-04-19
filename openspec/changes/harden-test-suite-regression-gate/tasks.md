@@ -53,6 +53,22 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 - [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.
+      **Batch 3 (kategori E m/eksisterende issue-refs, 2026-04-19):**
+      10 skips re-labelet til at referere eksisterende issues:
+      - `test-cache-reactive-lazy-evaluation.R` (2 skips) →
+        `skip("Afventer fix i create_cached_reactive ... — se #212")`.
+      - `test-parse-danish-target-unit-conversion.R` (8 skips) →
+        `skip("Afventer parse_danish_target unit-awareness refactor — se #213 (...)")`.
+      Alle tidligere `TODO Fase 3`-markers fjernet. test_that-titler
+      opdateret fra "TODO Fase 3: ..." til "#213: ..." for klarhed.
+      **Nu tilbage:** 57 skip("TODO")-kald i 10 filer (fra 67).
+
+      **GitHub issue-oprydning 2026-04-19:**
+      - #234 (PR A3 catch-all) lukket som completed — dækket af
+        commit `1614c1c` (§1.1.8).
+      - #235 (`get_qic_chart_type` fallback) kommenteret om
+        supplerende berørte linjer i `test-data-validation.R:107-109`.
+
       **Batch 2 (kategori C, 2026-04-19):** 7 skips re-labelet fra
       `skip("TODO Fase 4: ... reactive context ...")` til
       `skip("testServer-migration — se harden-test-suite §2.3 (#230)")`.

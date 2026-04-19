@@ -153,10 +153,10 @@ test_that("autoSaveAppState deaktiverer auto_save ved quota-exceeded (§2.5.3)",
   test_data <- data.frame(x = 1:5, y = 6:10)
   metadata <- list(x_column = "x", y_column = "y", chart_type = "run")
 
-  autoSaveAppState(
+  shiny::isolate(autoSaveAppState(
     failing_session, test_data, metadata,
     app_state = app_state
-  )
+  ))
 
   # Efter quota-fejl skal auto_save_enabled være FALSE
   expect_false(
@@ -473,4 +473,75 @@ test_that("compute_spc_results_bfh kaster fejl ved ugyldig chart_type (§2.5.3)"
   expect_true(error_caught || is.null(result),
     label = "Ugyldig chart_type skal give error eller NULL"
   )
+})
+
+# ------------------------------------------------------------------------------
+# 7. Security: SQL injection, path traversal, formula injection (#244)
+# ------------------------------------------------------------------------------
+
+test_that("sanitize_column_name saniterer SQL injection-strings (§2.5.3, #244)", {
+  skip_if_not(exists("sanitize_column_name", mode = "function"))
+
+  # sanitize_column_name fjerner ikke-tilladte tegn (allowed: A-Za-z0-9_æøåÆØÅ .-)
+  # og HTML-escaper quotes. Kontrakten er at output er ændret og ikke identisk
+  # med farlige injection-strings.
+  sql_inputs <- c(
+    "'; DROP TABLE users; --",
+    "1 OR 1=1",
+    "admin'--"
+  )
+
+  for (input in sql_inputs) {
+    result <- sanitize_column_name(input)
+    # Output skal IKKE være identisk med input (sanitering er sket)
+    expect_false(
+      identical(result, input),
+      label = paste0("SQL injection-string ikke saniteret (output == input): ", input)
+    )
+    # Output må ikke indeholde rå enkeltcitater (de HTML-escapes til &#39;)
+    expect_false(
+      grepl("'", result, fixed = TRUE),
+      label = paste0("Rå enkeltcitat overlevede sanitering: ", input)
+    )
+  }
+})
+
+test_that("validate_file_extension afviser path traversal-forsøg (§2.5.3, #244)", {
+  skip_if_not(exists("validate_file_extension", mode = "function"))
+
+  traversal_inputs <- c(
+    "../../../etc/passwd",
+    "..%2F..%2Fetc",
+    "./../secret.R",
+    "csv/../../../root"
+  )
+
+  for (input in traversal_inputs) {
+    result <- validate_file_extension(input)
+    expect_false(result,
+      label = paste0("Path traversal-input ikke afvist: ", input)
+    )
+  }
+})
+
+test_that("sanitize_csv_output blokerer formula injection-strings (§2.5.3, #244)", {
+  skip_if_not(exists("sanitize_csv_output", mode = "function"))
+
+  formula_inputs <- c("=CMD()", "+HYPERLINK()", "-2+3+cmd|", "@SUM(A1:A100)")
+
+  df <- data.frame(
+    label = formula_inputs,
+    value = seq_along(formula_inputs),
+    stringsAsFactors = FALSE
+  )
+
+  result <- sanitize_csv_output(df)
+
+  for (i in seq_along(formula_inputs)) {
+    # Saniteret output skal starte med ' (tvungen tekstmode) hvis formel
+    expect_true(
+      startsWith(result$label[i], "'"),
+      label = paste0("Formula injection ikke saniteret: ", formula_inputs[i])
+    )
+  }
 })

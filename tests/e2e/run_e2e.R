@@ -21,6 +21,8 @@
 #   1 = E2E-fejl efter retries
 # ==============================================================================
 
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
 run_e2e <- function(retry_count = NULL) {
   retry_count <- retry_count %||% as.integer(Sys.getenv("E2E_RETRY", "2"))
   if (is.na(retry_count) || retry_count < 0) retry_count <- 2L
@@ -121,8 +123,6 @@ run_e2e <- function(retry_count = NULL) {
     Sys.sleep(5)
   }
 }
-
-`%||%` <- function(x, y) if (is.null(x)) y else x
 
 if (!interactive()) {
   run_e2e()

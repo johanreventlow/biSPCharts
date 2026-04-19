@@ -55,7 +55,7 @@ create_handler_app_state <- function(has_data = TRUE) {
   state <- new.env(parent = emptyenv())
   state$data <- new.env(parent = emptyenv())
   state$data$current_data <- if (has_data) {
-    data.frame(x = 1:10, y = rnorm(10))
+    data.frame(x = 1:10, y = withr::with_seed(42, rnorm(10)))
   } else {
     NULL
   }
@@ -67,7 +67,7 @@ create_handler_app_state <- function(has_data = TRUE) {
 # ============================================================================
 
 test_that("classify_update_context returnerer 'general' ved NULL input (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   expect_equal(classify_update_context(NULL), "general")
   expect_equal(classify_update_context(list()), "general")
@@ -75,7 +75,7 @@ test_that("classify_update_context returnerer 'general' ved NULL input (§2.2.3)
 })
 
 test_that("classify_update_context identificerer 'load' ved upload-kontekster (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   expect_equal(classify_update_context(list(context = "file_upload")), "load")
   expect_equal(classify_update_context(list(context = "data_loaded")), "load")
@@ -84,7 +84,7 @@ test_that("classify_update_context identificerer 'load' ved upload-kontekster (�
 })
 
 test_that("classify_update_context identificerer 'table_edit' exakt (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   # Kun exact match — skal ikke matche andre "edit"-varianter
   expect_equal(
@@ -99,7 +99,7 @@ test_that("classify_update_context identificerer 'table_edit' exakt (§2.2.3)", 
 })
 
 test_that("classify_update_context identificerer 'session_restore' exakt (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   expect_equal(
     classify_update_context(list(context = "session_restore")),
@@ -113,7 +113,7 @@ test_that("classify_update_context identificerer 'session_restore' exakt (§2.2.
 })
 
 test_that("classify_update_context identificerer 'data_change' ved edit/modify (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   expect_equal(
     classify_update_context(list(context = "data_change")),
@@ -130,7 +130,7 @@ test_that("classify_update_context identificerer 'data_change' ved edit/modify (
 })
 
 test_that("classify_update_context falder tilbage til 'general' for ukendte (§2.2.3)", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  expect_true(exists("classify_update_context", mode = "function"))
 
   expect_equal(
     classify_update_context(list(context = "something_random")),
@@ -144,7 +144,7 @@ test_that("classify_update_context falder tilbage til 'general' for ukendte (§2
 # ============================================================================
 
 test_that("handle_load_context triggerer auto-detection når data findes (§2.2.3)", {
-  skip_if_not(exists("handle_load_context", mode = "function"))
+  expect_true(exists("handle_load_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -159,7 +159,7 @@ test_that("handle_load_context triggerer auto-detection når data findes (§2.2.
 })
 
 test_that("handle_load_context springer auto-detection over uden data (§2.2.3)", {
-  skip_if_not(exists("handle_load_context", mode = "function"))
+  expect_true(exists("handle_load_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = FALSE)
@@ -176,7 +176,7 @@ test_that("handle_load_context springer auto-detection over uden data (§2.2.3)"
 # ============================================================================
 
 test_that("handle_table_edit_context triggerer navigation+viz (§2.2.3)", {
-  skip_if_not(exists("handle_table_edit_context", mode = "function"))
+  expect_true(exists("handle_table_edit_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -198,7 +198,7 @@ test_that("handle_table_edit_context triggerer navigation+viz (§2.2.3)", {
 # ============================================================================
 
 test_that("handle_data_change_context triggerer choices+navigation+viz (§2.2.3)", {
-  skip_if_not(exists("handle_data_change_context", mode = "function"))
+  expect_true(exists("handle_data_change_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -234,12 +234,35 @@ test_that("handle_data_change_context triggerer choices+navigation+viz (§2.2.3)
   )
 })
 
+test_that("handle_data_change_context kører uden fejl ved has_data=FALSE (§2.2.3)", {
+  expect_true(exists("handle_data_change_context", mode = "function"))
+
+  spy <- create_spy_emit()
+  app_state <- create_handler_app_state(has_data = FALSE)
+
+  testthat::local_mocked_bindings(
+    update_column_choices_unified = function(...) invisible(NULL)
+  )
+
+  expect_no_error(
+    handle_data_change_context(
+      app_state = app_state,
+      emit = spy$emit,
+      input = list(),
+      output = list(),
+      session = NULL,
+      ui_service = NULL,
+      context = "column_change"
+    )
+  )
+})
+
 # ============================================================================
 # handle_general_context
 # ============================================================================
 
 test_that("handle_general_context triggerer kun choices (ingen navigation/viz) (§2.2.3)", {
-  skip_if_not(exists("handle_general_context", mode = "function"))
+  expect_true(exists("handle_general_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -276,7 +299,7 @@ test_that("handle_general_context triggerer kun choices (ingen navigation/viz) (
 # ============================================================================
 
 test_that("handle_session_restore_context triggerer choices+navigation+viz (§2.2.3)", {
-  skip_if_not(exists("handle_session_restore_context", mode = "function"))
+  expect_true(exists("handle_session_restore_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -311,12 +334,34 @@ test_that("handle_session_restore_context triggerer choices+navigation+viz (§2.
   )
 })
 
+test_that("handle_session_restore_context kører uden fejl ved has_data=FALSE (§2.2.3)", {
+  expect_true(exists("handle_session_restore_context", mode = "function"))
+
+  spy <- create_spy_emit()
+  app_state <- create_handler_app_state(has_data = FALSE)
+
+  testthat::local_mocked_bindings(
+    update_column_choices_unified = function(...) invisible(NULL)
+  )
+
+  expect_no_error(
+    handle_session_restore_context(
+      app_state = app_state,
+      emit = spy$emit,
+      input = list(),
+      output = list(),
+      session = NULL,
+      ui_service = NULL
+    )
+  )
+})
+
 # ============================================================================
 # handle_data_update_by_context (dispatcher)
 # ============================================================================
 
 test_that("handle_data_update_by_context dispatcher ruter 'load' korrekt (§2.2.3)", {
-  skip_if_not(exists("handle_data_update_by_context", mode = "function"))
+  expect_true(exists("handle_data_update_by_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -341,7 +386,7 @@ test_that("handle_data_update_by_context dispatcher ruter 'load' korrekt (§2.2.
 })
 
 test_that("handle_data_update_by_context dispatcher ruter 'table_edit' korrekt (§2.2.3)", {
-  skip_if_not(exists("handle_data_update_by_context", mode = "function"))
+  expect_true(exists("handle_data_update_by_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -365,7 +410,7 @@ test_that("handle_data_update_by_context dispatcher ruter 'table_edit' korrekt (
 })
 
 test_that("handle_data_update_by_context dispatcher ruter 'session_restore' korrekt (§2.2.3)", {
-  skip_if_not(exists("handle_data_update_by_context", mode = "function"))
+  expect_true(exists("handle_data_update_by_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -394,7 +439,7 @@ test_that("handle_data_update_by_context dispatcher ruter 'session_restore' korr
 })
 
 test_that("handle_data_update_by_context dispatcher fallback til 'general' (§2.2.3)", {
-  skip_if_not(exists("handle_data_update_by_context", mode = "function"))
+  expect_true(exists("handle_data_update_by_context", mode = "function"))
 
   spy <- create_spy_emit()
   app_state <- create_handler_app_state(has_data = TRUE)
@@ -434,7 +479,7 @@ test_that("handle_data_update_by_context dispatcher fallback til 'general' (§2.
 # ============================================================================
 
 test_that("handle_load_context håndterer manglende data-felt defensivt (§2.2.3)", {
-  skip_if_not(exists("handle_load_context", mode = "function"))
+  expect_true(exists("handle_load_context", mode = "function"))
 
   spy <- create_spy_emit()
   # app_state uden data-felt

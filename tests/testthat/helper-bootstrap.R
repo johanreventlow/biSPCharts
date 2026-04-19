@@ -20,6 +20,13 @@ library(testthat)
 # Shiny aliases
 # ------------------------------------------------------------------------------
 # Gør core Shiny-funktioner tilgængelige uden library(shiny) i hver testfil.
+#
+# ADVARSEL: Disse aliaser assigneres direkte i globalenv via `<-`.
+# `testthat::local_mocked_bindings()` kan IKKE intercepte funktioner der er
+# bundet på denne måde — den patcher pakke-namespace, ikke globalenv-bindinger.
+# Brug `testthat::local_mocked_bindings(.package = "shiny", ...)` for at mocke
+# den originale shiny-funktion, eller omskriv kald til `shiny::isolate()` etc.
+# i den kode der skal mockes.
 
 isolate <- shiny::isolate
 reactive <- shiny::reactive
@@ -77,7 +84,7 @@ if (!package_already_loaded()) {
 # Conditional source af ekstra helpers hvis pkgload ikke eksporterede dem
 conditionally_source_helpers <- function() {
   helper_functions <- c("observer_manager", "create_empty_session_data")
-  functions_missing <- !sapply(helper_functions, exists, mode = "function")
+  functions_missing <- !vapply(helper_functions, exists, logical(1), mode = "function")
 
   if (any(functions_missing)) {
     additional_helper_files <- c(

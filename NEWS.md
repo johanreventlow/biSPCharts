@@ -1,5 +1,15 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Security
+
+* **Session token-tests opdateret til SHA256** (#239): To test-filer testede
+  den tidligere SHA1-implementering. Implementeringen var allerede opgraderet
+  til SHA256 (stærkere hashing), men testene forventede stadig SHA1-output.
+  `test-security-session-tokens.R` opdateret til at verificere SHA256-adfærd.
+  `test-session-token-sanitization.R` opdateret: `sanitize_session_token()`
+  returnerer `"NO_SESSION"` for ikke-character input (eksplicit type-validering
+  — ingen skjult koercering). Del af #239-paraply.
+
 ## Bug fixes
 
 * **test-bfh-error-handling: opdatér forventninger efter #240 validering**

@@ -41,8 +41,9 @@ test_that("sanitize_session_token handles empty tokens", {
 })
 
 test_that("sanitize_session_token handles non-character input", {
-  # Should handle conversion gracefully
-  expect_equal(nchar(sanitize_session_token(12345)), 8)
+  # Ikke-character input behandles som ugyldigt token og returnerer "NO_SESSION"
+  # (funktionen validerer typen eksplicit for at undgå skjult type-koercering)
+  expect_equal(sanitize_session_token(12345), "NO_SESSION")
 })
 
 test_that("Different tokens produce different hashes", {

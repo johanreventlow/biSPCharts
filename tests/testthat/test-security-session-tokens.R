@@ -92,22 +92,22 @@ test_that("hashed tokens are not reversible", {
   expect_lt(nchar(hashed), nchar(original_token))
 })
 
-test_that("session token hashing uses SHA1 algorithm", {
+test_that("session token hashing uses SHA256 algorithm", {
   skip_if_not(exists("hash_session_token", mode = "function"))
 
-  # Verify that our implementation matches expected SHA1 behavior
+  # Bekræft at implementeringen bruger SHA256 (opgraderet fra SHA1 af sikkerhedsmæssige årsager)
   test_token <- "test_token_for_verification"
 
   if (requireNamespace("digest", quietly = TRUE)) {
-    # Calculate expected hash using digest directly
-    expected_full_hash <- digest::sha1(test_token)
+    # Beregn forventet hash via digest direkte med SHA256
+    expected_full_hash <- digest::digest(test_token, algo = "sha256")
     expected_short_hash <- substr(expected_full_hash, 1, 8)
 
-    # Our function should produce the same result
+    # Vores funktion skal producere samme SHA256-resultat
     actual_hash <- hash_session_token(test_token)
     expect_equal(actual_hash, expected_short_hash)
   } else {
-    skip("digest package not available for SHA1 verification")
+    skip("digest-pakken ikke tilgængelig for SHA256-verifikation")
   }
 })
 
@@ -238,7 +238,7 @@ test_that("session token hashing meets security best practices", {
 
   # Verify that implementation follows security best practices:
 
-  # 1. Uses cryptographically secure hash function (SHA1)
+  # 1. Uses cryptographically secure hash function (SHA256)
   test_token <- "security_test_token"
   hash_result <- hash_session_token(test_token)
 

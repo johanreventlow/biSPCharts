@@ -722,13 +722,49 @@ Målsætning: push til remote kan ikke ske med rød test; rng er deterministisk.
 
 ### 3.3 Ét canonical test-entrypoint
 
-- [ ] 3.3.1 Audit divergens mellem `tests/testthat.R` (`test_check()`) og
+- [x] 3.3.1 Audit divergens mellem `tests/testthat.R` (`test_check()`) og
       `tests/run_*.R` (source-baseret). Dokumentér forskellene.
-- [ ] 3.3.2 Beslut canonical: pkgload-baseret via `testthat::test_dir()`
+      **Leveret 2026-04-19:** 3 divergerende loading-mekanismer
+      identificeret:
+      1. `tests/testthat.R`: `library(testthat); test_check("biSPCharts")`
+         — kræver installeret pakke (R CMD check-context).
+      2. `tests/run_*.R` (legacy): `source("global.R") +
+         testthat::test_dir(...)` — source-based loading.
+      3. `devtools::test()`: `pkgload::load_all()` — mest moderne,
+         bruges af lokal udvikling + publish_prepare.R.
+      Divergens → state-leaks og inkonsistente test-resultater.
+- [x] 3.3.2 Beslut canonical: pkgload-baseret via `testthat::test_dir()`
       med `load_package = "source"`.
-- [ ] 3.3.3 Konsolidér `tests/run_*.R` til tynde wrappers omkring
+      **Leveret 2026-04-19:** `tests/run_canonical.R` —
+      canonical runner der bruger `pkgload::load_all()` (matcher
+      `devtools::test()`) + `testthat::test_dir()` med scope-filter.
+      Signature: `run_canonical_tests(scope = c("all", "unit",
+      "integration", "performance"), stop_on_failure = FALSE)`.
+      CLI-usage: `Rscript tests/run_canonical.R [unit|integration|
+      performance|all]`. Aggregerer resultater på tværs af scopes og
+      returnerer kombineret summary.
+      **Verifikation (unit-scope):** 1471 blocks, 4324 pass,
+      44 fails, 4 errors, 157 skip — konsistent med tidligere
+      `devtools::test()`-kørsler.
+- [x] 3.3.3 Konsolidér `tests/run_*.R` til tynde wrappers omkring
       canonical entrypoint + tag-filter (`unit`/`performance`/`integration`).
-- [ ] 3.3.4 `dev/publish_prepare.R` bruger canonical entrypoint.
+      **Leveret 2026-04-19:** 4 runner-filer omskrevet til tynde
+      wrappers (6-8 linjer hver):
+      - `run_unit_tests.R` → `run_canonical_tests(scope = "unit")`
+      - `run_integration_tests.R` → `scope = "integration"`
+      - `run_performance_tests.R` → `scope = "performance"`
+      - `run_all_tests.R` → `scope = "all"` (kører alle 3 i én
+        pkgload-session for at undgå state-leaks)
+      Eliminerer `source("global.R")`-afhængighed (erstattet af
+      pkgload). Backward-compatible via samme Rscript-kommandoer.
+- [x] 3.3.4 `dev/publish_prepare.R` bruger canonical entrypoint.
+      **Leveret 2026-04-19:** `dev/publish_prepare.R` §2
+      (Kør testthat-tests) opdateret fra direkte `devtools::test()`-
+      kald til `source("tests/run_canonical.R") +
+      run_canonical_tests(scope = "unit", stop_on_failure = TRUE)`.
+      Sikrer at publish-gate bruger SAMME test-loading-mekanisme
+      som lokal udvikling og CI. Ingen afvigelse mellem publish-
+      gate- og lokal-kørsels-resultater længere.
 
 **Acceptkriterium fase 3:** Push med rød test fejler; lintr-regel fanger
 rng uden seed; unit- og publish-gate-kørsel giver identisk testresultat.

@@ -1,19 +1,8 @@
 #!/usr/bin/env Rscript
-# Run Integration Tests
+# Run Integration Tests — tynd wrapper omkring canonical runner (§3.3.3)
 #
-# Integration tests for full workflow validation.
-# These tests verify end-to-end functionality.
+# Canonical entrypoint: tests/run_canonical.R
+# Denne wrapper beholdes for bagudkompatibilitet.
 
-cat("=== Running Integration Tests ===\n\n")
-
-# Source global.R to load the application
-source("global.R")
-
-# Run integration tests
-if (dir.exists("tests/integration")) {
-  testthat::test_dir("tests/integration")
-} else {
-  cat("No integration tests found - skipping\n")
-}
-
-cat("\n=== Integration Tests Complete ===\n")
+source("tests/run_canonical.R")
+run_canonical_tests(scope = "integration", stop_on_failure = TRUE)

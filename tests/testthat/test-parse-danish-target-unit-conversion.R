@@ -125,15 +125,11 @@ test_that("TODO Fase 3: absolutte enheder (days/hours etc.) haandteres konsisten
   }
 })
 
-test_that("TODO Fase 3: detect_y_axis_scale funktion eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — detect_y_axis_scale() ikke eksporteret/eksisterer ikke i namespace (#203-followup)")
-  expect_true(exists("detect_y_axis_scale", mode = "function"))
-})
-
-test_that("TODO Fase 3: convert_by_unit_type funktion eksisterer", {
-  skip("TODO Fase 3: R-bug afsloeret — convert_by_unit_type() ikke eksporteret/eksisterer ikke i namespace (#203-followup)")
-  expect_true(exists("convert_by_unit_type", mode = "function"))
-})
+# 2 test-blokke fjernet i §1.2.2 (PR-batch A+B):
+# detect_y_axis_scale() og convert_by_unit_type() eksisterer ikke i R/ og
+# blev aldrig implementeret. Tests validerede kun exists() uden reel
+# funktionsafdækning. Se docs/test-suite-inventory-203.md §
+# "Inventory af skip('TODO')-kald".
 
 test_that("TODO Fase 3: fallback uden y_axis_unit returnerer korrekte vaerdier", {
   skip("TODO Fase 3: R-bug afsloeret — parse_danish_target('50', NULL, NULL) returnerer NULL i stedet for 50 (#203-followup)")

@@ -481,7 +481,11 @@ test_that("apply_y_axis_formatting handles invalid inputs gracefully", {
 # TEST: format_scaled_number() -------------------------------------------------
 
 test_that("format_scaled_number formats correctly with Danish notation", {
-  skip("Afventer format-funktion edge case fix — se #242 (format_scaled_number afrunding)")
+  # NOTE (#242): format() med nsmall=1 sikrer kun minimum decimaler, ikke
+  # maksimum — derfor returnerede tidligere version "2,75K" for 2750.
+  # Fix: formatC(val, digits=1, format="f") giver deterministisk 1-decimal
+  # rounding med round-half-up. Se #236 for samme mønster i format_y_value().
+
   # Integer values (no decimals)
   expect_equal(format_scaled_number(1000, 1e3, "K"), "1K")
   expect_equal(format_scaled_number(5000, 1e3, "K"), "5K")
@@ -498,7 +502,10 @@ test_that("format_scaled_number formats correctly with Danish notation", {
 # TEST: format_unscaled_number() -----------------------------------------------
 
 test_that("format_unscaled_number uses Danish notation", {
-  skip("Afventer format-funktion edge case fix — se #242 (format_unscaled_number scientific)")
+  # NOTE (#242): format(100000, big.mark=".") returnerede tidligere "1e+05"
+  # (scientific notation leak). Fix: formatC(val, format="d", big.mark=".")
+  # for heltal og formatC(val, digits=1, format="f", ...) for decimaler.
+
   # Integer values (with thousand separator ".")
   expect_equal(format_unscaled_number(100), "100")
   expect_equal(format_unscaled_number(1000), "1.000")
@@ -517,17 +524,13 @@ test_that("format_time_with_unit consolidates duplication correctly", {
 })
 
 test_that("format_time_with_unit handles edge cases", {
-  skip("Afventer format-funktion edge case fix — se #242 (format_time_with_unit 10000 days)")
-  # Zero values
-  expect_equal(format_time_with_unit(0, "minutes"), "0 min")
-  expect_equal(format_time_with_unit(0, "hours"), "0 timer")
-  expect_equal(format_time_with_unit(0, "days"), "0 dage")
-
-  # Very small decimals
-  expect_match(format_time_with_unit(0.1, "minutes"), "^0,1 min$")
-
-  # Large values
-  expect_equal(format_time_with_unit(10000, "days"), "6,9 dage")
+  skip(paste(
+    "format_time_with_unit er fjernet og erstattet af format_time_composite",
+    "(R/utils_time_formatting.R). Edge case-dækning er flyttet til",
+    "test-label-formatting.R som verificerer komposit-format (0m, 30m, 1t,",
+    "1t 30m, 1d, 2d 13t). Den oprindelige test-forventning passer ikke",
+    "længere til ny API (10000 minutter → '6d 22t 40m', ikke '6,9 dage')."
+  ))
 })
 
 # TEST: format_y_axis_time() ---------------------------------------------------

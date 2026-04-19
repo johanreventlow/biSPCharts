@@ -1,5 +1,14 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Bug fixes
+
+* **test-bfh-error-handling: opdatér forventninger efter #240 validering**
+  (#239): 6 tests forventede `NULL`-return fra `compute_spc_results_bfh()`
+  ved ugyldige input — den adfærd var korrekt FØR #240 indførte eksplicit
+  `validate_spc_inputs()` der kaster `stop()` direkte (så fejl propagerer
+  til caller). Opdateret til `expect_error()` med regex-match mod de
+  danske fejlbeskeder. 0 FAIL (tidligere 6 ERRORs). Del af #239-paraply.
+
 ## Security
 
 * **Supply-chain review-policy for .Rprofile og andre auto-executing filer**

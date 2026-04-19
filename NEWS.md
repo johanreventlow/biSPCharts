@@ -2,6 +2,22 @@
 
 ## Bug fixes
 
+* **format_scaled_number/format_unscaled_number afrunding og scientific
+  notation leak** (#242): To bugs i `R/utils_y_axis_formatting.R`:
+  - `format_scaled_number(2750, 1e3, "K")` returnerede "2,75K" i stedet
+    for "2,8K" — `format(..., nsmall=1)` runder ikke (samme bug som #236).
+  - `format_unscaled_number(100000)` returnerede "1e+05" (scientific
+    notation leak) i stedet for "100.000".
+  Fix: Begge funktioner bruger nu `formatC(val, digits=1, format="f")`
+  (for decimaler) eller `formatC(val, format="d")` (for heltal), som
+  giver deterministisk dansk formatering uden scientific notation og
+  round-half-up (konsistent med #236 fix i `format_y_value`). De tre
+  `format_time_with_unit` tests skipped permanent — funktionen er
+  erstattet af `format_time_composite` og dækning ligger nu i
+  `test-label-formatting.R`.
+
+
+
 * **resolve_y_unit/detect_unit_from_data percent-detection tests** (#243):
   Opdateret 2 skipped tests i `test-y-axis-scaling-overhaul.R` til at
   matche ny API. Forventninger ændret fra `"percent"` til `"absolute"`

@@ -230,11 +230,15 @@ format_y_axis_time <- function(qic_data, input_unit = NULL) {
 #' @return Formatted string with Danish decimal notation
 #' @keywords internal
 format_scaled_number <- function(val, scale, suffix) {
+  # Bemærk: formatC med format="f" giver round-half-up (2.75 → 2,8) som
+  # matcher klinisk læsevaner. R's base round() bruger banker's rounding
+  # (2.75 → 2.8 faktisk men 2.45 → 2.4). Se også #236 for samme mønster
+  # i format_y_value().
   scaled <- val / scale
   if (scaled == round(scaled)) {
     paste0(round(scaled), suffix)
   } else {
-    paste0(format(scaled, decimal.mark = ",", nsmall = 1), suffix)
+    paste0(formatC(scaled, digits = 1, format = "f", decimal.mark = ","), suffix)
   }
 }
 
@@ -248,10 +252,14 @@ format_scaled_number <- function(val, scale, suffix) {
 #' @return Formatted string with Danish number notation
 #' @keywords internal
 format_unscaled_number <- function(val) {
+  # Bemærk: formatC undgår scientific notation leak (format() returnerer
+  # fx "1e+05" for 100000 med big.mark="."). formatC med format="d"/"f"
+  # giver deterministisk dansk formatering. Eksplicit decimal.mark="," er
+  # nødvendig selv for heltal for at undgå R's advarsel om big.mark ==
+  # decimal.mark. Se også #236/#242.
   if (val == round(val)) {
-    format(round(val), big.mark = ".", decimal.mark = ",")
+    formatC(val, format = "d", big.mark = ".", decimal.mark = ",")
   } else {
-    format(val, big.mark = ".", decimal.mark = ",", nsmall = 1)
+    formatC(val, digits = 1, format = "f", big.mark = ".", decimal.mark = ",")
   }
 }
-

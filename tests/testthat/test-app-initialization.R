@@ -4,10 +4,12 @@
 test_that("App initialization og global configuration fungerer", {
   # Test at core funktioner er loaded (ikke package-baseret)
   # Projektet bruger source-baseret loading, ikke package struktur
-  skip_if_not(exists("get_qic_chart_type", mode = "function"),
-              "get_qic_chart_type not available - check global.R loading")
+  skip_if_not(
+    exists("get_qic_chart_type", mode = "function"),
+    "get_qic_chart_type not available - check global.R loading"
+  )
 
-  expect_equal(get_qic_chart_type("P-kort (Andele)"), "p")
+  expect_equal(get_qic_chart_type("P-kort \u2014 andele/procenter (fx infektionsrate)"), "p")
   expect_equal(get_qic_chart_type(""), "run")
 
   # Test hospital konfiguration hvis tilgængelig
@@ -54,8 +56,10 @@ test_that("Unified state system kan initialiseres", {
   expect_true(exists("create_app_state"))
 
   # Strong assertion - this is critical functionality
-  expect_true(exists("create_app_state", mode = "function"),
-              "create_app_state must be available for unified state system")
+  expect_true(
+    exists("create_app_state", mode = "function"),
+    "create_app_state must be available for unified state system"
+  )
 
   app_state <- create_app_state()
   expect_true(is.environment(app_state))

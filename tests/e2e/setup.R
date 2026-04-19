@@ -8,8 +8,8 @@
 # §4.1 af harden-test-suite-regression-gate.
 # ==============================================================================
 
-library(testthat)
-library(shiny)
+suppressPackageStartupMessages(library(testthat))
+suppressPackageStartupMessages(library(shiny))
 
 # ------------------------------------------------------------------------------
 # Chrome-availability gate

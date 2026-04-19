@@ -25,7 +25,7 @@
 #' Linter: detekter rng-kald uden set.seed i test_that-blokke
 #'
 #' @return En `lintr::Linter`-funktion.
-#' @export
+#' @noRd
 seed_rng_linter <- function() {
   # Random-funktioner der kræver seeding
   rng_functions <- c(

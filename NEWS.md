@@ -1,5 +1,30 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Interne ændringer
+
+* **Test-hygiene L1-L14 (#247):** Addresserer LOW findings fra automatisk review
+  af PR #246. Ingen adfærdsændringer i produktionskode.
+  - L1: `rnorm(10)` i helper erstattet med `withr::with_seed(42, rnorm(10))` for
+    deterministisk adfærd
+  - L2: `%||%`-definition i `run_e2e.R` flyttet til toppen (before-use)
+  - L3: `sapply()` → `vapply(..., logical(1), ...)` i `helper-bootstrap.R`
+  - L4: `@export` erstattet med `@noRd` i `dev/lintr_seed_rng.R`
+  - L5: TODO tilføjet — output$plot_available-binding-test deferret til separat issue
+  - L6: Parametriserede security-tests tilføjet for SQL injection, path traversal
+    og formula injection (#244)
+  - L7: `skip_if_not(exists(...))` → `expect_true(exists(...))` i
+    `test-event-context-handlers.R`
+  - L8: Kommentar om `local_mocked_bindings`-begrænsning tilføjet i
+    `helper-bootstrap.R`
+  - L9: TODO tilføjet — warnings write-path test deferret til separat issue
+  - L10: `autoSaveAppState`-kald wrappet i `shiny::isolate()` i test
+  - L11: Symmetritests for `handle_data_change_context` og
+    `handle_session_restore_context` med `has_data=FALSE` tilføjet
+  - L12: `Filter(function(x) ...)` → `purrr::keep(lints, ~ ...)` i
+    `dev/publish_prepare.R`
+  - L13: `library()` wrappet i `suppressPackageStartupMessages()` i e2e/setup.R
+  - L14: No-op — allerede fixet i `bda2a0a`
+
 ## Security
 
 * **Path traversal test-dækning** (#244): To skipped tests i

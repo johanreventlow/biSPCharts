@@ -9,9 +9,10 @@ test_that("get_qic_chart_type konverterer danske labels korrekt", {
   expect_equal(get_qic_chart_type("P-kort \u2014 andele/procenter (fx infektionsrate)"), "p")
   expect_equal(get_qic_chart_type("U-kort \u2014 rater (fx komplikationer pr. 1000)"), "u")
   expect_equal(get_qic_chart_type("C-kort \u2014 t\u00e6llinger (fx antal fald)"), "c")
-  # MR-kort, P'-kort, U'-kort, G-kort er ikke aktive i CHART_TYPES_DA (udkommenteret i config)
-  # De returnerer fallback "run" når de ikke er registreret
-  skip("TODO Fase 4: MR/PP/UP/G-kort labels mangler i CHART_TYPES_DA (#203-followup)")
+  # MR-kort, P'-kort, U'-kort, G-kort er ikke aktive i CHART_TYPES_DA
+  # (udkommenteret i config_chart_types.R). De returnerer "run" via fallback.
+  # Hvis disse chart types aktiveres, tilføj tilsvarende expect_equal-assertions
+  # ovenfor og fjern denne kommentar.
 })
 
 test_that("get_qic_chart_type returnerer engelske koder uændret", {
@@ -19,9 +20,9 @@ test_that("get_qic_chart_type returnerer engelske koder uændret", {
   for (code in c("run", "i", "p", "u", "c")) {
     expect_equal(get_qic_chart_type(code), code)
   }
-  # TODO Fase 4: MR/PP/UP/G er ikke registreret som engelske koder i lookup-tabellen
-  # og returnerer "run" (fallback). (#203-followup)
-  skip("TODO Fase 4: get_qic_chart_type understøtter ikke mr/pp/up/g koder direkte (#203-followup)")
+  # Bemærk: MR/PP/UP/G er ikke registreret som engelske koder i lookup-tabellen
+  # og returnerer "run" (fallback). Hvis disse aktiveres i CHART_TYPES_DA,
+  # udvid vektoren ovenfor med "mr", "pp", "up", "g".
 })
 
 test_that("get_qic_chart_type håndterer edge cases med fallback til run", {

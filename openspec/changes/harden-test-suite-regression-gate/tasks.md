@@ -53,6 +53,25 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 - [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.
+      **Batch 1 (kategori A+B, 2026-04-19):** 18 skips håndteret.
+      92 → 74 skip-kald tilbage i 12 filer (fra 15). Detaljer:
+      - `test-config_chart_types.R` — 2 dangling skip() fjernet
+        (tests allerede komplette; skips var vestigielle). Assertions bevaret.
+      - `test-config_export.R` — 3 test-blokke slettet
+        (EXPORT_PDF_CONFIG, EXPORT_PNG_CONFIG eksisterer ikke som
+        separate konstanter; konfig er inline i render-funktioner).
+      - `test-autodetect-unified-comprehensive.R` — 4 test-blokke slettet
+        (`appears_date`, `appears_numeric`, `detect_columns_with_cache`
+        erstattet af unified autodetect i `R/fct_autodetect_helpers.R`).
+      - `test-parse-danish-target-unit-conversion.R` — 2 test-blokke
+        slettet (`detect_y_axis_scale`, `convert_by_unit_type` aldrig
+        implementeret — tests validerede kun `exists()`).
+      - `test-reactive-batching.R` — 7 test-blokke slettet (`is_batch_pending`
+        og `clear_all_batches` state-inspection-helpers aldrig
+        implementeret; kun `schedule_batched_update` findes).
+      **Rest (kategori C+D+E+F = 74 skips):** kræver dybere analyse —
+      R-bug issues (E=41), API-struktur-analyse (D=21), testServer-migration
+      (C=7), BFHcharts-cross-repo (F=5). Fortsættes i separate batches.
 - [ ] 1.2.3 Særligt for `test-spc-bfh-service.R` (19 skips): eskalér hver
       skip-rationale — disse er SPC-kerne.
 

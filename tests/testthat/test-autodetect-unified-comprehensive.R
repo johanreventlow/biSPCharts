@@ -605,97 +605,15 @@ test_that("autodetect_engine edge cases work", {
 })
 
 # === SECTION: Core Column Detection Tests (merged from test-autodetect-core.R) ===
-
-test_that("Auto-detect identificerer kolonnetyper korrekt", {
-  skip("TODO Fase 4: appears_date() funktion mangler (#203-followup)")
-  test_data <- data.frame(
-    Skift = c(FALSE, FALSE, TRUE, FALSE),
-    Frys = c(FALSE, TRUE, FALSE, FALSE),
-    Dato = c("01-01-2024", "02-01-2024", "03-01-2024", "04-01-2024"),
-    Tæller = c(10, 15, 12, 18),
-    Nævner = c(100, 120, 110, 130),
-    Kommentarer = c("Start", "Problem", "Fix", "End")
-  )
-
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_true(appears_date(test_data$Dato))
-  expect_false(appears_date(test_data$Tæller))
-
-  expect_true(exists("appears_numeric", mode = "function"),
-              "appears_numeric must be available for this test")
-  expect_true(appears_numeric(test_data$Tæller))
-  expect_true(appears_numeric(test_data$Nævner))
-  expect_false(appears_numeric(test_data$Kommentarer))
-
-  expect_true(exists("find_numeric_columns", mode = "function"),
-              "find_numeric_columns must be available for this test")
-  numeric_cols <- find_numeric_columns(test_data)
-  expect_true(is.character(numeric_cols))
-  expect_true("Tæller" %in% numeric_cols)
-  expect_true("Nævner" %in% numeric_cols)
-})
-
-test_that("Auto-detect håndterer dansk dato format", {
-  skip("TODO Fase 4: appears_date() funktion mangler (#203-followup)")
-  danish_dates <- c("01-01-2024", "15-02-2024", "31-12-2023")
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_true(appears_date(danish_dates))
-
-  skip_if_not(exists("safe_date_parse", mode = "function"),
-              "safe_date_parse not available - check test setup")
-  parsed_dates <- safe_date_parse(danish_dates[1])
-  expect_true(!is.na(parsed_dates) || is.null(parsed_dates))
-})
-
-test_that("Auto-detect håndterer edge cases", {
-  skip("TODO Fase 4: appears_numeric() funktion mangler (#203-followup)")
-  edge_case_data <- data.frame(
-    empty_col = rep("", 5),
-    na_col = rep(NA, 5),
-    mixed_col = c("1", "2", "text", "4", "5"),
-    single_value = rep("constant", 5)
-  )
-
-  expect_true(exists("appears_numeric", mode = "function"),
-              "appears_numeric must be available for this test")
-  expect_false(appears_numeric(edge_case_data$empty_col))
-  expect_false(appears_numeric(edge_case_data$na_col))
-  expect_false(appears_numeric(edge_case_data$mixed_col))
-
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_false(appears_date(edge_case_data$empty_col))
-  expect_false(appears_date(edge_case_data$single_value))
-})
-
-test_that("Column mapping logic fungerer korrekt", {
-  skip("TODO Fase 4: detect_columns_with_cache() funktion mangler (#203-followup)")
-  test_data <- data.frame(
-    Skift = c(FALSE, FALSE, TRUE),
-    Frys = c(FALSE, TRUE, FALSE),
-    ObservationDate = c("01-01-2024", "02-01-2024", "03-01-2024"),
-    Count = c(10, 15, 12),
-    Total = c(100, 120, 110)
-  )
-
-  expect_true(exists("detect_columns_with_cache", mode = "function"),
-              "detect_columns_with_cache must be available for this test")
-
-  app_state <- create_test_app_state()
-  detected_with_state <- detect_columns_with_cache(test_data, app_state)
-  expect_true(is.list(detected_with_state))
-
-  detected_without_state <- detect_columns_with_cache(test_data)
-  expect_true(is.list(detected_without_state))
-
-  expect_true(identical(names(detected_with_state), names(detected_without_state)))
-
-  if ("x_col" %in% names(detected_without_state)) {
-    expect_true(is.character(detected_without_state$x_col))
-  }
-})
+#
+# 4 test-blokke fjernet i §1.2.2 (PR-batch A+B):
+# - appears_date(), appears_numeric(): erstattet af detect_date_columns_robust()
+#   og score_column_candidates() i R/fct_autodetect_helpers.R under unified
+#   autodetect refactor.
+# - detect_columns_with_cache(): stale NAMESPACE-export uden implementation.
+#   Cache-håndtering sker nu via utils_performance_caching.R med andre API'er.
+# Se docs/test-suite-inventory-203.md § "Inventory af skip('TODO')-kald" og
+# openspec/changes/archive/2026-04-18-remove-legacy-dead-code/.
 
 # === SECTION: Algorithm Scoring Tests (merged from test-autodetect-algorithms.R) ===
 

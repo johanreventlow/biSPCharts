@@ -465,16 +465,48 @@ har reel reactive-dækning.
 
 ### 2.4 Kanoniske mocks
 
-- [ ] 2.4.1 Opret `tests/testthat/helper-mocks.R` med mocks for:
+- [x] 2.4.1 Opret `tests/testthat/helper-mocks.R` med mocks for:
       `BFHllm::bfhllm_spc_suggestion`, `BFHcharts::create_spc_chart`,
       `pins::board_*`, `gert::git_*`, Gemini `httr2::req_perform`,
       `input$local_storage_*`-messages.
-- [ ] 2.4.2 Split `tests/testthat/helper.R` i `helper-bootstrap.R`,
+      **Leveret 2026-04-19:** `tests/testthat/helper-mocks.R` med 8
+      kanoniske mocks: `mock_bfhllm_spc_suggestion`, `mock_bfh_qic`
+      (BFHcharts bruger `bfh_qic` ikke `create_spc_chart`),
+      `mock_board_connect`, `mock_git_clone`, `mock_git_commit`,
+      `mock_req_perform`, `mock_local_storage_peek_result`,
+      `mock_local_storage_save_result`.
+- [x] 2.4.2 Split `tests/testthat/helper.R` i `helper-bootstrap.R`,
       `helper-fixtures.R`, `helper-mocks.R`. Fjern MockAppDriver.
-- [ ] 2.4.3 Kontrakttest: for hver mock, verificér at `formals()` matcher
+      **Leveret 2026-04-19:**
+      - `helper-bootstrap.R`: package loading, shiny aliases,
+        conditional source-fallback.
+      - `helper-fixtures.R`: create_test_data, create_test_app_state,
+        ensure_event_counters, create_test_ready_app_state,
+        wait_for_app_ready.
+      - `helper-mocks.R`: se §2.4.1 ovenfor.
+      - `helper.R` slettet. MockAppDriver + mock_microbenchmark fjernet
+        (legacy code; shinytest2 + microbenchmark er nu stabile deps).
+      - `test-input-debouncing-comprehensive.R` opdateret (fjernet
+        eksplicit `source("helper.R")`-kald — testthat auto-sources
+        `helper-*.R`-filer).
+- [x] 2.4.3 Kontrakttest: for hver mock, verificér at `formals()` matcher
       real API (fejl → tvinger mock-opdatering).
-- [ ] 2.4.4 Migrér eksisterende `mockery::stub`-kald til
+      **Leveret 2026-04-19:** `test-helper-mocks-contracts.R` med 9
+      contract-tests (29 assertions). Verificerer `formals()` af mock
+      matcher real API for: BFHllm, BFHcharts, pins, gert (×2), httr2.
+      Plus struktur-tests for localStorage-mocks. Test-strategi:
+      `skip_if_not_installed()` + `expect_setequal(formals)` fanger
+      API-drift tidligt når ekstern pakke bumpes.
+- [x] 2.4.4 Migrér eksisterende `mockery::stub`-kald til
       `testthat::local_mocked_bindings()`.
+      **Leveret 2026-04-19:** 3 `mockery::stub`-kald migreret:
+      - `test-fct_spc_file_save_load.R` (2 kald) — showNotification-stub
+        i `handle_excel_upload` restore + fallback paths.
+      - `test-session-persistence.R` (1 kald) — showNotification-stub
+        i `autoSaveAppState` quota-exceeded path.
+      Alle 3 bruger nu `testthat::local_mocked_bindings(showNotification
+      = ..., .package = "shiny")`. Verifikation: `grep "mockery::stub"`
+      returnerer kun kommentar-referencer (ingen aktive kald).
 
 ### 2.5 Negative asserts-løft
 

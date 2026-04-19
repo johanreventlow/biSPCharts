@@ -154,7 +154,36 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 ## Inventory af `skip("TODO")`-kald (§1.2.1)
 
 **Dato:** 2026-04-19
-**Total:** 92 skip-kald i 15 filer
+**Oprindelig total:** 92 skip-kald i 15 filer
+
+### Opdatering 2026-04-19 (§1.2.2 batch 1+2+3)
+
+| Skip-form | Antal | Beskrivelse |
+|---|---|---|
+| `skip("TODO ...")` — uden issue-ref | 57 | Tilbage i 10 filer (kat D/E/F + resterende E uden issue) |
+| `skip("testServer-migration — se ... §2.3 (#230)")` | 7 | Kat C — migrerer i Fase 2 (batch 2) |
+| `skip("Afventer ... — se #212/#213")` | 10 | Kat E med konkrete tracking-issues (batch 3) |
+| **Slettet** (obsolete test-blokke) | 18 | Kat A+B — funktioner/konstanter fjernet eller aldrig implementeret (batch 1) |
+| **Total** | **92** | |
+
+**Status §1.2.2 handling per kategori:**
+
+| Kat | Antal | Håndtering |
+|---|---|---|
+| A (fjernet/omdøbt) | 8 | ✅ Slettet (batch 1) |
+| B (feature ikke impl.) | 10 | ✅ Slettet (batch 1) |
+| C (reaktiv kontekst) | 7 | ✅ Re-labelet → #230 §2.3 (batch 2) |
+| D (API-struktur) | 21 | ⏳ Tilbage (kræver API-analyse) |
+| E (R-bug) — med issue | 10 | ✅ Re-labelet → #212 (2) + #213 (8) (batch 3) |
+| E (R-bug) — uden issue | 31 | ⏳ Tilbage (kræver issue-oprettelse) |
+| F (qicharts2 baseline) | 5 | ⏳ Tilbage (kræver BFHcharts sibling-issue) |
+
+### Relaterede eksisterende issues
+
+- **#212** — Fix reactive cache-key i `create_cached_reactive` (dækker 2 skips i `test-cache-reactive-lazy-evaluation.R`)
+- **#213** — `parse_danish_target`/`normalize_axis_value` unit-awareness refactor (dækker 8 skips i `test-parse-danish-target-unit-conversion.R`)
+- **#230** — [Fase 2/4] testServer-kontrakter (dækker 7 kat C skips)
+- **#216** — 3 tests afventer BFHcharts-ændringer (ikke direkte overlap med kat F i denne inventory — handler om `place_two_labels_npc` o.a.)
 
 Tabellen er produceret som input til §1.2.2 (per-skip beslutning) og
 §1.2.3 (særlig håndtering af `test-spc-bfh-service.R`).

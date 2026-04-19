@@ -53,7 +53,7 @@ test_that("create_cached_reactive evaluerer lazy", {
 })
 
 test_that("create_cached_reactive reagerer paa reaktive dependencies", {
-  skip("TODO Fase 3: create_cached_reactive bruger digest-cache-key (string), ikke reaktiv tracking — val1(5) invaliderer ikke cachen korrekt (#203-followup)")
+  skip("Afventer fix i create_cached_reactive cache-key — se #212")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -99,7 +99,7 @@ test_that("create_cached_reactive cacher inden for timeout", {
 })
 
 test_that("create_cached_reactive haandterer cache-udloeb", {
-  skip("TODO Fase 3: create_cached_reactive re-evaluerer ikke automatisk efter timeout — cache-key er statisk string, ikke tidsbaseret (#203-followup)")
+  skip("Afventer fix i create_cached_reactive timeout-handling — se #212")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {

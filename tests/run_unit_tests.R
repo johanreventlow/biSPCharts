@@ -1,15 +1,8 @@
 #!/usr/bin/env Rscript
-# Run Unit Tests
+# Run Unit Tests — tynd wrapper omkring canonical runner (§3.3.3)
 #
-# Fast unit tests for continuous integration.
-# Performance tests are in tests/performance/
+# Canonical entrypoint: tests/run_canonical.R
+# Denne wrapper beholdes for bagudkompatibilitet.
 
-cat("=== Running Unit Tests ===\n\n")
-
-# Source global.R to load the application
-source("global.R")
-
-# Run unit tests
-testthat::test_dir("tests/testthat")
-
-cat("\n=== Unit Tests Complete ===\n")
+source("tests/run_canonical.R")
+run_canonical_tests(scope = "unit", stop_on_failure = TRUE)

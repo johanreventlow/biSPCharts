@@ -1,15 +1,8 @@
 #!/usr/bin/env Rscript
-# Run Performance Tests
+# Run Performance Tests — tynd wrapper omkring canonical runner (§3.3.3)
 #
-# Slow performance and benchmarking tests.
-# These are typically run on release branches only.
+# Canonical entrypoint: tests/run_canonical.R
+# Denne wrapper beholdes for bagudkompatibilitet.
 
-cat("=== Running Performance Tests ===\n\n")
-
-# Source global.R to load the application
-source("global.R")
-
-# Run performance tests
-testthat::test_dir("tests/performance")
-
-cat("\n=== Performance Tests Complete ===\n")
+source("tests/run_canonical.R")
+run_canonical_tests(scope = "performance", stop_on_failure = TRUE)

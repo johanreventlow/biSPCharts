@@ -25,7 +25,7 @@ test_that("E2E: App launches successfully", {
 
   # Launch app
   app <- AppDriver$new(
-    app_dir = "../../",  # Root of project
+    app_dir = "../../", # Root of project
     name = "app_launch",
     height = 800,
     width = 1200
@@ -141,6 +141,7 @@ test_that("E2E: Auto-detection runs after file upload", {
 # E2E TEST: Chart Generation Workflow ==========================================
 
 test_that("E2E: User can generate SPC chart", {
+  set.seed(42)
   skip_if_not_installed("shinytest2")
   skip_on_ci()
 
@@ -169,13 +170,16 @@ test_that("E2E: User can generate SPC chart", {
 
   # Select chart type (if available)
   # Note: Adjust selector based on actual input ID
-  tryCatch({
-    app$set_inputs(chart_type = "Run chart")
-    app$wait_for_idle(duration = 1000)
-  }, error = function(e) {
-    # Input may not be settable in this way
-    message("Could not set chart_type input: ", e$message)
-  })
+  tryCatch(
+    {
+      app$set_inputs(chart_type = "Run chart")
+      app$wait_for_idle(duration = 1000)
+    },
+    error = function(e) {
+      # Input may not be settable in this way
+      message("Could not set chart_type input: ", e$message)
+    }
+  )
 
   # Wait for chart to render
   app$wait_for_idle(duration = 2000)
@@ -222,15 +226,18 @@ test_that("E2E: User can manually select columns", {
 
   # Try to set column selections
   # Note: This depends on actual input IDs
-  tryCatch({
-    app$set_inputs(
-      x_column = "ColA",
-      y_column = "ColB"
-    )
-    app$wait_for_idle(duration = 1000)
-  }, error = function(e) {
-    message("Could not set column inputs: ", e$message)
-  })
+  tryCatch(
+    {
+      app$set_inputs(
+        x_column = "ColA",
+        y_column = "ColB"
+      )
+      app$wait_for_idle(duration = 1000)
+    },
+    error = function(e) {
+      message("Could not set column inputs: ", e$message)
+    }
+  )
 
   # Take screenshot
   app$expect_screenshot()
@@ -330,6 +337,7 @@ test_that("E2E: App handles invalid data gracefully", {
 # E2E TEST: Complete User Journey ==============================================
 
 test_that("E2E: Complete user journey from upload to chart", {
+  set.seed(42)
   skip_if_not_installed("shinytest2")
   skip_on_ci()
 
@@ -365,13 +373,16 @@ test_that("E2E: Complete user journey from upload to chart", {
   app$expect_screenshot("03_autodetected")
 
   # PHASE 4: Select chart type (if possible)
-  tryCatch({
-    app$set_inputs(chart_type = "P-kort (Andele)")
-    app$wait_for_idle(duration = 1500)
-    app$expect_screenshot("04_chart_selected")
-  }, error = function(e) {
-    message("Could not set chart type: ", e$message)
-  })
+  tryCatch(
+    {
+      app$set_inputs(chart_type = "P-kort (Andele)")
+      app$wait_for_idle(duration = 1500)
+      app$expect_screenshot("04_chart_selected")
+    },
+    error = function(e) {
+      message("Could not set chart type: ", e$message)
+    }
+  )
 
   # PHASE 5: Final state with chart
   app$wait_for_idle(duration = 2000)

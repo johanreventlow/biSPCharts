@@ -73,7 +73,7 @@ test_that("generate_spc_cache_key changes with data changes", {
 
   data1 <- create_test_data(50, "run")
   data2 <- create_test_data(50, "run")
-  data2$value <- data2$value + 10  # Change data values
+  data2$value <- data2$value + 10 # Change data values
 
   config <- list(
     chart_type = "run",
@@ -101,7 +101,7 @@ test_that("generate_spc_cache_key changes with config changes", {
   )
 
   config2 <- list(
-    chart_type = "i",  # Changed chart type
+    chart_type = "i", # Changed chart type
     x_column = "date",
     y_column = "value"
   )
@@ -295,7 +295,7 @@ test_that("get_qic_cache_stats returns correct metrics", {
   expect_equal(stats$size, 1)
   expect_equal(stats$hits, 1)
   expect_equal(stats$misses, 1)
-  expect_equal(stats$hit_rate_percent, 50)  # 1 hit out of 2 requests
+  expect_equal(stats$hit_rate_percent, 50) # 1 hit out of 2 requests
 })
 
 
@@ -304,6 +304,7 @@ test_that("get_qic_cache_stats returns correct metrics", {
 # ====================================================================
 
 test_that("cache achieves >80% hit rate in typical workflow", {
+  set.seed(42)
   skip_if_not_installed("digest")
 
   qic_cache <- create_qic_cache(max_size = 50)

@@ -54,6 +54,7 @@ test_that("extract_anhoej_metadata() extracts runs signal correctly", {
 })
 
 test_that("extract_anhoej_metadata() detects crossings violation", {
+  set.seed(42)
   # Arrange: Too few crossings
   qic_data <- tibble(
     x = 1:20,
@@ -209,7 +210,7 @@ test_that("calculate_combined_anhoej_signal() handles missing columns gracefully
 test_that("calculate_combined_anhoej_signal() converts non-logical to logical", {
   # Arrange
   qic_data <- tibble(
-    runs.signal = c(0, 0, 1, 1, 0),  # Numeric instead of logical
+    runs.signal = c(0, 0, 1, 1, 0), # Numeric instead of logical
     n.crossings = 5,
     n.crossings.min = 3
   )
@@ -295,8 +296,10 @@ test_that("compute_spc_results_bfh() includes Anhøj metadata in output", {
   # Arrange
   data <- data.frame(
     month = 1:20,
-    infections = c(10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                   5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+    infections = c(
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+      5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+    )
   )
 
   # Act
@@ -327,8 +330,10 @@ test_that("compute_spc_results_bfh() signal column matches BFHchart anhoej.signa
   # Arrange
   data <- data.frame(
     month = 1:20,
-    infections = c(10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                   5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+    infections = c(
+      10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+      5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+    )
   )
 
   # Act
@@ -563,6 +568,7 @@ test_that("Anhøj rules handle freeze period correctly", {
 # ==============================================================================
 
 test_that("extract_anhoej_metadata() performs efficiently on large dataset", {
+  set.seed(42)
   # Arrange: Large dataset
   n <- 1000
   qic_data <- tibble(
@@ -580,7 +586,7 @@ test_that("extract_anhoej_metadata() performs efficiently on large dataset", {
     metadata <- extract_anhoej_metadata(qic_data)
   })["elapsed"]
 
-  expect_lt(result, 0.1)  # Less than 100ms
+  expect_lt(result, 0.1) # Less than 100ms
   expect_false(is.null(metadata))
 })
 

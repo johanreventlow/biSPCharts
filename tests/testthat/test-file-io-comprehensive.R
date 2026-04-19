@@ -7,7 +7,7 @@ test_that("readCSVFile handles Danish formats correctly", {
   # Create Danish CSV test data
   danish_data <- data.frame(
     Dato = c("2023-01-15", "2023-02-20", "2023-03-25"),
-    Værdi = c("12,5", "15,8", "9,2"),  # Danish decimal comma
+    Værdi = c("12,5", "15,8", "9,2"), # Danish decimal comma
     Afdeling = c("Medicinsk", "Kirurgisk", "Akut"),
     Kommentar = c("Første måling", "Høj værdi", "Normal"),
     stringsAsFactors = FALSE
@@ -18,10 +18,12 @@ test_that("readCSVFile handles Danish formats correctly", {
   on.exit(unlink(temp_file_utf8), add = TRUE)
 
   writeLines(
-    c("Dato;Værdi;Afdeling;Kommentar",
+    c(
+      "Dato;Værdi;Afdeling;Kommentar",
       "2023-01-15;12,5;Medicinsk;Første måling",
       "2023-02-20;15,8;Kirurgisk;Høj værdi",
-      "2023-03-25;9,2;Akut;Normal"),
+      "2023-03-25;9,2;Akut;Normal"
+    ),
     temp_file_utf8,
     useBytes = TRUE
   )
@@ -61,6 +63,7 @@ test_that("File upload security validation prevents path traversal", {
 })
 
 test_that("File upload handles large files efficiently", {
+  set.seed(42)
   skip_if(Sys.getenv("CI") == "true", "Skip large file test in CI")
 
   # Create large test file (1MB)
@@ -100,9 +103,9 @@ test_that("File parsing handles corrupted data gracefully", {
   # Test corrupted CSV files
   corrupted_files <- list(
     "incomplete_quotes" = 'name,value\n"John,25\nJane",30',
-    "mixed_delimiters" = 'name;value\nJohn,25\nJane;30',
-    "invalid_encoding" = paste0('name,value\n', rawToChar(as.raw(c(74, 111, 104, 110, 255, 44, 50, 53)))),
-    "truncated_file" = 'name,value\nJohn,25\nJa'
+    "mixed_delimiters" = "name;value\nJohn,25\nJane;30",
+    "invalid_encoding" = paste0("name,value\n", rawToChar(as.raw(c(74, 111, 104, 110, 255, 44, 50, 53)))),
+    "truncated_file" = "name,value\nJohn,25\nJa"
   )
 
   for (test_name in names(corrupted_files)) {
@@ -135,7 +138,7 @@ test_that("BOM handling preserves file integrity", {
 
   # Write with BOM
   con <- file(temp_bom, "wb")
-  writeBin(c(0xEF, 0xBB, 0xBF), con)  # UTF-8 BOM
+  writeBin(c(0xEF, 0xBB, 0xBF), con) # UTF-8 BOM
   writeLines(test_content, con)
   close(con)
 

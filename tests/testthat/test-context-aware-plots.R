@@ -119,6 +119,7 @@ test_that("validate_plot_context rejects invalid contexts", {
 # CONTEXT-AWARE PLOT GENERATION ================================================
 
 test_that("generateSPCPlot accepts plot_context parameter", {
+  set.seed(42)
   skip_if_not_installed("BFHcharts")
 
   # Create minimal test data
@@ -149,6 +150,7 @@ test_that("generateSPCPlot accepts plot_context parameter", {
 })
 
 test_that("generateSPCPlot works with all context types", {
+  set.seed(42)
   skip_if_not_installed("BFHcharts")
 
   test_data <- data.frame(
@@ -183,6 +185,7 @@ test_that("generateSPCPlot works with all context types", {
 })
 
 test_that("generateSPCPlot fails on invalid context", {
+  set.seed(42)
   skip_if_not_installed("BFHcharts")
 
   test_data <- data.frame(
@@ -296,6 +299,7 @@ test_that("Export contexts have appropriate dimensions", {
 # REGRESSION TESTS =============================================================
 
 test_that("Default plot_context parameter maintains backward compatibility", {
+  set.seed(42)
   skip_if_not_installed("BFHcharts")
 
   test_data <- data.frame(

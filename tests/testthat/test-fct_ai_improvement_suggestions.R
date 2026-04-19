@@ -18,7 +18,6 @@ library(mockery)
 # ============================================================================
 
 describe("generate_improvement_suggestion()", {
-
   # Helper function to create mock session
   create_mock_session <- function() {
     session <- list(
@@ -31,6 +30,7 @@ describe("generate_improvement_suggestion()", {
 
   # Helper to create minimal valid spc_result
   create_mock_spc_result <- function() {
+    set.seed(42) # Deterministisk rnorm (§3.2.3)
     list(
       metadata = list(
         chart_type = "run",
@@ -122,8 +122,10 @@ describe("generate_improvement_suggestion()", {
 
     expected_suggestion <- "Processen viser ikke-naturlig variation med 2 signaler. **Anbefaling:** Undersøg årsager til de detekterede mønstre."
 
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) expected_suggestion)
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) expected_suggestion
+    )
 
     result <- generate_improvement_suggestion(spc_result, context, session)
 
@@ -156,8 +158,10 @@ describe("generate_improvement_suggestion()", {
     session <- create_mock_session()
 
     # Mock BFHllm failure
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) NULL)
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) NULL
+    )
 
     result <- generate_improvement_suggestion(spc_result, context, session)
 
@@ -170,8 +174,10 @@ describe("generate_improvement_suggestion()", {
     session <- create_mock_session()
 
     # Mock BFHllm error
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) stop("BFHllm API error"))
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) stop("BFHllm API error")
+    )
 
     # Should not throw error (safe_operation catches it)
     result <- generate_improvement_suggestion(spc_result, context, session)
@@ -208,8 +214,10 @@ describe("generate_improvement_suggestion()", {
     )
     session <- create_mock_session()
 
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) "Suggestion without target")
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) "Suggestion without target"
+    )
 
     result <- generate_improvement_suggestion(spc_result, context, session)
 
@@ -225,8 +233,10 @@ describe("generate_improvement_suggestion()", {
     context <- create_mock_context()
     session <- create_mock_session()
 
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) "P-chart suggestion")
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) "P-chart suggestion"
+    )
 
     result <- generate_improvement_suggestion(spc_result, context, session)
 
@@ -242,8 +252,10 @@ describe("generate_improvement_suggestion()", {
     context <- create_mock_context()
     session <- create_mock_session()
 
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) "Suggestion")
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) "Suggestion"
+    )
 
     # Capture logs (if logging is active)
     result <- generate_improvement_suggestion(spc_result, context, session)
@@ -257,8 +269,10 @@ describe("generate_improvement_suggestion()", {
     context <- create_mock_context()
     session <- create_mock_session()
 
-    stub(generate_improvement_suggestion, "generate_bfhllm_suggestion",
-         function(...) NULL)
+    stub(
+      generate_improvement_suggestion, "generate_bfhllm_suggestion",
+      function(...) NULL
+    )
 
     # Should log warning and return NULL
     result <- generate_improvement_suggestion(spc_result, context, session)

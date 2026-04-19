@@ -1,8 +1,26 @@
-linters: linters_with_defaults(
-    line_length_linter = line_length_linter(120L),
-    object_usage_linter = NULL
-  )
+linters: local({
+    # Source custom seed_rng_linter — §3.2 af
+    # harden-test-suite-regression-gate openspec change.
+    linter_path <- file.path(getwd(), "dev", "lintr_seed_rng.R")
+    custom <- list()
+    if (file.exists(linter_path)) {
+      tryCatch({
+        sys.source(linter_path, envir = environment())
+        custom$seed_rng_linter <- seed_rng_linter()
+      }, error = function(e) {
+        message("Kunne ikke source dev/lintr_seed_rng.R: ", e$message)
+      })
+    }
+    do.call(lintr::linters_with_defaults, c(
+      list(
+        line_length_linter = lintr::line_length_linter(120L),
+        object_usage_linter = NULL
+      ),
+      custom
+    ))
+  })
 exclusions: list(
     "dev/",
-    "R/golem_utils.R"
+    "R/golem_utils.R",
+    "tests/testthat/fixtures/"
   )

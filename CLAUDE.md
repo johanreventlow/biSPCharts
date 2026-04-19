@@ -333,6 +333,29 @@ Manual tests køres IKKE automatisk i CI/CD. De bruges under development og før
 
 ## 6) Domain-Specific Guidance
 
+### Git Hooks (pre-push gate)
+
+**Installation:** `Rscript dev/install_git_hooks.R` — installerer symlink `.git/hooks/pre-push → dev/git-hooks/pre-push`.
+
+**Formål:** Blokér push til remote hvis lintr fejler eller test-suiten er rød (§3.1 af `harden-test-suite-regression-gate` openspec change).
+
+**Anvendelse:**
+```bash
+# Normal push (udløser hooken)
+git push
+
+# Hurtig pre-push (kun lintr + udvalgte unit-tests, ~2 min)
+PREPUSH_MODE=fast git push
+
+# Bypass (brug sparsomt, fx når #239-paraply blokerer)
+SKIP_PREPUSH=1 git push
+git push --no-verify        # Git-native alternativ
+```
+
+⚠️ **VIGTIG:** Pre-push-hooken vil blokere push indtil paraply-issue #239 er lukket (suite har 43 fails + 21 errors pre-existing). Brug `SKIP_PREPUSH=1` midlertidigt.
+
+**Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
+
 ### Issue Tracking (GitHub Issues)
 
 ✅ **OBLIGATORISK:** Alle fejl, rettelser, todo-emner og forbedringsforslag dokumenteres som GitHub Issues.

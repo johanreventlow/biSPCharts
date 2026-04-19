@@ -450,6 +450,51 @@ The RAG knowledge store is built automatically during package installation if `G
 
 See README.md "AI-Assisteret Forbedringsmål" section for detailed AI troubleshooting.
 
+## Git Hooks
+
+biSPCharts bruger custom git-hooks for at håndhæve kvalitetskrav før push til remote. Hooks er versioneret i `dev/git-hooks/` og installeres som symlinks.
+
+### Installation
+
+```bash
+Rscript dev/install_git_hooks.R
+```
+
+Installerer:
+
+- `.git/hooks/pre-push` → `dev/git-hooks/pre-push`
+
+Kan køres flere gange (idempotent). Brug `--force` for at overskrive eksisterende hooks. `--uninstall` fjerner installerede symlinks.
+
+### pre-push hook
+
+**Kører før `git push`:**
+
+1. `lintr::lint_package()` — afviser ved lintr-ERROR (warnings er ikke-blokerende)
+2. `devtools::test()` — afviser ved fail/error (skips er OK)
+
+**Tilstande:**
+
+| Mode | Sætning | Varighed | Formål |
+|------|---------|----------|--------|
+| `full` (default) | `git push` | 5-10 min | Komplet suite før push |
+| `fast` | `PREPUSH_MODE=fast git push` | ~2 min | Hurtig iteration under udvikling |
+
+**Bypass:**
+
+```bash
+SKIP_PREPUSH=1 git push      # Environment variable
+git push --no-verify         # Git-native bypass
+```
+
+⚠️ **Kendt begrænsning:** Pre-push vil blokere push indtil paraply-issue #239 er lukket (suite har pre-existing 43 fails + 21 errors). Brug `SKIP_PREPUSH=1` indtil da.
+
+### Interaktiv R-session advarsel
+
+Ved R-start i projekt-rod logges en advarsel hvis pre-push ikke er installeret. Implementeret i `.Rprofile`. Vises kun i interaktive sessioner (ignoreres i Rscript/CI).
+
+---
+
 ## Additional Documentation
 
 - **README.md** - General usage and AI setup guide

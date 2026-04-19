@@ -215,66 +215,11 @@ test_that("EXPORT_FORMAT_OPTIONS has all required formats", {
   expect_equal(EXPORT_FORMAT_OPTIONS[["PNG"]], "png")
 })
 
-# PDF CONFIGURATION TESTS ======================================================
-
-test_that("EXPORT_PDF_CONFIG has correct structure", {
-  # EXPORT_PDF_CONFIG er ikke defineret i nuværende config_export_config.R
-  # TODO Fase 4: PDF config er inline i render-funktioner, ikke som separat konstant (#203-followup)
-  skip("TODO Fase 4: EXPORT_PDF_CONFIG konstant eksisterer ikke (#203-followup)")
-
-  # TEST: PDF configuration
-  expect_true(exists("EXPORT_PDF_CONFIG"),
-              "EXPORT_PDF_CONFIG constant must be defined")
-
-  expect_type(EXPORT_PDF_CONFIG, "list")
-
-  # Verify required fields
-  required_fields <- c("paper", "orientation", "margin_top", "margin_bottom",
-                      "margin_left", "margin_right", "encoding", "version")
-  for (field in required_fields) {
-    expect_true(field %in% names(EXPORT_PDF_CONFIG),
-                info = paste("PDF config missing field:", field))
-  }
-
-  # Verify specific values
-  expect_equal(EXPORT_PDF_CONFIG$paper, "a4")
-  expect_equal(EXPORT_PDF_CONFIG$orientation, "landscape")
-  expect_equal(EXPORT_PDF_CONFIG$encoding, "UTF-8")
-  expect_equal(EXPORT_PDF_CONFIG$version, "1.4")
-})
-
-test_that("EXPORT_PDF_CONFIG margins are valid", {
-  skip("TODO Fase 4: EXPORT_PDF_CONFIG konstant eksisterer ikke (#203-followup)")
-  # TEST: PDF margin values are reasonable
-  expect_true(EXPORT_PDF_CONFIG$margin_top > 0 && EXPORT_PDF_CONFIG$margin_top < 5)
-  expect_true(EXPORT_PDF_CONFIG$margin_bottom > 0 && EXPORT_PDF_CONFIG$margin_bottom < 5)
-  expect_true(EXPORT_PDF_CONFIG$margin_left > 0 && EXPORT_PDF_CONFIG$margin_left < 5)
-  expect_true(EXPORT_PDF_CONFIG$margin_right > 0 && EXPORT_PDF_CONFIG$margin_right < 5)
-})
-
-# PNG CONFIGURATION TESTS ======================================================
-
-test_that("EXPORT_PNG_CONFIG has correct structure", {
-  skip("TODO Fase 4: EXPORT_PNG_CONFIG konstant eksisterer ikke (#203-followup)")
-  # TEST: PNG configuration
-  expect_true(exists("EXPORT_PNG_CONFIG"),
-              "EXPORT_PNG_CONFIG constant must be defined")
-
-  expect_type(EXPORT_PNG_CONFIG, "list")
-
-  # Verify required fields
-  required_fields <- c("bg", "type", "compression")
-  for (field in required_fields) {
-    expect_true(field %in% names(EXPORT_PNG_CONFIG),
-                info = paste("PNG config missing field:", field))
-  }
-
-  # Verify specific values
-  expect_equal(EXPORT_PNG_CONFIG$bg, "white")
-  expect_equal(EXPORT_PNG_CONFIG$type, "cairo")
-  expect_true(EXPORT_PNG_CONFIG$compression >= 0 && EXPORT_PNG_CONFIG$compression <= 9,
-              "PNG compression should be between 0 and 9")
-})
+# PDF/PNG CONFIGURATION TESTS fjernet i §1.2.2 (PR-batch A+B):
+# EXPORT_PDF_CONFIG og EXPORT_PNG_CONFIG eksisterer ikke som separate konstanter
+# — konfigurationen er inline i render-funktionerne. Tests forudsatte en
+# arkitektur der aldrig blev implementeret. Se docs/test-suite-inventory-203.md
+# § "Inventory af skip('TODO')-kald".
 
 # EXPORT VALIDATION RULES TESTS ================================================
 

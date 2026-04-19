@@ -15,15 +15,11 @@
 
 
 metadata:
-  total_files: 113
-  audit_run: 2026-04-17T16:32:41+0200
+  total_files: 116
+  audit_run: 2026-04-19T16:03:42+0200
   manifest_schema_version: '1.0'
-  last_updated: '2026-04-17'
-  phase2_note: 'Fase 2 salvage komplet. test-label-placement-bounds.R mergeret ind
-    i test-label-placement-core.R og slettet. 10 filer rewrittet (handling: rewrite
-    -> keep).'
   review_status:
-    reviewed: 113
+    reviewed: 116
     unreviewed: 0
     needs_triage: 0
 files:
@@ -47,15 +43,6 @@ files:
     type: unit
     handling: keep
     reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-app-basic.R
-    audit_category: stub
-    type: integration
-    handling: keep
-    reviewed: yes
-    rationale: E2E-smoke med AppDriver-mock fallback (2 blokke). Misklassificeret
-      som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-app-initialization.R
@@ -144,7 +131,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cache-invalidation-sprint3.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -178,7 +165,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-column-observer-consolidation.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -239,7 +226,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-context-aware-plots.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -392,6 +379,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-facade-time-parsing.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 8 tests passer.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
   - file: test-fct_ai_improvement_suggestions.R
     audit_category: green
     type: unit
@@ -463,7 +458,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-input-debouncing-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: e2e
     handling: fix-in-phase-3
     reviewed: yes
@@ -502,6 +497,14 @@ files:
       via BFHcharts:::. Absorberede test-label-placement-bounds.R (6 tests). 21 PASS,
       3 SKIP+TODO (label_height oevre grænse + NIVEAU 2+3 fallback ikke udloeserbare).
       Klar til CI.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-local-storage-time-migration.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 10 tests passer.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-logging-debug-cat.R
@@ -729,7 +732,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-bfh-service.R
-    audit_category: green
+    audit_category: green-partial
     type: unit
     handling: keep
     reviewed: yes
@@ -786,6 +789,22 @@ files:
     handling: fix-in-phase-3
     reviewed: yes
     rationale: Green-partial med 2/24 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-time-formatting.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 45 tests passer.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-17'
+  - file: test-time-parsing.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 28 tests passer.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-ui-synchronization.R
@@ -930,38 +949,6 @@ files:
     handling: fix-in-phase-3
     reviewed: yes
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-facade-time-parsing.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 8 tests passer.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-local-storage-time-migration.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 10 tests passer.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-time-formatting.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 45 tests passer.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-time-parsing.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'Ny fil fra master tidsakse-PRs (#204-#207). Alle 28 tests passer.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
 

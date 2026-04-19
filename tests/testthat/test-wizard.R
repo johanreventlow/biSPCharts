@@ -113,6 +113,7 @@ describe("Paste data parsing (separator auto-detection)", {
   })
 
   it("haandterer store datasets (200 raekker)", {
+    set.seed(42)
     dates <- seq(as.Date("2020-01-01"), by = "month", length.out = 200)
     values <- round(runif(200, 5, 50), 1)
     lines <- c("Dato\tVaerdi", paste(dates, values, sep = "\t"))

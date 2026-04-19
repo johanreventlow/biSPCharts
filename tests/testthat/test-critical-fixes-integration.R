@@ -35,25 +35,34 @@ test_that("Event system priorities fungerer i integration", {
 
   # Mock critical event handlers med korrekte priorities
   observeEvent(app_state$events$data_updated,
-               priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    execution_log <<- c(execution_log, "STATE_MANAGEMENT_DATA_UPDATE")
-    log_debug("State management handling data update",
-              .context = "INTEGRATION_TEST")
-  })
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      execution_log <<- c(execution_log, "STATE_MANAGEMENT_DATA_UPDATE")
+      log_debug("State management handling data update",
+        .context = "INTEGRATION_TEST"
+      )
+    }
+  )
 
   observeEvent(app_state$events$auto_detection_started,
-               priority = OBSERVER_PRIORITIES$AUTO_DETECT, {
-    execution_log <<- c(execution_log, "AUTO_DETECT_HANDLER")
-    log_debug("Auto detection handler triggered",
-              .context = "INTEGRATION_TEST")
-  })
+    priority = OBSERVER_PRIORITIES$AUTO_DETECT,
+    {
+      execution_log <<- c(execution_log, "AUTO_DETECT_HANDLER")
+      log_debug("Auto detection handler triggered",
+        .context = "INTEGRATION_TEST"
+      )
+    }
+  )
 
   observeEvent(app_state$events$ui_sync_requested,
-               priority = OBSERVER_PRIORITIES$UI_SYNC, {
-    execution_log <<- c(execution_log, "UI_SYNC_HANDLER")
-    log_debug("UI sync handler triggered",
-              .context = "INTEGRATION_TEST")
-  })
+    priority = OBSERVER_PRIORITIES$UI_SYNC,
+    {
+      execution_log <<- c(execution_log, "UI_SYNC_HANDLER")
+      log_debug("UI sync handler triggered",
+        .context = "INTEGRATION_TEST"
+      )
+    }
+  )
 
   # Trigger event chain
   isolate({
@@ -66,7 +75,8 @@ test_that("Event system priorities fungerer i integration", {
 
     # Verify execution order follows priorities
     expect_true(length(execution_log) >= 3,
-                info = "All event handlers should execute")
+      info = "All event handlers should execute"
+    )
 
     # Find positions in execution log
     state_pos <- which(execution_log == "STATE_MANAGEMENT_DATA_UPDATE")[1]
@@ -76,18 +86,21 @@ test_that("Event system priorities fungerer i integration", {
     # Verify STATE_MANAGEMENT executes before AUTO_DETECT
     if (!is.na(state_pos) && !is.na(autodetect_pos)) {
       expect_true(state_pos < autodetect_pos,
-                  info = "STATE_MANAGEMENT should execute before AUTO_DETECT")
+        info = "STATE_MANAGEMENT should execute before AUTO_DETECT"
+      )
     }
 
     # Verify AUTO_DETECT executes before UI_SYNC
     if (!is.na(autodetect_pos) && !is.na(ui_pos)) {
       expect_true(autodetect_pos < ui_pos,
-                  info = "AUTO_DETECT should execute before UI_SYNC")
+        info = "AUTO_DETECT should execute before UI_SYNC"
+      )
     }
   })
 })
 
 test_that("Error handling integration med logging og priorities", {
+  set.seed(42)
   # Test complete error handling chain
 
   skip_if_not(exists("safe_operation"), message = "safe_operation not available")
@@ -124,12 +137,14 @@ test_that("Error handling integration med logging og priorities", {
 
   # Verify either success or proper error handling
   expect_true(result %in% c("Success", "FALLBACK_RESULT"),
-              info = "safe_operation should return either success or fallback result")
+    info = "safe_operation should return either success or fallback result"
+  )
 
   # If error occurred, verify proper logging
   if (result == "FALLBACK_RESULT") {
     expect_true("FALLBACK_EXECUTED" %in% error_events,
-                info = "Fallback should be executed on error")
+      info = "Fallback should be executed on error"
+    )
   }
 })
 
@@ -164,15 +179,18 @@ test_that("Input sanitization integration med UI components", {
     sanitized <- sanitize_column_name(original_value)
 
     expect_true(nchar(sanitized) > 0,
-                info = paste("Sanitized column name should not be empty:", col_type))
+      info = paste("Sanitized column name should not be empty:", col_type)
+    )
 
     # Should preserve meaningful Danish content
     expect_true(grepl("måling|antal|dato|værdi|kommentar", sanitized, ignore.case = TRUE),
-                info = paste("Should preserve meaningful content:", col_type))
+      info = paste("Should preserve meaningful content:", col_type)
+    )
 
     # Should remove problematic characters but keep structure
     expect_false(grepl("[()&%]", sanitized),
-                 info = paste("Should remove problematic characters:", col_type))
+      info = paste("Should remove problematic characters:", col_type)
+    )
   }
 
   # Test file name validation integration
@@ -182,12 +200,14 @@ test_that("Input sanitization integration med UI components", {
     is_valid <- validate_file_extension(ext)
 
     expect_true(is_valid,
-                info = paste("Realistic file extension should be valid:", file_name))
+      info = paste("Realistic file extension should be valid:", file_name)
+    )
 
     # Test file name sanitization
     sanitized_name <- sanitize_user_input(file_name, max_length = 100)
     expect_true(nchar(sanitized_name) > 0,
-                info = paste("Sanitized file name should not be empty:", file_name))
+      info = paste("Sanitized file name should not be empty:", file_name)
+    )
   }
 
   # Test search term sanitization
@@ -195,15 +215,18 @@ test_that("Input sanitization integration med UI components", {
     sanitized <- sanitize_user_input(search_term, max_length = 200)
 
     expect_true(nchar(sanitized) > 0,
-                info = paste("Sanitized search term should not be empty:", search_term))
+      info = paste("Sanitized search term should not be empty:", search_term)
+    )
 
     # Should preserve Danish content
     expect_true(grepl("hændelse|måling|data|afd", sanitized, ignore.case = TRUE),
-                info = paste("Should preserve Danish search content:", search_term))
+      info = paste("Should preserve Danish search content:", search_term)
+    )
   }
 })
 
 test_that("Cross-component reactive chain med priorities", {
+  set.seed(42)
   # Test komplet reactive chain på tværs af komponenter
 
   skip_if_not(exists("reactiveVal"), message = "Shiny reactive functions not available")
@@ -276,9 +299,11 @@ test_that("Cross-component reactive chain med priorities", {
 
     # Verify chain completion
     expect_equal(columns_detected(), names(test_data),
-                 info = "Column detection should complete")
+      info = "Column detection should complete"
+    )
     expect_true(ui_updated(),
-               info = "UI update should complete")
+      info = "UI update should complete"
+    )
   })
 })
 
@@ -292,7 +317,8 @@ test_that("OBSERVER_PRIORITIES helper functions integration", {
   })
 
   expect_error(get_priority("INVALID_PRIORITY"),
-               info = "Invalid priority should throw error")
+    info = "Invalid priority should throw error"
+  )
 
   # Test convenience functions
   expect_equal(priority_high(), OBSERVER_PRIORITIES$STATE_MANAGEMENT)
@@ -322,11 +348,12 @@ test_that("OBSERVER_PRIORITIES helper functions integration", {
 })
 
 test_that("Memory management under sustained load", {
+  set.seed(42)
   # Test memory efficiency i complete integration scenarios
 
   # Initial memory snapshot
   gc_initial <- gc()
-  initial_memory <- sum(gc_initial[,2])
+  initial_memory <- sum(gc_initial[, 2])
 
   # Simulate sustained app usage
   for (cycle in 1:50) {
@@ -361,14 +388,16 @@ test_that("Memory management under sustained load", {
 
   # Final memory snapshot
   gc_final <- gc()
-  final_memory <- sum(gc_final[,2])
+  final_memory <- sum(gc_final[, 2])
   memory_growth <- final_memory - initial_memory
 
   # Memory growth should be reasonable (< 20MB for 50 cycles)
   expect_true(memory_growth < 20,
-              info = paste("Memory growth should be bounded. Growth:", memory_growth, "MB"))
+    info = paste("Memory growth should be bounded. Growth:", memory_growth, "MB")
+  )
 
   # No major memory leaks should be detected
   expect_true(memory_growth / 50 < 0.5,
-              info = "Per-cycle memory growth should be minimal (< 0.5MB/cycle)")
+    info = "Per-cycle memory growth should be minimal (< 0.5MB/cycle)"
+  )
 })

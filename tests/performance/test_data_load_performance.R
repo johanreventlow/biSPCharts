@@ -39,7 +39,7 @@ test_data_load_manual <- function() {
   cat("   - Kør get_qic_call_counts() igen\n")
   cat("   - Burde kun give 1 ekstra qic-beregning\n\n")
 
-  cat("DEBUGGING:\n")
+  cat("Debug-info:\n")
   cat("Se i R console efter:\n")
   cat("   [SPC_CALC_DEBUG] generateSPCPlot CALL # [nummer]\n")
   cat("   [QIC_CALL_DEBUG] ACTUAL qic() CALL # [nummer]\n\n")
@@ -87,29 +87,30 @@ benchmark_with_test_data <- function() {
     cat("Generating SPC plot...\n")
     start_time <- Sys.time()
 
-    tryCatch({
-      result <- generateSPCPlot(
-        data = test_data,
-        config = config,
-        chart_type = "p"
-      )
+    tryCatch(
+      {
+        result <- generateSPCPlot(
+          data = test_data,
+          config = config,
+          chart_type = "p"
+        )
 
-      end_time <- Sys.time()
-      duration <- as.numeric(difftime(end_time, start_time, units = "secs"))
+        end_time <- Sys.time()
+        duration <- as.numeric(difftime(end_time, start_time, units = "secs"))
 
-      counts <- get_qic_call_counts()
+        counts <- get_qic_call_counts()
 
-      cat("\n=== BENCHMARK RESULTATER ===\n")
-      cat("Duration:", round(duration, 3), "seconds\n")
-      cat("generateSPCPlot calls:", counts$generateSPCPlot_calls, "\n")
-      cat("Actual qic() calls:", counts$actual_qic_calls, "\n")
-      cat("Data points processed:", nrow(test_data), "\n")
-      cat("Performance:", round(nrow(test_data) / duration, 1), "rows/sec\n")
-
-    }, error = function(e) {
-      cat("Error in benchmark:", e$message, "\n")
-    })
-
+        cat("\n=== BENCHMARK RESULTATER ===\n")
+        cat("Duration:", round(duration, 3), "seconds\n")
+        cat("generateSPCPlot calls:", counts$generateSPCPlot_calls, "\n")
+        cat("Actual qic() calls:", counts$actual_qic_calls, "\n")
+        cat("Data points processed:", nrow(test_data), "\n")
+        cat("Performance:", round(nrow(test_data) / duration, 1), "rows/sec\n")
+      },
+      error = function(e) {
+        cat("Error in benchmark:", e$message, "\n")
+      }
+    )
   } else {
     cat("Test data file not found\n")
     cat("Expected: R/data/spc_testdata_p_chart.csv\n")

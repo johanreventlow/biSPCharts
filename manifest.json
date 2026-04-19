@@ -45,7 +45,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.7.2",
+        "Version": "0.8.2",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3",
@@ -58,22 +58,23 @@
         "Depends": "R (>= 4.1.0)",
         "Imports": "BFHtheme (>= 0.1.0), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), svglite (>= 2.1.0), grid",
         "Suggests": "testthat (>= 3.0.0), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, BFHllm, digest, geomtextpath",
+        "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
         "Config/testthat/edition": "3",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.7.2",
-        "RemoteSha": "acee70b4e08f044fb7e237626d75d6469350e04c",
+        "RemoteRef": "v0.8.2",
+        "RemoteSha": "25b106248fda187d17550779ea70cd5a4b0123c0",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.7.2",
-        "GithubSHA1": "acee70b4e08f044fb7e237626d75d6469350e04c",
+        "GithubRef": "v0.8.2",
+        "GithubSHA1": "25b106248fda187d17550779ea70cd5a4b0123c0",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-17 09:27:49 UTC; johanreventlow",
+        "Packaged": "2026-04-19 18:05:25 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-17 09:27:50 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-19 18:05:25 UTC; unix"
       }
     },
     "BFHllm": {
@@ -105,10 +106,10 @@
         "GithubRef": "v0.1.1",
         "GithubSHA1": "cb7191bf4f4c5f625f982cfbd2db5cd416d9d541",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-17 09:27:59 UTC; johanreventlow",
+        "Packaged": "2026-04-19 18:05:38 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-17 09:27:59 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-19 18:05:39 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -140,10 +141,10 @@
         "GithubRef": "v0.4.0",
         "GithubSHA1": "56b04d28037f2aca342cd75bae45c5edea313009",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-17 09:27:54 UTC; johanreventlow",
+        "Packaged": "2026-04-19 18:05:32 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-17 09:27:55 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-19 18:05:33 UTC; unix"
       }
     },
     "BH": {
@@ -6410,7 +6411,7 @@
       "checksum": "de4538b214d11ae86fcace492bfc3b02"
     },
     ".claude/commands/publish-to-connect.md": {
-      "checksum": "52a62ed46dccb727f95d8de42c4ba954"
+      "checksum": "f626484e9b72b055225a7e2070272bb4"
     },
     ".claude/epics/.archived/ai-improvement-suggestions/70.md": {
       "checksum": "a9e2e1bc60e628733a12c8c7bd00a4d6"
@@ -6617,10 +6618,10 @@
       "checksum": "9c39c4ea3db8be6bbe44510db7be739a"
     },
     ".claude/scheduled_tasks.lock": {
-      "checksum": "1e0492e8b0e14e3aadc5e71c4dbf0e34"
+      "checksum": "26efa6fe71f4d2d46fb1af2f6de3d828"
     },
     ".claude/settings.local.json": {
-      "checksum": "2513729d373bf6a64a0faa310a1e9623"
+      "checksum": "cce848e1bd5dd141f86408e9f6767f75"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -20008,14 +20009,26 @@
     ".github/ISSUE_TEMPLATE/bfhchart-feature-request.md": {
       "checksum": "83f8f6dcab7897c2701cf838edb9f973"
     },
+    ".github/workflows/lint.yaml": {
+      "checksum": "ec58f8a4165d73cc4d651c5ea105eb85"
+    },
+    ".github/workflows/R-CMD-check.yaml": {
+      "checksum": "2edfb7a08417546e782d06ab14115d48"
+    },
+    ".github/workflows/validate-manifest.yaml": {
+      "checksum": "4c115332faafa27ed7bbad28e7567284"
+    },
     ".lintr": {
-      "checksum": "dc2cd6bd2bb9b8056476cb2a31b6f1fa"
+      "checksum": "3e3c5e9ca4bb3ee40c00168dbd3e6361"
     },
     ".Rbuildignore": {
       "checksum": "676a6a35af56225ff0fb01dc8eadc939"
     },
     ".Renviron.example": {
       "checksum": "dca8c9449987695a0862f66667f48b6e"
+    },
+    ".Rprofile": {
+      "checksum": "9cf3c1476c6a51bfedacf40ce1d5620f"
     },
     ".superpowers/brainstorm/46098-1774072610/.server-stopped": {
       "checksum": "9efdd5f1c1696c9743d7c204747245f6"
@@ -20037,6 +20050,18 @@
     },
     ".superpowers/brainstorm/48246-1774075108/wizard-layout.html": {
       "checksum": "f4471f6cdbc40487a35ff675c51155d3"
+    },
+    ".superpowers/brainstorm/74399-1776447828/state/server.log": {
+      "checksum": "aa71c499447086df7ae1e13190260cb4"
+    },
+    ".superpowers/brainstorm/74399-1776447828/state/server.pid": {
+      "checksum": "986a270600af81c200031468a92182a7"
+    },
+    ".superpowers/brainstorm/74885-1776447847/state/server.log": {
+      "checksum": "35a2b74dd5567a61d54377c131954c48"
+    },
+    ".superpowers/brainstorm/74885-1776447847/state/server.pid": {
+      "checksum": "b2051515728461e78b0435637adec2b7"
     },
     ".superpowers/brainstorm/94371-1776289300/state/server.log": {
       "checksum": "3b042a5622b4dce739e75309c49d3d42"
@@ -20587,6 +20612,603 @@
     ".worktrees/spc_wizard/docs/reviews/2026-03-25-gemini-ux-review.md": {
       "checksum": "4a61fb6ed0ff7fa5ba40c78f6bbd44a2"
     },
+    ".worktrees/test-suite-phase1-impl/_brand.yml": {
+      "checksum": "cbfb22d6dafe610562099fc8b031f058"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/architecture-validator.md": {
+      "checksum": "2cd36d5212cecb09c2c83711b7d76b77"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/configuration-reviewer.md": {
+      "checksum": "24f1fb635990e31b009b2e416a6c7a45"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/error-handling-reviewer.md": {
+      "checksum": "4c70a74823257f51a0b7f87dd6ff42f9"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/legacy-code-detector.md": {
+      "checksum": "b093eb663a12ed7ac638b94c99f77811"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/logging-reviewer.md": {
+      "checksum": "2db34a9a5c80ae52b3949fd06cee5ec1"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/performance-optimizer.md": {
+      "checksum": "453c747fbf76f873114c3bd2ba1da197"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/refactoring-advisor.md": {
+      "checksum": "be618ff2d649a57d17ba26055d5bb643"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/security-reviewer.md": {
+      "checksum": "b9ef5a5f33e2b585c4d1625c1a2a521d"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/shiny-code-reviewer.md": {
+      "checksum": "f5ed7cd8a83bcce9bcb891dc2845ea62"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/test-coverage-analyzer.md": {
+      "checksum": "fd2fd200dc18f7a8d2473d3eccf98c1e"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/agents/tidyverse-code-reviewer.md": {
+      "checksum": "69937af58d0cf46ca0318b7c6ffa70fc"
+    },
+    ".worktrees/test-suite-phase1-impl/.claude/GLOBAL_RULES.md": {
+      "checksum": "7f00f65344553ea1eef52346632ee65e"
+    },
+    ".worktrees/test-suite-phase1-impl/.github/ISSUE_BFHCHARTS_y_axis_unit.md": {
+      "checksum": "d1147d6071772d7fc561247b77c68932"
+    },
+    ".worktrees/test-suite-phase1-impl/.github/ISSUE_TEMPLATE/bfhchart-feature-request.md": {
+      "checksum": "83f8f6dcab7897c2701cf838edb9f973"
+    },
+    ".worktrees/test-suite-phase1-impl/.Renviron.example": {
+      "checksum": "dca8c9449987695a0862f66667f48b6e"
+    },
+    ".worktrees/test-suite-phase1-impl/app.R": {
+      "checksum": "f7fa710eba8d9f6076c63a9f6f1f5f09"
+    },
+    ".worktrees/test-suite-phase1-impl/CLAUDE.md": {
+      "checksum": "aa1719933d5ef440fa3fad1c2b37ad46"
+    },
+    ".worktrees/test-suite-phase1-impl/DESCRIPTION": {
+      "checksum": "f3be42e0de71345ab727de1bbab8ad07"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/ARCHITECTURE_OVERVIEW.md": {
+      "checksum": "ffcd6f72f78e599c57553b505b6127d8"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/ARCHITECTURE.md": {
+      "checksum": "71ac4d574ad0ce8b174fc122defdb619"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit_tests.R": {
+      "checksum": "9cc8b6e527f1c1edebc94304d35739f8"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit-output/.gitkeep": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit-output/audit-run.log": {
+      "checksum": "b6617c5c15bfa3a4ed7879771640957b"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit-output/test-audit.json": {
+      "checksum": "42f843b22107e75e5ff4bf2970dd9a00"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit-output/test-classification.yaml": {
+      "checksum": "f9cafabea9a95189d4bd8b23f60817d8"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit/classifier.R": {
+      "checksum": "471685351650ddd014fe688dcec91640"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit/dynamic_runner.R": {
+      "checksum": "d37bfc268af35b3b3a5c0f0f6355788f"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit/README.md": {
+      "checksum": "3e69eba7677c232a254d7ad3d508d2bb"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit/reporter.R": {
+      "checksum": "089f6e66a543ddcb7fe69cc4535132d3"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/audit/static_analysis.R": {
+      "checksum": "6b2cd93ec3c76923dded52336c788223"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/classify_tests_lib.R": {
+      "checksum": "2bbe1a8fab3456fa87f36acf9464a669"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/classify_tests.R": {
+      "checksum": "7cc4eb2ffd49d773e09db4c6f493d93e"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/DEVELOPER_GUIDE.md": {
+      "checksum": "bbbb21551bf0388f62813a18d441fe61"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/lint_and_style.R": {
+      "checksum": "59318f9f08de38f35228772e882c92c5"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/MODULE_STRUCTURE.md": {
+      "checksum": "93b432dc27d2b2565a7e74252ae16a96"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/package_validation.R": {
+      "checksum": "be69c4cd86f9cccf65b95bf7974e4d4b"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/PROFILING_GUIDE.md": {
+      "checksum": "cbbfe79a6c0cdc5fdf771efbcf21994e"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/publish_prepare.R": {
+      "checksum": "91831ca078c6fd2677d900bc8c617c90"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/run_dev.R": {
+      "checksum": "b0c735f800e54f50aac42abf848ea14d"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/TESTING_PROTOCOL.md": {
+      "checksum": "ca5f7af8d99b8aeb115e60017ef63f9b"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/tests/run_tests.R": {
+      "checksum": "f0ae4541583721379f6bedc81dfcd075"
+    },
+    ".worktrees/test-suite-phase1-impl/dev/tests/test-classify.R": {
+      "checksum": "4a90a238cf6edbea3d784b4cbf0da97a"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/ADR-001-pure-bfhcharts-workflow.md": {
+      "checksum": "cd7d2068ab199981bfe49286fb678620"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/ADR-002-ui-sync-throttle-250ms.md": {
+      "checksum": "753ee774739755987f656ced29ab8ea8"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/ADR-014-deprecate-optimized-event-pipeline.md": {
+      "checksum": "def53e2286bd2f82cd0554af03eacb7c"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/ADR-015-bfhchart-migrering.md": {
+      "checksum": "8c6b34b1091b6861394c4ee5119d04a7"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/ADR-016-gemini-integration.md": {
+      "checksum": "fd28966961c8605a7502e893cd845332"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/adr/README.md": {
+      "checksum": "7ce2b4e21f363601f6ec0899e04d8d29"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/architecture/service-layer-pattern.md": {
+      "checksum": "c26c9397a12bfb8886efc4dec1846ff5"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/BFHCHARTS_FEATURE_REQUEST_y_axis_unit.md": {
+      "checksum": "3cca24b9cd745989917f1d7a63ac28ba"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/BFHCHARTS_LIMITATIONS.md": {
+      "checksum": "e67421ce744c04dd3bb692c1c8f19c0c"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/BFHCHARTS_MIGRATION_GUIDE.md": {
+      "checksum": "91506680d711d358dc0e7498997c8168"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/CONFIGURATION.md": {
+      "checksum": "5119065893c37ed170006c275386d82b"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/CROSS_REPO_COORDINATION.md": {
+      "checksum": "12e86331b81abf20c99ff06951016e61"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/DEBUG_CONTEXT_FILTERING.md": {
+      "checksum": "feff1f619caeeaa679fe0dc1b2cfd477"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/DEBUG_CONTEXTS_QUICK_REFERENCE.md": {
+      "checksum": "f1a5891492a183088862a653593f7b3e"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/DEPLOYMENT.md": {
+      "checksum": "d2e118a2721c2fe1bfcae1b8fd080903"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/GITHUB_LABELS_SETUP.md": {
+      "checksum": "b558dd9359aaaf169b8621e75a988eed"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/bfhchart-feasibility-findings.md": {
+      "checksum": "b71eb718d778d2a6e3425c5f9daa2dab"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/bfhchart-transition-issues.md": {
+      "checksum": "585473dc823d7db43210f929e22e35b9"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/bfhcharts-integration-findings.md": {
+      "checksum": "78b8a2dd5efa275cfac0bcf93df1a8eb"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/bfhcharts-label-compatibility-fix.md": {
+      "checksum": "0c0316f776528c1ff1f5a0024ca66209"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/bfhcharts-renderplot-error.md": {
+      "checksum": "fa5a784491d092e9399c93161792dcc9"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/issues/target-line-manual-test-guide.md": {
+      "checksum": "e4df220f2af481a5fef22300510fdfbf"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/LOGGING_GUIDE.md": {
+      "checksum": "4b405b3567c7f78ca1fd4877ad82db5d"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/PHASE_2C_EXECUTION_PLAN.md": {
+      "checksum": "eac2002177f94c2edcb6d52f3894290d"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/PHASE_2C_REACTIVE_DEPENDENCY_MAP.md": {
+      "checksum": "253ab0fd20f6c25c6e67588a940b45df"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/plans/2026-04-09-connect-cloud-deployment-design.md": {
+      "checksum": "a20d026714146c96649ae103e07b163c"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/plans/2026-04-09-connect-cloud-deployment-plan.md": {
+      "checksum": "665accf3552340c58d37d80decaf5b58"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/SPCify_Frontend_Design_Brief.md": {
+      "checksum": "23d0f96aac7a060c95d34cba74912a4c"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/STARTUP_CONTRACT.md": {
+      "checksum": "ef93d83bc2b48df8e876a4bf0c8b2a83"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-11-save-load-file.md": {
+      "checksum": "8daeb00b3753359c3578438d93de5b33"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-15-analytics-cookie-consent.md": {
+      "checksum": "43d6376a37b564b2e310abd4e4bee2a2"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-15-help-information-architecture.md": {
+      "checksum": "c418bbee86e41f4b074f11e88f377cbd"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-16-analytics-dashboard.md": {
+      "checksum": "3e2c6ef891fd6ea4263f5ba731df505f"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-17-refactor-test-suite-phase1.md": {
+      "checksum": "bed908526f68410f15043ea01d96ee18"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/plans/2026-04-17-test-audit-plan.md": {
+      "checksum": "5cf26d8233b33833b665059ce09b2745"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-11-save-load-design.md": {
+      "checksum": "89b8e59f66365ddb4eaa3feb12c8b77a"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-15-analytics-cookie-consent-design.md": {
+      "checksum": "596fb5962e39c63b683ccb83bf621258"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-15-help-back-navigation-design.md": {
+      "checksum": "d2e0ce446dd9ac30f87eb31b374cfb4c"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-15-help-information-architecture-design.md": {
+      "checksum": "646cd053d1568152aa18bb8bd2f24e3f"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-16-analytics-dashboard-design.md": {
+      "checksum": "863a058672df19235604dd28f20ec01f"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-17-refactor-test-suite-phase1-design.md": {
+      "checksum": "b8f675fe0e76d945656523be0a72a02e"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-17-test-audit-design.md": {
+      "checksum": "e0e08145a4735cf72c42c881d77912c4"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/superpowers/specs/2026-04-17-test-audit-report.md": {
+      "checksum": "71b6a08e728e135a014eaf00bb7624b9"
+    },
+    ".worktrees/test-suite-phase1-impl/docs/USER_GUIDE.md": {
+      "checksum": "9558c1b892794698483b124dd521e61d"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/analytics-client.js": {
+      "checksum": "a026dd823c74ace114c7e892922b683c"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/BISPCHARTS.png": {
+      "checksum": "2b4446c6fc018b83919a15e41e225cf0"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/cookie-consent.css": {
+      "checksum": "8ab295a08b9d4e69130b76d377b9d776"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/cookie-consent.js": {
+      "checksum": "a378cf488549f6c864f650279f2f08b6"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/fonts/MariOffice-Bold.ttf": {
+      "checksum": "a6df7b27d2a6ccfbd4690f7a0cff0e20"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/fonts/MariOffice-Book.ttf": {
+      "checksum": "b22b59ab0cb85a0cba92ad076a56d30a"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/01-run-chart-stabil.png": {
+      "checksum": "09201a8c8cc7623b622d2dd9f1bde626"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/02-variation-sammenligning.png": {
+      "checksum": "9ca0b83e521d5751ba9a11bd459c5704"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/03-diagram-annoteret.png": {
+      "checksum": "8fdd71c1c90d0eaa6b441589b3caeb44"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/04-anhoej-signal.png": {
+      "checksum": "c25e22603cbc59de70a0f12151087bfa"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/05-p-chart.png": {
+      "checksum": "b7933561b2de61e4521fd155571627b3"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/06a-trin1-upload.png": {
+      "checksum": "3a4005cff1d6a97725d5bb1fff7017a1"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/06b-trin2-analyser.png": {
+      "checksum": "26febb23639c6770fd0191b1ab3b10c6"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/help/06c-trin3-eksporter.png": {
+      "checksum": "781e14b31f6ad4cb8abe1a0c1f23f8de"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/hospital_logo.png": {
+      "checksum": "c652ae32097799977cbbd103e8cb3a2c"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/local-storage.js": {
+      "checksum": "b1fc92ef9616601997588581088d5809"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/shiny-handlers.js": {
+      "checksum": "86073d9b15511549d496b74c2e3c372e"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/SPCify.png": {
+      "checksum": "add4ce5c2fc35cef938e935ad4f873f4"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/app/www/wizard-nav.js": {
+      "checksum": "cbda0302a7b36823f6b04325b0075de9"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/config/brand.yml": {
+      "checksum": "8097b52693ae309bf2bd587bb6a487b9"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_c.csv": {
+      "checksum": "754d8d80b545bf90842892c40fedea44"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_g.csv": {
+      "checksum": "fdbfd0e8f57659ba48cb34a6c0868812"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_i_mr.csv": {
+      "checksum": "0a0569612c2ce4bf19fd8421e3de2347"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_p.csv": {
+      "checksum": "f85cd2e63272f8ff2e565a2055c4734c"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_pp.csv": {
+      "checksum": "ac8a5cac4cf75613c160f657ea864af7"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_run.csv": {
+      "checksum": "31659605e5e73729ac19bbe61c7f6929"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_spc_data.csv": {
+      "checksum": "63a6810d13568aebaf0ea0a9a2ae2132"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_t.csv": {
+      "checksum": "aa3d95a96ed048ed5d54b79f39170af2"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_u.csv": {
+      "checksum": "bc43b1470c60521dd690ba2542732e3b"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/sample_up.csv": {
+      "checksum": "aadcfa3a68c28a2e95849b2278b771cc"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/spc_exampledata_utf8.csv": {
+      "checksum": "948baf92ad30f422a7b9049af46cbbd8"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/spc_exampledata.csv": {
+      "checksum": "bbecb64486db3e1f07b180e5334046b6"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/extdata/SPC_test_data_forskellige.csv": {
+      "checksum": "72feb6fef51f3898baa4746313b3d94a"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/Lato-Bold.ttf": {
+      "checksum": "26af1ab89ca07c82f244395a9849e150"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/Lato-Light.ttf": {
+      "checksum": "a3ba535f79c84f435ff448876032a5f5"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/Lato-Regular.ttf": {
+      "checksum": "c5c3b9b91ff2c85ab6dcf666f5d852b0"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/LICENSE": {
+      "checksum": "86d3f3a95c324c9479bd8986968f4327"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/Roboto-Bold.ttf": {
+      "checksum": "8ce868dab82f3f36896915aff1ff0dab"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/fonts/Roboto-Medium.ttf": {
+      "checksum": "c9436ead5ef4f265e585d9e4c27db08f"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/golem-config.yml": {
+      "checksum": "99d6603f935217562045aba2036eb8c7"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/powerpointskabelon.pptx": {
+      "checksum": "b5542f0b880d47cfa0d3b81e6e127d5b"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh_horisonal.typ": {
+      "checksum": "b6be97cd59c8d78460506639a8fd798b"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/bfh-template.typ": {
+      "checksum": "fc2a5b2af2f51e6a4dd814c126be5d27"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIAL.TTF": {
+      "checksum": "fa3228aadde0db988e1822c2f736c131"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALBD.TTF": {
+      "checksum": "858f5a50a4c3e5e6559a0c9b128eee60"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALBI.TTF": {
+      "checksum": "b04eb00031bf4d82265b30855d7a314f"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALI.TTF": {
+      "checksum": "97f1aa85e8ce271cd2a65759cb230397"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALN.TTF": {
+      "checksum": "d20ba4eaaf26b7033da05fd59ed020ab"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALNB.TTF": {
+      "checksum": "6debd7b47fbf196d9aea1dc4235439bb"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALNBI.TTF": {
+      "checksum": "56e394b38fbf81afb437bc00884544f8"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIALNI.TTF": {
+      "checksum": "989670c4c82248bb6a8cec3558212374"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARIBLK.TTF": {
+      "checksum": "ec8b4d9c0e68604dfbeda73d0213c82e"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/ARLRDBD.TTF": {
+      "checksum": "2d1068a7f51e1fc2c63d81165bf52422"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari Bold.otf": {
+      "checksum": "8603a8b95d29b030b66d1d4f68ab2b72"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari Book.otf": {
+      "checksum": "d891294df978554740a1996b1040468f"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari Heavy.otf": {
+      "checksum": "a8911c6c90f788e17831fc9075a821f0"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari Light.otf": {
+      "checksum": "bbbf1fe0cb1ff169970a39ac9a069ce6"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari Poster.otf": {
+      "checksum": "5a058c77c06cfec678030c353cbcc3e8"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/Mari.otf": {
+      "checksum": "2e9b3d0385a8462bea22f3b2b80422e7"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice-Bold.ttf": {
+      "checksum": "a6df7b27d2a6ccfbd4690f7a0cff0e20"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice-Book.ttf": {
+      "checksum": "b22b59ab0cb85a0cba92ad076a56d30a"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice-Heavy.ttf": {
+      "checksum": "d81d6f49c135ae3bd22a76acf20ee6e1"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice-Light.ttf": {
+      "checksum": "8cca5b564b57d0a084569f273fcf5a2d"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice-Poster.ttf": {
+      "checksum": "79fd2077ce69faf565d6406810b698b4"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/fonts/MariOffice.ttf": {
+      "checksum": "5668b54b76c9999c826f3e20f2aa261d"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/BFH_medicin.png": {
+      "checksum": "f5219f8241215cba6cf24c0ee94d9cca"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Hospital_Maerke_RGB_A1_str.png": {
+      "checksum": "13e95f724e48fa4349e5b2e4c350dea1"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_neg_png.png": {
+      "checksum": "c6394765a629c4560911aa16f72a1e05"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og Frederiksberg_RGB_neg.png": {
+      "checksum": "6f298bb47a8b404b66351ef4c9d5448c"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og Frederiksberg_RGB.png": {
+      "checksum": "bc22fbe491384f9e5c8585111a2d95a9"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og-Frederiksberg_web.png": {
+      "checksum": "e36727d1a97fe247bd0e8f60c19e859a"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/bfh-template/images/Logo_Bispebjerg_png.png": {
+      "checksum": "8ad39ee39a8a8c61fd76ecc6fb72e689"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/README.md": {
+      "checksum": "aea794434a74d42d6eaf071df163c2cb"
+    },
+    ".worktrees/test-suite-phase1-impl/inst/templates/typst/test_output.pdf": {
+      "checksum": "759c5310e2d8d5997b9cd06ceebac3ce"
+    },
+    ".worktrees/test-suite-phase1-impl/NAMESPACE": {
+      "checksum": "f4b5adafd133859ab1520f131b02e150"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/add-session-persistence-autosave/design.md": {
+      "checksum": "29c96828447cf8f8e28f3ed3d203d410"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/add-session-persistence-autosave/proposal.md": {
+      "checksum": "b9de3999a17c6a847d3034170a286b9a"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/add-session-persistence-autosave/specs/session-persistence/spec.md": {
+      "checksum": "bb3095e8972b1327fa01aaa90c9fd80c"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/add-session-persistence-autosave/tasks.md": {
+      "checksum": "a6b3b42edc26e094a145add65ff41081"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-centerline-label-rounding/proposal.md": {
+      "checksum": "8b40ea293ef46ff56d0b960254fb5f73"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-centerline-label-rounding/tasks.md": {
+      "checksum": "1ff2d6ca8768de5e9df3fbac7746df9d"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-export-code-review-issues/proposal.md": {
+      "checksum": "bcb659d5478b0b45e9fd517912378967"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-export-code-review-issues/tasks.md": {
+      "checksum": "66be233231229e617870d73ca2b8fd5c"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-export-preview-blank/proposal.md": {
+      "checksum": "6201e954d34d994d831200bd41025fbf"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-fix-export-preview-blank/tasks.md": {
+      "checksum": "faada71fd3e8cbe6c5c54c8be2041879"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/proposal.md": {
+      "checksum": "bab2f14c0aff2aaafd0bb2085ef37b77"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/specs/export-api/spec.md": {
+      "checksum": "e09b0b2e7d7af72dfae401078c54da78"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-export/tasks.md": {
+      "checksum": "bc53f1a65cd3796d155cd722695f34ee"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/proposal.md": {
+      "checksum": "deff832e81940178102f8426febacae0"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/specs/export-api/spec.md": {
+      "checksum": "44823cbc8e515a03ad7ca83d294837ad"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-01-migrate-to-bfhcharts-public-api/tasks.md": {
+      "checksum": "0e564ddc619afd79cbb9d497824a6736"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-02-extract-ai-to-bfhllm/proposal.md": {
+      "checksum": "0b14ad523951847321d1d27c125c2f11"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/archive/2025-12-02-extract-ai-to-bfhllm/tasks.md": {
+      "checksum": "3b1df05bcfb589b92458ecd9c326d77d"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/design.md": {
+      "checksum": "a6a3a8e09995c104ca50ce06a911487e"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/proposal.md": {
+      "checksum": "7fc8d1e792922188d5f0f71f9b464bcb"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/specs/code-organization/spec.md": {
+      "checksum": "731387c1558d44fc1158fd2bd5b7bf33"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/specs/configuration-management/spec.md": {
+      "checksum": "8153bc25855a62ea37d73fe13737957b"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/specs/test-infrastructure/spec.md": {
+      "checksum": "20be9108e568cbb7815ae465a74857fd"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-code-quality/tasks.md": {
+      "checksum": "76148c0a6e419bf00911605ad663b19d"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-viewport-emit-optimization/proposal.md": {
+      "checksum": "048d27f003d7e3d01e9bf4167fc22ccb"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-viewport-emit-optimization/specs/spc-visualization/spec.md": {
+      "checksum": "01b38d1933e0f63551a8d9decd67f770"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/refactor-viewport-emit-optimization/tasks.md": {
+      "checksum": "ab0843525c4db144832cd1e4ce3283b0"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/remove-legacy-dead-code/proposal.md": {
+      "checksum": "fa4431c1f235bb501579584d9d5f6919"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/remove-legacy-dead-code/specs/code-hygiene/spec.md": {
+      "checksum": "72bf88c202d6f4c1860bde6b4fcec181"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/remove-legacy-dead-code/tasks.md": {
+      "checksum": "d764bc23ff5390c3b564f1a07eba67c9"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/unblock-publish-test-gate/design.md": {
+      "checksum": "b3a7f0eec27bf880bf68d1b2794c2f78"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/unblock-publish-test-gate/FOLLOW_UP.md": {
+      "checksum": "ae8d293c4bec6365541fddd959050d71"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/unblock-publish-test-gate/proposal.md": {
+      "checksum": "32b098e99e31da15fbf644060e666d39"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/unblock-publish-test-gate/specs/test-infrastructure/spec.md": {
+      "checksum": "5362324153b3b6337af0247e707f0e05"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/changes/unblock-publish-test-gate/tasks.md": {
+      "checksum": "a70efbe6971787a89f9f61648a97d5c5"
+    },
+    ".worktrees/test-suite-phase1-impl/openspec/project.md": {
+      "checksum": "4fab2c9bb76baf8bd3b6e0fcd9586350"
+    },
+    ".worktrees/test-suite-phase1-impl/README.md": {
+      "checksum": "89ccf4736f70d8a8dd37d325856b478f"
+    },
     "app.R": {
       "checksum": "f7fa710eba8d9f6076c63a9f6f1f5f09"
     },
@@ -20594,13 +21216,13 @@
       "checksum": "138e2b41f8e5a27fe4d5b1d8c2a436e9"
     },
     "CLAUDE.md": {
-      "checksum": "aa1719933d5ef440fa3fad1c2b37ad46"
+      "checksum": "29b257b8db3cfd3ec2389c5b4529e41e"
     },
     "CLAUDE.md.backup": {
       "checksum": "6df1bcc93de858211a1ed26097bc4a44"
     },
     "DESCRIPTION": {
-      "checksum": "f3be42e0de71345ab727de1bbab8ad07"
+      "checksum": "a7654acdbd68639ab0524477de944357"
     },
     "dev/ARCHITECTURE_ANALYSIS.md": {
       "checksum": "596f533ca4698ce24f1666046cdf8d84"
@@ -20611,8 +21233,59 @@
     "dev/ARCHITECTURE.md": {
       "checksum": "71ac4d574ad0ce8b174fc122defdb619"
     },
+    "dev/audit_tests.R": {
+      "checksum": "9cc8b6e527f1c1edebc94304d35739f8"
+    },
+    "dev/audit-output/.gitkeep": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "dev/audit-output/audit-run-fresh.log": {
+      "checksum": "8e794baebc7de51d0c9f7f57b783538a"
+    },
+    "dev/audit-output/audit-run.log": {
+      "checksum": "b6617c5c15bfa3a4ed7879771640957b"
+    },
+    "dev/audit-output/devtools-test-output.log": {
+      "checksum": "5df2a583407b5278c025a36df68cf8c4"
+    },
+    "dev/audit-output/publish-gate-20260419-200551.log": {
+      "checksum": "032f8ab790f606774c21ac301428e777"
+    },
+    "dev/audit-output/publish-gate-20260419-200821.log": {
+      "checksum": "5ca316714051225ddfb8bca127a32ebd"
+    },
+    "dev/audit-output/publish-gate-20260419-205705.log": {
+      "checksum": "733d74cbe6815b076d5198e4b626ff59"
+    },
     "dev/audit-output/test-audit.json": {
-      "checksum": "47ca1ccae5bfd18b057358869284da62"
+      "checksum": "a508caac5db02c5cb1a109a634a72951"
+    },
+    "dev/audit-output/test-classification.yaml": {
+      "checksum": "f36c4e4d53bdd955529f62fb4b21fff3"
+    },
+    "dev/audit-output/test-results.rds": {
+      "checksum": "044e34c7cead638f265b9256cecbf2ad"
+    },
+    "dev/audit/classifier.R": {
+      "checksum": "471685351650ddd014fe688dcec91640"
+    },
+    "dev/audit/dynamic_runner.R": {
+      "checksum": "d37bfc268af35b3b3a5c0f0f6355788f"
+    },
+    "dev/audit/README.md": {
+      "checksum": "3e69eba7677c232a254d7ad3d508d2bb"
+    },
+    "dev/audit/reporter.R": {
+      "checksum": "089f6e66a543ddcb7fe69cc4535132d3"
+    },
+    "dev/audit/static_analysis.R": {
+      "checksum": "6b2cd93ec3c76923dded52336c788223"
+    },
+    "dev/classify_tests_lib.R": {
+      "checksum": "2bbe1a8fab3456fa87f36acf9464a669"
+    },
+    "dev/classify_tests.R": {
+      "checksum": "7cc4eb2ffd49d773e09db4c6f493d93e"
     },
     "dev/DEVELOPER_GUIDE.md": {
       "checksum": "bbbb21551bf0388f62813a18d441fe61"
@@ -20620,8 +21293,17 @@
     "dev/GEMINI.md": {
       "checksum": "a1070acb47244e8b6620cef930f0d9c7"
     },
+    "dev/git-hooks/pre-push": {
+      "checksum": "ada610fa7ca67203054c6372001fa29c"
+    },
+    "dev/install_git_hooks.R": {
+      "checksum": "f314ff4e7303c4602a53098da6aa9d20"
+    },
     "dev/lint_and_style.R": {
       "checksum": "59318f9f08de38f35228772e882c92c5"
+    },
+    "dev/lintr_seed_rng.R": {
+      "checksum": "d5a8e2642d7cfee956d96e40376bd968"
     },
     "dev/MODULE_STRUCTURE.md": {
       "checksum": "93b432dc27d2b2565a7e74252ae16a96"
@@ -20633,13 +21315,19 @@
       "checksum": "cbbfe79a6c0cdc5fdf771efbcf21994e"
     },
     "dev/publish_prepare.R": {
-      "checksum": "91831ca078c6fd2677d900bc8c617c90"
+      "checksum": "03495c52a67ad943d52e28060847c393"
     },
     "dev/run_dev.R": {
       "checksum": "b0c735f800e54f50aac42abf848ea14d"
     },
     "dev/TESTING_PROTOCOL.md": {
       "checksum": "ca5f7af8d99b8aeb115e60017ef63f9b"
+    },
+    "dev/tests/run_tests.R": {
+      "checksum": "f0ae4541583721379f6bedc81dfcd075"
+    },
+    "dev/tests/test-classify.R": {
+      "checksum": "4a90a238cf6edbea3d784b4cbf0da97a"
     },
     "docs/adr/ADR-001-pure-bfhcharts-workflow.md": {
       "checksum": "cd7d2068ab199981bfe49286fb678620"
@@ -20656,6 +21344,9 @@
     "docs/adr/ADR-016-gemini-integration.md": {
       "checksum": "fd28966961c8605a7502e893cd845332"
     },
+    "docs/adr/ADR-017-test-regression-gate-design.md": {
+      "checksum": "4866239b3abda55db17a5c73de3ffdbb"
+    },
     "docs/adr/README.md": {
       "checksum": "7ce2b4e21f363601f6ec0899e04d8d29"
     },
@@ -20671,11 +21362,17 @@
     "docs/BFHCHARTS_MIGRATION_GUIDE.md": {
       "checksum": "91506680d711d358dc0e7498997c8168"
     },
+    "docs/CI_SETUP_GUIDE.md": {
+      "checksum": "e576a45fe7981d44c4fae5eeb57e9032"
+    },
     "docs/CONFIGURATION.md": {
-      "checksum": "5119065893c37ed170006c275386d82b"
+      "checksum": "953fc1665352f20a6eda9340eb9635c5"
     },
     "docs/CROSS_REPO_COORDINATION.md": {
       "checksum": "12e86331b81abf20c99ff06951016e61"
+    },
+    "docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md": {
+      "checksum": "1f35e071b4bff392e6d82b224bc4b9f5"
     },
     "docs/DEBUG_CONTEXT_FILTERING.md": {
       "checksum": "feff1f619caeeaa679fe0dc1b2cfd477"
@@ -20740,6 +21437,18 @@
     "docs/superpowers/plans/2026-04-16-analytics-dashboard.md": {
       "checksum": "3e2c6ef891fd6ea4263f5ba731df505f"
     },
+    "docs/superpowers/plans/2026-04-17-refactor-test-suite-phase2.md": {
+      "checksum": "89a50013278a36360843c3fb77e519af"
+    },
+    "docs/superpowers/plans/2026-04-17-refactor-test-suite-phase3.md": {
+      "checksum": "02249585f47c1edca50b06c715c42253"
+    },
+    "docs/superpowers/plans/2026-04-17-test-audit-plan.md": {
+      "checksum": "5cf26d8233b33833b665059ce09b2745"
+    },
+    "docs/superpowers/plans/2026-04-17-time-yaxis.md": {
+      "checksum": "0243573a17352ae98c78f48c96f00258"
+    },
     "docs/superpowers/specs/2026-04-11-save-load-design.md": {
       "checksum": "89b8e59f66365ddb4eaa3feb12c8b77a"
     },
@@ -20758,8 +21467,23 @@
     "docs/superpowers/specs/2026-04-17-refactor-test-suite-phase1-design.md": {
       "checksum": "b8f675fe0e76d945656523be0a72a02e"
     },
+    "docs/superpowers/specs/2026-04-17-refactor-test-suite-phase2-design.md": {
+      "checksum": "9242a2347551cf454e79400b64a94f2d"
+    },
+    "docs/superpowers/specs/2026-04-17-refactor-test-suite-phase3-design.md": {
+      "checksum": "f8678c13fac2f16c048cd9b8d7758f59"
+    },
     "docs/superpowers/specs/2026-04-17-test-audit-design.md": {
       "checksum": "e0e08145a4735cf72c42c881d77912c4"
+    },
+    "docs/superpowers/specs/2026-04-17-test-audit-report.md": {
+      "checksum": "707f2cb6fca6499f0842943195423f77"
+    },
+    "docs/superpowers/specs/2026-04-17-time-yaxis-design.md": {
+      "checksum": "95fbf47a278858beb9cabade956ed296"
+    },
+    "docs/test-suite-inventory-203.md": {
+      "checksum": "09d2d5b6ceafe788da49254b8731dc39"
     },
     "docs/USER_GUIDE.md": {
       "checksum": "9558c1b892794698483b124dd521e61d"
@@ -20989,1145 +21713,1145 @@
     "inst/templates/typst/test_output.pdf": {
       "checksum": "759c5310e2d8d5997b9cd06ceebac3ce"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759784420547578096.json": {
-      "checksum": "32f4c5f5d8119ed7fd81696c19bd84df"
+    "logs/shinylogs_SPC_Analysis_Tool_1759784420547578096.json.gz": {
+      "checksum": "d0588de3107504bbf5df3eadb37a0e31"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759785749892678976.json": {
-      "checksum": "dc98e418f5fdf5dfbbb64288727de7a4"
+    "logs/shinylogs_SPC_Analysis_Tool_1759785749892678976.json.gz": {
+      "checksum": "bb7d9af4d0aa4125c3e3bb7512f6b1b3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759787308645648003.json": {
-      "checksum": "9a97c168397953cc6d9cf03c771b759f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759787308645648003.json.gz": {
+      "checksum": "00aac5229ff7830014f5d3a0c1698c74"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759787369224431038.json": {
-      "checksum": "a0d88d31d6329dbe4015b7de473a5919"
+    "logs/shinylogs_SPC_Analysis_Tool_1759787369224431038.json.gz": {
+      "checksum": "e57f23bd2cdfdb81301c06f242fe145a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759787809748193979.json": {
-      "checksum": "39588c610faa46d54bdce10c6cc80017"
+    "logs/shinylogs_SPC_Analysis_Tool_1759787809748193979.json.gz": {
+      "checksum": "3bb9cecdf313bdbea9f7090c9aa1ed05"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759788327028192043.json": {
-      "checksum": "57cee5d1a95d9aee5d803bb49fb9d51a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759788327028192043.json.gz": {
+      "checksum": "586883617bbdc628d3c31a632b5453a9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759788880436527014.json": {
-      "checksum": "d9ebc04c1b0ed5447cd24861866a1b6a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759788880436527014.json.gz": {
+      "checksum": "6ad3ae6240ecf6c423bedc8ee4a1e713"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759789143810553074.json": {
-      "checksum": "f5c1a5a4f798e3cb44623b3912c48bb3"
+    "logs/shinylogs_SPC_Analysis_Tool_1759789143810553074.json.gz": {
+      "checksum": "b981e3fe3a5078b255a92187bfb8eedb"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759789307116883993.json": {
-      "checksum": "2bce7b6bdf68d7cab7d44d26584f22fe"
+    "logs/shinylogs_SPC_Analysis_Tool_1759789307116883993.json.gz": {
+      "checksum": "ccbf03a5d4dcaaf8a3e3e0913ef12417"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759789889984266996.json": {
-      "checksum": "8cb54a309eadfc06fab456a68278e347"
+    "logs/shinylogs_SPC_Analysis_Tool_1759789889984266996.json.gz": {
+      "checksum": "d524af2acee0fa02c22dce8117bb07be"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759789960903506041.json": {
-      "checksum": "152395079ed73a5d0cea09ae2cee5a62"
+    "logs/shinylogs_SPC_Analysis_Tool_1759789960903506041.json.gz": {
+      "checksum": "34a501be3ac61c469bc68bea5b5f57c0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759790029034629107.json": {
-      "checksum": "501e6d30750cbba1d039dea86ae93d65"
+    "logs/shinylogs_SPC_Analysis_Tool_1759790029034629107.json.gz": {
+      "checksum": "903940251d85bb4da57ce1de853e0032"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759790045370160103.json": {
-      "checksum": "b8bd1daf17bff03a4257bdc9cb59ec27"
+    "logs/shinylogs_SPC_Analysis_Tool_1759790045370160103.json.gz": {
+      "checksum": "9b1cde3afcc6a0ae6959c88746e15819"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759790076116126060.json": {
-      "checksum": "6b1d2b48a9297a4cb0fbd0998dad2aa7"
+    "logs/shinylogs_SPC_Analysis_Tool_1759790076116126060.json.gz": {
+      "checksum": "edd02483041d96487aaef558a13a314b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759790142741112947.json": {
-      "checksum": "e4024647850b2cad91e97e729e46ae8d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759790142741112947.json.gz": {
+      "checksum": "3d64b4be7d5145a52d29b1c772bd2828"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759790320242679119.json": {
-      "checksum": "40eef01af597d216a3ab57a24c9aef3d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759790320242679119.json.gz": {
+      "checksum": "3fc5dd2b529337d29d88414ef7c9be5b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759833963213167906.json": {
-      "checksum": "0c727fd2a54c9c59237c9fbd407a65b5"
+    "logs/shinylogs_SPC_Analysis_Tool_1759833963213167906.json.gz": {
+      "checksum": "c703181e5075148a759c6e5c017140bd"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759834089243848085.json": {
-      "checksum": "5b87afdcc56f72d7c63586eb39a6d31f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759834089243848085.json.gz": {
+      "checksum": "b1bb382b321e04c79531cb7253ef38ff"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759834667992763996.json": {
-      "checksum": "d15d9cd3a4fdaef366051ad8742a9acb"
+    "logs/shinylogs_SPC_Analysis_Tool_1759834667992763996.json.gz": {
+      "checksum": "835f816f4b213f92f9437445ab2791d6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759835577115279913.json": {
-      "checksum": "4be12a72557d6089311f420850df43b1"
+    "logs/shinylogs_SPC_Analysis_Tool_1759835577115279913.json.gz": {
+      "checksum": "4ac66d959e026ac35d1a1a6aa8a376f0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759835884383924961.json": {
-      "checksum": "e308094915b7832755b555ce4ac8f0f7"
+    "logs/shinylogs_SPC_Analysis_Tool_1759835884383924961.json.gz": {
+      "checksum": "4f2d12322202a6d626f44d0842b239fb"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759835938907948971.json": {
-      "checksum": "58d0bf423f7643d817c7c8f4fac4b5bc"
+    "logs/shinylogs_SPC_Analysis_Tool_1759835938907948971.json.gz": {
+      "checksum": "f5dffe208db013425374a3ab54979593"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759836109571577072.json": {
-      "checksum": "cdf23a019606474058a6f458be14b464"
+    "logs/shinylogs_SPC_Analysis_Tool_1759836109571577072.json.gz": {
+      "checksum": "1361ae9df6b8a4ef2e02cd67802bfd8e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759836299533732891.json": {
-      "checksum": "a07b19dd9b1514bc5c4b41d178d2642a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759836299533732891.json.gz": {
+      "checksum": "4be58994b82cd5baa2adfd1cbeadc36b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837047735603094.json": {
-      "checksum": "70f2c8a4859256106a87f66eb2626dc7"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837047735603094.json.gz": {
+      "checksum": "d570c7fb16014275e43c521287008598"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837090538744926.json": {
-      "checksum": "df14bb5a5fb78eecbc1b387145373eb4"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837090538744926.json.gz": {
+      "checksum": "9fdd377ba4de42ad3621dc46565882a8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837189725771904.json": {
-      "checksum": "05580222532a961afccb4d68e7e3fbf7"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837189725771904.json.gz": {
+      "checksum": "6c95dc3c3ef4daa5e41245d0e1f9536d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837352864480972.json": {
-      "checksum": "9c54d51c8615b1a4fb154846f9efa708"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837352864480972.json.gz": {
+      "checksum": "e69918434d98160eb600d3d9b1f467cf"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837437212404013.json": {
-      "checksum": "cab077ddef28f7dd03106e173010e91b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837437212404013.json.gz": {
+      "checksum": "f379381c9110ef5e4ed6f51c631b2060"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837480633403063.json": {
-      "checksum": "c2c4c3a5bfc493041e02162929773cdd"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837480633403063.json.gz": {
+      "checksum": "3df697f2c80889ef1b58aa86f5f4dee2"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759837627386024952.json": {
-      "checksum": "959c4f948f5816ebbe459c618574db44"
+    "logs/shinylogs_SPC_Analysis_Tool_1759837627386024952.json.gz": {
+      "checksum": "895718a5c2711bf7f636321ab38b622c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838004683995962.json": {
-      "checksum": "272d87ced19604606251daca9e6d6f92"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838004683995962.json.gz": {
+      "checksum": "b302da59a1d79f15689d1d60c5deb645"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838041816873074.json": {
-      "checksum": "3db9398b44cf9c7a83f6a919ddc7153d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838041816873074.json.gz": {
+      "checksum": "71d389db6acf56d5197360520508c844"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838078093461037.json": {
-      "checksum": "6c451da2e67ed8477ed54b0e6eeac873"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838078093461037.json.gz": {
+      "checksum": "a7d4c62b6ed55d83812521075ebfae51"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838148345535040.json": {
-      "checksum": "62a44591a45e5172008287839cc22e0f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838148345535040.json.gz": {
+      "checksum": "6d5dfd50eb628580065c570c6c0611ed"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838229954219103.json": {
-      "checksum": "cf168c3e705780662ecda328c6f30d2e"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838229954219103.json.gz": {
+      "checksum": "a1ae0ecd3f3818d17cc14e9cd001a086"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838499920321941.json": {
-      "checksum": "abad4e37bd774edb2f876ea915ceece2"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838499920321941.json.gz": {
+      "checksum": "0d09a714255c4f2b14b9a2f5259693f3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838544160427094.json": {
-      "checksum": "22b10fc2bbd7eb66edef1933f9f5d770"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838544160427094.json.gz": {
+      "checksum": "d125f867c669b17d30c429a003df0423"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759838754053111076.json": {
-      "checksum": "4160fc110594a5ec5f012a1c4f773603"
+    "logs/shinylogs_SPC_Analysis_Tool_1759838754053111076.json.gz": {
+      "checksum": "12830f20ba6f80770c9db927f43054ad"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759839725581343889.json": {
-      "checksum": "16fa2c14765408cd5ab72622ebddb6ef"
+    "logs/shinylogs_SPC_Analysis_Tool_1759839725581343889.json.gz": {
+      "checksum": "327bea5d1e916f8ddec90249de66b9ea"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759839790168514013.json": {
-      "checksum": "86a3292c01aabcb31e608d0ea8b9306c"
+    "logs/shinylogs_SPC_Analysis_Tool_1759839790168514013.json.gz": {
+      "checksum": "f97b85ec0fdc2270e42135079824737e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759839829187005043.json": {
-      "checksum": "f202f6b07ceabb7c08ea85c29a9f6652"
+    "logs/shinylogs_SPC_Analysis_Tool_1759839829187005043.json.gz": {
+      "checksum": "fa1640643e89dd630d1eff36c4198813"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759840315764022112.json": {
-      "checksum": "f43141a395091832cb3bd074040635c0"
+    "logs/shinylogs_SPC_Analysis_Tool_1759840315764022112.json.gz": {
+      "checksum": "e6c2b54fe85394a69b6f9fa26ef0012f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759840635512304068.json": {
-      "checksum": "2dbf85a126a0a354b2d1a9b98386a296"
+    "logs/shinylogs_SPC_Analysis_Tool_1759840635512304068.json.gz": {
+      "checksum": "faa42b1efd134c72a77c3d19e8687b39"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759841349443434000.json": {
-      "checksum": "44b001dd2dcea30a2c36db250c386438"
+    "logs/shinylogs_SPC_Analysis_Tool_1759841349443434000.json.gz": {
+      "checksum": "da913003253c2067937d967c90afa541"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759842227996077061.json": {
-      "checksum": "5ad3b7dd20182ce50ba90a778462a37b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759842227996077061.json.gz": {
+      "checksum": "35cdc67cd2d356176b1d1c5f01a35227"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759842284319603920.json": {
-      "checksum": "e3c1a55857325e1c2f31947cd0955902"
+    "logs/shinylogs_SPC_Analysis_Tool_1759842284319603920.json.gz": {
+      "checksum": "ef6492e4f6890734741dad473f7228b2"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759842399024637938.json": {
-      "checksum": "0e7a2755d31d3aba37cd083ab01ee209"
+    "logs/shinylogs_SPC_Analysis_Tool_1759842399024637938.json.gz": {
+      "checksum": "f35b773c69da0832991364d8b5a0db68"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759845461995306015.json": {
-      "checksum": "788e8bfd06c4ecc6f4e26c59766cd819"
+    "logs/shinylogs_SPC_Analysis_Tool_1759845461995306015.json.gz": {
+      "checksum": "f9fe1bf2396ee38b3b319f47eb748ab3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759846716441608906.json": {
-      "checksum": "6d6c39edaa47a9765761955f9b840861"
+    "logs/shinylogs_SPC_Analysis_Tool_1759846716441608906.json.gz": {
+      "checksum": "b0aa7f89a42c3454ef40a2c78af48b3b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759846741862045050.json": {
-      "checksum": "50e8e1f65c6dac461dc62bfedfa33157"
+    "logs/shinylogs_SPC_Analysis_Tool_1759846741862045050.json.gz": {
+      "checksum": "7838a96471cc8701276813f8591162c1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759846758575689077.json": {
-      "checksum": "c995fadc7f0557b5bb97d4defe62c533"
+    "logs/shinylogs_SPC_Analysis_Tool_1759846758575689077.json.gz": {
+      "checksum": "ebbdd50aacf5108c6c0894876a160559"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759846784067236900.json": {
-      "checksum": "095cf360f0fcad73a803d2c4c6c1f6e9"
+    "logs/shinylogs_SPC_Analysis_Tool_1759846784067236900.json.gz": {
+      "checksum": "2c311ea45121569e4b24ef6b5b3f38f5"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847035596813917.json": {
-      "checksum": "6fd750626ed76033c56c5b99f3fc45e3"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847035596813917.json.gz": {
+      "checksum": "f082e4b7907a336983070fdb8ca9d5d8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847072255084038.json": {
-      "checksum": "019793a801acf8dead4b525d7e0e1ed4"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847072255084038.json.gz": {
+      "checksum": "58bb6b2980be141c5c5cca20ea0ca975"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847252233827114.json": {
-      "checksum": "36f904c7ebfc81dbf6c7169407d6533f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847252233827114.json.gz": {
+      "checksum": "7d1b8ee1d1b4d7c3ba28e260e035b0f4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847571196854115.json": {
-      "checksum": "b6151d5478560396bfdf4fb21c465125"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847571196854115.json.gz": {
+      "checksum": "7cc9a9b1617034b132bcb3f1b5d30d3c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847608689805031.json": {
-      "checksum": "b79afd01ea198a5441a306867393bf45"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847608689805031.json.gz": {
+      "checksum": "060d9d08a2fbb889671017ebdccabb12"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847654723674059.json": {
-      "checksum": "fd364651f0bc9cb992493a2f68642df6"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847654723674059.json.gz": {
+      "checksum": "6a52ea0a576f6a6dd8faadc3bb656bd2"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847685917659044.json": {
-      "checksum": "a7fc4db4291db7afd8ac8688eda82bf6"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847685917659044.json.gz": {
+      "checksum": "fd35dc9a948ed70201271e4047161f76"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847720933491945.json": {
-      "checksum": "f67f644fc1fdc836a517ae9ae37cf4b9"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847720933491945.json.gz": {
+      "checksum": "5f52b0a2a415fab044fbae2692665516"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759847799467839003.json": {
-      "checksum": "8a35a143c65c7b54d2bb3c1112f3524c"
+    "logs/shinylogs_SPC_Analysis_Tool_1759847799467839003.json.gz": {
+      "checksum": "fa39fe5c6fbe399a0d68223d6d3888cd"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759848411507626057.json": {
-      "checksum": "8514cac8dda5b656779e316889436736"
+    "logs/shinylogs_SPC_Analysis_Tool_1759848411507626057.json.gz": {
+      "checksum": "0356f0ac35a80258ee1fac05e0a3fa9b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759848607133445024.json": {
-      "checksum": "145d082733e06a992b35eb1706ec577a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759848607133445024.json.gz": {
+      "checksum": "0746f5c2631234fe6075a790fa70cf56"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759848860109599113.json": {
-      "checksum": "9ec9401d4ac90b02fefca68b8ddb7741"
+    "logs/shinylogs_SPC_Analysis_Tool_1759848860109599113.json.gz": {
+      "checksum": "ef505bd833b9b8025975b938434e882e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759849414507793903.json": {
-      "checksum": "99565bad78cc1270e8fa4cf95733fdac"
+    "logs/shinylogs_SPC_Analysis_Tool_1759849414507793903.json.gz": {
+      "checksum": "a0cd830be7a0047d143ef90abc40df6b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759849495451508999.json": {
-      "checksum": "7cba113ac52ffb76233b087818afcbed"
+    "logs/shinylogs_SPC_Analysis_Tool_1759849495451508999.json.gz": {
+      "checksum": "917abb5a6d456fa5ed4ad5f03068a1f0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759849605991451979.json": {
-      "checksum": "5973d54c274445a042ad7178bbc8c375"
+    "logs/shinylogs_SPC_Analysis_Tool_1759849605991451979.json.gz": {
+      "checksum": "527462f267c2345479d55b4bdb55ee58"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759849665867047071.json": {
-      "checksum": "aa89cc395342975fce52438b112e935e"
+    "logs/shinylogs_SPC_Analysis_Tool_1759849665867047071.json.gz": {
+      "checksum": "983c9e921db75abd30e196178555784e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759849772676440001.json": {
-      "checksum": "3a0e47694b3375bebdbf547155984664"
+    "logs/shinylogs_SPC_Analysis_Tool_1759849772676440001.json.gz": {
+      "checksum": "ba2496e3e3b4a78277bfc61916533f3e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759850404740669966.json": {
-      "checksum": "07d634d15b91f35dfb9aecdea4d4f0de"
+    "logs/shinylogs_SPC_Analysis_Tool_1759850404740669966.json.gz": {
+      "checksum": "cea09d54296b0eabf14364f1ae6bfc41"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759855906220804930.json": {
-      "checksum": "1f82c68cf57db34806cf95fb6d441ef0"
+    "logs/shinylogs_SPC_Analysis_Tool_1759855906220804930.json.gz": {
+      "checksum": "8b232a056e58a563519b331ab77ca594"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759855918993300915.json": {
-      "checksum": "39b9680e1cd8b9eab229bd076b384ff6"
+    "logs/shinylogs_SPC_Analysis_Tool_1759855918993300915.json.gz": {
+      "checksum": "a0138ae2ec3b9968282b37a229b8097f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759856617307094097.json": {
-      "checksum": "a75ab985c7dccfc9ff113e337b6b6e52"
+    "logs/shinylogs_SPC_Analysis_Tool_1759856617307094097.json.gz": {
+      "checksum": "2d1c39c8ec91f0604bc666e90b96cb30"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759856668898004055.json": {
-      "checksum": "a766ca3cbca8ff813c3a81e05015707b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759856668898004055.json.gz": {
+      "checksum": "edef330fb917d75d3007d3c2b490709d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759856882059309006.json": {
-      "checksum": "a642cb1f895764ad1d2472037329b42a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759856882059309006.json.gz": {
+      "checksum": "84a7b80005cd952b8624d126d1902e5e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759856942875693083.json": {
-      "checksum": "0b4861e3f4a72703a0d179c838004947"
+    "logs/shinylogs_SPC_Analysis_Tool_1759856942875693083.json.gz": {
+      "checksum": "9323b310a8a3253efbbe0c1235be3bc1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759857177890346050.json": {
-      "checksum": "100fde0bbf656906d64e7d261fd4c56f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759857177890346050.json.gz": {
+      "checksum": "8e2d8b93626066caee5e1f68a4acadf6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759857422755431890.json": {
-      "checksum": "e8d5e9cd8e14c402a7bfdebd63027454"
+    "logs/shinylogs_SPC_Analysis_Tool_1759857422755431890.json.gz": {
+      "checksum": "fd24fbe0ddaba12d30b1841aadda1490"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759857979974127054.json": {
-      "checksum": "29052e0ab6e6966a9988b30e44d2c780"
+    "logs/shinylogs_SPC_Analysis_Tool_1759857979974127054.json.gz": {
+      "checksum": "88a39973848501e1114e8b1d8ab7a43d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759858326240523100.json": {
-      "checksum": "a366648df91029c03667013d41191160"
+    "logs/shinylogs_SPC_Analysis_Tool_1759858326240523100.json.gz": {
+      "checksum": "092506961aeb98277c7e41e69246576f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759858503842953920.json": {
-      "checksum": "a325a14e336542119b09e0160de6a32d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759858503842953920.json.gz": {
+      "checksum": "3f11db7e4d6997b5c8db72ad4467de66"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759858609274228096.json": {
-      "checksum": "2cc00ff303e95341be8354e2652e1c4b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759858609274228096.json.gz": {
+      "checksum": "e9673a5ff4ab34f88b047fc51b257bbf"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759858650255471945.json": {
-      "checksum": "674a9a911557eecd4bbf5f29c8f5bda2"
+    "logs/shinylogs_SPC_Analysis_Tool_1759858650255471945.json.gz": {
+      "checksum": "61ebca3e56683d9d8dbe344058c8b3cc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759861016936291933.json": {
-      "checksum": "f2ea1189a295932dbdd7a9579963fdd1"
+    "logs/shinylogs_SPC_Analysis_Tool_1759861016936291933.json.gz": {
+      "checksum": "cea87eb28faa7e84c5d2aa0432638f5d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759861318178594112.json": {
-      "checksum": "66bc1db605ec4558adebc0483eb8f77b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759861318178594112.json.gz": {
+      "checksum": "237016d9f77714d2180b272f39b9f5c1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759861349507464886.json": {
-      "checksum": "f47dcae735c8112c8bfc391f778a88e2"
+    "logs/shinylogs_SPC_Analysis_Tool_1759861349507464886.json.gz": {
+      "checksum": "358f20737f9e2dc3a0eb1c8104205b7a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759861483663928032.json": {
-      "checksum": "270ad8989f0ca276eafc82b281bd7894"
+    "logs/shinylogs_SPC_Analysis_Tool_1759861483663928032.json.gz": {
+      "checksum": "9e423783d65a11f40d718c0dffac289a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759861709962340117.json": {
-      "checksum": "88f9d9fd3566b35732561e30502bd5cb"
+    "logs/shinylogs_SPC_Analysis_Tool_1759861709962340117.json.gz": {
+      "checksum": "bd9059719b209c4a328779a5336d119b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759862362542062998.json": {
-      "checksum": "cc64fb3a44e3b3c0c4174bc33c4e4272"
+    "logs/shinylogs_SPC_Analysis_Tool_1759862362542062998.json.gz": {
+      "checksum": "97d8ad1d858c6c134a6ba55ff88ffe58"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759867299509289026.json": {
-      "checksum": "75dc90682fa71acd6b36f0a707264c4e"
+    "logs/shinylogs_SPC_Analysis_Tool_1759867299509289026.json.gz": {
+      "checksum": "3e995f44fb67f718327cf9e9658d6ab6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759868165808361053.json": {
-      "checksum": "662869c0b515135574839033f14653d5"
+    "logs/shinylogs_SPC_Analysis_Tool_1759868165808361053.json.gz": {
+      "checksum": "6e78c20a26fc479138673f7e4c982dff"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759872036307425976.json": {
-      "checksum": "1036f43339a9aeee91b8507feb24ba32"
+    "logs/shinylogs_SPC_Analysis_Tool_1759872036307425976.json.gz": {
+      "checksum": "1630928129ecdd2c95856daa9564eb25"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759872570396024942.json": {
-      "checksum": "c08cc23456073bc53722f99ac24449a9"
+    "logs/shinylogs_SPC_Analysis_Tool_1759872570396024942.json.gz": {
+      "checksum": "a1d2d97bb6c5f0ac2c083b3758644bd4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759901236215863943.json": {
-      "checksum": "fe05dac019c0d2c5f372cb2946672ac8"
+    "logs/shinylogs_SPC_Analysis_Tool_1759901236215863943.json.gz": {
+      "checksum": "67fc8da8d326db9ba9d8549b5d922f30"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759902956218193054.json": {
-      "checksum": "905626fa4f85fe302c15892b7fb17d0f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759902956218193054.json.gz": {
+      "checksum": "20efb8a6e7f5fa9f07d9f1bb73426965"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759902979231775045.json": {
-      "checksum": "b17e8d05ab5d2031259018ca09a52df8"
+    "logs/shinylogs_SPC_Analysis_Tool_1759902979231775045.json.gz": {
+      "checksum": "7442e657a4ba934d92b477c55528824e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759903411991518974.json": {
-      "checksum": "98259c1a7b8de67e5a285ab2d4b6e04c"
+    "logs/shinylogs_SPC_Analysis_Tool_1759903411991518974.json.gz": {
+      "checksum": "4f094f02aba3fba7ca1f3e3e605e8201"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759938732744823933.json": {
-      "checksum": "5296ae58f57db7974d158b3b2b6b9682"
+    "logs/shinylogs_SPC_Analysis_Tool_1759938732744823933.json.gz": {
+      "checksum": "5963c2e38b4f5e7603528876115c4450"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759938752866631031.json": {
-      "checksum": "893346881391443ed5c9cd535b70ba0b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759938752866631031.json.gz": {
+      "checksum": "b736297cbf0d734d3328eaca7a9aeec1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759938763108731985.json": {
-      "checksum": "bbbd18f476c385e395c4dcd2d95dc0fc"
+    "logs/shinylogs_SPC_Analysis_Tool_1759938763108731985.json.gz": {
+      "checksum": "3bdf567c7e31a103d1b4ba52e43f458c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759940161583030939.json": {
-      "checksum": "7b2ce03c82d76ec23d1f885266b0ffe3"
+    "logs/shinylogs_SPC_Analysis_Tool_1759940161583030939.json.gz": {
+      "checksum": "8f419ded9390672e120fa1f0f8432079"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759940450029546976.json": {
-      "checksum": "59f2422a3b3aa8b8d72648760fcda4a0"
+    "logs/shinylogs_SPC_Analysis_Tool_1759940450029546976.json.gz": {
+      "checksum": "e4472e9c5f8211d1b261ff90128c75e3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759940759936465979.json": {
-      "checksum": "d8d18c948f3c1c171bc000cd8d2b091d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759940759936465979.json.gz": {
+      "checksum": "6ab7412c06fdcfbf6dace1a43668475a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759940801133372068.json": {
-      "checksum": "9eae49f3de4841a2a7ee163d805aa92a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759940801133372068.json.gz": {
+      "checksum": "946df49f63633b1f0ec2b2d1558a73f7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759941069697645903.json": {
-      "checksum": "a6e965233c0e332ef420aad26a010c27"
+    "logs/shinylogs_SPC_Analysis_Tool_1759941069697645903.json.gz": {
+      "checksum": "795a591141695363e9c2ec1f96099049"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759941262902729034.json": {
-      "checksum": "c3513dd043a030f59f7aa26a36e256fa"
+    "logs/shinylogs_SPC_Analysis_Tool_1759941262902729034.json.gz": {
+      "checksum": "b9cc25f1e429728558bb465b45510546"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759941487965806961.json": {
-      "checksum": "64413563410a4a4b2ab5dded448b54a2"
+    "logs/shinylogs_SPC_Analysis_Tool_1759941487965806961.json.gz": {
+      "checksum": "9e018bc07a08d504dd67fed7360ea334"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759941940917350054.json": {
-      "checksum": "67778666c27e7f716961e124a0f17884"
+    "logs/shinylogs_SPC_Analysis_Tool_1759941940917350054.json.gz": {
+      "checksum": "c08bd6c7b57207dbe8b357140b546a2b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759942104319063902.json": {
-      "checksum": "18d153e90b3cb597b9451b96f94a563b"
+    "logs/shinylogs_SPC_Analysis_Tool_1759942104319063902.json.gz": {
+      "checksum": "1ae11375e5f6967ad06e5feeda5f4f9c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759942500508531094.json": {
-      "checksum": "54132de6d44a0559f330a1fa118259eb"
+    "logs/shinylogs_SPC_Analysis_Tool_1759942500508531094.json.gz": {
+      "checksum": "e907e13cd06da28b11bb8ffc4c4c312a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759942809514121056.json": {
-      "checksum": "e236ec19ba1ef0820dd439ed542d18f0"
+    "logs/shinylogs_SPC_Analysis_Tool_1759942809514121056.json.gz": {
+      "checksum": "958460e7705e7c3efe0b3d7fb08564a5"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759942952943268061.json": {
-      "checksum": "f654165fcd0d033d8423ed5215105704"
+    "logs/shinylogs_SPC_Analysis_Tool_1759942952943268061.json.gz": {
+      "checksum": "01cf166a4caf5b6b86e60179c68e8d1a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943078494371891.json": {
-      "checksum": "316aa7ddf5c0a6db6bed176a1d8e31d2"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943078494371891.json.gz": {
+      "checksum": "464dd2817e158627704f31ecdc2ad6de"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943163272636890.json": {
-      "checksum": "fcea4ffe3974d1e9c4c5f7a898fc9bac"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943163272636890.json.gz": {
+      "checksum": "4fc7b9cb1e1d2f068aae0fc1f92a135f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943500382606983.json": {
-      "checksum": "0197d216f3f40c12c5ead0ac3aa897ad"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943500382606983.json.gz": {
+      "checksum": "71a3d2409728b3df728c1b93ed4f4505"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943522976234913.json": {
-      "checksum": "670e25c78888450020feb67112bf560c"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943522976234913.json.gz": {
+      "checksum": "fb62d50fdd14a41a0cf15349de207fc7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943696984268904.json": {
-      "checksum": "b9cba2f0c3f46c5c3cd82f5e344d6427"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943696984268904.json.gz": {
+      "checksum": "1e66540a274b2ba13e1994288b67e78e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943722622956991.json": {
-      "checksum": "8648e50e68b9114cae6007e1c83e7472"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943722622956991.json.gz": {
+      "checksum": "f5e5b6598a45124ab8a02c58af42fd3e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943755829541922.json": {
-      "checksum": "4a826e32f99b0b1f34c0e0d674020bee"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943755829541922.json.gz": {
+      "checksum": "383e8c660960bdce0f580f6ab3465ec8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943885865134001.json": {
-      "checksum": "8b18dd2c89c12c44a49de4921df97f99"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943885865134001.json.gz": {
+      "checksum": "01649c7e4259e41d1efd6aa933cd033c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759943982990438938.json": {
-      "checksum": "2fce946c192b541281ec7135507d2274"
+    "logs/shinylogs_SPC_Analysis_Tool_1759943982990438938.json.gz": {
+      "checksum": "3c1d419ea3b0eaed23f428ec792b2b23"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759944225617997885.json": {
-      "checksum": "365ca64b92fb60e616a613f6e308f181"
+    "logs/shinylogs_SPC_Analysis_Tool_1759944225617997885.json.gz": {
+      "checksum": "a16aa950b43e026380dae4e784d1aefa"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759944415422215939.json": {
-      "checksum": "3ea4eec5f8a59ef178f410ded3653cdd"
+    "logs/shinylogs_SPC_Analysis_Tool_1759944415422215939.json.gz": {
+      "checksum": "4c721ddeebb3f767efb4d03e5e1872be"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759944674465699911.json": {
-      "checksum": "5220c2e7ae4e5a82a3fcf76bf2cccaf8"
+    "logs/shinylogs_SPC_Analysis_Tool_1759944674465699911.json.gz": {
+      "checksum": "02cae44e8cc77413056dd894c9abd1d9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759944904979327917.json": {
-      "checksum": "e25a7ad92874a7b0bfe5d9811fc483fe"
+    "logs/shinylogs_SPC_Analysis_Tool_1759944904979327917.json.gz": {
+      "checksum": "4f45272b7b8643c709473296da90d39d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759945157640459061.json": {
-      "checksum": "a94380d35b9b777ae4b8858dd73b6325"
+    "logs/shinylogs_SPC_Analysis_Tool_1759945157640459061.json.gz": {
+      "checksum": "a3d3c9824de386a9de067fac30985ff4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759948227476051092.json": {
-      "checksum": "362fb0ec369f35e1a998b6e70b90c962"
+    "logs/shinylogs_SPC_Analysis_Tool_1759948227476051092.json.gz": {
+      "checksum": "58be2adfe39a73d5258fcca5712a7e4b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759948410795473099.json": {
-      "checksum": "4c9d1f75287a36da4e242227af7a48e8"
+    "logs/shinylogs_SPC_Analysis_Tool_1759948410795473099.json.gz": {
+      "checksum": "1a21312a86b0e141633061311972dbe8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759948661057245970.json": {
-      "checksum": "e62581ebf3e8b3ec59c2f4cd817c48f9"
+    "logs/shinylogs_SPC_Analysis_Tool_1759948661057245970.json.gz": {
+      "checksum": "0398aa1e23659dc6bd762e2800bb5361"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759951033743549109.json": {
-      "checksum": "c33f6920f2467c0430df75e73155f91f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759951033743549109.json.gz": {
+      "checksum": "22bde4ab4fb032e902b8f585e67bf89b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953484329734087.json": {
-      "checksum": "33bb51a1aa7e654f5e0b57cc620807d6"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953484329734087.json.gz": {
+      "checksum": "f33ad4bf31dfd17590ee1afd576ceed0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953577728074074.json": {
-      "checksum": "1187f076d01be05b260b180cc8058243"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953577728074074.json.gz": {
+      "checksum": "4dfb7c6bcbf2efbc6c6a6d6ed4ca1120"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953610413078070.json": {
-      "checksum": "661ec692ca75e43da4f7a129911be2cc"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953610413078070.json.gz": {
+      "checksum": "e7b73a89b00408fd8095bc7e787296bb"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953649925426960.json": {
-      "checksum": "4fa1db3d63cfc5344db24c32f69a24da"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953649925426960.json.gz": {
+      "checksum": "04badefd465b87b6e1b31aec481a4585"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953751709014893.json": {
-      "checksum": "a8f2df747c883817e7ae771f586a2cbf"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953751709014893.json.gz": {
+      "checksum": "59a0b05725331ba61d209f2f462fde8c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953818200747013.json": {
-      "checksum": "1de294c5c23203092f84c41753baf652"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953818200747013.json.gz": {
+      "checksum": "245f2d51b9eb5c1625f1603d7aed9da1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953843721060991.json": {
-      "checksum": "8ab721a837a2880553396723f00273f1"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953843721060991.json.gz": {
+      "checksum": "da3ece24e18feb3156e6e0f8c239d742"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953869615032911.json": {
-      "checksum": "d033be3ccbfe2bac98e607a0e31e38f4"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953869615032911.json.gz": {
+      "checksum": "c06a02562f6013970b72cdf12a88e611"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953904850038052.json": {
-      "checksum": "e013fad2473e565c6c1bf6720866d330"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953904850038052.json.gz": {
+      "checksum": "bce5b73f179539c9612a25ebec68d5e4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953936861008883.json": {
-      "checksum": "6f166c7909a733e5ecee8a0a75aec76f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953936861008883.json.gz": {
+      "checksum": "9cd1db25898981fcfca437ad75a1600d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953969492221117.json": {
-      "checksum": "e5207c8dd56f159983e03480180aaf74"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953969492221117.json.gz": {
+      "checksum": "8e95bed5c7693b2be6b8e4a5fc32e980"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759953998546066999.json": {
-      "checksum": "9bc0b6bf9ed8e43f194dcd9d6734e10a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759953998546066999.json.gz": {
+      "checksum": "bd7a862686fedb05733f2bdcfc05e5dc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759954034182728052.json": {
-      "checksum": "e1dc8bc2458e40f2aabb5c9782c9932a"
+    "logs/shinylogs_SPC_Analysis_Tool_1759954034182728052.json.gz": {
+      "checksum": "6442274e912b050dbd445a12b8281df3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759954073509999990.json": {
-      "checksum": "45fbd6e373af8171f6ceddfe13127b16"
+    "logs/shinylogs_SPC_Analysis_Tool_1759954073509999990.json.gz": {
+      "checksum": "b2ccc6a774eee5b3960c1b3fd49cbe3b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759956750443173885.json": {
-      "checksum": "ec1b8a08ab15eb1c277e30e08f0465a9"
+    "logs/shinylogs_SPC_Analysis_Tool_1759956750443173885.json.gz": {
+      "checksum": "cc6667beea511e37d889b077f8de1d9c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759957460765872955.json": {
-      "checksum": "f1f82b9879d35ab847c279afaea2ae9f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759957460765872955.json.gz": {
+      "checksum": "12cf70fd78b3ec53a251c37c951fdc9e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759958268583559036.json": {
-      "checksum": "4d17cd4f988d586c5f2f682095be0b12"
+    "logs/shinylogs_SPC_Analysis_Tool_1759958268583559036.json.gz": {
+      "checksum": "eb0e75b1b2a37bb7db3f97138fd3f008"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759959324498858929.json": {
-      "checksum": "f2fd20be7ade77044c98c19f1ee0bd03"
+    "logs/shinylogs_SPC_Analysis_Tool_1759959324498858929.json.gz": {
+      "checksum": "b71fde0703afbdfe5ad1eab4e2d2f34c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759986358504148960.json": {
-      "checksum": "c6961be90d192e8546a153521418a593"
+    "logs/shinylogs_SPC_Analysis_Tool_1759986358504148960.json.gz": {
+      "checksum": "99726d60c122e9bba7f4e697094226b1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759986400876811981.json": {
-      "checksum": "101e251674f360e7c766e6759a088445"
+    "logs/shinylogs_SPC_Analysis_Tool_1759986400876811981.json.gz": {
+      "checksum": "5b107c2f2ba27b5a339bca2fbfb29c93"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759987125002734900.json": {
-      "checksum": "dabd60bf201cc9f43a416cf82ef55ccd"
+    "logs/shinylogs_SPC_Analysis_Tool_1759987125002734900.json.gz": {
+      "checksum": "b6f668b12b61d35c640174ae3246585a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759988281260795116.json": {
-      "checksum": "564c2c857f8cf5c3f70be69b9783810d"
+    "logs/shinylogs_SPC_Analysis_Tool_1759988281260795116.json.gz": {
+      "checksum": "6afc1a441c720566c9b79518efe6e4f5"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759990426203388929.json": {
-      "checksum": "a18200365220b11690d1ee732a5d8454"
+    "logs/shinylogs_SPC_Analysis_Tool_1759990426203388929.json.gz": {
+      "checksum": "59702f8aca3704bc05c8ad191bc07ad0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759998419160989046.json": {
-      "checksum": "86e07b97fd8c5725752cf580cea8dc1f"
+    "logs/shinylogs_SPC_Analysis_Tool_1759998419160989046.json.gz": {
+      "checksum": "5e47b02ce6cbe628fb32cc76e3156ea7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1759998653927670956.json": {
-      "checksum": "72768a61decf54b67601c3f07a5bb213"
+    "logs/shinylogs_SPC_Analysis_Tool_1759998653927670956.json.gz": {
+      "checksum": "02332760e382caa1516c776f1afea9f4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760000568913559914.json": {
-      "checksum": "865772513cbb7d3e0def90ef1237ab18"
+    "logs/shinylogs_SPC_Analysis_Tool_1760000568913559914.json.gz": {
+      "checksum": "3d0075e5c0bb8db84a7f3aea9be6918b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760001842134159088.json": {
-      "checksum": "7f61ffc8d9bf12525fe4d58be279fce5"
+    "logs/shinylogs_SPC_Analysis_Tool_1760001842134159088.json.gz": {
+      "checksum": "8de0420ad80bf38fa3b712290eca6c06"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760002514485562086.json": {
-      "checksum": "c78f0bc7b9c62c4f60b0835309d8852c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760002514485562086.json.gz": {
+      "checksum": "51ce8d8c696927982bbe98aafdf5e1df"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760002549121347904.json": {
-      "checksum": "77865a98168557715b245b18ba510e29"
+    "logs/shinylogs_SPC_Analysis_Tool_1760002549121347904.json.gz": {
+      "checksum": "b98735958b5e942260bc8597bac16428"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760002618872478008.json": {
-      "checksum": "82e644067c8ae9985b9e904c78019e76"
+    "logs/shinylogs_SPC_Analysis_Tool_1760002618872478008.json.gz": {
+      "checksum": "7fee6034e12783540c86e3a65e0d6e59"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760005787681701899.json": {
-      "checksum": "b83066a24fed01d50ba75f231260f4ba"
+    "logs/shinylogs_SPC_Analysis_Tool_1760005787681701899.json.gz": {
+      "checksum": "93d3f4052aa735411734d50ebab18f24"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760005872980319023.json": {
-      "checksum": "3ce6eb0a6e535658173c277c3e7dce1f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760005872980319023.json.gz": {
+      "checksum": "4fcec6d9efd9900fc3c89cace6d21bdd"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760005915355389118.json": {
-      "checksum": "8a208c5e4c3675ff555bb89155c4ff69"
+    "logs/shinylogs_SPC_Analysis_Tool_1760005915355389118.json.gz": {
+      "checksum": "e6b6e0efb13216b30dd0f0f5d0a4ea9a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760005996955339909.json": {
-      "checksum": "96ed1e3ec14fdd50d5f2f4381b17c08f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760005996955339909.json.gz": {
+      "checksum": "d5e42f8a165415972f2ad25ca64a3375"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760008363745975018.json": {
-      "checksum": "ecbfa28bb9cf88470b814b18e88c2d7a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760008363745975018.json.gz": {
+      "checksum": "d2dcf17f9d439fb5a2387b27d4659585"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760008474771435022.json": {
-      "checksum": "ef0dafa8b6dc6e7f87757e8977ddb4da"
+    "logs/shinylogs_SPC_Analysis_Tool_1760008474771435022.json.gz": {
+      "checksum": "3ebf86b49f2f2641f13ab010fb683011"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760008762230567932.json": {
-      "checksum": "bbe302fe368ead4d4b69dd34c8d858cc"
+    "logs/shinylogs_SPC_Analysis_Tool_1760008762230567932.json.gz": {
+      "checksum": "2da0175934576dac5fbea7332659b51b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760008949484776974.json": {
-      "checksum": "1631316ff927aa8bc6e73f91872790da"
+    "logs/shinylogs_SPC_Analysis_Tool_1760008949484776974.json.gz": {
+      "checksum": "963bd45800632df05cd3281a5fd0d7f0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760009920555233955.json": {
-      "checksum": "ab3f6d1ffe45c771fb5d2c6e6860d13c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760009920555233955.json.gz": {
+      "checksum": "9843ca94caef5626730c298b61a47377"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760010486570422888.json": {
-      "checksum": "707be246202271cb1b185dd1a76490db"
+    "logs/shinylogs_SPC_Analysis_Tool_1760010486570422888.json.gz": {
+      "checksum": "8871c6c351340b6aa4e0fe269e7a2cca"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760010895289570093.json": {
-      "checksum": "ee55817313ae5c03093a447d1037eb96"
+    "logs/shinylogs_SPC_Analysis_Tool_1760010895289570093.json.gz": {
+      "checksum": "c788f824b92e5ec1cd5468e692aeed49"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760011125159404039.json": {
-      "checksum": "edf19a7f18c632efad57753f452b724d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760011125159404039.json.gz": {
+      "checksum": "4d99e61af1a0fd3ba613f25a760e5523"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760011287443428040.json": {
-      "checksum": "a6683db4c72c22d69dd60f95a78e585d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760011287443428040.json.gz": {
+      "checksum": "59cf0f89a3c43a91ea3cbae9502868dd"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760011767268810987.json": {
-      "checksum": "043ce114bbbf787c5b9c19cdf9ecf749"
+    "logs/shinylogs_SPC_Analysis_Tool_1760011767268810987.json.gz": {
+      "checksum": "6a68a012989fda6757d816a7d1f76c5b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760012340821403027.json": {
-      "checksum": "8acd6982df8dc59a8f9a5cb19b35dd37"
+    "logs/shinylogs_SPC_Analysis_Tool_1760012340821403027.json.gz": {
+      "checksum": "4ddc811dc72079c1aa0b3b85b8b0b350"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760012400782500982.json": {
-      "checksum": "c0ae8ea68b33693e4b16418ac3147bab"
+    "logs/shinylogs_SPC_Analysis_Tool_1760012400782500982.json.gz": {
+      "checksum": "e313e9ae258f5d170fd28847c55b06ac"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760012691353708029.json": {
-      "checksum": "27b6b17ca402ccd94ec82ee654215f44"
+    "logs/shinylogs_SPC_Analysis_Tool_1760012691353708029.json.gz": {
+      "checksum": "6e9807c6a1a84f3a9e7db6e7786a1fe5"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760012858947873116.json": {
-      "checksum": "331039ea6069947e8621715d1d6c69e4"
+    "logs/shinylogs_SPC_Analysis_Tool_1760012858947873116.json.gz": {
+      "checksum": "662bfe62414eaa8ef5ab18f1bd739d1c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760015442890554905.json": {
-      "checksum": "ca51f5b10b478195a5fcad218c6be0c1"
+    "logs/shinylogs_SPC_Analysis_Tool_1760015442890554905.json.gz": {
+      "checksum": "fefbce7c2954cc48d373a4b437344bc9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760016440450978994.json": {
-      "checksum": "a619a0e79858330b1e9fec23af28125e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760016440450978994.json.gz": {
+      "checksum": "011f90971b69d29b6635c1e24aa044ff"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760016645836446047.json": {
-      "checksum": "76d1b2a59c9689f968da801a6efdb9b2"
+    "logs/shinylogs_SPC_Analysis_Tool_1760016645836446047.json.gz": {
+      "checksum": "8400d46657e6d132216e287d442e36e4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760017532902219057.json": {
-      "checksum": "b98b14dac463bbbd0a0ec013320d54d7"
+    "logs/shinylogs_SPC_Analysis_Tool_1760017532902219057.json.gz": {
+      "checksum": "b13828e23f4056b293ec7b1f6dfcdf0a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760017607655767918.json": {
-      "checksum": "905fb729095d3db7fb094bf99b1f16ca"
+    "logs/shinylogs_SPC_Analysis_Tool_1760017607655767918.json.gz": {
+      "checksum": "9b95ec4aa63cf282013fb5816ee78b90"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760018640798099041.json": {
-      "checksum": "3d430e14b2044c9159fd8d7d93dd1e7c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760018640798099041.json.gz": {
+      "checksum": "d417c408b8e45a4c37f4a74f2ac834e3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760019031683017969.json": {
-      "checksum": "aed1952aa6983fe38173314665bdc4f3"
+    "logs/shinylogs_SPC_Analysis_Tool_1760019031683017969.json.gz": {
+      "checksum": "7b5cac5f96af25c2b28896773afcf75f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760025630500127077.json": {
-      "checksum": "4baa17289ac3ce64b2674aeb9c5bbb85"
+    "logs/shinylogs_SPC_Analysis_Tool_1760025630500127077.json.gz": {
+      "checksum": "6b841d51ae186df00c0e5bb51a53c6ca"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760028380040945053.json": {
-      "checksum": "988b9bcb4fb8c7de7448e7022ff50980"
+    "logs/shinylogs_SPC_Analysis_Tool_1760028380040945053.json.gz": {
+      "checksum": "3b182482829a10881238e7b8d4307a60"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760036719711205006.json": {
-      "checksum": "3cb7dc4ffa50bbf1fa41189e06babbd4"
+    "logs/shinylogs_SPC_Analysis_Tool_1760036719711205006.json.gz": {
+      "checksum": "826181f60307b7cee02d040c68c4f76b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760043325586417913.json": {
-      "checksum": "5f0dcbd421569a33079049e4bc5bfaa9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760043325586417913.json.gz": {
+      "checksum": "5e9d1e6d35d879e7beefff6eb824b4d6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760043346157372952.json": {
-      "checksum": "9797e281392edd5103068e0e4db54769"
+    "logs/shinylogs_SPC_Analysis_Tool_1760043346157372952.json.gz": {
+      "checksum": "d748a4b0e20e016dd8d2078b89b9112f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760044961163729906.json": {
-      "checksum": "ceea1f555fe8649d7b725ec9f9a03aff"
+    "logs/shinylogs_SPC_Analysis_Tool_1760044961163729906.json.gz": {
+      "checksum": "7e93ee4ce0042f698f946b5368dd0634"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760072978336843014.json": {
-      "checksum": "5700c714a2b5c11ffcedd10290508348"
+    "logs/shinylogs_SPC_Analysis_Tool_1760072978336843014.json.gz": {
+      "checksum": "d08d9e21c625086eb45f6e7565ecb5cc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760082555553575039.json": {
-      "checksum": "83cf0fe2acd95e8a705db6cfdfe00701"
+    "logs/shinylogs_SPC_Analysis_Tool_1760082555553575039.json.gz": {
+      "checksum": "dc296cb824a86a71964f58a10a3ed30b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760096188965754032.json": {
-      "checksum": "5b8b73ba4ede131f7ba0d5efbb9245d6"
+    "logs/shinylogs_SPC_Analysis_Tool_1760096188965754032.json.gz": {
+      "checksum": "00a108c81161757c4916fb20a4021256"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760108584700527906.json": {
-      "checksum": "9f8776f80d8a1ef8f1fc2bcc8b137350"
+    "logs/shinylogs_SPC_Analysis_Tool_1760108584700527906.json.gz": {
+      "checksum": "3d8b874cdd657704dc5e8b801513a0f3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760108595852524996.json": {
-      "checksum": "14ef5e32c3a94b9c4c5f82c0e6d4d991"
+    "logs/shinylogs_SPC_Analysis_Tool_1760108595852524996.json.gz": {
+      "checksum": "ab38b1171bbb7352f01ecf678fffef24"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760109528336021900.json": {
-      "checksum": "fd134431bfb1d3ecca8d185a8550bd0b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760109528336021900.json.gz": {
+      "checksum": "792dd96dce01810a1c22291d359cf043"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760110501115603924.json": {
-      "checksum": "b4626e45d790c9f37d6d8584d73b14bd"
+    "logs/shinylogs_SPC_Analysis_Tool_1760110501115603924.json.gz": {
+      "checksum": "1406311fb74fafd09492462a44d3f4dc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760111006731976032.json": {
-      "checksum": "8a43fe584f6317397da35a05dda4a50f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760111006731976032.json.gz": {
+      "checksum": "b1c5f078ef06314b3491801dd5d97b0d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760170583647212029.json": {
-      "checksum": "752f4314a79098debfd76c7287db0828"
+    "logs/shinylogs_SPC_Analysis_Tool_1760170583647212029.json.gz": {
+      "checksum": "2d3bb4dd80f9d79d3ca5b1288c3384df"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760364325353009939.json": {
-      "checksum": "d5e4b465ba0a0f38373af4768ec81b7d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760364325353009939.json.gz": {
+      "checksum": "51a632be4c33b358a8b752188114b957"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760364735613828897.json": {
-      "checksum": "689f09426ff41b9015fe452bbb56c04c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760364735613828897.json.gz": {
+      "checksum": "c6cf6a7cadf233e368b588e0f8829c60"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760365583127906084.json": {
-      "checksum": "67b441d74f92192833a10555ca29a53b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760365583127906084.json.gz": {
+      "checksum": "47e57a5f82c8997c9f7f8ef764139624"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760367392286700010.json": {
-      "checksum": "35657044bcb0bf6bd036bc3c5436de5f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760367392286700010.json.gz": {
+      "checksum": "0d2439f99ce1a9f0ba5ea046dafe091c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760369421782829046.json": {
-      "checksum": "a123973aa373acee1028dd8a83fddde5"
+    "logs/shinylogs_SPC_Analysis_Tool_1760369421782829046.json.gz": {
+      "checksum": "820abff72ae7e836e7f14663799a6bc3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760376975915280104.json": {
-      "checksum": "ca3ae41e41fd5c0d70a31d9d6ca5200e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760376975915280104.json.gz": {
+      "checksum": "179b4db6505a850c108da1d70da59310"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760377613780714035.json": {
-      "checksum": "e47e320d48205705c0d363444841069f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760377613780714035.json.gz": {
+      "checksum": "37c189cb58d13b92b4e9ded946c44388"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760377709018574953.json": {
-      "checksum": "7c44741b479080957be6ff8f4b809047"
+    "logs/shinylogs_SPC_Analysis_Tool_1760377709018574953.json.gz": {
+      "checksum": "7a6ec4c3344f144babb249f6a8f63247"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760377829565756083.json": {
-      "checksum": "8e21d097ace32e4a552b6275db5ad135"
+    "logs/shinylogs_SPC_Analysis_Tool_1760377829565756083.json.gz": {
+      "checksum": "0b5923974a245ee9bf585c5b76f133a8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760382033546921015.json": {
-      "checksum": "7342b90c773dbc76bc492f17e7d4e425"
+    "logs/shinylogs_SPC_Analysis_Tool_1760382033546921015.json.gz": {
+      "checksum": "ca19747376161721b91fa30c47d71560"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760382215944760084.json": {
-      "checksum": "accd279b5de195ea3eec87ea83930905"
+    "logs/shinylogs_SPC_Analysis_Tool_1760382215944760084.json.gz": {
+      "checksum": "ad8cdda139ed2af4e0f94f8e2f68a601"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760382471565275908.json": {
-      "checksum": "11c41ee9b48c998eafc3194ab7a061ab"
+    "logs/shinylogs_SPC_Analysis_Tool_1760382471565275908.json.gz": {
+      "checksum": "c33e8353868f35bdcbfa51300d21fa0a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760382778070722103.json": {
-      "checksum": "aa248ce8c91c8fcdc6e707ac481ff11d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760382778070722103.json.gz": {
+      "checksum": "dc932beca89c4030abaad162e1b01c7b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760383075745023012.json": {
-      "checksum": "7b447ec882f24bebb7c3410e0d2ff64b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760383075745023012.json.gz": {
+      "checksum": "23a93e9cc601b2315fab33199159e583"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760384199444493055.json": {
-      "checksum": "41b9d5be6f1de7e16ba41bf99e088c9e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760384199444493055.json.gz": {
+      "checksum": "03ababc375990d6e88fd50aab6e0233c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760384724331304073.json": {
-      "checksum": "daa734d5c3ec922dae6b54302ece2bd7"
+    "logs/shinylogs_SPC_Analysis_Tool_1760384724331304073.json.gz": {
+      "checksum": "d84c1c855ea408e0744815232b5e9b0d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760385014846097946.json": {
-      "checksum": "b979d053717ea5d2426fe81e56071ed2"
+    "logs/shinylogs_SPC_Analysis_Tool_1760385014846097946.json.gz": {
+      "checksum": "33d6210d2b500829a38e973d19fe4920"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760385139620897055.json": {
-      "checksum": "caf6fd02a6cb9c3123e265b8e6ccc49e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760385139620897055.json.gz": {
+      "checksum": "4b5330b9eb1b9b8fec8ad9bb0e570a0f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760386006101074934.json": {
-      "checksum": "a2790ff1a02a07bf6c254c3e5c216bbd"
+    "logs/shinylogs_SPC_Analysis_Tool_1760386006101074934.json.gz": {
+      "checksum": "11f47837b7abf3863389c8a30ca372a6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760386141346530914.json": {
-      "checksum": "c9e522f373a0d62f6a7fa1160f6f1248"
+    "logs/shinylogs_SPC_Analysis_Tool_1760386141346530914.json.gz": {
+      "checksum": "e1432f02b179f8d457ad89024c744fbc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760387255147536039.json": {
-      "checksum": "e61aa4523483a5ed13aeff1dc03c3c3f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760387255147536039.json.gz": {
+      "checksum": "fc15360bddc7195a9e8af7842551fccc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760392099854723930.json": {
-      "checksum": "c97dd4f9b1b7c1ebf4294a4a8d964d92"
+    "logs/shinylogs_SPC_Analysis_Tool_1760392099854723930.json.gz": {
+      "checksum": "4dacc5422dd7d81b01a2ceeb259ba608"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760426536318023920.json": {
-      "checksum": "7085bb1034ccf24968525fa5ab539060"
+    "logs/shinylogs_SPC_Analysis_Tool_1760426536318023920.json.gz": {
+      "checksum": "42f79edf8644d71509663e17cf3b6171"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760430372998863935.json": {
-      "checksum": "3850fda6f529e6229e80b907e0eec352"
+    "logs/shinylogs_SPC_Analysis_Tool_1760430372998863935.json.gz": {
+      "checksum": "fdabd1bf22f352aa1f10e5a3ab15f5ad"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760431354591221094.json": {
-      "checksum": "63aa33f93d0b2fe3a64ae3ff8e22d22b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760431354591221094.json.gz": {
+      "checksum": "a06d2dfe191fb0ba4a5a6af6d16c06b4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760431373384579897.json": {
-      "checksum": "298cfaa8d11c9e46bb0d243522e601d9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760431373384579897.json.gz": {
+      "checksum": "2b348b4373f72d8ce51558aa23b94a57"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760432251911119938.json": {
-      "checksum": "8cfb162fe539b75e1665c6b27b421822"
+    "logs/shinylogs_SPC_Analysis_Tool_1760432251911119938.json.gz": {
+      "checksum": "38c346252c6c06006613a214efc1bcd7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760432557891863108.json": {
-      "checksum": "cdc0b7a99b0abff4633aab11983f2cd4"
+    "logs/shinylogs_SPC_Analysis_Tool_1760432557891863108.json.gz": {
+      "checksum": "fb6b66dd092369937f95c3d55f8ff144"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760433719624562979.json": {
-      "checksum": "e86f5644caec70ed1b1d4d79d174f78e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760433719624562979.json.gz": {
+      "checksum": "fdb3010fb61bb851bf61c8bb9ba444f0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760435169570830107.json": {
-      "checksum": "a73e44672bf13f4265786d1bf18b488e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760435169570830107.json.gz": {
+      "checksum": "4633c79eb9573adb9f655aac27f0aa85"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760445267110693932.json": {
-      "checksum": "a1b7f6be2d70a497beb323b4de70b193"
+    "logs/shinylogs_SPC_Analysis_Tool_1760445267110693932.json.gz": {
+      "checksum": "c14eda6d9e3a211a8589527e1b07fcd3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760446124769699097.json": {
-      "checksum": "78cc683c353b0129cb07828e87870ebf"
+    "logs/shinylogs_SPC_Analysis_Tool_1760446124769699097.json.gz": {
+      "checksum": "76e69d20c529f4e68a93563a232596fe"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760446258919126987.json": {
-      "checksum": "0e04eab7b3462f39c020d5a3c9a7d466"
+    "logs/shinylogs_SPC_Analysis_Tool_1760446258919126987.json.gz": {
+      "checksum": "440ff3f9851e214ad0d934adba6a7bb4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760446522027237892.json": {
-      "checksum": "b39b6b63bc9cd976a54545f351ac54c3"
+    "logs/shinylogs_SPC_Analysis_Tool_1760446522027237892.json.gz": {
+      "checksum": "6cb27c0b5111d5f5f403423d02818e04"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760449345933717966.json": {
-      "checksum": "62cc8b62b3fcfc5aa05ecd0cc83040da"
+    "logs/shinylogs_SPC_Analysis_Tool_1760449345933717966.json.gz": {
+      "checksum": "bce2209c75a6ac03d6ecd0e384ca5c04"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760450175431662083.json": {
-      "checksum": "1cb4908539e4ac8a2d738b6cf14d019a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760450175431662083.json.gz": {
+      "checksum": "c857a05e48d1daad10be0af1d43bf0b6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760450594785157919.json": {
-      "checksum": "50e95714554777296f45d97c1ed31bde"
+    "logs/shinylogs_SPC_Analysis_Tool_1760450594785157919.json.gz": {
+      "checksum": "73cde1d6ffde0795aaa0437c8571bb4d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760450846608772039.json": {
-      "checksum": "54238afe79302c3327a2a01400e8da81"
+    "logs/shinylogs_SPC_Analysis_Tool_1760450846608772039.json.gz": {
+      "checksum": "bf1e60c82c3ed7519a41083f1482f06f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760451197793215036.json": {
-      "checksum": "34eda8a3c4a3807379dec94238cc2228"
+    "logs/shinylogs_SPC_Analysis_Tool_1760451197793215036.json.gz": {
+      "checksum": "3dd223ec044dfd49d93340c75200a3d2"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760451920264959097.json": {
-      "checksum": "88e05811d04ff43ba4f2fecd3d53f596"
+    "logs/shinylogs_SPC_Analysis_Tool_1760451920264959097.json.gz": {
+      "checksum": "f938bdedd0e919693c6ed10c5a8814bf"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760451952570368052.json": {
-      "checksum": "1d3147a72719e67b1edb265c6c4cd3ac"
+    "logs/shinylogs_SPC_Analysis_Tool_1760451952570368052.json.gz": {
+      "checksum": "4661b7985f3a8b383872ccee709adb70"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760452326844559908.json": {
-      "checksum": "87e314905be636b11638a05590f6d11f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760452326844559908.json.gz": {
+      "checksum": "d5dc4b9166c0aec4edd40d2a809c6c9b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760452845753393888.json": {
-      "checksum": "c7b60a24c69ef6ad36ab6bfc3e5e67d2"
+    "logs/shinylogs_SPC_Analysis_Tool_1760452845753393888.json.gz": {
+      "checksum": "75530e25ed66132c9df829f4b3d5549d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760454491637588978.json": {
-      "checksum": "71a55c0ef2c4d49ff88942e62bb6c4c0"
+    "logs/shinylogs_SPC_Analysis_Tool_1760454491637588978.json.gz": {
+      "checksum": "a87a5ba215d62518eea8d086a1b1ea54"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760454567328274965.json": {
-      "checksum": "0b38c4d19ab8f29a17d34a9f2d2f2a09"
+    "logs/shinylogs_SPC_Analysis_Tool_1760454567328274965.json.gz": {
+      "checksum": "e93f1a2dc3b52fbe37f72dd4b1330540"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760476722808028936.json": {
-      "checksum": "1b42adfe711289116e8766a86bab6c67"
+    "logs/shinylogs_SPC_Analysis_Tool_1760476722808028936.json.gz": {
+      "checksum": "47f90fa5522a9e74cded5d953f9b11fc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760602657639528990.json": {
-      "checksum": "c230a2867b0ce8dd3c115a4a0261f36f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760602657639528990.json.gz": {
+      "checksum": "4238b24d89d98b1c74ec6ef036208a10"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760704480712508917.json": {
-      "checksum": "a8c0caca54305827022dc758d91882c4"
+    "logs/shinylogs_SPC_Analysis_Tool_1760704480712508917.json.gz": {
+      "checksum": "83df0679f807c6b61929e89f521bf811"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760738690582499027.json": {
-      "checksum": "40339badb25086f1b652307f3d173282"
+    "logs/shinylogs_SPC_Analysis_Tool_1760738690582499027.json.gz": {
+      "checksum": "6e4e14412311815662d2bbc29a2c8231"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760738842499680996.json": {
-      "checksum": "375e26c447a8f2aef47e3cd87ff226ec"
+    "logs/shinylogs_SPC_Analysis_Tool_1760738842499680996.json.gz": {
+      "checksum": "cd7e1c9e4856190a7eae56c859e826bc"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760738978356520891.json": {
-      "checksum": "854d5a83359d9ee68eddf9e67890985a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760738978356520891.json.gz": {
+      "checksum": "1686308ffd7c4b103da185749503d5c4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760739202380007029.json": {
-      "checksum": "8359aafd95f1fb08bbaa80e6dd7aac55"
+    "logs/shinylogs_SPC_Analysis_Tool_1760739202380007029.json.gz": {
+      "checksum": "67f19e3d38e691159d96950e7d8c90c3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760739558819803953.json": {
-      "checksum": "b771f9066ae8f60619fbe4011af04724"
+    "logs/shinylogs_SPC_Analysis_Tool_1760739558819803953.json.gz": {
+      "checksum": "cf1eb80aceb4b31148c3fb25347f225e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760776091091469049.json": {
-      "checksum": "10f714ed52f2f96fa9168fa57a44f77c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760776091091469049.json.gz": {
+      "checksum": "95d36dbc590ee00c1178ea7a72cf0568"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760780218961324930.json": {
-      "checksum": "318dd7171e23768f3fd166c17d1038d9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760780218961324930.json.gz": {
+      "checksum": "0b81a9c670e728b29942a52639fcf4af"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760780635794640064.json": {
-      "checksum": "d223a1b044f4892051769571b9209724"
+    "logs/shinylogs_SPC_Analysis_Tool_1760780635794640064.json.gz": {
+      "checksum": "cde9872aefaeada5fed43d77dcc5f36a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760781195108103991.json": {
-      "checksum": "8b5daac2ca836941a97f7ddf169bf7a4"
+    "logs/shinylogs_SPC_Analysis_Tool_1760781195108103991.json.gz": {
+      "checksum": "a99dc79dff2a8ef832578392635b225d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760781717312588930.json": {
-      "checksum": "690861a07fa0c91060297e0f52f7d55a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760781717312588930.json.gz": {
+      "checksum": "c9ae7d95e31d32a31d2577dcdae75e74"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760787972754081964.json": {
-      "checksum": "45548f6a51390c3e32dcc50faf2c9d35"
+    "logs/shinylogs_SPC_Analysis_Tool_1760787972754081964.json.gz": {
+      "checksum": "a8c307d1fd5ae28e0096075775251b8f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760788070723582029.json": {
-      "checksum": "96b1e88709ab12ace40372384ed22f9a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760788070723582029.json.gz": {
+      "checksum": "882d464d2b584d740d87b3d6533553fa"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760788245414151907.json": {
-      "checksum": "03b6abcba6530439a85d2a1e04821a2e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760788245414151907.json.gz": {
+      "checksum": "09e8d131e5ac9bf8cb08bc927814aa0a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760788499737776995.json": {
-      "checksum": "5bb15e77f0f4290207c059dff31256f1"
+    "logs/shinylogs_SPC_Analysis_Tool_1760788499737776995.json.gz": {
+      "checksum": "3288dce82bd27484cdd7394840729e7c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760788731619632006.json": {
-      "checksum": "593a727aaedf62175a66005739aae45c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760788731619632006.json.gz": {
+      "checksum": "7ddd9e7035bd245d461e0b98d842149a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760788924092458963.json": {
-      "checksum": "6c0c7cb9c800289d5d81e4a7d6f4ae35"
+    "logs/shinylogs_SPC_Analysis_Tool_1760788924092458963.json.gz": {
+      "checksum": "1632d3e79fbb47c410622296c81d37b7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760804635251389980.json": {
-      "checksum": "4e2f6cc544a9f112fef6e8cf63ebcfa9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760804635251389980.json.gz": {
+      "checksum": "34161c2d6ea31e6f7e6ef0f8af612053"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760809873658535957.json": {
-      "checksum": "461116f130ca67268a0bffce6bd87420"
+    "logs/shinylogs_SPC_Analysis_Tool_1760809873658535957.json.gz": {
+      "checksum": "f4660b310a2f020566664e0f38a45262"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760809951499181986.json": {
-      "checksum": "194b125e2c666da18def6d6c27e87c1d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760809951499181986.json.gz": {
+      "checksum": "21b65525ca75f79b64b74ee70563f742"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760810672032274008.json": {
-      "checksum": "3e599bcff62f6711d1d00ce1a921acaa"
+    "logs/shinylogs_SPC_Analysis_Tool_1760810672032274008.json.gz": {
+      "checksum": "146377bc0e5041dc434d6dd2897246c0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760810687919816017.json": {
-      "checksum": "1eb578cddb8ac6b146fa855dcfcb34dc"
+    "logs/shinylogs_SPC_Analysis_Tool_1760810687919816017.json.gz": {
+      "checksum": "dfbb7c33124e68a69e37f6e707915c6d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760812614946975946.json": {
-      "checksum": "d2605b749295b76bde27a3079555baac"
+    "logs/shinylogs_SPC_Analysis_Tool_1760812614946975946.json.gz": {
+      "checksum": "ea74121f2794b9efec48950dc5782d0c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760820050674627066.json": {
-      "checksum": "7cad9fe3bf3f0c64aad74af4c3b7c4c5"
+    "logs/shinylogs_SPC_Analysis_Tool_1760820050674627066.json.gz": {
+      "checksum": "edf668e6c4570245813229b43099d707"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760821053167782068.json": {
-      "checksum": "651b5590d8aee48f749b281cddcef5e3"
+    "logs/shinylogs_SPC_Analysis_Tool_1760821053167782068.json.gz": {
+      "checksum": "1b5505678d6e97a3742fff0b8f80a5f4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760821909366406918.json": {
-      "checksum": "fa59bfcf2da8d50e587191580cf956cf"
+    "logs/shinylogs_SPC_Analysis_Tool_1760821909366406918.json.gz": {
+      "checksum": "632794d042ea64202d6b288d8a59700e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760822552014189005.json": {
-      "checksum": "fa3dc672030bf78f4b8a1464a79d979b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760822552014189005.json.gz": {
+      "checksum": "19cec5d2b85f610ff7452b11ce74ce24"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760823225115106106.json": {
-      "checksum": "ed6b3bc629532fcceb022413d257d95e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760823225115106106.json.gz": {
+      "checksum": "a8dc3e677a0e91a1fe4a9aecbc9039d2"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760823652694498062.json": {
-      "checksum": "ff7c45cbaebdf55b573c2d034fb29924"
+    "logs/shinylogs_SPC_Analysis_Tool_1760823652694498062.json.gz": {
+      "checksum": "1be0e78fa79757e90d82e1bf93d9d18a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760903884456883907.json": {
-      "checksum": "d038a8aa80c24900c86f2f4a2d90648f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760903884456883907.json.gz": {
+      "checksum": "e5701bc3464211b765989b3f5989f5c4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760903978525851011.json": {
-      "checksum": "69fc27512da54817f25f5716205b69df"
+    "logs/shinylogs_SPC_Analysis_Tool_1760903978525851011.json.gz": {
+      "checksum": "acd21f642ebe93e8d91bfa9e88ced2b4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760904068493993998.json": {
-      "checksum": "0df133ebb9f8cc4c42d71f92a2859b4a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760904068493993998.json.gz": {
+      "checksum": "05078e8547c546bb694142242872e516"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760904119316809893.json": {
-      "checksum": "4b5ab3fc9605220b567c8f7fcd6c3853"
+    "logs/shinylogs_SPC_Analysis_Tool_1760904119316809893.json.gz": {
+      "checksum": "35c909c5e62876fc9dd77806c5a562fb"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760904128490976095.json": {
-      "checksum": "a917d21d8945cab8f146acb2962aa9cc"
+    "logs/shinylogs_SPC_Analysis_Tool_1760904128490976095.json.gz": {
+      "checksum": "199d865e98482ab2a51cc968bb68fb83"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760904170554016113.json": {
-      "checksum": "2cf06fdf4694c9fecabd1e84e77319c9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760904170554016113.json.gz": {
+      "checksum": "6470a45ea9e5b83e027402c85756a380"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760904732974684000.json": {
-      "checksum": "5ac1346fda85ac9102674baf31633e19"
+    "logs/shinylogs_SPC_Analysis_Tool_1760904732974684000.json.gz": {
+      "checksum": "ecba031b5a54c0e0fe5c9fb709d4e841"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760905206159727097.json": {
-      "checksum": "9a0af9c00bca507748dd1dda5dccee98"
+    "logs/shinylogs_SPC_Analysis_Tool_1760905206159727097.json.gz": {
+      "checksum": "26eada07de789ccd9d06d2393533f7fe"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760908220485960007.json": {
-      "checksum": "f62b5b8d935939a942b68f013885d72f"
+    "logs/shinylogs_SPC_Analysis_Tool_1760908220485960007.json.gz": {
+      "checksum": "1ac3380fafe1b9e44dbdb9c5f6f9b658"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760908811588491917.json": {
-      "checksum": "e2f5fd27959030c1a39835d2e36970bb"
+    "logs/shinylogs_SPC_Analysis_Tool_1760908811588491917.json.gz": {
+      "checksum": "ee3a3021d9a0b8ecbefda46f5a0c1682"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760908885404427052.json": {
-      "checksum": "69c4511e52e2744040d121af52e65899"
+    "logs/shinylogs_SPC_Analysis_Tool_1760908885404427052.json.gz": {
+      "checksum": "b2ba137488590978420731d50ab428cb"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760909728097136974.json": {
-      "checksum": "50bb9315cb19f74049ca542dd47a7446"
+    "logs/shinylogs_SPC_Analysis_Tool_1760909728097136974.json.gz": {
+      "checksum": "0e4e5372bff6b25a36940865f9abb33c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760909892660706043.json": {
-      "checksum": "63ee4f76f4b91a643feaa6b95f0cc9b3"
+    "logs/shinylogs_SPC_Analysis_Tool_1760909892660706043.json.gz": {
+      "checksum": "9f092cf7d4bdbf3891fe7c18fa855fa0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760910548184817076.json": {
-      "checksum": "c17ab8a9d8896c4682a56074a2442100"
+    "logs/shinylogs_SPC_Analysis_Tool_1760910548184817076.json.gz": {
+      "checksum": "10bf7dd0f75142b53ba6aae1034e898e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760910901646071911.json": {
-      "checksum": "7181c6de78952c9418a4be34129d7fd9"
+    "logs/shinylogs_SPC_Analysis_Tool_1760910901646071911.json.gz": {
+      "checksum": "4fa1e79ad3dd91edaff508f0ade0621a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760911005195131063.json": {
-      "checksum": "826de1a370b3b7cf1f647dc696bcd80d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760911005195131063.json.gz": {
+      "checksum": "08650e7eb445b58b9ed9dc44a7615c2c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760911797748961926.json": {
-      "checksum": "df2c1b88590d4fc59f2f0eade1ff38d8"
+    "logs/shinylogs_SPC_Analysis_Tool_1760911797748961926.json.gz": {
+      "checksum": "79fa845330c1eb2cc77fd8817b0072b7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760912802107546091.json": {
-      "checksum": "c90dd775aa48bb01b7a8e9ce79eb49ae"
+    "logs/shinylogs_SPC_Analysis_Tool_1760912802107546091.json.gz": {
+      "checksum": "2114a3ca75d9b0f86383221b1958043f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760943859411515951.json": {
-      "checksum": "b24d9d46fc4cd8f639fa13aed869cbba"
+    "logs/shinylogs_SPC_Analysis_Tool_1760943859411515951.json.gz": {
+      "checksum": "e4884dfc0e691ab0d55fcf4c2f4a4e8a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760944505617373943.json": {
-      "checksum": "1836d16c97ad00ef291b2363a3a9d7c5"
+    "logs/shinylogs_SPC_Analysis_Tool_1760944505617373943.json.gz": {
+      "checksum": "7ce63b928a9686441bdf0349ac190198"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760945014620239019.json": {
-      "checksum": "041bd03426870fbd2e58408e46f299cd"
+    "logs/shinylogs_SPC_Analysis_Tool_1760945014620239019.json.gz": {
+      "checksum": "ccb41a21d11d64666cd95430fd050477"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760949864802069902.json": {
-      "checksum": "7989b55d986c61aa8f4419167c63d87c"
+    "logs/shinylogs_SPC_Analysis_Tool_1760949864802069902.json.gz": {
+      "checksum": "43296756a2641b4d37f27593ab1a358c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760957670294908047.json": {
-      "checksum": "ae2b7f416371eff247f08071ffc69bc8"
+    "logs/shinylogs_SPC_Analysis_Tool_1760957670294908047.json.gz": {
+      "checksum": "2f87077f25d3673d897a44444597b52b"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760958171432498932.json": {
-      "checksum": "9c256c74244e1ffe844ba93215878b87"
+    "logs/shinylogs_SPC_Analysis_Tool_1760958171432498932.json.gz": {
+      "checksum": "c4b2175c352c1fe33626212db9506e2d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760958438372901917.json": {
-      "checksum": "afc3ab8977a4ba1eb1df06cb9ccd168d"
+    "logs/shinylogs_SPC_Analysis_Tool_1760958438372901917.json.gz": {
+      "checksum": "62b99e7ec93ded6001989c43aacc58ec"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760959502621975899.json": {
-      "checksum": "c84b1b8143bb86f7188e11596c7f021b"
+    "logs/shinylogs_SPC_Analysis_Tool_1760959502621975899.json.gz": {
+      "checksum": "46747b8da8c7984032840927f9fb2b1c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760959563658600092.json": {
-      "checksum": "8c5c121b3e1f2863a3f18c80c974dbfb"
+    "logs/shinylogs_SPC_Analysis_Tool_1760959563658600092.json.gz": {
+      "checksum": "c3e2f054c01a81f52ba8682cdfe14e29"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760961317829971075.json": {
-      "checksum": "c5aea9d929db0c82761409341e481771"
+    "logs/shinylogs_SPC_Analysis_Tool_1760961317829971075.json.gz": {
+      "checksum": "2ca1626064c45f418520ac3e4277df35"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760961785757320881.json": {
-      "checksum": "d04e1de2d9684cd34fe91381afd3267a"
+    "logs/shinylogs_SPC_Analysis_Tool_1760961785757320881.json.gz": {
+      "checksum": "e7e634a58605a7cc21c59aaf53ec8507"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760961948235954046.json": {
-      "checksum": "a18ff41e2a33f4e7fbcfd776f0b29b26"
+    "logs/shinylogs_SPC_Analysis_Tool_1760961948235954046.json.gz": {
+      "checksum": "fc29c54c2e09798aadd9ad5713f2dd94"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760962527091085911.json": {
-      "checksum": "8226ccd0d7fd25ae9c3c589b351c143e"
+    "logs/shinylogs_SPC_Analysis_Tool_1760962527091085911.json.gz": {
+      "checksum": "ffb9db0011f362f0feffad1a5cdc16e6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760962730929482937.json": {
-      "checksum": "2d5d8abc5806df2a09770aaa87f72d25"
+    "logs/shinylogs_SPC_Analysis_Tool_1760962730929482937.json.gz": {
+      "checksum": "c4041f866ca8b611fd111beee510010c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760963071295170069.json": {
-      "checksum": "192e2f774c68e2b85931241f6e616724"
+    "logs/shinylogs_SPC_Analysis_Tool_1760963071295170069.json.gz": {
+      "checksum": "43b349084a8977f23507caacad78d7e7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1760967360617327929.json": {
-      "checksum": "e3c47fe3a2e60984231b382e58264dc1"
+    "logs/shinylogs_SPC_Analysis_Tool_1760967360617327929.json.gz": {
+      "checksum": "9c9957b0e96bf6abd78dd534d41ac616"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761081873772701025.json": {
-      "checksum": "37e5f91d4b4b7e1485a661bbe9b8a022"
+    "logs/shinylogs_SPC_Analysis_Tool_1761081873772701025.json.gz": {
+      "checksum": "a75ad002d1bd2627dad38f023b06251d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761082132937424898.json": {
-      "checksum": "8b00ba0e5991e7f5d5e3d598a9529184"
+    "logs/shinylogs_SPC_Analysis_Tool_1761082132937424898.json.gz": {
+      "checksum": "51e4c16645fef417ac60e1b0a84ef9ec"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761083568960401058.json": {
-      "checksum": "f528f1f270c28a0449aec7bcc93fb238"
+    "logs/shinylogs_SPC_Analysis_Tool_1761083568960401058.json.gz": {
+      "checksum": "fddb2ee4d25f1feeb3b2470223682201"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761084648931833982.json": {
-      "checksum": "38dfedc3a1f4ee9cf80987d3a22ae084"
+    "logs/shinylogs_SPC_Analysis_Tool_1761084648931833982.json.gz": {
+      "checksum": "0eabcd11ef6daa8c442bd055de79b923"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761084869743551016.json": {
-      "checksum": "1c1adbd2f2b63f5e5483847577423448"
+    "logs/shinylogs_SPC_Analysis_Tool_1761084869743551016.json.gz": {
+      "checksum": "8ae12244f3aadf32b8aa39a76c2e427c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761085361653110981.json": {
-      "checksum": "2514fd55156c3132788170d02542848d"
+    "logs/shinylogs_SPC_Analysis_Tool_1761085361653110981.json.gz": {
+      "checksum": "d950dbb69cc19745ad4b4d22572ffefe"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761122282431814909.json": {
-      "checksum": "35985650d572f1ef6202372da32ca0a9"
+    "logs/shinylogs_SPC_Analysis_Tool_1761122282431814909.json.gz": {
+      "checksum": "9352a74a46e89a4f54f20312d14d74f6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761144732876328945.json": {
-      "checksum": "aaf0963830c0fb366d16608999fb6535"
+    "logs/shinylogs_SPC_Analysis_Tool_1761144732876328945.json.gz": {
+      "checksum": "93a3719a9b3f44d6647f6ec0b97e538e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761145612056833982.json": {
-      "checksum": "9d9809e6242f07f57ab0f360f731a3ed"
+    "logs/shinylogs_SPC_Analysis_Tool_1761145612056833982.json.gz": {
+      "checksum": "82b0dc6bcb3d72c4b130f63cdc29e573"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761154069439870119.json": {
-      "checksum": "8cba5163d4c7f40f379f8813410ea6ec"
+    "logs/shinylogs_SPC_Analysis_Tool_1761154069439870119.json.gz": {
+      "checksum": "d3afa0ae517274d309bcadca4580b5d9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761154395886059046.json": {
-      "checksum": "27079def52e807a032dd18bd0227ec48"
+    "logs/shinylogs_SPC_Analysis_Tool_1761154395886059046.json.gz": {
+      "checksum": "65fa9070c3f3c2309475ff5f92973863"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761154589280675888.json": {
-      "checksum": "e2e53e999ef725f7f206cfe1af688591"
+    "logs/shinylogs_SPC_Analysis_Tool_1761154589280675888.json.gz": {
+      "checksum": "5d942f88af071c9b91b88e864cf68e7a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761155350156056881.json": {
-      "checksum": "fb11f29d3aba26331efebb25faa04cd6"
+    "logs/shinylogs_SPC_Analysis_Tool_1761155350156056881.json.gz": {
+      "checksum": "67e7864a35ff645e233a4c03e367cd3d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761160642689914942.json": {
-      "checksum": "f7f42e32d786d637edf89eb3fffdd0f3"
+    "logs/shinylogs_SPC_Analysis_Tool_1761160642689914942.json.gz": {
+      "checksum": "ab5309a36eb55160397acebbf6bd3116"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761160707522197962.json": {
-      "checksum": "4c38b83b314001cd47b8d2abbb8b9d17"
+    "logs/shinylogs_SPC_Analysis_Tool_1761160707522197962.json.gz": {
+      "checksum": "aba99645e22320382c5e2dd280958587"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761161150300492048.json": {
-      "checksum": "0a94df1b2c4fc63c3553d12946e4ce05"
+    "logs/shinylogs_SPC_Analysis_Tool_1761161150300492048.json.gz": {
+      "checksum": "7b5756ceef1e95be5a2ebd9f7b0465b4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761161605863707066.json": {
-      "checksum": "e40e51a3a1f40cd907412141fde19340"
+    "logs/shinylogs_SPC_Analysis_Tool_1761161605863707066.json.gz": {
+      "checksum": "7b9008439a35e4a51c062edb57e2a05a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761161925968168974.json": {
-      "checksum": "9d3625fb33b63aca18857cb21f04575a"
+    "logs/shinylogs_SPC_Analysis_Tool_1761161925968168974.json.gz": {
+      "checksum": "46cdeda2e459874a960e7c3aa843de5c"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761162000409384966.json": {
-      "checksum": "43529673acc8511e1f575b1c3824d79d"
+    "logs/shinylogs_SPC_Analysis_Tool_1761162000409384966.json.gz": {
+      "checksum": "0bb9aed0d4a8a629c84d24c0e4d42f12"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761162339497189999.json": {
-      "checksum": "0fddce066b024566b55edcfa014bca94"
+    "logs/shinylogs_SPC_Analysis_Tool_1761162339497189999.json.gz": {
+      "checksum": "7c82bdde14ba6f259e5afb21b5c25e70"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761162463397650957.json": {
-      "checksum": "6bfd0a7c88fd1926ce6398b7bacd0dab"
+    "logs/shinylogs_SPC_Analysis_Tool_1761162463397650957.json.gz": {
+      "checksum": "bd7f1c07a77612e06c9e4c1434575428"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761162760091763020.json": {
-      "checksum": "4371af1da7db21c4e806036ab263c927"
+    "logs/shinylogs_SPC_Analysis_Tool_1761162760091763020.json.gz": {
+      "checksum": "420b50c2540f0041166c27b1e6ac9d99"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761163035194752932.json": {
-      "checksum": "d52fd7c471e61b2d3f1fefebcb852d65"
+    "logs/shinylogs_SPC_Analysis_Tool_1761163035194752932.json.gz": {
+      "checksum": "d4117dd1e59cf0b4f6fd1588a57a1539"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761165822377150059.json": {
-      "checksum": "93facad34ff5d31c88a0bf4e3596ec02"
+    "logs/shinylogs_SPC_Analysis_Tool_1761165822377150059.json.gz": {
+      "checksum": "8f9bdf7f1bba9ddf22456e89d8591438"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761203541606650114.json": {
-      "checksum": "4de51d6f6e9219786234d11c9d1176a4"
+    "logs/shinylogs_SPC_Analysis_Tool_1761203541606650114.json.gz": {
+      "checksum": "04147061690561fe4cc361ffa62e64be"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761236250199506044.json": {
-      "checksum": "7b118779f52d80e66bb082b237dcf1ba"
+    "logs/shinylogs_SPC_Analysis_Tool_1761236250199506044.json.gz": {
+      "checksum": "47631735fd6b6e32b31f2e271399ecff"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761236812699868917.json": {
-      "checksum": "2d0ba9c1ec1011e3b1b5847f039eb483"
+    "logs/shinylogs_SPC_Analysis_Tool_1761236812699868917.json.gz": {
+      "checksum": "413078211db9e95bc400f15e0c349b7d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761237371713313103.json": {
-      "checksum": "07e98919456ea49e5a30c67bead49dbf"
+    "logs/shinylogs_SPC_Analysis_Tool_1761237371713313103.json.gz": {
+      "checksum": "c00c08d1bfc22c60c1597ade817f0365"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761237890388094902.json": {
-      "checksum": "37686e3a7574a5ff9069b5ef456c63f7"
+    "logs/shinylogs_SPC_Analysis_Tool_1761237890388094902.json.gz": {
+      "checksum": "64b79c8260378efdf9c4caf559c7d9b1"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761239430927350044.json": {
-      "checksum": "14a27fe10d935e9c86d960bb8113c416"
+    "logs/shinylogs_SPC_Analysis_Tool_1761239430927350044.json.gz": {
+      "checksum": "73fa4bc100f3242b7694308a3b6ff042"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761253325229979038.json": {
-      "checksum": "0d631efc8f6588b0fc91f7b8c4f94d8b"
+    "logs/shinylogs_SPC_Analysis_Tool_1761253325229979038.json.gz": {
+      "checksum": "67ad8f351b63fe7102d712cd918245a4"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761480397916157961.json": {
-      "checksum": "be00afb096b1103b0a4f890820c3ef9f"
+    "logs/shinylogs_SPC_Analysis_Tool_1761480397916157961.json.gz": {
+      "checksum": "956ec4000bef02686afd846d25effa28"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761485214969784021.json": {
-      "checksum": "fa482be3b9195d9fb14c7dfde98ec334"
+    "logs/shinylogs_SPC_Analysis_Tool_1761485214969784021.json.gz": {
+      "checksum": "4d2bca58b59af9e2cdca466d41b6452d"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761668304681128979.json": {
-      "checksum": "18a544aae94debe76823271ec8f11257"
+    "logs/shinylogs_SPC_Analysis_Tool_1761668304681128979.json.gz": {
+      "checksum": "6a8612902187a2b6e3ef03291f6aad31"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761677494049669027.json": {
-      "checksum": "f9f0ca566ae4889ee2ad6694e3c4dbbc"
+    "logs/shinylogs_SPC_Analysis_Tool_1761677494049669027.json.gz": {
+      "checksum": "83c64d107a0f7c62e65503628530dee0"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761688416790576935.json": {
-      "checksum": "2d049d4782ba68937021855f0002b633"
+    "logs/shinylogs_SPC_Analysis_Tool_1761688416790576935.json.gz": {
+      "checksum": "92b035e2dd4849b6b5720f4720d14add"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761691767097866058.json": {
-      "checksum": "92c30cf5ef12dd346a3b144c3f4d2878"
+    "logs/shinylogs_SPC_Analysis_Tool_1761691767097866058.json.gz": {
+      "checksum": "19502f2040cb5d2fd3efe1110bf1b9e9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761717250750042915.json": {
-      "checksum": "aa41945bdd318484d8fdc7809ec96513"
+    "logs/shinylogs_SPC_Analysis_Tool_1761717250750042915.json.gz": {
+      "checksum": "c9815b5c5c4034366bb10edf11e8ee86"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761717275422646046.json": {
-      "checksum": "98a3f71b221ef598a0c3ad04a173e7f4"
+    "logs/shinylogs_SPC_Analysis_Tool_1761717275422646046.json.gz": {
+      "checksum": "fa0dfee7fc91847f43ea1e10444785c6"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761717534717971087.json": {
-      "checksum": "74369bf09f3805435e31966f488fd135"
+    "logs/shinylogs_SPC_Analysis_Tool_1761717534717971087.json.gz": {
+      "checksum": "6728266301fbd022b10dbc2b5a010d36"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761717737701251984.json": {
-      "checksum": "9877fc5f2657c09c8666ccadd29aedf1"
+    "logs/shinylogs_SPC_Analysis_Tool_1761717737701251984.json.gz": {
+      "checksum": "a84731e53136eb47a740f0785237809a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761718233465034962.json": {
-      "checksum": "36cc56207e0b03e47b2a827430fbd15b"
+    "logs/shinylogs_SPC_Analysis_Tool_1761718233465034962.json.gz": {
+      "checksum": "070a00a3d6dd550c2d381e5dd0817e7a"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761721271307555914.json": {
-      "checksum": "6d82ec35ce5d2137f6606d681a00e2d6"
+    "logs/shinylogs_SPC_Analysis_Tool_1761721271307555914.json.gz": {
+      "checksum": "4c0d3b3173eb1538912df9687e1b2a28"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1761723077320662975.json": {
-      "checksum": "e4dd62eb4c85d489c8a8f0028c29aa8d"
+    "logs/shinylogs_SPC_Analysis_Tool_1761723077320662975.json.gz": {
+      "checksum": "a21e6d25a8ff24dfe47ada5accf17f25"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1762809242046032906.json": {
-      "checksum": "054ce7f29d77f01f44c8c7da170acd23"
+    "logs/shinylogs_SPC_Analysis_Tool_1762809242046032906.json.gz": {
+      "checksum": "f75d553560d12e904b51a0877359fbb3"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764590288497208118.json": {
-      "checksum": "f8f5a3a03ac00ae4b681acca095fc796"
+    "logs/shinylogs_SPC_Analysis_Tool_1764590288497208118.json.gz": {
+      "checksum": "9cfbfd93efe90f1b045f814e06bfee4f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764591508501352072.json": {
-      "checksum": "82473f55b168162f82814e045dab3007"
+    "logs/shinylogs_SPC_Analysis_Tool_1764591508501352072.json.gz": {
+      "checksum": "9f738b3e9c140de039eef652ea3d9205"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764592371719624043.json": {
-      "checksum": "b061da53b0d3ab38a692a713d8259cea"
+    "logs/shinylogs_SPC_Analysis_Tool_1764592371719624043.json.gz": {
+      "checksum": "a2345badf169f2bf7e6b32b7acdfaa62"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764593390343267918.json": {
-      "checksum": "9863d8f7ac7033eb727bf5b7192dff54"
+    "logs/shinylogs_SPC_Analysis_Tool_1764593390343267918.json.gz": {
+      "checksum": "537db77bfb1b684ed065b68d0c942309"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764596625201455116.json": {
-      "checksum": "f846ff6bf23b3c1be34fdb9249b08ff8"
+    "logs/shinylogs_SPC_Analysis_Tool_1764596625201455116.json.gz": {
+      "checksum": "2ee29caa79327c7a5c1649f01d1d875e"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764609103900547981.json": {
-      "checksum": "84458f5120d6efc3787db4e5b43fb1f4"
+    "logs/shinylogs_SPC_Analysis_Tool_1764609103900547981.json.gz": {
+      "checksum": "e4b6a051caf8a0b18fc23e4c1744a6f9"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764625137454488993.json": {
-      "checksum": "d6482c02934514dceeda5559dd669089"
+    "logs/shinylogs_SPC_Analysis_Tool_1764625137454488993.json.gz": {
+      "checksum": "5788a24a0a5f5de7d2e40475d5eaea85"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764625286160017014.json": {
-      "checksum": "b42b1b8f236d780acc5e0eb8017efdec"
+    "logs/shinylogs_SPC_Analysis_Tool_1764625286160017014.json.gz": {
+      "checksum": "ff76d2d06b139d8a11fbd0c576669fdf"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764677575463784933.json": {
-      "checksum": "5c8e1f9a6ade2e02a1fd22635cc7a1ae"
+    "logs/shinylogs_SPC_Analysis_Tool_1764677575463784933.json.gz": {
+      "checksum": "15f96484e303dd591bf36e1e0022ae84"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764677600342291117.json": {
-      "checksum": "0bd801d0c0f85ed2784bf4ccd0af4f0c"
+    "logs/shinylogs_SPC_Analysis_Tool_1764677600342291117.json.gz": {
+      "checksum": "09d19ae9c6b5597d0971620f55ae45ad"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764679765573497057.json": {
-      "checksum": "17aa72acd68154ad1e1c7d0a48ca263d"
+    "logs/shinylogs_SPC_Analysis_Tool_1764679765573497057.json.gz": {
+      "checksum": "d03f1dd9245c83ea6edb87cefd4421ea"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764679788497890949.json": {
-      "checksum": "ba98504c3c3aebf87d2d0bff6fdb0e33"
+    "logs/shinylogs_SPC_Analysis_Tool_1764679788497890949.json.gz": {
+      "checksum": "d8940597bd3cefb1767e3ea0d38efa24"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764682560182684898.json": {
-      "checksum": "239aef884dea65bd2ae891801e2228e8"
+    "logs/shinylogs_SPC_Analysis_Tool_1764682560182684898.json.gz": {
+      "checksum": "d35f8dd2650a97c8d41a928773be7aaa"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764682774133532047.json": {
-      "checksum": "db28d6184f7c5e74ea96df7d4dee5b14"
+    "logs/shinylogs_SPC_Analysis_Tool_1764682774133532047.json.gz": {
+      "checksum": "be40e8831ad98612d8a8de918b3bf630"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764685793258080006.json": {
-      "checksum": "767f1cb6ed6ec154c9e1b859fbfcf53e"
+    "logs/shinylogs_SPC_Analysis_Tool_1764685793258080006.json.gz": {
+      "checksum": "10604269309bdefbd26aa57b7f0ea938"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764685867446947098.json": {
-      "checksum": "2ddd2328ff063d5edba5f2e586436f23"
+    "logs/shinylogs_SPC_Analysis_Tool_1764685867446947098.json.gz": {
+      "checksum": "cecf4959c348dc2ac26c5a309cd4d0f7"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764686053977422953.json": {
-      "checksum": "b077f603c26f8fa792209f21c9b7da68"
+    "logs/shinylogs_SPC_Analysis_Tool_1764686053977422953.json.gz": {
+      "checksum": "4dc710cb6f01f166116522e9e8c6b892"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764687493149498940.json": {
-      "checksum": "005beb9363ace8bd8440331859b43486"
+    "logs/shinylogs_SPC_Analysis_Tool_1764687493149498940.json.gz": {
+      "checksum": "47b7bcfda9e3a3bf771cce96eaa589d8"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764688272621377945.json": {
-      "checksum": "5f8d6aba267257b3f42355ba01a6feca"
+    "logs/shinylogs_SPC_Analysis_Tool_1764688272621377945.json.gz": {
+      "checksum": "efc06fb204fe076866dfa9889770e12f"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1764690977396897078.json": {
-      "checksum": "44d4c294b1f599cccc6c2a793a8210db"
+    "logs/shinylogs_SPC_Analysis_Tool_1764690977396897078.json.gz": {
+      "checksum": "7e44e8b9366a69fa7a8fbe14745d4039"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1765239914248718977.json": {
-      "checksum": "76eee7c2142c7110c852637cb90397bc"
+    "logs/shinylogs_SPC_Analysis_Tool_1765239914248718977.json.gz": {
+      "checksum": "fc3a69603bb87aacae4538795a1d3602"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1765240086845107079.json": {
-      "checksum": "5391ee4f0f353a9de312d33a5765b0fa"
+    "logs/shinylogs_SPC_Analysis_Tool_1765240086845107079.json.gz": {
+      "checksum": "2fd8d7e5e12e28dab534e4676f013e38"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1765271384440254927.json": {
-      "checksum": "c21c6d97fab889f7ce8256ff13c70aca"
+    "logs/shinylogs_SPC_Analysis_Tool_1765271384440254927.json.gz": {
+      "checksum": "699c0c002be1b338425c89a347e4d198"
     },
-    "logs/shinylogs_SPC_Analysis_Tool_1765300938115461111.json": {
-      "checksum": "20314a753fdff72fa2ab2293186a0475"
+    "logs/shinylogs_SPC_Analysis_Tool_1765300938115461111.json.gz": {
+      "checksum": "3e35c0d8807414a6ef122c35d160988a"
     },
     "logs/shinylogs_SPC_Analysis_Tool_1773857424032516956.json": {
       "checksum": "032521ada3555dcbce08cd9c3d3810e9"
@@ -22735,6 +23459,9 @@
     "logs/shinylogs_SPC_Analysis_Tool_1776431882071053028.json": {
       "checksum": "7866d8103194be427630e451d9b090b6"
     },
+    "logs/shinylogs_SPC_Analysis_Tool_1776520538720539093.json": {
+      "checksum": "6338b6f4d6adb17d99e375ae649222c1"
+    },
     "Makefile": {
       "checksum": "88a582018f62caa919051b1f1942e76b"
     },
@@ -22745,7 +23472,7 @@
       "checksum": "8ebee10869e33a40760a147af352f7c5"
     },
     "man/aggregate_and_pin_logs.Rd": {
-      "checksum": "9227a8b1306968dfeb66b57713479ecd"
+      "checksum": "cee59068dd684972ce7199ccf25c9c35"
     },
     "man/ANALYTICS_CONFIG.Rd": {
       "checksum": "45841d790fa59b7315dcf73a440e1827"
@@ -22789,11 +23516,14 @@
     "man/build_serielengde_box.Rd": {
       "checksum": "4eed30f0dc384fa5c38e5be2feebdad9"
     },
+    "man/build_session_filename.Rd": {
+      "checksum": "3fad6488c3b9fccbaa022507f430630c"
+    },
     "man/build_spc_excel.Rd": {
       "checksum": "49f5d83b05832a256f4619968d4196ee"
     },
     "man/cache_auto_detection_results.Rd": {
-      "checksum": "166f4dc3c8f586211f525ada36886594"
+      "checksum": "63b93089c182a6a49071e13c429da250"
     },
     "man/CACHE_CONFIG.Rd": {
       "checksum": "f9911be9dd9c36eb448eace4c43bf4a1"
@@ -22835,7 +23565,7 @@
       "checksum": "6553cbc0402bdeb0a4f6d216a78d15a5"
     },
     "man/clear_performance_cache.Rd": {
-      "checksum": "70c759f9105e45bee48046b9489e0fb9"
+      "checksum": "5f37e8259067d283a7005bbc5846afdc"
     },
     "man/coerce_to_target_unit.Rd": {
       "checksum": "3d36e921a360acd5a3c83b28e6192131"
@@ -22852,14 +23582,17 @@
     "man/convert_profile_to_legacy_config.Rd": {
       "checksum": "928a38cadb6ff5959a2e1608c9cfd7f8"
     },
+    "man/count_outliers_latest_part.Rd": {
+      "checksum": "592c535d1aaea04ab3bd1a1e4fa705b8"
+    },
     "man/create_app_state.Rd": {
-      "checksum": "b6d42443be45026b2648e209c546ab1f"
+      "checksum": "7dfe0900d9628ca940b7e315bb6bddec"
     },
     "man/create_bfhllm_cache.Rd": {
       "checksum": "45b9f82fd7c6299988784ffa4ee29e98"
     },
     "man/create_cached_reactive.Rd": {
-      "checksum": "e6d2eec3187b4ae16cce8849bce7ef25"
+      "checksum": "5d58a23955a1c0a7c80d1573fc2d061a"
     },
     "man/create_chart_config_reactive.Rd": {
       "checksum": "d05ec158d5d1f45984ef6999b71e6b35"
@@ -22883,7 +23616,7 @@
       "checksum": "b48b4ee1b034d0ba3f899c731c326a08"
     },
     "man/create_performance_debounced.Rd": {
-      "checksum": "021051d4cc2c1f4f6332690a8c187c44"
+      "checksum": "9a7e14112e800faf056127612a51a758"
     },
     "man/create_qic_cache.Rd": {
       "checksum": "4c71ba8123e5884088081d182f2137da"
@@ -22892,7 +23625,7 @@
       "checksum": "e3dc3804bd8bb2ca7706956245a6daf9"
     },
     "man/create_security_warning.Rd": {
-      "checksum": "fd740ca76f2714cbd93a76ecdb55a469"
+      "checksum": "d7000944fcb137711fdb06d4c47fe037"
     },
     "man/create_spc_inputs_reactive.Rd": {
       "checksum": "d73fb5f77a44de72f87f6afc6dd74210"
@@ -22916,19 +23649,19 @@
       "checksum": "614b35a78a4a672fc9b305df8cfbc877"
     },
     "man/debug_log.Rd": {
-      "checksum": "2d4a778cb1706cd660aeb8cd58bd8081"
+      "checksum": "c4f3c6e008e0579c8a85e12e127d119e"
     },
     "man/debug_performance_timer.Rd": {
-      "checksum": "742e13b4393fe6d0ed9cb69f200c665c"
+      "checksum": "3642ceeebfe60609eca41d4c319e61cf"
     },
     "man/debug_session_lifecycle.Rd": {
       "checksum": "e1c780edc6adbdbcd6caf12cabebad2a"
     },
     "man/debug_state_snapshot.Rd": {
-      "checksum": "40d12e216b589de217173540bdf1d176"
+      "checksum": "1be6fb977f2350e97e6c587dd537ca70"
     },
     "man/debug_workflow_tracer.Rd": {
-      "checksum": "34d9e2b375b9bf7573ae26b8ed85e307"
+      "checksum": "3eb42117c130cf86d33aaebf4a7a114e"
     },
     "man/decide_default_y_axis_ui_type.Rd": {
       "checksum": "5754098a5925eb3db9cfbd709d01dd73"
@@ -23074,8 +23807,8 @@
     "man/format_scaled_number.Rd": {
       "checksum": "4b7acb5b1944f32fa53bb14815eafad1"
     },
-    "man/format_time_with_unit.Rd": {
-      "checksum": "c951f3c6422e0fb2aacc3d0a9bf0b06e"
+    "man/format_time_composite.Rd": {
+      "checksum": "4f583b1d8a2a616b6f0bf0af0703ec85"
     },
     "man/format_unscaled_number.Rd": {
       "checksum": "1b56e65d4ef78cf41df42b837c58413a"
@@ -23090,10 +23823,10 @@
       "checksum": "f3f0a213c5ac1148d19055ab8ef23c2b"
     },
     "man/format_y_axis_time.Rd": {
-      "checksum": "8f0c72c1c8ce2a3ca24956588d0f6bdf"
+      "checksum": "96732871448428a5adf0ae88a58d86d7"
     },
     "man/format_y_value.Rd": {
-      "checksum": "f6aa24de3f7cff157b105103f06cbb9a"
+      "checksum": "d17546b2432b3bc7982773861a7e904c"
     },
     "man/generate_autodetect_cache_key_optimized.Rd": {
       "checksum": "690911bec60f2ffa5f8119ca731e89d3"
@@ -23102,7 +23835,7 @@
       "checksum": "4827481f4e19889703771daa68ec007b"
     },
     "man/generate_data_cache_key.Rd": {
-      "checksum": "ad609c9b2bb3fd76580ced2782e92ca9"
+      "checksum": "01f57aef95aa2c0853a2bbcf45e3d227"
     },
     "man/generate_export_filename.Rd": {
       "checksum": "a13aaf02d30804cb73490d8f64482503"
@@ -23158,6 +23891,9 @@
     "man/get_auto_save_enabled.Rd": {
       "checksum": "5c57c300a85596100924dffaa9634f6d"
     },
+    "man/get_autodetect_status.Rd": {
+      "checksum": "76a6de63b780a7c4413b7e3318595c48"
+    },
     "man/get_autosave_delay.Rd": {
       "checksum": "443e9f0eed59b51b9c63e6176ea4364c"
     },
@@ -23168,13 +23904,19 @@
       "checksum": "99c7caff805ab59cf73b7c17d70ec9e6"
     },
     "man/get_cached_result.Rd": {
-      "checksum": "2ba6ae10c9cfbc7f7c9a5103c352eb0b"
+      "checksum": "bfbc6219036657611498f298a32b52e1"
     },
     "man/get_cached_spc_result.Rd": {
       "checksum": "3d2e6003ec477d91a8c1629d84ae8662"
     },
     "man/get_chart_types_config.Rd": {
       "checksum": "9eded0a77d478329a44f0008c1d4fdbb"
+    },
+    "man/get_column_mapping.Rd": {
+      "checksum": "83d304c1f392cee81e03831a7234ae4b"
+    },
+    "man/get_column_mappings.Rd": {
+      "checksum": "eab233fe22a1e58c5466e166b0cd4089"
     },
     "man/get_context_dimensions.Rd": {
       "checksum": "091d5bd890a7d7478fd802f51670802e"
@@ -23194,6 +23936,9 @@
     "man/get_effective_log_level.Rd": {
       "checksum": "62295268cbfacf54d4ab158df7849d63"
     },
+    "man/get_error_count.Rd": {
+      "checksum": "6d66f71cec90069fd966554fe5f359d8"
+    },
     "man/get_hospital_branding_config.Rd": {
       "checksum": "558d3330d2e7f27d158b566cda04670b"
     },
@@ -23203,6 +23948,9 @@
     "man/get_initialization_status_report.Rd": {
       "checksum": "914d784c9727b08861a0f4bae4d4ef3f"
     },
+    "man/get_last_error.Rd": {
+      "checksum": "2c0a517dc9781d0ad94c78f33542c20b"
+    },
     "man/get_lazy_loading_status.Rd": {
       "checksum": "fd0b8b27400f335f78a4f2864817d390"
     },
@@ -23210,7 +23958,7 @@
       "checksum": "f1e6e68c8905450af9d35aadce3eae43"
     },
     "man/get_log_level.Rd": {
-      "checksum": "1daada3188fd826b7fa61970603ef89a"
+      "checksum": "a3968a10c6d7555a534c4f4e632ab52c"
     },
     "man/get_loop_protection_delay.Rd": {
       "checksum": "56db112284d301de8445eae86f32a6bf"
@@ -23226,6 +23974,9 @@
     },
     "man/get_or_init_qic_cache.Rd": {
       "checksum": "f38547aa1e6adcee15145ec8ed88fc0e"
+    },
+    "man/get_original_data.Rd": {
+      "checksum": "bafb3f39d445e649e091eee085072d32"
     },
     "man/get_override_or_default.Rd": {
       "checksum": "29b9af5ce0ec9a7ed5d26e18e56a9f52"
@@ -23244,6 +23995,12 @@
     },
     "man/get_performance_threshold.Rd": {
       "checksum": "33595f3aa5856cce4ebf3adfe2a9ffa1"
+    },
+    "man/get_plot_object.Rd": {
+      "checksum": "97fbd0cce456ee9da87e43db62278a7c"
+    },
+    "man/get_plot_warnings.Rd": {
+      "checksum": "8b7ee112efdfa4c4cada264205e03d47"
     },
     "man/get_priority.Rd": {
       "checksum": "17ddcbe47c464fc8f1eeb2c61fc37305"
@@ -23295,6 +24052,9 @@
     },
     "man/get_test_mode_file_path.Rd": {
       "checksum": "be440a77468ccc6ba4706434a4752fe4"
+    },
+    "man/get_test_mode_startup_phase.Rd": {
+      "checksum": "2df218ce603ca76096dadb2ac2b47783"
     },
     "man/get_ui_column_width.Rd": {
       "checksum": "84e1f8c1e3435c5d7285a65bc339442c"
@@ -23392,6 +24152,9 @@
     "man/initialize_spc_chart_state.Rd": {
       "checksum": "6a6377283099f357497b035977dbc877"
     },
+    "man/inject_pat_into_url.Rd": {
+      "checksum": "205f1de6e71adda01ca6ef119fe49763"
+    },
     "man/inject_template_assets.Rd": {
       "checksum": "bcdb00c97cf8f9ab3f0598ab83060fd6"
     },
@@ -23404,6 +24167,9 @@
     "man/invalidate_qic_cache_smart.Rd": {
       "checksum": "94e19b74668a7a3c9b1ff6e856108691"
     },
+    "man/is_anhoej_rules_hidden.Rd": {
+      "checksum": "3549b58a2f336bb9dc39700849aa37d7"
+    },
     "man/is_bfhllm_available.Rd": {
       "checksum": "0100b7725a4acc1146c19dfcd086c89b"
     },
@@ -23413,11 +24179,29 @@
     "man/is_dev_mode.Rd": {
       "checksum": "2a2e7c3c5d92406cc53a7dbf58c090b4"
     },
+    "man/is_file_uploaded.Rd": {
+      "checksum": "af5a82b07c344f58556561f1c79a1382"
+    },
+    "man/is_plot_generating.Rd": {
+      "checksum": "fd3235b28ad1965d1d0886f143923cce"
+    },
     "man/is_plot_ready.Rd": {
       "checksum": "4455ba56204d8c91729b49d3741446ec"
     },
     "man/is_prod_mode.Rd": {
       "checksum": "0a324465f6136b4c7c715cfce5cff2ec"
+    },
+    "man/is_table_updating.Rd": {
+      "checksum": "b068cc99b3461ae3fae5463e63b7fbe3"
+    },
+    "man/is_test_mode_enabled.Rd": {
+      "checksum": "17b97884f0d9833f45f02d9ad2df15f2"
+    },
+    "man/is_user_session_started.Rd": {
+      "checksum": "14c558ef0a571bfd56b5a93f45c4c295"
+    },
+    "man/is_y_axis_autoset_done.Rd": {
+      "checksum": "89ced91cc300c7a90818cd180d58bcac"
     },
     "man/lazy_load_module.Rd": {
       "checksum": "8723e9e68c30d02e52c5cae8af9ade58"
@@ -23447,25 +24231,25 @@
       "checksum": "82f19564ebd02dc0343b1d103d6c3062"
     },
     "man/log_debug_block.Rd": {
-      "checksum": "a5e3fbe2f5fc293a8b4b68a0f0548283"
+      "checksum": "c1766bfb96fd884845f8b0868344dfed"
     },
     "man/log_debug_kv.Rd": {
-      "checksum": "86fd09c6fdce0ec55c1e33e4a2b626c3"
+      "checksum": "b0bcf43da7053daaa96b3a600063e18f"
     },
     "man/log_debug.Rd": {
-      "checksum": "009feb035faee5ffee1dab32995a25c5"
+      "checksum": "d4817161fef4b49780c1a731be6adcaf"
     },
     "man/log_error.Rd": {
-      "checksum": "c22244bda8e9d7c626e25c6a438500ea"
+      "checksum": "5376ee77bdfb6efb56ad76599cc24647"
     },
     "man/log_info.Rd": {
-      "checksum": "1c4469571349273c14ce3a181aead1f2"
+      "checksum": "98467d498c3b7527804bd609805cacf9"
     },
     "man/LOG_LEVELS.Rd": {
       "checksum": "e52661335154e88e72b6ae26f35c6701"
     },
     "man/log_msg.Rd": {
-      "checksum": "41a625d2bcc360234a4a89d9a143a7a2"
+      "checksum": "c70b9f381448316d0fd26020add44ea0"
     },
     "man/log_qic_call_wrapper.Rd": {
       "checksum": "03f403ed5d8c585550082d38a048ba56"
@@ -23477,13 +24261,16 @@
       "checksum": "e5a45bdbfab3f422e0c4c7bad52f7106"
     },
     "man/log_warn.Rd": {
-      "checksum": "d89ff7114862cbdfe15db5dccbc2c827"
+      "checksum": "4861fa22e7ca0ff41b91b68f015fa9fb"
     },
     "man/LOOP_PROTECTION_DELAYS.Rd": {
       "checksum": "3449a5d0c7dc331ad552fe1ec291cd54"
     },
     "man/main_app_server.Rd": {
       "checksum": "ffc836a9aef7ab3ad90888d9b2e3e308"
+    },
+    "man/manage_cache_size.Rd": {
+      "checksum": "5f1fc797ab72e32685c3e850297d97a3"
     },
     "man/map_to_bfh_params.Rd": {
       "checksum": "a480af21c9149f55108bc72548fb85d2"
@@ -23525,7 +24312,7 @@
       "checksum": "755d8c513af1513a09dc21437d1e15e4"
     },
     "man/normalize_column_input.Rd": {
-      "checksum": "0ce96ce6657eac5e11bb743136154bc1"
+      "checksum": "a706ec17211cc7d9a085c04772a1402c"
     },
     "man/normalize_proportions_to_internal.Rd": {
       "checksum": "4d68c9f624dc75aae77ad5609450a1b5"
@@ -23585,7 +24372,7 @@
       "checksum": "8f5ec58427b692d4c4a4edb20c5bdb5d"
     },
     "man/read_shinylogs_all.Rd": {
-      "checksum": "eb6a63a9c95ec70a0c75a6eff86f64f6"
+      "checksum": "384c6512cf8c7631c4578aa7f74116d7"
     },
     "man/read_shinylogs_sessions.Rd": {
       "checksum": "bf4566a9b068c7f6948b9aa0068426e8"
@@ -23660,7 +24447,7 @@
       "checksum": "188beaf1f45c67b199046b4589cf0691"
     },
     "man/safe_getenv.Rd": {
-      "checksum": "f81075f0644f847846c9d6c1070253db"
+      "checksum": "ff7a686c7ce92a4f05982b9b3899aea5"
     },
     "man/safe_max.Rd": {
       "checksum": "39abfe39fe81779fa47f04ce2a393e79"
@@ -23675,7 +24462,7 @@
       "checksum": "f12d49b6d4142e5f3de4f4ea8405ce37"
     },
     "man/sanitize_column_name.Rd": {
-      "checksum": "d1b00e72f7aac1d96cba1530c6d5c13a"
+      "checksum": "2707b6705be9658cd7571ad8e05f47c6"
     },
     "man/sanitize_csv_output.Rd": {
       "checksum": "59b3dbaabfe602768e8f149ef98732db"
@@ -23684,7 +24471,7 @@
       "checksum": "4a77cc2fa73db9e2f9e797fef908a109"
     },
     "man/sanitize_selection.Rd": {
-      "checksum": "3696663517081f87a7fe818d48b4ec1a"
+      "checksum": "99ddfa7051e74465d1dddff76903e6f6"
     },
     "man/sanitize_session_token.Rd": {
       "checksum": "bbac7b560d81cd07af2e6d03c57c54e8"
@@ -23710,14 +24497,26 @@
     "man/score_column_candidates.Rd": {
       "checksum": "7ca70143e40b2fed65ac24f08a76e654"
     },
+    "man/set_anhoej_rules_hidden.Rd": {
+      "checksum": "d05f1a3af688e4b2142e5e61126de314"
+    },
+    "man/set_autodetect_in_progress.Rd": {
+      "checksum": "17de1891c9506ececc1ca63f9d13b3dd"
+    },
     "man/set_current_data.Rd": {
       "checksum": "fafa1754197cbe39335d2966c3da5352"
     },
     "man/set_debug_context.Rd": {
       "checksum": "2fa6d71f8324c0fcdd4bc39180fe4eb8"
     },
+    "man/set_file_uploaded.Rd": {
+      "checksum": "e7ef8581898f4213deb1573dd67fccb9"
+    },
+    "man/set_last_error.Rd": {
+      "checksum": "f6e4db3c1a112e66224ca5403e188cae"
+    },
     "man/set_log_level_development.Rd": {
-      "checksum": "028a433fee7135ab24f87ecfc607da02"
+      "checksum": "38aecc90ba5b1ff63f1404aba14cbf0d"
     },
     "man/set_log_level.Rd": {
       "checksum": "dcf771d51b0a462c0668c35578102757"
@@ -23725,8 +24524,35 @@
     "man/set_original_data.Rd": {
       "checksum": "df4d9889efc43425ca6a85ab7b122da9"
     },
+    "man/set_plot_generating.Rd": {
+      "checksum": "7d878f9e3f5f883a1ec27f3b2d805371"
+    },
+    "man/set_plot_object.Rd": {
+      "checksum": "4aa2d0064a93c31ee63212e1ef3f80ad"
+    },
+    "man/set_plot_ready.Rd": {
+      "checksum": "50ecae1f36e97f2bfab6adf73d372dfd"
+    },
+    "man/set_plot_warnings.Rd": {
+      "checksum": "9f75c238f4cdc31587fe966f3be65c32"
+    },
+    "man/set_table_updating.Rd": {
+      "checksum": "f810dd70cf1365fa30c664ee361f8629"
+    },
+    "man/set_test_mode_enabled.Rd": {
+      "checksum": "960baacddb7eb40b26140c37d28f66f2"
+    },
+    "man/set_test_mode_startup_phase.Rd": {
+      "checksum": "8b7579c939788ec0663938841b293807"
+    },
+    "man/set_user_session_started.Rd": {
+      "checksum": "b20b2c558015c0c75c1b3c4065199963"
+    },
     "man/set_viewport_dims.Rd": {
       "checksum": "9926670cdd65c9ef96cc68e8cd88f53e"
+    },
+    "man/set_y_axis_autoset_done.Rd": {
+      "checksum": "a4746045ab6b0534f9455dfd8df8e244"
     },
     "man/setup_analytics_consent.Rd": {
       "checksum": "1d3e1096f531534459a92cb7c3cbd9ef"
@@ -23803,6 +24629,9 @@
     "man/suggest_chart_type.Rd": {
       "checksum": "fb0eb9c36eb14302ac7d637baeba61b9"
     },
+    "man/sync_logs_to_github.Rd": {
+      "checksum": "873321b4b4f2d6711fa328c2f89ec259"
+    },
     "man/sync_ui_with_columns_unified.Rd": {
       "checksum": "2eb52fe01ab535c08884fbc650b2b4a3"
     },
@@ -23811,6 +24640,12 @@
     },
     "man/TEST_MODE_CONFIG.Rd": {
       "checksum": "ebc14b402491f8faf9b4ff6d9fff4043"
+    },
+    "man/TIME_BREAK_CANDIDATES.Rd": {
+      "checksum": "2632f812c59a6b3f5cca5f5b27e2b523"
+    },
+    "man/time_breaks.Rd": {
+      "checksum": "ad0656453a72b5ea8f2c6fff3ed27083"
     },
     "man/to_internal_scale.Rd": {
       "checksum": "e0c0314ee955d96b5efdf94e749e339a"
@@ -23847,6 +24682,9 @@
     },
     "man/update_column_choices_unified.Rd": {
       "checksum": "e9ac9331295b81d428e621c8a421591a"
+    },
+    "man/update_column_mapping.Rd": {
+      "checksum": "f81428c83562215bb2579588c1390a5d"
     },
     "man/UPLOAD_LIMITS.Rd": {
       "checksum": "040e3b2d73b684cd8e33482fb92c34b0"
@@ -23894,7 +24732,7 @@
       "checksum": "522ef862ef0b11455d76be3adcec1592"
     },
     "man/validate_file_extension.Rd": {
-      "checksum": "0787a9f461759b75e1d81084c2ad4c87"
+      "checksum": "58e4ddf5e8e7448caed03b2ca189257b"
     },
     "man/validate_plot_context.Rd": {
       "checksum": "a41cf5c2307bca616a0ba2852d9c3e90"
@@ -23939,22 +24777,10 @@
       "checksum": "dc1693229c42f8ba5e0c8995632dac22"
     },
     "NEWS.md": {
-      "checksum": "6501d3e3b02b45e1bc63e7c942710712"
+      "checksum": "8ca1f3928c066bf48e40f3b929102610"
     },
     "openspec/AGENTS.md": {
       "checksum": "ceb7dbf3c9045c618761dc4efd61e189"
-    },
-    "openspec/changes/add-session-persistence-autosave/design.md": {
-      "checksum": "29c96828447cf8f8e28f3ed3d203d410"
-    },
-    "openspec/changes/add-session-persistence-autosave/proposal.md": {
-      "checksum": "b9de3999a17c6a847d3034170a286b9a"
-    },
-    "openspec/changes/add-session-persistence-autosave/specs/session-persistence/spec.md": {
-      "checksum": "bb3095e8972b1327fa01aaa90c9fd80c"
-    },
-    "openspec/changes/add-session-persistence-autosave/tasks.md": {
-      "checksum": "a6b3b42edc26e094a145add65ff41081"
     },
     "openspec/changes/archive/2025-12-01-fix-centerline-label-rounding/proposal.md": {
       "checksum": "8b40ea293ef46ff56d0b960254fb5f73"
@@ -23998,44 +24824,89 @@
     "openspec/changes/archive/2025-12-02-extract-ai-to-bfhllm/tasks.md": {
       "checksum": "3b1df05bcfb589b92458ecd9c326d77d"
     },
-    "openspec/changes/refactor-code-quality/design.md": {
+    "openspec/changes/archive/2026-04-18-add-session-persistence-autosave/design.md": {
+      "checksum": "29c96828447cf8f8e28f3ed3d203d410"
+    },
+    "openspec/changes/archive/2026-04-18-add-session-persistence-autosave/proposal.md": {
+      "checksum": "b9de3999a17c6a847d3034170a286b9a"
+    },
+    "openspec/changes/archive/2026-04-18-add-session-persistence-autosave/specs/session-persistence/spec.md": {
+      "checksum": "bb3095e8972b1327fa01aaa90c9fd80c"
+    },
+    "openspec/changes/archive/2026-04-18-add-session-persistence-autosave/tasks.md": {
+      "checksum": "a6b3b42edc26e094a145add65ff41081"
+    },
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/design.md": {
       "checksum": "a6a3a8e09995c104ca50ce06a911487e"
     },
-    "openspec/changes/refactor-code-quality/proposal.md": {
-      "checksum": "455b1e63e5f88f474f41bc9720753205"
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/proposal.md": {
+      "checksum": "7fc8d1e792922188d5f0f71f9b464bcb"
     },
-    "openspec/changes/refactor-code-quality/specs/code-organization/spec.md": {
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/specs/code-organization/spec.md": {
       "checksum": "731387c1558d44fc1158fd2bd5b7bf33"
     },
-    "openspec/changes/refactor-code-quality/specs/configuration-management/spec.md": {
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/specs/configuration-management/spec.md": {
       "checksum": "8153bc25855a62ea37d73fe13737957b"
     },
-    "openspec/changes/refactor-code-quality/specs/test-infrastructure/spec.md": {
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/specs/test-infrastructure/spec.md": {
       "checksum": "20be9108e568cbb7815ae465a74857fd"
     },
-    "openspec/changes/refactor-code-quality/tasks.md": {
-      "checksum": "4e784dd4c23ed5189e0ef7cb3f5992ce"
+    "openspec/changes/archive/2026-04-18-refactor-code-quality/tasks.md": {
+      "checksum": "76148c0a6e419bf00911605ad663b19d"
     },
-    "openspec/changes/refactor-viewport-emit-optimization/proposal.md": {
+    "openspec/changes/archive/2026-04-18-refactor-viewport-emit-optimization/proposal.md": {
       "checksum": "048d27f003d7e3d01e9bf4167fc22ccb"
     },
-    "openspec/changes/refactor-viewport-emit-optimization/specs/spc-visualization/spec.md": {
+    "openspec/changes/archive/2026-04-18-refactor-viewport-emit-optimization/specs/spc-visualization/spec.md": {
       "checksum": "01b38d1933e0f63551a8d9decd67f770"
     },
-    "openspec/changes/refactor-viewport-emit-optimization/tasks.md": {
+    "openspec/changes/archive/2026-04-18-refactor-viewport-emit-optimization/tasks.md": {
       "checksum": "ab0843525c4db144832cd1e4ce3283b0"
     },
-    "openspec/changes/remove-legacy-dead-code/proposal.md": {
+    "openspec/changes/archive/2026-04-18-remove-legacy-dead-code/proposal.md": {
       "checksum": "fa4431c1f235bb501579584d9d5f6919"
     },
-    "openspec/changes/remove-legacy-dead-code/specs/code-hygiene/spec.md": {
+    "openspec/changes/archive/2026-04-18-remove-legacy-dead-code/specs/code-hygiene/spec.md": {
       "checksum": "72bf88c202d6f4c1860bde6b4fcec181"
     },
-    "openspec/changes/remove-legacy-dead-code/tasks.md": {
+    "openspec/changes/archive/2026-04-18-remove-legacy-dead-code/tasks.md": {
       "checksum": "d764bc23ff5390c3b564f1a07eba67c9"
     },
+    "openspec/changes/archive/2026-04-18-unblock-publish-test-gate/design.md": {
+      "checksum": "b3a7f0eec27bf880bf68d1b2794c2f78"
+    },
+    "openspec/changes/archive/2026-04-18-unblock-publish-test-gate/FOLLOW_UP.md": {
+      "checksum": "ae8d293c4bec6365541fddd959050d71"
+    },
+    "openspec/changes/archive/2026-04-18-unblock-publish-test-gate/proposal.md": {
+      "checksum": "32b098e99e31da15fbf644060e666d39"
+    },
+    "openspec/changes/archive/2026-04-18-unblock-publish-test-gate/specs/test-infrastructure/spec.md": {
+      "checksum": "5362324153b3b6337af0247e707f0e05"
+    },
+    "openspec/changes/archive/2026-04-18-unblock-publish-test-gate/tasks.md": {
+      "checksum": "a70efbe6971787a89f9f61648a97d5c5"
+    },
+    "openspec/changes/archive/2026-04-19-harden-test-suite-regression-gate/design.md": {
+      "checksum": "d2258dc613c79f12ec5b3c03517dc7e9"
+    },
+    "openspec/changes/archive/2026-04-19-harden-test-suite-regression-gate/proposal.md": {
+      "checksum": "69f3873c9d01532f1dc72dd1b9ceb8eb"
+    },
+    "openspec/changes/archive/2026-04-19-harden-test-suite-regression-gate/specs/test-infrastructure/spec.md": {
+      "checksum": "3b64d20c4ea487486828893fd7e759c4"
+    },
+    "openspec/changes/archive/2026-04-19-harden-test-suite-regression-gate/tasks.md": {
+      "checksum": "5b344d67945ffe6a2a8d3994a9573729"
+    },
     "openspec/project.md": {
-      "checksum": "4fab2c9bb76baf8bd3b6e0fcd9586350"
+      "checksum": "c66739acd89fb4d21d7212289a878570"
+    },
+    "openspec/specs/session-persistence/spec.md": {
+      "checksum": "d7752b8e8003eabc1b9b996d0fb9b708"
+    },
+    "openspec/specs/test-infrastructure/spec.md": {
+      "checksum": "e4a385283ad9a26f0c4c9d70c840eb7c"
     },
     "R/app_initialization.R": {
       "checksum": "f071cbff6c30d7b79c7441f65ea78642"
@@ -24083,7 +24954,7 @@
       "checksum": "36e24571f3adbb2284bcad031c67c0a4"
     },
     "R/config_spc_config.R": {
-      "checksum": "0477ad972876f8c1e207ffe728320c7f"
+      "checksum": "e4c0879eb52c7ba4d359528de254ec97"
     },
     "R/config_system_config.R": {
       "checksum": "0ad4bc77729def053948a348bca5788c"
@@ -24113,7 +24984,7 @@
       "checksum": "61f7515650060b84856697a1b972b394"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "f1871a43179d65ae126df062256a116a"
+      "checksum": "78f1d16af45a488309dc4f5b92b41cb5"
     },
     "R/fct_spc_bfh_invocation.R": {
       "checksum": "f063f732a7587ac6e5d72340c0473db7"
@@ -24200,22 +25071,22 @@
       "checksum": "16c5d785182c487474fca6a430741b7d"
     },
     "R/state_management.R": {
-      "checksum": "5894c918cbab34f405e888ec2c251c0f"
+      "checksum": "126dc28531c65983b73af949090a5d06"
     },
     "R/ui_app_ui.R": {
       "checksum": "bf5770198e31a450a94add3a13f5930b"
     },
     "R/utils_advanced_debug.R": {
-      "checksum": "b58eab3f78fed2b6668eb798d4707935"
+      "checksum": "7ad6be395fbd484cd0c658ec24ccb10f"
     },
     "R/utils_analytics_consent.R": {
-      "checksum": "8c845ee48abc992b72e1f15844cdedce"
+      "checksum": "6771090724c0ee03e657f058bf4f5b1f"
     },
     "R/utils_analytics_github.R": {
       "checksum": "1ce9185710a53f17fd87b03b57ebcf34"
     },
     "R/utils_analytics_pins.R": {
-      "checksum": "cb0322738957afee0a74dc62144e6c92"
+      "checksum": "e54825d66530c6ec84f82e22ed3e6b01"
     },
     "R/utils_anhoej_results.R": {
       "checksum": "135a3f83977281974bac557346f6d0ae"
@@ -24236,7 +25107,7 @@
       "checksum": "cb131c06a8f3d5db9240f44782fc4dc5"
     },
     "R/utils_error_handling.R": {
-      "checksum": "836108c23719606a98f3cf4b8b890e3e"
+      "checksum": "7117e3b01a8d3278d9999b6cad0d8a6b"
     },
     "R/utils_event_context_handlers.R": {
       "checksum": "76cb8baa2f41f5b829b4e41f731ded9d"
@@ -24254,19 +25125,19 @@
       "checksum": "2b5cc9bd95bbf738fb8ec777bcd416f1"
     },
     "R/utils_input_sanitization.R": {
-      "checksum": "b87c0a328e393aed1f56dd8694d2a1e8"
+      "checksum": "2aa049bf3c63e9ab8792080aa6ab02a9"
     },
     "R/utils_label_formatting.R": {
-      "checksum": "832d7e15012b8e0962d2d63b11b092f7"
+      "checksum": "a71213937724617d152a62ede06ff957"
     },
     "R/utils_lazy_loading.R": {
       "checksum": "feb73229e9a65b27f110b01f220268f2"
     },
     "R/utils_local_storage.R": {
-      "checksum": "7a492b5b83c1aac032d41fba443be5f7"
+      "checksum": "06af810ea7a8634f61ab2e1d6976ea23"
     },
     "R/utils_logging.R": {
-      "checksum": "49c61aa3f23ad741a3e22df9bb003482"
+      "checksum": "bf613be58f568f9712d1e553131a8105"
     },
     "R/utils_memory_management.R": {
       "checksum": "38183779e1ea8858eb1a147fcb6d8c6a"
@@ -24275,7 +25146,7 @@
       "checksum": "b99ffea3e15ed45ff818b722d80b4ad7"
     },
     "R/utils_performance_caching.R": {
-      "checksum": "1c3ecbcb23b5fdbbddf4b71921326610"
+      "checksum": "83e670ebe8b1b6bebec636380ffad804"
     },
     "R/utils_performance_monitoring.R": {
       "checksum": "9c9594288167cd3f9de0cd55ca6e8dbd"
@@ -24302,7 +25173,7 @@
       "checksum": "27f6f4e44bddc8065d79ead288028383"
     },
     "R/utils_server_column_input.R": {
-      "checksum": "9b5ddd2d6e7d6e2d1e3af627dbf00744"
+      "checksum": "7248e60cc82116d5c1a29050784d15e5"
     },
     "R/utils_server_column_management.R": {
       "checksum": "a7d9b1d5123dee0b3f570fda78be5a2c"
@@ -24314,7 +25185,7 @@
       "checksum": "e504a3273934d8218a0c10eb7ee11eb8"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "fc37267026109f6b5eb6bf2c500a0171"
+      "checksum": "2f6411f5922a02f99bb2f1d709fa04ea"
     },
     "R/utils_server_events_data.R": {
       "checksum": "1e2c569e53b43875953f363475111961"
@@ -24341,7 +25212,7 @@
       "checksum": "4d6eed05424abd405b259b4c89e55eed"
     },
     "R/utils_server_server_management.R": {
-      "checksum": "27db7a0ba3b78eb4cc89b623a4e97050"
+      "checksum": "259cecc4b4e135e79f9d7e39071762e6"
     },
     "R/utils_server_session_helpers.R": {
       "checksum": "753344320a22a2feae942826b2121c52"
@@ -24365,13 +25236,19 @@
       "checksum": "95cb062ae0610cff513bdf41c6d6adea"
     },
     "R/utils_state_accessors.R": {
-      "checksum": "819dfa669f8f36a80e57c46ab78e4b27"
+      "checksum": "59addf2fb44b0e05e288437324a7b107"
+    },
+    "R/utils_time_formatting.R": {
+      "checksum": "8e8378e9549f2e00b3ebc9864a0f95bf"
+    },
+    "R/utils_time_parsing.R": {
+      "checksum": "eaacc4690858a017265777459daed8da"
     },
     "R/utils_ui_column_sync.R": {
       "checksum": "a3d0e6c5f72a408124c786becc7f88b8"
     },
     "R/utils_ui_ui_helpers.R": {
-      "checksum": "c2fb90f148817131338112a43f2973df"
+      "checksum": "c429daad755d5fd36baa7594e3e597bd"
     },
     "R/utils_ui_ui_updates.R": {
       "checksum": "559c0d8bc600b26d8c961be91c1c6b9f"
@@ -24380,13 +25257,13 @@
       "checksum": "b32d7aa699f03a96986b07b749fd06b0"
     },
     "R/utils_y_axis_formatting.R": {
-      "checksum": "ad8e12b45615dba853a93f88f7b733c7"
+      "checksum": "c684f1a3ca484ebe9e5f27fb2baee2b8"
     },
     "R/utils_y_axis_model.R": {
-      "checksum": "bccae0d93348ad69bd06ca3148d25f9a"
+      "checksum": "641d48e5d8520de6733a161bbf662666"
     },
     "R/utils_y_axis_scaling.R": {
-      "checksum": "49d609b8cfbb07ef66a3394053e72c06"
+      "checksum": "470e7d837eeb8ab5306ced47fb12f55c"
     },
     "R/zzz.R": {
       "checksum": "37f52804212717a6294dfed997111b43"
@@ -24397,11 +25274,77 @@
     "Rplots.pdf": {
       "checksum": "701f92c1cfccfe01a20a98eff8419463"
     },
+    "tests/_archive/testthat-legacy/README.md": {
+      "checksum": "05c2a46ed4feac11b366f5346455be7b"
+    },
+    "tests/_archive/testthat-legacy/test-device-batching.R": {
+      "checksum": "85c03cb548389f682f58195b025a7fc9"
+    },
+    "tests/_archive/testthat-legacy/test-device-size-consistency.R": {
+      "checksum": "729727c9219dc867157b632653e96fd7"
+    },
+    "tests/_archive/testthat-legacy/test-fase1-refactoring.R": {
+      "checksum": "7a7d355e570c509d1ef7f0be825b1746"
+    },
+    "tests/_archive/testthat-legacy/test-fase2-reactive-chains.R": {
+      "checksum": "cbd95a162ba7b443daf6c86d2a9f9db5"
+    },
+    "tests/_archive/testthat-legacy/test-fase3-event-driven-state-machine.R": {
+      "checksum": "4b3259ef917c238ec7dae0497305de12"
+    },
+    "tests/_archive/testthat-legacy/test-fase4-intelligent-heuristics.R": {
+      "checksum": "7046b688c96211320f26bbee79963853"
+    },
+    "tests/_archive/testthat-legacy/test-phase0-cache-isolation.R": {
+      "checksum": "d16263996df536f6939207a4b4e99f90"
+    },
+    "tests/_archive/testthat-legacy/test-phase1-first-run-effect.R": {
+      "checksum": "8bc65f7d0a99d5f6b3815e7603f7f733"
+    },
+    "tests/_archive/testthat-legacy/test-phase1-grob-measurement-stability.R": {
+      "checksum": "7600e0b27fa0ca9a18240e13960357e6"
+    },
+    "tests/_archive/testthat-legacy/test-phase1-qic-reproducibility.R": {
+      "checksum": "01a2d283244c10c2568c1b0204c01782"
+    },
+    "tests/_archive/testthat-legacy/test-phase2-device-size-matrix.R": {
+      "checksum": "a1d59a925a184bdf0634bfa2c958d1b2"
+    },
+    "tests/_archive/testthat-legacy/test-phase3-test-mode-optimization.R": {
+      "checksum": "382ee705f1b6a432147f043697f7df9e"
+    },
+    "tests/_archive/testthat-legacy/test-qic-cache-metrics.R": {
+      "checksum": "0fc31fc8dfddb9229fdc18dda7712257"
+    },
+    "tests/_archive/testthat-legacy/test-qic-cache-smart-invalidation.R": {
+      "checksum": "e9724141de7809512b64a125aec9dec0"
+    },
+    "tests/_archive/testthat-legacy/test-qic-calculations.R": {
+      "checksum": "2922002186787d8c1e243c2b04fd78cd"
+    },
+    "tests/_archive/testthat-legacy/test-qic-docall-nse-fix.R": {
+      "checksum": "81f3a2fdbbdb92883e97f8c1f074f824"
+    },
+    "tests/_archive/testthat-legacy/test-qic-preparation-sprint1.R": {
+      "checksum": "d12877c5e64fd2c54e0ac7e1ff733b7e"
+    },
+    "tests/_archive/testthat-legacy/test-qicharts2-integration.R": {
+      "checksum": "25ead644117284df9bd2247756dd872b"
+    },
     "tests/coverage.R": {
-      "checksum": "e6932ece460712b94e7e6557e9422a99"
+      "checksum": "ff56ff428d4447e06b57175da0d9ddb8"
     },
     "tests/E2E_TESTING_GUIDE.md": {
       "checksum": "451449b420dad57f0b95d455d51c705f"
+    },
+    "tests/e2e/run_e2e.R": {
+      "checksum": "ee6e7c6a6d0561e9fa683f7d51ff2da1"
+    },
+    "tests/e2e/setup.R": {
+      "checksum": "b266e6b524dd2f6dfce21d0f41ae5967"
+    },
+    "tests/e2e/test-e2e-app-launches.R": {
+      "checksum": "2148368ec22d3a4d0f8934a3910ae0ac"
     },
     "tests/integration/README.md": {
       "checksum": "2b610a7949e5d8580648d559a63e925e"
@@ -24442,6 +25385,15 @@
     "tests/manual-test-data/run_i_chart.csv": {
       "checksum": "1635b0a1561b918bdfb94011ae00dfd4"
     },
+    "tests/manual-test-data/time_days.csv": {
+      "checksum": "ec1ea436296272aac115509d84063eae"
+    },
+    "tests/manual-test-data/time_hours.csv": {
+      "checksum": "8ed17a0c835b4c1c74734a63f0902926"
+    },
+    "tests/manual-test-data/time_minutes.csv": {
+      "checksum": "044e648afcb70f7bf562f6b1230503ff"
+    },
     "tests/manual/benchmark_qic_cache.R": {
       "checksum": "80a68b4d4e34b331197eb74a364dcd21"
     },
@@ -24467,7 +25419,7 @@
       "checksum": "691a86408e631ac12a671903c3fd1f99"
     },
     "tests/performance/test_data_load_performance.R": {
-      "checksum": "a4080ab69bbc048c3ce6a500d44e2cf3"
+      "checksum": "c09c61b11863615ad1a183f0a0e91e02"
     },
     "tests/performance/test_startup_performance.R": {
       "checksum": "70f8b7f959ceead10100dd07ce6d78db"
@@ -24524,19 +25476,22 @@
       "checksum": "0327bc5789ccc544db6a617520bc55a2"
     },
     "tests/README.md": {
-      "checksum": "5b09fcfbc751cea5b844eb05ec5efb39"
+      "checksum": "7667abb1d8e79dab0c70fe9b71c447f2"
     },
     "tests/run_all_tests.R": {
-      "checksum": "bf0f91f711559f358859b61d7800e112"
+      "checksum": "a81b0056259bfdf28826a1e79122af57"
+    },
+    "tests/run_canonical.R": {
+      "checksum": "abb14a4f3a9796f24393cd49e193c943"
     },
     "tests/run_integration_tests.R": {
-      "checksum": "b823e2b1de33e41062f4c7354c74a71f"
+      "checksum": "beccf84ced383f7e48ca84ec48da0695"
     },
     "tests/run_performance_tests.R": {
-      "checksum": "91c49b53b8f2524a3dfa38a69f0ec7e3"
+      "checksum": "be4ed6b2c18cb028e981069332d908c5"
     },
     "tests/run_unit_tests.R": {
-      "checksum": "9e052f037f5191534479c80c44f4162a"
+      "checksum": "0de8d1f3dae4f3a7bd3afb924a7b68df"
     },
     "tests/TEST_SUITE_OVERVIEW.md": {
       "checksum": "7dafdf0cb1798cfc436bc06f148332e9"
@@ -24547,125 +25502,20 @@
     "tests/testthat.R": {
       "checksum": "1e671c7bbeb4daefa18fff7fd518344a"
     },
-    "tests/testthat/_problems/test-100x-mismatch-prevention-199.R": {
-      "checksum": "092c5be85088073157bb6ec34a3eea37"
+    "tests/testthat/fixtures/cache_signature_10000.rds": {
+      "checksum": "48ef07e4befa58d69ee51451a8e8d65e"
     },
-    "tests/testthat/_problems/test-100x-mismatch-prevention-200.R": {
-      "checksum": "578830dabdbc5e7ea03f3a10492e5a4a"
-    },
-    "tests/testthat/_problems/test-100x-mismatch-prevention-201.R": {
-      "checksum": "7f76f1173536d7d1f5be4612a6331dc7"
-    },
-    "tests/testthat/_problems/test-100x-mismatch-prevention-250.R": {
-      "checksum": "33fbb825986d0f74857bbc501d39c005"
-    },
-    "tests/testthat/_problems/test-100x-mismatch-prevention-285.R": {
-      "checksum": "eec0dda2633450acbfed8bf2d2f15785"
-    },
-    "tests/testthat/_problems/test-config_export-236.R": {
-      "checksum": "e0efdfd6f8911f054d5187eef5bb8e66"
-    },
-    "tests/testthat/_problems/test-config_export-238.R": {
-      "checksum": "dd69f72052ef86d7688859dfe187e12f"
-    },
-    "tests/testthat/_problems/test-config_export-257.R": {
-      "checksum": "480683b8624f37af9e69e6a7c5287835"
-    },
-    "tests/testthat/_problems/test-config_export-268.R": {
-      "checksum": "79c95277f9ef9616ab7775f3b5c36a4f"
-    },
-    "tests/testthat/_problems/test-config_export-270.R": {
-      "checksum": "e8be40713c381640256e5c08a7ab9b1e"
-    },
-    "tests/testthat/_problems/test-config_export-447.R": {
-      "checksum": "9126daf6cd4bfcf97909cfd533a8ad1d"
-    },
-    "tests/testthat/_problems/test-config_export-457.R": {
-      "checksum": "fa9da05a93ccd8b59774b3ea8cac779c"
-    },
-    "tests/testthat/_problems/test-event-system-emit-186.R": {
-      "checksum": "1efa59927e3518eda38f7b02e4c56adc"
-    },
-    "tests/testthat/_problems/test-event-system-emit-187.R": {
-      "checksum": "d7aa2d585033b9c751b06c19f7085342"
-    },
-    "tests/testthat/_problems/test-event-system-emit-197.R": {
-      "checksum": "0d229ad9aa4b9a91b8ed0432da05228d"
-    },
-    "tests/testthat/_problems/test-event-system-emit-198.R": {
-      "checksum": "e0c9088cd9153959b2752955e849bec5"
-    },
-    "tests/testthat/_problems/test-event-system-emit-235.R": {
-      "checksum": "f2889d36338c9e7c3b1fcfb0462a9290"
-    },
-    "tests/testthat/_problems/test-event-system-emit-236.R": {
-      "checksum": "5c0e8d3b84ee645b9475cad14bd836f9"
-    },
-    "tests/testthat/_problems/test-event-system-emit-33.R": {
-      "checksum": "a22e07b53de18a949f871e8a5d570e4c"
-    },
-    "tests/testthat/_problems/test-mod_export-71.R": {
-      "checksum": "654d021ba54d1dcf9fd1e7f84e884f9f"
-    },
-    "tests/testthat/archived/README.md": {
-      "checksum": "906b96bef76d11c8aa3d8bd731aeeced"
-    },
-    "tests/testthat/archived/test-device-batching.R": {
-      "checksum": "85c03cb548389f682f58195b025a7fc9"
-    },
-    "tests/testthat/archived/test-device-size-consistency.R": {
-      "checksum": "729727c9219dc867157b632653e96fd7"
-    },
-    "tests/testthat/archived/test-fase1-refactoring.R": {
-      "checksum": "7a7d355e570c509d1ef7f0be825b1746"
-    },
-    "tests/testthat/archived/test-fase2-reactive-chains.R": {
-      "checksum": "cbd95a162ba7b443daf6c86d2a9f9db5"
-    },
-    "tests/testthat/archived/test-fase3-event-driven-state-machine.R": {
-      "checksum": "4b3259ef917c238ec7dae0497305de12"
-    },
-    "tests/testthat/archived/test-fase4-intelligent-heuristics.R": {
-      "checksum": "7046b688c96211320f26bbee79963853"
-    },
-    "tests/testthat/archived/test-phase0-cache-isolation.R": {
-      "checksum": "d16263996df536f6939207a4b4e99f90"
-    },
-    "tests/testthat/archived/test-phase1-first-run-effect.R": {
-      "checksum": "8bc65f7d0a99d5f6b3815e7603f7f733"
-    },
-    "tests/testthat/archived/test-phase1-grob-measurement-stability.R": {
-      "checksum": "7600e0b27fa0ca9a18240e13960357e6"
-    },
-    "tests/testthat/archived/test-phase1-qic-reproducibility.R": {
-      "checksum": "01a2d283244c10c2568c1b0204c01782"
-    },
-    "tests/testthat/archived/test-phase2-device-size-matrix.R": {
-      "checksum": "a1d59a925a184bdf0634bfa2c958d1b2"
-    },
-    "tests/testthat/archived/test-phase3-test-mode-optimization.R": {
-      "checksum": "382ee705f1b6a432147f043697f7df9e"
-    },
-    "tests/testthat/archived/test-qic-cache-metrics.R": {
-      "checksum": "0fc31fc8dfddb9229fdc18dda7712257"
-    },
-    "tests/testthat/archived/test-qic-cache-smart-invalidation.R": {
-      "checksum": "e9724141de7809512b64a125aec9dec0"
-    },
-    "tests/testthat/archived/test-qic-calculations.R": {
-      "checksum": "2922002186787d8c1e243c2b04fd78cd"
-    },
-    "tests/testthat/archived/test-qic-docall-nse-fix.R": {
-      "checksum": "81f3a2fdbbdb92883e97f8c1f074f824"
-    },
-    "tests/testthat/archived/test-qic-preparation-sprint1.R": {
-      "checksum": "d12877c5e64fd2c54e0ac7e1ff733b7e"
-    },
-    "tests/testthat/archived/test-qicharts2-integration.R": {
-      "checksum": "25ead644117284df9bd2247756dd872b"
+    "tests/testthat/fixtures/create_large_test_data.R": {
+      "checksum": "a50423f665b28c84175fb3f43c0febd8"
     },
     "tests/testthat/fixtures/create_sample_spc_result.R": {
       "checksum": "1c503408a1899a3f07e126999dcd7b33"
+    },
+    "tests/testthat/fixtures/large_numeric_1000.rds": {
+      "checksum": "a1dc8ebacea0ee9f3bf4ae220a441ecb"
+    },
+    "tests/testthat/fixtures/large_spc_500.rds": {
+      "checksum": "7ebd00ee4aef291e5ce244f191130fa6"
     },
     "tests/testthat/fixtures/qic-baseline/c-anhoej.rds": {
       "checksum": "4a6135fc903a45b9668a5ee3859ac558"
@@ -24736,11 +25586,20 @@
     "tests/testthat/fixtures/qic-baseline/xbar-freeze.rds": {
       "checksum": "7a27ce32c785e8e81fb2aaa26b4b801d"
     },
+    "tests/testthat/fixtures/README.md": {
+      "checksum": "82f7ebe208a04e5a9c2cbe89853d70f4"
+    },
     "tests/testthat/fixtures/sample_spc_result.rds": {
       "checksum": "1f6d0c9908ba7bfbf2aaa969730cffc5"
     },
-    "tests/testthat/helper.R": {
-      "checksum": "e70d694c08ae8ee0dbb3f4b62b1efacf"
+    "tests/testthat/helper-bootstrap.R": {
+      "checksum": "3e07aff06144dc2f9dea93565ac237e2"
+    },
+    "tests/testthat/helper-fixtures.R": {
+      "checksum": "5285d88bfaabee17e6dc143d0ff2c2da"
+    },
+    "tests/testthat/helper-mocks.R": {
+      "checksum": "ab2dd70c6ba127b8f8c8f36ebcb71327"
     },
     "tests/testthat/logs/shinylogs_SPC_Analysis_Tool_1758572034819402933.json": {
       "checksum": "103fe5d7274de885302b1627c36600c5"
@@ -24800,52 +25659,52 @@
       "checksum": "53096f0dbca4ae357668f69cccfbe749"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "2ae3a6d5cfb9500d869ec6bb8cf0379e"
+      "checksum": "49a65a3b8d78d292e5e44a31aeba9abd"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
       "checksum": "5b5377680c8912b7973824466bf25f8f"
     },
     "tests/testthat/test-anhoej-metadata-local.R": {
-      "checksum": "cadbd8a8aa3fb13f3e2e90849cf7feeb"
+      "checksum": "86749e1ed77b4941289095760caad8e9"
     },
     "tests/testthat/test-anhoej-rules.R": {
-      "checksum": "8e238f811ac8c52ed9530c5f7bbfb44a"
-    },
-    "tests/testthat/test-app-basic.R": {
-      "checksum": "92e8def3b347b4ff501e352a23e8b057"
+      "checksum": "54a451da381e4dab2ee033ea53058530"
     },
     "tests/testthat/test-app-initialization.R": {
       "checksum": "fe38aa3d575b0834290f8b727a26baee"
+    },
+    "tests/testthat/test-audit-classifier.R": {
+      "checksum": "e0d2825579a194d47ce144056f9e78cd"
     },
     "tests/testthat/test-autodetect-tidyverse-integration.R": {
       "checksum": "70a50afc08ff7cc2b2a033ee23545eba"
     },
     "tests/testthat/test-autodetect-unified-comprehensive.R": {
-      "checksum": "71aae8e6b30981110c319448ad9d69c3"
+      "checksum": "8c7e4fa09126cbc5282704c77ebdfe08"
     },
     "tests/testthat/test-bfh-error-handling.R": {
-      "checksum": "31398a573f540d43d07a1599d9bbc69d"
+      "checksum": "0b05c366b27f14b234030daa54fa90f8"
     },
     "tests/testthat/test-bfh-module-integration.R": {
-      "checksum": "8f9d444aa9919f5719db4e7b15f9753f"
+      "checksum": "156d50e9b0256f64a8a2825191667ea6"
     },
     "tests/testthat/test-bfhcharts-integration.R": {
-      "checksum": "22ebe58a9dc8d27cfc61c305a77123d2"
+      "checksum": "065592576c3b382e94d83b5c092199f2"
     },
     "tests/testthat/test-branding-globals.R": {
-      "checksum": "d6dd61481a5713adf0cfeb6bf0f35c54"
+      "checksum": "71c76755c7220d96555f3ca419723013"
     },
     "tests/testthat/test-cache-collision-fix.R": {
-      "checksum": "a87a40db530d3fe149bf67c92699553b"
+      "checksum": "8049fe6524ae52908eefdaef1bd48be6"
     },
     "tests/testthat/test-cache-data-signature-bugs.R": {
-      "checksum": "232b29105ce69eb00b78b356ee550f44"
+      "checksum": "d6c7e457c63f4100dd53dd48cbce0c31"
     },
     "tests/testthat/test-cache-invalidation-sprint3.R": {
-      "checksum": "3f87addf286268320a0d849679b2858d"
+      "checksum": "f8be9e4019e70928982f7328c2d2fc37"
     },
     "tests/testthat/test-cache-reactive-lazy-evaluation.R": {
-      "checksum": "23f37997119edcd1892a5e9e2e577861"
+      "checksum": "297c788b9fd644b4fe930ae8a0ae868c"
     },
     "tests/testthat/test-centerline-handling.R": {
       "checksum": "07b2f7f3dfb15c1bfee177ec51133e60"
@@ -24854,7 +25713,7 @@
       "checksum": "4d915764ad9b3707f256e8b2f09f9af6"
     },
     "tests/testthat/test-column-observer-consolidation.R": {
-      "checksum": "1c4af76bac22f90a5d4902e8b5162670"
+      "checksum": "751a13008dcb2a416ae212dc6b4bebd0"
     },
     "tests/testthat/test-comment-row-mapping.R": {
       "checksum": "25067f720024e54754aa39abeb13b946"
@@ -24866,10 +25725,10 @@
       "checksum": "5b51712b768e9f05a98d009dc7bcfc1a"
     },
     "tests/testthat/test-config_chart_types.R": {
-      "checksum": "ed1cd5200ab16f7020dba476d05720c9"
+      "checksum": "79f37f3151b1cf446e6b69c9285336df"
     },
     "tests/testthat/test-config_export.R": {
-      "checksum": "cc855ddf44555d34c936c455440078b3"
+      "checksum": "8460f2d5a2856d7a01f05f416067e314"
     },
     "tests/testthat/test-config-performance-getters.R": {
       "checksum": "94013c961d9340b5a457955eb3825abe"
@@ -24877,23 +25736,20 @@
     "tests/testthat/test-config-ui-getters.R": {
       "checksum": "793908376dfc954b35dd9d0fd7f529a5"
     },
-    "tests/testthat/test-constants-architecture.R": {
-      "checksum": "fbe3e447d61e70e2a3761f3f6e9697e2"
-    },
     "tests/testthat/test-context-aware-plots.R": {
-      "checksum": "51808ae481aba91429102e4aaa14c78e"
+      "checksum": "cdfb38252cacdf640b2082e3d545e2a1"
     },
     "tests/testthat/test-critical-fixes-integration.R": {
-      "checksum": "8f8599f15d3c574710f3e823272328f1"
+      "checksum": "51c92f5c223c76f3a44c5644ed9c9c9b"
     },
     "tests/testthat/test-critical-fixes-regression.R": {
-      "checksum": "f6e2b103eb0dfb87a44cc6407d7f08d8"
+      "checksum": "8cb1290ca7b38dc2cd47520ca11abfed"
     },
     "tests/testthat/test-critical-fixes-security.R": {
-      "checksum": "7960a8cdf8d8e1cb971d6ee43ecffdd3"
+      "checksum": "81b885a993ce19742f91a264d4f05c8b"
     },
     "tests/testthat/test-cross-component-reactive.R": {
-      "checksum": "9785c1b89b73ca1aef4a1c9dfd59059a"
+      "checksum": "d30b27553c42b64160c8ff83967e9ea6"
     },
     "tests/testthat/test-csv-parsing.R": {
       "checksum": "b6131d2d0293bb5d37b15001ed444d59"
@@ -24905,85 +25761,91 @@
       "checksum": "65e41f2437ff7245e3ccec66117b7d52"
     },
     "tests/testthat/test-data-validation.R": {
-      "checksum": "f5799a16425fd837e98190a46b9f8ed2"
+      "checksum": "f29b3997fcdc5d41951a03416669c74f"
     },
     "tests/testthat/test-debug-context-filtering.R": {
       "checksum": "914c8c6150aacfa0363c1c0c90b3e014"
     },
     "tests/testthat/test-denominator-field-toggle.R": {
-      "checksum": "d4d9b0bb143f002339420a8db17428b1"
+      "checksum": "c8adfb2f299a13be3e0da6b202cd7439"
     },
     "tests/testthat/test-dependency-namespace.R": {
       "checksum": "77fd1898ee39ed32224ad5deda5cb643"
     },
     "tests/testthat/test-e2e-user-workflows.R": {
-      "checksum": "5c50796e1998b251c5a182ff2cf177e2"
+      "checksum": "94307c11f7b2f6e6a3f530b3745d455a"
     },
     "tests/testthat/test-e2e-workflows.R": {
-      "checksum": "2cf4348578ce966b9b41444adf3eff0f"
+      "checksum": "7c6a2ff3bead1b657f214cc31ea52f69"
     },
     "tests/testthat/test-edge-cases-comprehensive.R": {
-      "checksum": "88bbbeaed128a0e75a37387aa11a2950"
+      "checksum": "5f6c394b1cfdc4ded36abc0fe7085952"
     },
     "tests/testthat/test-error-handling.R": {
       "checksum": "3684ef4f2bca3bff530c225ae848a7c3"
     },
+    "tests/testthat/test-event-context-handlers.R": {
+      "checksum": "7e05bff91d5c8534a4b52f47388e6ba3"
+    },
     "tests/testthat/test-event-system-emit.R": {
-      "checksum": "027890da1276953e18fa4131efd53315"
+      "checksum": "5de1aa3b5fd7061e423340dcbb3cf7b1"
     },
     "tests/testthat/test-event-system-observers.R": {
-      "checksum": "d29da8f6630e45700974eb3e300bb4e1"
+      "checksum": "da91f1ba4badd1b2e511b8a7d12637a8"
     },
     "tests/testthat/test-excelr-data-reconstruction.R": {
       "checksum": "907877fbaaa56fa9838a1f0e34d0dbfb"
     },
+    "tests/testthat/test-facade-time-parsing.R": {
+      "checksum": "ff8ebe936d6b6b6096da917f89e5c17f"
+    },
     "tests/testthat/test-fct_ai_improvement_suggestions.R": {
-      "checksum": "24c9c73c64c7f37080811f0b3c047802"
+      "checksum": "2ddd1af849155184fd04d52066f99a29"
     },
     "tests/testthat/test-fct_export_png.R": {
       "checksum": "14c7835d1e8fb336930145e9ba131054"
     },
     "tests/testthat/test-fct_spc_file_save_load.R": {
-      "checksum": "1f1ae61ceb6ea7cf2526bdbe5f4537c7"
+      "checksum": "0299706308cdb11e4ca3f3002c89b1a5"
     },
     "tests/testthat/test-file-io-comprehensive.R": {
-      "checksum": "f5d61983c16c35baa31de9002e98b4f6"
+      "checksum": "9d1c3107eb5d28757e0fe6d34051aeed"
     },
     "tests/testthat/test-file-operations-tidyverse.R": {
       "checksum": "436f2a6ebcbecbf573b1fa48c26c5a76"
     },
     "tests/testthat/test-file-operations.R": {
-      "checksum": "721c0f289ff3647dab48b90669ca8b19"
+      "checksum": "9caa831dba27cdd0e9dd5bed994978a0"
     },
     "tests/testthat/test-file-upload.R": {
-      "checksum": "af843eb17c5e99f923df2da150d6f543"
+      "checksum": "cf7f0558c5fa41b2dc466dbe0c8da8a7"
     },
     "tests/testthat/test-foreign-column-names.R": {
-      "checksum": "c93a565b19b9bbb13f068543009ffb8e"
+      "checksum": "212e8240d189b34bcc53e1ce3883955f"
     },
     "tests/testthat/test-generateSPCPlot-comprehensive.R": {
-      "checksum": "d37ce9927b4b071304d8c8cdf9b4dd7d"
+      "checksum": "607085279636f65f85cffc0ab0f94c44"
+    },
+    "tests/testthat/test-helper-mocks-contracts.R": {
+      "checksum": "288436cb26058f521ef918593dabc2ed"
     },
     "tests/testthat/test-input-debouncing-comprehensive.R": {
-      "checksum": "f16174b4b47a44c62ca5138f66dda789"
+      "checksum": "a89593668afa1dff413896e9805dd9d3"
     },
     "tests/testthat/test-input-sanitization.R": {
-      "checksum": "1fc2525332e856eb4a48deb9ff18233a"
+      "checksum": "49ce1c878c1f2a560d2084a54b9e2bb8"
     },
     "tests/testthat/test-integration-workflows.R": {
       "checksum": "a8725876bbcf48d21f42ce0ab2a69622"
     },
     "tests/testthat/test-label-formatting.R": {
-      "checksum": "0d146d5c9f4d879d6e88e0177bf38a75"
-    },
-    "tests/testthat/test-label-height-estimation.R": {
-      "checksum": "76029ba8af67d78045cccba6102fb89b"
-    },
-    "tests/testthat/test-label-placement-bounds.R": {
-      "checksum": "debf4ed2da656680a8c54b6dbcdd5236"
+      "checksum": "82ca20d5669084680f08c25ffa963ba0"
     },
     "tests/testthat/test-label-placement-core.R": {
-      "checksum": "ff82a32d9d640158f8d50ede627f9b68"
+      "checksum": "4be55b15901641e15a3de92dc8dbb4b9"
+    },
+    "tests/testthat/test-local-storage-time-migration.R": {
+      "checksum": "f040e898a380413f5ceeadfed23c4b70"
     },
     "tests/testthat/test-logging-debug-cat.R": {
       "checksum": "533bf0215b8483cd5aa8b7183c3a9421"
@@ -24998,25 +25860,25 @@
       "checksum": "fa5af2d19dab58f2a6aecb310cd357b1"
     },
     "tests/testthat/test-mod_export.R": {
-      "checksum": "79a826f5a12af4b058fbbd0586e220ed"
+      "checksum": "3414b49df9edc19e48332d5d433e5f0c"
+    },
+    "tests/testthat/test-mod-landing-server.R": {
+      "checksum": "8d81df4eb228e59c189174c66aa88c30"
     },
     "tests/testthat/test-mod-spc-chart-comprehensive.R": {
-      "checksum": "1ded061ac3ad3a217ff0b1b75f4a69e9"
-    },
-    "tests/testthat/test-mod-spc-chart-integration.R": {
-      "checksum": "a8f52e9d66457fc3279315d1d8afa9eb"
+      "checksum": "9c4e314e4b600fda405edac4c629915b"
     },
     "tests/testthat/test-namespace-integrity.R": {
       "checksum": "e48c4393b34e7c2fa7ab1f57892a066b"
     },
-    "tests/testthat/test-no-file-dependencies.R": {
-      "checksum": "067f59380c606dab7df9ae34de24df78"
+    "tests/testthat/test-negative-assertions-phase2-5.R": {
+      "checksum": "57f4cd00c66df5034e175d022099d171"
     },
-    "tests/testthat/test-npc-mapper.R": {
-      "checksum": "d46924ad2e4d34981b859aeea239ab41"
+    "tests/testthat/test-no-file-dependencies.R": {
+      "checksum": "4d430557853f02b485c203f97e828f3d"
     },
     "tests/testthat/test-observer-cleanup.R": {
-      "checksum": "187f0d70d0829ff964b69d7cbbed7ff5"
+      "checksum": "ed463fd7c1345594cc12fbaf9c35f472"
     },
     "tests/testthat/test-outlier-count-latest-part.R": {
       "checksum": "40824cf707eaf83c71ea40f12c003777"
@@ -25025,25 +25887,19 @@
       "checksum": "d4a77fd7228535cd0f3246b669fc673a"
     },
     "tests/testthat/test-package-namespace-validation.R": {
-      "checksum": "78ada045c0cb9eb5a3701bf59686e36d"
-    },
-    "tests/testthat/test-panel-height-cache.R": {
-      "checksum": "5dd51221e90ed8fe8029eb46275a5b1d"
+      "checksum": "0bf6a8ee795a75b1b484b0f5b6463f22"
     },
     "tests/testthat/test-parse-danish-target-unit-conversion.R": {
-      "checksum": "5139ab299bddc32e45e863caf5ef3ed4"
+      "checksum": "8b05185dab6e81016d0d93595adf63c5"
     },
     "tests/testthat/test-performance-benchmarks.R": {
-      "checksum": "eaecc5eb323d622836c0289b603f14e1"
+      "checksum": "4609780fb3f8c266919a3b879fbde3ae"
     },
     "tests/testthat/test-phase-2c-reactive-chain.R": {
       "checksum": "ea13db28125a8d24bf23f01f0feee09a"
     },
     "tests/testthat/test-plot-core.R": {
-      "checksum": "521b1a2647c43139efe611ffe46bd1ed"
-    },
-    "tests/testthat/test-plot-diff.R": {
-      "checksum": "d9582d5cb49bf9f9c9f8d3c173b961d3"
+      "checksum": "2f110983a3bf180eedb4353d023e00c4"
     },
     "tests/testthat/test-plot-generation-performance.R": {
       "checksum": "3535a2ae47aa0f20eef088219e37688e"
@@ -25052,10 +25908,10 @@
       "checksum": "9fba3cba5e769bdb69ec17c181129709"
     },
     "tests/testthat/test-reactive-batching.R": {
-      "checksum": "e1b0abed69044b29bd44f66a83e3b022"
+      "checksum": "27fa9f8dfa42bd1559831c2b2f9f7c75"
     },
     "tests/testthat/test-recent-functionality.R": {
-      "checksum": "b834ea59b01c689554ddfa6dabb8a477"
+      "checksum": "5115afbce4df6d44d98ef35957f8272d"
     },
     "tests/testthat/test-run-app.R": {
       "checksum": "e95194e34e54fda2a28d8684d4c17d64"
@@ -25064,46 +25920,52 @@
       "checksum": "121d2c9a16c9f6731beff44f91724bee"
     },
     "tests/testthat/test-runtime-config-comprehensive.R": {
-      "checksum": "ba81f561cd47927cbb0cc923eb15149d"
+      "checksum": "8fe290c52063818918289e5996b3e6a8"
     },
     "tests/testthat/test-safe-operation-comprehensive.R": {
-      "checksum": "9f30b81e99450b8533d8bd1c3d5918d5"
+      "checksum": "f3712739dff5dab713cbbd0730c5f028"
     },
     "tests/testthat/test-security-session-tokens.R": {
-      "checksum": "a4fec5400be0240d907449cdfee314d2"
+      "checksum": "8c1053de49240e9d4f0568c9e3ae14a8"
     },
     "tests/testthat/test-session-persistence.R": {
-      "checksum": "afb3e145ba3997a2b200a9f073d03cab"
+      "checksum": "213332c9d657576e17753c0be7a267c2"
     },
     "tests/testthat/test-session-token-sanitization.R": {
-      "checksum": "f8ffe8918ddcfc730e3b6cdb64cf7fab"
+      "checksum": "474ea1c95b0c00ff441ae03bfbf8ce28"
     },
     "tests/testthat/test-shared-data-signatures.R": {
-      "checksum": "df60f855a426e96d60520adabfcbf249"
+      "checksum": "9b140f9ff332457e5a916bedcc7ce4d0"
     },
     "tests/testthat/test-spc-bfh-service.R": {
-      "checksum": "0586bb8859093a4b397f98ccf3c8e69a"
+      "checksum": "08bebce7d11b3e4d6344d74964464ec0"
     },
     "tests/testthat/test-spc-cache-integration.R": {
-      "checksum": "faf8b1481b8968acdd150a6833f5d647"
+      "checksum": "cc7152f9be6f04ce0ba4a41e35551b27"
     },
     "tests/testthat/test-spc-plot-generation-comprehensive.R": {
-      "checksum": "55ba9baddf95a146ffaccf80e7ea8139"
+      "checksum": "d60247efc105fbfbc1ef15aa82a5a21c"
     },
     "tests/testthat/test-spc-regression-bfh-vs-qic.R": {
-      "checksum": "313126344948edb0d0645a12f8979714"
+      "checksum": "a25d6029620fec7cd7fd69da7bbe20ca"
     },
     "tests/testthat/test-startup-optimization.R": {
       "checksum": "51ee5566736f4e50c4c7cd1537043b49"
     },
     "tests/testthat/test-state-management-hierarchical.R": {
-      "checksum": "f029239d051e81c2d8900ccf5c87e481"
+      "checksum": "527168b06d3284920fff397648d63ba7"
     },
     "tests/testthat/test-tidyverse-purrr-operations.R": {
-      "checksum": "2b575c6d67d327f5bbbfdd446601ac85"
+      "checksum": "ed6c11b11152f94485c9198e0f0b14f6"
+    },
+    "tests/testthat/test-time-formatting.R": {
+      "checksum": "f5194ba42bfc0880f36bf23f87cf1617"
+    },
+    "tests/testthat/test-time-parsing.R": {
+      "checksum": "04f37099725e0eda5f247eebad07d8f2"
     },
     "tests/testthat/test-ui-synchronization.R": {
-      "checksum": "dfc5b6c9a3c8eee6bd8936bb046c5da7"
+      "checksum": "102030fb8f8f000f66051f5b00f48d18"
     },
     "tests/testthat/test-ui-token-management.R": {
       "checksum": "824ac3925d33cd08752fc121c79439c8"
@@ -25115,7 +25977,7 @@
       "checksum": "d6d3ce3b7c4f372b8397a5b1b0c6732a"
     },
     "tests/testthat/test-utils_analytics_pins.R": {
-      "checksum": "e528b781cfd27f638672188cd7b19896"
+      "checksum": "b5c90a87244f8a7051a9ff4790f5c3ac"
     },
     "tests/testthat/test-utils_data_signatures.R": {
       "checksum": "5a1de58ae2f4c61bf6f34f2055e469c8"
@@ -25133,7 +25995,7 @@
       "checksum": "6dd5ef38944876a3158c97acf9ce902c"
     },
     "tests/testthat/test-utils_performance_caching.R": {
-      "checksum": "e19700c9c50a0c6cc6016e29be1471e6"
+      "checksum": "d4f4e315c6db0f3f3e452b00f367bd31"
     },
     "tests/testthat/test-utils_qic_caching.R": {
       "checksum": "df426538681423167d5c653ed184782b"
@@ -25141,14 +26003,8 @@
     "tests/testthat/test-utils_server_export.R": {
       "checksum": "3cb438ef2535679323dfdfbfd7ad3195"
     },
-    "tests/testthat/test-utils_validation_guards.R": {
-      "checksum": "28b646f30e7fcc6565e1e62a1ada3191"
-    },
     "tests/testthat/test-utils-state-accessors.R": {
-      "checksum": "34dfa9c13337a54aaf42e3d2a8f12340"
-    },
-    "tests/testthat/test-validation-guards.R": {
-      "checksum": "76869d61eefc9758e16bf83146cf81de"
+      "checksum": "1ce963f4382024f0cbc165b412721d7b"
     },
     "tests/testthat/test-visualization-dimensions.R": {
       "checksum": "b73f8968fcd3a1d95ebf14505bf1ff9e"
@@ -25157,19 +26013,10 @@
       "checksum": "3e6cfa856fff87ccda7a2f60696dfe12"
     },
     "tests/testthat/test-wizard.R": {
-      "checksum": "ffacf72ae75b91a12a96c5a34d686adb"
-    },
-    "tests/testthat/test-y-axis-formatting.R": {
-      "checksum": "a6acada68eb83fff85e3dcd4e258126d"
-    },
-    "tests/testthat/test-y-axis-mapping.R": {
-      "checksum": "0c845a326fb85d78fa481ef96fa8825e"
-    },
-    "tests/testthat/test-y-axis-model.R": {
-      "checksum": "bc4d802921823da20e99ab65e5a693ca"
+      "checksum": "bb928296e4c86fc8cca366f23d413432"
     },
     "tests/testthat/test-y-axis-scaling-overhaul.R": {
-      "checksum": "a352f41208ee6b3de2e431e6dff3e662"
+      "checksum": "b4c3fdec23275c386c2683563a2bffef"
     },
     "tests/testthat/test-yaml-config-adherence.R": {
       "checksum": "ebd5ac510240a4c889eef09f3263e82f"

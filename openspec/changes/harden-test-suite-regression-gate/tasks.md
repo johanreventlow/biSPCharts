@@ -53,6 +53,17 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 - [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.
+      **Batch 2 (kategori C, 2026-04-19):** 7 skips re-labelet fra
+      `skip("TODO Fase 4: ... reactive context ...")` til
+      `skip("testServer-migration — se harden-test-suite §2.3 (#230)")`.
+      Tests bevaret som reference-materiale for §2.3 testServer-kontrakter.
+      Berørte filer:
+      - `test-critical-fixes-security.R` (1: observer priorities)
+      - `test-mod-spc-chart-comprehensive.R` (1: reactive updates)
+      - `test-state-management-hierarchical.R` (5: nested reactive,
+        flushReact, reactive chains, backward compat, clinical workflow)
+      **Nu tilbage:** 67 skip("TODO")-kald i 12 filer (fra 74).
+
       **Batch 1 (kategori A+B, 2026-04-19):** 18 skips håndteret.
       92 → 74 skip-kald tilbage i 12 filer (fra 15). Detaljer:
       - `test-config_chart_types.R` — 2 dangling skip() fjernet

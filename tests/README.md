@@ -8,23 +8,39 @@ Tests er organiseret i kategorier for optimal feedback loop og CI/CD performance
 
 ```
 tests/
-├── testthat/           # Fast unit tests (seconds)
-│   ├── test-*.R        # Unit tests for individual components
-│   └── helper-*.R      # Test helpers and utilities
+├── testthat/                # Fast unit tests (seconds)
+│   ├── helper-bootstrap.R   # Package loading + shiny aliases (§2.4.2)
+│   ├── helper-fixtures.R    # Test-data + app_state factories
+│   ├── helper-mocks.R       # Kanoniske mocks for eksterne APIs
+│   ├── fixtures/            # Pre-genererede .rds-datasæt (§3.2.4)
+│   └── test-*.R             # Unit tests for individual components
 │
-├── performance/        # Slow performance tests (minutes)
-│   ├── test-*-performance.R      # Performance benchmarks
-│   ├── test-startup-*.R          # Startup optimization tests
-│   └── test-microbenchmark-*.R   # Microbenchmark tests
+├── performance/             # Slow performance tests (minutes)
+│   └── test-*-performance.R
 │
-├── integration/        # Integration tests (future)
-│   └── test-full-workflow.R      # End-to-end workflow tests
+├── integration/             # Integration tests
+│   └── test-*.R             # Session/workflow/error-recovery scenarios
 │
-├── run_unit_tests.R         # Run only unit tests
-├── run_performance_tests.R  # Run only performance tests
-├── run_integration_tests.R  # Run only integration tests
-└── run_all_tests.R          # Run all test suites
+├── e2e/                     # Headless shinytest2 E2E (§4.1)
+│   ├── run_e2e.R            # Entrypoint med Chrome-gate + retry
+│   └── test-e2e-*.R         # Happy-path end-to-end tests
+│
+├── _archive/                # Legacy tests bevaret som historisk reference
+│
+├── run_canonical.R          # ★ Canonical pkgload-baseret runner (§3.3)
+├── run_unit_tests.R         # Thin wrapper (scope="unit")
+├── run_performance_tests.R  # Thin wrapper (scope="performance")
+├── run_integration_tests.R  # Thin wrapper (scope="integration")
+├── run_all_tests.R          # Thin wrapper (scope="all")
+├── coverage.R               # Coverage-rapport + publish-gate (§4.2)
+└── testthat.R               # R CMD check entrypoint (test_check)
 ```
+
+**Canonical entrypoint (§3.3):** `tests/run_canonical.R` bruger `pkgload::load_all()` (matching `devtools::test()`). Alle legacy wrappers delegerer hertil for at undgå divergens mellem test-loading-mekanismer.
+
+**Pre-push hook (§3.1):** `Rscript dev/install_git_hooks.R` installerer lintr + testthat gate ved `git push`. Se `docs/CONFIGURATION.md` §Git Hooks.
+
+**Publish-gate (§4.3):** `Rscript dev/publish_prepare.R manifest` kører 5-trins pipeline: lintr → canonical testthat → E2E → coverage → writeManifest.
 
 ## Test Runners
 

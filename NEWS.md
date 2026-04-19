@@ -25,6 +25,15 @@
   font database"-warnings ved plot-generering i PostScript-device
   kontekst er separat — ligger i BFHtheme-ansvar og kræver cross-repo
   eskalering (PostScript font-database er adskilt fra systemfonts).
+* **100x-mismatch tests opdateret til BFHcharts 0.8.0 API** (#238):
+  - `detect_unit_from_data([10,20,30,80])` forventning opdateret fra
+    `"percent"` til `"absolute"` — percent-heuristik blev bevidst fjernet
+    fra data-detection. Chart type (p/pp) + nævner er nu den korrekte
+    indikator for procent (styres via `chart_type_to_ui_type()`).
+  - 2 tests skipped med tydelige issue-references (`#238` + `#216`):
+    `display_scaler` fjernet fra `generateSPCPlot()`-return struktur,
+    og target-line rendering ændret i BFHcharts 0.8.0. Test-refactor
+    til ny API kræver cross-repo samarbejde.
 
 ## Interne ændringer (Fase 1 saneringsarbejde, #228/#229)
 

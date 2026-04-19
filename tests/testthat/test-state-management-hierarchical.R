@@ -352,9 +352,9 @@ test_that("app_state performance and memory management works", {
 })
 
 test_that("app_state complex state transitions work", {
-  # Bruger gamle event-navne (data_loaded, ui_sync_needed) og nested reactive access
-  # TODO Fase 4: Opdater til konsoliderede event-navne og shiny::testServer() (#203-followup)
-  skip("TODO Fase 4: Kompleks state transition test bruger gamle event-navne (#203-followup)")
+  # Bruger gamle event-navne (data_loaded, ui_sync_needed) og nested reactive access.
+  # Testen er reference-materiale for §2.3 testServer-migration + event-navne-cleanup.
+  skip("testServer-migration + event-navne cleanup — se harden-test-suite §2.3 (#230)")
 
   # TEST: Complex state transition scenarios
 

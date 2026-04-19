@@ -69,8 +69,10 @@ create_test_app_state <- function(auto_save_enabled = TRUE) {
 # ==============================================================================
 
 test_that("saveDataLocally sends single-encoded JSON on R side", {
-  skip_if_not(exists("saveDataLocally", mode = "function"),
-    "saveDataLocally not available")
+  skip_if_not(
+    exists("saveDataLocally", mode = "function"),
+    "saveDataLocally not available"
+  )
 
   mock <- create_mock_capture_session()
   test_data <- data.frame(
@@ -101,11 +103,14 @@ test_that("saveDataLocally sends single-encoded JSON on R side", {
 
   # Efter ÉN parse skal vi have en list med "data", "metadata", "timestamp"
   expect_true(is.list(parsed_once),
-    info = "Efter én fromJSON() skal resultatet være en list, ikke en string")
+    info = "Efter én fromJSON() skal resultatet være en list, ikke en string"
+  )
   expect_true("metadata" %in% names(parsed_once),
-    info = "metadata skal være tilgængelig efter første parse")
+    info = "metadata skal være tilgængelig efter første parse"
+  )
   expect_true("timestamp" %in% names(parsed_once),
-    info = "timestamp skal være tilgængelig efter første parse")
+    info = "timestamp skal være tilgængelig efter første parse"
+  )
 
   # Metadata felter skal være direkte tilgængelige
   expect_equal(parsed_once$metadata$x_column, "x")
@@ -164,13 +169,16 @@ test_that("local-storage.js loadAppState still parses JSON once (static check)",
 # ==============================================================================
 
 test_that("autoSaveAppState accepts app_state parameter and disables auto-save on failure", {
-  skip_if_not(exists("autoSaveAppState", mode = "function"),
-    "autoSaveAppState not available")
+  skip_if_not(
+    exists("autoSaveAppState", mode = "function"),
+    "autoSaveAppState not available"
+  )
 
   # Check signature has app_state parameter (post-fix)
   fn_args <- names(formals(autoSaveAppState))
   expect_true("app_state" %in% fn_args,
-    info = "autoSaveAppState SKAL acceptere app_state som parameter (Fase 2)")
+    info = "autoSaveAppState SKAL acceptere app_state som parameter (Fase 2)"
+  )
 
   # Create state with failing save scenario
   app_state <- create_test_app_state(auto_save_enabled = TRUE)
@@ -193,14 +201,19 @@ test_that("autoSaveAppState accepts app_state parameter and disables auto-save o
 
   # Auto-save SKAL være disabled efter fejl
   expect_false(isolate(app_state$session$auto_save_enabled),
-    info = "auto_save_enabled skal være FALSE efter save-fejl")
+    info = "auto_save_enabled skal være FALSE efter save-fejl"
+  )
 })
 
 test_that("autoSaveAppState skips when auto_save_enabled is FALSE", {
-  skip_if_not(exists("autoSaveAppState", mode = "function"),
-    "autoSaveAppState not available")
-  skip_if_not("app_state" %in% names(formals(autoSaveAppState)),
-    "autoSaveAppState has no app_state parameter yet")
+  skip_if_not(
+    exists("autoSaveAppState", mode = "function"),
+    "autoSaveAppState not available"
+  )
+  skip_if_not(
+    "app_state" %in% names(formals(autoSaveAppState)),
+    "autoSaveAppState has no app_state parameter yet"
+  )
 
   app_state <- create_test_app_state(auto_save_enabled = FALSE)
   mock <- create_mock_capture_session()
@@ -222,10 +235,14 @@ test_that("autoSaveAppState skips when auto_save_enabled is FALSE", {
 # NB: jsonlite serialiserer R NA til JSON null, som parses tilbage til R NULL
 # i list-elementer. Vi skal eksplicit konvertere NULL → NA før rekonstruktion.
 simulate_roundtrip <- function(data) {
-  skip_if_not(exists("extract_class_info", mode = "function"),
-    "extract_class_info not yet implemented (Fase 3)")
-  skip_if_not(exists("restore_column_class", mode = "function"),
-    "restore_column_class not yet implemented (Fase 3)")
+  skip_if_not(
+    exists("extract_class_info", mode = "function"),
+    "extract_class_info not yet implemented (Fase 3)"
+  )
+  skip_if_not(
+    exists("restore_column_class", mode = "function"),
+    "restore_column_class not yet implemented (Fase 3)"
+  )
 
   class_info <- extract_class_info(data)
 
@@ -310,22 +327,26 @@ test_that("Roundtrip preserves Date columns (Fase 3)", {
   result <- simulate_roundtrip(original)
 
   expect_true(inherits(result$dato, "Date"),
-    info = "Dato-kolonne skal bevare Date-klasse efter roundtrip")
+    info = "Dato-kolonne skal bevare Date-klasse efter roundtrip"
+  )
   expect_equal(result$dato, original$dato)
 })
 
 test_that("Roundtrip preserves POSIXct columns with timezone (Fase 3)", {
   original <- data.frame(
     ts = as.POSIXct(c("2026-01-15 10:30:00", "2026-02-28 15:45:00"),
-      tz = "Europe/Copenhagen"),
+      tz = "Europe/Copenhagen"
+    ),
     stringsAsFactors = FALSE
   )
   result <- simulate_roundtrip(original)
 
   expect_true(inherits(result$ts, "POSIXct"),
-    info = "Timestamp-kolonne skal bevare POSIXct-klasse efter roundtrip")
+    info = "Timestamp-kolonne skal bevare POSIXct-klasse efter roundtrip"
+  )
   expect_equal(attr(result$ts, "tzone"), "Europe/Copenhagen",
-    info = "Tidszone-attribut skal bevares")
+    info = "Tidszone-attribut skal bevares"
+  )
   expect_equal(result$ts, original$ts)
 })
 
@@ -337,22 +358,26 @@ test_that("Roundtrip preserves integer columns (Fase 3)", {
   result <- simulate_roundtrip(original)
 
   expect_true(is.integer(result$n),
-    info = "Integer-kolonne skal IKKE konverteres til numeric")
+    info = "Integer-kolonne skal IKKE konverteres til numeric"
+  )
   expect_equal(result$n, original$n)
 })
 
 test_that("Roundtrip preserves factor columns with levels (Fase 3)", {
   original <- data.frame(
     kat = factor(c("Low", "High", "Medium", "Low"),
-      levels = c("Low", "Medium", "High")),
+      levels = c("Low", "Medium", "High")
+    ),
     stringsAsFactors = FALSE
   )
   result <- simulate_roundtrip(original)
 
   expect_true(is.factor(result$kat),
-    info = "Factor-kolonne skal bevare factor-klasse efter roundtrip")
+    info = "Factor-kolonne skal bevare factor-klasse efter roundtrip"
+  )
   expect_equal(levels(result$kat), c("Low", "Medium", "High"),
-    info = "Levels skal bevare rækkefølge")
+    info = "Levels skal bevare rækkefølge"
+  )
   expect_equal(as.character(result$kat), as.character(original$kat))
 })
 
@@ -361,8 +386,10 @@ test_that("Roundtrip preserves factor columns with levels (Fase 3)", {
 # ==============================================================================
 
 test_that("collect_metadata captures all form fields including active_tab", {
-  skip_if_not(exists("collect_metadata", mode = "function"),
-    "collect_metadata not available")
+  skip_if_not(
+    exists("collect_metadata", mode = "function"),
+    "collect_metadata not available"
+  )
 
   mock_input <- list(
     x_column = "Dato",
@@ -400,8 +427,10 @@ test_that("collect_metadata captures all form fields including active_tab", {
 })
 
 test_that("collect_metadata falls back to 'analyser' when main_navbar is NULL", {
-  skip_if_not(exists("collect_metadata", mode = "function"),
-    "collect_metadata not available")
+  skip_if_not(
+    exists("collect_metadata", mode = "function"),
+    "collect_metadata not available"
+  )
 
   mock_input <- list(
     x_column = "",
@@ -421,12 +450,15 @@ test_that("collect_metadata falls back to 'analyser' when main_navbar is NULL", 
 
   metadata <- isolate(collect_metadata(mock_input))
   expect_equal(metadata$active_tab, "analyser",
-    info = "active_tab skal defaulte til 'analyser' ved NULL (ikke 'start')")
+    info = "active_tab skal defaulte til 'analyser' ved NULL (ikke 'start')"
+  )
 })
 
 test_that("collect_metadata handles empty/NULL fields gracefully", {
-  skip_if_not(exists("collect_metadata", mode = "function"),
-    "collect_metadata not available")
+  skip_if_not(
+    exists("collect_metadata", mode = "function"),
+    "collect_metadata not available"
+  )
 
   mock_input <- list(
     x_column = NULL,
@@ -450,7 +482,7 @@ test_that("collect_metadata handles empty/NULL fields gracefully", {
   expect_equal(metadata$frys_column, "")
   expect_equal(metadata$kommentar_column, "k")
   expect_equal(metadata$chart_type, "run")
-  expect_equal(metadata$y_axis_unit, "count")  # Default fallback
+  expect_equal(metadata$y_axis_unit, "count") # Default fallback
 })
 
 # ==============================================================================
@@ -464,10 +496,14 @@ test_that("Restore rejects payloads exceeding row limit", {
 })
 
 test_that("Save skips oversized datasets", {
-  skip_if_not(exists("autoSaveAppState", mode = "function"),
-    "autoSaveAppState not available")
-  skip_if_not("app_state" %in% names(formals(autoSaveAppState)),
-    "autoSaveAppState has no app_state parameter yet")
+  skip_if_not(
+    exists("autoSaveAppState", mode = "function"),
+    "autoSaveAppState not available"
+  )
+  skip_if_not(
+    "app_state" %in% names(formals(autoSaveAppState)),
+    "autoSaveAppState has no app_state parameter yet"
+  )
 
   app_state <- create_test_app_state(auto_save_enabled = TRUE)
   mock <- create_mock_capture_session()
@@ -480,17 +516,17 @@ test_that("Save skips oversized datasets", {
 
   metadata <- list(x_column = "V1", y_column = "V2")
 
-  # Mock showNotification — MockShinySession supports ikke sendNotification
+  # Mock showNotification — MockShinySession supports ikke sendNotification.
+  # §2.4.4: migreret fra mockery::stub til testthat::local_mocked_bindings.
   notifications <- list()
-  mockery::stub(
-    autoSaveAppState,
-    "shiny::showNotification",
-    function(ui, type = NULL, duration = NULL, ...) {
+  testthat::local_mocked_bindings(
+    showNotification = function(ui, type = NULL, duration = NULL, ...) {
       notifications[[length(notifications) + 1]] <<- list(
         ui = ui, type = type, duration = duration
       )
       invisible(NULL)
-    }
+    },
+    .package = "shiny"
   )
 
   autoSaveAppState(mock$session, large_data, metadata, app_state = app_state)
@@ -506,12 +542,18 @@ test_that("Save skips oversized datasets", {
 # ==============================================================================
 
 test_that("Feature flag getters return sensible defaults", {
-  skip_if_not(exists("get_auto_save_enabled", mode = "function"),
-    "get_auto_save_enabled not available")
-  skip_if_not(exists("get_save_interval_ms", mode = "function"),
-    "get_save_interval_ms not available")
-  skip_if_not(exists("get_settings_save_interval_ms", mode = "function"),
-    "get_settings_save_interval_ms not available")
+  skip_if_not(
+    exists("get_auto_save_enabled", mode = "function"),
+    "get_auto_save_enabled not available"
+  )
+  skip_if_not(
+    exists("get_save_interval_ms", mode = "function"),
+    "get_save_interval_ms not available"
+  )
+  skip_if_not(
+    exists("get_settings_save_interval_ms", mode = "function"),
+    "get_settings_save_interval_ms not available"
+  )
 
   # Default-værdier skal være sensible når pakke-miljø er tomt
   expect_true(is.logical(get_auto_save_enabled()))
@@ -522,13 +564,17 @@ test_that("Feature flag getters return sensible defaults", {
 })
 
 test_that("get_session_config returns list with all required fields", {
-  skip_if_not(exists("get_session_config", mode = "function"),
-    "get_session_config not available")
+  skip_if_not(
+    exists("get_session_config", mode = "function"),
+    "get_session_config not available"
+  )
 
   cfg <- get_session_config()
   expect_type(cfg, "list")
-  expect_true(all(c("auto_save_enabled", "auto_restore_session",
-    "save_interval_ms", "settings_save_interval_ms") %in% names(cfg)))
+  expect_true(all(c(
+    "auto_save_enabled", "auto_restore_session",
+    "save_interval_ms", "settings_save_interval_ms"
+  ) %in% names(cfg)))
   expect_true(is.logical(cfg$auto_save_enabled))
   expect_true(is.logical(cfg$auto_restore_session))
   expect_true(is.numeric(cfg$save_interval_ms))
@@ -538,12 +584,15 @@ test_that("determine_auto_restore_setting is removed (single source of truth)", 
   # Issue #193: determine_auto_restore_setting blev slettet for at undgå
   # parallelle config-paths. Feature flag læses nu kun fra golem-config.yml
   expect_false(exists("determine_auto_restore_setting", mode = "function"),
-    info = "determine_auto_restore_setting skal være slettet (Fase 4)")
+    info = "determine_auto_restore_setting skal være slettet (Fase 4)"
+  )
 })
 
 test_that("saveDataLocally payload uses current version tag", {
-  skip_if_not(exists("saveDataLocally", mode = "function"),
-    "saveDataLocally not available")
+  skip_if_not(
+    exists("saveDataLocally", mode = "function"),
+    "saveDataLocally not available"
+  )
 
   mock <- create_mock_capture_session()
   test_data <- data.frame(a = 1:3, b = 4:6)
@@ -558,5 +607,6 @@ test_that("saveDataLocally payload uses current version tag", {
   # Schema versioner: "1.2" (legacy), "2.0" (Fase 3), "3.0" (time-yaxis Fase 2b).
   # Test accepterer alle kendte versioner for robusthed mod fremtidige bumps.
   expect_true(parsed$version %in% c("1.2", "2.0", "3.0"),
-    info = paste("Unknown payload version:", parsed$version))
+    info = paste("Unknown payload version:", parsed$version)
+  )
 })

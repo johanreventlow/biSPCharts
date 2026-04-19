@@ -402,7 +402,7 @@ describe("Error Handling", {
     })
   })
 
-  # TODO(#247-L9): Refaktorér til at verificere modulets write-path —
+  # TODO(#262): Refaktorér til at verificere modulets write-path —
   # test skal trigge modulet til at skrive plot_warnings via reactive,
   # ikke pre-populere app_state direkte og verificere samme strenge.
   it("sets appropriate warnings on validation failure", {

@@ -361,6 +361,7 @@ test_that("setup_column_management return value pattern", {
 })
 
 test_that("event-driven vs timing-based reactivity", {
+  set.seed(42)
   # TEST: Demonstrate difference between event-driven (our solution) vs timing approaches
 
   # Timing-based approach (problematic)

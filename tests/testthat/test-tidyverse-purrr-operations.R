@@ -70,10 +70,10 @@ test_that("purrr::map_int operations for data quality analysis", {
   )
 
   # Test NA counting from preprocessing (fct_file_operations.R)
-  na_counts <- purrr::map_int(test_data, ~sum(is.na(.x)))
+  na_counts <- purrr::map_int(test_data, ~ sum(is.na(.x)))
   expect_equal(na_counts[["col1"]], 1)
   expect_equal(na_counts[["col2"]], 4)
-  expect_equal(na_counts[["col3"]], 0)  # Empty strings are not NA
+  expect_equal(na_counts[["col3"]], 0) # Empty strings are not NA
 
   # Test empty string counting for character columns
   empty_counts <- purrr::map_int(test_data, ~ {
@@ -85,7 +85,7 @@ test_that("purrr::map_int operations for data quality analysis", {
   })
   expect_equal(empty_counts[["col3"]], 1)
   expect_equal(empty_counts[["col4"]], 4)
-  expect_equal(empty_counts[["col1"]], 0)  # Numeric columns return 0
+  expect_equal(empty_counts[["col1"]], 0) # Numeric columns return 0
 })
 
 test_that("purrr::map_dbl operations for scoring in autodetect", {
@@ -114,14 +114,17 @@ test_that("purrr::map_dbl operations for scoring in autodetect", {
   malformed_candidates <- list(
     "Good" = list(score = 0.8),
     "Bad" = list(score = NA),
-    "Ugly" = list()  # Missing score
+    "Ugly" = list() # Missing score
   )
 
   # Should handle NA and missing values gracefully
-  expect_error({
-    malformed_candidates |>
-      purrr::map_dbl(~ .x$score)
-  }, class = "purrr_error_indexed")
+  expect_error(
+    {
+      malformed_candidates |>
+        purrr::map_dbl(~ .x$score)
+    },
+    class = "purrr_error_indexed"
+  )
 })
 
 test_that("purrr::detect operations for pattern matching", {
@@ -152,6 +155,7 @@ test_that("purrr::detect operations for pattern matching", {
 })
 
 test_that("purrr::reduce operations for plot enhancements", {
+  set.seed(42)
   skip_if_not_installed("purrr")
   skip_if_not_installed("ggplot2")
 
@@ -173,7 +177,7 @@ test_that("purrr::reduce operations for plot enhancements", {
         p +
           ggplot2::geom_vline(
             xintercept = mock_qic_data$x[change_point + 1],
-            color = "red",  # Use hardcoded color for test
+            color = "red", # Use hardcoded color for test
             linetype = "dotted", linewidth = 1, alpha = 0.7
           )
       }, .init = base_plot)
@@ -203,7 +207,7 @@ test_that("pipe operator chain correctness", {
     dplyr::summarise(
       mean_y = mean(y, na.rm = TRUE),
       count = dplyr::n(),
-      .groups = 'drop'
+      .groups = "drop"
     )
 
   expect_equal(nrow(result), 2)
@@ -216,7 +220,7 @@ test_that("pipe operator chain correctness", {
       !is.na(.x) | (is.character(.x) & stringr::str_trim(.x) != "")
     }))
 
-  expect_equal(nrow(filtered_data), 8)  # Should remove 2 NA rows
+  expect_equal(nrow(filtered_data), 8) # Should remove 2 NA rows
 })
 
 test_that("error handling in purrr operations", {
@@ -232,7 +236,9 @@ test_that("error handling in purrr operations", {
   # Test map_safely pattern
   safe_results <- test_list |>
     purrr::map(purrr::safely(function(x) {
-      if (is.null(x)) return(NA_real_)
+      if (is.null(x)) {
+        return(NA_real_)
+      }
       if (is.character(x)) stop("Cannot calculate mean of character data")
       mean(x, na.rm = TRUE)
     }, otherwise = NA_real_))
@@ -249,6 +255,7 @@ test_that("error handling in purrr operations", {
 })
 
 test_that("performance of tidyverse vs base R operations", {
+  set.seed(42)
   skip_if_not_installed("bench")
 
   # Create larger test dataset for performance comparison
@@ -265,7 +272,7 @@ test_that("performance of tidyverse vs base R operations", {
   })
 
   tidyverse_time <- system.time({
-    large_data[1:3] |> purrr::map_int(~sum(!is.na(.x)))
+    large_data[1:3] |> purrr::map_int(~ sum(!is.na(.x)))
   })
 
   # Both should complete successfully
@@ -274,7 +281,7 @@ test_that("performance of tidyverse vs base R operations", {
 
   # Results should be equivalent
   base_result <- sapply(large_data[1:3], function(x) sum(!is.na(x)))
-  tidyverse_result <- large_data[1:3] |> purrr::map_int(~sum(!is.na(.x)))
+  tidyverse_result <- large_data[1:3] |> purrr::map_int(~ sum(!is.na(.x)))
 
   expect_equal(as.numeric(base_result), as.numeric(tidyverse_result))
 })

@@ -354,6 +354,7 @@ describe("Data Preprocessing & Cleaning", {
   })
 
   it("preserves data integrity during preprocessing", {
+    set.seed(42)
     skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
 
     data <- data.frame(
@@ -429,6 +430,7 @@ describe("Error Handling & Recovery", {
 
 describe("Data Validation for Auto-Detection", {
   it("validates suitable data for auto-detection", {
+    set.seed(42)
     skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
 
     data <- data.frame(
@@ -556,6 +558,7 @@ describe("Edge Cases", {
   })
 
   it("handles large CSV files efficiently", {
+    set.seed(42)
     skip("Performance test - run manually")
 
     # Create large CSV

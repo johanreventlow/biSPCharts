@@ -54,7 +54,6 @@ verify_plot_structure <- function(result, expected_layers_min = 3) {
 # BASIC CHART TYPES TESTS ======================================================
 
 describe("Basic Chart Types", {
-
   it("generates run chart correctly", {
     skip("Afventer SPC-plot geom/data edge cases — se #245 (run chart ucl/lcl + y out of range)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
@@ -185,7 +184,6 @@ describe("Basic Chart Types", {
 # Y-AXIS FORMATTING TESTS ======================================================
 
 describe("Y-Axis Formatting", {
-
   it("formats percent values correctly", {
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
@@ -289,16 +287,17 @@ describe("Y-Axis Formatting", {
 # MULTI-PART HANDLING TESTS ====================================================
 
 describe("Multi-Part Data", {
-
   it("creates separate control limits per part", {
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     # Data med phase change
     test_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 18),
-      `Tæller` = c(45, 43, 48, 46, 47, 49, # Part 1
-                   55, 54, 58, 56, 57, 59, # Part 2 (higher level)
-                   50, 48, 52, 51, 49, 53), # Part 3
+      `Tæller` = c(
+        45, 43, 48, 46, 47, 49, # Part 1
+        55, 54, 58, 56, 57, 59, # Part 2 (higher level)
+        50, 48, 52, 51, 49, 53
+      ), # Part 3
       `Nævner` = rep(60, 18),
       Skift = c(rep(FALSE, 6), TRUE, rep(FALSE, 5), TRUE, rep(FALSE, 5)),
       stringsAsFactors = FALSE,
@@ -334,8 +333,10 @@ describe("Multi-Part Data", {
 
     test_data <- data.frame(
       Obs = 1:12,
-      `Værdi` = c(95, 92, 98, 91, 94, 96, # Part 1
-                  105, 108, 103, 107, 106, 104), # Part 2
+      `Værdi` = c(
+        95, 92, 98, 91, 94, 96, # Part 1
+        105, 108, 103, 107, 106, 104
+      ), # Part 2
       Skift = c(rep(FALSE, 6), TRUE, rep(FALSE, 5)),
       stringsAsFactors = FALSE,
       check.names = FALSE
@@ -364,8 +365,10 @@ describe("Multi-Part Data", {
 
     test_data <- data.frame(
       Obs = 1:15,
-      `Tæller` = c(45, 43, 48, 46, 47, # Baseline (5 punkter)
-                   49, 44, 44, 42, 46, 48, 45, 47, 44, 46), # Efter freeze
+      `Tæller` = c(
+        45, 43, 48, 46, 47, # Baseline (5 punkter)
+        49, 44, 44, 42, 46, 48, 45, 47, 44, 46
+      ), # Efter freeze
       `Nævner` = rep(50, 15),
       Frys = c(rep(FALSE, 5), rep(TRUE, 10)),
       stringsAsFactors = FALSE,
@@ -393,8 +396,8 @@ describe("Multi-Part Data", {
 # X-AXIS DATETIME FORMATTING TESTS =============================================
 
 describe("X-Axis Datetime Formatting", {
-
   it("formats weekly data correctly", {
+    set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- data.frame(
@@ -442,6 +445,7 @@ describe("X-Axis Datetime Formatting", {
   })
 
   it("formats daily data correctly", {
+    set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- data.frame(
@@ -468,6 +472,7 @@ describe("X-Axis Datetime Formatting", {
   })
 
   it("handles character x-column as factor", {
+    set.seed(42)
     skip("Afventer SPC-plot geom/data edge cases — se #245 (character x→factor)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
@@ -498,7 +503,6 @@ describe("X-Axis Datetime Formatting", {
 # EDGE CASES TESTS =============================================================
 
 describe("Edge Cases", {
-
   it("handles empty data gracefully", {
     skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (tom data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
@@ -651,8 +655,8 @@ describe("Edge Cases", {
 # PERFORMANCE BENCHMARKS =======================================================
 
 describe("Performance", {
-
   it("completes in <500ms for 1000 rows", {
+    set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
     skip_on_cran()
 

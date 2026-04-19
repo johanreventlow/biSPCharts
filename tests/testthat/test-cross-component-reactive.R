@@ -174,7 +174,7 @@ test_that("Data flow: Session Reset → State Cleanup", {
   )
 
   # Simulate session reset
-  session_reset_trigger <- TRUE  # User clicked "Start ny session"
+  session_reset_trigger <- TRUE # User clicked "Start ny session"
 
   if (session_reset_trigger) {
     # Reset states (simulating reset_to_empty_session)
@@ -262,28 +262,31 @@ test_that("Error handling i reactive chains", {
 
   # Mock error-prone reactive chain
   safe_reactive_chain <- function(data) {
-    tryCatch({
-      # Step 1: Validate data
-      if (is.null(data)) {
-        stop("Data is NULL")
+    tryCatch(
+      {
+        # Step 1: Validate data
+        if (is.null(data)) {
+          stop("Data is NULL")
+        }
+
+        if (nrow(data) == 0) {
+          stop("Data is empty")
+        }
+
+        # Step 2: Process data
+        processed <- data
+        values$current_data <<- processed
+        values$auto_detect_done <<- TRUE
+        values$error_state <<- NULL
+
+        return("success")
+      },
+      error = function(e) {
+        values$error_state <<- e$message
+        values$auto_detect_done <<- FALSE
+        return("error")
       }
-
-      if (nrow(data) == 0) {
-        stop("Data is empty")
-      }
-
-      # Step 2: Process data
-      processed <- data
-      values$current_data <<- processed
-      values$auto_detect_done <<- TRUE
-      values$error_state <<- NULL
-
-      return("success")
-    }, error = function(e) {
-      values$error_state <<- e$message
-      values$auto_detect_done <<- FALSE
-      return("error")
-    })
+    )
   }
 
   # Test 1: NULL data
@@ -365,13 +368,11 @@ test_that("Reactive invalidation og dependency tracking", {
       invalidated = FALSE,
       value = NULL
     ),
-
     column_config_reactive = list(
       dependencies = c("data_reactive"),
       invalidated = FALSE,
       value = NULL
     ),
-
     plot_reactive = list(
       dependencies = c("data_reactive", "column_config_reactive"),
       invalidated = FALSE,
@@ -424,6 +425,7 @@ test_that("Reactive invalidation og dependency tracking", {
 })
 
 test_that("Performance testing af reactive chains", {
+  set.seed(42)
   # TEST: Performance characteristics af reactive chains
 
   # Mock performance-heavy reactive computation
@@ -448,15 +450,15 @@ test_that("Performance testing af reactive chains", {
   small_result <- heavy_computation(small_data, 50)
 
   # TEST: Small dataset performance
-  expect_lt(small_result$execution_time, 2)  # Should complete in under 2 seconds
+  expect_lt(small_result$execution_time, 2) # Should complete in under 2 seconds
   expect_equal(nrow(small_result$result), 10)
 
   # Test with larger dataset
   large_data <- data.frame(x = 1:1000, y = 1:1000)
-  large_result <- heavy_computation(large_data, 10)  # Fewer iterations for large data
+  large_result <- heavy_computation(large_data, 10) # Fewer iterations for large data
 
   # TEST: Large dataset still reasonable
-  expect_lt(large_result$execution_time, 5)  # Should complete in under 5 seconds
+  expect_lt(large_result$execution_time, 5) # Should complete in under 5 seconds
   expect_equal(nrow(large_result$result), 1000)
 
   # TEST: Performance scaling (with tolerance for small datasets)

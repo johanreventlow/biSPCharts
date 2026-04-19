@@ -61,7 +61,6 @@ create_edge_case_data <- function(type = "normal", n = 10) {
 # EMPTY/NULL DATA EDGE CASES ===================================================
 
 describe("Empty and Null Data Handling", {
-
   it("handles completely empty data frame", {
     empty_data <- data.frame()
 
@@ -111,7 +110,6 @@ describe("Empty and Null Data Handling", {
 # SINGLE ROW/COLUMN EDGE CASES =================================================
 
 describe("Single Row/Column Data", {
-
   it("handles single row data frame", {
     single_row <- create_edge_case_data("single_row")
 
@@ -150,6 +148,7 @@ describe("Single Row/Column Data", {
   })
 
   it("generates SPC plot with minimum data (10 rows)", {
+    set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     min_data <- data.frame(
@@ -176,8 +175,8 @@ describe("Single Row/Column Data", {
 # DANISH CHARACTERS COMPREHENSIVE ==============================================
 
 describe("Danish Characters Comprehensive", {
-
   it("handles all Danish characters in column names", {
+    set.seed(42)
     danish_data <- data.frame(
       `Dato` = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 12),
       `Tæller` = sample(40:50, 12, replace = TRUE),
@@ -200,10 +199,14 @@ describe("Danish Characters Comprehensive", {
 
   it("handles Danish characters in data values", {
     danish_values <- data.frame(
-      Måned = c("januar", "februar", "marts", "april", "maj", "juni",
-                "juli", "august", "september", "oktober", "november", "december"),
-      Note = c("Første", "Anden", "Tredje", "Fjerde", "Femte", "Sjette",
-               "Syvende", "Ottende", "Niende", "Tiende", "Ellevte", "Tolvte"),
+      Måned = c(
+        "januar", "februar", "marts", "april", "maj", "juni",
+        "juli", "august", "september", "oktober", "november", "december"
+      ),
+      Note = c(
+        "Første", "Anden", "Tredje", "Fjerde", "Femte", "Sjette",
+        "Syvende", "Ottende", "Niende", "Tiende", "Ellevte", "Tolvte"
+      ),
       Værdi = 1:12,
       stringsAsFactors = FALSE
     )
@@ -230,6 +233,7 @@ describe("Danish Characters Comprehensive", {
   })
 
   it("handles mixed Danish and English characters", {
+    set.seed(42)
     mixed_data <- data.frame(
       `Date/Dato` = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 6),
       `Count/Tæller` = sample(40:50, 6, replace = TRUE),
@@ -273,7 +277,6 @@ describe("Danish Characters Comprehensive", {
 # EXTREME VALUES ===============================================================
 
 describe("Extreme Value Handling", {
-
   it("handles very large numbers (1e15)", {
     large_data <- create_edge_case_data("extreme_large", n = 10)
 
@@ -361,8 +364,8 @@ describe("Extreme Value Handling", {
 # LARGE FILE HANDLING ==========================================================
 
 describe("Large File Performance", {
-
   it("handles large dataset (1000 rows) efficiently", {
+    set.seed(42)
     large_data <- data.frame(
       Dato = seq.Date(as.Date("2020-01-01"), by = "day", length.out = 1000),
       Tæller = sample(40:50, 1000, replace = TRUE),
@@ -378,11 +381,12 @@ describe("Large File Performance", {
 
     elapsed_ms <- as.numeric(difftime(end_time, start_time, units = "secs")) * 1000
 
-    expect_lt(elapsed_ms, 500)  # Should complete in <500ms
+    expect_lt(elapsed_ms, 500) # Should complete in <500ms
     expect_equal(result$x_col, "Dato")
   })
 
   it("handles CSV with many columns (50+)", {
+    set.seed(42)
     many_cols <- 50
     wide_data <- as.data.frame(matrix(rnorm(100 * many_cols), ncol = many_cols))
     names(wide_data)[1] <- "Dato"
@@ -397,8 +401,8 @@ describe("Large File Performance", {
 
     elapsed_ms <- as.numeric(difftime(end_time, start_time, units = "secs")) * 1000
 
-    expect_lt(elapsed_ms, 1000)  # Should complete in <1s
-    expect_gte(length(numeric_cols), many_cols - 1)  # All but Dato column
+    expect_lt(elapsed_ms, 1000) # Should complete in <1s
+    expect_gte(length(numeric_cols), many_cols - 1) # All but Dato column
   })
 
   it("processes large file without memory issues", {
@@ -409,6 +413,7 @@ describe("Large File Performance", {
   })
 
   it("validates large CSV file efficiently", {
+    set.seed(42)
     skip_if_not(exists("validate_csv_file", mode = "function"))
 
     # Create large test CSV
@@ -429,15 +434,15 @@ describe("Large File Performance", {
     elapsed_ms <- as.numeric(difftime(end_time, start_time, units = "secs")) * 1000
 
     expect_true(result$valid)
-    expect_lt(elapsed_ms, 2000)  # Should validate in <2s
+    expect_lt(elapsed_ms, 2000) # Should validate in <2s
   })
 })
 
 # BOUNDARY CONDITIONS ==========================================================
 
 describe("Boundary Conditions", {
-
   it("handles exactly MIN_SPC_ROWS data points", {
+    set.seed(42)
     skip_if_not(exists("MIN_SPC_ROWS"))
 
     min_rows <- ifelse(exists("MIN_SPC_ROWS"), MIN_SPC_ROWS, 10)
@@ -456,6 +461,7 @@ describe("Boundary Conditions", {
   })
 
   it("handles MIN_SPC_ROWS - 1 data points", {
+    set.seed(42)
     skip_if_not(exists("MIN_SPC_ROWS"))
 
     min_rows <- ifelse(exists("MIN_SPC_ROWS"), MIN_SPC_ROWS, 10)
@@ -490,6 +496,7 @@ describe("Boundary Conditions", {
   })
 
   it("handles maximum recommended SPC points", {
+    set.seed(42)
     skip_if_not(exists("RECOMMENDED_SPC_POINTS"))
 
     rec_points <- ifelse(exists("RECOMMENDED_SPC_POINTS"), RECOMMENDED_SPC_POINTS, 20)
@@ -505,6 +512,7 @@ describe("Boundary Conditions", {
   })
 
   it("handles 100% missing data in one column", {
+    set.seed(42)
     partial_data <- data.frame(
       x = 1:10,
       y = rep(NA_real_, 10),
@@ -524,8 +532,8 @@ describe("Boundary Conditions", {
 # SPECIAL DATA TYPES ===========================================================
 
 describe("Special Data Types", {
-
   it("handles Date columns correctly", {
+    set.seed(42)
     date_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 12),
       Værdi = rnorm(12),
@@ -543,6 +551,7 @@ describe("Special Data Types", {
   })
 
   it("handles POSIXct datetime columns", {
+    set.seed(42)
     datetime_data <- data.frame(
       Tidspunkt = seq.POSIXt(
         as.POSIXct("2024-01-01 00:00:00"),
@@ -563,6 +572,7 @@ describe("Special Data Types", {
   })
 
   it("handles factor columns", {
+    set.seed(42)
     factor_data <- data.frame(
       Kategori = factor(c("A", "B", "C", "A", "B", "C")),
       Værdi = rnorm(6),
@@ -579,6 +589,7 @@ describe("Special Data Types", {
   })
 
   it("handles logical columns", {
+    set.seed(42)
     logical_data <- data.frame(
       Flag = c(TRUE, FALSE, TRUE, FALSE, TRUE),
       Værdi = rnorm(5),
@@ -598,7 +609,6 @@ describe("Special Data Types", {
 # MALFORMED DATA ===============================================================
 
 describe("Malformed Data Handling", {
-
   it("handles inconsistent row lengths in CSV", {
     malformed_csv <- "Dato;Tæller;Nævner\n2024-01-01;10\n2024-01-02;12;100;extra"
 
@@ -620,13 +630,13 @@ describe("Malformed Data Handling", {
     dup_data <- data.frame(
       Værdi = 1:5,
       Værdi = 6:10,
-      check.names = TRUE,  # R will make unique
+      check.names = TRUE, # R will make unique
       stringsAsFactors = FALSE
     )
 
     # R should auto-generate unique names
     expect_equal(ncol(dup_data), 2)
-    expect_true(all(names(dup_data) != names(dup_data)[1]))  # Names should differ
+    expect_true(all(names(dup_data) != names(dup_data)[1])) # Names should differ
   })
 
   it("handles whitespace-only values", {

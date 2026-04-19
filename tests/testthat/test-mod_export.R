@@ -169,7 +169,7 @@ test_that("mod_export_server requires app_state parameter", {
 # §2.3.2 (plot-available reactive): reagerer på app_state plot-data
 # Leveret i §2.3.2 (#230)
 #
-# TODO(#247-L5): Refaktorér til at verificere output$plot_available-binding
+# TODO(#261): Refaktorér til at verificere output$plot_available-binding
 # direkte via testServer i stedet for at evaluere logikken via shiny::isolate().
 # Kræver at output-id'et eksponeres og at testServer understøtter det korrekt.
 test_that("mod_export_server plot_available reflects app_state (§2.3.2)", {

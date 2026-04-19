@@ -259,10 +259,16 @@ phase_manifest <- function() {
   }
   log_ok("Pakken loader uden fejl")
 
-  log_step(2, total, "Kør testthat-tests")
+  log_step(2, total, "Kør testthat-tests (canonical entrypoint §3.3)")
+  # Brug canonical runner for at sikre identisk test-kontekst mellem
+  # publish-gate og lokal udvikling (devtools::test). Se
+  # tests/run_canonical.R for §3.3 rationale.
+  canonical_path <- file.path(getwd(), "tests", "run_canonical.R")
   test_res <- tryCatch(
-    devtools::test(".", stop_on_failure = TRUE, stop_on_warning = FALSE,
-                   reporter = testthat::SummaryReporter$new()),
+    {
+      source(canonical_path, local = TRUE)
+      run_canonical_tests(scope = "unit", stop_on_failure = TRUE)
+    },
     error = function(e) e
   )
   if (inherits(test_res, "error")) {

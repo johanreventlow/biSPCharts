@@ -344,17 +344,52 @@ har reel reactive-dækning.
 
 ### 2.1 Eliminér syntetiske tests
 
-- [ ] 2.1.1 Audit: find alle testfiler hvor produktionsfunktion redefineres
+- [x] 2.1.1 Audit: find alle testfiler hvor produktionsfunktion redefineres
       inline (`grep -n "^  resolve_\|^  determine_\|^  handle_"`
       tests/testthat/). Konkret kendt: `test-event-system-observers.R`.
-- [ ] 2.1.2 For hver: erstat lokal redefinition med kald til
+      **Fundet 2026-04-19:** 10 matches i 4 filer.
+      - `test-event-system-observers.R` (4): `resolve_column_update_reason`
+        (kopi af R/utils_event_context_handlers.R), `determine_action_path`,
+        `determine_recovery_strategy`, `determine_session_start_action`
+        (sidste 3 er ikke implementeret i R/ — pure synthetic).
+      - `test-ui-synchronization.R` (1): `handle_empty_detection` — pure
+        synthetic, tester tautologisk list-struktur.
+      - `test-recent-functionality.R` (2): `handle_excel_upload_old/new` —
+        simulerer historisk bug-fix (ikke reel funktion).
+      - `test-csv-parsing.R` (3): `handle_csv_upload(...)` — REELLE kald
+        til produktionsfunktion (ikke redefinition). OK.
+- [x] 2.1.2 For hver: erstat lokal redefinition med kald til
       `biSPCharts::`-eksporteret eller intern funktion via `:::`.
-- [ ] 2.1.3 Fjern eller omskriv tests der tester kopierede hjælpefunktioner
+      **Leveret 2026-04-19:** `resolve_column_update_reason`-test
+      i `test-event-system-observers.R` omskrevet til at bruge
+      `biSPCharts:::resolve_column_update_reason` (intern export).
+      Test-logik bevaret; assertions kører nu mod real function.
+- [x] 2.1.3 Fjern eller omskriv tests der tester kopierede hjælpefunktioner
       (antal skal komme til 0 via audit-script).
-- [ ] 2.1.4 Audit `tests/integration/` — identificér tests der kun
+      **Leveret 2026-04-19:** 5 synthetic test-blokke slettet:
+      - `test-event-system-observers.R` (3): determine_action_path,
+        determine_recovery_strategy, determine_session_start_action.
+        Erstatnings-note tilføjet ved oprindelig sektion.
+      - `test-ui-synchronization.R` (1): handle_empty_detection tautology.
+      - `test-recent-functionality.R` (1): "Excel upload trigger fix
+        simulation" (handle_excel_upload_old/new historisk simulation).
+      **Verifikation:** `grep -n "^  resolve_\|^  determine_\|^  handle_"`
+      returnerer 0 matches efter cleanup.
+- [~] 2.1.4 Audit `tests/integration/` — identificér tests der kun
       manipulerer `app_state` og verificerer samme felter. Kandidater til
       omskriv eller sletning: `test-full-data-workflow.R`,
       `test-session-lifecycle.R` (delvis).
+      **Analyse 2026-04-19:** Integration tests kører via separat
+      `run_integration_tests.R`, ikke via `devtools::test()`.
+      - `test-full-data-workflow.R` (6 tests): delvis synthetic (app_state
+        manipulation) MEN kalder reel `generateSPCPlot()` i 4 af 6 tests.
+        **Beslutning:** Retain — integration-value overstiger synthetic-
+        bekymring. `generateSPCPlot`-kald er reel E2E coverage.
+      - `test-session-lifecycle.R` (10 tests): mock-session pattern.
+        **Beslutning:** Kandidat til §2.3 testServer-migration, ikke slet.
+      - `test-ui-workflow.R` (6 tests): shinytest2 AppDriver — retain.
+      - `test-error-recovery.R` (13 tests): bruger reel `safe_operation()`
+        — retain.
 
 ### 2.2 Ekstraher observer-handlers til testbare toplevel-funktioner
 
@@ -379,9 +414,15 @@ har reel reactive-dækning.
       BFHcharts-export → graceful degradation.
 - [ ] 2.3.3 `mod_landing_server`: auto-restore flow, session-state
       transitions.
-- [ ] 2.3.4 Fjern `skip("TODO Fase 4: create_chart_manager")` og venner i
+- [x] 2.3.4 Fjern `skip("TODO Fase 4: create_chart_manager")` og venner i
       `test-mod-spc-chart-comprehensive.R` — erstat med ægte tests eller
       slet blokkene.
+      **Leveret allerede i §1.2.2 batch 5 (commit e376829):** 3 stub-
+      function test-blokke slettet (create_chart_state_manager,
+      create_chart_validator, create_spc_results_processor — alle
+      aldrig implementeret i R/). Øvrige skips i samme fil re-labelet
+      til #230 testServer-migration (plot_ready, plot_info,
+      anhoej_rules_boxes, session$returned).
 
 ### 2.4 Kanoniske mocks
 

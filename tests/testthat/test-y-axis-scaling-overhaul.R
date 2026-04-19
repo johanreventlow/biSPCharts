@@ -15,7 +15,6 @@ library(ggplot2)
 # LAYER 1: PARSING TESTS -------------------------------------------------------
 
 test_that("parse_number_da correctly parses Danish numbers with symbols", {
-
   # Basic symbol detection
   expect_equal(parse_number_da("80%"), list(value = 80, symbol = "percent"))
   expect_equal(parse_number_da("8\u2030"), list(value = 8, symbol = "permille"))
@@ -33,12 +32,10 @@ test_that("parse_number_da correctly parses Danish numbers with symbols", {
   # Edge cases
   expect_equal(parse_number_da(""), list(value = NA_real_, symbol = "none"))
   expect_equal(parse_number_da(NULL), list(value = numeric(0), symbol = character(0)))
-  expect_equal(parse_number_da("80%\u2030"), list(value = NA_real_, symbol = "invalid"))  # Begge symboler
-
+  expect_equal(parse_number_da("80%\u2030"), list(value = NA_real_, symbol = "invalid")) # Begge symboler
 })
 
 test_that("parse_number_da is idempotent", {
-
   # Same input should give same output on repeated calls
   input1 <- "68,5%"
   result1a <- parse_number_da(input1)
@@ -49,24 +46,25 @@ test_that("parse_number_da is idempotent", {
   result2a <- parse_number_da(input2)
   result2b <- parse_number_da(input2)
   expect_identical(result2a, result2b)
-
 })
 
 test_that("parse_number_da handles vectors correctly", {
-
   # Vector input should return vector output
   inputs <- c("80%", "8\u2030", "75")
   result <- parse_number_da(inputs)
 
   expect_equal(result$value, c(80, 8, 75))
   expect_equal(result$symbol, c("percent", "permille", "none"))
-
 })
 
 # LAYER 2: UNIT CLARIFICATION TESTS --------------------------------------------
 
 test_that("resolve_y_unit follows correct priority order", {
-  skip("Afventer y-axis unit-detection fix — se #243 (resolve_y_unit percent)")
+  # NOTE (#243): Percent-heuristik blev bevidst fjernet fra data-detection
+  # i #238 (se R/utils_y_axis_scaling.R:detect_unit_from_data). Tal i 0-100
+  # kan være minutter, scores, counts osv. — chart type (p/pp) + nævner er
+  # nu den korrekte indikator for procent. Data i [0-100] range defaulter
+  # derfor til "absolute" via data-heuristik.
 
   # Priority 1: User explicit choice overrides everything
   expect_equal(resolve_y_unit(user_unit = "percent", col_unit = "proportion", y_sample = c(0.1, 0.2)), "percent")
@@ -78,16 +76,20 @@ test_that("resolve_y_unit follows correct priority order", {
   decimal_data <- c(0.1, 0.2, 0.3, 0.8)
   expect_equal(resolve_y_unit(user_unit = NULL, col_unit = NULL, y_sample = decimal_data), "proportion")
 
-  percent_data <- c(10, 20, 30, 80)
-  expect_equal(resolve_y_unit(user_unit = NULL, col_unit = NULL, y_sample = percent_data), "percent")
+  # Tal i 0-100 range → "absolute" (ikke længere "percent" via heuristik)
+  ambiguous_data <- c(10, 20, 30, 80)
+  expect_equal(resolve_y_unit(user_unit = NULL, col_unit = NULL, y_sample = ambiguous_data), "absolute")
 
   # Priority 4: Fallback to absolute
   expect_equal(resolve_y_unit(user_unit = NULL, col_unit = NULL, y_sample = NULL), "absolute")
-
 })
 
 test_that("detect_unit_from_data uses clear heuristics", {
-  skip("Afventer y-axis unit-detection fix — se #243 (detect_unit_from_data percent)")
+  # NOTE (#243): Percent-heuristik blev bevidst fjernet fra data-detection
+  # i #238 (se R/utils_y_axis_scaling.R). Tal i 0-100 kan være minutter,
+  # scores, counts osv. — chart type (p/pp) + nævner er nu den korrekte
+  # indikator for procent. Kun proportion [0,1] detekteres via data;
+  # alle andre værdier defaulter til "absolute".
 
   # Decimal detection [0,1] with decimals
   decimal_data1 <- c(0.1, 0.3, 0.6, 0.8)
@@ -97,13 +99,13 @@ test_that("detect_unit_from_data uses clear heuristics", {
   decimal_data2 <- c(0, 0, 1, 1)
   expect_equal(detect_unit_from_data(decimal_data2), "proportion")
 
-  # Percent detection [0-100] with whole numbers
-  percent_data <- c(10, 25, 50, 85)
-  expect_equal(detect_unit_from_data(percent_data), "percent")
+  # Tal i 0-100 range → "absolute" (ikke længere "percent" via heuristik)
+  ambiguous_whole <- c(10, 25, 50, 85)
+  expect_equal(detect_unit_from_data(ambiguous_whole), "absolute")
 
-  # Should NOT detect percent when too many decimals
-  mixed_percent <- c(10.5, 25.3, 45.7, 60.2, 85.9)
-  expect_equal(detect_unit_from_data(mixed_percent), "absolute")
+  # Decimals uden for [0,1] → absolute
+  mixed_decimals <- c(10.5, 25.3, 45.7, 60.2, 85.9)
+  expect_equal(detect_unit_from_data(mixed_decimals), "absolute")
 
   # Large numbers → absolute
   large_data <- c(150, 250, 450, 800)
@@ -112,68 +114,60 @@ test_that("detect_unit_from_data uses clear heuristics", {
   # Empty/NA data → absolute
   expect_equal(detect_unit_from_data(c()), "absolute")
   expect_equal(detect_unit_from_data(c(NA, NA)), "absolute")
-
 })
 
 # LAYER 3A: HARMONIZATION TESTS ------------------------------------------------
 
 test_that("coerce_to_target_unit uses deterministic conversion matrix", {
-
   # TO PROPORTION
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "proportion"), 0.8)
   expect_equal(coerce_to_target_unit(list(value = 8, symbol = "permille"), "proportion"), 0.008)
-  expect_equal(coerce_to_target_unit(list(value = 0.8, symbol = "none"), "proportion"), 0.8)  # No implicit scaling
+  expect_equal(coerce_to_target_unit(list(value = 0.8, symbol = "none"), "proportion"), 0.8) # No implicit scaling
 
   # TO PERCENT
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "percent"), 80)
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "permille"), "percent"), 8)
-  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "percent"), 80)  # No implicit scaling
+  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "percent"), 80) # No implicit scaling
 
   # TO PERMILLE
   expect_equal(coerce_to_target_unit(list(value = 8, symbol = "percent"), "permille"), 80)
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "permille"), "permille"), 80)
-  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "permille"), 80)  # No implicit scaling
+  expect_equal(coerce_to_target_unit(list(value = 80, symbol = "none"), "permille"), 80) # No implicit scaling
 
   # TO ABSOLUTE
   expect_equal(coerce_to_target_unit(list(value = 80, symbol = "percent"), "absolute"), 80)
   expect_equal(coerce_to_target_unit(list(value = 8, symbol = "permille"), "absolute"), 8)
   expect_equal(coerce_to_target_unit(list(value = 50, symbol = "none"), "absolute"), 50)
-
 })
 
 test_that("coerce_to_target_unit handles edge cases", {
-
   # Invalid input
   expect_true(is.na(coerce_to_target_unit(list(value = NA, symbol = "percent"), "proportion")))
   expect_true(is.na(coerce_to_target_unit(list(value = 80, symbol = "invalid"), "proportion")))
 
   # Unknown target unit
   expect_true(is.na(coerce_to_target_unit(list(value = 80, symbol = "percent"), "unknown")))
-
 })
 
 # LAYER 3B: INTERNAL CONVERSION TESTS ------------------------------------------
 
 test_that("to_internal_scale converts deterministically", {
-
   # TO PROPORTION (internal canonical for proportional plots)
   expect_equal(to_internal_scale(80, "percent", "proportion"), 0.8)
   expect_equal(to_internal_scale(80, "permille", "proportion"), 0.08)
-  expect_equal(to_internal_scale(0.8, "proportion", "proportion"), 0.8)  # Identity
+  expect_equal(to_internal_scale(0.8, "proportion", "proportion"), 0.8) # Identity
 
   # TO ABSOLUTE (internal canonical for count plots)
-  expect_equal(to_internal_scale(80, "absolute", "absolute"), 80)  # Identity
+  expect_equal(to_internal_scale(80, "absolute", "absolute"), 80) # Identity
   expect_equal(to_internal_scale(80, "percent", "absolute"), 80)
 
   # Error cases
   expect_true(is.na(to_internal_scale(80, "absolute", "proportion")))
-
 })
 
 # MAIN API TESTS ---------------------------------------------------------------
 
 test_that("normalize_axis_value integrates all layers correctly", {
-
   # SCENARIO A: Input with % symbol, proportion internal unit
   result1 <- normalize_axis_value("80%", user_unit = "proportion", internal_unit = "proportion")
   expect_equal(result1, 0.8)
@@ -185,30 +179,26 @@ test_that("normalize_axis_value integrates all layers correctly", {
   # SCENARIO C: Data-driven unit resolution
   decimal_y_data <- c(0.1, 0.2, 0.3, 0.8)
   result3 <- normalize_axis_value("80%", y_sample = decimal_y_data, internal_unit = "proportion")
-  expect_equal(result3, 0.8)  # 80% → proportion 0.8
+  expect_equal(result3, 0.8) # 80% → proportion 0.8
 
   # SCENARIO D: Data-driven unit resolution suggests percent
   percent_y_data <- c(10, 20, 30, 80)
   result4 <- normalize_axis_value("80%", y_sample = percent_y_data, internal_unit = "percent")
-  expect_equal(result4, 80)  # Data suggests percent: 80% → 80 percent
-
+  expect_equal(result4, 80) # Data suggests percent: 80% → 80 percent
 })
 
 test_that("normalize_axis_value handles edge cases gracefully", {
-
   # Invalid input
   expect_null(normalize_axis_value(""))
   expect_null(normalize_axis_value("invalid"))
-  expect_null(normalize_axis_value("80%\u2030"))  # Begge symboler
+  expect_null(normalize_axis_value("80%\u2030")) # Begge symboler
 
   # Valid input but incompatible units
   result <- normalize_axis_value("150", user_unit = "absolute", internal_unit = "proportion")
-  expect_true(is.null(result) || !is.na(result))  # Should handle gracefully
-
+  expect_true(is.null(result) || !is.na(result)) # Should handle gracefully
 })
 
 test_that("normalize_axis_value is idempotent", {
-
   # Same input should give same output
   input_str <- "68,5%"
   user_unit <- "proportion"
@@ -218,13 +208,11 @@ test_that("normalize_axis_value is idempotent", {
   result_b <- normalize_axis_value(input_str, user_unit = user_unit, internal_unit = internal_unit)
 
   expect_identical(result_a, result_b)
-
 })
 
 # VALIDATION TESTS -------------------------------------------------------------
 
 test_that("validate_axis_value enforces range constraints", {
-
   # Proportion should be [0,1]
   valid_prop <- validate_axis_value(0.8, "proportion")
   expect_true(valid_prop$valid)
@@ -238,7 +226,6 @@ test_that("validate_axis_value enforces range constraints", {
   # Absolute has no constraints (for now)
   absolute_val <- validate_axis_value(150, "absolute")
   expect_true(absolute_val$valid)
-
 })
 
 # BACKWARDS COMPATIBILITY TESTS ------------------------------------------------
@@ -259,13 +246,11 @@ test_that("parse_danish_target maintains backwards compatibility", {
   # No Y-data, explicit unit
   expect_equal(parse_danish_target("80%", NULL, "percent"), 80)
   expect_equal(parse_danish_target("0.8", NULL, "percent"), 80)
-
 })
 
 # INTEGRATION AND CONSISTENCY TESTS --------------------------------------------
 
 test_that("Key examples from design specification work correctly", {
-
   # "80%" + target_unit=proportion → 0.8
   result1 <- normalize_axis_value("80%", user_unit = "proportion", internal_unit = "proportion")
   expect_equal(result1, 0.8)
@@ -289,31 +274,26 @@ test_that("Key examples from design specification work correctly", {
   # "8\u2030" + target_unit=percent → 0.8
   result6 <- normalize_axis_value("8\u2030", user_unit = "percent", internal_unit = "percent")
   expect_equal(result6, 0.8)
-
 })
 
 test_that("No double-scaling occurs in typical qicharts2 workflows", {
-
-  proportion_y_data <- c(0.1, 0.2, 0.3, 0.8)  # Typical p-chart data
+  proportion_y_data <- c(0.1, 0.2, 0.3, 0.8) # Typical p-chart data
   target_normalized <- normalize_axis_value("80%", y_sample = proportion_y_data, internal_unit = "proportion")
 
   expect_equal(target_normalized, 0.8)
-
 })
 
 test_that("Priority system works as designed", {
-
   # User explicit choice should override data heuristics
-  percent_looking_data <- c(10, 20, 30, 80)  # Would normally suggest "percent"
+  percent_looking_data <- c(10, 20, 30, 80) # Would normally suggest "percent"
 
   # But user explicitly chooses "proportion"
   result <- normalize_axis_value("80%", user_unit = "proportion", y_sample = percent_looking_data, internal_unit = "proportion")
-  expect_equal(result, 0.8)  # Should honor user choice: 80% → 0.8 proportion
+  expect_equal(result, 0.8) # Should honor user choice: 80% → 0.8 proportion
 
   # Whereas without user choice, data heuristics would suggest percent
   result_heuristic <- normalize_axis_value("80%", y_sample = percent_looking_data, internal_unit = "percent")
-  expect_equal(result_heuristic, 80)  # Data suggests percent: 80% → 80 percent
-
+  expect_equal(result_heuristic, 80) # Data suggests percent: 80% → 80 percent
 })
 
 # =============================================================================
@@ -457,7 +437,8 @@ test_that("t-kort: korttype-skift foerer til time_days som default y-enhed", {
 test_that("apply_y_axis_formatting handles all unit types", {
   # Setup: Create base plot
   test_data <- data.frame(x = 1:10, y = seq(0, 100, length.out = 10))
-  base_plot <- ggplot(test_data, aes(x = x, y = y)) + geom_point()
+  base_plot <- ggplot(test_data, aes(x = x, y = y)) +
+    geom_point()
 
   # Test percent formatting
   plot_percent <- apply_y_axis_formatting(base_plot, "percent", test_data)
@@ -480,7 +461,8 @@ test_that("apply_y_axis_formatting handles all unit types", {
 
 test_that("apply_y_axis_formatting handles invalid inputs gracefully", {
   test_data <- data.frame(x = 1:10, y = 1:10)
-  base_plot <- ggplot(test_data, aes(x = x, y = y)) + geom_point()
+  base_plot <- ggplot(test_data, aes(x = x, y = y)) +
+    geom_point()
 
   # Test NULL y_axis_unit (should default to "count")
   plot_null <- apply_y_axis_formatting(base_plot, NULL, test_data)
@@ -584,8 +566,10 @@ test_that("Y-axis formatting integrates correctly with ggplot2", {
   # Create test data
   test_data <- data.frame(
     x = 1:20,
-    y = c(50, 75, 100, 125, 150, 175, 200, 225, 250, 275,
-          300, 325, 350, 375, 400, 425, 450, 475, 500, 525)
+    y = c(
+      50, 75, 100, 125, 150, 175, 200, 225, 250, 275,
+      300, 325, 350, 375, 400, 425, 450, 475, 500, 525
+    )
   )
 
   # Create base plot

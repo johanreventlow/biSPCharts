@@ -282,6 +282,61 @@ og dens sub-issues (#235-#238) er fixet — dette arbejde ligger uden for
 
 ---
 
+## 1.5 Fase 1 lukning + follow-up noter (2026-04-19)
+
+### 1.5.1 Status ved Fase 1-lukning
+
+- [x] §1.1 (inventory-PR-plan A–F + catch-all): fuldt leveret
+      (18 A+B slet, 7 C re-label #230, 41 E re-label #212/#213/#240-245,
+      5 F re-label BFHcharts#154, 2 FIX inline, 28 DELETE tests)
+- [x] §1.2 (TODO-skip oprydning): **0 `skip("TODO ...")`-kald tilbage**
+      fra oprindelige 92. Alle resterende skips har issue-reference.
+- [x] §1.3 (stub-filer + artefakter): oprydning leveret, README opdateret
+- [~] §1.4 (verifikation): audit + devtools::test kørt og dokumenteret.
+      Suite er ikke grøn (43 fails + 21 errors), men alle sporet til
+      eksisterende issues (#235/#236/#237/#238/#239 paraply).
+- [x] §1.5 (governance): master-issue + 4 sub-issues etableret
+
+### 1.5.2 ⚠ CI-følgevirkninger — bevar `continue-on-error: true`
+
+**KRITISK note til archival:** `continue-on-error: true` på testthat-jobbet
+i `.github/workflows/R-CMD-check.yaml` (linje 71) MÅ IKKE fjernes før
+paraply-issue #239 er lukket.
+
+```yaml
+# .github/workflows/R-CMD-check.yaml linje 67-71
+# Separat test-job - synligt men non-blocking indtil refactor-test-suite Phase 3
+# er done. Naar test-suiten er groen lokalt, fjern continue-on-error.
+testthat:
+  runs-on: ubuntu-latest
+  continue-on-error: true
+```
+
+**Baggrund:** Suite har 43+21 pre-existing runtime-fails mapped til
+GitHub-issues. Fjernes `continue-on-error` før disse er fixet, vil CI
+blokere al PR-merge til master. Lukning af #239 (paraply for 18
+testgrupper) + individuel fix af #235/#236/#237/#238 er forudsætning.
+
+**Action ved archival:** Opdatér denne sektion når #239 er closed,
+og indfør eksplicit task i Fase 3 (pre-push gate) eller Fase 4 (publish
+gate) for at fjerne flag.
+
+### 1.5.3 Blokker-liste for Fase 1 fuld grøn
+
+| Issue | Scope | Antal filer | Kategori |
+|---|---|---|---|
+| #235 | `get_qic_chart_type` fallback | 3 | Pre-existing regression |
+| #236 | `format_y_value` precision | 1 | Pre-existing regression |
+| #237 | Mari font state-leak | 3 | Pre-existing regression |
+| #238 | BFHcharts 0.8.0 100x-mismatch | 1 | Pre-existing regression |
+| #239 | Paraply — 18 runtime-regressioner | 18 | Pre-existing |
+| **Total** | | **26 filer** | **64 failing blocks** |
+
+Ingen af disse blokkere er introduceret af §1.2-arbejdet. §1.2 har
+forbedret audit-kategorifordeling (green 79→82, missing-fn 6→1).
+
+---
+
 ## 2. Fase 2 — Kvalitet: Fjern falsk tryghed
 
 Målsætning: ingen test redefinerer produktionsfunktioner; kritiske moduler

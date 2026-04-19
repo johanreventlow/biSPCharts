@@ -12,7 +12,7 @@ test_that("setup_visualization initializes correctly", {
     "setup_visualization function not available - check test setup"
   )
 
-  mock_input <- list(chart_type = "P-kort (Andele)")
+  mock_input <- list(chart_type = "P-kort \u2014 andele/procenter (fx infektionsrate)")
   mock_output <- list()
   mock_session <- list(token = "test_session")
 
@@ -75,10 +75,10 @@ test_that("Chart type conversion works in visualization context", {
     "get_qic_chart_type not available - check test setup"
   )
 
-  expect_equal(get_qic_chart_type("P-kort (Andele)"), "p")
-  expect_equal(get_qic_chart_type("U-kort (Rater)"), "u")
-  expect_equal(get_qic_chart_type("I-kort (Individuelle værdier)"), "i")
-  expect_equal(get_qic_chart_type("Seriediagram (Run Chart)"), "run")
+  expect_equal(get_qic_chart_type("P-kort \u2014 andele/procenter (fx infektionsrate)"), "p")
+  expect_equal(get_qic_chart_type("U-kort \u2014 rater (fx komplikationer pr. 1000)"), "u")
+  expect_equal(get_qic_chart_type("I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)"), "i")
+  expect_equal(get_qic_chart_type("Seriediagram (Run) \u2014 data over tid"), "run")
 
   expect_equal(get_qic_chart_type(""), "run")
   expect_equal(get_qic_chart_type(NULL), "run")

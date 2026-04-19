@@ -21,9 +21,9 @@ test_that("Manuel kolonnevalg prioriteres over auto-detect", {
 
   # Mock reaktive værdier for auto-detect (simulerer app_state$columns$auto_detect$results)
   auto_detect_results <- list(
-    x_col = "Uge",  # Auto-detect ville vælge Uge som X
-    y_col = "T",    # Auto-detect kunne ikke detektere T som tæller
-    n_col = "N"     # Auto-detect kunne ikke detektere N som nævner
+    x_col = "Uge", # Auto-detect ville vælge Uge som X
+    y_col = "T", # Auto-detect kunne ikke detektere T som tæller
+    n_col = "N" # Auto-detect kunne ikke detektere N som nævner
   )
 
   # Simuler manual_config() funktionen
@@ -68,9 +68,9 @@ test_that("Manuel kolonnevalg prioriteres over auto-detect", {
   # Test at manual valg prioriteres
   result <- column_config()
 
-  expect_equal(result$x_col, "Nr")  # Manuel valg, ikke auto-detected "Uge"
-  expect_equal(result$y_col, "T")   # Manuel valg
-  expect_equal(result$n_col, "N")   # Manuel valg
+  expect_equal(result$x_col, "Nr") # Manuel valg, ikke auto-detected "Uge"
+  expect_equal(result$y_col, "T") # Manuel valg
+  expect_equal(result$n_col, "N") # Manuel valg
 })
 
 test_that("Auto-detect fallback når ingen manuel valg", {
@@ -131,9 +131,9 @@ test_that("Auto-detect fallback når ingen manuel valg", {
   # Test at auto-detect bruges når ingen manuel valg
   result <- column_config()
 
-  expect_equal(result$x_col, "Uge")     # Auto-detect fallback
-  expect_equal(result$y_col, "Tæller")  # Auto-detect fallback
-  expect_equal(result$n_col, "Nævner")  # Auto-detect fallback
+  expect_equal(result$x_col, "Uge") # Auto-detect fallback
+  expect_equal(result$y_col, "Tæller") # Auto-detect fallback
+  expect_equal(result$n_col, "Nævner") # Auto-detect fallback
 })
 
 test_that("Foreign column names vises i selectize choices", {
@@ -146,7 +146,7 @@ test_that("Foreign column names vises i selectize choices", {
     "Uge tekst" = paste("W", 1:5),
     T = c(10, 15, 12, 8, 20),
     N = c(100, 150, 120, 80, 200),
-    check.names = FALSE,  # Bevar originale kolonnenavne med mellemrum
+    check.names = FALSE, # Bevar originale kolonnenavne med mellemrum
     stringsAsFactors = FALSE
   )
 
@@ -167,11 +167,12 @@ test_that("Foreign column names vises i selectize choices", {
   expect_true("N" %in% names(col_choices))
 
   # Verificer at choices har korrekt struktur
-  expect_equal(length(col_choices), length(all_cols) + 1)  # +1 for "Vælg kolonne..."
-  expect_equal(col_choices[[1]], "")  # Første element er tom string
+  expect_equal(length(col_choices), length(all_cols) + 1) # +1 for "Vælg kolonne..."
+  expect_equal(col_choices[[1]], "") # Første element er tom string
 })
 
 test_that("Scenario: Bruger vælger fremmede kolonnenavne manuelt", {
+  set.seed(42)
   # Dette test simulerer det oprindelige problem scenarie
 
   # Test data som i SPC_test_data_forskellige.xlsx
@@ -188,13 +189,13 @@ test_that("Scenario: Bruger vælger fremmede kolonnenavne manuelt", {
   )
 
   # 1. Auto-detect fejler (kan ikke genkende T/N som tæller/nævner)
-  auto_detected_result <- list(x_col = "Uge", y_col = NULL, n_col = NULL)  # Auto-detect fejl
+  auto_detected_result <- list(x_col = "Uge", y_col = NULL, n_col = NULL) # Auto-detect fejl
 
   # 2. Bruger vælger manuelt i selectize inputs
   manual_selection <- list(
-    x_col = "Nr",     # Brugeren vælger Nr som X
-    y_col = "T",      # Brugeren vælger T som Y
-    n_col = "N"       # Brugeren vælger N som N
+    x_col = "Nr", # Brugeren vælger Nr som X
+    y_col = "T", # Brugeren vælger T som Y
+    n_col = "N" # Brugeren vælger N som N
   )
 
   # 3. Test at manual prioriteres korrekt

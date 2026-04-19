@@ -104,6 +104,7 @@ test_that("compute_anhoej_metadata_local() handles I charts", {
 })
 
 test_that("compute_anhoej_metadata_local() handles P charts with denominator", {
+  set.seed(42)
   data <- tibble::tibble(
     month = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 20),
     numerator = round(rnorm(20, mean = 10, sd = 2)),
@@ -292,6 +293,7 @@ test_that("compute_anhoej_metadata_local() handles zero values", {
 })
 
 test_that("compute_anhoej_metadata_local() handles negative values", {
+  set.seed(42)
   data <- tibble::tibble(
     month = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 20),
     value = rnorm(20, mean = 0, sd = 10) # Can be negative

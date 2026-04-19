@@ -43,7 +43,7 @@ create_test_data <- function(n_rows = 20, chart_type = "run") {
 
 # Unit Tests: compute_spc_results_bfh() =======================================
 
-#"Unit Tests - compute_spc_results_bfh()")
+# "Unit Tests - compute_spc_results_bfh()")
 
 test_that("compute_spc_results_bfh() exists and is callable", {
   # RED PHASE: Function doesn't exist yet
@@ -54,7 +54,6 @@ test_that("compute_spc_results_bfh() exists and is callable", {
 # Chart Type Tests ------------------------------------------------------------
 
 test_that("compute_spc_results_bfh() handles run charts", {
-  skip("TODO Fase 4: result mangler expected names (plot/qic_data/metadata) (#203-followup)")
   # Arrange
   set.seed(20251015)
   data <- create_test_data(n_rows = 20, chart_type = "run")
@@ -67,9 +66,9 @@ test_that("compute_spc_results_bfh() handles run charts", {
     chart_type = "run"
   )
 
-  # Assert - Return structure
+  # Assert - Return structure (facaden returnerer også bfh_qic_result for exports)
   expect_type(result, "list")
-  expect_named(result, c("plot", "qic_data", "metadata"))
+  expect_true(all(c("plot", "qic_data", "metadata") %in% names(result)))
 
   # Assert - Plot component
   expect_s3_class(result$plot, "ggplot")
@@ -189,7 +188,7 @@ test_that("compute_spc_results_bfh() handles S charts (standard deviation)", {
 # Parameter Validation Tests --------------------------------------------------
 
 test_that("compute_spc_results_bfh() requires data parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende data)")
   expect_error(
     compute_spc_results_bfh(
       x_var = "month",
@@ -202,7 +201,7 @@ test_that("compute_spc_results_bfh() requires data parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires x_var parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende x_var (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende x_var)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -217,7 +216,7 @@ test_that("compute_spc_results_bfh() requires x_var parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires y_var parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende y_var (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende y_var)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -232,7 +231,7 @@ test_that("compute_spc_results_bfh() requires y_var parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires chart_type parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende chart_type (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende chart_type)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -247,7 +246,7 @@ test_that("compute_spc_results_bfh() requires chart_type parameter", {
 })
 
 test_that("compute_spc_results_bfh() validates chart_type values", {
-  skip("TODO Fase 4: compute_spc_results_bfh() validerer ikke ugyldigt chart_type (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (ugyldigt chart_type)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -263,7 +262,7 @@ test_that("compute_spc_results_bfh() validates chart_type values", {
 })
 
 test_that("compute_spc_results_bfh() requires n_var for P charts", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende n_var for P-chart (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende n_var for P-chart)")
   data <- create_test_data(n_rows = 20, chart_type = "p")
 
   # P charts need denominator
@@ -281,7 +280,7 @@ test_that("compute_spc_results_bfh() requires n_var for P charts", {
 })
 
 test_that("compute_spc_results_bfh() requires n_var for U charts", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende n_var for U-chart (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende n_var for U-chart)")
   data <- create_test_data(n_rows = 20, chart_type = "u")
 
   expect_error(
@@ -299,42 +298,6 @@ test_that("compute_spc_results_bfh() requires n_var for U charts", {
 
 # Optional Parameters Tests ---------------------------------------------------
 
-test_that("compute_spc_results_bfh() accepts optional freeze_var", {
-  skip("TODO Fase 4: metadata indeholder ikke freeze_var (#203-followup)")
-  set.seed(20251015)
-  data <- create_test_data(n_rows = 30)
-  data$freeze <- c(rep(FALSE, 20), rep(TRUE, 10))
-
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "month",
-    y_var = "value",
-    chart_type = "run",
-    freeze_var = "freeze"
-  )
-
-  expect_s3_class(result$plot, "ggplot")
-  expect_true("freeze_var" %in% names(result$metadata))
-})
-
-test_that("compute_spc_results_bfh() accepts optional part_var", {
-  skip("TODO Fase 4: metadata indeholder ikke part_var (#203-followup)")
-  set.seed(20251015)
-  data <- create_test_data(n_rows = 40)
-  data$phase <- c(rep(1, 20), rep(2, 20))
-
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "month",
-    y_var = "value",
-    chart_type = "run",
-    part_var = "phase"
-  )
-
-  expect_s3_class(result$plot, "ggplot")
-  expect_true("part_var" %in% names(result$metadata))
-})
-
 test_that("compute_spc_results_bfh() accepts optional multiply parameter", {
   set.seed(20251015)
   data <- create_test_data(n_rows = 20, chart_type = "p")
@@ -345,30 +308,12 @@ test_that("compute_spc_results_bfh() accepts optional multiply parameter", {
     y_var = "numerator",
     n_var = "denominator",
     chart_type = "p",
-    multiply = 100  # Convert to percentage
+    multiply = 100 # Convert to percentage
   )
 
   expect_s3_class(result$plot, "ggplot")
   # Values should be scaled by 100
   expect_true(max(result$qic_data$y, na.rm = TRUE) > 1)
-})
-
-test_that("compute_spc_results_bfh() accepts optional cl_var", {
-  skip("TODO Fase 4: metadata indeholder ikke cl_var (#203-followup)")
-  set.seed(20251015)
-  data <- create_test_data(n_rows = 20)
-  data$custom_cl <- rep(50, 20)
-
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "month",
-    y_var = "value",
-    chart_type = "run",
-    cl_var = "custom_cl"
-  )
-
-  expect_s3_class(result$plot, "ggplot")
-  expect_true("cl_var" %in% names(result$metadata))
 })
 
 test_that("compute_spc_results_bfh() resolves reactive chart title before BFHcharts call", {
@@ -398,7 +343,7 @@ test_that("compute_spc_results_bfh() resolves reactive chart title before BFHcha
 
 # Integration Tests: Validator Integration ====================================
 
-#"Integration Tests - Validator Integration")
+# "Integration Tests - Validator Integration")
 
 test_that("compute_spc_results_bfh() integrates with filter_complete_spc_data()", {
   set.seed(20251015)
@@ -436,7 +381,7 @@ test_that("compute_spc_results_bfh() integrates with parse_and_validate_spc_data
 })
 
 test_that("compute_spc_results_bfh() handles validation errors gracefully", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for ikke-numerisk y (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (ikke-numerisk y)")
   # Create invalid data (non-numeric values)
   data <- tibble::tibble(
     month = 1:10,
@@ -457,7 +402,7 @@ test_that("compute_spc_results_bfh() handles validation errors gracefully", {
 
 # Integration Tests: Output Compatibility =====================================
 
-#"Integration Tests - Output Compatibility")
+# "Integration Tests - Output Compatibility")
 
 test_that("compute_spc_results_bfh() output is compatible with existing plot functions", {
   set.seed(20251015)
@@ -502,10 +447,10 @@ test_that("compute_spc_results_bfh() qic_data has correct column types", {
 
 # Error Handling Tests ========================================================
 
-#"Error Handling Tests")
+# "Error Handling Tests")
 
 test_that("compute_spc_results_bfh() handles empty data", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for tom data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (tom data)")
   empty_data <- tibble::tibble(
     month = as.Date(character(0)),
     value = numeric(0)
@@ -524,7 +469,7 @@ test_that("compute_spc_results_bfh() handles empty data", {
 })
 
 test_that("compute_spc_results_bfh() handles single data point", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for enkelt datapunkt (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (enkelt datapunkt)")
   single_point <- tibble::tibble(
     month = as.Date("2024-01-01"),
     value = 50
@@ -543,7 +488,7 @@ test_that("compute_spc_results_bfh() handles single data point", {
 })
 
 test_that("compute_spc_results_bfh() handles all NA values", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for all-NA data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (all-NA data)")
   all_na <- tibble::tibble(
     month = seq.Date(from = as.Date("2024-01-01"), by = "month", length.out = 20),
     value = rep(NA_real_, 20)
@@ -562,7 +507,7 @@ test_that("compute_spc_results_bfh() handles all NA values", {
 })
 
 test_that("compute_spc_results_bfh() handles missing columns", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for manglende kolonner (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende kolonner)")
   data <- create_test_data(n_rows = 20)
 
   expect_error(
@@ -579,7 +524,7 @@ test_that("compute_spc_results_bfh() handles missing columns", {
 
 # Edge Cases Tests ============================================================
 
-#"Edge Cases")
+# "Edge Cases")
 
 test_that("compute_spc_results_bfh() handles very small datasets (n=3)", {
   set.seed(20251015)
@@ -632,13 +577,13 @@ test_that("compute_spc_results_bfh() handles zero values", {
 test_that("compute_spc_results_bfh() handles negative values", {
   set.seed(20251015)
   data <- create_test_data(n_rows = 20)
-  data$value <- rnorm(20, mean = 0, sd = 10)  # Can be negative
+  data$value <- rnorm(20, mean = 0, sd = 10) # Can be negative
 
   result <- compute_spc_results_bfh(
     data = data,
     x_var = "month",
     y_var = "value",
-    chart_type = "i"  # I charts can handle negative values
+    chart_type = "i" # I charts can handle negative values
   )
 
   expect_s3_class(result$plot, "ggplot")
@@ -647,7 +592,7 @@ test_that("compute_spc_results_bfh() handles negative values", {
 test_that("compute_spc_results_bfh() handles constant values", {
   set.seed(20251015)
   data <- create_test_data(n_rows = 20)
-  data$value <- rep(50, 20)  # No variation
+  data$value <- rep(50, 20) # No variation
 
   result <- compute_spc_results_bfh(
     data = data,
@@ -663,32 +608,14 @@ test_that("compute_spc_results_bfh() handles constant values", {
 
 # Comments/Notes Column Tests =================================================
 
-#"Comments/Notes Integration")
-
-test_that("compute_spc_results_bfh() handles notes_column parameter", {
-  skip("TODO Fase 4: metadata indeholder ikke notes_column (#203-followup)")
-  set.seed(20251015)
-  data <- create_test_data(n_rows = 20)
-  data$comments <- c(rep("", 15), rep("Important event", 5))
-
-  result <- compute_spc_results_bfh(
-    data = data,
-    x_var = "month",
-    y_var = "value",
-    chart_type = "run",
-    notes_column = "comments"
-  )
-
-  expect_s3_class(result$plot, "ggplot")
-  expect_true("notes_column" %in% names(result$metadata))
-})
+# "Comments/Notes Integration")
 
 # Baseline Tests Using Task #29 Fixtures ======================================
 
-#"Baseline Regression Tests")
+# "Baseline Regression Tests")
 
 test_that("compute_spc_results_bfh() baseline: run-basic", {
-  skip("TODO Fase 4: cl mismatch mod qicharts2 baseline (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, baseline run-basic)")
   # Load qicharts2 baseline from Task #29
   baseline_path <- here::here("tests/testthat/fixtures/qic-baseline/run-basic.rds")
 
@@ -698,8 +625,8 @@ test_that("compute_spc_results_bfh() baseline: run-basic", {
     # Run BFHchart service with same input
     result <- compute_spc_results_bfh(
       data = baseline$input_data,
-      x_var = names(baseline$input_data)[1],  # x column
-      y_var = names(baseline$input_data)[2],  # y column
+      x_var = names(baseline$input_data)[1], # x column
+      y_var = names(baseline$input_data)[2], # y column
       chart_type = baseline$chart_type
     )
 
@@ -715,7 +642,7 @@ test_that("compute_spc_results_bfh() baseline: run-basic", {
 })
 
 test_that("compute_spc_results_bfh() baseline: p-anhoej", {
-  skip("TODO Fase 4: signal mismatch mod qicharts2 Anhøj baseline (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (Anhøj signal mismatch, baseline p-anhoej)")
   baseline_path <- here::here("tests/testthat/fixtures/qic-baseline/p-anhoej.rds")
 
   if (file.exists(baseline_path)) {
@@ -738,7 +665,7 @@ test_that("compute_spc_results_bfh() baseline: p-anhoej", {
 
 # Performance Tests ===========================================================
 
-#"Performance Tests")
+# "Performance Tests")
 
 test_that("compute_spc_results_bfh() completes within reasonable time", {
   set.seed(20251015)

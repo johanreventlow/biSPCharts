@@ -76,7 +76,7 @@ extract_column_names <- function(baseline) {
   # y_var: "Vaerdi" (value) OR "Taeller" (numerator for rate charts)
   # n_var: "Naevner" (denominator for rate charts)
 
-  x_var <- "Dato"  # Always first column in baselines
+  x_var <- "Dato" # Always first column in baselines
 
   # Identify y_var based on chart type and available columns
   if ("Vaerdi" %in% col_names) {
@@ -133,7 +133,7 @@ extract_column_names <- function(baseline) {
 # ============================================================================
 
 test_that("Run chart: Basic scenario matches qicharts2", {
-  skip("TODO Fase 4: bfh_result returnerer ikke expected struktur (plot/qic_data/metadata) + cl mismatch (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch + strict expect_named)")
   # Arrange
   baseline <- load_baseline("run", "basic")
   cols <- extract_column_names(baseline)
@@ -144,7 +144,7 @@ test_that("Run chart: Basic scenario matches qicharts2", {
     data = baseline$input_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
-    n_var = cols$n_var,  # Include denominator for proportion calculation
+    n_var = cols$n_var, # Include denominator for proportion calculation
     chart_type = "run"
   )
 
@@ -186,7 +186,7 @@ test_that("Run chart: Anhøj violations detected", {
     data = baseline$input_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
-    n_var = cols$n_var,  # Include denominator
+    n_var = cols$n_var, # Include denominator
     chart_type = "run"
   )
 
@@ -207,7 +207,7 @@ test_that("Run chart: Anhøj violations detected", {
 })
 
 test_that("Run chart: Freeze period handling", {
-  skip("TODO Fase 4: cl mismatch mod qicharts2 baseline (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, run freeze)")
   # Arrange
   baseline <- load_baseline("run", "freeze")
   cols <- extract_column_names(baseline)
@@ -217,7 +217,7 @@ test_that("Run chart: Freeze period handling", {
     data = baseline$input_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
-    n_var = cols$n_var,  # Include denominator
+    n_var = cols$n_var, # Include denominator
     chart_type = "run",
     freeze_var = cols$freeze_var
   )
@@ -588,7 +588,7 @@ test_that("U chart: Freeze period handling", {
 # ============================================================================
 
 test_that("Xbar chart: Subgroup means", {
-  skip("TODO Fase 4: ucl/lcl mismatch mod qicharts2 baseline (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl mismatch, xbar subgroup means)")
   # Arrange
   baseline <- load_baseline("xbar", "basic")
   cols <- extract_column_names(baseline)
@@ -669,7 +669,7 @@ test_that("Xbar chart: Freeze period handling", {
 # ============================================================================
 
 test_that("S chart: Standard deviation", {
-  skip("TODO Fase 4: ucl/lcl/cl mismatch mod qicharts2 baseline (#203-followup)")
+  skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl/cl mismatch, s chart SD)")
   # Arrange
   baseline <- load_baseline("s", "basic")
   cols <- extract_column_names(baseline)

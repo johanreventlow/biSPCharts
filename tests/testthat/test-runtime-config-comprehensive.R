@@ -6,8 +6,10 @@ library(testthat)
 
 test_that("initialize_runtime_config works with default settings", {
   # TEST: Default configuration initialization
-  expect_true(exists("initialize_runtime_config", mode = "function"),
-              "initialize_runtime_config function must be available")
+  expect_true(
+    exists("initialize_runtime_config", mode = "function"),
+    "initialize_runtime_config function must be available"
+  )
 
   config <- initialize_runtime_config()
 
@@ -18,12 +20,14 @@ test_that("initialize_runtime_config works with default settings", {
   expect_true("logging" %in% names(config))
   # Aktuelt hedder sektionen "testing" (ikke "test_mode")
   expect_true("testing" %in% names(config),
-              info = "Config skal have 'testing' sektion (opdateret fra 'test_mode')")
+    info = "Config skal have 'testing' sektion (opdateret fra 'test_mode')"
+  )
 
   # Verify development section (indeholder session-persistence settings, ikke debug_enabled)
   expect_type(config$development, "list")
   expect_true(length(config$development) > 0,
-              info = "development sektion skal have indhold")
+    info = "development sektion skal have indhold"
+  )
 
   # Verify environment section
   expect_type(config$environment, "list")
@@ -34,7 +38,8 @@ test_that("initialize_runtime_config works with default settings", {
   # Verify logging section (level hedder log_level ikke level)
   expect_type(config$logging, "list")
   expect_true("log_level" %in% names(config$logging),
-              info = "logging sektion skal have 'log_level' felt (ikke 'level')")
+    info = "logging sektion skal have 'log_level' felt (ikke 'level')"
+  )
   expect_true(toupper(config$logging$log_level) %in% c("DEBUG", "INFO", "WARN", "WARNING", "ERROR"))
 })
 
@@ -58,19 +63,24 @@ test_that("initialize_runtime_config respects override_options", {
 })
 
 test_that("determine_environment_type_from_context works correctly", {
-  skip_if_not(exists("determine_environment_type_from_context", mode = "function"),
-              "determine_environment_type_from_context not available - check test setup")
+  skip_if_not(
+    exists("determine_environment_type_from_context", mode = "function"),
+    "determine_environment_type_from_context not available - check test setup"
+  )
 
   # TEST: CI environment detection
   old_ci <- Sys.getenv("CI", unset = NA_character_)
   Sys.setenv(CI = "true")
-  on.exit({
-    if (is.na(old_ci)) {
-      Sys.unsetenv("CI")
-    } else {
-      Sys.setenv(CI = old_ci)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (is.na(old_ci)) {
+        Sys.unsetenv("CI")
+      } else {
+        Sys.setenv(CI = old_ci)
+      }
+    },
+    add = TRUE
+  )
 
   env_type <- determine_environment_type_from_context()
   expect_true(env_type %in% c("ci", "test", "production", "development"))
@@ -82,21 +92,30 @@ test_that("determine_environment_type_from_context works correctly", {
 })
 
 test_that("setup_development_config creates valid configuration", {
-  skip_if_not(exists("setup_development_config", mode = "function"),
-              "setup_development_config not available - check test setup")
+  skip_if_not(
+    exists("setup_development_config", mode = "function"),
+    "setup_development_config not available - check test setup"
+  )
 
-  # TEST: Default development config
+  # TEST: Default development config — session-persistence schema (Issue #193)
   dev_config <- setup_development_config()
 
   expect_type(dev_config, "list")
-  # "debug_enabled" er erstattet med session-persistence settings (auto_save, etc.)
-  # TODO Fase 4: Opdater denne test til nuværende development config struktur (#203-followup)
-  skip("TODO Fase 4: setup_development_config struktur er ændret - debug_enabled er fjernet (#203-followup)")
+  # Verificér session-persistence-feltnavne (erstattede legacy debug_enabled)
+  expect_true("auto_save_enabled" %in% names(dev_config))
+  expect_true("auto_restore_enabled" %in% names(dev_config))
+  expect_true("save_interval_ms" %in% names(dev_config))
+  expect_true("settings_save_interval_ms" %in% names(dev_config))
+  # Default port skal være sat
+  expect_true("default_port" %in% names(dev_config))
+  expect_true(is.numeric(dev_config$default_port))
 })
 
 test_that("setup_environment_features detects environment correctly", {
-  skip_if_not(exists("setup_environment_features", mode = "function"),
-              "setup_environment_features not available - check test setup")
+  skip_if_not(
+    exists("setup_environment_features", mode = "function"),
+    "setup_environment_features not available - check test setup"
+  )
 
   # TEST: Environment feature detection
   env_config <- setup_environment_features()
@@ -114,8 +133,10 @@ test_that("setup_environment_features detects environment correctly", {
 })
 
 test_that("setup_logging_features creates appropriate log levels", {
-  skip_if_not(exists("setup_logging_features", mode = "function"),
-              "setup_logging_features not available - check test setup")
+  skip_if_not(
+    exists("setup_logging_features", mode = "function"),
+    "setup_logging_features not available - check test setup"
+  )
 
   # TEST: Default logging config
   log_config <- setup_logging_features()
@@ -123,7 +144,8 @@ test_that("setup_logging_features creates appropriate log levels", {
   expect_type(log_config, "list")
   # Logging feltet hedder "log_level" ikke "level"
   expect_true("log_level" %in% names(log_config),
-              info = "Logging config skal have 'log_level' felt")
+    info = "Logging config skal have 'log_level' felt"
+  )
   expect_true(toupper(log_config$log_level) %in% c("DEBUG", "INFO", "WARN", "WARNING", "ERROR"))
 
   # TEST: Override logging level
@@ -149,16 +171,19 @@ test_that("runtime config handles environment variables correctly", {
   Sys.setenv(DEBUG_MODE = "FALSE")
   Sys.setenv(LOG_LEVEL = "info")
 
-  on.exit({
-    # Restore original environment variables
-    for (var_name in names(original_vars)) {
-      if (is.na(original_vars[[var_name]])) {
-        Sys.unsetenv(names(original_vars)[which(names(original_vars) == var_name)])
-      } else {
-        do.call(Sys.setenv, setNames(list(original_vars[[var_name]]), var_name))
+  on.exit(
+    {
+      # Restore original environment variables
+      for (var_name in names(original_vars)) {
+        if (is.na(original_vars[[var_name]])) {
+          Sys.unsetenv(names(original_vars)[which(names(original_vars) == var_name)])
+        } else {
+          do.call(Sys.setenv, setNames(list(original_vars[[var_name]]), var_name))
+        }
       }
-    }
-  }, add = TRUE)
+    },
+    add = TRUE
+  )
 
   # TEST: Configuration respects environment variables
   config <- initialize_runtime_config()
@@ -201,7 +226,8 @@ test_that("runtime config backwards compatibility maintained", {
 
   for (key in legacy_required_keys) {
     expect_true(key %in% names(config),
-                info = paste("Legacy key", key, "should be present for backwards compatibility"))
+      info = paste("Legacy key", key, "should be present for backwards compatibility")
+    )
   }
 
   # TEST: Testing mode configuration (sektionen hedder "testing" ikke "test_mode")
@@ -265,14 +291,16 @@ test_that("runtime config thread safety and state consistency", {
   # All configs should have consistent structure
   for (i in 2:5) {
     expect_equal(names(configs[[1]]), names(configs[[i]]),
-                 info = paste("Config", i, "should have same structure as config 1"))
+      info = paste("Config", i, "should have same structure as config 1")
+    )
   }
 
   # Environment-specific values should be consistent
   for (i in 2:5) {
     # is_ci er ikke i environment - brug environment_type eller is_development
     expect_equal(configs[[1]]$environment$environment_type,
-                 configs[[i]]$environment$environment_type,
-                 info = "environment_type should be consistent across config instances")
+      configs[[i]]$environment$environment_type,
+      info = "environment_type should be consistent across config instances"
+    )
   }
 })

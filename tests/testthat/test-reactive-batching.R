@@ -24,117 +24,12 @@ test_that("schedule_batched_update schedules execution", {
   expect_false(executed)
 })
 
-test_that("schedule_batched_update batches rapid-fire events", {
-  skip("TODO Fase 4: is_batch_pending er ikke implementeret (#203-followup)")
-  skip_if_not(requireNamespace("later", quietly = TRUE), "later package not available")
-
-  app_state <- create_app_state()
-
-  # Fire 5 rapid events with same batch key
-  for (i in 1:5) {
-    schedule_batched_update(
-      update_fn = function() {},
-      delay_ms = 50,
-      app_state = app_state,
-      batch_key = "test_batch"
-    )
-  }
-
-  # Should have scheduled only once (batch pending after first call)
-  # Subsequent calls with same batch_key should be no-ops
-  expect_true(is_batch_pending(app_state, "test_batch"))
-
-  # Clean up
-  clear_all_batches(app_state)
-})
-
-test_that("schedule_batched_update handles different batch keys independently", {
-  skip("TODO Fase 4: is_batch_pending er ikke implementeret (#203-followup)")
-  skip_if_not(requireNamespace("later", quietly = TRUE), "later package not available")
-
-  app_state <- create_app_state()
-
-  # Schedule events with different batch keys
-  schedule_batched_update(
-    update_fn = function() {},
-    delay_ms = 10,
-    app_state = app_state,
-    batch_key = "batch1"
-  )
-
-  schedule_batched_update(
-    update_fn = function() {},
-    delay_ms = 10,
-    app_state = app_state,
-    batch_key = "batch2"
-  )
-
-  # Both batches should be pending independently
-  expect_true(is_batch_pending(app_state, "batch1"))
-  expect_true(is_batch_pending(app_state, "batch2"))
-
-  # Clean up
-  clear_all_batches(app_state)
-})
-
-test_that("schedule_batched_update handles errors gracefully", {
-  skip("TODO Fase 4: is_batch_pending er ikke implementeret (#203-followup)")
-  skip_if_not(requireNamespace("later", quietly = TRUE), "later package not available")
-
-  app_state <- create_app_state()
-
-  # Schedule update that will error
-  expect_silent({
-    schedule_batched_update(
-      update_fn = function() {
-        stop("Intentional error for testing")
-      },
-      delay_ms = 10,
-      app_state = app_state,
-      batch_key = "error_batch"
-    )
-  })
-
-  # Should have scheduled despite error-prone function
-  expect_true(is_batch_pending(app_state, "error_batch"))
-
-  # Clean up
-  clear_all_batches(app_state)
-})
-
-test_that("is_batch_pending returns FALSE for non-existent batches", {
-  skip("TODO Fase 4: is_batch_pending er ikke implementeret i nuværende codebase (#203-followup)")
-})
-
-test_that("clear_all_batches removes all pending batches", {
-  skip("TODO Fase 4: is_batch_pending/clear_all_batches er ikke implementeret (#203-followup)")
-  skip_if_not(requireNamespace("later", quietly = TRUE), "later package not available")
-
-  app_state <- create_app_state()
-
-  # Schedule multiple batches
-  for (i in 1:3) {
-    schedule_batched_update(
-      update_fn = function() {},
-      delay_ms = 100,
-      app_state = app_state,
-      batch_key = paste0("batch", i)
-    )
-  }
-
-  # All should be pending
-  expect_true(is_batch_pending(app_state, "batch1"))
-  expect_true(is_batch_pending(app_state, "batch2"))
-  expect_true(is_batch_pending(app_state, "batch3"))
-
-  # Clear all batches
-  clear_all_batches(app_state)
-
-  # All should be cleared
-  expect_false(is_batch_pending(app_state, "batch1"))
-  expect_false(is_batch_pending(app_state, "batch2"))
-  expect_false(is_batch_pending(app_state, "batch3"))
-})
+# 5 test-blokke fjernet i §1.2.2 (PR-batch A+B):
+# is_batch_pending() og clear_all_batches() state-inspection-helpers blev
+# aldrig implementeret i R/. Kun schedule_batched_update() eksisterer
+# (R/utils_reactive_batching.R:74). Tests forudsatte en state-tracking-
+# arkitektur der ikke findes. Se docs/test-suite-inventory-203.md §
+# "Inventory af skip('TODO')-kald".
 
 test_that("schedule_batched_update validates input parameters", {
   expect_error(
@@ -153,34 +48,9 @@ test_that("schedule_batched_update validates input parameters", {
   )
 })
 
-# Integration test: Column input batching behavior
-test_that("handle_column_input uses batching infrastructure", {
-  skip("TODO Fase 4: is_batch_pending er ikke implementeret (#203-followup)")
-  skip_if_not(requireNamespace("later", quietly = TRUE), "later package not available")
-
-  app_state <- create_app_state()
-
-  # Mock emit API (minimal implementation)
-  emit <- list(
-    column_choices_changed = function() {}
-  )
-
-  # Rapid-fire column input changes
-  for (i in 1:5) {
-    handle_column_input(
-      col_name = "x_column",
-      new_value = paste0("column_", i),
-      app_state = app_state,
-      emit = emit
-    )
-  }
-
-  # Should have scheduled batch (verified by pending flag)
-  expect_true(is_batch_pending(app_state, "column_choices"))
-
-  # Clean up
-  clear_all_batches(app_state)
-})
+# Integrationstest "handle_column_input uses batching infrastructure"
+# fjernet i §1.2.2 — afhængig af is_batch_pending/clear_all_batches (ikke
+# implementeret). Se note ovenfor.
 
 # Edge case: Fallback behavior without app_state
 test_that("schedule_batched_update works without app_state (fallback mode)", {
@@ -199,27 +69,6 @@ test_that("schedule_batched_update works without app_state (fallback mode)", {
   # This tests the fallback path works without errors
 })
 
-# Test batching infrastructure creation
-test_that("batching infrastructure is created lazily", {
-  skip("TODO Fase 4: batching infrastructure er ikke implementeret (#203-followup)")
-
-  app_state <- create_app_state()
-
-  # Initially no batching environment
-  expect_false(exists("batching", envir = app_state, inherits = FALSE))
-
-  # First schedule creates infrastructure
-  schedule_batched_update(
-    update_fn = function() {},
-    delay_ms = 10,
-    app_state = app_state,
-    batch_key = "test"
-  )
-
-  # Now batching infrastructure should exist
-  expect_true(exists("batching", envir = app_state, inherits = FALSE))
-  expect_true(exists("pending_batches", envir = app_state$batching, inherits = FALSE))
-
-  # Clean up
-  clear_all_batches(app_state)
-})
+# Test "batching infrastructure is created lazily" fjernet i §1.2.2 —
+# forudsat app_state$batching-environment eksisterer ikke i nuværende
+# reactive batching implementation. Se note ovenfor.

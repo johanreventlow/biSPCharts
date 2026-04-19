@@ -11,14 +11,14 @@ test_that("Input sanitization forhindrer SQL injection patterns", {
   # SQL keywords som DROP, INSERT, SELECT bliver IKKE fjernet — kun tegn der ikke er i
   # allowed_chars pattern fjernes. SQL injection prevention er ikke scope for denne funktion
   # (appen bruger ikke SQL, kun CSV/Excel data).
-  skip("TODO Fase 4: sanitize_user_input laver ikke SQL injection prevention - kun XSS+whitelist (#203-followup)")
+  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (SQL injection)")
 })
 
 test_that("Input sanitization forhindrer path traversal attacks", {
   # sanitize_user_input laver ikke path traversal prevention.
   # Dot-dot sekvenser (".." og "%2e%2e") bevares fordi de kan indgå i legitim tekst.
   # Path traversal håndteres af validate_safe_path() (separat funktion).
-  skip("TODO Fase 4: sanitize_user_input laver ikke path traversal prevention - brug validate_safe_path() (#203-followup)")
+  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (path traversal)")
 })
 
 test_that("Input sanitization håndterer Unicode edge cases", {
@@ -28,30 +28,35 @@ test_that("Input sanitization håndterer Unicode edge cases", {
   emoji_input <- "Test 😀🎉 data med emoji"
   result1 <- sanitize_user_input(emoji_input, html_escape = FALSE)
   expect_equal(result1, "Test  data med emoji",
-               info = "Emoji skal fjernes men bevare spacing")
+    info = "Emoji skal fjernes men bevare spacing"
+  )
 
   # Test Unicode normalization consistency
-  unicode_combined <- "cafe\u0301"  # café med combining accent
-  unicode_composed <- "caf\u00e9"  # café som single characters (é = U+00E9)
+  unicode_combined <- "cafe\u0301" # café med combining accent
+  unicode_composed <- "caf\u00e9" # café som single characters (é = U+00E9)
   result1 <- sanitize_user_input(unicode_combined, html_escape = FALSE)
   result2 <- sanitize_user_input(unicode_composed, html_escape = FALSE)
   # sanitize_user_input laver ikke Unicode normalization, men begge skal give output
   expect_true(nchar(result1) > 0,
-              info = "Unicode combined input skal give ikke-tom output")
+    info = "Unicode combined input skal give ikke-tom output"
+  )
   expect_true(nchar(result2) > 0,
-              info = "Unicode composed input skal give ikke-tom output")
+    info = "Unicode composed input skal give ikke-tom output"
+  )
 
   # Test zero-width og control characters
   zero_width_input <- "Test\u200B\u200C\u200D\uFEFFdata"
   result <- sanitize_user_input(zero_width_input, html_escape = FALSE)
   expect_equal(result, "Testdata",
-               info = "Zero-width og control characters skal fjernes")
+    info = "Zero-width og control characters skal fjernes"
+  )
 
   # Test potentielt farlige Unicode ranges
-  dangerous_unicode <- "Test\u2028\u2029\u0085data"  # Line/paragraph separators
+  dangerous_unicode <- "Test\u2028\u2029\u0085data" # Line/paragraph separators
   result <- sanitize_user_input(dangerous_unicode, html_escape = FALSE)
   expect_false(grepl("[\u2028\u2029\u0085]", result),
-               info = "Farlige Unicode separators skal fjernes")
+    info = "Farlige Unicode separators skal fjernes"
+  )
 })
 
 test_that("Column name sanitization håndterer kliniske data patterns", {
@@ -72,20 +77,25 @@ test_that("Column name sanitization håndterer kliniske data patterns", {
 
     # Should preserve meaningful parts
     expect_true(nchar(result) > 0,
-                info = paste("Column name should not be empty:", col_name))
+      info = paste("Column name should not be empty:", col_name)
+    )
 
     # Should preserve Danish characters
-    expect_true(all(stringr::str_detect(result, "[æøåÆØÅ]") ==
-                   stringr::str_detect(col_name, "[æøåÆØÅ]")),
-                info = paste("Danish characters should be preserved:", col_name))
+    expect_true(
+      all(stringr::str_detect(result, "[æøåÆØÅ]") ==
+        stringr::str_detect(col_name, "[æøåÆØÅ]")),
+      info = paste("Danish characters should be preserved:", col_name)
+    )
 
     # Should handle special characters safely
     expect_false(grepl("[()&%:]", result),
-                 info = paste("Special characters should be sanitized:", col_name))
+      info = paste("Special characters should be sanitized:", col_name)
+    )
   }
 })
 
 test_that("Logging API performance under load", {
+  set.seed(42)
   # Test performance regression - kritisk for production stability
   #
   # Performance skalering baseret på miljø:
@@ -101,16 +111,16 @@ test_that("Logging API performance under load", {
 
   # Detect execution environment
   is_ci <- isTRUE(as.logical(Sys.getenv("CI", "FALSE"))) ||
-           isTRUE(as.logical(Sys.getenv("GITHUB_ACTIONS", "FALSE"))) ||
-           isTRUE(as.logical(Sys.getenv("GITLAB_CI", "FALSE"))) ||
-           nzchar(Sys.getenv("JENKINS_URL"))
+    isTRUE(as.logical(Sys.getenv("GITHUB_ACTIONS", "FALSE"))) ||
+    isTRUE(as.logical(Sys.getenv("GITLAB_CI", "FALSE"))) ||
+    nzchar(Sys.getenv("JENKINS_URL"))
 
   # Determine platform characteristics
   platform <- Sys.info()[["sysname"]]
   is_windows <- platform == "Windows"
 
   # Calculate performance threshold based on environment
-  base_threshold <- 1.0  # Baseline: 500 logs in 1 second
+  base_threshold <- 1.0 # Baseline: 500 logs in 1 second
 
   if (is_ci) {
     # CI environments: 2.5x baseline (most lenient)
@@ -151,7 +161,7 @@ test_that("Logging API performance under load", {
 
   # Test memory efficiency - ingen store memory leaks
   gc_before <- gc()
-  start_memory <- sum(gc_before[,2])
+  start_memory <- sum(gc_before[, 2])
 
   for (i in 1:100) {
     log_warn(
@@ -162,7 +172,7 @@ test_that("Logging API performance under load", {
   }
 
   gc_after <- gc()
-  end_memory <- sum(gc_after[,2])
+  end_memory <- sum(gc_after[, 2])
   memory_growth <- end_memory - start_memory
 
   # Memory growth should be reasonable (< 10MB for 100 logs)
@@ -171,7 +181,7 @@ test_that("Logging API performance under load", {
 
 test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
   # Observer execution order kan ikke testes udenfor en reaktiv kontekst (shinytest2/shinyApp)
-  skip("TODO Fase 4: Observer priority execution order kræver reaktiv kontekst (shinytest2) (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   skip_if_not(exists("reactiveVal"), message = "Shiny reactive functions not available")
 
@@ -201,11 +211,14 @@ test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
 
     # Verify execution order respects priorities
     expect_equal(execution_order[1], "HIGH_PRIORITY",
-                 info = "STATE_MANAGEMENT should execute first")
+      info = "STATE_MANAGEMENT should execute first"
+    )
     expect_equal(execution_order[2], "LOW_PRIORITY",
-                 info = "UI_SYNC should execute second")
+      info = "UI_SYNC should execute second"
+    )
     expect_equal(execution_order[3], "LOWEST_PRIORITY",
-                 info = "CLEANUP should execute last")
+      info = "CLEANUP should execute last"
+    )
   })
 })
 
@@ -214,20 +227,23 @@ test_that("Error boundaries fungerer med structured logging", {
 
   # Test fejl med details formatting
   expect_no_error({
-    tryCatch({
-      stop("Simuleret fejl")
-    }, error = function(e) {
-      log_error(
-        message = "Error caught and logged",
-        component = "[ERROR_TEST]",
-        details = list(
-          error_class = class(e),
-          error_message = conditionMessage(e),
-          stack_trace = "simulated_trace"
+    tryCatch(
+      {
+        stop("Simuleret fejl")
+      },
+      error = function(e) {
+        log_error(
+          message = "Error caught and logged",
+          component = "[ERROR_TEST]",
+          details = list(
+            error_class = class(e),
+            error_message = conditionMessage(e),
+            stack_trace = "simulated_trace"
+          )
         )
-      )
-    })
-  })  # expect_no_error accepterer ikke info= i testthat 3.x
+      }
+    )
+  }) # expect_no_error accepterer ikke info= i testthat 3.x
 
   # Test circular reference handling i error details
   circular_obj <- list(data = "test")
@@ -252,11 +268,13 @@ test_that("Input validation edge cases håndteres", {
   very_long_input <- paste(rep("A", 10000), collapse = "")
   result <- sanitize_user_input(very_long_input, max_length = 100)
   expect_equal(nchar(result), 100,
-               info = "Very long input should be truncated to max_length")
+    info = "Very long input should be truncated to max_length"
+  )
 
   # NULL and edge case inputs
   expect_equal(sanitize_user_input(NULL), "",
-               info = "NULL input should return empty string")
+    info = "NULL input should return empty string"
+  )
   # TODO Fase 4: sanitize_user_input krasher på character(0) og NA_character_
   # (subscript out of bounds i strsplit). Disse edge cases er ikke håndteret.
   # expect_equal(sanitize_user_input(character(0)), "",
@@ -268,11 +286,13 @@ test_that("Input validation edge cases håndteres", {
   mixed_encoding <- "Normal text mixed with \u00e9\u00f1\u00fc special chars"
   result <- sanitize_user_input(mixed_encoding)
   expect_true(nchar(result) > 0,
-               info = "Mixed encoding should be handled gracefully")
+    info = "Mixed encoding should be handled gracefully"
+  )
 
   # Binary-like input that might confuse regex
   binary_like <- "\\x00\\x01\\x02\\xff"
   result <- sanitize_user_input(binary_like, html_escape = FALSE)
   expect_equal(result, "x00x01x02xff",
-               info = "Binary-like sequences should be cleaned predictably")
+    info = "Binary-like sequences should be cleaned predictably"
+  )
 })

@@ -10,92 +10,38 @@ library(testthat)
 # EVENT CONTEXT RESOLUTION TESTS ===============================================
 
 test_that("resolve_column_update_reason correctly identifies contexts", {
-  # TEST: Context resolution logic from setup_event_listeners
-
-  resolve_column_update_reason <- function(context) {
-    if (is.null(context)) {
-      return("manual")
-    }
-
-    ctx <- tolower(context)
-
-    if (grepl("edit|change|modify|column", ctx, ignore.case = FALSE)) {
-      return("edit")
-    }
-
-    if (grepl("session", ctx, ignore.case = FALSE)) {
-      return("session")
-    }
-
-    if (grepl("load|upload|file|new", ctx, ignore.case = FALSE)) {
-      return("upload")
-    }
-
-    "manual"
-  }
+  # Tester den rigtige produktions-funktion (intern export).
+  # Tidligere synthetic test med lokal kopi — fixet i §2.1.2 (#230).
+  fn <- biSPCharts:::resolve_column_update_reason
 
   # TEST: Edit contexts
-  expect_equal(resolve_column_update_reason("table_edit"), "edit")
-  expect_equal(resolve_column_update_reason("column_change"), "edit")
-  expect_equal(resolve_column_update_reason("modify_data"), "edit")
+  expect_equal(fn("table_edit"), "edit")
+  expect_equal(fn("column_change"), "edit")
+  expect_equal(fn("modify_data"), "edit")
 
   # TEST: Session contexts
-  expect_equal(resolve_column_update_reason("session_restore"), "session")
-  expect_equal(resolve_column_update_reason("Session_Start"), "session")
+  expect_equal(fn("session_restore"), "session")
+  expect_equal(fn("Session_Start"), "session")
 
   # TEST: Upload contexts
-  expect_equal(resolve_column_update_reason("file_upload"), "upload")
-  expect_equal(resolve_column_update_reason("data_loaded"), "upload")
-  expect_equal(resolve_column_update_reason("new_file"), "upload")
+  expect_equal(fn("file_upload"), "upload")
+  expect_equal(fn("data_loaded"), "upload")
+  expect_equal(fn("new_file"), "upload")
 
   # TEST: Manual/default
-  expect_equal(resolve_column_update_reason(NULL), "manual")
-  expect_equal(resolve_column_update_reason("unknown_context"), "manual")
+  expect_equal(fn(NULL), "manual")
+  expect_equal(fn("unknown_context"), "manual")
 })
+
+# SYNTHETIC TESTS FJERNET §2.1.3 (#230):
+# Følgende test-blokke definerede aspirations-funktioner (determine_action_path,
+# determine_recovery_strategy, determine_session_start_action) der aldrig blev
+# implementeret i R/. De testede if/else-logik der ikke havde nogen reel
+# produktionsforbindelse. Hvis disse strategier skal genindføres, bør de
+# implementeres i R/utils_event_context_handlers.R først og derefter testes via
+# biSPCharts::: direkte kald.
 
 # DATA UPDATE CONTEXT HANDLING TESTS ===========================================
-
-test_that("data_updated context determines correct action path", {
-  # TEST: Logic for determining action based on data update context
-
-  determine_action_path <- function(context) {
-    if (is.null(context)) {
-      return("fallback")
-    }
-
-    is_table_edit <- identical(context, "table_cells_edited")
-    is_load <- grepl("load|upload|new", context, ignore.case = TRUE)
-    is_change <- grepl("change|edit|modify", context, ignore.case = TRUE)
-
-    if (is_load) {
-      return("trigger_autodetect")
-    } else if (is_table_edit) {
-      return("update_viz_only")
-    } else if (is_change) {
-      return("update_columns_and_viz")
-    } else {
-      return("update_columns_only")
-    }
-  }
-
-  # TEST: Load context triggers auto-detection
-  expect_equal(determine_action_path("file_upload"), "trigger_autodetect")
-  expect_equal(determine_action_path("data_loaded"), "trigger_autodetect")
-  expect_equal(determine_action_path("new_data"), "trigger_autodetect")
-
-  # TEST: Table edit context updates visualization only
-  expect_equal(determine_action_path("table_cells_edited"), "update_viz_only")
-
-  # TEST: Change context updates columns and visualization
-  expect_equal(determine_action_path("data_changed"), "update_columns_and_viz")
-  expect_equal(determine_action_path("user_edit"), "update_columns_and_viz")
-
-  # TEST: General context updates columns only
-  expect_equal(determine_action_path("general"), "update_columns_only")
-
-  # TEST: Fallback for NULL context
-  expect_equal(determine_action_path(NULL), "fallback")
-})
 
 # AUTO-DETECTION STATE MANAGEMENT TESTS ========================================
 
@@ -141,7 +87,7 @@ test_that("auto-detection respects frozen state except for manual trigger", {
 
   can_run_autodetect <- function(trigger_type, frozen) {
     if (trigger_type == "manual") {
-      return(TRUE)  # Manual trigger always bypasses frozen state
+      return(TRUE) # Manual trigger always bypasses frozen state
     }
     return(!frozen)
   }
@@ -155,7 +101,7 @@ test_that("auto-detection respects frozen state except for manual trigger", {
 
   # TEST: Manual trigger bypasses frozen state
   expect_true(can_run_autodetect("manual", frozen = FALSE))
-  expect_true(can_run_autodetect("manual", frozen = TRUE))  # BYPASSES!
+  expect_true(can_run_autodetect("manual", frozen = TRUE)) # BYPASSES!
 })
 
 # UI SYNCHRONIZATION LOGIC TESTS ===============================================
@@ -164,9 +110,15 @@ test_that("UI sync guards prevent race conditions", {
   # TEST: Guard conditions prevent concurrent operations
 
   should_skip_column_update <- function(state) {
-    if (state$data$updating_table) return(TRUE)
-    if (state$columns$auto_detect$in_progress) return(TRUE)
-    if (state$columns$ui_sync$needed) return(TRUE)
+    if (state$data$updating_table) {
+      return(TRUE)
+    }
+    if (state$columns$auto_detect$in_progress) {
+      return(TRUE)
+    }
+    if (state$columns$ui_sync$needed) {
+      return(TRUE)
+    }
     return(FALSE)
   }
 
@@ -232,76 +184,6 @@ test_that("UI sync completion triggers navigation change", {
 
 # ERROR HANDLING LOGIC TESTS ===================================================
 
-test_that("error context determines recovery strategy", {
-  # TEST: Error type influences recovery logic
-
-  determine_recovery_strategy <- function(error_type, error_context) {
-    if (error_type == "processing") {
-      if (!is.null(error_context) &&
-          grepl("data|processing|convert|qic", error_context, ignore.case = TRUE)) {
-        return("validate_data")
-      }
-      return("increment_attempts")
-    }
-
-    if (error_type == "validation") {
-      return("clear_validation_state")
-    }
-
-    if (error_type == "network") {
-      if (!is.null(error_context) &&
-          grepl("file|upload|download|io", error_context, ignore.case = TRUE)) {
-        return("retry_file_operation")
-      }
-      return("log_network_error")
-    }
-
-    if (error_type == "ui") {
-      return("sync_ui")
-    }
-
-    return("general_error_handling")
-  }
-
-  # TEST: Processing errors
-  expect_equal(
-    determine_recovery_strategy("processing", "data_processing"),
-    "validate_data"
-  )
-  expect_equal(
-    determine_recovery_strategy("processing", "other_context"),
-    "increment_attempts"
-  )
-
-  # TEST: Validation errors
-  expect_equal(
-    determine_recovery_strategy("validation", "any_context"),
-    "clear_validation_state"
-  )
-
-  # TEST: Network errors
-  expect_equal(
-    determine_recovery_strategy("network", "file_upload_failed"),
-    "retry_file_operation"
-  )
-  expect_equal(
-    determine_recovery_strategy("network", "api_timeout"),
-    "log_network_error"
-  )
-
-  # TEST: UI errors
-  expect_equal(
-    determine_recovery_strategy("ui", "render_error"),
-    "sync_ui"
-  )
-
-  # TEST: Unknown errors
-  expect_equal(
-    determine_recovery_strategy("unknown", NULL),
-    "general_error_handling"
-  )
-})
-
 test_that("error tracking maintains state correctly", {
   # TEST: Error state management logic
 
@@ -348,7 +230,7 @@ test_that("error tracking maintains state correctly", {
   # TEST: Network error only increments error count
   error_state <- record_error(error_state, "network", "file_download")
   expect_equal(error_state$error_count, 2L)
-  expect_equal(error_state$recovery_attempts, 1L)  # Not incremented
+  expect_equal(error_state$recovery_attempts, 1L) # Not incremented
   expect_equal(error_state$last_error$type, "network")
 
   # TEST: Validation error increments recovery attempts
@@ -462,24 +344,6 @@ test_that("session reset clears all state flags", {
   expect_null(state$columns$auto_detect$results)
   expect_false(state$columns$auto_detect$frozen_until_next_trigger)
   expect_null(state$columns$auto_detect$last_run)
-})
-
-test_that("session start with data triggers full detection", {
-  # TEST: Session start decision logic
-
-  determine_session_start_action <- function(has_data) {
-    if (has_data) {
-      return("skip_detection")  # Will be handled by data_loaded event
-    } else {
-      return("name_only_detection")
-    }
-  }
-
-  # TEST: With data - skip detection
-  expect_equal(determine_session_start_action(has_data = TRUE), "skip_detection")
-
-  # TEST: Without data - run name-only detection
-  expect_equal(determine_session_start_action(has_data = FALSE), "name_only_detection")
 })
 
 # EVENT CHAIN INTEGRATION TESTS ================================================
@@ -746,7 +610,9 @@ test_that("Observer priority concept er forståelig", {
   }
 
   execute_queue <- function() {
-    if (length(execution_queue) == 0) return(character(0))
+    if (length(execution_queue) == 0) {
+      return(character(0))
+    }
 
     sorted <- execution_queue[order(sapply(execution_queue, function(x) {
       if (x$priority < 0) 1000 + abs(x$priority) else -x$priority

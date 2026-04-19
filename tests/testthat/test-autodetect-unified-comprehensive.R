@@ -3,53 +3,6 @@
 # Tests core auto-detection logic, trigger systems, and state management
 # Critical for data upload workflows and user experience
 
-test_that("autodetect_engine basic functionality works", {
-  skip("TODO Fase 4: auto_detect$last_run er atomic ikke liste med $trigger (#203-followup)")
-  # TEST: Core autodetect_engine function with standard SPC data
-
-  # SETUP: Standard Danish SPC dataset
-  test_data <- data.frame(
-    Dato = c("01-01-2024", "01-02-2024", "01-03-2024", "01-04-2024"),
-    `Tæller` = c(45, 43, 48, 46),
-    `Nævner` = c(50, 50, 50, 50),
-    `Control limit` = c("CL1", "CL2", "CL1", "CL1"),
-    stringsAsFactors = FALSE,
-    check.names = FALSE
-  )
-
-  # SETUP: Mock app_state and emit functions
-  app_state <- create_test_app_state()
-  emit_called <- list()
-  mock_emit <- list(
-    auto_detection_started = function() { emit_called$auto_detection_started <- TRUE },
-    auto_detection_completed = function() { emit_called$auto_detection_completed <- TRUE }
-  )
-
-  # TEST: File upload trigger
-  result <- autodetect_engine(
-    data = test_data,
-    trigger_type = "file_upload",
-    app_state = app_state,
-    emit = mock_emit
-  )
-
-  # Verify column detection worked (autodetect may not detect all columns)
-  expect_equal(app_state$columns$mappings$x_column, "Dato")
-  expect_equal(app_state$columns$mappings$y_column, "Tæller")
-  expect_equal(app_state$columns$mappings$n_column, "Nævner")
-  # Control limit column detection may be NULL if not detected
-  expect_true(is.null(app_state$columns$mappings$cl_column) ||
-              app_state$columns$mappings$cl_column == "Control limit")
-
-  # Verify freeze state was set
-  expect_true(app_state$columns$auto_detect$frozen_until_next_trigger)
-
-  # Verify last run information
-  expect_false(is.null(app_state$columns$auto_detect$last_run))
-  expect_equal(app_state$columns$auto_detect$last_run$trigger, "file_upload")
-  expect_equal(app_state$columns$auto_detect$last_run$data_rows, 4)
-})
-
 test_that("autodetect_engine trigger validation works", {
   # TEST: Trigger types and frozen state management
 
@@ -149,43 +102,6 @@ test_that("autodetect_engine smart unfreeze works", {
   expect_true(app_state$columns$auto_detect$frozen_until_next_trigger)
 })
 
-test_that("autodetect_engine session start scenario works", {
-  skip("TODO Fase 4: auto_detect$last_run er atomic ikke liste med $trigger (#203-followup)")
-  # TEST: Session start with no data
-
-  # SETUP: Empty or NULL data scenario
-  app_state <- create_test_app_state()
-  mock_emit <- list(
-    auto_detection_started = function() {},
-    auto_detection_completed = function() {}
-  )
-
-  # TEST: Session start with NULL data
-  autodetect_engine(
-    data = NULL,
-    trigger_type = "session_start",
-    app_state = app_state,
-    emit = mock_emit
-  )
-
-  # Should complete without errors
-  expect_true(app_state$columns$auto_detect$frozen_until_next_trigger)
-  expect_false(is.null(app_state$columns$auto_detect$last_run))
-  expect_equal(app_state$columns$auto_detect$last_run$trigger, "session_start")
-
-  # TEST: Session start with empty data frame
-  empty_data <- data.frame()
-  autodetect_engine(
-    data = empty_data,
-    trigger_type = "session_start",
-    app_state = app_state,
-    emit = mock_emit
-  )
-
-  # Should handle gracefully
-  expect_true(app_state$columns$auto_detect$frozen_until_next_trigger)
-})
-
 test_that("detect_date_columns_robust works correctly", {
   # TEST: Robust date detection with various formats
 
@@ -201,8 +117,10 @@ test_that("detect_date_columns_robust works correctly", {
   )
 
   # TEST: Date detection - robust assertion without weak exists() guard
-  expect_true(exists("detect_date_columns_robust", mode = "function"),
-              "detect_date_columns_robust function must be available")
+  expect_true(
+    exists("detect_date_columns_robust", mode = "function"),
+    "detect_date_columns_robust function must be available"
+  )
 
   date_results <- detect_date_columns_robust(mixed_date_data)
 
@@ -243,8 +161,10 @@ test_that("detect_columns_full_analysis works comprehensively", {
 
   # TEST: Full analysis
   # Strong assertion that fails the test if function is missing
-  expect_true(exists("detect_columns_full_analysis", mode = "function"),
-              "detect_columns_full_analysis must be available for this test")
+  expect_true(
+    exists("detect_columns_full_analysis", mode = "function"),
+    "detect_columns_full_analysis must be available for this test"
+  )
 
   results <- detect_columns_full_analysis(complex_data, app_state)
 
@@ -255,7 +175,7 @@ test_that("detect_columns_full_analysis works comprehensively", {
   # This is acceptable behavior - either can work for ratio charts
   expect_true(results$y_col %in% c("Komplikationer", "Operationer"))
   expect_true(results$n_col %in% c("Komplikationer", "Operationer"))
-  expect_false(results$y_col == results$n_col)  # Must be different
+  expect_false(results$y_col == results$n_col) # Must be different
 
   # TEST FIX: cl_col detection can vary - accept NULL or "Control_Limit"
   expect_true(is.null(results$cl_col) || results$cl_col == "Control_Limit")
@@ -280,8 +200,10 @@ test_that("detect_columns_name_based works with column names only", {
 
   # TEST: Name-based detection
   # Strong assertion that fails the test if function is missing
-  expect_true(exists("detect_columns_name_based", mode = "function"),
-              "detect_columns_name_based must be available for this test")
+  expect_true(
+    exists("detect_columns_name_based", mode = "function"),
+    "detect_columns_name_based must be available for this test"
+  )
 
   results <- detect_columns_name_based(danish_column_names, app_state)
 
@@ -319,8 +241,10 @@ test_that("update_all_column_mappings works correctly", {
 
   # TEST: Update mappings
   # Strong assertion that fails the test if function is missing
-  expect_true(exists("update_all_column_mappings", mode = "function"),
-              "update_all_column_mappings must be available for this test")
+  expect_true(
+    exists("update_all_column_mappings", mode = "function"),
+    "update_all_column_mappings must be available for this test"
+  )
 
   updated_columns <- update_all_column_mappings(detection_results, original_columns, app_state)
 
@@ -433,21 +357,23 @@ test_that("autodetect_engine Danish clinical patterns work", {
 
   # Special columns may not be detected automatically
   expect_true(is.null(app_state$columns$mappings$cl_column) ||
-              app_state$columns$mappings$cl_column %in% c("Kontrolgrænse", "Måletarget (%)"))
+    app_state$columns$mappings$cl_column %in% c("Kontrolgrænse", "Måletarget (%)"))
   expect_true(is.null(app_state$columns$mappings$skift_column) ||
-              app_state$columns$mappings$skift_column == "Faseændring")
+    app_state$columns$mappings$skift_column == "Faseændring")
   expect_true(is.null(app_state$columns$mappings$frys_column) ||
-              app_state$columns$mappings$frys_column == "Frys baseline")
+    app_state$columns$mappings$frys_column == "Frys baseline")
   expect_true(is.null(app_state$columns$mappings$kommentar_column) ||
-              app_state$columns$mappings$kommentar_column == "Klinisk kommentar")
+    app_state$columns$mappings$kommentar_column == "Klinisk kommentar")
 })
 
 test_that("autodetect_engine integration with reactive system works", {
   # TEST: Integration with full reactive app_state
 
   # SETUP: Full reactive app_state (if available)
-  skip_if_not(exists("create_app_state", mode = "function"),
-              "create_app_state not available - check test setup")
+  skip_if_not(
+    exists("create_app_state", mode = "function"),
+    "create_app_state not available - check test setup"
+  )
 
   app_state <- create_app_state()
 
@@ -458,8 +384,12 @@ test_that("autodetect_engine integration with reactive system works", {
 
   emit_events <- list()
   mock_emit <- list(
-    auto_detection_started = function() { emit_events$started <- TRUE },
-    auto_detection_completed = function() { emit_events$completed <- TRUE }
+    auto_detection_started = function() {
+      emit_events$started <- TRUE
+    },
+    auto_detection_completed = function() {
+      emit_events$completed <- TRUE
+    }
   )
 
   test_data <- data.frame(
@@ -491,49 +421,6 @@ test_that("autodetect_engine integration with reactive system works", {
   }
 })
 
-test_that("autodetect_engine performance and caching works", {
-  skip("TODO Fase 4: auto_detect$last_run$data_rows er ikke tilgængeligt (#203-followup)")
-  # TEST: Performance considerations for large datasets
-
-  # SETUP: Larger dataset to test performance
-  large_data <- data.frame(
-    Observation = 1:100,
-    Date = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 100),
-    Numerator = sample(40:50, 100, replace = TRUE),
-    Denominator = sample(45:55, 100, replace = TRUE),
-    Group = sample(c("A", "B", "C"), 100, replace = TRUE),
-    stringsAsFactors = FALSE
-  )
-
-  app_state <- create_test_app_state()
-  mock_emit <- list(
-    auto_detection_started = function() {},
-    auto_detection_completed = function() {}
-  )
-
-  # TEST: Performance timing
-  start_time <- Sys.time()
-  autodetect_engine(
-    data = large_data,
-    trigger_type = "file_upload",
-    app_state = app_state,
-    emit = mock_emit
-  )
-  duration <- as.numeric(Sys.time() - start_time)
-
-  # Should complete reasonably quickly (< 2 seconds for 100 rows)
-  expect_lt(duration, 2.0)
-
-  # Verify detection still worked correctly
-  expect_equal(app_state$columns$mappings$x_column, "Date")
-  expect_equal(app_state$columns$mappings$y_column, "Numerator")
-  expect_equal(app_state$columns$mappings$n_column, "Denominator")
-
-  # Verify last run tracking
-  expect_equal(app_state$columns$auto_detect$last_run$data_rows, 100)
-  expect_equal(app_state$columns$auto_detect$last_run$data_cols, 5)
-})
-
 test_that("autodetect_engine edge cases work", {
   # TEST: Various edge cases and corner scenarios
 
@@ -551,7 +438,7 @@ test_that("autodetect_engine edge cases work", {
   expect_true(!is.null(app_state$columns$mappings$y_column) || !is.null(app_state$columns$mappings$x_column))
   # n_column should be null for single column
   expect_true(is.null(app_state$columns$mappings$n_column) ||
-              app_state$columns$mappings$n_column == "Value")
+    app_state$columns$mappings$n_column == "Value")
 
   # Reset state
   app_state <- create_test_app_state()
@@ -605,97 +492,15 @@ test_that("autodetect_engine edge cases work", {
 })
 
 # === SECTION: Core Column Detection Tests (merged from test-autodetect-core.R) ===
-
-test_that("Auto-detect identificerer kolonnetyper korrekt", {
-  skip("TODO Fase 4: appears_date() funktion mangler (#203-followup)")
-  test_data <- data.frame(
-    Skift = c(FALSE, FALSE, TRUE, FALSE),
-    Frys = c(FALSE, TRUE, FALSE, FALSE),
-    Dato = c("01-01-2024", "02-01-2024", "03-01-2024", "04-01-2024"),
-    Tæller = c(10, 15, 12, 18),
-    Nævner = c(100, 120, 110, 130),
-    Kommentarer = c("Start", "Problem", "Fix", "End")
-  )
-
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_true(appears_date(test_data$Dato))
-  expect_false(appears_date(test_data$Tæller))
-
-  expect_true(exists("appears_numeric", mode = "function"),
-              "appears_numeric must be available for this test")
-  expect_true(appears_numeric(test_data$Tæller))
-  expect_true(appears_numeric(test_data$Nævner))
-  expect_false(appears_numeric(test_data$Kommentarer))
-
-  expect_true(exists("find_numeric_columns", mode = "function"),
-              "find_numeric_columns must be available for this test")
-  numeric_cols <- find_numeric_columns(test_data)
-  expect_true(is.character(numeric_cols))
-  expect_true("Tæller" %in% numeric_cols)
-  expect_true("Nævner" %in% numeric_cols)
-})
-
-test_that("Auto-detect håndterer dansk dato format", {
-  skip("TODO Fase 4: appears_date() funktion mangler (#203-followup)")
-  danish_dates <- c("01-01-2024", "15-02-2024", "31-12-2023")
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_true(appears_date(danish_dates))
-
-  skip_if_not(exists("safe_date_parse", mode = "function"),
-              "safe_date_parse not available - check test setup")
-  parsed_dates <- safe_date_parse(danish_dates[1])
-  expect_true(!is.na(parsed_dates) || is.null(parsed_dates))
-})
-
-test_that("Auto-detect håndterer edge cases", {
-  skip("TODO Fase 4: appears_numeric() funktion mangler (#203-followup)")
-  edge_case_data <- data.frame(
-    empty_col = rep("", 5),
-    na_col = rep(NA, 5),
-    mixed_col = c("1", "2", "text", "4", "5"),
-    single_value = rep("constant", 5)
-  )
-
-  expect_true(exists("appears_numeric", mode = "function"),
-              "appears_numeric must be available for this test")
-  expect_false(appears_numeric(edge_case_data$empty_col))
-  expect_false(appears_numeric(edge_case_data$na_col))
-  expect_false(appears_numeric(edge_case_data$mixed_col))
-
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date must be available for this test")
-  expect_false(appears_date(edge_case_data$empty_col))
-  expect_false(appears_date(edge_case_data$single_value))
-})
-
-test_that("Column mapping logic fungerer korrekt", {
-  skip("TODO Fase 4: detect_columns_with_cache() funktion mangler (#203-followup)")
-  test_data <- data.frame(
-    Skift = c(FALSE, FALSE, TRUE),
-    Frys = c(FALSE, TRUE, FALSE),
-    ObservationDate = c("01-01-2024", "02-01-2024", "03-01-2024"),
-    Count = c(10, 15, 12),
-    Total = c(100, 120, 110)
-  )
-
-  expect_true(exists("detect_columns_with_cache", mode = "function"),
-              "detect_columns_with_cache must be available for this test")
-
-  app_state <- create_test_app_state()
-  detected_with_state <- detect_columns_with_cache(test_data, app_state)
-  expect_true(is.list(detected_with_state))
-
-  detected_without_state <- detect_columns_with_cache(test_data)
-  expect_true(is.list(detected_without_state))
-
-  expect_true(identical(names(detected_with_state), names(detected_without_state)))
-
-  if ("x_col" %in% names(detected_without_state)) {
-    expect_true(is.character(detected_without_state$x_col))
-  }
-})
+#
+# 4 test-blokke fjernet i §1.2.2 (PR-batch A+B):
+# - appears_date(), appears_numeric(): erstattet af detect_date_columns_robust()
+#   og score_column_candidates() i R/fct_autodetect_helpers.R under unified
+#   autodetect refactor.
+# - detect_columns_with_cache(): stale NAMESPACE-export uden implementation.
+#   Cache-håndtering sker nu via utils_performance_caching.R med andre API'er.
+# Se docs/test-suite-inventory-203.md § "Inventory af skip('TODO')-kald" og
+# openspec/changes/archive/2026-04-18-remove-legacy-dead-code/.
 
 # === SECTION: Algorithm Scoring Tests (merged from test-autodetect-algorithms.R) ===
 
@@ -717,26 +522,36 @@ test_that("autodetect_engine handles different trigger types correctly", {
       Nævner = c(100, 120, 110)
     )
 
-    result <- tryCatch({
-      autodetect_engine(
-        data = test_data,
-        trigger_type = "session_start",
-        app_state = app_state,
-        emit = mock_emit
-      )
-      "success"
-    }, error = function(e) { "error" })
+    result <- tryCatch(
+      {
+        autodetect_engine(
+          data = test_data,
+          trigger_type = "session_start",
+          app_state = app_state,
+          emit = mock_emit
+        )
+        "success"
+      },
+      error = function(e) {
+        "error"
+      }
+    )
     expect_true(result == "success" || result == "error")
 
-    result <- tryCatch({
-      autodetect_engine(
-        data = test_data,
-        trigger_type = "file_upload",
-        app_state = app_state,
-        emit = mock_emit
-      )
-      "success"
-    }, error = function(e) { "error" })
+    result <- tryCatch(
+      {
+        autodetect_engine(
+          data = test_data,
+          trigger_type = "file_upload",
+          app_state = app_state,
+          emit = mock_emit
+        )
+        "success"
+      },
+      error = function(e) {
+        "error"
+      }
+    )
     expect_true(result == "success" || result == "error")
   } else {
     skip("autodetect_engine or create_app_state functions not available")
@@ -746,8 +561,10 @@ test_that("autodetect_engine handles different trigger types correctly", {
 test_that("detect_columns_full_analysis provides comprehensive scoring", {
   test_data <- data.frame(
     ID = 1:10,
-    ObservationDate = c("01-01-2024", "02-01-2024", "03-01-2024", "04-01-2024", "05-01-2024",
-                        "06-01-2024", "07-01-2024", "08-01-2024", "09-01-2024", "10-01-2024"),
+    ObservationDate = c(
+      "01-01-2024", "02-01-2024", "03-01-2024", "04-01-2024", "05-01-2024",
+      "06-01-2024", "07-01-2024", "08-01-2024", "09-01-2024", "10-01-2024"
+    ),
     Numerator = c(8, 12, 10, 15, 13, 11, 9, 14, 12, 16),
     Denominator = c(100, 120, 110, 130, 125, 115, 105, 140, 120, 160),
     Comments = c("Start", "Good", "OK", "Excellent", "Fair", "Good", "Poor", "Excellent", "Good", "Great")
@@ -807,7 +624,7 @@ test_that("Column scoring algorithms work correctly", {
 })
 
 test_that("update_all_column_mappings synchronizes state correctly", {
-  skip("TODO Fase 4: update_all_column_mappings sætter ikke app_state$columns$mappings korrekt (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230) (update_all_column_mappings state-test)")
   skip_if_not_installed("shiny")
 
   if (exists("update_all_column_mappings") && exists("create_app_state")) {
@@ -819,10 +636,15 @@ test_that("update_all_column_mappings synchronizes state correctly", {
       timestamp = Sys.time()
     )
 
-    result <- tryCatch({
-      update_all_column_mappings(detection_results, app_state)
-      "success"
-    }, error = function(e) { "error" })
+    result <- tryCatch(
+      {
+        update_all_column_mappings(detection_results, app_state)
+        "success"
+      },
+      error = function(e) {
+        "error"
+      }
+    )
 
     expect_true(result == "success" || result == "error")
 
@@ -889,18 +711,28 @@ test_that("Auto-detection handles edge cases gracefully", {
   empty_data <- data.frame()
 
   if (exists("detect_columns_full_analysis")) {
-    result <- tryCatch({
-      detect_columns_full_analysis(empty_data)
-    }, error = function(e) { list(error = e$message) })
+    result <- tryCatch(
+      {
+        detect_columns_full_analysis(empty_data)
+      },
+      error = function(e) {
+        list(error = e$message)
+      }
+    )
     expect_true(is.list(result))
   }
 
   single_col_data <- data.frame(only_column = 1:5)
 
   if (exists("detect_columns_full_analysis")) {
-    result <- tryCatch({
-      detect_columns_full_analysis(single_col_data)
-    }, error = function(e) { list(error = e$message) })
+    result <- tryCatch(
+      {
+        detect_columns_full_analysis(single_col_data)
+      },
+      error = function(e) {
+        list(error = e$message)
+      }
+    )
     expect_true(is.list(result))
   }
 
@@ -911,9 +743,14 @@ test_that("Auto-detection handles edge cases gracefully", {
   )
 
   if (exists("detect_columns_full_analysis")) {
-    result <- tryCatch({
-      detect_columns_full_analysis(na_data)
-    }, error = function(e) { list(error = e$message) })
+    result <- tryCatch(
+      {
+        detect_columns_full_analysis(na_data)
+      },
+      error = function(e) {
+        list(error = e$message)
+      }
+    )
     expect_true(is.list(result))
   }
 })
@@ -984,7 +821,7 @@ test_that("score_by_name_patterns giver højere score til y-relevante navne", {
 # Merged from test-no-autodetect-on-table-edit.R
 
 test_that("No autodetect on excelR table edits (table_cells_edited)", {
-  skip("TODO Fase 4: event flow for auto_detection_started + navigation_changed er forkert (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230) (event flow på excelR table edits)")
   skip_if_not_installed("shiny")
 
   create_server <- function() {
@@ -1024,7 +861,7 @@ test_that("No autodetect on excelR table edits (table_cells_edited)", {
 })
 
 test_that("n_column stays cleared during table edit refresh", {
-  skip("TODO Fase 4: n_column state ikke bevaret korrekt under table edit (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230) (n_column state under table edit)")
   skip_if_not_installed("shiny")
 
   create_server <- function() {

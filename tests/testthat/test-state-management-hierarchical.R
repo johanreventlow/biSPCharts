@@ -99,9 +99,9 @@ test_that("app_state data management works", {
 })
 
 test_that("app_state hierarchical column management works", {
-  # Nested reactive values ($columns$auto_detect$field) kræver korrekt reactive context
-  # TODO Fase 4: Refaktorer test til shiny::testServer() pattern (#203-followup)
-  skip("TODO Fase 4: Nested reactive value access kræver reactive context (#203-followup)")
+  # Nested reactive values ($columns$auto_detect$field) kræver korrekt reactive context.
+  # Testen er reference-materiale for §2.3 testServer-migration.
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   # TEST: Hierarchical column structure and mappings
 
@@ -216,9 +216,9 @@ test_that("app_state session management works", {
 })
 
 test_that("app_state reactive chains work correctly", {
-  # reactive() og req() kræver aktiv reaktiv kontekst til korrekt evaluering
-  # TODO Fase 4: Refaktorer til shiny::testServer() (#203-followup)
-  skip("TODO Fase 4: reactive() kræver aktiv Shiny-session udenfor isolate (#203-followup)")
+  # reactive() og req() kræver aktiv reaktiv kontekst til korrekt evaluering.
+  # Testen er reference-materiale for §2.3 testServer-migration.
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   # TEST: Reactive dependencies and chains
 
@@ -255,10 +255,10 @@ test_that("app_state reactive chains work correctly", {
 })
 
 test_that("app_state event-driven workflows work", {
-  # shiny::flushReact() er ikke eksporteret fra shiny namespace
-  # Observer execution i tests kræver shiny::testServer() eller shinytest2
-  # TODO Fase 4: Refaktorer til shiny::testServer() (#203-followup)
-  skip("TODO Fase 4: flushReact er ikke eksporteret - brug shiny::testServer() (#203-followup)")
+  # shiny::flushReact() er ikke eksporteret fra shiny namespace.
+  # Observer execution i tests kræver shiny::testServer() eller shinytest2.
+  # Testen er reference-materiale for §2.3 testServer-migration.
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   # TEST: Event-driven state update workflows
 
@@ -322,6 +322,7 @@ test_that("app_state error handling and recovery works", {
 })
 
 test_that("app_state performance and memory management works", {
+  set.seed(42)
   # TEST: Performance considerations and memory usage
 
   # SETUP: Create app state
@@ -352,9 +353,9 @@ test_that("app_state performance and memory management works", {
 })
 
 test_that("app_state complex state transitions work", {
-  # Bruger gamle event-navne (data_loaded, ui_sync_needed) og nested reactive access
-  # TODO Fase 4: Opdater til konsoliderede event-navne og shiny::testServer() (#203-followup)
-  skip("TODO Fase 4: Kompleks state transition test bruger gamle event-navne (#203-followup)")
+  # Bruger gamle event-navne (data_loaded, ui_sync_needed) og nested reactive access.
+  # Testen er reference-materiale for §2.3 testServer-migration + event-navne-cleanup.
+  skip("testServer-migration + event-navne cleanup — se harden-test-suite §2.3 (#230)")
 
   # TEST: Complex state transition scenarios
 
@@ -410,9 +411,9 @@ test_that("app_state complex state transitions work", {
 })
 
 test_that("app_state backward compatibility works", {
-  # Nested reactive access ($columns$mappings$x_column) kræver reactive context
-  # TODO Fase 4: Refaktorer til shiny::testServer() (#203-followup)
-  skip("TODO Fase 4: Nested reactive access i backward compat test (#203-followup)")
+  # Nested reactive access ($columns$mappings$x_column) kræver reactive context.
+  # Testen er reference-materiale for §2.3 testServer-migration.
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   # TEST: Backward compatibility with legacy patterns
 
@@ -448,9 +449,9 @@ test_that("app_state backward compatibility works", {
 })
 
 test_that("app_state Danish clinical workflow works", {
-  # Bruger nested reactive access og gamle event-navne
-  # TODO Fase 4: Opdater til shiny::testServer() og konsoliderede events (#203-followup)
-  skip("TODO Fase 4: Danish clinical workflow test bruger nested reactive access (#203-followup)")
+  # Bruger nested reactive access og gamle event-navne.
+  # Testen er reference-materiale for §2.3 testServer-migration.
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   # TEST: Complete Danish clinical data workflow
 

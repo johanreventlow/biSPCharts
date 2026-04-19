@@ -3,8 +3,8 @@
 # PURPOSE: Verificer at debouncing reducerer redundante renders med 60-80%
 # CONTEXT: Recent performance optimization (commit b2a2a0a) mangler test coverage
 
-# Test setup
-source(testthat::test_path("helper.R"))
+# Test setup — helper-bootstrap.R, helper-fixtures.R og helper-mocks.R
+# sources automatisk af testthat (filename-prefix "helper-").
 
 test_that("Debouncing reducerer redundante chart renders ved hurtige input ændringer", {
   testthat::skip_on_ci()

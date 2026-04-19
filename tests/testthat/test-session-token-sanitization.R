@@ -98,6 +98,7 @@ test_that("SHA256 provides strong collision resistance", {
 })
 
 test_that("Sanitized tokens are safe for logging", {
+  set.seed(42)
   # Simulate a real Shiny session token format
   real_token <- paste0(
     sample(c(letters, LETTERS, 0:9), 40, replace = TRUE),

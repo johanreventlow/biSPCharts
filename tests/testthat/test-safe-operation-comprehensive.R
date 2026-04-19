@@ -9,7 +9,9 @@ test_that("safe_operation basic functionality works", {
   # SETUP: Simple successful operation
   result <- safe_operation(
     operation_name = "Basic test operation",
-    code = { 2 + 2 },
+    code = {
+      2 + 2
+    },
     fallback = 0
   )
 
@@ -19,7 +21,9 @@ test_that("safe_operation basic functionality works", {
   # SETUP: Operation that fails
   error_result <- safe_operation(
     operation_name = "Failing operation",
-    code = { stop("Intentional test error") },
+    code = {
+      stop("Intentional test error")
+    },
     fallback = "fallback_value"
   )
 
@@ -29,7 +33,9 @@ test_that("safe_operation basic functionality works", {
   # SETUP: Operation without fallback
   null_fallback_result <- safe_operation(
     operation_name = "No fallback operation",
-    code = { stop("Error with no fallback") }
+    code = {
+      stop("Error with no fallback")
+    }
   )
 
   # TEST: Default fallback is NULL
@@ -42,21 +48,27 @@ test_that("safe_operation error handling works correctly", {
   # SETUP: Different error types
   validation_error <- safe_operation(
     operation_name = "Validation test",
-    code = { stop("Invalid input data") },
+    code = {
+      stop("Invalid input data")
+    },
     fallback = "validation_fallback",
     error_type = "validation"
   )
 
   processing_error <- safe_operation(
     operation_name = "Processing test",
-    code = { stop("Processing failed") },
+    code = {
+      stop("Processing failed")
+    },
     fallback = "processing_fallback",
     error_type = "processing"
   )
 
   network_error <- safe_operation(
     operation_name = "Network test",
-    code = { stop("Connection failed") },
+    code = {
+      stop("Connection failed")
+    },
     fallback = "network_fallback",
     error_type = "network"
   )
@@ -121,7 +133,9 @@ test_that("safe_operation with Shiny session integration works", {
   # TEST: Operation with user notification enabled
   result_with_notification <- safe_operation(
     operation_name = "User notification test",
-    code = { stop("User should see this error") },
+    code = {
+      stop("User should see this error")
+    },
     fallback = "user_fallback",
     session = mock_session,
     show_user = TRUE,
@@ -134,7 +148,9 @@ test_that("safe_operation with Shiny session integration works", {
   # TEST: Operation without user notification
   result_no_notification <- safe_operation(
     operation_name = "No notification test",
-    code = { stop("User should not see this") },
+    code = {
+      stop("User should not see this")
+    },
     fallback = "silent_fallback",
     session = mock_session,
     show_user = FALSE
@@ -166,7 +182,9 @@ test_that("safe_operation logging integration works", {
   # TEST: Error logging functionality
   logged_error <- safe_operation(
     operation_name = "Logging test operation",
-    code = { stop("This error should be logged") },
+    code = {
+      stop("This error should be logged")
+    },
     fallback = "logged_fallback",
     error_type = "testing"
   )
@@ -193,7 +211,9 @@ test_that("safe_operation with complex fallback functions works", {
   # TEST: Function fallback
   result_with_function_fallback <- safe_operation(
     operation_name = "Function fallback test",
-    code = { stop("Operation failed") },
+    code = {
+      stop("Operation failed")
+    },
     fallback = create_empty_data()
   )
 
@@ -215,7 +235,9 @@ test_that("safe_operation with complex fallback functions works", {
   # TEST: Complex structure fallback
   result_complex_fallback <- safe_operation(
     operation_name = "Complex fallback test",
-    code = { stop("Complex operation failed") },
+    code = {
+      stop("Complex operation failed")
+    },
     fallback = complex_fallback
   )
 
@@ -416,6 +438,7 @@ test_that("safe_operation with SPC-specific scenarios works", {
 })
 
 test_that("safe_operation performance and memory handling works", {
+  set.seed(42)
   # TEST: Performance considerations and memory management
 
   # TEST: Large data operation with memory constraints
@@ -480,7 +503,9 @@ test_that("safe_operation error cascade prevention works", {
     code = {
       inner_result <- safe_operation(
         operation_name = "Inner operation",
-        code = { stop("Inner error") },
+        code = {
+          stop("Inner error")
+        },
         fallback = "inner_fallback"
       )
 
@@ -502,7 +527,9 @@ test_that("safe_operation error cascade prevention works", {
   # Step 1
   chain_result$step1 <- safe_operation(
     operation_name = "Chain step 1",
-    code = { "step1_success" },
+    code = {
+      "step1_success"
+    },
     fallback = "step1_failed"
   )
 
@@ -521,7 +548,9 @@ test_that("safe_operation error cascade prevention works", {
   # Step 3 (fails)
   chain_result$step3 <- safe_operation(
     operation_name = "Chain step 3",
-    code = { stop("Step 3 always fails") },
+    code = {
+      stop("Step 3 always fails")
+    },
     fallback = "step3_failed"
   )
 

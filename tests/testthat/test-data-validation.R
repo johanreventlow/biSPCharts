@@ -52,23 +52,11 @@ test_that("validate_numeric_column fungerer", {
   expect_true(is.null(result_missing) || is.character(result_missing))
 })
 
-test_that("validate_date_column fungerer", {
-  test_data <- data.frame(
-    dato_valid = as.Date(c("2024-01-01", "2024-02-01")),
-    dato_tekst = c("2024-01-01", "2024-02-01"),
-    ikke_dato = c(1, 2)
-  )
-  
-  # Test valid dato kolonne
-  expect_null(validate_date_column(test_data, "dato_valid"))
-  
-  # Test konverterbar tekst dato
-  expect_null(validate_date_column(test_data, "dato_tekst"))
-  
-  # Test ikke-eksisterende kolonne
-  result <- validate_date_column(test_data, "findes_ikke")
-  expect_true(grepl("ikke fundet", result))
-})
+# Test for validate_date_column fjernet i #228 PR A3:
+# Funktionen blev fjernet i openspec change remove-legacy-dead-code (§4.5,
+# arkiveret 2026-04-18). Dato-validering varetages nu af kolonneparser og
+# auto-detection pipeline (se R/utils_server_time_preparation.R og
+# fct_time_parsing.R). Ingen direkte erstatning kræves.
 
 test_that("safe_date_parse fungerer robust", {
   # Skip if function not available

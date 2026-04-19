@@ -63,6 +63,7 @@ test_that("classify_error_source handles unknown errors gracefully", {
 
 # Test: Structured logging utilities
 test_that("sanitize_log_details removes sensitive data", {
+  set.seed(42)
   skip("sanitize_log_details blev fjernet i logging-refactor. Ansvaret er flyttet til log_info/log_warn/log_error som strukturerer details internt.")
   details <- list(
     data = data.frame(x = 1:100, y = rnorm(100)),

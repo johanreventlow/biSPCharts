@@ -27,13 +27,18 @@ test_that("Vectorized part processing produces identical output", {
   )
 
   # Verify that the qic object was created successfully
-  expect_s3_class(qic_result, "qic")
-  expect_true("data" %in% names(qic_result))
+  expect_true(inherits(qic_result, "qic"))
 
-  # Verify that anhoej signals are calculated
-  if ("n.crossings" %in% names(qic_result$data)) {
-    expect_true("n.crossings" %in% names(qic_result$data))
-    expect_true("n.crossings.min" %in% names(qic_result$data))
+  # qicharts2 >= 0.5.5 returnerer S7-objekt — data tilgås via @data-slot
+  # Tidligere versioner brugte $data (S3 list). Understøt begge.
+  qic_data <- tryCatch(qic_result@data, error = function(e) qic_result$data)
+  expect_true(is.data.frame(qic_data))
+  expect_true(nrow(qic_data) > 0)
+
+  # Verify that anhoej signals er beregnet (kolonnenavne afhænger af version)
+  if ("n.crossings" %in% names(qic_data)) {
+    expect_true("n.crossings" %in% names(qic_data))
+    expect_true("n.crossings.min" %in% names(qic_data))
   }
 })
 

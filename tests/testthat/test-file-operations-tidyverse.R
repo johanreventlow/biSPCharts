@@ -57,8 +57,8 @@ test_that("preprocess_uploaded_data handles tidyverse operations correctly", {
     }
 
     # Test data integrity - non-empty meaningful data should be preserved
-    expect_true(nrow(processed_data) >= 3)  # At least some valid rows
-    expect_true(ncol(processed_data) >= 3)  # Preserve columns even if empty
+    expect_true(nrow(processed_data) >= 3) # At least some valid rows
+    expect_true(ncol(processed_data) >= 3) # Preserve columns even if empty
   } else {
     skip("preprocess_uploaded_data function not available")
   }
@@ -119,12 +119,15 @@ test_that("Danish CSV processing with tidyverse locale handling", {
     )
 
     # Test CSV upload processing
-    result <- tryCatch({
-      handle_csv_upload(temp_file, app_state, session_id = "test", emit = mock_emit)
-      "success"
-    }, error = function(e) {
-      list(error = e$message)
-    })
+    result <- tryCatch(
+      {
+        handle_csv_upload(temp_file, app_state, session_id = "test", emit = mock_emit)
+        "success"
+      },
+      error = function(e) {
+        list(error = e$message)
+      }
+    )
 
     if (is.character(result) && result == "success") {
       # Verify data was loaded correctly
@@ -168,9 +171,12 @@ test_that("error handling in file operations with tidyverse", {
     expect_false(result$valid)
     expect_true(length(result$errors) > 0)
 
-    # Test with zero-size file
+    # Test med tom fil (size=0) — brug file.create() så eksistens-tjekket passerer
+    empty_path <- tempfile(fileext = ".csv")
+    file.create(empty_path)
+    on.exit(unlink(empty_path), add = TRUE)
     empty_file_info <- list(
-      datapath = tempfile(),
+      datapath = empty_path,
       name = "empty.csv",
       size = 0,
       type = "text/csv"
@@ -178,19 +184,24 @@ test_that("error handling in file operations with tidyverse", {
 
     result_empty <- validate_uploaded_file(empty_file_info, session_id = "test")
     expect_false(result_empty$valid)
-    expect_true(any(grepl("empty", result_empty$errors, ignore.case = TRUE)))
+    # Fejlbesked er på dansk: "Uploaded fil er tom"
+    expect_true(any(grepl("tom", result_empty$errors, ignore.case = TRUE)))
 
-    # Test with oversized file
+    # Test med oversized fil — brug file.create() og angiv størrelse i metadata
+    big_path <- tempfile(fileext = ".csv")
+    file.create(big_path)
+    on.exit(unlink(big_path), add = TRUE)
     big_file_info <- list(
-      datapath = tempfile(),
+      datapath = big_path,
       name = "big.csv",
-      size = 100 * 1024 * 1024,  # 100MB
+      size = 100 * 1024 * 1024, # 100MB i metadata
       type = "text/csv"
     )
 
     result_big <- validate_uploaded_file(big_file_info, session_id = "test")
     expect_false(result_big$valid)
-    expect_true(any(grepl("size", result_big$errors, ignore.case = TRUE)))
+    # Fejlbesked er på dansk: "Filstørrelse overskrider maksimum på X MB"
+    expect_true(any(grepl("st\u00f8rrelse|overskrider|maksimum", result_big$errors, ignore.case = TRUE)))
   } else {
     skip("validate_uploaded_file function not available")
   }
@@ -213,12 +224,15 @@ test_that("Excel file processing with tidyverse patterns", {
     )
 
     # Test with non-existent Excel file (should handle gracefully)
-    result <- tryCatch({
-      handle_excel_upload(excel_path, session = NULL, app_state, mock_emit)
-      "completed"
-    }, error = function(e) {
-      "error_handled"
-    })
+    result <- tryCatch(
+      {
+        handle_excel_upload(excel_path, session = NULL, app_state, mock_emit)
+        "completed"
+      },
+      error = function(e) {
+        "error_handled"
+      }
+    )
 
     # Either should complete or handle error gracefully
     expect_true(result %in% c("completed", "error_handled"))
@@ -226,4 +240,3 @@ test_that("Excel file processing with tidyverse patterns", {
     skip("Excel upload functions not available")
   }
 })
-

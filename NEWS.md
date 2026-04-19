@@ -25,6 +25,16 @@
   funktionen lever i pakke-namespacet; test opdateret til at verificere
   faktiske YAML-værdier (production: `"ERROR"`, development: `"DEBUG"`).
 
+* **#239-kluster: data-operations og performance-tests** (#239): Tre testfiler
+  rettet: (1) `test-file-operations-tidyverse.R` — `validate_uploaded_file`
+  returnerede tidligt ved ikke-eksisterende fil (tempfile-sti), og
+  fejlbeskeder er på dansk; brug `file.create()` + regex mod "tom"/"størrelse".
+  (2) `test-plot-generation-performance.R` — qicharts2 >= 0.5.5 returnerer
+  S7-objekt hvor data tilgås via `@data` i stedet for `$data`; adaptivet til
+  at understøtte begge API-versioner. (3) `test-tidyverse-purrr-operations.R`
+  — `system.time()["elapsed"] > 0` fejler på hurtig hardware hvor operationer
+  afsluttes på < 1ms og runder til 0; ændret til `>= 0`. 0 FAIL (tidligere 5).
+
 * **test-bfh-error-handling: opdatér forventninger efter #240 validering**
   (#239): 6 tests forventede `NULL`-return fra `compute_spc_results_bfh()`
   ved ugyldige input — den adfærd var korrekt FØR #240 indførte eksplicit

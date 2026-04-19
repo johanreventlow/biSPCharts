@@ -178,6 +178,21 @@ register_mari_font <- function() {
     return(invisible(NULL))
   }
 
+  # Idempotens-guard: Hvis Mari allerede er installeret som system-font
+  # (fx MacOS user fonts), afviser systemfonts::register_font at registrere
+  # over — derfor springer vi over. Undgår spurious "already exists"-fejl
+  # ved gentagne test-sessions på dev-maskiner hvor Mari er systeminstalleret.
+  sys_fonts <- systemfonts::system_fonts()
+  if ("Mari" %in% sys_fonts$family) {
+    log_debug(
+      component = "[FONT_REGISTRATION]",
+      message = "Mari allerede tilgængelig som system-font — registrering sprunget over",
+      details = list(variants = sum(sys_fonts$family == "Mari"))
+    )
+    assign(".mari_registered", TRUE, envir = .GlobalEnv)
+    return(invisible(NULL))
+  }
+
   font_dir <- system.file(
     "templates/typst/bfh-template/fonts",
     package = "biSPCharts"

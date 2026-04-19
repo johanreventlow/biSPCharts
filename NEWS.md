@@ -19,8 +19,17 @@
   - `tests/performance/test_data_load_performance.R` fikset — "DEBUGGING:"-
     overskrift renameret til "Debug-info:" for at undgå false positive match
     mod `cat("DEBUG"`-regex i `test-logging-debug-cat.R` (commit `fdab691`).
+* **PR A3 — catch-all fjernede funktioner (§1.1.8):**
+  - `validate_date_column`-testblok fjernet fra `test-data-validation.R`.
+    Funktionen blev slettet i `remove-legacy-dead-code §4.5` (arkiveret
+    2026-04-18); dato-validering varetages nu af kolonneparser og
+    auto-detection pipeline.
+  - `skip_on_ci_if_slow` allerede migreret til `testthat::skip_on_ci()`
+    i #225 `a14a529` — verificeret.
+  - Øvrige audit-missing-functions (`sanitize_log_details`,
+    `log_with_throttle`, `get_cache_stats`, `get_spc_cache_stats`)
+    håndteret i PR A1/A2 (#222 `9f4b0c0`).
 * **Kendt resterende arbejde i Fase 1:**
-  - §1.1.8 PR A3 (catch-all restende fjernede funktioner)
   - §1.2 TODO-skips (92 kald — kræver reparér/slet/issue-reference-beslutning)
   - §1.4 audit-kategorifordeling skal re-måles efter ovenstående
 

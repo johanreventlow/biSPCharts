@@ -43,9 +43,13 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 
 ### 1.2 Håndtér TODO Fase 4-skips (92 kald)
 
-- [ ] 1.2.1 Liste alle `skip("TODO Fase 4")`-kald via
+- [x] 1.2.1 Liste alle `skip("TODO Fase 4")`-kald via
       `grep -rn 'skip(\"TODO' tests/testthat/` og opret tabel i
       `docs/test-suite-inventory-203.md` (pr. fil, pr. test_that).
+      **Status 2026-04-19:** 92 skip-kald i 15 filer kortlagt med
+      kategori-fordeling E=41, D=21, B=10, A=8, C=7, F=5. Tabellen
+      inkluderer blok-linjenumre og beslutningsmatrix pr. kategori.
+      Se `docs/test-suite-inventory-203.md` § "Inventory af skip('TODO')-kald".
 - [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.

@@ -212,24 +212,73 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 
 ### 1.4 Verifikation — suite grøn
 
-- [ ] 1.4.1 Kør `Rscript dev/audit_tests.R --timeout=120`; verificér
+Kørt 2026-04-19 efter §1.2.2 + §1.2.3 afslutning. Alle resterende
+fejl er mapped til eksisterende GitHub-issues.
+
+- [~] 1.4.1 Kør `Rscript dev/audit_tests.R --timeout=120`; verificér
       `summary.broken-missing-fn = 0`, `green-partial ≤ 5`.
-- [ ] 1.4.2 Kør `devtools::test(stop_on_failure = TRUE)` — exit 0.
-      **Status 2026-04-19:** 10+ fejl forbliver fra kategori G "post-audit"
-      (ikke introduceret af §1.3-arbejdet). Eksempler:
-      `test-100x-mismatch-prevention.R` (5 fails — run chart target line,
-      scales), `test-app-initialization.R`, `test-bfh-error-handling.R:246`
-      (logging format), `test-cache-data-signature-bugs.R:192`,
-      `test-critical-fixes-integration.R` (cross-component reactive).
-      Kræver §1.1.8 (PR A3) + ny PR for runtime-regressions.
-- [ ] 1.4.3 Opdatér `docs/superpowers/specs/2026-04-17-test-audit-report.md`
+      **Resultat 2026-04-19:**
+      - Audit gennemført på 116 filer på 427.6s
+      - `broken-missing-fn = 1` (clear_spc_cache i
+        test-spc-cache-integration.R) — sporet via #239 paraply
+      - `green-partial = 24` (target ≤5 ikke opfyldt)
+      - Kategori-fordeling: green=82 (70.7%), green-partial=24 (20.7%),
+        skipped-all=2, stub=8
+      - Sammenlignet med baseline 2026-04-18: green 79→82 (+3),
+        green-partial 27→24 (-3), top_missing_functions 6→1 (-5)
+      - Acceptance ikke opfyldt, men alle resterende problemer er
+        sporet i issue-tracker (se §1.4.2 mapping)
+- [~] 1.4.2 Kør `devtools::test(stop_on_failure = TRUE)` — exit 0.
+      **Resultat 2026-04-19:**
+      - Total tests: 1431, passed: 4214 assertions
+      - Failed: 43, Errored: 21, Skipped: 144
+      - 49 failing blocks i 26 filer — **alle sporet til eksisterende
+        GitHub-issues**:
+        - **#235** (3 filer): `get_qic_chart_type()` returnerer "run"
+          for danske labels → test-app-initialization.R,
+          test-data-validation.R, test-visualization-server.R
+        - **#236** (1 fil): `format_y_value()` precision for
+          rate/unknown units → test-label-formatting.R
+        - **#237** (3 filer): Mari font state-leak →
+          test-bfh-error-handling.R, test-package-initialization.R,
+          test-spc-bfh-service.R (sidstnævnte kun pga. Mari-warning
+          i edition-3, testen fungerer teknisk korrekt efter §1.2.2
+          batch 5 fix)
+        - **#238** (1 fil): 100x-mismatch BFHcharts 0.8.0 refactor →
+          test-100x-mismatch-prevention.R
+        - **#239 paraply** (18 filer): alle øvrige pre-existerende
+          runtime-regressioner (bfh-module, e2e, cache-stats, edge-
+          cases, file-io, mod_export, security-tokens, etc.)
+      - Acceptance ikke opfyldt (suite er ikke grøn), men §1.2-
+        arbejdet har ikke introduceret nye fejl — alle 64 failures
+        eksisterede før §1.2.2-arbejdet begyndte (jf. #239 baseline-
+        bekræftelse om pre-existing fails)
+- [x] 1.4.3 Opdatér `docs/superpowers/specs/2026-04-17-test-audit-report.md`
       med ny kategorifordeling.
+      **Leveret:** Audit-script opdaterede automatisk rapporten
+      (dateret 2026-04-19T16:03:42+0200) med ny fordeling.
 - [x] 1.4.4 `NEWS.md`-entry tilføjet under "Interne ændringer (Fase 1
       saneringsarbejde, #228/#229)" med fil-liste, commits og rationale.
-- [ ] 1.4.5 Fjern `--skip-tests`-flag fra `dev/publish_prepare.R` hvis det
+- [x] 1.4.5 Fjern `--skip-tests`-flag fra `dev/publish_prepare.R` hvis det
       stadig eksisterer (sanity check mod eksisterende spec-requirement).
+      **Verificeret 2026-04-19:** `grep -nE "skip-tests|skip_tests|--skip"
+      dev/publish_prepare.R` returnerer 0 resultater. Flaget eksisterer
+      ikke længere i scriptet.
 
-**Acceptkriterium fase 1:** `devtools::test()` grøn + audit 0 fails.
+**Acceptkriterium fase 1 STATUS:** Delvist opfyldt. `devtools::test()` er
+ikke grøn, men alle 64 non-passing blokke er sporet i issue-tracker
+(#235/#236/#237/#238/#239). §1.2 afsluttet med 0 `skip("TODO")`-kald uden
+issue-reference (fra 92). Fase 1 kan lukkes grønt efter #239 (paraply)
+og dens sub-issues (#235-#238) er fixet — dette arbejde ligger uden for
+§1.2-scope og håndteres i separate PRs.
+
+**Verificering artefakter:**
+- `dev/audit-output/test-audit.json` — struktureret audit-output
+- `dev/audit-output/devtools-test-output.log` — fuld test-output med
+  failure-backtrace
+- `dev/audit-output/test-results.rds` — R-resultat-objekt til analyse
+- `docs/superpowers/specs/2026-04-17-test-audit-report.md` — kategori-
+  rapport (auto-opdateret)
 
 ---
 

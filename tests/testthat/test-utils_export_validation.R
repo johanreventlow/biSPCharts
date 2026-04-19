@@ -28,7 +28,8 @@ if (!exists("EXPORT_DESCRIPTION_MAX_LENGTH")) {
   EXPORT_DESCRIPTION_MAX_LENGTH <- 2000
 }
 if (!exists("EXPORT_DEPARTMENT_MAX_LENGTH")) {
-  EXPORT_DEPARTMENT_MAX_LENGTH <- 100
+  # Faktisk værdi: 250 (se config_system_config.R)
+  EXPORT_DEPARTMENT_MAX_LENGTH <- 250
 }
 if (!exists("EXPORT_ASPECT_RATIO_MIN")) {
   EXPORT_ASPECT_RATIO_MIN <- 0.5
@@ -117,9 +118,9 @@ test_that("sanitize_user_input trims whitespace", {
 
 test_that("validate_aspect_ratio accepts normal ratios", {
   # Normal aspect ratios (0.5 - 2.0)
-  expect_true(validate_aspect_ratio(1200, 900))  # 1.33
+  expect_true(validate_aspect_ratio(1200, 900)) # 1.33
   expect_true(validate_aspect_ratio(1920, 1080)) # 1.78
-  expect_true(validate_aspect_ratio(800, 800))   # 1.0
+  expect_true(validate_aspect_ratio(800, 800)) # 1.0
 })
 
 test_that("validate_aspect_ratio warns on extreme ratios", {
@@ -190,7 +191,8 @@ test_that("validate_export_inputs rejects overly long description", {
 })
 
 test_that("validate_export_inputs rejects overly long department", {
-  long_dept <- paste(rep("A", 101), collapse = "")
+  # EXPORT_DEPARTMENT_MAX_LENGTH = 250, så vi bruger 251 tegn
+  long_dept <- paste(rep("A", 251), collapse = "")
 
   expect_error(
     validate_export_inputs(format = "pdf", department = long_dept),
@@ -267,8 +269,9 @@ test_that("validate_export_inputs handles empty strings", {
 })
 
 test_that("validate_export_inputs combines multiple errors", {
+  # EXPORT_TITLE_MAX_LENGTH = 200, EXPORT_DEPARTMENT_MAX_LENGTH = 250
   long_title <- paste(rep("A", 201), collapse = "")
-  long_dept <- paste(rep("B", 101), collapse = "")
+  long_dept <- paste(rep("B", 251), collapse = "")
 
   expect_error(
     validate_export_inputs(
@@ -286,7 +289,7 @@ test_that("validate_export_inputs does not validate dimensions for PDF", {
     validate_export_inputs(
       format = "pdf",
       title = "Valid",
-      width = 100,  # Would be invalid for PNG
+      width = 100, # Would be invalid for PNG
       height = 10000
     )
   )
@@ -327,14 +330,14 @@ test_that("sanitize_user_input handles numeric input", {
 test_that("validate_export_inputs handles case-insensitive format", {
   expect_true(
     validate_export_inputs(
-      format = "PDF",  # Uppercase
+      format = "PDF", # Uppercase
       title = "Valid"
     )
   )
 
   expect_true(
     validate_export_inputs(
-      format = "PnG",  # Mixed case
+      format = "PnG", # Mixed case
       width = 800,
       height = 600
     )

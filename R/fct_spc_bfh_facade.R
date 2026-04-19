@@ -66,60 +66,71 @@ validate_spc_inputs <- function(data, x_var, y_var, chart_type, n_var = NULL) {
     ))
   }
 
-  # 7. x_var og y_var skal eksistere som kolonner i data
-  if (!x_var %in% names(data)) {
-    stop(paste0("Kolonnen '", x_var, "' blev ikke fundet i data (missing column: x_var)"))
-  }
-  if (!y_var %in% names(data)) {
-    stop(paste0("Kolonnen '", y_var, "' blev ikke fundet i data (missing column: y_var)"))
-  }
-  if (!is.null(n_var) && !n_var %in% names(data)) {
-    stop(paste0("Kolonnen '", n_var, "' blev ikke fundet i data (missing column: n_var)"))
-  }
-
-  # 8. y_var skal v\u00e6re numerisk (eller konverterbar)
-  y_vals <- data[[y_var]]
-  if (!is.numeric(y_vals) && !all(is.na(suppressWarnings(as.numeric(as.character(y_vals)))))) {
-    # Tjek om det slet ikke kan konverteres til numerisk
-    converted <- suppressWarnings(as.numeric(as.character(y_vals)))
-    if (all(is.na(converted)) && !all(is.na(y_vals))) {
-      stop(paste0(
-        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres. ",
-        "Kolonnen skal indeholde tal (numeric/convert)."
-      ))
-    }
-  }
-  # Ekstra tjek: eksplicit ikke-numerisk character kolonne
-  if (is.character(y_vals) || is.factor(y_vals)) {
-    converted <- suppressWarnings(as.numeric(as.character(y_vals)))
-    if (all(is.na(converted)) && any(!is.na(y_vals))) {
-      stop(paste0(
-        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid). ",
-        "Kolonnen skal indeholde tal."
-      ))
-    }
-  }
-
-  # 9. data m\u00e5 ikke v\u00e6re tom
+  # 7. data m\u00e5 ikke v\u00e6re tom (tjekkes f\u00f8r kolonne-opslag for klar fejlbesked)
   if (nrow(data) == 0) {
-    stop("Data er tomt (empty): ingen r\u00e6kker fundet. Upload data f\u00f8rst.")
+    stop("Ingen r\u00e6kker fundet i data (empty dataset). Upload data f\u00f8rst.")
   }
 
-  # 10. Mindst \u00e9t datapunkt kræves (minimum 2 for meningsfuld SPC)
-  if (nrow(data) < 2) {
+  # 8. Mindst 3 datapunkter kr\u00e6ves for meningsfuld SPC-analyse
+  if (nrow(data) < 3) {
     stop(paste0(
-      "Utilstr\u00e6kkelig data: ", nrow(data), " r\u00e6kke(r). ",
-      "Minimum 2 datapunkter kr\u00e6ves for SPC-analyse (too few/insufficient)."
+      "For f\u00e5 datapunkter: ", nrow(data), " r\u00e6kke(r) fundet (too few/insufficient). ",
+      "minimum 3 datapunkter kr\u00e6ves for SPC-analyse."
     ))
   }
 
-  # 11. y_var m\u00e5 ikke udelukkende best\u00e5 af NA
+  # 9. x_var og y_var skal eksistere som kolonner i data
+  if (!x_var %in% names(data)) {
+    stop(paste0("X-kolonne '", x_var, "' blev ikke fundet i data (missing column: x_var)"))
+  }
+  if (!y_var %in% names(data)) {
+    stop(paste0("Y-kolonne '", y_var, "' blev ikke fundet i data (missing column: y_var)"))
+  }
+  if (!is.null(n_var) && !n_var %in% names(data)) {
+    stop(paste0("N\u00e6vner-kolonne '", n_var, "' blev ikke fundet i data (missing column: n_var)"))
+  }
+
+  # 10. y_var m\u00e5 ikke udelukkende best\u00e5 af NA
   y_vals <- data[[y_var]]
   if (all(is.na(y_vals))) {
     stop(paste0(
-      "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier (all NA/no valid values). ",
-      "Mindst \u00e9n g\u00e6ldig v\u00e6rdi er p\u00e5kr\u00e6vet."
+      "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier. ",
+      "Ingen komplette datapunkter til r\u00e5dighed (all NA/no valid values)."
     ))
+  }
+
+  # 11. y_var skal v\u00e6re numerisk (eller konverterbar — inkl. danske talformater med komma)
+  if (!is.numeric(y_vals)) {
+    # Fors\u00f8g f\u00f8rst standard konvertering, s\u00e5 dansk format (komma som decimalseparator)
+    std_converted <- suppressWarnings(as.numeric(as.character(y_vals)))
+    danish_converted <- suppressWarnings(as.numeric(gsub(",", ".", as.character(y_vals))))
+    # Accepter kolonnen hvis mindst \u00e9n konverteringsmetode giver gyldige v\u00e6rdier
+    any_convertible <- !all(is.na(std_converted)) || !all(is.na(danish_converted))
+    non_na_vals <- !all(is.na(y_vals))
+    if (non_na_vals && !any_convertible) {
+      stop(paste0(
+        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid/convert). ",
+        "Kolonnen skal indeholde tal (ogs\u00e5 dansk talformat med komma accepteres)."
+      ))
+    }
+  }
+
+  # 12. n_var m\u00e5 ikke indeholde nul-v\u00e6rdier for rate-baserede kort (p, u)
+  ct_normalized_check <- tolower(trimws(chart_type))
+  if (!is.null(n_var) && n_var %in% names(data) &&
+    ct_normalized_check %in% c("p", "pp", "u", "up")) {
+    n_vals <- data[[n_var]]
+    # H\u00e5ndter b\u00e5de standard og dansk talformat (komma som decimalseparator)
+    n_numeric <- suppressWarnings(as.numeric(n_vals))
+    if (all(is.na(n_numeric)) && is.character(n_vals)) {
+      n_numeric <- suppressWarnings(as.numeric(gsub(",", ".", n_vals)))
+    }
+    if (any(!is.na(n_numeric) & n_numeric == 0)) {
+      stop(paste0(
+        "N\u00e6vner-kolonnen '", n_var, "' indeholder nul-v\u00e6rdier. ",
+        "N\u00e6vner m\u00e5 ikke v\u00e6re nul for ", toupper(ct_normalized_check), "-kort."
+      ))
+    }
   }
 
   invisible(NULL)

@@ -515,7 +515,6 @@ describe("X-Axis Datetime Formatting", {
 
 describe("Edge Cases", {
   it("handles empty data gracefully", {
-    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (tom data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     empty_data <- data.frame()
@@ -533,7 +532,6 @@ describe("Edge Cases", {
   })
 
   it("handles single row data", {
-    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (enkelt-rækket data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     single_data <- data.frame(
@@ -585,7 +583,6 @@ describe("Edge Cases", {
   })
 
   it("handles all NA values gracefully", {
-    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (all-NA data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     na_data <- data.frame(
@@ -638,7 +635,6 @@ describe("Edge Cases", {
   })
 
   it("handles zero denominators", {
-    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (nul-nævnere)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     zero_data <- data.frame(

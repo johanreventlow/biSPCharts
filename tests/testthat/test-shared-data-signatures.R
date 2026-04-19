@@ -185,6 +185,7 @@ test_that("cache stats provide useful information", {
 })
 
 test_that("shared signatures reduce hashing overhead", {
+  set.seed(42)
   skip_on_cran()
 
   # SETUP
@@ -220,6 +221,9 @@ test_that("shared signatures reduce hashing overhead", {
 })
 
 # CLEANUP after all tests
-withr::defer({
-  clear_data_signature_cache()
-}, envir = parent.frame())
+withr::defer(
+  {
+    clear_data_signature_cache()
+  },
+  envir = parent.frame()
+)

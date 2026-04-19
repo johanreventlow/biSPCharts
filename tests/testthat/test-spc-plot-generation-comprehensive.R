@@ -321,7 +321,7 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
   cl_rows <- subset(layer$data, type == "cl")
   expect_gt(nrow(cl_rows), 0)
   expect_true(all(grepl("NUV\\. NIVEAU", cl_rows$label)))
-  expect_true(all(grepl("\\*\\*", cl_rows$label)))  # Marquee markdown bold syntax
+  expect_true(all(grepl("\\*\\*", cl_rows$label))) # Marquee markdown bold syntax
   expect_equal(unique(cl_rows$text_color), "#009CE8")
 })
 
@@ -359,7 +359,7 @@ test_that("generateSPCPlot target label bruger geom_marquee", {
   target_rows <- subset(layer$data, type == "target")
   expect_gt(nrow(target_rows), 0)
   expect_true(all(grepl("MÅL", target_rows$label)))
-  expect_true(all(grepl("\\*\\*", target_rows$label)))  # Marquee markdown bold syntax
+  expect_true(all(grepl("\\*\\*", target_rows$label))) # Marquee markdown bold syntax
   expect_equal(unique(target_rows$text_color), "#565656")
 })
 
@@ -495,6 +495,7 @@ test_that("generateSPCPlot error handling works correctly", {
 })
 
 test_that("generateSPCPlot performance and caching works", {
+  set.seed(42)
   # TEST: Performance features and caching mechanisms
 
   # Skip if generateSPCPlot function not available
@@ -580,7 +581,7 @@ test_that("generateSPCPlot hospital theme integration works", {
     # Verify hospital colors are defined
     expect_true(is.list(HOSPITAL_COLORS))
     expect_true("primary" %in% names(HOSPITAL_COLORS) ||
-                "hospitalblue" %in% names(HOSPITAL_COLORS))
+      "hospitalblue" %in% names(HOSPITAL_COLORS))
   }
 })
 
@@ -593,8 +594,10 @@ test_that("generateSPCPlot Danish clinical data patterns work", {
 
   # SETUP: Typical Danish hospital data format
   danish_data <- data.frame(
-    `Måned` = c("Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024",
-                "Maj 2024", "Jun 2024", "Jul 2024", "Aug 2024"),
+    `Måned` = c(
+      "Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024",
+      "Maj 2024", "Jun 2024", "Jul 2024", "Aug 2024"
+    ),
     `Genindlæggelser` = c(12, 8, 15, 11, 9, 13, 7, 10),
     `Samlede indlæggelser` = c(150, 145, 160, 155, 148, 158, 142, 152),
     `Måletarget (%)` = rep(8, 8),

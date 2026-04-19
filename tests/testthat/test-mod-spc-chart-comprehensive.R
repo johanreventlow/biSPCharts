@@ -11,6 +11,7 @@ library(testthat)
 # =============================================================================
 
 test_that("Chart generation performance meets benchmarks", {
+  set.seed(42)
   skip_if_not_installed("qicharts2")
   skip_if(Sys.getenv("CI") == "true", "Skip performance test in CI")
 
@@ -45,6 +46,7 @@ test_that("Chart generation performance meets benchmarks", {
 })
 
 test_that("Chart module handles reactive updates correctly", {
+  set.seed(42)
   skip("testServer-migration — se harden-test-suite §2.3 (#230)")
   skip_if_not_installed("shiny")
 

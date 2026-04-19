@@ -4,6 +4,7 @@
 # og create_chart_validator() ikke i namespace.
 
 test_that("Complete user journey: upload til chart generation", {
+  set.seed(42)
   skip_if_not_installed("shiny")
   skip_if_not_installed("qicharts2")
 
@@ -132,6 +133,7 @@ test_that("Complete user journey: upload til chart generation", {
 })
 
 test_that("Error recovery workflow haandterer fejl graciost", {
+  set.seed(42)
   skip_if_not_installed("shiny")
 
   app_state <- create_app_state()
@@ -167,6 +169,7 @@ test_that("TODO Fase 3: create_chart_validator eksisterer ikke", {
 })
 
 test_that("Session lifecycle management virker korrekt", {
+  set.seed(42)
   skip_if_not_installed("shiny")
 
   app_state <- create_app_state()
@@ -227,6 +230,7 @@ test_that("Session lifecycle management virker korrekt", {
 })
 
 test_that("Performance workflow haandterer successive operationer", {
+  set.seed(42)
   skip_if_not_installed("shiny")
   skip_if(Sys.getenv("CI") == "true", "Skip concurrent test in CI")
 

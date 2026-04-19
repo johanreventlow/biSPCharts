@@ -131,6 +131,7 @@ test_that("hash length is appropriate for logging", {
 
 # Integration tests with app_server_main.R
 test_that("session token hashing is used in server logging", {
+  set.seed(42)
   # This test verifies that the security fix is properly integrated
   # We can't easily test the actual server function, but we can verify
   # that the hashing function would work in the expected context
@@ -173,8 +174,10 @@ test_that("performance of session token hashing is acceptable", {
 
   expect_lt(batch_time, 0.1) # 100 hashes should take less than 100ms
 
-  message(sprintf("Session token hashing performance: single=%.6fs, 100x=%.3fs",
-                  single_time, batch_time))
+  message(sprintf(
+    "Session token hashing performance: single=%.6fs, 100x=%.3fs",
+    single_time, batch_time
+  ))
 })
 
 # Security regression tests
@@ -206,6 +209,7 @@ test_that("session token exposure vulnerability is fixed", {
 })
 
 test_that("hash collision resistance is adequate for logging", {
+  set.seed(42)
   skip_if_not(exists("hash_session_token", mode = "function"))
 
   # Generate many different tokens and verify low collision rate
@@ -222,8 +226,10 @@ test_that("hash collision resistance is adequate for logging", {
   # collision rate should be very low for reasonable number of sessions
   expect_lt(collision_rate, 0.01) # Less than 1% collision rate
 
-  message(sprintf("Hash collision test: %d tokens, %d unique hashes, %.2f%% collision rate",
-                  n_tokens, length(unique_hashes), collision_rate * 100))
+  message(sprintf(
+    "Hash collision test: %d tokens, %d unique hashes, %.2f%% collision rate",
+    n_tokens, length(unique_hashes), collision_rate * 100
+  ))
 })
 
 # Documentation and compliance tests
@@ -276,6 +282,7 @@ test_that("session token hashing integrates with error handling", {
 
 # Final integration test
 test_that("session token security system works end-to-end", {
+  set.seed(42)
   skip_if_not(exists("hash_session_token", mode = "function"))
 
   # Simulate complete workflow

@@ -165,6 +165,7 @@ test_that("create_cached_reactive haandterer baade funktion og udtryk", {
 })
 
 test_that("create_cached_reactive giver performance-fordel", {
+  set.seed(42)
   skip_if_not(exists("create_cached_reactive"))
   skip_on_ci()
 

@@ -20,6 +20,7 @@
 # ------------------------------------------------------------------------------
 
 test_that("generate_improvement_suggestion returnerer NULL når BFHllm utilgængelig (§2.5.3)", {
+  set.seed(42)
   skip_if_not(exists("generate_improvement_suggestion", mode = "function"))
 
   # Mock is_bfhllm_available til altid at returnere FALSE
@@ -451,6 +452,7 @@ test_that("safe_operation med warning kode-blok fuldfører uden at kaste (§2.5.
 # ------------------------------------------------------------------------------
 
 test_that("compute_spc_results_bfh kaster fejl ved ugyldig chart_type (§2.5.3)", {
+  set.seed(42)
   skip_if_not(exists("compute_spc_results_bfh", mode = "function"))
 
   data <- data.frame(x = 1:10, y = rnorm(10))

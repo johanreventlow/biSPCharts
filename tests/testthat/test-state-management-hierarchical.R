@@ -322,6 +322,7 @@ test_that("app_state error handling and recovery works", {
 })
 
 test_that("app_state performance and memory management works", {
+  set.seed(42)
   # TEST: Performance considerations and memory usage
 
   # SETUP: Create app state

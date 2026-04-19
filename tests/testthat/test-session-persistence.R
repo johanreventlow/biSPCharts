@@ -496,6 +496,7 @@ test_that("Restore rejects payloads exceeding row limit", {
 })
 
 test_that("Save skips oversized datasets", {
+  set.seed(42)
   skip_if_not(
     exists("autoSaveAppState", mode = "function"),
     "autoSaveAppState not available"

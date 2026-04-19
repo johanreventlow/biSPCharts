@@ -94,8 +94,10 @@ test_that("create_data_signature is stable for identical data", {
 # Bug #2: Data content cache uses only first row ----
 
 test_that("evaluate_data_content_cached detects changes beyond first row", {
-  skip_if_not(exists("evaluate_data_content_cached"),
-              "evaluate_data_content_cached not loaded")
+  skip_if_not(
+    exists("evaluate_data_content_cached"),
+    "evaluate_data_content_cached not loaded"
+  )
 
   # SETUP: Dataset with meaningful data
   data_original <- create_test_dataset(nrows = 20)
@@ -136,8 +138,10 @@ test_that("evaluate_data_content_cached detects changes beyond first row", {
 })
 
 test_that("data content cache key changes when middle rows cleared", {
-  skip_if_not(exists("evaluate_data_content_cached"),
-              "evaluate_data_content_cached not loaded")
+  skip_if_not(
+    exists("evaluate_data_content_cached"),
+    "evaluate_data_content_cached not loaded"
+  )
 
   # SETUP: Full dataset
   data_full <- create_test_dataset(nrows = 30)
@@ -219,7 +223,8 @@ test_that("create_full_data_signature includes all metadata", {
   sig2 <- create_data_signature(data_renamed)
 
   expect_false(identical(sig1, sig2),
-               info = "Signature should change when column names change")
+    info = "Signature should change when column names change"
+  )
 
   # Change column type (should change signature)
   data_type_change <- data
@@ -228,7 +233,8 @@ test_that("create_full_data_signature includes all metadata", {
   sig3 <- create_data_signature(data_type_change)
 
   expect_false(identical(sig1, sig3),
-               info = "Signature should change when column types change")
+    info = "Signature should change when column types change"
+  )
 })
 
 test_that("create_full_data_signature is deterministic", {
@@ -238,12 +244,14 @@ test_that("create_full_data_signature is deterministic", {
   sigs <- replicate(5, create_data_signature(data))
 
   expect_true(all(sigs == sigs[1]),
-              info = "Signature should be deterministic")
+    info = "Signature should be deterministic"
+  )
 })
 
 # Performance test ----
 
 test_that("create_full_data_signature performs reasonably on large data", {
+  set.seed(42)
   skip_on_ci()
 
   # Large dataset
@@ -260,7 +268,8 @@ test_that("create_full_data_signature performs reasonably on large data", {
   })
 
   expect_true(timing["elapsed"] < 0.1,
-              info = "Signature generation should be fast even for large data")
+    info = "Signature generation should be fast even for large data"
+  )
 
   expect_type(sig, "character")
   expect_true(nchar(sig) > 10, info = "Signature should be non-trivial hash")
@@ -269,13 +278,15 @@ test_that("create_full_data_signature performs reasonably on large data", {
 # Integration test with actual cache collision scenario ----
 
 test_that("INTEGRATION: autodetect cache invalidates when data changes beyond row 10", {
-  skip_if_not(exists("detect_columns_with_cache"),
-              "detect_columns_with_cache not available")
+  skip_if_not(
+    exists("detect_columns_with_cache"),
+    "detect_columns_with_cache not available"
+  )
 
   # SETUP: Initial dataset
   data1 <- data.frame(
     Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 20),
-    Tæller = c(rep(50, 10), rep(100, 10)),  # First 10: 50, Last 10: 100
+    Tæller = c(rep(50, 10), rep(100, 10)), # First 10: 50, Last 10: 100
     Nævner = rep(100, 20)
   )
 
@@ -289,7 +300,7 @@ test_that("INTEGRATION: autodetect cache invalidates when data changes beyond ro
 
   # MUTATE: Change values in rows 11-20 (should invalidate cache)
   data2 <- data1
-  data2$Tæller[11:20] <- 200  # Change from 100 to 200
+  data2$Tæller[11:20] <- 200 # Change from 100 to 200
 
   # Second detection (should use NEW cache key due to data change)
   result2 <- detect_columns_with_cache(data2, app_state = NULL)
@@ -328,12 +339,15 @@ test_that("unlock_cache_statistics uses provided namespace without global lookup
   unlockBinding("asNamespace", base_env)
   unlockBinding("getNamespace", base_env)
 
-  on.exit({
-    assign("asNamespace", original_asNamespace, envir = base_env)
-    assign("getNamespace", original_getNamespace, envir = base_env)
-    lockBinding("asNamespace", base_env)
-    lockBinding("getNamespace", base_env)
-  }, add = TRUE)
+  on.exit(
+    {
+      assign("asNamespace", original_asNamespace, envir = base_env)
+      assign("getNamespace", original_getNamespace, envir = base_env)
+      lockBinding("asNamespace", base_env)
+      lockBinding("getNamespace", base_env)
+    },
+    add = TRUE
+  )
 
   assign("asNamespace", function(...) stop("asNamespace should not be called"), envir = base_env)
   assign("getNamespace", function(...) stop("getNamespace should not be called"), envir = base_env)

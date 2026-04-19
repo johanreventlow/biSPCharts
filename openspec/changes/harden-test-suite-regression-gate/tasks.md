@@ -777,47 +777,119 @@ Målsætning: publish blokeres hvis coverage falder eller E2E fejler.
 
 ### 4.1 Headless shinytest2-suite
 
-- [ ] 4.1.1 Opret `tests/e2e/` med separat entrypoint (ikke auto-discovered
+- [x] 4.1.1 Opret `tests/e2e/` med separat entrypoint (ikke auto-discovered
       af testthat default).
-- [ ] 4.1.2 Definér 5-10 navngivne happy-path-tests (estimated max 10):
+      **Leveret 2026-04-19:** `tests/e2e/` oprettet som separat
+      directory (ikke del af `tests/testthat/`). Entrypoint:
+      `tests/e2e/run_e2e.R` der aktivt loader biSPCharts via
+      pkgload + kører `testthat::test_dir()` mod e2e-mappen.
+      Inkluderer Chrome-availability-gate, `CI_SKIP_SHINYTEST2`
+      env-flag, retry-mekanisme (default 2 retries på fejl), og
+      `E2E_UPDATE_SNAPS=true` support til snapshot-opdatering.
+- [~] 4.1.2 Definér 5-10 navngivne happy-path-tests (estimated max 10):
       - `upload → autodetect → p-chart → export PNG`
       - `upload → autodetect → run-chart → export PDF`
       - `upload → vælg kolonner manuelt → i-chart`
       - `upload → schema-migration (session restore) → plot`
       - `upload → tom dato-kolonne → fejlbesked vises`
       - `upload → wizard gate blocks export uden data`
-- [ ] 4.1.3 Commit screenshot-baselines til
+      **Foundation leveret 2026-04-19:** `tests/e2e/setup.R` med
+      `skip_if_no_chrome()` + `create_biSPCharts_driver()` helpers.
+      `tests/e2e/test-e2e-app-launches.R` med 2 smoke-tests:
+      "app starter headless og viser landing", "navbar-entry er
+      reaktiv efter start_wizard". De resterende 4-6 happy-path-
+      tests i opgavelisten kræver reelle test-datafiler + UI-
+      element-ID-kortlægning og implementeres ad-hoc efter
+      Chrome-availability er verificeret i CI.
+- [~] 4.1.3 Commit screenshot-baselines til
       `tests/testthat/_snaps/e2e-*/`.
-- [ ] 4.1.4 `dev/publish_prepare.R` tilføjer E2E-sektion:
+      **Udskudt 2026-04-19:** Snapshot-baselines oprettes først når
+      happy-path-tests fra §4.1.2 kører stabilt. `tests/e2e/_snaps/`
+      directory oprettet som placeholder. `E2E_UPDATE_SNAPS=true`
+      env-flag aktiverer snapshot-opdatering i run_e2e.R.
+- [x] 4.1.4 `dev/publish_prepare.R` tilføjer E2E-sektion:
       - `skip_if_not(shinytest2::detect_chrome())` → warn hvis
         Chrome mangler
       - retry × 2 ved flaky fejl
       - generous `wait_for_idle` timeouts
+      **Leveret 2026-04-19:** `phase_manifest()` i
+      `dev/publish_prepare.R` inkluderer E2E-trin (trin 3 af 5)
+      der sources `tests/e2e/run_e2e.R` og kalder `run_e2e()`.
+      Alle 3 garderinger (Chrome-gate, retry×2, wait_for_idle
+      timeouts) er implementeret i `run_e2e()`-funktionen.
 
 ### 4.2 Coverage-threshold i publish-gate
 
-- [ ] 4.2.1 Udvid `tests/coverage.R`:
+- [x] 4.2.1 Udvid `tests/coverage.R`:
       - Kør ved publish
       - Exit 1 hvis samlet coverage < 80 %
       - Exit 1 hvis kritiske paths < 95 %
       - Output HTML til `coverage/index.html`
-- [ ] 4.2.2 Baseline-måling første gang: dokumentér aktuel % i
+      **Leveret 2026-04-19:** `tests/coverage.R` udvidet med:
+      - `hard_threshold = 80L` (overall coverage gate)
+      - `critical_hard_threshold = 95L` (critical paths gate)
+      - `target_coverage = 90L` (aspirational, warn only)
+      - Ny `run_coverage_gate()` funktion — returner TRUE hvis
+        begge hard thresholds opfyldt, ellers exit 1 (non-
+        interactive) eller `stop()` (interactive).
+      - HTML-output til `coverage/index.html` bevaret.
+      Default CLI-adfærd ændret: `Rscript tests/coverage.R` kører
+      nu `run_coverage_gate()` (publish-gate) i stedet for blot
+      rapport.
+- [~] 4.2.2 Baseline-måling første gang: dokumentér aktuel % i
       `tests/coverage.R` som startpunkt.
-- [ ] 4.2.3 Threshold-stigning: +5 % per release indtil target nået.
+      **Udskudt 2026-04-19:** Første `covr::package_coverage()`-
+      run tager ~10-30 min lokalt. Baseline-måling bør køres når
+      #239-paraply er lukket (suite er grøn), så coverage-
+      resultatet er pålideligt. Indtil da: `hard_threshold=80` er
+      konservativ startværdi der kan tilpasses efter første reelle
+      måling. Dokumenteres i NEWS.md ved næste release.
+- [x] 4.2.3 Threshold-stigning: +5 % per release indtil target nået.
       Dokumentér progression i `NEWS.md`.
-- [ ] 4.2.4 Exclude-liste dokumenteres eksplicit (fx `zzz.R`, `golem_utils.R`).
+      **Leveret 2026-04-19:** `COVERAGE_CONFIG` i `tests/coverage.R`
+      har separate `hard_threshold` (blokker) og `target_coverage`
+      (mål). Progressions-policy dokumenteret i kode-kommentar:
+      "§4.2.3 Threshold-stigning: +5 %-point per release indtil
+      target nået. Dokumentér progression i NEWS.md ved hver bump."
+- [x] 4.2.4 Exclude-liste dokumenteres eksplicit (fx `zzz.R`, `golem_utils.R`).
+      **Leveret 2026-04-19:** `COVERAGE_CONFIG$exclude_patterns`
+      udvidet fra 3 til 5 entries:
+      - `R/zzz\\.R$` (Package hooks)
+      - `R/app_dependencies\\.R$` (Dependency management)
+      - `R/golem_utils\\.R$` (Golem utilities, external)
+      - `R/app_run\\.R$` (Shiny app entrypoint, tested via E2E)
+      - `R/utils_lazy_loading\\.R$` (Lazy loading infra, runtime-only)
+      Critical paths udvidet fra 3 til 6 entries for bedre
+      granularitet på kritiske funktionsområder.
 
 ### 4.3 Publish-gate integration
 
-- [ ] 4.3.1 `dev/publish_prepare.R manifest`-fase kører i rækkefølge:
+- [x] 4.3.1 `dev/publish_prepare.R manifest`-fase kører i rækkefølge:
       1. `lintr::lint_package()`
       2. `devtools::test(stop_on_failure = TRUE)` via canonical entrypoint
       3. E2E-suite via `source("tests/e2e/run_e2e.R")`
       4. `covr::package_coverage()` med threshold-check
       5. `rsconnect::writeManifest()`
-- [ ] 4.3.2 Hver fase logger struktureret output til
+      **Leveret 2026-04-19:** `phase_manifest()` refaktoreret fra
+      3-trins (load_all + test + manifest) til 6-trins pipeline:
+      - Trin 0 (pre-flight): devtools::load_all
+      - Trin 1: lintr::lint_package (ERROR-only blocking)
+      - Trin 2: canonical testthat (via tests/run_canonical.R)
+      - Trin 3: E2E via tests/e2e/run_e2e.R (Chrome-gated)
+      - Trin 4: run_coverage_gate() (hard 80%/95% thresholds)
+      - Trin 5: rsconnect::writeManifest() (kun hvis 1-4 grønne)
+- [x] 4.3.2 Hver fase logger struktureret output til
       `dev/audit-output/publish-gate-<timestamp>.log`.
-- [ ] 4.3.3 Fejl i trin 1-4 stopper med klar fejlbesked og exit 1.
+      **Leveret 2026-04-19:** Timestamp-baseret log-fil (format
+      `publish-gate-YYYYMMDD-HHMMSS.log`) genereres ved hver
+      publish-gate-kørsel. Hver trin logger `step=N status=OK|FAIL`
+      med message. Log-fil-sti vises til bruger ved gate-completion.
+- [x] 4.3.3 Fejl i trin 1-4 stopper med klar fejlbesked og exit 1.
+      **Leveret 2026-04-19:** Hver trin bruger `tryCatch` +
+      `log_fail()` der kalder `quit(status = 1)` ved fejl. Fejl-
+      besked inkluderer trin-nummer, trin-navn og underliggende
+      error message. Manifest-regenerering (trin 5) kører KUN
+      hvis alle tidligere trin er grønne.
 
 **Acceptkriterium fase 4:** Publish-gate fejler kontrolleret ved (a) rødt
 test-output, (b) covr < threshold, (c) E2E-fejl. Manifest genereres kun ved

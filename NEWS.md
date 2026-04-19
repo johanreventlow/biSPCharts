@@ -14,6 +14,17 @@
   round-half-up (123.45 → 123,5) som matcher klinisk læsevaner, modsat R's
   base `round()` som bruger banker's rounding (123.45 → 123,4). 2 tests
   grønne (linje 41 og 87 i `test-label-formatting.R`).
+* **Mari font-registrering idempotent** (#237): `register_mari_font()`
+  afviste at registrere Mari hvis den allerede var installeret som
+  system-font (fx MacOS user fonts ~/Library/Fonts/), og genererede
+  ERROR-log "A system font called `Mari` already exists" ved hver
+  test-session-start. Fix: Tjek `systemfonts::system_fonts()` for
+  eksisterende Mari-family før registrering; spring over (idempotent)
+  hvis fonten allerede er tilgængelig. Primær symptom (ERROR-log)
+  elimineret. **Restcase:** "font family 'Mari' not found in PostScript
+  font database"-warnings ved plot-generering i PostScript-device
+  kontekst er separat — ligger i BFHtheme-ansvar og kræver cross-repo
+  eskalering (PostScript font-database er adskilt fra systemfonts).
 
 ## Interne ændringer (Fase 1 saneringsarbejde, #228/#229)
 

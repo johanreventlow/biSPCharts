@@ -249,20 +249,75 @@ phase_install <- function() {
 }
 
 phase_manifest <- function() {
-  total <- 3
+  # §4.3.1 Full 5-step publish-gate — kører i rækkefølge:
+  #   1. lintr::lint_package()
+  #   2. testthat via canonical entrypoint (§3.3)
+  #   3. E2E-suite via tests/e2e/run_e2e.R (§4.1)
+  #   4. covr-threshold-check (§4.2)
+  #   5. rsconnect::writeManifest()
+  #
+  # §4.3.2 Hver fase logger struktureret output til
+  # dev/audit-output/publish-gate-<timestamp>.log
+  total <- 6
 
+  # §4.3.2 Setup struktureret log-fil
+  gate_log_dir <- file.path(getwd(), "dev", "audit-output")
+  if (!dir.exists(gate_log_dir)) {
+    dir.create(gate_log_dir, recursive = TRUE)
+  }
+  gate_log <- file.path(
+    gate_log_dir,
+    sprintf("publish-gate-%s.log", format(Sys.time(), "%Y%m%d-%H%M%S"))
+  )
+  writeLines(
+    c(
+      sprintf("# Publish-gate run %s", format(Sys.time())),
+      sprintf("# R version: %s", R.version.string),
+      ""
+    ),
+    gate_log
+  )
+
+  log_gate <- function(step, status, message = "") {
+    line <- sprintf("[%s] step=%d status=%s %s",
+      format(Sys.time(), "%H:%M:%S"), step, status, message)
+    cat(line, "\n", file = gate_log, append = TRUE, sep = "")
+  }
+
+  # Trin 0 (pre-flight): Load biSPCharts (beholder fra original publish-gate)
   log_step(1, total, "Load biSPCharts (devtools::load_all)")
   res <- tryCatch(devtools::load_all(".", quiet = TRUE),
                   error = function(e) e)
   if (inherits(res, "error")) {
+    log_gate(0, "FAIL", res$message)
     log_fail(sprintf("load_all() fejlede: %s", res$message))
   }
+  log_gate(0, "OK", "biSPCharts loaded")
   log_ok("Pakken loader uden fejl")
 
-  log_step(2, total, "Kør testthat-tests (canonical entrypoint §3.3)")
-  # Brug canonical runner for at sikre identisk test-kontekst mellem
-  # publish-gate og lokal udvikling (devtools::test). Se
-  # tests/run_canonical.R for §3.3 rationale.
+  # Trin 1: lintr
+  log_step(2, total, "Kør lintr::lint_package() (§4.3.1 trin 1)")
+  lint_res <- tryCatch(
+    {
+      lints <- lintr::lint_package()
+      errors <- Filter(function(x) x$type == "error", lints)
+      if (length(errors) > 0) {
+        stop(sprintf("%d lintr ERROR(s) fundet", length(errors)))
+      }
+      warnings_ct <- length(Filter(function(x) x$type == "warning", lints))
+      list(ok = TRUE, warnings = warnings_ct)
+    },
+    error = function(e) e
+  )
+  if (inherits(lint_res, "error")) {
+    log_gate(1, "FAIL", lint_res$message)
+    log_fail(sprintf("lintr fejlede: %s", lint_res$message))
+  }
+  log_gate(1, "OK", sprintf("%d warnings (non-blocking)", lint_res$warnings))
+  log_ok(sprintf("lintr OK (%d warnings, ingen ERRORs)", lint_res$warnings))
+
+  # Trin 2: testthat via canonical (§3.3)
+  log_step(3, total, "Kør testthat-tests via canonical (§4.3.1 trin 2)")
   canonical_path <- file.path(getwd(), "tests", "run_canonical.R")
   test_res <- tryCatch(
     {
@@ -272,21 +327,69 @@ phase_manifest <- function() {
     error = function(e) e
   )
   if (inherits(test_res, "error")) {
+    log_gate(2, "FAIL", test_res$message)
     log_fail(sprintf("Tests fejlede: %s", test_res$message))
   }
+  log_gate(2, "OK", "canonical testthat passed")
   log_ok("Alle tests bestået")
 
-  log_step(3, total, "Regenerér manifest.json")
+  # Trin 3: E2E-suite (§4.1.4 + §4.3.1 trin 3)
+  log_step(4, total, "Kør E2E-suite (§4.3.1 trin 3)")
+  e2e_path <- file.path(getwd(), "tests", "e2e", "run_e2e.R")
+  if (file.exists(e2e_path)) {
+    e2e_res <- tryCatch(
+      {
+        source(e2e_path, local = TRUE)
+        run_e2e()
+      },
+      error = function(e) e
+    )
+    if (inherits(e2e_res, "error")) {
+      log_gate(3, "FAIL", e2e_res$message)
+      log_fail(sprintf("E2E fejlede: %s", e2e_res$message))
+    }
+    log_gate(3, "OK", "E2E passed or Chrome-skipped")
+    log_ok("E2E OK (eller skipped ved Chrome-mangel)")
+  } else {
+    log_gate(3, "SKIP", "tests/e2e/run_e2e.R ikke fundet")
+    cat("  [skipped] tests/e2e/run_e2e.R ikke fundet\n")
+  }
+
+  # Trin 4: Coverage threshold (§4.2 + §4.3.1 trin 4)
+  log_step(5, total, "Kør coverage-threshold-check (§4.3.1 trin 4)")
+  cov_path <- file.path(getwd(), "tests", "coverage.R")
+  cov_res <- tryCatch(
+    {
+      source(cov_path, local = TRUE)
+      run_coverage_gate(stop_on_failure = TRUE)
+    },
+    error = function(e) e
+  )
+  if (inherits(cov_res, "error")) {
+    log_gate(4, "FAIL", cov_res$message)
+    log_fail(sprintf("Coverage-gate fejlede: %s", cov_res$message))
+  }
+  log_gate(4, "OK", sprintf("overall=%.1f%%", cov_res$overall_coverage))
+  log_ok(sprintf(
+    "Coverage OK (overall=%.1f%%, hard gate=%d%%)",
+    cov_res$overall_coverage, 80L
+  ))
+
+  # Trin 5: writeManifest (kun hvis trin 1-4 grønne)
+  log_step(6, total, "Regenerér manifest.json (§4.3.1 trin 5)")
   res <- tryCatch(
     rsconnect::writeManifest(appDir = ".", quiet = TRUE),
     error = function(e) e
   )
   if (inherits(res, "error")) {
+    log_gate(5, "FAIL", res$message)
     log_fail(sprintf("writeManifest() fejlede: %s", res$message))
   }
+  log_gate(5, "OK", "manifest.json regenereret")
   log_ok("manifest.json regenereret")
 
   cat("\n[FASE manifest FÆRDIG]\n")
+  cat(sprintf("\nPublish-gate log: %s\n", gate_log))
   cat("\nHUSK: opdater NEWS.md hvis denne publish leder til en egentlig release.\n")
 }
 

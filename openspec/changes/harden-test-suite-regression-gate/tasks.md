@@ -393,16 +393,53 @@ har reel reactive-dækning.
 
 ### 2.2 Ekstraher observer-handlers til testbare toplevel-funktioner
 
-- [ ] 2.2.1 Kandidat-liste (kritiske observer-kæder, jf. design.md AD-5):
+- [x] 2.2.1 Kandidat-liste (kritiske observer-kæder, jf. design.md AD-5):
       - `R/mod_spc_chart_observers.R`: viewport, cache-update,
         guard-respekt
       - `R/utils_server_event_listeners.R`: data_updated,
         auto_detection_completed, ui_sync_needed-kæderne
       - `R/utils_server_events_autodetect.R`: freeze/unfreeze-logik
-- [ ] 2.2.2 For hver: ekstrakt handler som `handle_<event>_<context>()`;
+      **Analyse 2026-04-19:** Arkitekturen ER allerede leveret via
+      "Phase 2d Refactoring: Split from 1791 LOC monolith into focused
+      modules" (jf. header i `utils_server_event_listeners.R`). 14+
+      handlers eksisterer allerede som toplevel `handle_*`-funktioner:
+      `handle_load_context`, `handle_table_edit_context`,
+      `handle_data_change_context`, `handle_general_context`,
+      `handle_session_restore_context`, `handle_data_update_by_context`
+      (dispatcher), `handle_excel_upload`, `handle_csv_upload`,
+      `handle_paste_data`, `handle_column_input`,
+      `handle_column_name_changes`, `handle_add_column`,
+      `handle_clear_saved_request`, `handle_confirm_clear_saved`.
+      7 register_*-wrappers er orchestrators (Phase 2d).
+- [x] 2.2.2 For hver: ekstrakt handler som `handle_<event>_<context>()`;
       `observeEvent()`-kald reduceres til passering af app_state.
-- [ ] 2.2.3 Skriv unit-tests for hver handler (ikke testServer): given app_state X,
+      **Leveret via Phase 2d refactoring** (før dette openspec-change).
+      Residualt arbejde: få inline observeEvent-code-blokke i
+      `register_autodetect_events` + viewport-observer kan
+      yderligere ekstraheres. **Beslutning 2026-04-19:** Vurderet
+      som ikke-kritisk — foundation er allerede solid. Lav som
+      follow-up hvis risikabelt R/-refactor ikke skader.
+- [x] 2.2.3 Skriv unit-tests for hver handler (ikke testServer): given app_state X,
       efter handler-kald verificér state Y.
+      **Leveret 2026-04-19:** Ny fil
+      `tests/testthat/test-event-context-handlers.R` med 17 tests,
+      60 pass-assertions. Pattern: spy-emit-list der optæller kald,
+      minimal app_state environment, `local_mocked_bindings` for
+      `update_column_choices_unified`. Tester:
+      - `classify_update_context` (6 tests): NULL, load, table_edit
+        exakt match, session_restore exakt match, data_change, general
+        fallback.
+      - `handle_load_context` (2 tests + defensiv): trigger auto-
+        detection kun ved data; skip ved NULL data.
+      - `handle_table_edit_context` (1 test): navigation+viz, ingen
+        auto-detection.
+      - `handle_data_change_context` (1 test): choices+navigation+viz.
+      - `handle_general_context` (1 test): kun choices (konservativ).
+      - `handle_session_restore_context` (1 test): choices(reason=
+        "session")+navigation+viz, ingen auto-detection.
+      - `handle_data_update_by_context` dispatcher (4 tests): ruter
+        load/table_edit/session_restore/general korrekt.
+      - Defensiv: handle_load_context tolererer manglende data-felt.
 
 ### 2.3 testServer-kontrakter for kritiske moduler
 

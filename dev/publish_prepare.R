@@ -65,13 +65,13 @@ SIBLINGS <- list(
   BFHllm    = "johanreventlow/BFHllm"
 )
 
-log_step <- function(n, total, msg) {
+gate_log_step <- function(n, total, msg) {
   cat(sprintf("\n-> Trin %d/%d: %s\n", n, total, msg))
 }
-log_info <- function(msg)  cat(sprintf("  %s\n", msg))
-log_ok   <- function(msg)  cat(sprintf("  [OK] %s\n", msg))
-log_warn <- function(msg)  cat(sprintf("  [ADVARSEL] %s\n", msg))
-log_fail <- function(msg) {
+gate_log_info <- function(msg)  cat(sprintf("  %s\n", msg))
+gate_log_ok   <- function(msg)  cat(sprintf("  [OK] %s\n", msg))
+gate_log_warn <- function(msg)  cat(sprintf("  [ADVARSEL] %s\n", msg))
+gate_log_fail <- function(msg) {
   cat(sprintf("  [FEJL] %s\n", msg))
   quit(status = 1)
 }
@@ -100,12 +100,12 @@ fetch_latest_tag <- function(repo) {
     error = function(e) character(0)
   )
   if (length(out) == 0 || inherits(out, "try-error")) {
-    log_fail(sprintf("Kunne ikke hente tags for %s", repo))
+    gate_log_fail(sprintf("Kunne ikke hente tags for %s", repo))
   }
   tags <- sub(".*refs/tags/", "", out)
   tags <- grep("^v[0-9]+\\.[0-9]+\\.[0-9]+$", tags, value = TRUE)
   if (length(tags) == 0) {
-    log_fail(sprintf("Ingen vX.Y.Z-tags fundet for %s", repo))
+    gate_log_fail(sprintf("Ingen vX.Y.Z-tags fundet for %s", repo))
   }
   pick_highest_semver_tag(tags)
 }
@@ -163,7 +163,7 @@ bump_description <- function(pkg, new_version, dep_type) {
 phase_install <- function() {
   total <- 4
 
-  log_step(1, total, "Hent seneste tags fra GitHub")
+  gate_log_step(1, total, "Hent seneste tags fra GitHub")
   tag_info <- lapply(names(SIBLINGS), function(pkg) {
     repo <- SIBLINGS[[pkg]]
     tag <- fetch_latest_tag(repo)
@@ -172,12 +172,12 @@ phase_install <- function() {
          current_lower = dep$version, dep_type = dep$type)
   })
   for (info in tag_info) {
-    log_info(sprintf("%-12s seneste=%s  DESCRIPTION-lower=%s",
+    gate_log_info(sprintf("%-12s seneste=%s  DESCRIPTION-lower=%s",
                      info$pkg, info$tag,
                      ifelse(is.na(info$current_lower), "(ingen)", info$current_lower)))
   }
 
-  log_step(2, total, "Valider tag-versioner mod DESCRIPTION")
+  gate_log_step(2, total, "Valider tag-versioner mod DESCRIPTION")
   behind <- character(0)
   any_major <- FALSE
   for (info in tag_info) {
@@ -189,38 +189,38 @@ phase_install <- function() {
                                   info$pkg, info$current_lower, info$tag))
     }
     if (is_major_bump(info$version, info$current_lower)) {
-      log_warn(sprintf("MAJOR-bump for %s: %s → %s (kan indeholde breaking changes)",
+      gate_log_warn(sprintf("MAJOR-bump for %s: %s → %s (kan indeholde breaking changes)",
                        info$pkg, info$current_lower, info$version))
       any_major <- TRUE
     }
   }
   if (length(behind) > 0) {
     cat("\n")
-    for (b in behind) log_warn(b)
-    log_fail("GitHub-tags er bagud ift. DESCRIPTION. Push manglende tags til sibling-repoer først.")
+    for (b in behind) gate_log_warn(b)
+    gate_log_fail("GitHub-tags er bagud ift. DESCRIPTION. Push manglende tags til sibling-repoer først.")
   }
-  if (!any_major) log_ok("Ingen MAJOR-bumps, ingen bagud-tags")
+  if (!any_major) gate_log_ok("Ingen MAJOR-bumps, ingen bagud-tags")
 
-  log_step(3, total, "Installér siblings fra tags")
+  gate_log_step(3, total, "Installér siblings fra tags")
   for (info in tag_info) {
     target <- sprintf("%s@%s", info$repo, info$tag)
-    log_info(sprintf("Installerer %s ...", target))
+    gate_log_info(sprintf("Installerer %s ...", target))
     res <- tryCatch(
       remotes::install_github(target, upgrade = "never", quiet = TRUE,
                               force = TRUE),
       error = function(e) e
     )
     if (inherits(res, "error")) {
-      log_fail(sprintf("install_github(%s) fejlede: %s", target, res$message))
+      gate_log_fail(sprintf("install_github(%s) fejlede: %s", target, res$message))
     }
-    log_ok(sprintf("%s@%s installeret", info$pkg, info$tag))
+    gate_log_ok(sprintf("%s@%s installeret", info$pkg, info$tag))
   }
 
-  log_step(4, total, "Auto-bump DESCRIPTION lower-bounds")
+  gate_log_step(4, total, "Auto-bump DESCRIPTION lower-bounds")
   bumps <- character(0)
   for (info in tag_info) {
     if (is.na(info$current_lower)) {
-      log_info(sprintf("%s: ingen lower-bound i DESCRIPTION — skipper", info$pkg))
+      gate_log_info(sprintf("%s: ingen lower-bound i DESCRIPTION — skipper", info$pkg))
       next
     }
     if (!identical(info$version, info$current_lower) &&
@@ -229,10 +229,10 @@ phase_install <- function() {
       bumps <- c(bumps, sprintf("%s %s → %s (%s)", info$pkg,
                                 info$current_lower, info$version,
                                 info$dep_type))
-      log_ok(sprintf("%s: bumpet %s → %s i %s", info$pkg,
+      gate_log_ok(sprintf("%s: bumpet %s → %s i %s", info$pkg,
                      info$current_lower, info$version, info$dep_type))
     } else {
-      log_info(sprintf("%s: ingen bump nødvendig (DESCRIPTION har %s)",
+      gate_log_info(sprintf("%s: ingen bump nødvendig (DESCRIPTION har %s)",
                        info$pkg, info$current_lower))
     }
   }
@@ -299,19 +299,19 @@ phase_manifest <- function() {
   }
 
   # Trin 0 (pre-flight): Load biSPCharts (beholder fra original publish-gate)
-  log_step(1, total, "Load biSPCharts (devtools::load_all)")
+  gate_log_step(1, total, "Load biSPCharts (devtools::load_all)")
   res <- tryCatch(devtools::load_all(".", quiet = TRUE),
                   error = function(e) e)
   if (inherits(res, "error")) {
     log_gate(0, "FAIL", res$message)
-    log_fail(sprintf("load_all() fejlede: %s", res$message))
+    gate_log_fail(sprintf("load_all() fejlede: %s", res$message))
   }
   log_gate(0, "OK", "biSPCharts loaded")
-  log_ok("Pakken loader uden fejl")
+  gate_log_ok("Pakken loader uden fejl")
 
   if (!skip_gate) {
     # Trin 1: lintr
-    log_step(2, total, "Kør lintr::lint_package() (§4.3.1 trin 1)")
+    gate_log_step(2, total, "Kør lintr::lint_package() (§4.3.1 trin 1)")
     lint_res <- tryCatch(
       {
         lints <- lintr::lint_package()
@@ -326,13 +326,13 @@ phase_manifest <- function() {
     )
     if (inherits(lint_res, "error")) {
       log_gate(1, "FAIL", lint_res$message)
-      log_fail(sprintf("lintr fejlede: %s", lint_res$message))
+      gate_log_fail(sprintf("lintr fejlede: %s", lint_res$message))
     }
     log_gate(1, "OK", sprintf("%d warnings (non-blocking)", lint_res$warnings))
-    log_ok(sprintf("lintr OK (%d warnings, ingen ERRORs)", lint_res$warnings))
+    gate_log_ok(sprintf("lintr OK (%d warnings, ingen ERRORs)", lint_res$warnings))
 
     # Trin 2: testthat via canonical (§3.3)
-    log_step(3, total, "Kør testthat-tests via canonical (§4.3.1 trin 2)")
+    gate_log_step(3, total, "Kør testthat-tests via canonical (§4.3.1 trin 2)")
     canonical_path <- file.path(getwd(), "tests", "run_canonical.R")
     test_res <- tryCatch(
       {
@@ -343,13 +343,13 @@ phase_manifest <- function() {
     )
     if (inherits(test_res, "error")) {
       log_gate(2, "FAIL", test_res$message)
-      log_fail(sprintf("Tests fejlede: %s", test_res$message))
+      gate_log_fail(sprintf("Tests fejlede: %s", test_res$message))
     }
     log_gate(2, "OK", "canonical testthat passed")
-    log_ok("Alle tests bestået")
+    gate_log_ok("Alle tests bestået")
 
     # Trin 3: E2E-suite (§4.1.4 + §4.3.1 trin 3)
-    log_step(4, total, "Kør E2E-suite (§4.3.1 trin 3)")
+    gate_log_step(4, total, "Kør E2E-suite (§4.3.1 trin 3)")
     e2e_path <- file.path(getwd(), "tests", "e2e", "run_e2e.R")
     if (file.exists(e2e_path)) {
       e2e_res <- tryCatch(
@@ -361,17 +361,17 @@ phase_manifest <- function() {
       )
       if (inherits(e2e_res, "error")) {
         log_gate(3, "FAIL", e2e_res$message)
-        log_fail(sprintf("E2E fejlede: %s", e2e_res$message))
+        gate_log_fail(sprintf("E2E fejlede: %s", e2e_res$message))
       }
       log_gate(3, "OK", "E2E passed or Chrome-skipped")
-      log_ok("E2E OK (eller skipped ved Chrome-mangel)")
+      gate_log_ok("E2E OK (eller skipped ved Chrome-mangel)")
     } else {
       log_gate(3, "SKIP", "tests/e2e/run_e2e.R ikke fundet")
       cat("  [skipped] tests/e2e/run_e2e.R ikke fundet\n")
     }
 
     # Trin 4: Coverage threshold (§4.2 + §4.3.1 trin 4)
-    log_step(5, total, "Kør coverage-threshold-check (§4.3.1 trin 4)")
+    gate_log_step(5, total, "Kør coverage-threshold-check (§4.3.1 trin 4)")
     cov_path <- file.path(getwd(), "tests", "coverage.R")
     cov_res <- tryCatch(
       {
@@ -382,10 +382,10 @@ phase_manifest <- function() {
     )
     if (inherits(cov_res, "error")) {
       log_gate(4, "FAIL", cov_res$message)
-      log_fail(sprintf("Coverage-gate fejlede: %s", cov_res$message))
+      gate_log_fail(sprintf("Coverage-gate fejlede: %s", cov_res$message))
     }
     log_gate(4, "OK", sprintf("overall=%.1f%%", cov_res$overall_coverage))
-    log_ok(sprintf(
+    gate_log_ok(sprintf(
       "Coverage OK (overall=%.1f%%, hard gate=%d%%)",
       cov_res$overall_coverage, 80L
     ))
@@ -397,17 +397,17 @@ phase_manifest <- function() {
   }
 
   # Trin 5: writeManifest (kun hvis trin 1-4 grønne ELLER skip_gate)
-  log_step(total, total, "Regenerér manifest.json (§4.3.1 trin 5)")
+  gate_log_step(total, total, "Regenerér manifest.json (§4.3.1 trin 5)")
   res <- tryCatch(
     rsconnect::writeManifest(appDir = ".", quiet = TRUE),
     error = function(e) e
   )
   if (inherits(res, "error")) {
     log_gate(5, "FAIL", res$message)
-    log_fail(sprintf("writeManifest() fejlede: %s", res$message))
+    gate_log_fail(sprintf("writeManifest() fejlede: %s", res$message))
   }
   log_gate(5, "OK", "manifest.json regenereret")
-  log_ok("manifest.json regenereret")
+  gate_log_ok("manifest.json regenereret")
 
   cat("\n[FASE manifest FÆRDIG]\n")
   cat(sprintf("\nPublish-gate log: %s\n", gate_log))
@@ -424,7 +424,7 @@ main <- function() {
 
   if (!file.exists("DESCRIPTION") ||
       !grepl("Package:\\s*biSPCharts", readLines("DESCRIPTION", n = 5))[1]) {
-    log_fail("Skal køres fra biSPCharts project root")
+    gate_log_fail("Skal køres fra biSPCharts project root")
   }
 
   switch(phase,

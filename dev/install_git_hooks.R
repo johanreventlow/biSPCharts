@@ -43,9 +43,33 @@ install_git_hooks <- function(force = FALSE, uninstall = FALSE) {
     stop(".git/hooks/ findes ikke — er dette et git repository?")
   }
 
-  # Liste hooks der skal installeres (kun filer uden extension)
-  hook_files <- list.files(hooks_source, full.names = FALSE)
-  hook_files <- hook_files[!grepl("\\.(md|txt|sample)$", hook_files)]
+  # Liste hooks der skal installeres.
+  # SECURITY: Eksplicit allowlist fremfor extension-blacklist for at forhindre
+  # at en fil med navn fx "../.git/config" (uden extension) kan omgå filtrering
+  # og blive installeret som symlink-target. Kun kendte git hook-navne er
+  # tilladt. Udvid allowlist hvis nye hook-typer tilføjes til dev/git-hooks/.
+  VALID_GIT_HOOKS <- c(
+    "applypatch-msg", "pre-applypatch", "post-applypatch",
+    "pre-commit", "pre-merge-commit", "prepare-commit-msg", "commit-msg",
+    "post-commit", "pre-rebase", "post-checkout", "post-merge",
+    "pre-push", "pre-receive", "update", "proc-receive", "post-receive",
+    "post-update", "reference-transaction", "push-to-checkout",
+    "pre-auto-gc", "post-rewrite", "sendemail-validate",
+    "fsmonitor-watchman", "p4-changelist", "p4-prepare-changelist",
+    "p4-post-changelist", "p4-pre-submit", "post-index-change"
+  )
+  available_files <- list.files(hooks_source, full.names = FALSE)
+  hook_files <- intersect(available_files, VALID_GIT_HOOKS)
+
+  # Log ignorerede filer for transparens
+  ignored <- setdiff(available_files, hook_files)
+  ignored <- ignored[!grepl("\\.(md|txt|sample)$", ignored)]
+  if (length(ignored) > 0) {
+    message(sprintf(
+      "  (ignoreret — ikke i VALID_GIT_HOOKS-allowlist) %s",
+      paste(ignored, collapse = ", ")
+    ))
+  }
 
   if (length(hook_files) == 0) {
     message("Ingen hooks fundet i dev/git-hooks/")

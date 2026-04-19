@@ -563,8 +563,12 @@ describe("UI Rendering", {
         chart_type("i")
         chart_type("c")
 
-        # Flush reactives uden at vente på debounce — debounce skal
-        # kun tillade ÉN re-evaluation, ikke 3
+        # Flush reactives OG driv later-timers så debounce (800ms default) udløser.
+        # session$flushReact() alene dreier IKKE later-queue — testen ville
+        # passere selv hvis debounce-kode blev fjernet. later::run_now(2) venter
+        # op til 2 sekunder på pending later-tasks og sikrer determinisme.
+        session$flushReact()
+        later::run_now(2)
         session$flushReact()
 
         # Efter debounce bør chart_config have evalueret < 3 gange

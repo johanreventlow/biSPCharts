@@ -1,5 +1,21 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Security
+
+* **Path traversal test-dækning** (#244): To skipped tests i
+  `test-critical-fixes-security.R` omformuleret efter maintainer-anbefalet
+  Option B (match faktisk threat-model):
+  - SQL injection-testen dokumenterer nu eksplicit at SQL-keywords bevares
+    i `sanitize_user_input` — appen bruger ingen SQL direkte, så filtrering
+    er ikke scope. Bevidst adfærd, ikke en sikkerhedsmangel.
+  - Path traversal-testen omskrevet til at verificere
+    `validate_safe_file_path()` (R/fct_file_operations.R), som er den
+    faktiske app-beskyttelse mod traversal: blokerer absolute paths
+    (`/etc/passwd`), relative traversal (`../../etc/passwd`), NULL,
+    multi-element vektorer; validerer legitime tempdir-stier.
+  Ingen ændringer i produktionskode — eksisterende beskyttelse er
+  tilstrækkelig, testene manglede blot at pege på den.
+
 ## Bug fixes
 
 * **format_scaled_number/format_unscaled_number afrunding og scientific

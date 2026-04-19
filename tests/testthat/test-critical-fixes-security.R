@@ -171,7 +171,7 @@ test_that("Logging API performance under load", {
 
 test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
   # Observer execution order kan ikke testes udenfor en reaktiv kontekst (shinytest2/shinyApp)
-  skip("TODO Fase 4: Observer priority execution order kræver reaktiv kontekst (shinytest2) (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
 
   skip_if_not(exists("reactiveVal"), message = "Shiny reactive functions not available")
 

@@ -127,7 +127,7 @@ test_that("Chart generation performance meets benchmarks", {
 })
 
 test_that("Chart module handles reactive updates correctly", {
-  skip("TODO Fase 4: create_data_manager() returnerer NULL + shiny::flushReact ikke eksporteret (#203-followup)")
+  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
   skip_if_not_installed("shiny")
 
   # Mock reactive environment

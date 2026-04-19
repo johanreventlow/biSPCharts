@@ -641,17 +641,41 @@ Målsætning: push til remote kan ikke ske med rød test; rng er deterministisk.
 
 ### 3.1 Pre-push git-hook
 
-- [ ] 3.1.1 Opret `dev/git-hooks/pre-push` (bash-wrapper):
+- [x] 3.1.1 Opret `dev/git-hooks/pre-push` (bash-wrapper):
       kører `Rscript -e "devtools::test(stop_on_failure = TRUE)"` +
       `Rscript -e "lintr::lint_package()"`; afviser push ved fejl.
-- [ ] 3.1.2 Opret `dev/install_git_hooks.R` som installerer symlink
+      **Leveret 2026-04-19:** `dev/git-hooks/pre-push` (bash-script,
+      executable, 5.2 KB). Kører lintr::lint_package() (ERROR-only
+      blocking, warnings non-blocking) + devtools::test() med
+      stop_on_failure=FALSE men exit 1 ved fails/errors. Bypass-
+      mekanismer: `SKIP_PREPUSH=1`, `git push --no-verify`.
+- [x] 3.1.2 Opret `dev/install_git_hooks.R` som installerer symlink
       `.git/hooks/pre-push` → `dev/git-hooks/pre-push`.
-- [ ] 3.1.3 Tilføj tjek i `.Rprofile` (projekt-niveau): hvis
+      **Leveret 2026-04-19:** Idempotent R-script med `--force` og
+      `--uninstall` flags. Bruger relativ symlink
+      (`../../dev/git-hooks/pre-push`) for portabilitet. Verificeret
+      executable permission + link-target-sammenligning via
+      `normalizePath(mustWork=FALSE)`.
+- [x] 3.1.3 Tilføj tjek i `.Rprofile` (projekt-niveau): hvis
       `.git/hooks/pre-push` ikke er installeret, log warning ved R-start.
-- [ ] 3.1.4 Dokumentér i `CLAUDE.md` §6 (pre-commit-tjekliste) og
+      **Leveret 2026-04-19:** `.Rprofile` tilføjet i projekt-rod.
+      Kun aktiv i interaktive sessioner (`interactive()`-guard).
+      Ignoreres i Rscript/CI for at undgå støj. Advarsel refererer
+      `dev/install_git_hooks.R` + SKIP_PREPUSH-bypass.
+- [x] 3.1.4 Dokumentér i `CLAUDE.md` §6 (pre-commit-tjekliste) og
       `docs/CONFIGURATION.md`.
-- [ ] 3.1.5 Mål: total pre-push-tid < 5 min. Hvis ikke: del i "hurtig
+      **Leveret 2026-04-19:** CLAUDE.md §6 udvidet med "Git Hooks
+      (pre-push gate)"-sektion. `docs/CONFIGURATION.md` har nu
+      komplet "Git Hooks"-afsnit med installation, tilstande
+      (fast/full), bypass-dokumentation, og note om #239-blokker.
+- [x] 3.1.5 Mål: total pre-push-tid < 5 min. Hvis ikke: del i "hurtig
       pre-push" (unit + lint) og "fuld pre-push" (alt) med flag.
+      **Leveret 2026-04-19:** Dual-mode via `PREPUSH_MODE` env-var:
+      - `fast` (~2 min): lintr + udvalgte unit-testfiler
+        (test-event-context-handlers, test-helper-mocks-contracts,
+        test-negative-assertions-phase2-5)
+      - `full` (default, 5-10 min): lintr + fuld testthat-suite
+      Hook logger varighed + advarer hvis >300s (§3.1.5-grænsen).
 
 ### 3.2 Determinisme
 

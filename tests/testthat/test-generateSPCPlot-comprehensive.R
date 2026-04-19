@@ -55,7 +55,11 @@ verify_plot_structure <- function(result, expected_layers_min = 3) {
 
 describe("Basic Chart Types", {
   it("generates run chart correctly", {
-    skip("Afventer SPC-plot geom/data edge cases — se #245 (run chart ucl/lcl + y out of range)")
+    # BFHcharts 0.8.0 returnerer ucl/lcl for run charts (burde være NA/fraværende).
+    # Run charts har per definition INGEN kontrolgrænser — kun centrallinje.
+    # Dette er en BFHcharts-bug: eskalér cross-repo (#245, #216).
+    # y-værdier returneres som proportioner (0-1) ikke pct (70-110) da n_col angives.
+    skip("Afventer BFHcharts run-chart scope — ucl/lcl returneres uventet — se #245 (cross-repo BFHcharts)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- create_test_data(n = 15, chart_type = "run")
@@ -256,7 +260,11 @@ describe("Y-Axis Formatting", {
   })
 
   it("formats time values intelligently", {
-    skip("Afventer SPC-plot geom/data edge cases — se #245 (time transformation under-60)")
+    # BFHcharts 0.8.0 time-unit: y-værdier returneres uforandrede (61 min passerer).
+    # Testen antog at BFHcharts transformerer tidsværdier > 60 min til timer:min format.
+    # Relateret til #238 time-format-refactor og BFHcharts komposit-time-format.
+    # Kan reaktiveres når BFHcharts eksponerer transformation via metadata (#245, #216).
+    skip("Afventer BFHcharts time-transformation for under-60 format — se #245 (relateret #238)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     # Test data med minutter
@@ -473,7 +481,10 @@ describe("X-Axis Datetime Formatting", {
 
   it("handles character x-column as factor", {
     set.seed(42)
-    skip("Afventer SPC-plot geom/data edge cases — se #245 (character x→factor)")
+    # BFHcharts 0.8.0 returnerer integer (ikke factor) for character x-kolonner.
+    # Cross-repo: BFHcharts skal eksponere factor-konvertering for ikke-dato x-kolonner.
+    # Kan reaktiveres når BFHcharts garanterer factor output for character x (#245, #216).
+    skip("Afventer BFHcharts factor-konvertering for character x-kolonner — se #245 (cross-repo BFHcharts)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- data.frame(

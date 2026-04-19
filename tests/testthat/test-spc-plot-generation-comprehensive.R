@@ -291,7 +291,13 @@ test_that("generateSPCPlot target line functionality works", {
 })
 
 test_that("generateSPCPlot centerline label bruger geom_marquee", {
-  skip("Afventer SPC-plot geom/data edge cases — se #245 (geom_marquee size assertion)")
+  # BFHcharts 0.8.0 ændrede geom_marquee-datastruktur:
+  #   - size: 4 → 6
+  #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
+  #   - 'text_color' → 'color', mapping$color → mapping$colour
+  # Testen er forældet og kræver opdatering af alle assertions mod ny BFHcharts API.
+  # Kan reaktiveres når BFHcharts eksponerer stabil label-metadata (#245, #216).
+  skip("Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245")
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -326,7 +332,13 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
 })
 
 test_that("generateSPCPlot target label bruger geom_marquee", {
-  skip("Afventer SPC-plot geom/data edge cases — se #245 (geom_marquee size assertion)")
+  # BFHcharts 0.8.0 ændrede geom_marquee-datastruktur:
+  #   - size: 4 → 6
+  #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
+  #   - 'text_color' → 'color', mapping$color → mapping$colour
+  # Testen er forældet og kræver opdatering af alle assertions mod ny BFHcharts API.
+  # Kan reaktiveres når BFHcharts eksponerer stabil label-metadata (#245, #216).
+  skip("Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245")
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -586,7 +598,10 @@ test_that("generateSPCPlot hospital theme integration works", {
 })
 
 test_that("generateSPCPlot Danish clinical data patterns work", {
-  skip("Afventer SPC-plot geom/data edge cases — se #245 (character x→factor)")
+  # BFHcharts 0.8.0 parser "Jan 2024" til POSIXct (ikke factor).
+  # Testen forventer is.factor(result$qic_data$x) — men BFHcharts returnerer POSIXct.
+  # Cross-repo: BFHcharts skal eksponere factor-konvertering for tekstbaserede måneder (#245, #216).
+  skip("Afventer BFHcharts factor-konvertering for tekstbaserede månedsnavne — se #245 (cross-repo BFHcharts)")
   # TEST: Real-world Danish clinical data patterns
 
   # Skip if generateSPCPlot function not available

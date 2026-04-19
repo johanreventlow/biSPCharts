@@ -594,9 +594,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         details = list(
           error = e$message,
           chart_type = chart_type
-        ),
-        session = NULL,
-        show_user = TRUE
+        )
       )
       stop(e) # Re-throw the error - no fallback available
     }
@@ -618,5 +616,3 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
 #' @inheritParams generateSPCPlot_with_backend
 #' @keywords internal
 generateSPCPlot <- generateSPCPlot_with_backend
-
-

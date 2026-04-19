@@ -5,6 +5,12 @@
 #
 # Kører automatisk når R startes i dette projekt-directory. Tjekker om
 # pre-push git-hook er installeret og advarer hvis ikke.
+#
+# ⚠ SECURITY: Denne fil eksekveres automatisk ved hver R-session-start i
+# projekt-directory — den udgør en supply-chain overflade. ENHVER ændring
+# til .Rprofile SKAL reviewes ekstra grundigt (PR-reviewer tjekker manuelt
+# for auto-executing kode, netværkskald, fil-skrivning uden for logs).
+# Se .github/pull_request_template.md for review-checklist (#247 M5).
 # ==============================================================================
 
 local({

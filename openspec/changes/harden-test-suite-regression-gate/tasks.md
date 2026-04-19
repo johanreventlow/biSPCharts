@@ -53,6 +53,25 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
 - [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.
+      **Batch 4 (kategori E m/nyoprettede issues, 2026-04-19):**
+      31 kat E skips grupperet i 6 konsoliderede sub-grupper og sporet
+      via nye GitHub-issues #240-#245 + 1 skip re-labelet til #213:
+      - **#240** (12 skips): `compute_spc_results_bfh()` input-validering
+        i `test-spc-bfh-service.R`. Manglende-argument + data-shape.
+      - **#241** (5 skips): `generateSPCPlot()` edge case fejl-håndtering
+        for tom/NA/enkelt-rækket/nul-nævner data.
+      - **#242** (3 skips): `format_scaled_number`, `format_unscaled_number`,
+        `format_time_with_unit` edge case afrunding + dansk format.
+      - **#243** (2 skips): `resolve_y_unit`/`detect_unit_from_data` percent-
+        detection. Relateret til #238 (samme BFHcharts 0.8.0-rod-årsag).
+      - **#244** (2 skips): `sanitize_user_input()` SQL injection + path
+        traversal. Inkluderer pragmatisk threat-model-vurdering.
+      - **#245** (6 skips): SPC-plot geom-assertions (layer size) +
+        data-transformation edge cases (character x→factor, run chart
+        ucl/lcl, time transformation).
+      - **#213** (1 skip): `parse_danish_target` backwards-compat re-labelet.
+      **Nu tilbage:** 26 skip("TODO")-kald i 6 filer (fra 57).
+
       **Batch 3 (kategori E m/eksisterende issue-refs, 2026-04-19):**
       10 skips re-labelet til at referere eksisterende issues:
       - `test-cache-reactive-lazy-evaluation.R` (2 skips) →

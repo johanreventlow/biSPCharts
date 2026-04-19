@@ -156,13 +156,13 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 **Dato:** 2026-04-19
 **Oprindelig total:** 92 skip-kald i 15 filer
 
-### Opdatering 2026-04-19 (§1.2.2 batch 1+2+3)
+### Opdatering 2026-04-19 (§1.2.2 batch 1+2+3+4)
 
 | Skip-form | Antal | Beskrivelse |
 |---|---|---|
-| `skip("TODO ...")` — uden issue-ref | 57 | Tilbage i 10 filer (kat D/E/F + resterende E uden issue) |
+| `skip("TODO ...")` — uden issue-ref | 26 | Tilbage i 6 filer (kat D: 21, kat F: 5) |
 | `skip("testServer-migration — se ... §2.3 (#230)")` | 7 | Kat C — migrerer i Fase 2 (batch 2) |
-| `skip("Afventer ... — se #212/#213")` | 10 | Kat E med konkrete tracking-issues (batch 3) |
+| `skip("Afventer ... — se #XXX")` | 41 | Kat E med konkrete tracking-issues (batch 3+4) |
 | **Slettet** (obsolete test-blokke) | 18 | Kat A+B — funktioner/konstanter fjernet eller aldrig implementeret (batch 1) |
 | **Total** | **92** | |
 
@@ -174,16 +174,41 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 | B (feature ikke impl.) | 10 | ✅ Slettet (batch 1) |
 | C (reaktiv kontekst) | 7 | ✅ Re-labelet → #230 §2.3 (batch 2) |
 | D (API-struktur) | 21 | ⏳ Tilbage (kræver API-analyse) |
-| E (R-bug) — med issue | 10 | ✅ Re-labelet → #212 (2) + #213 (8) (batch 3) |
-| E (R-bug) — uden issue | 31 | ⏳ Tilbage (kræver issue-oprettelse) |
+| E (R-bug) | 41 | ✅ Re-labelet → #212/#213 (batch 3) + #240-#245 (batch 4) |
 | F (qicharts2 baseline) | 5 | ⏳ Tilbage (kræver BFHcharts sibling-issue) |
 
-### Relaterede eksisterende issues
+### Relaterede eksisterende og nyoprettede issues
 
+**Eksisterende (Fase 3 follow-up):**
 - **#212** — Fix reactive cache-key i `create_cached_reactive` (dækker 2 skips i `test-cache-reactive-lazy-evaluation.R`)
-- **#213** — `parse_danish_target`/`normalize_axis_value` unit-awareness refactor (dækker 8 skips i `test-parse-danish-target-unit-conversion.R`)
-- **#230** — [Fase 2/4] testServer-kontrakter (dækker 7 kat C skips)
+- **#213** — `parse_danish_target`/`normalize_axis_value` unit-awareness refactor (dækker 8+1 skips)
 - **#216** — 3 tests afventer BFHcharts-ændringer (ikke direkte overlap med kat F i denne inventory — handler om `place_two_labels_npc` o.a.)
+
+**Nye (§1.2.2 batch 4, 2026-04-19):**
+- **#240** — `compute_spc_results_bfh()` mangler input-validering (12 skips, `test-spc-bfh-service.R`)
+- **#241** — `generateSPCPlot()` mangler edge case fejl-håndtering (5 skips)
+- **#242** — `format_scaled_number`/`format_unscaled_number`/`format_time_with_unit` edge cases (3 skips)
+- **#243** — `resolve_y_unit`/`detect_unit_from_data` percent-detection (2 skips)
+- **#244** — `sanitize_user_input()` mangler SQL injection + path traversal prevention (2 skips)
+- **#245** — SPC-plot geom-assertions + data-transformation edge cases (6 skips)
+
+**Issues lukket under dette arbejde:**
+- **#234** — PR A3 catch-all (lukket som completed, dækket af commit `1614c1c`)
+
+**Issue-fordeling per kategori:**
+
+| Kat | Reference | Antal skips |
+|---|---|---|
+| E | #212 | 2 |
+| E | #213 | 9 |
+| E | #240 | 12 |
+| E | #241 | 5 |
+| E | #242 | 3 |
+| E | #243 | 2 |
+| E | #244 | 2 |
+| E | #245 | 6 |
+| C | #230 | 7 |
+| **I alt issue-refererede** | | **48** |
 
 Tabellen er produceret som input til §1.2.2 (per-skip beslutning) og
 §1.2.3 (særlig håndtering af `test-spc-bfh-service.R`).

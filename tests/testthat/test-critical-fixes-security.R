@@ -11,14 +11,14 @@ test_that("Input sanitization forhindrer SQL injection patterns", {
   # SQL keywords som DROP, INSERT, SELECT bliver IKKE fjernet — kun tegn der ikke er i
   # allowed_chars pattern fjernes. SQL injection prevention er ikke scope for denne funktion
   # (appen bruger ikke SQL, kun CSV/Excel data).
-  skip("TODO Fase 4: sanitize_user_input laver ikke SQL injection prevention - kun XSS+whitelist (#203-followup)")
+  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (SQL injection)")
 })
 
 test_that("Input sanitization forhindrer path traversal attacks", {
   # sanitize_user_input laver ikke path traversal prevention.
   # Dot-dot sekvenser (".." og "%2e%2e") bevares fordi de kan indgå i legitim tekst.
   # Path traversal håndteres af validate_safe_path() (separat funktion).
-  skip("TODO Fase 4: sanitize_user_input laver ikke path traversal prevention - brug validate_safe_path() (#203-followup)")
+  skip("Afventer sanitize_user_input sikkerheds-fix — se #244 (path traversal)")
 })
 
 test_that("Input sanitization håndterer Unicode edge cases", {

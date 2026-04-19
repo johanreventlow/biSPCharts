@@ -291,7 +291,7 @@ test_that("generateSPCPlot target line functionality works", {
 })
 
 test_that("generateSPCPlot centerline label bruger geom_marquee", {
-  skip("TODO Fase 4: layer$aes_params$size er ikke 4 (#203-followup)")
+  skip("Afventer SPC-plot geom/data edge cases — se #245 (geom_marquee size assertion)")
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -326,7 +326,7 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
 })
 
 test_that("generateSPCPlot target label bruger geom_marquee", {
-  skip("TODO Fase 4: layer$aes_params$size er ikke 4 (#203-followup)")
+  skip("Afventer SPC-plot geom/data edge cases — se #245 (geom_marquee size assertion)")
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -409,7 +409,7 @@ test_that("generateSPCPlot comment annotations work", {
 })
 
 test_that("generateSPCPlot error handling works correctly", {
-  skip("TODO Fase 4: generateSPCPlot kaster ikke fejl for tom/ufuldstændig/NA/nul/lille data (#203-followup)")
+  skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (kombineret edge cases)")
   # TEST: Various error conditions and defensive programming
 
   # Skip if generateSPCPlot function not available
@@ -585,7 +585,7 @@ test_that("generateSPCPlot hospital theme integration works", {
 })
 
 test_that("generateSPCPlot Danish clinical data patterns work", {
-  skip("TODO Fase 4: character x-kolonne konverteres ikke til factor (#203-followup)")
+  skip("Afventer SPC-plot geom/data edge cases — se #245 (character x→factor)")
   # TEST: Real-world Danish clinical data patterns
 
   # Skip if generateSPCPlot function not available

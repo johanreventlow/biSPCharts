@@ -189,7 +189,7 @@ test_that("compute_spc_results_bfh() handles S charts (standard deviation)", {
 # Parameter Validation Tests --------------------------------------------------
 
 test_that("compute_spc_results_bfh() requires data parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende data)")
   expect_error(
     compute_spc_results_bfh(
       x_var = "month",
@@ -202,7 +202,7 @@ test_that("compute_spc_results_bfh() requires data parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires x_var parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende x_var (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende x_var)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -217,7 +217,7 @@ test_that("compute_spc_results_bfh() requires x_var parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires y_var parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende y_var (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende y_var)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -232,7 +232,7 @@ test_that("compute_spc_results_bfh() requires y_var parameter", {
 })
 
 test_that("compute_spc_results_bfh() requires chart_type parameter", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende chart_type (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende chart_type)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -247,7 +247,7 @@ test_that("compute_spc_results_bfh() requires chart_type parameter", {
 })
 
 test_that("compute_spc_results_bfh() validates chart_type values", {
-  skip("TODO Fase 4: compute_spc_results_bfh() validerer ikke ugyldigt chart_type (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (ugyldigt chart_type)")
   data <- create_test_data(n_rows = 10)
 
   expect_error(
@@ -263,7 +263,7 @@ test_that("compute_spc_results_bfh() validates chart_type values", {
 })
 
 test_that("compute_spc_results_bfh() requires n_var for P charts", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende n_var for P-chart (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende n_var for P-chart)")
   data <- create_test_data(n_rows = 20, chart_type = "p")
 
   # P charts need denominator
@@ -281,7 +281,7 @@ test_that("compute_spc_results_bfh() requires n_var for P charts", {
 })
 
 test_that("compute_spc_results_bfh() requires n_var for U charts", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl ved manglende n_var for U-chart (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende n_var for U-chart)")
   data <- create_test_data(n_rows = 20, chart_type = "u")
 
   expect_error(
@@ -436,7 +436,7 @@ test_that("compute_spc_results_bfh() integrates with parse_and_validate_spc_data
 })
 
 test_that("compute_spc_results_bfh() handles validation errors gracefully", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for ikke-numerisk y (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (ikke-numerisk y)")
   # Create invalid data (non-numeric values)
   data <- tibble::tibble(
     month = 1:10,
@@ -505,7 +505,7 @@ test_that("compute_spc_results_bfh() qic_data has correct column types", {
 #"Error Handling Tests")
 
 test_that("compute_spc_results_bfh() handles empty data", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for tom data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (tom data)")
   empty_data <- tibble::tibble(
     month = as.Date(character(0)),
     value = numeric(0)
@@ -524,7 +524,7 @@ test_that("compute_spc_results_bfh() handles empty data", {
 })
 
 test_that("compute_spc_results_bfh() handles single data point", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for enkelt datapunkt (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (enkelt datapunkt)")
   single_point <- tibble::tibble(
     month = as.Date("2024-01-01"),
     value = 50
@@ -543,7 +543,7 @@ test_that("compute_spc_results_bfh() handles single data point", {
 })
 
 test_that("compute_spc_results_bfh() handles all NA values", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for all-NA data (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (all-NA data)")
   all_na <- tibble::tibble(
     month = seq.Date(from = as.Date("2024-01-01"), by = "month", length.out = 20),
     value = rep(NA_real_, 20)
@@ -562,7 +562,7 @@ test_that("compute_spc_results_bfh() handles all NA values", {
 })
 
 test_that("compute_spc_results_bfh() handles missing columns", {
-  skip("TODO Fase 4: compute_spc_results_bfh() kaster ikke fejl for manglende kolonner (#203-followup)")
+  skip("Afventer compute_spc_results_bfh input-validering — se #240 (manglende kolonner)")
   data <- create_test_data(n_rows = 20)
 
   expect_error(

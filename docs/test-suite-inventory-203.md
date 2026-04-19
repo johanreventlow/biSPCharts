@@ -163,7 +163,7 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 | `skip("TODO ...")` — uden issue-ref | **0** ✅ | Alle håndteret |
 | `skip("testServer-migration — se ... §2.3 (#230)")` | 15 | Kat C (7) + kat D testServer-kandidater (8) |
 | `skip("Afventer ... — se #XXX")` | 41 | Kat E med konkrete tracking-issues |
-| `skip("BFHcharts-followup — se ... draft")` | 6 | Kat F (5) + kat D L136 — afventer BFHcharts sibling-issue |
+| `skip("BFHcharts-followup — se BFHcharts#154 (...)")` | 6 | Kat F (5) + kat D L136 — sporet via BFHcharts#154 |
 | **Fixet inline** (test opdateret til ny API) | 2 | Batch 5: expect_named, setup_development_config |
 | **Slettet** (obsolete test-blokke) | 28 | Batch 1 (18) + batch 5 (10) |
 | **Total** | **92** | |
@@ -197,11 +197,14 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 **Issues lukket under dette arbejde:**
 - **#234** — PR A3 catch-all (lukket som completed, dækket af commit `1614c1c`)
 
-**BFHcharts sibling-issue draft (§1.2.2 batch 5, 2026-04-19):**
-- `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md` — klar
-  til copy-paste i BFHcharts-repo. Dækker 6 skips (5 kat F + 1 kat D).
-  GitHub MCP-adgang til sibling-repo var utilgængelig da drafted blev
-  lavet — maintainer opretter selve BFHcharts-issue manuelt.
+**BFHcharts sibling-issue (§1.2.2 batch 5, 2026-04-19):**
+- **[BFHcharts#154](https://github.com/johanreventlow/BFHcharts/issues/154)** —
+  `cl/ucl/lcl/signal mismatch mod qicharts2 baseline`. Dækker 6 skips
+  (5 kat F + 1 kat D) i `test-spc-regression-bfh-vs-qic.R` og
+  `test-spc-bfh-service.R`. Oprettet via `gh issue create` med
+  labels `bug,enhancement,priority:medium`.
+- Draft-doc bevaret som historisk reference:
+  `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md`.
 
 **Issue-fordeling per kategori:**
 

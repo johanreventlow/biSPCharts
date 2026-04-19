@@ -1,27 +1,25 @@
-# Draft: BFHcharts sibling-issue — qicharts2 baseline mismatch (5 tests)
+# BFHcharts sibling-issue: qicharts2 baseline mismatch (6 tests) — ARKIVERET
 
-**Status:** Draft til BFHcharts-issue-oprettelse.
-**Kontekst:** Genereret under §1.2.2 Kat F behandling i `harden-test-suite-regression-gate` (#228). GitHub MCP tools var ikke tilgængelige da draftet blev lavet — maintainer skal oprette issue i `BFHcharts` repoet manuelt.
+**Status:** ✅ Sibling-issue oprettet som **[BFHcharts#154](https://github.com/johanreventlow/BFHcharts/issues/154)** den 2026-04-19.
+**Kontekst:** Genereret under §1.2.2 Kat F behandling i `harden-test-suite-regression-gate` (#228). Doc'et er bevaret som historisk reference til den oprindelige draft-body der blev brugt til at oprette BFHcharts#154.
 
-## Brug
+## Nuværende skip-beskeder i biSPCharts
 
-Kopiér sektionen "Issue body" nedenfor ind i et nyt issue på BFHcharts-repoet med titel:
+De 6 skips refererer nu `BFHcharts#154` direkte:
 
-> BFHcharts: cl/ucl/lcl/signal mismatch mod qicharts2 baseline (5 tests i biSPCharts)
+```r
+# tests/testthat/test-spc-regression-bfh-vs-qic.R (4 skips)
+skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch + strict expect_named)")
+skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, run freeze)")
+skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl mismatch, xbar subgroup means)")
+skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl/cl mismatch, s chart SD)")
 
-Anvend template `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md` i biSPCharts som udgangspunkt.
-
-Når BFHcharts-issue er oprettet (antages `BFHcharts#NN`), opdatér de 5 skip-beskeder i biSPCharts fra den nuværende:
-
+# tests/testthat/test-spc-bfh-service.R (2 skips)
+skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, baseline run-basic)")
+skip("BFHcharts-followup — se BFHcharts#154 (Anhøj signal mismatch, baseline p-anhoej)")
 ```
-skip("BFHcharts-followup — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
-```
 
-til:
-
-```
-skip("BFHcharts-followup — se BFHcharts#NN (qicharts2 baseline mismatch)")
-```
+Når BFHcharts#154 er fixet og biSPCharts bumpes til ny BFHcharts-version, skal de 6 skips fjernes og tests un-skippes for at validere regressionsbasen.
 
 ---
 

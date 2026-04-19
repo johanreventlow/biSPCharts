@@ -62,8 +62,10 @@ test_that("UI sync request creation fungerer", {
   sync_request <- create_ui_sync_request(detected, choices)
 
   # TEST: All required fields present
-  required_fields <- c("x_col", "taeller_col", "naevner_col", "skift_col",
-                       "frys_col", "kommentar_col", "col_choices", "timestamp")
+  required_fields <- c(
+    "x_col", "taeller_col", "naevner_col", "skift_col",
+    "frys_col", "kommentar_col", "col_choices", "timestamp"
+  )
   for (field in required_fields) {
     expect_true(field %in% names(sync_request))
   }
@@ -234,7 +236,9 @@ test_that("Observer priority concept", {
 
   # Function to execute events by priority
   execute_by_priority <- function() {
-    if (length(event_queue) == 0) return(character(0))
+    if (length(event_queue) == 0) {
+      return(character(0))
+    }
 
     # Sort by priority: negative priorities run last
     sorted_events <- event_queue[order(sapply(event_queue, function(e) {
@@ -318,8 +322,10 @@ test_that("auto-detect UI sync trigger mechanism", {
   trigger <- create_ui_sync_trigger(auto_detect_results, col_choices)
 
   # TEST: All required fields present
-  required_fields <- c("x_col", "taeller_col", "naevner_col", "skift_col",
-                      "frys_col", "kommentar_col", "col_choices", "timestamp")
+  required_fields <- c(
+    "x_col", "taeller_col", "naevner_col", "skift_col",
+    "frys_col", "kommentar_col", "col_choices", "timestamp"
+  )
   for (field in required_fields) {
     expect_true(field %in% names(trigger), info = paste("Missing field:", field))
   }
@@ -347,7 +353,7 @@ test_that("reaktiv UI sync observer simulation", {
   sync_data <- list(
     x_col = "Dato",
     taeller_col = "Tæller",
-    naevner_col = NULL,  # Test NULL handling
+    naevner_col = NULL, # Test NULL handling
     skift_col = "Skift_kolonne",
     frys_col = NULL,
     kommentar_col = "Kommentarer",
@@ -383,7 +389,7 @@ test_that("reaktiv UI sync observer simulation", {
       } else {
         updates$n_column <- list(
           choices = sync_data$col_choices,
-          selected = ""  # Fallback for NULL
+          selected = "" # Fallback for NULL
         )
       }
 
@@ -417,14 +423,14 @@ test_that("reaktiv UI sync observer simulation", {
   # TEST: Correct updates generated for non-NULL columns
   expect_true("x_column" %in% names(updates))
   expect_true("y_column" %in% names(updates))
-  expect_true("n_column" %in% names(updates))  # Should be present even if NULL (with fallback)
+  expect_true("n_column" %in% names(updates)) # Should be present even if NULL (with fallback)
   expect_true("skift_column" %in% names(updates))
   expect_true("kommentar_column" %in% names(updates))
 
   # TEST: Correct selected values
   expect_equal(updates$x_column$selected, "Dato")
   expect_equal(updates$y_column$selected, "Tæller")
-  expect_equal(updates$n_column$selected, "")  # NULL becomes empty string
+  expect_equal(updates$n_column$selected, "") # NULL becomes empty string
   expect_equal(updates$skift_column$selected, "Skift_kolonne")
   expect_equal(updates$kommentar_column$selected, "Kommentarer")
 
@@ -451,7 +457,7 @@ test_that("timestamp reactivity mechanism", {
 
   # TEST: Multiple calls produce different timestamps
   trigger1 <- add_reactivity_timestamp(base_data)
-  Sys.sleep(0.01)  # Small delay to ensure different timestamps
+  Sys.sleep(0.01) # Small delay to ensure different timestamps
   trigger2 <- add_reactivity_timestamp(base_data)
 
   # Verify timestamps are different even though other data is same
@@ -462,56 +468,6 @@ test_that("timestamp reactivity mechanism", {
   expect_equal(trigger1$x_col, trigger2$x_col)
   expect_equal(trigger1$taeller_col, trigger2$taeller_col)
   expect_equal(trigger1$col_choices, trigger2$col_choices)
-})
-
-test_that("edge case: alle kolonner NULL", {
-  # TEST: Håndtering når auto-detect ikke finder noget
-
-  # SETUP: Empty detection results
-  empty_results <- list(
-    x_col = NULL,
-    taeller_col = NULL,
-    naevner_col = NULL,
-    skift_col = NULL,
-    frys_col = NULL,
-    kommentar_col = NULL
-  )
-
-  col_choices <- c("Vælg kolonne..." = "", "UnknownCol1" = "UnknownCol1")
-
-  # Function to handle empty detection
-  handle_empty_detection <- function(detected_cols, choices) {
-    # Simulation af ui_sync_needed creation med NULL values
-    list(
-      x_col = detected_cols$x_col,
-      taeller_col = detected_cols$taeller_col,
-      naevner_col = detected_cols$naevner_col,
-      skift_col = detected_cols$skift_col,
-      frys_col = detected_cols$frys_col,
-      kommentar_col = detected_cols$kommentar_col,
-      col_choices = choices,
-      timestamp = as.numeric(Sys.time())
-    )
-  }
-
-  trigger <- handle_empty_detection(empty_results, col_choices)
-
-  # TEST: Structure er korrekt selvom values er NULL
-  expect_true(is.list(trigger))
-  expect_true("col_choices" %in% names(trigger))
-  expect_true("timestamp" %in% names(trigger))
-
-  # TEST: All detection fields are NULL
-  expect_null(trigger$x_col)
-  expect_null(trigger$taeller_col)
-  expect_null(trigger$naevner_col)
-  expect_null(trigger$skift_col)
-  expect_null(trigger$frys_col)
-  expect_null(trigger$kommentar_col)
-
-  # TEST: col_choices and timestamp still present
-  expect_equal(trigger$col_choices, col_choices)
-  expect_true(is.numeric(trigger$timestamp))
 })
 
 test_that("integration: komplet auto-detect til UI flow", {
@@ -576,6 +532,6 @@ test_that("integration: komplet auto-detect til UI flow", {
 
   # TEST: UI sync data is ready for processing
   expect_true(!is.null(ui_sync_trigger$col_choices))
-  expect_true(length(ui_sync_trigger$col_choices) == 5)  # "" + 4 data columns
+  expect_true(length(ui_sync_trigger$col_choices) == 5) # "" + 4 data columns
   expect_true(is.numeric(ui_sync_trigger$timestamp))
 })

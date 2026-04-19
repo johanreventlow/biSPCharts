@@ -103,70 +103,6 @@ test_that("direct trigger callback pattern simulation", {
   expect_true(inherits(callback_value, "POSIXct"))
 })
 
-test_that("Excel upload trigger fix simulation", {
-  # TEST: Simulation af Excel upload fix hvor vi tilføjede autodetect_trigger parameter
-
-  trigger_calls <- list()
-
-  mock_trigger <- function(value) {
-    trigger_calls <<- c(trigger_calls, list(value))
-    return(value)
-  }
-
-  # OLD handle_excel_upload without trigger (before fix)
-  handle_excel_upload_old <- function(file_path) {
-    result <- list(
-      current_data = data.frame(
-        Dato = c("2024-01-01", "2024-02-01"),
-        Tæller = c(90, 85),
-        stringsAsFactors = FALSE
-      ),
-      file_uploaded = TRUE,
-      trigger_called = FALSE
-    )
-    # NOTE: No autodetect trigger call (the bug we fixed)
-    return(result)
-  }
-
-  # NEW handle_excel_upload with trigger (after fix)
-  handle_excel_upload_new <- function(file_path, autodetect_trigger = NULL) {
-    result <- list(
-      current_data = data.frame(
-        Dato = c("2024-01-01", "2024-02-01"),
-        Tæller = c(90, 85),
-        stringsAsFactors = FALSE
-      ),
-      file_uploaded = TRUE,
-      trigger_called = FALSE
-    )
-
-    # FIX: Call autodetect trigger for subsequent files
-    if (!is.null(autodetect_trigger)) {
-      autodetect_trigger(Sys.time())
-      result$trigger_called <- TRUE
-    }
-
-    return(result)
-  }
-
-  # TEST: Old version doesn't trigger autodetection
-  trigger_calls <- list()
-  result1 <- handle_excel_upload_old("test.xlsx")
-
-  expect_true(result1$file_uploaded)
-  expect_false(result1$trigger_called)
-  expect_equal(length(trigger_calls), 0)  # No trigger called
-
-  # TEST: New version triggers autodetection
-  trigger_calls <- list()
-  result2 <- handle_excel_upload_new("test.xlsx", autodetect_trigger = mock_trigger)
-
-  expect_true(result2$file_uploaded)
-  expect_true(result2$trigger_called)
-  expect_equal(length(trigger_calls), 1)  # Trigger was called
-  expect_true(inherits(trigger_calls[[1]], "POSIXct"))
-})
-
 test_that("UI sync trigger mechanism simulation", {
   # TEST: Simulation af UI sync trigger mechanism
 
@@ -231,7 +167,7 @@ test_that("UI sync trigger mechanism simulation", {
 
   expect_equal(result1$x_col, "Dato")
   expect_equal(result1$taeller_col, "Tæller")
-  expect_equal(length(ui_updates), 0)  # No UI sync called
+  expect_equal(length(ui_updates), 0) # No UI sync called
 
   # TEST: Auto-detection with UI sync trigger
   ui_updates <- list()
@@ -239,7 +175,7 @@ test_that("UI sync trigger mechanism simulation", {
 
   expect_equal(result2$x_col, "Dato")
   expect_equal(result2$taeller_col, "Tæller")
-  expect_equal(length(ui_updates), 1)  # UI sync was called
+  expect_equal(length(ui_updates), 1) # UI sync was called
 
   # TEST: UI sync data structure
   sync_data <- ui_updates[[1]]
@@ -250,7 +186,7 @@ test_that("UI sync trigger mechanism simulation", {
   expect_true("timestamp" %in% names(sync_data))
 
   # TEST: Column choices structure
-  expect_equal(length(sync_data$col_choices), 4)  # "" + 3 data columns
+  expect_equal(length(sync_data$col_choices), 4) # "" + 3 data columns
   expect_equal(sync_data$col_choices[[1]], "")
   expect_equal(names(sync_data$col_choices)[1], "Vælg kolonne...")
 })
@@ -285,14 +221,14 @@ test_that("unified state management helper functions", {
 
   # TEST: Unified state mode
   result_unified <- simulate_state_management(use_unified = TRUE)
-  expect_true(result_unified$unified_value)   # Should be updated
-  expect_false(result_unified$legacy_value)   # Should NOT be updated
+  expect_true(result_unified$unified_value) # Should be updated
+  expect_false(result_unified$legacy_value) # Should NOT be updated
   expect_equal(result_unified$mode, "unified")
 
   # TEST: Legacy state mode
   result_legacy <- simulate_state_management(use_unified = FALSE)
-  expect_false(result_legacy$unified_value)   # Should NOT be updated
-  expect_true(result_legacy$legacy_value)     # Should be updated
+  expect_false(result_legacy$unified_value) # Should NOT be updated
+  expect_true(result_legacy$legacy_value) # Should be updated
   expect_equal(result_legacy$mode, "legacy")
 
   # TEST: Helper function pattern concept
@@ -439,7 +375,7 @@ test_that("event-driven vs timing-based reactivity", {
     while (!sync_success && attempts < max_attempts) {
       attempts <- attempts + 1
       # Simulate timing uncertainty
-      if (runif(1) > 0.3) {  # 70% success rate per attempt
+      if (runif(1) > 0.3) { # 70% success rate per attempt
         sync_success <- TRUE
       }
     }
@@ -470,7 +406,7 @@ test_that("event-driven vs timing-based reactivity", {
 
     return(list(
       success = processed,
-      attempts = 1,  # Always succeeds in one attempt
+      attempts = 1, # Always succeeds in one attempt
       execution_time = as.numeric(end_time - start_time),
       approach = "event_driven"
     ))

@@ -10,88 +10,6 @@ library(testthat)
 # SEKTION 1: LIFECYCLE OG PERFORMANCE (fra test-mod-spc-chart-comprehensive.R)
 # =============================================================================
 
-test_that("SPC chart module initialization creates proper state", {
-  skip("TODO Fase 4: create_chart_manager() returnerer ikke expected API (#203-followup)")
-  skip_if_not_installed("shiny")
-
-  # Create minimal app state for testing
-  app_state <- create_app_state()
-
-  # Test chart state manager creation
-  chart_manager <- safe_operation(
-    "Create chart state manager",
-    code = {
-      create_chart_state_manager(app_state)
-    }
-  )
-
-  expect_true(!is.null(chart_manager))
-  expect_true(is.list(chart_manager))
-  expect_true("get_chart_config" %in% names(chart_manager))
-  expect_true("update_chart_state" %in% names(chart_manager))
-  expect_true("get_chart_state" %in% names(chart_manager))
-})
-
-test_that("Chart data binding handles various data types", {
-  skip("TODO Fase 4: create_data_validator() returnerer NULL (#203-followup)")
-  skip_if_not_installed("qicharts2")
-
-  # Test different data scenarios
-  test_datasets <- list(
-    "small_numeric" = data.frame(
-      x = 1:5,
-      y = c(2.1, 3.5, 1.8, 4.2, 2.9),
-      stringsAsFactors = FALSE
-    ),
-    "large_dataset" = data.frame(
-      x = 1:100,
-      y = rnorm(100, mean = 50, sd = 10),
-      stringsAsFactors = FALSE
-    ),
-    "missing_values" = data.frame(
-      x = 1:10,
-      y = c(1, 2, NA, 4, 5, NA, 7, 8, 9, 10),
-      stringsAsFactors = FALSE
-    ),
-    "danish_dates" = data.frame(
-      x = seq(as.Date("2023-01-01"), by = "month", length.out = 12),
-      y = runif(12, 10, 50),
-      stringsAsFactors = FALSE
-    )
-  )
-
-  for (test_name in names(test_datasets)) {
-    test_data <- test_datasets[[test_name]]
-
-    # Test data validation
-    validator <- safe_operation(
-      paste("Create validator for", test_name),
-      code = {
-        create_chart_validator()
-      }
-    )
-
-    expect_true(!is.null(validator))
-
-    # Test validation process
-    validation_result <- safe_operation(
-      paste("Validate data:", test_name),
-      code = {
-        validator$validate_chart_data(test_data, "x", "y")
-      },
-      fallback = list(valid = FALSE, message = "Validation failed")
-    )
-
-    expect_true(is.list(validation_result))
-    expect_true("valid" %in% names(validation_result))
-
-    # Should handle all test cases without crashing
-    if (test_name != "missing_values") {
-      expect_true(validation_result$valid)
-    }
-  }
-})
-
 test_that("Chart generation performance meets benchmarks", {
   skip_if_not_installed("qicharts2")
   skip_if(Sys.getenv("CI") == "true", "Skip performance test in CI")
@@ -185,13 +103,13 @@ test_that("Chart module memory cleanup prevents leaks", {
 
   # Clear managers
   managers <- NULL
-  gc()  # Force garbage collection
+  gc() # Force garbage collection
 
   final_objects <- length(ls(envir = .GlobalEnv))
 
   # Should not have excessive object growth
   object_growth <- final_objects - initial_objects
-  expect_lt(object_growth, 5)  # Allow some temporary objects
+  expect_lt(object_growth, 5) # Allow some temporary objects
 })
 
 test_that("Chart error states are handled gracefully", {
@@ -231,62 +149,6 @@ test_that("Chart error states are handled gracefully", {
     # Error scenarios should generally be invalid
     if (scenario_name %in% c("empty_data", "all_na", "non_numeric")) {
       expect_false(result$valid)
-    }
-  }
-})
-
-test_that("SPC results processor handles various chart types", {
-  skip("TODO Fase 4: create_spc_processor() returnerer NULL (#203-followup)")
-  skip_if_not_installed("qicharts2")
-
-  # Test different SPC chart types
-  chart_types <- c("i", "mr", "xbar", "s", "p", "c", "u")
-
-  test_data <- data.frame(
-    x = 1:30,
-    y = rnorm(30, mean = 20, sd = 3),
-    n = rep(100, 30),  # For proportion charts
-    stringsAsFactors = FALSE
-  )
-
-  processor <- safe_operation(
-    "Create SPC results processor",
-    code = {
-      create_spc_results_processor()
-    }
-  )
-
-  expect_true(!is.null(processor))
-
-  for (chart_type in chart_types) {
-    # Test chart processing
-    result <- safe_operation(
-      paste("Process", chart_type, "chart"),
-      code = {
-        if (chart_type %in% c("p", "u")) {
-          # Proportion/rate charts need count data
-          qicharts2::qic(
-            x = test_data$x,
-            y = test_data$y,
-            n = test_data$n,
-            chart = chart_type,
-            title = paste("Test", chart_type, "Chart")
-          )
-        } else {
-          qicharts2::qic(
-            x = test_data$x,
-            y = test_data$y,
-            chart = chart_type,
-            title = paste("Test", chart_type, "Chart")
-          )
-        }
-      },
-      fallback = NULL
-    )
-
-    # Should handle each chart type appropriately
-    if (chart_type %in% c("i", "mr", "xbar")) {
-      expect_true(!is.null(result), info = paste("Chart type", chart_type, "should work"))
     }
   }
 })
@@ -360,9 +222,8 @@ create_test_data_for_module <- function(n = 12) {
 # REACTIVE CHAIN TESTS ---------------------------------------------------------
 
 describe("Reactive Chains", {
-
   it("updates plot when data changes", {
-    skip("TODO Fase 4: session$returned er ikke reactive (module return structure mismatch) (#203-followup)")
+    skip("testServer-migration — se harden-test-suite §2.3 (#230) (session$returned module contract)")
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
     # Setup
@@ -427,7 +288,6 @@ describe("Reactive Chains", {
 # CACHE UPDATE TESTS -----------------------------------------------------------
 
 describe("Cache Update Atomicity", {
-
   it("updates both cache values together", {
     app_state <- create_mock_app_state()
     test_data <- create_test_data_for_module()
@@ -472,7 +332,6 @@ describe("Cache Update Atomicity", {
 # ERROR HANDLING TESTS ---------------------------------------------------------
 
 describe("Error Handling", {
-
   it("handles null data gracefully", {
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
@@ -538,9 +397,8 @@ describe("Error Handling", {
 # UI RENDERING TESTS -----------------------------------------------------------
 
 describe("UI Rendering", {
-
   it("renders plot_ready output correctly", {
-    skip("TODO Fase 4: plot_ready ikke i output names (module output struktur mismatch) (#203-followup)")
+    skip("testServer-migration — se harden-test-suite §2.3 (#230) (plot_ready output)")
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
     app_state <- create_mock_app_state()
@@ -566,7 +424,7 @@ describe("UI Rendering", {
   })
 
   it("renders plot_info with warnings", {
-    skip("TODO Fase 4: plot_info ikke i output names (#203-followup)")
+    skip("testServer-migration — se harden-test-suite §2.3 (#230) (plot_info output)")
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
     app_state <- create_mock_app_state()
@@ -588,7 +446,7 @@ describe("UI Rendering", {
   })
 
   it("renders anhoej_rules_boxes correctly", {
-    skip("TODO Fase 4: anhoej_rules_boxes ikke i output names (#203-followup)")
+    skip("testServer-migration — se harden-test-suite §2.3 (#230) (anhoej_rules_boxes output)")
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
     app_state <- create_mock_app_state()
@@ -617,7 +475,6 @@ describe("UI Rendering", {
 # MODULE STATE MANAGEMENT TESTS ------------------------------------------------
 
 describe("Module State Management", {
-
   it("initializes state correctly", {
     app_state <- create_mock_app_state()
 
@@ -689,7 +546,6 @@ describe("Module State Management", {
 # VIEWPORT DIMENSIONS TESTS ----------------------------------------------------
 
 describe("Viewport Dimensions", {
-
   it("handles missing viewport dimensions gracefully", {
     skip_if_not(exists("visualizationModuleServer", mode = "function"))
 
@@ -724,7 +580,6 @@ describe("Viewport Dimensions", {
 # DEBOUNCING TESTS -------------------------------------------------------------
 
 describe("Debouncing", {
-
   it("debounces chart_config to prevent redundant renders", {
     skip("Debouncing requires time-based testing framework")
   })

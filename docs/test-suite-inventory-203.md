@@ -156,26 +156,28 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 **Dato:** 2026-04-19
 **Oprindelig total:** 92 skip-kald i 15 filer
 
-### Opdatering 2026-04-19 (§1.2.2 batch 1+2+3+4)
+### Opdatering 2026-04-19 (§1.2.2 batch 1+2+3+4+5 — ✅ COMPLETE)
 
 | Skip-form | Antal | Beskrivelse |
 |---|---|---|
-| `skip("TODO ...")` — uden issue-ref | 26 | Tilbage i 6 filer (kat D: 21, kat F: 5) |
-| `skip("testServer-migration — se ... §2.3 (#230)")` | 7 | Kat C — migrerer i Fase 2 (batch 2) |
-| `skip("Afventer ... — se #XXX")` | 41 | Kat E med konkrete tracking-issues (batch 3+4) |
-| **Slettet** (obsolete test-blokke) | 18 | Kat A+B — funktioner/konstanter fjernet eller aldrig implementeret (batch 1) |
+| `skip("TODO ...")` — uden issue-ref | **0** ✅ | Alle håndteret |
+| `skip("testServer-migration — se ... §2.3 (#230)")` | 15 | Kat C (7) + kat D testServer-kandidater (8) |
+| `skip("Afventer ... — se #XXX")` | 41 | Kat E med konkrete tracking-issues |
+| `skip("BFHcharts-followup — se ... draft")` | 6 | Kat F (5) + kat D L136 — afventer BFHcharts sibling-issue |
+| **Fixet inline** (test opdateret til ny API) | 2 | Batch 5: expect_named, setup_development_config |
+| **Slettet** (obsolete test-blokke) | 28 | Batch 1 (18) + batch 5 (10) |
 | **Total** | **92** | |
 
-**Status §1.2.2 handling per kategori:**
+**Status §1.2.2 handling per kategori — ALLE HÅNDTERET:**
 
 | Kat | Antal | Håndtering |
 |---|---|---|
 | A (fjernet/omdøbt) | 8 | ✅ Slettet (batch 1) |
 | B (feature ikke impl.) | 10 | ✅ Slettet (batch 1) |
 | C (reaktiv kontekst) | 7 | ✅ Re-labelet → #230 §2.3 (batch 2) |
-| D (API-struktur) | 21 | ⏳ Tilbage (kræver API-analyse) |
+| D (API-struktur) | 21 | ✅ 2 fixet + 10 slettet + 8 → #230 + 1 → BFHcharts (batch 5) |
 | E (R-bug) | 41 | ✅ Re-labelet → #212/#213 (batch 3) + #240-#245 (batch 4) |
-| F (qicharts2 baseline) | 5 | ⏳ Tilbage (kræver BFHcharts sibling-issue) |
+| F (qicharts2 baseline) | 5 | ✅ Re-labelet → BFHcharts draft-doc (batch 5) |
 
 ### Relaterede eksisterende og nyoprettede issues
 
@@ -194,6 +196,12 @@ problem <- df[df$failed > 0 | df$error == TRUE, ]
 
 **Issues lukket under dette arbejde:**
 - **#234** — PR A3 catch-all (lukket som completed, dækket af commit `1614c1c`)
+
+**BFHcharts sibling-issue draft (§1.2.2 batch 5, 2026-04-19):**
+- `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md` — klar
+  til copy-paste i BFHcharts-repo. Dækker 6 skips (5 kat F + 1 kat D).
+  GitHub MCP-adgang til sibling-repo var utilgængelig da drafted blev
+  lavet — maintainer opretter selve BFHcharts-issue manuelt.
 
 **Issue-fordeling per kategori:**
 

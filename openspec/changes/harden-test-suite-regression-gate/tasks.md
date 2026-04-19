@@ -50,9 +50,60 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
       kategori-fordeling E=41, D=21, B=10, A=8, C=7, F=5. Tabellen
       inkluderer blok-linjenumre og beslutningsmatrix pr. kategori.
       Se `docs/test-suite-inventory-203.md` § "Inventory af skip('TODO')-kald".
-- [ ] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
+- [x] 1.2.2 For hver: beslut (a) reparér mod ny API, (b) slet testen, eller
       (c) wrap med `skip("Ny feature X — se issue #NN")` + opret issue.
       Ingen `skip("TODO")` tilbage uden issue-reference.
+      **STATUS 2026-04-19:** ✅ 0 `skip("TODO")`-kald tilbage i suiten
+      (fra 92). Fuld fordeling af leverance:
+      - **Slettet (30 skips):** Obsolete test-blokke hvor forudsatte
+        funktioner/konstanter/API-shape aldrig eksisterede eller er
+        bevidst fjernet. Dækker batch 1 (18 skips) + batch 5 (12 skips).
+      - **Refereret til issues (46 skips):** #212 (2), #213 (9),
+        #240 (12), #241 (5), #242 (3), #243 (2), #244 (2), #245 (6),
+        plus #230 §2.3 testServer (5 fra batch 2+5).
+      - **Refereret til #230 testServer (15 skips total):** batch 2 (7)
+        + batch 5 (8 yderligere reactive/module-output tests).
+      - **Fix inline (2 skips):** `test-spc-bfh-service.R` (run chart
+        result-shape) + `test-runtime-config-comprehensive.R`
+        (setup_development_config session-persistence schema).
+      - **BFHcharts-followup draft (6 skips):** `test-spc-regression-
+        bfh-vs-qic.R` (4) + `test-spc-bfh-service.R` (2). Dækket af
+        `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md` —
+        maintainer opretter BFHcharts-issue manuelt (GitHub MCP var
+        utilgængelig under batch 5 arbejde).
+
+      **Batch 5 (kategori D+F, 2026-04-19):** 21 kat D + 5 kat F skips
+      håndteret i afsluttende batch:
+      - **Kat F (5 skips):** Re-labelet til `BFHcharts-followup` med
+        reference til `docs/cross-repo/draft-bfhcharts-qic-baseline-
+        mismatch.md`. Draft-doc forbereder sibling-issue med full body
+        klar til copy-paste i BFHcharts-repo. Dækker: run freeze, xbar
+        subgroup means, s chart SD, baseline run-basic, baseline
+        p-anhoej. Note: ikke overlap med #216 (andre BFHcharts-tests).
+      - **Kat D (21 skips):**
+        * FIX inline (2): `test-spc-bfh-service.R` L57 (`expect_named`
+          → subset check — facaden returnerer også `bfh_qic_result`)
+          og `test-runtime-config-comprehensive.R` L94 (opdateret til
+          session-persistence schema for Issue #193).
+        * DELETE (10): `test-spc-bfh-service.R` metadata-field tests
+          (freeze_var/part_var/cl_var/notes_column — felter intentional
+          fjernet fra metadata-contract), `test-autodetect-unified-
+          comprehensive.R` last_run-tests (3, atomic `Sys.time()`
+          erstattede legacy list-shape), `test-mod-spc-chart-
+          comprehensive.R` stub-functions (3: `create_chart_manager`,
+          `create_data_validator`, `create_spc_results_processor` —
+          aldrig implementeret).
+        * RE-LABEL #230 (8): Module-output testServer kandidater —
+          `test-mod-spc-chart-comprehensive.R` (4: session$returned,
+          plot_ready, plot_info, anhoej_rules_boxes), `test-autodetect-
+          unified-comprehensive.R` (3: update_all_column_mappings,
+          event flow, n_column state), `test-state-management-
+          hierarchical.R` (1: complex state transitions).
+        * RE-LABEL BFHcharts (1): `test-spc-regression-bfh-vs-qic.R`
+          L136 (strict `expect_named` + cl mismatch — samme rod som
+          øvrige kat F).
+      **Nu tilbage:** 0 `skip("TODO")`-kald. ✅
+
       **Batch 4 (kategori E m/nyoprettede issues, 2026-04-19):**
       31 kat E skips grupperet i 6 konsoliderede sub-grupper og sporet
       via nye GitHub-issues #240-#245 + 1 skip re-labelet til #213:
@@ -118,8 +169,25 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
       **Rest (kategori C+D+E+F = 74 skips):** kræver dybere analyse —
       R-bug issues (E=41), API-struktur-analyse (D=21), testServer-migration
       (C=7), BFHcharts-cross-repo (F=5). Fortsættes i separate batches.
-- [ ] 1.2.3 Særligt for `test-spc-bfh-service.R` (19 skips): eskalér hver
+- [x] 1.2.3 Særligt for `test-spc-bfh-service.R` (19 skips): eskalér hver
       skip-rationale — disse er SPC-kerne.
+      **Leveret 2026-04-19 via batches 3+4+5:**
+      - **12 skips → #240** (compute_spc_results_bfh input-validering):
+        manglende-argument (7) + data-shape validering (5). Konsolideret
+        issue med beslutningsmatrix for facade-validering vs. delegation.
+      - **4 skips DELETE** (metadata-field tests): freeze_var, part_var,
+        cl_var, notes_column — felter bevidst fjernet fra
+        `fct_spc_bfh_output.R::metadata`-contract. Tests forudsatte en
+        redundant API hvor caller-args også stod i metadata.
+      - **1 skip FIX inline** (L57 handles run charts): `expect_named()`
+        strict → subset check (facaden returnerer også `bfh_qic_result`
+        for exports).
+      - **2 skips → BFHcharts-followup draft** (L691 run-basic + L718
+        p-anhoej baseline mismatch): dækket af
+        `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md`.
+      SPC-kerne-tests er derved enten fixet, eksplicit sporet via issue,
+      eller dokumenteret som bevidst fjernet. Ingen SPC-test efterladt i
+      uklart "TODO"-state.
 
 ### 1.3 Fjern stub-filer og artefakter
 

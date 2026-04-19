@@ -108,8 +108,11 @@ run_canonical_tests <- function(scope = c("all", "unit", "integration", "perform
   invisible(combined)
 }
 
-# CLI entry
-if (!interactive()) {
+# CLI entry — kør KUN hvis scriptet er top-level Rscript entry-point
+# (ikke hvis det sources fra fx publish_prepare.R). sys.nframe() <= 1
+# garanterer at vi ikke fejl-parser commandArgs() inden for en funktion-
+# scope hvor args tilhører parent-scriptet.
+if (!interactive() && sys.nframe() <= 1L) {
   args <- commandArgs(trailingOnly = TRUE)
   scope <- if (length(args) == 0) "all" else args[1]
   valid_scopes <- c("all", "unit", "integration", "performance")

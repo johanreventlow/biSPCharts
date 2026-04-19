@@ -56,7 +56,7 @@ verify_plot_structure <- function(result, expected_layers_min = 3) {
 describe("Basic Chart Types", {
 
   it("generates run chart correctly", {
-    skip("TODO Fase 4: run chart returnerer ucl/lcl uventet + y værdier out of range (#203-followup)")
+    skip("Afventer SPC-plot geom/data edge cases — se #245 (run chart ucl/lcl + y out of range)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- create_test_data(n = 15, chart_type = "run")
@@ -258,7 +258,7 @@ describe("Y-Axis Formatting", {
   })
 
   it("formats time values intelligently", {
-    skip("TODO Fase 4: y værdier transformeres ikke til under-60 format (#203-followup)")
+    skip("Afventer SPC-plot geom/data edge cases — se #245 (time transformation under-60)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     # Test data med minutter
@@ -468,7 +468,7 @@ describe("X-Axis Datetime Formatting", {
   })
 
   it("handles character x-column as factor", {
-    skip("TODO Fase 4: character x-kolonne konverteres ikke til factor (#203-followup)")
+    skip("Afventer SPC-plot geom/data edge cases — se #245 (character x→factor)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     test_data <- data.frame(
@@ -500,7 +500,7 @@ describe("X-Axis Datetime Formatting", {
 describe("Edge Cases", {
 
   it("handles empty data gracefully", {
-    skip("TODO Fase 4: generateSPCPlot kaster ikke fejl for tom data (#203-followup)")
+    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (tom data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     empty_data <- data.frame()
@@ -518,7 +518,7 @@ describe("Edge Cases", {
   })
 
   it("handles single row data", {
-    skip("TODO Fase 4: generateSPCPlot kaster ikke fejl for enkelt-rækket data (#203-followup)")
+    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (enkelt-rækket data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     single_data <- data.frame(
@@ -570,7 +570,7 @@ describe("Edge Cases", {
   })
 
   it("handles all NA values gracefully", {
-    skip("TODO Fase 4: generateSPCPlot kaster ikke fejl for all-NA data (#203-followup)")
+    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (all-NA data)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     na_data <- data.frame(
@@ -623,7 +623,7 @@ describe("Edge Cases", {
   })
 
   it("handles zero denominators", {
-    skip("TODO Fase 4: generateSPCPlot kaster ikke fejl for nul-nævnere (#203-followup)")
+    skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (nul-nævnere)")
     skip_if_not(exists("generateSPCPlot", mode = "function"))
 
     zero_data <- data.frame(

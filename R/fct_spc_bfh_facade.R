@@ -11,6 +11,121 @@
 # 4. Output standardization (via fct_spc_bfh_output)
 # 5. Anhøj metadata beregning (via fct_spc_bfh_signals)
 
+#' Valider input til compute_spc_results_bfh()
+#'
+#' Intern hjælpefunktion der tjekker alle obligatoriske parametre og
+#' data-egenskaber FØR safe_operation() kaldes. Fejl propagerer direkte
+#' til caller med danske brugervenlige beskeder.
+#'
+#' @param data data.frame eller NULL
+#' @param x_var character eller NULL
+#' @param y_var character eller NULL
+#' @param chart_type character eller NULL
+#' @param n_var character eller NULL
+#' @return Usynlig NULL (kaster fejl ved ugyldig input)
+#' @keywords internal
+validate_spc_inputs <- function(data, x_var, y_var, chart_type, n_var = NULL) {
+  # 1. data er påkrævet og skal være data.frame
+  if (is.null(data)) {
+    stop("data parameter er p\u00e5kr\u00e6vet (data required): m\u00e5 ikke v\u00e6re NULL")
+  }
+  if (!is.data.frame(data)) {
+    stop("data skal v\u00e6re en data.frame")
+  }
+
+  # 2. x_var er påkrævet
+  if (is.null(x_var) || !nzchar(trimws(x_var))) {
+    stop("x_var parameter er p\u00e5kr\u00e6vet (x_var required): angiv kolonnenavn for x-aksen")
+  }
+
+  # 3. y_var er påkrævet
+  if (is.null(y_var) || !nzchar(trimws(y_var))) {
+    stop("y_var parameter er p\u00e5kr\u00e6vet (y_var required): angiv kolonnenavn for m\u00e5lekolonnen")
+  }
+
+  # 4. chart_type er påkrævet
+  if (is.null(chart_type) || !nzchar(trimws(chart_type))) {
+    stop("chart_type parameter er p\u00e5kr\u00e6vet (chart_type required)")
+  }
+
+  # 5. chart_type skal v\u00e6re en understøttet type
+  ct_normalized <- tolower(trimws(chart_type))
+  if (!ct_normalized %in% SUPPORTED_CHART_TYPES_BFH) {
+    stop(paste0(
+      "chart_type '", chart_type, "' er invalid (ugyldig diagramtype). ",
+      "Must be one of: ",
+      paste(SUPPORTED_CHART_TYPES_BFH, collapse = ", ")
+    ))
+  }
+
+  # 6. n_var er påkrævet for P-, U-kort (og pp, up)
+  if (ct_normalized %in% c("p", "pp", "u", "up") && is.null(n_var)) {
+    stop(paste0(
+      "n_var (denominator) required for ", ct_normalized, "-kort. ",
+      "Angiv kolonnenavnet for n\u00e6vneren."
+    ))
+  }
+
+  # 7. x_var og y_var skal eksistere som kolonner i data
+  if (!x_var %in% names(data)) {
+    stop(paste0("Kolonnen '", x_var, "' blev ikke fundet i data (missing column: x_var)"))
+  }
+  if (!y_var %in% names(data)) {
+    stop(paste0("Kolonnen '", y_var, "' blev ikke fundet i data (missing column: y_var)"))
+  }
+  if (!is.null(n_var) && !n_var %in% names(data)) {
+    stop(paste0("Kolonnen '", n_var, "' blev ikke fundet i data (missing column: n_var)"))
+  }
+
+  # 8. y_var skal v\u00e6re numerisk (eller konverterbar)
+  y_vals <- data[[y_var]]
+  if (!is.numeric(y_vals) && !all(is.na(suppressWarnings(as.numeric(as.character(y_vals)))))) {
+    # Tjek om det slet ikke kan konverteres til numerisk
+    converted <- suppressWarnings(as.numeric(as.character(y_vals)))
+    if (all(is.na(converted)) && !all(is.na(y_vals))) {
+      stop(paste0(
+        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres. ",
+        "Kolonnen skal indeholde tal (numeric/convert)."
+      ))
+    }
+  }
+  # Ekstra tjek: eksplicit ikke-numerisk character kolonne
+  if (is.character(y_vals) || is.factor(y_vals)) {
+    converted <- suppressWarnings(as.numeric(as.character(y_vals)))
+    if (all(is.na(converted)) && any(!is.na(y_vals))) {
+      stop(paste0(
+        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid). ",
+        "Kolonnen skal indeholde tal."
+      ))
+    }
+  }
+
+  # 9. data m\u00e5 ikke v\u00e6re tom
+  if (nrow(data) == 0) {
+    stop("Data er tomt (empty): ingen r\u00e6kker fundet. Upload data f\u00f8rst.")
+  }
+
+  # 10. Mindst \u00e9t datapunkt kræves (minimum 2 for meningsfuld SPC)
+  if (nrow(data) < 2) {
+    stop(paste0(
+      "Utilstr\u00e6kkelig data: ", nrow(data), " r\u00e6kke(r). ",
+      "Minimum 2 datapunkter kr\u00e6ves for SPC-analyse (too few/insufficient)."
+    ))
+  }
+
+  # 11. y_var m\u00e5 ikke udelukkende best\u00e5 af NA
+  y_vals <- data[[y_var]]
+  if (all(is.na(y_vals))) {
+    stop(paste0(
+      "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier (all NA/no valid values). ",
+      "Mindst \u00e9n g\u00e6ldig v\u00e6rdi er p\u00e5kr\u00e6vet."
+    ))
+  }
+
+  invisible(NULL)
+}
+
+
 #' Compute SPC Results Using BFHchart Backend
 #'
 #' Primary facade function that wraps BFHchart functionality with biSPCharts conventions.
@@ -155,23 +270,19 @@ compute_spc_results_bfh <- function(
   app_state = NULL,
   ...
 ) {
+  # Validering UDEN safe_operation — fejl skal propagere til caller (fx testthat)
+  validate_spc_inputs(
+    data = if (missing(data)) NULL else data,
+    x_var = if (missing(x_var)) NULL else x_var,
+    y_var = if (missing(y_var)) NULL else y_var,
+    chart_type = if (missing(chart_type)) NULL else chart_type,
+    n_var = n_var
+  )
+
   safe_operation(
     operation_name = "BFHchart SPC computation",
     code = {
-      # 1. Validate required parameters
-      if (missing(data) || is.null(data)) {
-        stop("data parameter is required")
-      }
-      if (missing(x_var) || is.null(x_var)) {
-        stop("x_var parameter is required")
-      }
-      if (missing(y_var) || is.null(y_var)) {
-        stop("y_var parameter is required")
-      }
-      if (missing(chart_type) || is.null(chart_type)) {
-        stop("chart_type parameter is required")
-      }
-
+      # 1. (Validering sker i validate_spc_inputs() FØR safe_operation)
       # 1b. Cache key generation (before expensive validation)
       # Extract parameters for cache key
       extra_params <- list(...)
@@ -491,9 +602,9 @@ compute_spc_results_bfh <- function(
       # 90 timer → label viser "3d 18t".
       original_y_unit <- extra_params$y_axis_unit %||% "count"
       if (is_time_unit(original_y_unit) &&
-          !is.null(target_text) &&
-          !is.null(target_value) &&
-          length(target_value) > 0) {
+        !is.null(target_text) &&
+        !is.null(target_value) &&
+        length(target_value) > 0) {
         operator_match <- regmatches(
           target_text,
           regexpr("^[<>=]+", target_text)

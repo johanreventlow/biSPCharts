@@ -2,6 +2,17 @@
 
 ## Bug fixes
 
+* **compute_spc_results_bfh() input-validering** (#240): Facaden i
+  `R/fct_spc_bfh_facade.R` manglede eksplicit input-validering med danske
+  fejlbeskeder — 12 tests var skipped fordi funktionen ikke kastede fejl
+  ved ugyldige parametre. Fix: ny `validate_spc_inputs()`-helper med 11
+  kontroller kørt FØR `safe_operation()` (så fejl propagerer til caller
+  i stedet for at blive opslugt). Dækker: `data`/`x_var`/`y_var`/
+  `chart_type` obligatorisk, `chart_type` i `SUPPORTED_CHART_TYPES_BFH`,
+  `n_var` påkrævet for p/u/pp/up-kort, kolonner eksisterer i `data`,
+  `y_var` numerisk eller konverterbar, ikke-tom data, min. 2 rækker,
+  `y_var` ikke udelukkende NA. Alle 12 tests grønne.
+
 * **`log_error`-kald med ugyldige argumenter (#245):** `fct_spc_plot_generation.R`
   kaldte `log_error()` med `session = NULL` og `show_user = TRUE` som ikke
   eksisterer i logging-API'et — medførte at alle `generateSPCPlot()`-tests

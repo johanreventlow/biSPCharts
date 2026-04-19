@@ -2,6 +2,14 @@
 
 ## Bug fixes
 
+* **resolve_y_unit/detect_unit_from_data percent-detection tests** (#243):
+  Opdateret 2 skipped tests i `test-y-axis-scaling-overhaul.R` til at
+  matche ny API. Forventninger ændret fra `"percent"` til `"absolute"`
+  for data i 0-100 range — konsistent med #238 beslutning om at fjerne
+  percent-heuristik fra data-detection. Chart type (p/pp) + nævner er
+  nu den korrekte indikator for procent. Skip-markering fjernet,
+  tests aktive og grønne.
+
 * **Chart type mapping tests** (#235): opdaterede forældede chart-type
   labels i `test-app-initialization.R`, `test-data-validation.R` og
   `test-visualization-server.R` til de use-case-baserede labels fra

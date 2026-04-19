@@ -133,7 +133,7 @@ extract_column_names <- function(baseline) {
 # ============================================================================
 
 test_that("Run chart: Basic scenario matches qicharts2", {
-  skip("BFHcharts-followup (cl mismatch + strict expect_named) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch + strict expect_named)")
   # Arrange
   baseline <- load_baseline("run", "basic")
   cols <- extract_column_names(baseline)
@@ -207,7 +207,7 @@ test_that("Run chart: Anhøj violations detected", {
 })
 
 test_that("Run chart: Freeze period handling", {
-  skip("BFHcharts-followup (cl mismatch) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, run freeze)")
   # Arrange
   baseline <- load_baseline("run", "freeze")
   cols <- extract_column_names(baseline)
@@ -588,7 +588,7 @@ test_that("U chart: Freeze period handling", {
 # ============================================================================
 
 test_that("Xbar chart: Subgroup means", {
-  skip("BFHcharts-followup (ucl/lcl mismatch) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl mismatch, xbar subgroup means)")
   # Arrange
   baseline <- load_baseline("xbar", "basic")
   cols <- extract_column_names(baseline)
@@ -669,7 +669,7 @@ test_that("Xbar chart: Freeze period handling", {
 # ============================================================================
 
 test_that("S chart: Standard deviation", {
-  skip("BFHcharts-followup (ucl/lcl/cl mismatch) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (ucl/lcl/cl mismatch, s chart SD)")
   # Arrange
   baseline <- load_baseline("s", "basic")
   cols <- extract_column_names(baseline)

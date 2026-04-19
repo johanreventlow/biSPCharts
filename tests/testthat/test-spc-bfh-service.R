@@ -615,7 +615,7 @@ test_that("compute_spc_results_bfh() handles constant values", {
 # "Baseline Regression Tests")
 
 test_that("compute_spc_results_bfh() baseline: run-basic", {
-  skip("BFHcharts-followup (cl mismatch) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (cl mismatch, baseline run-basic)")
   # Load qicharts2 baseline from Task #29
   baseline_path <- here::here("tests/testthat/fixtures/qic-baseline/run-basic.rds")
 
@@ -642,7 +642,7 @@ test_that("compute_spc_results_bfh() baseline: run-basic", {
 })
 
 test_that("compute_spc_results_bfh() baseline: p-anhoej", {
-  skip("BFHcharts-followup (Anhøj signal mismatch) — se docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md")
+  skip("BFHcharts-followup — se BFHcharts#154 (Anhøj signal mismatch, baseline p-anhoej)")
   baseline_path <- here::here("tests/testthat/fixtures/qic-baseline/p-anhoej.rds")
 
   if (file.exists(baseline_path)) {

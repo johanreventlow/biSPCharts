@@ -66,11 +66,12 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
       - **Fix inline (2 skips):** `test-spc-bfh-service.R` (run chart
         result-shape) + `test-runtime-config-comprehensive.R`
         (setup_development_config session-persistence schema).
-      - **BFHcharts-followup draft (6 skips):** `test-spc-regression-
-        bfh-vs-qic.R` (4) + `test-spc-bfh-service.R` (2). Dækket af
-        `docs/cross-repo/draft-bfhcharts-qic-baseline-mismatch.md` —
-        maintainer opretter BFHcharts-issue manuelt (GitHub MCP var
-        utilgængelig under batch 5 arbejde).
+      - **BFHcharts-followup (6 skips):** `test-spc-regression-
+        bfh-vs-qic.R` (4) + `test-spc-bfh-service.R` (2). Sporet via
+        **[BFHcharts#154](https://github.com/johanreventlow/BFHcharts/issues/154)**
+        (oprettet 2026-04-19 via `gh issue create`). Draft-doc bevaret
+        som historisk reference: `docs/cross-repo/draft-bfhcharts-qic-
+        baseline-mismatch.md`.
 
       **Batch 5 (kategori D+F, 2026-04-19):** 21 kat D + 5 kat F skips
       håndteret i afsluttende batch:

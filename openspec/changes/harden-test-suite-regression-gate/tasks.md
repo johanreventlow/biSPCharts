@@ -29,8 +29,17 @@ Målsætning: `Rscript dev/publish_prepare.R manifest` passerer uden
       (#224 `ec606ea`, #225 `a14a529`).
 - [x] 1.1.7 **PR F1** — Rename `claudespc` → `biSPCharts` i testfiler
       (#221 `3bf14a1`).
-- [ ] 1.1.8 **PR A3** — Catch-all restende fjernede funktioner
-      (`validate_date_column`, `skip_on_ci_if_slow` m.fl.).
+- [x] 1.1.8 **PR A3** — Catch-all restende fjernede funktioner:
+      - `validate_date_column` — test-blok fjernet i `test-data-validation.R`
+        (funktionen fjernet i `remove-legacy-dead-code §4.5`, arkiveret
+        2026-04-18). Ingen direkte erstatning; dato-validering i
+        kolonneparser/auto-detection. **DENNE ÆNDRING.**
+      - `skip_on_ci_if_slow` — allerede erstattet med
+        `testthat::skip_on_ci()` i `test-input-debouncing-comprehensive.R`
+        via #225 `a14a529`. Verificeret.
+      - Øvrige funktioner i audit (`sanitize_log_details`,
+        `log_with_throttle`, `get_cache_stats`, `get_spc_cache_stats`)
+        håndteret i PR A1/A2 (#222 `9f4b0c0`).
 
 ### 1.2 Håndtér TODO Fase 4-skips (92 kald)
 

@@ -67,8 +67,8 @@ test_that("mod_export_ui generates valid Shiny UI", {
   # Create UI
   ui <- mod_export_ui("test")
 
-  # Basic structure checks
-  expect_s3_class(ui, "shiny.tag")
+  # Basic structure checks — mod_export_ui returnerer tagList (shiny.tag.list)
+  expect_s3_class(ui, "shiny.tag.list")
   expect_true(!is.null(ui))
 
   # Convert to HTML for content inspection
@@ -90,9 +90,10 @@ test_that("mod_export_ui contains format-specific conditional panels", {
   expect_true(grepl("test-pdf_description", html))
   expect_true(grepl("test-pdf_improvement", html))
 
-  # PNG-specific fields
-  expect_true(grepl("test-png_size_preset", html))
-  expect_true(grepl("test-png_dpi", html))
+  # PNG-specific fields — ID er png_preset (ingen separat DPI-felt i UI)
+  expect_true(grepl("test-png_preset", html))
+  # PNG-størrelse styres via png_width + png_height (ikke separat DPI)
+  expect_true(grepl("test-png_width", html))
 
   # Check conditional panel conditions exist (simplified regex)
   expect_true(grepl("test-export_format", html) && grepl("pdf", html))

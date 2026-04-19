@@ -1,5 +1,12 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Bug fixes
+
+* **Chart type mapping tests** (#235): opdaterede forældede chart-type
+  labels i `test-app-initialization.R`, `test-data-validation.R` og
+  `test-visualization-server.R` til de use-case-baserede labels fra
+  `c268f3a` (#147) og `8db3946`. 4 tests grønne, ingen kode-ændringer.
+
 ## Interne ændringer (Fase 1 saneringsarbejde, #228/#229)
 
 * **Test-artefakter flyttet ud af aktiv suite** (jf. `harden-test-suite-

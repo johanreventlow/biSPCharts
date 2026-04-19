@@ -75,7 +75,7 @@ test_that("safe_date_parse fungerer robust", {
     # If atomic vector, check that parsing worked
     expect_true(length(result) > 0)
   }
-  
+
   # Test invalid datoer
   invalid_datoer <- c("ikke-en-dato", "abc", "32-13-2024")
   result_invalid <- safe_date_parse(invalid_datoer)
@@ -92,14 +92,14 @@ test_that("safe_date_parse fungerer robust", {
 
 test_that("chart type mapping fungerer", {
   # Test danske navne til engelske koder
-  expect_equal(get_qic_chart_type("Seriediagram med SPC (Run Chart)"), "run")
-  expect_equal(get_qic_chart_type("P-kort (Andele)"), "p")
-  expect_equal(get_qic_chart_type("I-kort (Individuelle værdier)"), "i")
-  
+  expect_equal(get_qic_chart_type("Seriediagram (Run) \u2014 data over tid"), "run")
+  expect_equal(get_qic_chart_type("P-kort \u2014 andele/procenter (fx infektionsrate)"), "p")
+  expect_equal(get_qic_chart_type("I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)"), "i")
+
   # Test allerede engelske koder
   expect_equal(get_qic_chart_type("run"), "run")
   expect_equal(get_qic_chart_type("p"), "p")
-  
+
   # Test fallback
   expect_equal(get_qic_chart_type("ukendt_type"), "run")
   expect_equal(get_qic_chart_type(""), "run")

@@ -1,6 +1,43 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Security
+
+* **Supply-chain review-policy for .Rprofile og andre auto-executing filer**
+  (#247 M5): Tilføjet SECURITY-header i `.Rprofile` der dokumenterer at
+  ændringer kræver ekstra review. Oprettet `.github/pull_request_template.md`
+  med eksplicit supply-chain-checklist: `.Rprofile`, `.Renviron`,
+  `dev/git-hooks/*`, `.github/workflows/*`, `DESCRIPTION`, `renv.lock`.
+  Review-checklist dækker netværkskald, fil-skrivning, `system()`-kald og
+  eksterne dependencies uden pinned versioner.
+
+* **Allowlist for git hook-installation** (#247 M4): `dev/install_git_hooks.R`
+  brugte extension-blacklist (`.md|.txt|.sample`) som kunne omgås af en fil
+  uden extension men med malicious navn (fx `../.git/config`). Erstattet
+  med eksplicit `VALID_GIT_HOOKS`-allowlist der kun tillader de 27 kendte
+  git hook-navne. Ignorerede filer logges for transparens.
+
 ## Bug fixes
+
+* **Debounce-test determinisme** (#247 M3): `test-mod-spc-chart-comprehensive.R`
+  §2.3.1d-testen brugte kun `session$flushReact()` til at verificere debounce —
+  men `flushReact()` dreier ikke `later`-queue, så testen passerede selv hvis
+  debounce-koden blev fjernet. Tilføjet `later::run_now(2)` efter flushReact
+  for at sikre at pending debounce-timers udløser.
+
+## Interne ændringer
+
+* **Rename af skript-lokale log-funktioner i publish_prepare.R** (#247 M2):
+  `dev/publish_prepare.R` definerede `log_info`, `log_ok`, `log_warn`,
+  `log_fail`, `log_step` i global env — shadower projektets `R/utils_logging.R`
+  ved `devtools::load_all()`. Renamet til `gate_log_*` for at eliminere
+  collision-risk. `log_gate` (struktureret fil-logging) bevaret uændret.
+
+* **Step-numbering verifikation** (#247 M1): Verificeret at `log_step(n, total)`
+  matcher korrekt i `phase_manifest()` — `total <- if (skip_gate) 2L else 6L`
+  blev fixet i commit `3007010` ved SKIP_PUBLISH_GATE-introduktionen. No-op
+  for dette issue, men eksplicit verificeret.
+
+
 
 * **compute_spc_results_bfh() input-validering** (#240): Facaden i
   `R/fct_spc_bfh_facade.R` manglede eksplicit input-validering med danske

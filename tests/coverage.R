@@ -123,7 +123,7 @@ run_coverage_report <- function(config = COVERAGE_CONFIG) {
   low_coverage <- file_df[file_df$Coverage < config$target_coverage, ]
   if (nrow(low_coverage) > 0) {
     cat("\n  ⚠️  Files Below Target Coverage:\n\n")
-    for (i in 1:nrow(low_coverage)) {
+    for (i in seq_len(nrow(low_coverage))) {
       cat(sprintf(
         "    %s: %s\n",
         format_coverage(low_coverage$Coverage[i]),
@@ -137,7 +137,7 @@ run_coverage_report <- function(config = COVERAGE_CONFIG) {
   if (nrow(high_coverage) > 0) {
     cat("\n  ✅ Files Meeting Target Coverage:\n\n")
     displayed <- min(5, nrow(high_coverage))
-    for (i in 1:displayed) {
+    for (i in seq_len(displayed)) {
       cat(sprintf(
         "    %s: %s\n",
         format_coverage(high_coverage$Coverage[i]),
@@ -163,7 +163,7 @@ run_coverage_report <- function(config = COVERAGE_CONFIG) {
     file_df$File
   ), ]
   if (nrow(critical_files) > 0) {
-    for (i in 1:nrow(critical_files)) {
+    for (i in seq_len(nrow(critical_files))) {
       status <- coverage_status(critical_files$Coverage[i], 100)
       cat(sprintf(
         "  %s %s: %s\n",
@@ -183,7 +183,7 @@ run_coverage_report <- function(config = COVERAGE_CONFIG) {
     cat("─────────────────────────────────────────────────────────────\n")
     cat("  ❌ Files with Zero Coverage (CRITICAL)\n")
     cat("─────────────────────────────────────────────────────────────\n")
-    for (i in 1:nrow(zero_coverage)) {
+    for (i in seq_len(nrow(zero_coverage))) {
       cat(sprintf("    %s\n", basename(zero_coverage$File[i])))
     }
     cat("\n")
@@ -239,7 +239,7 @@ run_coverage_report <- function(config = COVERAGE_CONFIG) {
     cat("\n  Focus areas for improvement:\n")
     if (nrow(low_coverage) > 0) {
       top_priority <- head(low_coverage, 3)
-      for (i in 1:nrow(top_priority)) {
+      for (i in seq_len(nrow(top_priority))) {
         cat(sprintf(
           "    • %s (%s)\n",
           basename(top_priority$File[i]),

@@ -6,6 +6,14 @@
   labels i `test-app-initialization.R`, `test-data-validation.R` og
   `test-visualization-server.R` til de use-case-baserede labels fra
   `c268f3a` (#147) og `8db3946`. 4 tests grønne, ingen kode-ændringer.
+* **format_y_value() afrunding for rate/count/default** (#236): `format()`
+  med `nsmall = 1` sikrer kun minimum decimaler, ikke maksimum — derfor
+  returnerede `format_y_value(123.456, "rate")` "123,456" i stedet for
+  forventet "123,5". Fix: byttet til `formatC(val, digits = 1, format = "f",
+  decimal.mark = ",")` i rate/default/count-branches. `formatC` bruger
+  round-half-up (123.45 → 123,5) som matcher klinisk læsevaner, modsat R's
+  base `round()` som bruger banker's rounding (123.45 → 123,4). 2 tests
+  grønne (linje 41 og 87 i `test-label-formatting.R`).
 
 ## Interne ændringer (Fase 1 saneringsarbejde, #228/#229)
 

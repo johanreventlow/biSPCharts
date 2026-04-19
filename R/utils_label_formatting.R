@@ -54,44 +54,48 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
   }
 
   # Count formatting med K/M/mia notation
+  # Bruger formatC med format="f" for round-half-up (jf. rate-branch).
   if (y_unit == "count") {
     if (abs(val) >= 1e9) {
       scaled <- val / 1e9
       if (scaled == round(scaled)) {
         return(paste0(round(scaled), " mia."))
       } else {
-        return(paste0(format(scaled, decimal.mark = ",", nsmall = 1), " mia."))
+        return(paste0(formatC(scaled, digits = 1, format = "f", decimal.mark = ","), " mia."))
       }
     } else if (abs(val) >= 1e6) {
       scaled <- val / 1e6
       if (scaled == round(scaled)) {
         return(paste0(round(scaled), "M"))
       } else {
-        return(paste0(format(scaled, decimal.mark = ",", nsmall = 1), "M"))
+        return(paste0(formatC(scaled, digits = 1, format = "f", decimal.mark = ","), "M"))
       }
     } else if (abs(val) >= 1e3) {
       scaled <- val / 1e3
       if (scaled == round(scaled)) {
         return(paste0(round(scaled), "K"))
       } else {
-        return(paste0(format(scaled, decimal.mark = ",", nsmall = 1), "K"))
+        return(paste0(formatC(scaled, digits = 1, format = "f", decimal.mark = ","), "K"))
       }
     } else {
       # For values < 1000: show decimals only if present
       if (val == round(val)) {
         return(format(round(val), decimal.mark = ",", big.mark = "."))
       } else {
-        return(format(val, decimal.mark = ",", big.mark = ".", nsmall = 1))
+        return(formatC(val, digits = 1, format = "f", decimal.mark = ",", big.mark = "."))
       }
     }
   }
 
   # Rate formatting - kun decimaler hvis tilstede
+  # Bemærk: formatC med format="f" giver round-half-up (123.45 → 123,5) som
+  # matcher klinisk læsevaner. R's base round() bruger banker's rounding
+  # (123.45 → 123.4) som opfattes forvirrende for slut-brugere.
   if (y_unit == "rate") {
     if (val == round(val)) {
       return(format(round(val), decimal.mark = ","))
     } else {
-      return(format(val, decimal.mark = ",", nsmall = 1))
+      return(formatC(val, digits = 1, format = "f", decimal.mark = ","))
     }
   }
 
@@ -104,10 +108,10 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
     return(format_time_composite(val))
   }
 
-  # Default formatting - dansk notation
+  # Default formatting - dansk notation med round-half-up (se rate-branch)
   if (val == round(val)) {
     return(format(round(val), decimal.mark = ","))
   } else {
-    return(format(val, decimal.mark = ",", nsmall = 1))
+    return(formatC(val, digits = 1, format = "f", decimal.mark = ","))
   }
 }

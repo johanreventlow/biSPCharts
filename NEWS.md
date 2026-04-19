@@ -24,6 +24,16 @@
   debounce-koden blev fjernet. Tilføjet `later::run_now(2)` efter flushReact
   for at sikre at pending debounce-timers udløser.
 
+* **generateSPCPlot() edge case fejl-håndtering** (#241): 5 tests var skipped
+  fordi `generateSPCPlot()` ikke kastede klare fejl ved ugyldige data. Fix:
+  `validate_spc_inputs()` i `R/fct_spc_bfh_facade.R` udvidet med nye kontroller
+  — tom data ("Ingen rækker fundet"), for få datapunkter (minimum 3 i stedet
+  for 2), klare Y-kolonne-fejlbeskeder, nul-nævnere i p/u-kort, og all-NA
+  i y-kolonnen. Tilsat: `generateSPCPlot_with_backend()` normaliserer nu
+  `character(0)` config-værdier til NULL og injekterer rækkenummer som x-akse
+  ved manglende x-kolonne. Alle 5 tests grønne. Dansk talformat (komma-decimal)
+  valideres korrekt uden falske afvisninger.
+
 ## Interne ændringer
 
 * **Rename af skript-lokale log-funktioner i publish_prepare.R** (#247 M2):

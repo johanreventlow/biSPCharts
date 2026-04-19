@@ -557,16 +557,38 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     )
   )
 
+  # Normaliser config-v\u00e6rdier: character(0) og tomme strings behandles som NULL
+  # (config-felter med character(0) opstår fx ved ugyldige input fra UI)
+  normalize_config_val <- function(val) {
+    if (is.null(val) || length(val) == 0) {
+      return(NULL)
+    }
+    if (is.character(val) && !nzchar(trimws(val))) {
+      return(NULL)
+    }
+    val
+  }
+  x_col_val <- normalize_config_val(config$x_col)
+  y_col_val <- normalize_config_val(config$y_col)
+  n_col_val <- normalize_config_val(config$n_col)
+
+  # Fallback: hvis x_col er NULL (fx character(0) fra UI), inj\u00e9r r\u00e6kkenummer som x-akse
+  # S\u00e5 backend ikke fejler p\u00e5 manglende x_var — standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret
+  if (is.null(x_col_val) && is.data.frame(data) && nrow(data) > 0) {
+    data[[".spc_row_index"]] <- seq_len(nrow(data))
+    x_col_val <- ".spc_row_index"
+  }
+
   # Call BFHchart backend (compute_spc_results_bfh from Task #31)
   # Adapter: Map config object to individual parameters
   result <- tryCatch(
     {
       compute_spc_results_bfh(
         data = data,
-        x_var = config$x_col,
-        y_var = config$y_col,
+        x_var = x_col_val,
+        y_var = y_col_val,
         chart_type = chart_type,
-        n_var = config$n_col,
+        n_var = n_col_val,
         cl_var = NULL, # Not currently supported in biSPCharts
         freeze_var = frys_column,
         part_var = if (isTRUE(show_phases) && !is.null(skift_column)) skift_column else NULL,

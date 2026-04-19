@@ -421,7 +421,6 @@ test_that("generateSPCPlot comment annotations work", {
 })
 
 test_that("generateSPCPlot error handling works correctly", {
-  skip("Afventer generateSPCPlot edge case fejl-håndtering — se #241 (kombineret edge cases)")
   # TEST: Various error conditions and defensive programming
 
   # Skip if generateSPCPlot function not available

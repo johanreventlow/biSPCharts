@@ -12,6 +12,19 @@
 
 ## Bug fixes
 
+* **Package/infrastructure tests: opdatér forventninger til nuværende API**
+  (#239 — package/infra): 3 test-filer med 6 FAIL + 1 ERR opdateret:
+  (1) `test-package-initialization.R`: branding-globals er migreret fra
+  `.GlobalEnv` til `claudespc_env` (pakke-environment) — tests bruger nu
+  getter-funktioner (`get_hospital_name()`, `get_bootstrap_theme()`,
+  `get_hospital_logo_path()`). (2) `test-package-namespace-validation.R`:
+  `read.dcf()` returnerer navngivet matrix — `as.character()` tilføjet;
+  `initialize_app()` er `@keywords internal` og eksporteres ikke i NAMESPACE
+  — fjernet fra key_exports-liste. (3) `test-yaml-config-adherence.R`:
+  fallback-test forsøgte at fjerne `get_golem_config` fra `.GlobalEnv` men
+  funktionen lever i pakke-namespacet; test opdateret til at verificere
+  faktiske YAML-værdier (production: `"ERROR"`, development: `"DEBUG"`).
+
 * **test-bfh-error-handling: opdatér forventninger efter #240 validering**
   (#239): 6 tests forventede `NULL`-return fra `compute_spc_results_bfh()`
   ved ugyldige input — den adfærd var korrekt FØR #240 indførte eksplicit

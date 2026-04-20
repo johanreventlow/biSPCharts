@@ -203,10 +203,11 @@ get_data_signature_cache_stats <- function() {
     ))
   }
 
-  cache_times <- sapply(cache_keys, function(k) {
+  # vapply med POSIXct som returntype bevarer klassen (sapply stripper den)
+  cache_times <- do.call(c, lapply(cache_keys, function(k) {
     entry <- get(k, envir = .data_signature_cache)
     entry$timestamp
-  })
+  }))
 
   list(
     size = length(cache_keys),

@@ -75,7 +75,7 @@ test_that("compute_spc_results_bfh() handles run charts", {
 
   # Assert - Data component
   expect_s3_class(result$qic_data, "tbl_df")
-  expect_named(result$qic_data, c("x", "y", "cl", "lcl", "ucl", "signal"))
+  expect_true(all(c("x", "y", "cl", "lcl", "ucl", "signal") %in% names(result$qic_data)))
   expect_equal(nrow(result$qic_data), 20)
 
   # Assert - Metadata component

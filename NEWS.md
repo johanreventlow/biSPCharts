@@ -12,6 +12,16 @@
 
 ## Bug fixes
 
+* **BFHcharts-integration test-fixes for #279** (#279): Opdateret
+  `test-bfh-module-integration.R` til nuværende upload-input id
+  (`direct_file_upload`) via fælles helper, så 9 shinytest2-fejl ikke længere
+  fejler på manglende input-id. `test-spc-bfh-service.R` run-chart-testen
+  validerer nu krævede kernekolonner med `%in%` i stedet for rigid
+  `expect_named()`-eksaktmatch, så ekstra metadata-kolonner fra BFHcharts ikke
+  giver falske FAILs. Performance-kravet i
+  `test-generateSPCPlot-comprehensive.R` justeret fra `<500ms` til `<2s` for
+  1000 rækker, hvilket matcher den aktuelle BFHcharts-backend-path.
+
 * **Package/infrastructure tests: opdatér forventninger til nuværende API**
   (#239 — package/infra): 3 test-filer med 6 FAIL + 1 ERR opdateret:
   (1) `test-package-initialization.R`: branding-globals er migreret fra

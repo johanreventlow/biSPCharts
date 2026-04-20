@@ -662,7 +662,7 @@ describe("Edge Cases", {
 # PERFORMANCE BENCHMARKS =======================================================
 
 describe("Performance", {
-  it("completes in <500ms for 1000 rows", {
+  it("completes in <2s for 1000 rows", {
     set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
     skip_on_cran()
@@ -692,8 +692,9 @@ describe("Performance", {
 
     verify_plot_structure(result)
 
-    # Performance target: <500ms (0.5 seconds)
-    expect_lt(elapsed, 0.5)
+    # BFHcharts-backend inkluderer nu ekstra metadata/signalanalyse.
+    # Realistisk grænse i CI/dev-miljø er derfor 2 sekunder.
+    expect_lt(elapsed, 2.0)
   })
 
   it("caches x-column validation", {

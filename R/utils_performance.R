@@ -98,7 +98,8 @@ evaluate_data_content_cached <- function(data, cache_key = NULL, session = NULL,
         } else if (is.numeric(col)) {
           col_results[i] <- any(!is.na(col))
         } else if (is.character(col)) {
-          col_results[i] <- any(nzchar(col, keepNA = FALSE), na.rm = TRUE)
+          # nzchar(NA, keepNA = FALSE) returnerer uventet TRUE — brug eksplicit NA-tjek
+          col_results[i] <- any(!is.na(col) & nzchar(col))
         } else {
           col_results[i] <- FALSE
         }

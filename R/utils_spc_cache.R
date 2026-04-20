@@ -314,3 +314,40 @@ cache_spc_result <- function(cache_key, result, cache, ttl = 3600) {
     error_type = "cache_storage"
   )
 }
+
+
+#' Clear All SPC Cache Entries
+#'
+#' Removes all entries from a QIC cache object. Wrapper around `cache$clear()`
+#' som muliggør testbar og eksplicit oprydning af SPC-cachen.
+#'
+#' @param cache cache object. QIC cache instance fra `get_or_init_qic_cache()` eller `create_qic_cache()`.
+#'
+#' @return TRUE hvis ryddet succesfuldt, FALSE ved fejl.
+#'
+#' @examples
+#' \dontrun{
+#' qic_cache <- get_or_init_qic_cache(app_state)
+#' clear_spc_cache(qic_cache)
+#' }
+#'
+#' @keywords internal
+clear_spc_cache <- function(cache) {
+  safe_operation(
+    operation_name = "Clear SPC cache",
+    code = {
+      if (is.null(cache) || !is.list(cache) || !is.function(cache$clear)) {
+        log_warn("Invalid cache object provided", .context = "SPC_CACHE")
+        return(FALSE)
+      }
+
+      cache$clear()
+
+      log_debug("SPC cache ryddet", .context = "SPC_CACHE")
+
+      return(TRUE)
+    },
+    fallback = FALSE,
+    error_type = "cache_clear"
+  )
+}

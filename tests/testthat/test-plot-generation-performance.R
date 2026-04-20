@@ -1,6 +1,16 @@
 # tests/testthat/test-plot-generation-performance.R
 # Performance tests for vectorized plot generation
 
+
+# qicharts2 >= 0.5.5 can return S7 qic objects, older versions return S3 lists.
+expect_qic_object <- function(obj) {
+  expect_true(inherits(obj, "qic"))
+}
+
+get_qic_data <- function(obj) {
+  tryCatch(obj@data, error = function(e) obj$data)
+}
+
 test_that("Vectorized part processing produces identical output", {
   skip_if_not_installed("qicharts2")
   skip_if_not_installed("dplyr")
@@ -62,7 +72,7 @@ test_that("Vectorized processing handles edge cases correctly", {
     chart = "i"
   )
 
-  expect_s3_class(qic_single, "qic")
+  expect_qic_object(qic_single)
 
   # Test with many parts (stress test)
   many_parts_data <- data.frame(
@@ -79,7 +89,7 @@ test_that("Vectorized processing handles edge cases correctly", {
     chart = "i"
   )
 
-  expect_s3_class(qic_many, "qic")
+  expect_qic_object(qic_many)
 })
 
 test_that("Vectorized processing handles NA values correctly", {
@@ -102,10 +112,11 @@ test_that("Vectorized processing handles NA values correctly", {
     chart = "i"
   )
 
-  expect_s3_class(qic_na, "qic")
+  expect_qic_object(qic_na)
 
   # Verify that NA values are handled gracefully
-  expect_true(any(is.na(qic_na$data$y)))
+  qic_na_data <- get_qic_data(qic_na)
+  expect_true(any(is.na(qic_na_data$y)))
 })
 
 test_that("Vectorized part processing performance benchmark", {
@@ -169,12 +180,13 @@ test_that("Anhoej signal calculation is consistent", {
     chart = "i"
   )
 
-  expect_s3_class(qic_trend, "qic")
+  expect_qic_object(qic_trend)
 
   # Verify signal columns exist
-  if ("n.runs" %in% names(qic_trend$data)) {
-    expect_true("n.runs" %in% names(qic_trend$data))
-    expect_true("n.runs.signal" %in% names(qic_trend$data))
+  qic_trend_data <- get_qic_data(qic_trend)
+  if ("n.runs" %in% names(qic_trend_data)) {
+    expect_true("n.runs" %in% names(qic_trend_data))
+    expect_true("n.runs.signal" %in% names(qic_trend_data))
   }
 })
 
@@ -210,18 +222,19 @@ test_that("Multi-part crossings signal calculation", {
     chart = "i"
   )
 
-  expect_s3_class(qic_multi, "qic")
+  expect_qic_object(qic_multi)
 
   # Verify that part column exists in output
-  expect_true("part" %in% names(qic_multi$data) || "facet1" %in% names(qic_multi$data))
+  qic_multi_data <- get_qic_data(qic_multi)
+  expect_true("part" %in% names(qic_multi_data) || "facet1" %in% names(qic_multi_data))
 
   # Verify crossings columns if present
-  if ("n.crossings" %in% names(qic_multi$data)) {
-    expect_true("n.crossings" %in% names(qic_multi$data))
-    expect_true("n.crossings.min" %in% names(qic_multi$data))
+  if ("n.crossings" %in% names(qic_multi_data)) {
+    expect_true("n.crossings" %in% names(qic_multi_data))
+    expect_true("n.crossings.min" %in% names(qic_multi_data))
 
     # Verify that crossings are calculated per part
     # (each part should have its own crossings calculation)
-    expect_true(nrow(qic_multi$data) > 0)
+    expect_true(nrow(qic_multi_data) > 0)
   }
 })

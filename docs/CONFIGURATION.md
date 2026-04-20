@@ -487,7 +487,7 @@ SKIP_PREPUSH=1 git push      # Environment variable
 git push --no-verify         # Git-native bypass
 ```
 
-⚠️ **Kendt begrænsning:** Pre-push vil blokere push indtil paraply-issue #239 er lukket (suite har pre-existing 43 fails + 21 errors). Brug `SKIP_PREPUSH=1` indtil da.
+⚠️ **Kendt begrænsning:** Pre-push vil blokere push indtil #279 + #280 er lukket (suite har pre-existing 2 fails + 17 errors). Brug `SKIP_PREPUSH=1` indtil da.
 
 ### Interaktiv R-session advarsel
 

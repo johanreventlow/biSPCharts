@@ -18,20 +18,26 @@ skip_if_no_shinytest2_runtime <- function() {
     skip("CI_SKIP_SHINYTEST2 env-flag sat")
   }
 
+  # chromote::find_chrome() er den korrekte API — shinytest2 eksporterer
+  # ikke sin egen chrome-detektering. Returnerer NULL/"" hvis ikke fundet.
   chrome_path <- tryCatch(
-    shinytest2::detect_chrome(),
+    chromote::find_chrome(),
     error = function(e) ""
   )
-  skip_if(!nzchar(chrome_path), "Chrome/Chromium ikke fundet til shinytest2")
+  skip_if(is.null(chrome_path) || !nzchar(chrome_path),
+          "Chrome/Chromium ikke fundet til shinytest2")
 }
 
 create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
   # Test-CWD er tests/testthat/ — app.R ligger to niveauer op (projektrod).
+  # variant = platform_variant() gør app$expect_screenshot() platform-aware
+  # (undgår "variant not initialized"-fejl ved screenshot-assertions).
   shinytest2::AppDriver$new(
     app_dir = "../../",
     name = name,
     width = width,
     height = height,
+    variant = shinytest2::platform_variant(),
     ...
   )
 }
@@ -376,23 +382,23 @@ test_that("E2E: Complete user journey from upload to chart", {
 
   # PHASE 1: Initial state
   app$wait_for_idle()
-  app$expect_screenshot("01_initial")
+  app$expect_screenshot(name = "01_initial")
 
   # PHASE 2: Upload data
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
-  app$expect_screenshot("02_after_upload")
+  app$expect_screenshot(name = "02_after_upload")
 
   # PHASE 3: Wait for auto-detection
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot("03_autodetected")
+  app$expect_screenshot(name = "03_autodetected")
 
   # PHASE 4: Select chart type (if possible)
   tryCatch(
     {
       app$set_inputs(chart_type = "P-kort (Andele)")
       app$wait_for_idle(duration = 1500)
-      app$expect_screenshot("04_chart_selected")
+      app$expect_screenshot(name = "04_chart_selected")
     },
     error = function(e) {
       message("Could not set chart type: ", e$message)
@@ -401,7 +407,7 @@ test_that("E2E: Complete user journey from upload to chart", {
 
   # PHASE 5: Final state with chart
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot("05_final_chart")
+  app$expect_screenshot(name = "05_final_chart")
 
   # Verify app is still running
   # shinytest2 har ingen is_running()-metode; verificér via get_url() som

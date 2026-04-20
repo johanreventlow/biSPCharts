@@ -10,8 +10,9 @@
 #   Rscript dev/install_git_hooks.R
 #
 # Bypass (brug sparsomt):
-#   git push --no-verify     # Git-native bypass
-#   SKIP_PREPUSH=1 git push  # Environment-variabel bypass
+#   git push --no-verify          # Git-native bypass (alt)
+#   SKIP_PREPUSH=1 git push       # Bypass test/lintr checks
+#   SKIP_BRANCH_CHECK=1 git push  # Bypass branch-check (master)
 #
 # Hurtig vs fuld tilstand (§3.1.5):
 #   PREPUSH_MODE=fast git push  # Kun lintr + unit-tests (~2 min)
@@ -19,11 +20,31 @@
 #
 # Exit koder:
 #   0 = alle checks bestået, push tilladt
-#   1 = lintr eller test fejl, push blokeret
+#   1 = branch-check, lintr eller test fejl, push blokeret
 #   2 = Rscript ikke tilgængelig (skippes med advarsel)
 # ==============================================================================
 
 set -euo pipefail
+
+# --- Step 0: Block direkte push til master ---
+# Laes stdin (git giver refs som: <local-ref> <local-sha> <remote-ref> <remote-sha>)
+# og blokerer hvis nogen line peger paa refs/heads/master.
+# Kan bypasses med SKIP_BRANCH_CHECK=1 (fx til emergency hotfix).
+PUSH_REFS=$(cat || true)
+if [ "${SKIP_BRANCH_CHECK:-0}" != "1" ]; then
+  if echo "$PUSH_REFS" | awk '{print $3}' | grep -qx "refs/heads/master"; then
+    echo ""
+    echo "✗ Direkte push til master er blokeret"
+    echo ""
+    echo "  Brug PR-flow via GitHub: feature → develop → master"
+    echo ""
+    echo "  Bypass (undtagelsestilfaelde):"
+    echo "    SKIP_BRANCH_CHECK=1 git push"
+    echo "    git push --no-verify"
+    echo ""
+    exit 1
+  fi
+fi
 
 # Bypass via env-variabel (nyttigt når #239-paraply blokerer)
 if [ "${SKIP_PREPUSH:-0}" = "1" ]; then

@@ -39,6 +39,12 @@ get_app_driver <- function(name) {
   )
 }
 
+# Helper to upload CSV via current upload input id
+upload_test_data <- function(app, csv_path) {
+  app$upload_file(direct_file_upload = csv_path)
+  app$wait_for_idle(timeout = 5000)
+}
+
 # ==============================================================================
 # Test: Run Chart with BFHchart Backend
 # ==============================================================================
@@ -56,8 +62,7 @@ test_that("BFHchart module: Run chart renders correctly with BFHchart backend", 
   app <- get_app_driver("bfh-run-chart")
 
   # Upload test data
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   # Configure chart
   app$set_inputs(
@@ -96,8 +101,7 @@ test_that("BFHchart module: I chart renders correctly", {
 
   app <- get_app_driver("bfh-i-chart")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "I",
@@ -132,8 +136,7 @@ test_that("BFHchart module: P chart renders correctly with denominator", {
 
   app <- get_app_driver("bfh-p-chart")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "P",
@@ -169,8 +172,7 @@ test_that("BFHchart module: C chart renders correctly with count data", {
 
   app <- get_app_driver("bfh-c-chart")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "C",
@@ -205,8 +207,7 @@ test_that("BFHchart module: U chart renders correctly with variable denominator"
 
   app <- get_app_driver("bfh-u-chart")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "U",
@@ -244,8 +245,7 @@ test_that("BFHchart module: Freeze period renders correctly", {
 
   app <- get_app_driver("bfh-freeze-test")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "Run",
@@ -284,8 +284,7 @@ test_that("BFHchart module: Comments render correctly with BFHchart", {
 
   app <- get_app_driver("bfh-comments-test")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "Run",
@@ -319,8 +318,7 @@ test_that("BFHchart module: Visual output consistent across runs", {
 
   # First run
   app1 <- get_app_driver("bfh-regression-1")
-  app1$upload_file(file_upload = temp_csv)
-  app1$wait_for_idle(timeout = 5000)
+  upload_test_data(app1, temp_csv)
   app1$set_inputs(
     chart_type = "Run",
     x_column = "Dato",
@@ -339,8 +337,7 @@ test_that("BFHchart module: Visual output consistent across runs", {
 
   # Second run (should match)
   app2 <- get_app_driver("bfh-regression-2")
-  app2$upload_file(file_upload = temp_csv)
-  app2$wait_for_idle(timeout = 5000)
+  upload_test_data(app2, temp_csv)
   app2$set_inputs(
     chart_type = "Run",
     x_column = "Dato",
@@ -373,8 +370,7 @@ test_that("BFHchart module: Output structure is correct", {
 
   app <- get_app_driver("bfh-output-structure")
 
-  app$upload_file(file_upload = temp_csv)
-  app$wait_for_idle(timeout = 5000)
+  upload_test_data(app, temp_csv)
 
   app$set_inputs(
     chart_type = "Run",

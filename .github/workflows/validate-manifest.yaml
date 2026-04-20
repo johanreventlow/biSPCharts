@@ -4,9 +4,9 @@ name: validate-manifest
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
   pull_request:
-    branches: [master]
+    branches: [master, develop]
   workflow_dispatch:
 
 permissions: read-all

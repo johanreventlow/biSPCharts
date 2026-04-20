@@ -662,7 +662,7 @@ describe("Edge Cases", {
 # PERFORMANCE BENCHMARKS =======================================================
 
 describe("Performance", {
-  it("completes in <2s for 1000 rows", {
+  it("completes in <1.5s for 1000 rows", {
     set.seed(42)
     skip_if_not(exists("generateSPCPlot", mode = "function"))
     skip_on_cran()
@@ -693,8 +693,10 @@ describe("Performance", {
     verify_plot_structure(result)
 
     # BFHcharts-backend inkluderer nu ekstra metadata/signalanalyse.
-    # Realistisk grænse i CI/dev-miljø er derfor 2 sekunder.
-    expect_lt(elapsed, 2.0)
+    # Lokalt målt til ~0.7s (mean) / ~0.8s (max) for 1000 rækker; 1.5s
+    # giver ~2x buffer for CI-variabilitet uden at gemme reelle regressioner.
+    # Se #284 for follow-up på BFHcharts-backend-performance.
+    expect_lt(elapsed, 1.5)
   })
 
   it("caches x-column validation", {

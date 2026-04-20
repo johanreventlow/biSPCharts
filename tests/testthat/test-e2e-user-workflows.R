@@ -9,23 +9,40 @@
 # - UI state verification
 
 library(testthat)
-# BEMÆRK: library(shinytest2) loades IKKE på CI (chromote hænger i
-# non-interaktive Rscript-miljøer). Hver test har skip_on_ci() længere nede.
-if (Sys.getenv("CI") != "true" && Sys.getenv("CI_SKIP_SHINYTEST2") != "true") {
-  if (requireNamespace("shinytest2", quietly = TRUE)) {
-    library(shinytest2)
+
+skip_if_no_shinytest2_runtime <- function() {
+  skip_if_not_installed("shinytest2")
+  skip_if_not_installed("chromote")
+
+  if (Sys.getenv("CI_SKIP_SHINYTEST2", "false") %in% c("true", "TRUE", "1")) {
+    skip("CI_SKIP_SHINYTEST2 env-flag sat")
   }
+
+  chrome_path <- tryCatch(
+    shinytest2::detect_chrome(),
+    error = function(e) ""
+  )
+  skip_if(!nzchar(chrome_path), "Chrome/Chromium ikke fundet til shinytest2")
+}
+
+create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
+  shinytest2::AppDriver$new(
+    app_dir = ".",
+    name = name,
+    width = width,
+    height = height,
+    ...
+  )
 }
 
 # E2E TEST: Basic App Launch ===================================================
 
 test_that("E2E: App launches successfully", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci() # Skip on CI unless configured for headless testing
 
   # Launch app
-  app <- AppDriver$new(
-    app_dir = "../../", # Root of project
+  app <- create_e2e_driver(
     name = "app_launch",
     height = 800,
     width = 1200
@@ -47,7 +64,7 @@ test_that("E2E: App launches successfully", {
 # E2E TEST: File Upload Workflow ===============================================
 
 test_that("E2E: User can upload CSV file", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create temporary test data file
@@ -62,8 +79,7 @@ test_that("E2E: User can upload CSV file", {
   write.csv(test_data, temp_file, row.names = FALSE)
 
   # Launch app
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "file_upload",
     height = 800,
     width = 1200
@@ -72,7 +88,7 @@ test_that("E2E: User can upload CSV file", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
 
   # Wait for processing
   app$wait_for_idle(duration = 2000)
@@ -95,7 +111,7 @@ test_that("E2E: User can upload CSV file", {
 # E2E TEST: Auto-Detection Workflow ============================================
 
 test_that("E2E: Auto-detection runs after file upload", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create test data with clear column patterns
@@ -108,8 +124,7 @@ test_that("E2E: Auto-detection runs after file upload", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "autodetect",
     height = 800,
     width = 1200
@@ -118,7 +133,7 @@ test_that("E2E: Auto-detection runs after file upload", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
 
   # Wait for auto-detection to complete
   app$wait_for_idle(duration = 3000)
@@ -142,7 +157,7 @@ test_that("E2E: Auto-detection runs after file upload", {
 
 test_that("E2E: User can generate SPC chart", {
   set.seed(42)
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create test data
@@ -155,8 +170,7 @@ test_that("E2E: User can generate SPC chart", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "chart_generation",
     height = 800,
     width = 1200
@@ -165,7 +179,7 @@ test_that("E2E: User can generate SPC chart", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Select chart type (if available)
@@ -199,7 +213,7 @@ test_that("E2E: User can generate SPC chart", {
 # E2E TEST: Column Selection Workflow ==========================================
 
 test_that("E2E: User can manually select columns", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   test_data <- data.frame(
@@ -211,8 +225,7 @@ test_that("E2E: User can manually select columns", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "column_selection",
     height = 800,
     width = 1200
@@ -221,7 +234,7 @@ test_that("E2E: User can manually select columns", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Try to set column selections
@@ -254,7 +267,7 @@ test_that("E2E: User can manually select columns", {
 # E2E TEST: Table Edit Workflow ================================================
 
 test_that("E2E: User can edit data in table", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   test_data <- data.frame(
@@ -265,8 +278,7 @@ test_that("E2E: User can edit data in table", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "table_edit",
     height = 800,
     width = 1200
@@ -275,7 +287,7 @@ test_that("E2E: User can edit data in table", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Navigate to data table (if needed)
@@ -298,7 +310,7 @@ test_that("E2E: User can edit data in table", {
 # E2E TEST: Error Handling =====================================================
 
 test_that("E2E: App handles invalid data gracefully", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create invalid data (all text columns)
@@ -310,8 +322,7 @@ test_that("E2E: App handles invalid data gracefully", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "error_handling",
     height = 800,
     width = 1200
@@ -320,7 +331,7 @@ test_that("E2E: App handles invalid data gracefully", {
   app$wait_for_idle()
 
   # Upload invalid file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # App should still be running (not crashed)
@@ -338,7 +349,7 @@ test_that("E2E: App handles invalid data gracefully", {
 
 test_that("E2E: Complete user journey from upload to chart", {
   set.seed(42)
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create realistic SPC data
@@ -352,8 +363,7 @@ test_that("E2E: Complete user journey from upload to chart", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "complete_journey",
     height = 800,
     width = 1200
@@ -364,7 +374,7 @@ test_that("E2E: Complete user journey from upload to chart", {
   app$expect_screenshot("01_initial")
 
   # PHASE 2: Upload data
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
   app$expect_screenshot("02_after_upload")
 
@@ -418,8 +428,7 @@ create_e2e_test_data <- function(n_rows = 20, include_denominator = TRUE) {
 
 # Helper to setup app with test mode
 setup_e2e_app <- function(test_name, width = 1200, height = 800) {
-  AppDriver$new(
-    app_dir = "../../",
+  create_e2e_driver(
     name = test_name,
     width = width,
     height = height,

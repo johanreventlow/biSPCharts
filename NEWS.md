@@ -12,6 +12,19 @@
 
 ## Bug fixes
 
+* **Cache-invalidering for all-NA data frames** (#239 — state/cache): Fundet
+  under #239-test-fix-arbejde. `evaluate_data_content_cached()` returnerede
+  fejlagtigt `TRUE` for data frames hvor alle værdier er `NA`, fordi
+  `nzchar(NA, keepNA = FALSE)` uventet returnerer `TRUE`. Konsekvens: cache
+  blev ikke invalideret når data mistede alt indhold → stale UI-tilstand.
+  Fix i `R/utils_performance.R`: eksplicit `!is.na(col) & nzchar(col)`.
+
+* **POSIXct-klasse mistet i data-signature cache-stats** (#239 — state/cache):
+  `get_data_signature_cache_stats()` brugte `sapply()` på POSIXct-timestamps,
+  hvilket strippede klassen til `numeric`. `min()`/`max()` returnerede derfor
+  `numeric` fremfor `POSIXct` med tidszone-info. Fix i
+  `R/utils_data_signatures.R`: `do.call(c, lapply(...))` bevarer klassen.
+
 * **Package/infrastructure tests: opdatér forventninger til nuværende API**
   (#239 — package/infra): 3 test-filer med 6 FAIL + 1 ERR opdateret:
   (1) `test-package-initialization.R`: branding-globals er migreret fra

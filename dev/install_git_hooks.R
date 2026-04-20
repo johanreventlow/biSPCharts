@@ -13,10 +13,11 @@
 #   Rscript dev/install_git_hooks.R --uninstall
 #
 # Hooks installeret:
-#   - pre-push: dev/git-hooks/pre-push (lintr + testthat full suite)
+#   - pre-commit: dev/git-hooks/pre-commit (blokerer master-commits + lintr/styler)
+#   - pre-push:   dev/git-hooks/pre-push   (blokerer master-push + lintr + testthat)
 #
-# NB: pre-commit-hook håndteres separat (eksisterer allerede direkte i
-# .git/hooks/pre-commit via pre-existing workflow, ikke symlink).
+# NB: Hvis .git/hooks/pre-commit allerede eksisterer som en rigtig fil (ikke
+# symlink), skal du køre med --force for at overskrive den med symlinket version.
 # ==============================================================================
 
 install_git_hooks <- function(force = FALSE, uninstall = FALSE) {

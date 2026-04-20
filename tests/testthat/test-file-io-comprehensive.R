@@ -136,11 +136,9 @@ test_that("BOM handling preserves file integrity", {
   temp_bom <- tempfile(fileext = ".csv")
   on.exit(unlink(temp_bom), add = TRUE)
 
-  # Write with BOM
-  con <- file(temp_bom, "wb")
-  writeBin(c(0xEF, 0xBB, 0xBF), con) # UTF-8 BOM
-  writeLines(test_content, con)
-  close(con)
+  # Skriv BOM som rå bytes, derefter tekstindhold som tekst (separat trin)
+  writeBin(as.raw(c(0xEF, 0xBB, 0xBF)), temp_bom) # UTF-8 BOM
+  write(test_content, file = temp_bom, append = TRUE)
 
   # Test reading preserves Danish characters
   result <- safe_operation(

@@ -163,13 +163,18 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
       context <- list(
         data_definition = input$pdf_description %||% "",
         chart_title = input$export_title %||% "",
-        target_value = normalize_mapping(app_state$columns$mappings$target_value)
+        target_value = normalize_mapping(app_state$columns$mappings$target_value),
+        target_text = normalize_mapping(app_state$columns$mappings$target_text),
+        department = input$export_department %||% ""
       )
 
-      analysis_metadata <- list(
+      analysis_metadata <- build_export_analysis_metadata(
+        bfh_qic_result = spc_result$bfh_qic_result,
+        target_value = context$target_value,
+        target_text = context$target_text,
         data_definition = context$data_definition,
-        target = context$target_value,
-        chart_title = context$chart_title
+        chart_title = context$chart_title,
+        department = context$department
       )
 
       suggestion <- safe_operation(
@@ -191,7 +196,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
       if (!is.null(suggestion)) {
         shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
         shiny::showNotification(
-          "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
+          "✓ Analyse genereret. Du kan nu redigere teksten efter behov.",
           type = "message",
           duration = 3
         )

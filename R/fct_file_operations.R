@@ -159,7 +159,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
         log_warn(
           paste("Upload rate limit triggered - last upload", round(time_since_upload, 1), "seconds ago"),
           .context = "FILE_UPLOAD_SECURITY",
-          session_id = sanitize_session_token(session$token)
+          details = list(session_id = sanitize_session_token(session$token))
         )
         return()
       }
@@ -331,8 +331,10 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
       app_state$columns$auto_detect$completed <- TRUE
       app_state$ui$hide_anhoej_rules <- FALSE
 
-      for (field in c("x_column", "y_column", "n_column",
-                      "skift_column", "frys_column", "kommentar_column")) {
+      for (field in c(
+        "x_column", "y_column", "n_column",
+        "skift_column", "frys_column", "kommentar_column"
+      )) {
         val <- metadata[[field]]
         if (!is.null(val) && nzchar(val)) {
           app_state$columns$mappings[[field]] <- val
@@ -367,8 +369,10 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
         once = TRUE
       )
 
-      besked <- paste0("Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
-                       ncol(data_frame), " kolonner + indstillinger")
+      besked <- paste0(
+        "Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
+        ncol(data_frame), " kolonner + indstillinger"
+      )
     } else {
       # Fallback: Indstillinger-ark kunne ikke parses. Behandl som almindelig
       # data-upload og kør auto-detection i stedet.
@@ -381,8 +385,10 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
       emit$data_updated("file_loaded")
       emit$navigation_changed()
 
-      besked <- paste0("Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
-                       "indstillinger kunne ikke gendannes")
+      besked <- paste0(
+        "Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
+        "indstillinger kunne ikke gendannes"
+      )
     }
 
     shiny::showNotification(besked, type = "message", duration = 4)

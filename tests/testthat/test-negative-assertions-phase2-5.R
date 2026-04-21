@@ -22,6 +22,7 @@
 test_that("generate_improvement_suggestion returnerer NULL når BFHllm utilgængelig (§2.5.3)", {
   set.seed(42)
   skip_if_not(exists("generate_improvement_suggestion", mode = "function"))
+  skip_if_not_installed("BFHllm") # Midlertidigt fjernet fra deploy-bundle
 
   # Mock is_bfhllm_available til altid at returnere FALSE
   testthat::local_mocked_bindings(
@@ -52,6 +53,7 @@ test_that("generate_improvement_suggestion returnerer NULL når BFHllm utilgæng
 
 test_that("generate_improvement_suggestion returnerer NULL ved NULL inputs (§2.5.3)", {
   skip_if_not(exists("generate_improvement_suggestion", mode = "function"))
+  skip_if_not_installed("BFHllm") # Midlertidigt fjernet fra deploy-bundle
 
   mock_session <- shiny::MockShinySession$new()
 

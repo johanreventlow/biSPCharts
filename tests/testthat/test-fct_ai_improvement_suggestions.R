@@ -16,6 +16,12 @@ library(mockery)
 # ============================================================================
 # Test Suite: generate_improvement_suggestion() - BFHllm Facade
 # ============================================================================
+#
+# NOTE: BFHllm midlertidigt fjernet fra deploy-bundle (Python/reticulate-dep
+# via ragnar). Testene skipper automatisk når pakken ikke er installeret.
+# Reaktiveres automatisk når BFHllm reinstalleres.
+
+skip_if_not_installed("BFHllm")
 
 describe("generate_improvement_suggestion()", {
   # Helper function to create mock session

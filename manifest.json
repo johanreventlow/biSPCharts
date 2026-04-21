@@ -71,10 +71,10 @@
         "GithubRef": "v0.8.2",
         "GithubSHA1": "25b106248fda187d17550779ea70cd5a4b0123c0",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-19 18:05:25 UTC; johanreventlow",
+        "Packaged": "2026-04-21 15:25:54 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-19 18:05:25 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-21 15:25:54 UTC; unix"
       }
     },
     "BFHllm": {
@@ -106,10 +106,10 @@
         "GithubRef": "v0.1.1",
         "GithubSHA1": "cb7191bf4f4c5f625f982cfbd2db5cd416d9d541",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-19 18:05:38 UTC; johanreventlow",
+        "Packaged": "2026-04-21 15:26:04 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-19 18:05:39 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-21 15:26:04 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -141,10 +141,10 @@
         "GithubRef": "v0.4.0",
         "GithubSHA1": "56b04d28037f2aca342cd75bae45c5edea313009",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-19 18:05:32 UTC; johanreventlow",
+        "Packaged": "2026-04-21 15:25:59 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-19 18:05:33 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-21 15:26:00 UTC; unix"
       }
     },
     "BH": {
@@ -6621,7 +6621,7 @@
       "checksum": "26efa6fe71f4d2d46fb1af2f6de3d828"
     },
     ".claude/settings.local.json": {
-      "checksum": "cce848e1bd5dd141f86408e9f6767f75"
+      "checksum": "9b35dfe0ce30a02ffd3c4a983dfb2e89"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -20009,14 +20009,20 @@
     ".github/ISSUE_TEMPLATE/bfhchart-feature-request.md": {
       "checksum": "83f8f6dcab7897c2701cf838edb9f973"
     },
+    ".github/pull_request_template.md": {
+      "checksum": "211ba87b72189bbf6189e2b45abc4259"
+    },
     ".github/workflows/lint.yaml": {
-      "checksum": "ec58f8a4165d73cc4d651c5ea105eb85"
+      "checksum": "28578602fdb0c3ed0f87e4c646294d38"
     },
     ".github/workflows/R-CMD-check.yaml": {
-      "checksum": "2edfb7a08417546e782d06ab14115d48"
+      "checksum": "e88e58bf8ca76309db5d81e8c1597fed"
+    },
+    ".github/workflows/tag-release.yaml": {
+      "checksum": "d3c2a54323e526afffdc13e21c26de2d"
     },
     ".github/workflows/validate-manifest.yaml": {
-      "checksum": "4c115332faafa27ed7bbad28e7567284"
+      "checksum": "b139591f7bb6c5b13ae52aee8ca40bdc"
     },
     ".lintr": {
       "checksum": "3e3c5e9ca4bb3ee40c00168dbd3e6361"
@@ -20028,7 +20034,7 @@
       "checksum": "dca8c9449987695a0862f66667f48b6e"
     },
     ".Rprofile": {
-      "checksum": "9cf3c1476c6a51bfedacf40ce1d5620f"
+      "checksum": "5774fea06621f3a8ad00781147dd9529"
     },
     ".superpowers/brainstorm/46098-1774072610/.server-stopped": {
       "checksum": "9efdd5f1c1696c9743d7c204747245f6"
@@ -21216,7 +21222,7 @@
       "checksum": "138e2b41f8e5a27fe4d5b1d8c2a436e9"
     },
     "CLAUDE.md": {
-      "checksum": "29b257b8db3cfd3ec2389c5b4529e41e"
+      "checksum": "e7cc805741dd523b16d109e08c64a61f"
     },
     "CLAUDE.md.backup": {
       "checksum": "6df1bcc93de858211a1ed26097bc4a44"
@@ -21255,7 +21261,22 @@
       "checksum": "5ca316714051225ddfb8bca127a32ebd"
     },
     "dev/audit-output/publish-gate-20260419-205705.log": {
-      "checksum": "733d74cbe6815b076d5198e4b626ff59"
+      "checksum": "5f301b21f210d617ecb12d452f2304f2"
+    },
+    "dev/audit-output/publish-gate-20260421-172609.log": {
+      "checksum": "b050e507130697c96393e8343035fcc9"
+    },
+    "dev/audit-output/publish-gate-20260421-182719.log": {
+      "checksum": "0db79d89a0deda82144a8b0cf4860f91"
+    },
+    "dev/audit-output/publish-gate-20260421-182948.log": {
+      "checksum": "0ac54507cf8ce3a8d6c882581f70f845"
+    },
+    "dev/audit-output/publish-gate-20260421-183210.log": {
+      "checksum": "1bea979088bc1be6b0f1f5acbfa236a5"
+    },
+    "dev/audit-output/publish-gate-20260421-183421.log": {
+      "checksum": "e8a9a78b2dacb3e6d44ce1198d479931"
     },
     "dev/audit-output/test-audit.json": {
       "checksum": "a508caac5db02c5cb1a109a634a72951"
@@ -21293,17 +21314,20 @@
     "dev/GEMINI.md": {
       "checksum": "a1070acb47244e8b6620cef930f0d9c7"
     },
+    "dev/git-hooks/pre-commit": {
+      "checksum": "2557bbe465741e84773bf1ca67c67ee1"
+    },
     "dev/git-hooks/pre-push": {
-      "checksum": "ada610fa7ca67203054c6372001fa29c"
+      "checksum": "b66f41a8179860119a45db2aaa250306"
     },
     "dev/install_git_hooks.R": {
-      "checksum": "f314ff4e7303c4602a53098da6aa9d20"
+      "checksum": "9c0c39ff2ae3cff055530fc98932341c"
     },
     "dev/lint_and_style.R": {
       "checksum": "59318f9f08de38f35228772e882c92c5"
     },
     "dev/lintr_seed_rng.R": {
-      "checksum": "d5a8e2642d7cfee956d96e40376bd968"
+      "checksum": "2362c3102a78391df42c622f96f9328c"
     },
     "dev/MODULE_STRUCTURE.md": {
       "checksum": "93b432dc27d2b2565a7e74252ae16a96"
@@ -21315,7 +21339,7 @@
       "checksum": "cbbfe79a6c0cdc5fdf771efbcf21994e"
     },
     "dev/publish_prepare.R": {
-      "checksum": "03495c52a67ad943d52e28060847c393"
+      "checksum": "e7cb10a7286228c637c8372afcdfa282"
     },
     "dev/run_dev.R": {
       "checksum": "b0c735f800e54f50aac42abf848ea14d"
@@ -21366,7 +21390,7 @@
       "checksum": "e576a45fe7981d44c4fae5eeb57e9032"
     },
     "docs/CONFIGURATION.md": {
-      "checksum": "953fc1665352f20a6eda9340eb9635c5"
+      "checksum": "a6ea7e86342f136634f7890010b497e8"
     },
     "docs/CROSS_REPO_COORDINATION.md": {
       "checksum": "12e86331b81abf20c99ff06951016e61"
@@ -24777,7 +24801,7 @@
       "checksum": "dc1693229c42f8ba5e0c8995632dac22"
     },
     "NEWS.md": {
-      "checksum": "8ca1f3928c066bf48e40f3b929102610"
+      "checksum": "b9a4a7e189ed2401dfa051ffd35dc377"
     },
     "openspec/AGENTS.md": {
       "checksum": "ceb7dbf3c9045c618761dc4efd61e189"
@@ -24984,7 +25008,7 @@
       "checksum": "61f7515650060b84856697a1b972b394"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "78f1d16af45a488309dc4f5b92b41cb5"
+      "checksum": "9f085a79bc76669ad0abfdbcbe4af815"
     },
     "R/fct_spc_bfh_invocation.R": {
       "checksum": "f063f732a7587ac6e5d72340c0473db7"
@@ -25005,7 +25029,7 @@
       "checksum": "926a25fffd9f2c2e6414e777862fc42c"
     },
     "R/fct_spc_plot_generation.R": {
-      "checksum": "a6aadaf9b8fa047f406af5ab97dae5c3"
+      "checksum": "f7617e30990252e6caf4b0c156a70989"
     },
     "R/fct_visualization_server.R": {
       "checksum": "1da2b004176b6b363d89f2543e32c551"
@@ -25101,7 +25125,7 @@
       "checksum": "681cfce5570790cabe3e5273a6a26475"
     },
     "R/utils_data_signatures.R": {
-      "checksum": "d1cebac2465c66a75089dae0667b61d7"
+      "checksum": "8586b7cabf57872afb18ecc67c540f43"
     },
     "R/utils_end_to_end_debug.R": {
       "checksum": "cb131c06a8f3d5db9240f44782fc4dc5"
@@ -25122,13 +25146,13 @@
       "checksum": "57da0cd0dac48f4d54289a85168aa849"
     },
     "R/utils_font_registration.R": {
-      "checksum": "2b5cc9bd95bbf738fb8ec777bcd416f1"
+      "checksum": "d6a9bfe1b0dda73baa5372231941ff71"
     },
     "R/utils_input_sanitization.R": {
       "checksum": "2aa049bf3c63e9ab8792080aa6ab02a9"
     },
     "R/utils_label_formatting.R": {
-      "checksum": "a71213937724617d152a62ede06ff957"
+      "checksum": "1469f2b55b5b16793ebf726357b91528"
     },
     "R/utils_lazy_loading.R": {
       "checksum": "feb73229e9a65b27f110b01f220268f2"
@@ -25152,7 +25176,7 @@
       "checksum": "9c9594288167cd3f9de0cd55ca6e8dbd"
     },
     "R/utils_performance.R": {
-      "checksum": "57137525391e1a7584bbda21da911d2b"
+      "checksum": "f4cb3b83e1efa63413a5c40e2b47e20e"
     },
     "R/utils_profiling.R": {
       "checksum": "166764790d26403a95667df264dd2a13"
@@ -25224,7 +25248,7 @@
       "checksum": "234e1b49626b3e981266bf2b6715f54e"
     },
     "R/utils_spc_cache.R": {
-      "checksum": "8f77e46d5b80284e8f7327c391c0bcbf"
+      "checksum": "b0d9c99a13f244524e72c985a489d0c3"
     },
     "R/utils_spc_chart_ui_helpers.R": {
       "checksum": "e9a9922f1a01d9e7ca7fe7c72b22cb78"
@@ -25257,7 +25281,7 @@
       "checksum": "b32d7aa699f03a96986b07b749fd06b0"
     },
     "R/utils_y_axis_formatting.R": {
-      "checksum": "c684f1a3ca484ebe9e5f27fb2baee2b8"
+      "checksum": "a43315bd81b9b8e9c4c8d7eb9e5e853c"
     },
     "R/utils_y_axis_model.R": {
       "checksum": "641d48e5d8520de6733a161bbf662666"
@@ -25272,7 +25296,7 @@
       "checksum": "89ccf4736f70d8a8dd37d325856b478f"
     },
     "Rplots.pdf": {
-      "checksum": "701f92c1cfccfe01a20a98eff8419463"
+      "checksum": "079b5b8af4267fbeaba9ca4cd7f3797d"
     },
     "tests/_archive/testthat-legacy/README.md": {
       "checksum": "05c2a46ed4feac11b366f5346455be7b"
@@ -25338,10 +25362,10 @@
       "checksum": "451449b420dad57f0b95d455d51c705f"
     },
     "tests/e2e/run_e2e.R": {
-      "checksum": "ee6e7c6a6d0561e9fa683f7d51ff2da1"
+      "checksum": "1f761468b39fbaae6ea9d45c13f0db4c"
     },
     "tests/e2e/setup.R": {
-      "checksum": "b266e6b524dd2f6dfce21d0f41ae5967"
+      "checksum": "6c842b6af188b93302c98ad564d9a44c"
     },
     "tests/e2e/test-e2e-app-launches.R": {
       "checksum": "2148368ec22d3a4d0f8934a3910ae0ac"
@@ -25593,7 +25617,7 @@
       "checksum": "1f6d0c9908ba7bfbf2aaa969730cffc5"
     },
     "tests/testthat/helper-bootstrap.R": {
-      "checksum": "3e07aff06144dc2f9dea93565ac237e2"
+      "checksum": "3e04209d45ab334e245d131314c11fe1"
     },
     "tests/testthat/helper-fixtures.R": {
       "checksum": "5285d88bfaabee17e6dc143d0ff2c2da"
@@ -25659,10 +25683,10 @@
       "checksum": "53096f0dbca4ae357668f69cccfbe749"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "49a65a3b8d78d292e5e44a31aeba9abd"
+      "checksum": "133278898768b0d88d0780d029f3b62c"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
-      "checksum": "5b5377680c8912b7973824466bf25f8f"
+      "checksum": "15d12e6c7a539b24e8cbf9e7f2553513"
     },
     "tests/testthat/test-anhoej-metadata-local.R": {
       "checksum": "86749e1ed77b4941289095760caad8e9"
@@ -25671,7 +25695,7 @@
       "checksum": "54a451da381e4dab2ee033ea53058530"
     },
     "tests/testthat/test-app-initialization.R": {
-      "checksum": "fe38aa3d575b0834290f8b727a26baee"
+      "checksum": "96d977960f559fd188146f56cebf7d9d"
     },
     "tests/testthat/test-audit-classifier.R": {
       "checksum": "e0d2825579a194d47ce144056f9e78cd"
@@ -25683,7 +25707,7 @@
       "checksum": "8c7e4fa09126cbc5282704c77ebdfe08"
     },
     "tests/testthat/test-bfh-error-handling.R": {
-      "checksum": "0b05c366b27f14b234030daa54fa90f8"
+      "checksum": "6a004848062c4909c069d4f45d0ad064"
     },
     "tests/testthat/test-bfh-module-integration.R": {
       "checksum": "156d50e9b0256f64a8a2825191667ea6"
@@ -25740,13 +25764,13 @@
       "checksum": "cdfb38252cacdf640b2082e3d545e2a1"
     },
     "tests/testthat/test-critical-fixes-integration.R": {
-      "checksum": "51c92f5c223c76f3a44c5644ed9c9c9b"
+      "checksum": "d457de69a9fbbb127b13d32acdfcaa66"
     },
     "tests/testthat/test-critical-fixes-regression.R": {
       "checksum": "8cb1290ca7b38dc2cd47520ca11abfed"
     },
     "tests/testthat/test-critical-fixes-security.R": {
-      "checksum": "81b885a993ce19742f91a264d4f05c8b"
+      "checksum": "8d2f38fbf913f4d03b512c472f0118d7"
     },
     "tests/testthat/test-cross-component-reactive.R": {
       "checksum": "d30b27553c42b64160c8ff83967e9ea6"
@@ -25761,7 +25785,7 @@
       "checksum": "65e41f2437ff7245e3ccec66117b7d52"
     },
     "tests/testthat/test-data-validation.R": {
-      "checksum": "f29b3997fcdc5d41951a03416669c74f"
+      "checksum": "b281a04d352a6b45e2664d790d4127c9"
     },
     "tests/testthat/test-debug-context-filtering.R": {
       "checksum": "914c8c6150aacfa0363c1c0c90b3e014"
@@ -25779,19 +25803,19 @@
       "checksum": "7c6a2ff3bead1b657f214cc31ea52f69"
     },
     "tests/testthat/test-edge-cases-comprehensive.R": {
-      "checksum": "5f6c394b1cfdc4ded36abc0fe7085952"
+      "checksum": "f13c22204341b6e9608beae95dfe18f1"
     },
     "tests/testthat/test-error-handling.R": {
       "checksum": "3684ef4f2bca3bff530c225ae848a7c3"
     },
     "tests/testthat/test-event-context-handlers.R": {
-      "checksum": "7e05bff91d5c8534a4b52f47388e6ba3"
+      "checksum": "3f68928ebae6001701c7607fc7b5f6a1"
     },
     "tests/testthat/test-event-system-emit.R": {
       "checksum": "5de1aa3b5fd7061e423340dcbb3cf7b1"
     },
     "tests/testthat/test-event-system-observers.R": {
-      "checksum": "da91f1ba4badd1b2e511b8a7d12637a8"
+      "checksum": "114903f0be20ee288482ff520b82b98d"
     },
     "tests/testthat/test-excelr-data-reconstruction.R": {
       "checksum": "907877fbaaa56fa9838a1f0e34d0dbfb"
@@ -25809,10 +25833,10 @@
       "checksum": "0299706308cdb11e4ca3f3002c89b1a5"
     },
     "tests/testthat/test-file-io-comprehensive.R": {
-      "checksum": "9d1c3107eb5d28757e0fe6d34051aeed"
+      "checksum": "a1a2e3b0b269f1eded7f9225f625d5b6"
     },
     "tests/testthat/test-file-operations-tidyverse.R": {
-      "checksum": "436f2a6ebcbecbf573b1fa48c26c5a76"
+      "checksum": "be74293894772abcf0a4cff9db79fce1"
     },
     "tests/testthat/test-file-operations.R": {
       "checksum": "9caa831dba27cdd0e9dd5bed994978a0"
@@ -25824,7 +25848,7 @@
       "checksum": "212e8240d189b34bcc53e1ce3883955f"
     },
     "tests/testthat/test-generateSPCPlot-comprehensive.R": {
-      "checksum": "607085279636f65f85cffc0ab0f94c44"
+      "checksum": "96e045411f050dc0accf55fb852b7d0f"
     },
     "tests/testthat/test-helper-mocks-contracts.R": {
       "checksum": "288436cb26058f521ef918593dabc2ed"
@@ -25860,19 +25884,19 @@
       "checksum": "fa5af2d19dab58f2a6aecb310cd357b1"
     },
     "tests/testthat/test-mod_export.R": {
-      "checksum": "3414b49df9edc19e48332d5d433e5f0c"
+      "checksum": "662e2f900b22576581ee2d8709befbf8"
     },
     "tests/testthat/test-mod-landing-server.R": {
       "checksum": "8d81df4eb228e59c189174c66aa88c30"
     },
     "tests/testthat/test-mod-spc-chart-comprehensive.R": {
-      "checksum": "9c4e314e4b600fda405edac4c629915b"
+      "checksum": "a4b1982c07a2313c172245e8661d5cc6"
     },
     "tests/testthat/test-namespace-integrity.R": {
       "checksum": "e48c4393b34e7c2fa7ab1f57892a066b"
     },
     "tests/testthat/test-negative-assertions-phase2-5.R": {
-      "checksum": "57f4cd00c66df5034e175d022099d171"
+      "checksum": "ec3dc39190260e295a7b2828f1f669cd"
     },
     "tests/testthat/test-no-file-dependencies.R": {
       "checksum": "4d430557853f02b485c203f97e828f3d"
@@ -25884,10 +25908,10 @@
       "checksum": "40824cf707eaf83c71ea40f12c003777"
     },
     "tests/testthat/test-package-initialization.R": {
-      "checksum": "d4a77fd7228535cd0f3246b669fc673a"
+      "checksum": "37d1a5833a6819c7bc000b10a0656082"
     },
     "tests/testthat/test-package-namespace-validation.R": {
-      "checksum": "0bf6a8ee795a75b1b484b0f5b6463f22"
+      "checksum": "51635b7673d382ad69253c60a6489a84"
     },
     "tests/testthat/test-parse-danish-target-unit-conversion.R": {
       "checksum": "8b05185dab6e81016d0d93595adf63c5"
@@ -25902,7 +25926,7 @@
       "checksum": "2f110983a3bf180eedb4353d023e00c4"
     },
     "tests/testthat/test-plot-generation-performance.R": {
-      "checksum": "3535a2ae47aa0f20eef088219e37688e"
+      "checksum": "4bf21156e4e2fee038fbf0173836dad9"
     },
     "tests/testthat/test-plot-generation.R": {
       "checksum": "9fba3cba5e769bdb69ec17c181129709"
@@ -25926,25 +25950,25 @@
       "checksum": "f3712739dff5dab713cbbd0730c5f028"
     },
     "tests/testthat/test-security-session-tokens.R": {
-      "checksum": "8c1053de49240e9d4f0568c9e3ae14a8"
+      "checksum": "a840f8bcbc6a924568d83e38d34fa070"
     },
     "tests/testthat/test-session-persistence.R": {
       "checksum": "213332c9d657576e17753c0be7a267c2"
     },
     "tests/testthat/test-session-token-sanitization.R": {
-      "checksum": "474ea1c95b0c00ff441ae03bfbf8ce28"
+      "checksum": "c93859b36179977ec5c6f79689c53237"
     },
     "tests/testthat/test-shared-data-signatures.R": {
       "checksum": "9b140f9ff332457e5a916bedcc7ce4d0"
     },
     "tests/testthat/test-spc-bfh-service.R": {
-      "checksum": "08bebce7d11b3e4d6344d74964464ec0"
+      "checksum": "2d4a7c95ed11793a8d2a9c0abedca1dc"
     },
     "tests/testthat/test-spc-cache-integration.R": {
       "checksum": "cc7152f9be6f04ce0ba4a41e35551b27"
     },
     "tests/testthat/test-spc-plot-generation-comprehensive.R": {
-      "checksum": "d60247efc105fbfbc1ef15aa82a5a21c"
+      "checksum": "e4b87496809f996caf037cf3491f6a23"
     },
     "tests/testthat/test-spc-regression-bfh-vs-qic.R": {
       "checksum": "a25d6029620fec7cd7fd69da7bbe20ca"
@@ -25956,7 +25980,7 @@
       "checksum": "527168b06d3284920fff397648d63ba7"
     },
     "tests/testthat/test-tidyverse-purrr-operations.R": {
-      "checksum": "ed6c11b11152f94485c9198e0f0b14f6"
+      "checksum": "585782581f26d6cbfa73473c7af5e8e1"
     },
     "tests/testthat/test-time-formatting.R": {
       "checksum": "f5194ba42bfc0880f36bf23f87cf1617"
@@ -25989,7 +26013,7 @@
       "checksum": "2b4489fb069f8a6e343569b10984f097"
     },
     "tests/testthat/test-utils_export_validation.R": {
-      "checksum": "b5fb4229911c449f5c23425ef8fb0ebe"
+      "checksum": "bbf0f9cef9f81c7215c5132b328a70f8"
     },
     "tests/testthat/test-utils_input_sanitization.R": {
       "checksum": "6dd5ef38944876a3158c97acf9ce902c"
@@ -26010,16 +26034,16 @@
       "checksum": "b73f8968fcd3a1d95ebf14505bf1ff9e"
     },
     "tests/testthat/test-visualization-server.R": {
-      "checksum": "3e6cfa856fff87ccda7a2f60696dfe12"
+      "checksum": "027d51afc5bb7bcc1a92eab1cc888f5d"
     },
     "tests/testthat/test-wizard.R": {
       "checksum": "bb928296e4c86fc8cca366f23d413432"
     },
     "tests/testthat/test-y-axis-scaling-overhaul.R": {
-      "checksum": "b4c3fdec23275c386c2683563a2bffef"
+      "checksum": "c6028511a02331d5ba08f26bdb51a4b7"
     },
     "tests/testthat/test-yaml-config-adherence.R": {
-      "checksum": "ebd5ac510240a4c889eef09f3263e82f"
+      "checksum": "796a55c67147a5307e02ed7980a8a1ee"
     },
     "tests/testthat/testthat-problems.rds": {
       "checksum": "136337aa83e0395edd90f08ab8b4effa"

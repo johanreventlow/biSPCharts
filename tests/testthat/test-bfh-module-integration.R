@@ -1,14 +1,20 @@
-# tests/testthat/test-bfh-module-integration.R
 # Shinytest2 snapshot tests for BFHchart module integration
 # Tests visual output of all supported chart types with BFHchart backend
 
 library(testthat)
-# BEMÆRK: library(shinytest2) loades IKKE på CI (chromote hænger i
-# non-interaktive Rscript-miljøer). Hver test har skip_on_ci() længere nede.
-if (Sys.getenv("CI") != "true" && Sys.getenv("CI_SKIP_SHINYTEST2") != "true") {
-  if (requireNamespace("shinytest2", quietly = TRUE)) {
-    library(shinytest2)
-  }
+
+bfh_shinytest2_enabled <- identical(Sys.getenv("RUN_SHINYTEST2"), "1")
+
+if (bfh_shinytest2_enabled && requireNamespace("shinytest2", quietly = TRUE)) {
+  library(shinytest2)
+}
+
+skip_bfh_shinytest2 <- function() {
+  skip_if(
+    !bfh_shinytest2_enabled,
+    "BFH shinytest2 visual tests are opt-in; set RUN_SHINYTEST2=1"
+  )
+  skip_if_not_installed("shinytest2")
 }
 
 # Test fixtures helper
@@ -30,10 +36,10 @@ create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
 
 # Helper to get app driver
 get_app_driver <- function(name) {
-  AppDriver$new(
+  shinytest2::AppDriver$new(
     app_dir = test_path("../.."),
     name = name,
-    variant = platform_variant(),
+    variant = shinytest2::platform_variant(),
     height = 800,
     width = 1200
   )
@@ -50,8 +56,7 @@ upload_test_data <- function(app, csv_path) {
 # ==============================================================================
 
 test_that("BFHchart module: Run chart renders correctly with BFHchart backend", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   # Create test data
   test_data <- create_test_csv("run")
@@ -76,7 +81,7 @@ test_that("BFHchart module: Run chart renders correctly with BFHchart backend", 
   app$expect_screenshot(
     selector = "#spc_plot_actual",
     name = "bfh-run-chart",
-    threshold = 0.1  # Allow 10% pixel diff for anti-aliasing
+    threshold = 0.1 # Allow 10% pixel diff for anti-aliasing
   )
 
   # Verify plot rendered (check values)
@@ -92,8 +97,7 @@ test_that("BFHchart module: Run chart renders correctly with BFHchart backend", 
 # ==============================================================================
 
 test_that("BFHchart module: I chart renders correctly", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("i")
   temp_csv <- tempfile(fileext = ".csv")
@@ -127,8 +131,7 @@ test_that("BFHchart module: I chart renders correctly", {
 # ==============================================================================
 
 test_that("BFHchart module: P chart renders correctly with denominator", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("p")
   temp_csv <- tempfile(fileext = ".csv")
@@ -163,8 +166,7 @@ test_that("BFHchart module: P chart renders correctly with denominator", {
 # ==============================================================================
 
 test_that("BFHchart module: C chart renders correctly with count data", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("c")
   temp_csv <- tempfile(fileext = ".csv")
@@ -198,8 +200,7 @@ test_that("BFHchart module: C chart renders correctly with count data", {
 # ==============================================================================
 
 test_that("BFHchart module: U chart renders correctly with variable denominator", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("u")
   temp_csv <- tempfile(fileext = ".csv")
@@ -234,11 +235,10 @@ test_that("BFHchart module: U chart renders correctly with variable denominator"
 # ==============================================================================
 
 test_that("BFHchart module: Freeze period renders correctly", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
-  test_data$Fryz <- c(rep(0, 30), rep(1, 20))  # Last 20 points frozen
+  test_data$Fryz <- c(rep(0, 30), rep(1, 20)) # Last 20 points frozen
 
   temp_csv <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
@@ -270,8 +270,7 @@ test_that("BFHchart module: Freeze period renders correctly", {
 # ==============================================================================
 
 test_that("BFHchart module: Comments render correctly with BFHchart", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
   test_data$Kommentar <- c(
@@ -309,8 +308,7 @@ test_that("BFHchart module: Comments render correctly with BFHchart", {
 # ==============================================================================
 
 test_that("BFHchart module: Visual output consistent across runs", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
   temp_csv <- tempfile(fileext = ".csv")
@@ -361,8 +359,7 @@ test_that("BFHchart module: Visual output consistent across runs", {
 # ==============================================================================
 
 test_that("BFHchart module: Output structure is correct", {
-  skip_if_not_installed("shinytest2")
-  skip_on_ci()
+  skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
   temp_csv <- tempfile(fileext = ".csv")

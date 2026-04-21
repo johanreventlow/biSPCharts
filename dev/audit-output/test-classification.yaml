@@ -15,11 +15,11 @@
 
 
 metadata:
-  total_files: 120
+  total_files: 122
   audit_run: 2026-04-19T16:03:42+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 120
+    reviewed: 122
     unreviewed: 0
     needs_triage: 0
 files:
@@ -889,6 +889,15 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-utils-export-analysis-metadata.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Unit-test for export analysis metadata helper added after audit run;
+      covers metadata enrichment, percent centerline formatting, and fallback context.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-21'
   - file: test-utils_export_filename.R
     audit_category: green
     type: unit
@@ -911,6 +920,15 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-utils_logging.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Regression tests for utils_logging signatures added after audit run;
+      verifies session_id is passed through details and unknown top-level args fail.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-21'
   - file: test-utils_performance_caching.R
     audit_category: green
     type: benchmark
@@ -983,4 +1001,3 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-

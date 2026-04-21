@@ -68,9 +68,38 @@ create_cached_reactive <- function(reactive_expr, cache_key, cache_timeout = CAC
     function() as.character(cache_key)
   }
 
+  # Instance-scoped nonce for cache isolation mellem forskellige wrappers
+  # (undgår utilsigtede key-kollisioner på tværs af callers/sessions).
+  instance_nonce <- digest::digest(
+    list(
+      as.numeric(Sys.time()),
+      stats::runif(1)
+    ),
+    algo = "xxhash64"
+  )
+
+  # Revision bumpes ved hver reaktiv re-evaluering (dependency ændring eller
+  # timeout-baseret invalidation). Dette sikrer at stale cache entries ikke
+  # genbruges efter dependency change.
+  reactive_revision <- 0L
+
   return(reactive({
+    reactive_revision <<- reactive_revision + 1L
+
+    # Sørg for timeout-baseret re-evaluering, så cache-expiry faktisk kan
+    # træde i kraft selv når dependencies ikke ændrer sig.
+    if (is.numeric(cache_timeout) && length(cache_timeout) == 1 && is.finite(cache_timeout) && cache_timeout > 0) {
+      shiny::invalidateLater(max(1L, as.integer(cache_timeout * 1000)))
+    }
+
     # Generate actual cache key
-    actual_key <- key_func()
+    actual_key <- paste0(
+      key_func(),
+      "::",
+      instance_nonce,
+      "::rev_",
+      reactive_revision
+    )
 
     # Check if cached result exists and is fresh
     cached_result <- get_cached_result(actual_key)

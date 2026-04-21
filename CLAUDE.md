@@ -337,22 +337,28 @@ Manual tests køres IKKE automatisk i CI/CD. De bruges under development og før
 
 **Installation:** `Rscript dev/install_git_hooks.R` — installerer symlink `.git/hooks/pre-push → dev/git-hooks/pre-push`.
 
-**Formål:** Blokér push til remote hvis lintr fejler eller test-suiten er rød (§3.1 af `harden-test-suite-regression-gate` openspec change).
+**Formål:** Blokér push til remote hvis lintr fejler, test-classification manifestet er invalidt, eller de hurtige regressionstests er røde (§3.1 af `harden-test-suite-regression-gate` openspec change). Tunge browser-/visual-tests er opt-in og køres ikke som normal lokal pre-push.
 
 **Anvendelse:**
 ```bash
-# Normal push (udløser hooken)
+# Normal push (fast default: lintr + manifest-validering + små regressionstests)
 git push
 
-# Hurtig pre-push (kun lintr + udvalgte unit-tests, ~2 min)
+# Eksplicit hurtig pre-push
 PREPUSH_MODE=fast git push
 
-# Bypass (brug sparsomt, fx når #279/#280 blokerer)
+# Fuld testthat-suite uden opt-in shinytest2 screenshots
+PREPUSH_MODE=full git push
+
+# Kør BFH shinytest2 visual tests eksplicit
+RUN_SHINYTEST2=1 Rscript -e 'testthat::test_file("tests/testthat/test-bfh-module-integration.R")'
+
+# Bypass (brug sparsomt)
 SKIP_PREPUSH=1 git push
 git push --no-verify        # Git-native alternativ
 ```
 
-⚠️ **VIGTIG:** Test-suiten har stadig 2 fails + 17 errors pre-existing, sporet i #279 (BFHcharts-integration) og #280 (E2E shinytest2). Pre-push-hooken blokerer push indtil disse er lukket. Brug `SKIP_PREPUSH=1` midlertidigt.
+⚠️ **VIGTIG:** BFHcharts/shinytest2 screenshot-tests er miljøfølsomme og opt-in via `RUN_SHINYTEST2=1`. De må ikke være en normal lokal push-blokering; stabil browser/visual regression hører hjemme i en separat CI-job med kontrolleret Chrome/Chromium-miljø.
 
 **Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
 

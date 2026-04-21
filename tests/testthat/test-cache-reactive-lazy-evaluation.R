@@ -2,17 +2,6 @@
 # Salvage Fase 2: Opdateret mod nuværende cache API
 # Baseret paa R/utils_performance_caching.R
 #
-# NOTE: Alle testServer-baserede tests er markeret SKIP fordi
-# create_cached_reactive() kaster fejl pga. manage_cache_size() ikke
-# eksisterer i namespace. Se Issue #203 for Fase 3 followup.
-
-# =============================================================================
-# KENDTE BEGRAENSNINGER I NUVAERENDE IMPLEMENTATION (dokumenteret):
-#
-# 1. manage_cache_size() ikke i namespace — create_cached_reactive() fejler
-#    naar reactive evalueres, selvom funktionen oprettes uden fejl.
-# =============================================================================
-
 # Minimal module server til at teste reactive caching
 mock_cache_server <- function(id = "test") {
   shiny::moduleServer(id, function(input, output, session) {
@@ -53,7 +42,6 @@ test_that("create_cached_reactive evaluerer lazy", {
 })
 
 test_that("create_cached_reactive reagerer paa reaktive dependencies", {
-  skip("Afventer fix i create_cached_reactive cache-key — se #212")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -99,7 +87,6 @@ test_that("create_cached_reactive cacher inden for timeout", {
 })
 
 test_that("create_cached_reactive haandterer cache-udloeb", {
-  skip("Afventer fix i create_cached_reactive timeout-handling — se #212")
   skip_if_not(exists("create_cached_reactive"))
 
   shiny::testServer(mock_cache_server, {
@@ -117,7 +104,8 @@ test_that("create_cached_reactive haandterer cache-udloeb", {
 
     result1 <- cached()
     expect_equal(eval_count, 1)
-    Sys.sleep(0.2)
+    session$elapse(200)
+    session$flushReact()
     result2 <- cached()
     expect_equal(eval_count, 2)
   })

@@ -9,23 +9,47 @@
 # - UI state verification
 
 library(testthat)
-# BEMÆRK: library(shinytest2) loades IKKE på CI (chromote hænger i
-# non-interaktive Rscript-miljøer). Hver test har skip_on_ci() længere nede.
-if (Sys.getenv("CI") != "true" && Sys.getenv("CI_SKIP_SHINYTEST2") != "true") {
-  if (requireNamespace("shinytest2", quietly = TRUE)) {
-    library(shinytest2)
+
+skip_if_no_shinytest2_runtime <- function() {
+  skip_if_not_installed("shinytest2")
+  skip_if_not_installed("chromote")
+
+  if (Sys.getenv("CI_SKIP_SHINYTEST2", "false") %in% c("true", "TRUE", "1")) {
+    skip("CI_SKIP_SHINYTEST2 env-flag sat")
   }
+
+  # chromote::find_chrome() er den korrekte API — shinytest2 eksporterer
+  # ikke sin egen chrome-detektering. Returnerer NULL/"" hvis ikke fundet.
+  chrome_path <- tryCatch(
+    chromote::find_chrome(),
+    error = function(e) ""
+  )
+  skip_if(is.null(chrome_path) || !nzchar(chrome_path),
+          "Chrome/Chromium ikke fundet til shinytest2")
+}
+
+create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
+  # Test-CWD er tests/testthat/ — app.R ligger to niveauer op (projektrod).
+  # variant = platform_variant() gør app$expect_screenshot() platform-aware
+  # (undgår "variant not initialized"-fejl ved screenshot-assertions).
+  shinytest2::AppDriver$new(
+    app_dir = "../../",
+    name = name,
+    width = width,
+    height = height,
+    variant = shinytest2::platform_variant(),
+    ...
+  )
 }
 
 # E2E TEST: Basic App Launch ===================================================
 
 test_that("E2E: App launches successfully", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci() # Skip on CI unless configured for headless testing
 
   # Launch app
-  app <- AppDriver$new(
-    app_dir = "../../", # Root of project
+  app <- create_e2e_driver(
     name = "app_launch",
     height = 800,
     width = 1200
@@ -35,7 +59,9 @@ test_that("E2E: App launches successfully", {
   app$wait_for_idle()
 
   # Verify app is running
-  expect_true(app$is_running())
+  # shinytest2 har ingen is_running()-metode; verificér via get_url() som
+  # returnerer session-URL hvis app'en er levende og responsiv.
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
 
   # Take screenshot for visual verification
   app$expect_screenshot()
@@ -47,7 +73,7 @@ test_that("E2E: App launches successfully", {
 # E2E TEST: File Upload Workflow ===============================================
 
 test_that("E2E: User can upload CSV file", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create temporary test data file
@@ -62,8 +88,7 @@ test_that("E2E: User can upload CSV file", {
   write.csv(test_data, temp_file, row.names = FALSE)
 
   # Launch app
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "file_upload",
     height = 800,
     width = 1200
@@ -72,7 +97,7 @@ test_that("E2E: User can upload CSV file", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
 
   # Wait for processing
   app$wait_for_idle(duration = 2000)
@@ -95,7 +120,7 @@ test_that("E2E: User can upload CSV file", {
 # E2E TEST: Auto-Detection Workflow ============================================
 
 test_that("E2E: Auto-detection runs after file upload", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create test data with clear column patterns
@@ -108,8 +133,7 @@ test_that("E2E: Auto-detection runs after file upload", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "autodetect",
     height = 800,
     width = 1200
@@ -118,7 +142,7 @@ test_that("E2E: Auto-detection runs after file upload", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
 
   # Wait for auto-detection to complete
   app$wait_for_idle(duration = 3000)
@@ -142,7 +166,7 @@ test_that("E2E: Auto-detection runs after file upload", {
 
 test_that("E2E: User can generate SPC chart", {
   set.seed(42)
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create test data
@@ -155,8 +179,7 @@ test_that("E2E: User can generate SPC chart", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "chart_generation",
     height = 800,
     width = 1200
@@ -165,7 +188,7 @@ test_that("E2E: User can generate SPC chart", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Select chart type (if available)
@@ -199,7 +222,7 @@ test_that("E2E: User can generate SPC chart", {
 # E2E TEST: Column Selection Workflow ==========================================
 
 test_that("E2E: User can manually select columns", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   test_data <- data.frame(
@@ -211,8 +234,7 @@ test_that("E2E: User can manually select columns", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "column_selection",
     height = 800,
     width = 1200
@@ -221,7 +243,7 @@ test_that("E2E: User can manually select columns", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Try to set column selections
@@ -254,7 +276,7 @@ test_that("E2E: User can manually select columns", {
 # E2E TEST: Table Edit Workflow ================================================
 
 test_that("E2E: User can edit data in table", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   test_data <- data.frame(
@@ -265,8 +287,7 @@ test_that("E2E: User can edit data in table", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "table_edit",
     height = 800,
     width = 1200
@@ -275,7 +296,7 @@ test_that("E2E: User can edit data in table", {
   app$wait_for_idle()
 
   # Upload file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # Navigate to data table (if needed)
@@ -298,7 +319,7 @@ test_that("E2E: User can edit data in table", {
 # E2E TEST: Error Handling =====================================================
 
 test_that("E2E: App handles invalid data gracefully", {
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create invalid data (all text columns)
@@ -310,8 +331,7 @@ test_that("E2E: App handles invalid data gracefully", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "error_handling",
     height = 800,
     width = 1200
@@ -320,11 +340,13 @@ test_that("E2E: App handles invalid data gracefully", {
   app$wait_for_idle()
 
   # Upload invalid file
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
   # App should still be running (not crashed)
-  expect_true(app$is_running())
+  # shinytest2 har ingen is_running()-metode; verificér via get_url() som
+  # returnerer session-URL hvis app'en er levende og responsiv.
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
 
   # Take screenshot (may show error message)
   app$expect_screenshot()
@@ -338,7 +360,7 @@ test_that("E2E: App handles invalid data gracefully", {
 
 test_that("E2E: Complete user journey from upload to chart", {
   set.seed(42)
-  skip_if_not_installed("shinytest2")
+  skip_if_no_shinytest2_runtime()
   skip_on_ci()
 
   # Create realistic SPC data
@@ -352,8 +374,7 @@ test_that("E2E: Complete user journey from upload to chart", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_file, row.names = FALSE)
 
-  app <- AppDriver$new(
-    app_dir = "../../",
+  app <- create_e2e_driver(
     name = "complete_journey",
     height = 800,
     width = 1200
@@ -361,23 +382,23 @@ test_that("E2E: Complete user journey from upload to chart", {
 
   # PHASE 1: Initial state
   app$wait_for_idle()
-  app$expect_screenshot("01_initial")
+  app$expect_screenshot(name = "01_initial")
 
   # PHASE 2: Upload data
-  app$upload_file(data_file = temp_file)
+  app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
-  app$expect_screenshot("02_after_upload")
+  app$expect_screenshot(name = "02_after_upload")
 
   # PHASE 3: Wait for auto-detection
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot("03_autodetected")
+  app$expect_screenshot(name = "03_autodetected")
 
   # PHASE 4: Select chart type (if possible)
   tryCatch(
     {
       app$set_inputs(chart_type = "P-kort (Andele)")
       app$wait_for_idle(duration = 1500)
-      app$expect_screenshot("04_chart_selected")
+      app$expect_screenshot(name = "04_chart_selected")
     },
     error = function(e) {
       message("Could not set chart type: ", e$message)
@@ -386,10 +407,12 @@ test_that("E2E: Complete user journey from upload to chart", {
 
   # PHASE 5: Final state with chart
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot("05_final_chart")
+  app$expect_screenshot(name = "05_final_chart")
 
   # Verify app is still running
-  expect_true(app$is_running())
+  # shinytest2 har ingen is_running()-metode; verificér via get_url() som
+  # returnerer session-URL hvis app'en er levende og responsiv.
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
 
   # Get final state
   final_values <- app$get_values()
@@ -418,8 +441,7 @@ create_e2e_test_data <- function(n_rows = 20, include_denominator = TRUE) {
 
 # Helper to setup app with test mode
 setup_e2e_app <- function(test_name, width = 1200, height = 800) {
-  AppDriver$new(
-    app_dir = "../../",
+  create_e2e_driver(
     name = test_name,
     width = width,
     height = height,

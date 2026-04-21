@@ -32,56 +32,64 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
   last_auto_analysis <- shiny::reactiveVal("")
 
   # Auto-generer analysetekst når SPC-resultat er tilgængeligt
-  shiny::observeEvent(export_plot(), {
-    # Review fund #3: Auto-genereret analysetekst bruges KUN i PDF-eksport
-    # (pdf_improvement-feltet). Når formatet er png er analysen
-    # irrelevant, og den resulterende updateTextAreaInput trigger en ny
-    # preview-render uden reel brugerændring. Guard på format sparer
-    # unødig reactive chain (preview → autosave → debounce → preview).
-    fmt <- shiny::isolate(input$export_format) %||% "pdf"
-    if (!identical(fmt, "pdf")) {
-      return()
-    }
+  shiny::observeEvent(export_plot(),
+    {
+      # Review fund #3: Auto-genereret analysetekst bruges KUN i PDF-eksport
+      # (pdf_improvement-feltet). Når formatet er png er analysen
+      # irrelevant, og den resulterende updateTextAreaInput trigger en ny
+      # preview-render uden reel brugerændring. Guard på format sparer
+      # unødig reactive chain (preview → autosave → debounce → preview).
+      fmt <- shiny::isolate(input$export_format) %||% "pdf"
+      if (!identical(fmt, "pdf")) {
+        return()
+      }
 
-    result <- export_plot()
-    if (is.null(result) || is.null(result$bfh_qic_result)) {
-      return()
-    }
+      result <- export_plot()
+      if (is.null(result) || is.null(result$bfh_qic_result)) {
+        return()
+      }
 
-    # Byg metadata med target og datadefinition fra app_state
-    auto_metadata <- list(
-      target = shiny::isolate(
-        normalize_mapping(app_state$columns$mappings$target_value)
-      ),
-      data_definition = shiny::isolate(input$pdf_description %||% "")
-    )
+      auto_metadata <- build_export_analysis_metadata(
+        bfh_qic_result = result$bfh_qic_result,
+        target_value = shiny::isolate(
+          normalize_mapping(app_state$columns$mappings$target_value)
+        ),
+        target_text = shiny::isolate(
+          normalize_mapping(app_state$columns$mappings$target_text)
+        ),
+        data_definition = shiny::isolate(input$pdf_description %||% ""),
+        chart_title = shiny::isolate(input$export_title %||% ""),
+        department = shiny::isolate(input$export_department %||% "")
+      )
 
-    auto_text <- safe_operation(
-      operation_name = "Auto-generate analysis text",
-      code = {
-        BFHcharts::bfh_generate_analysis(
-          result$bfh_qic_result,
-          metadata = auto_metadata,
-          use_ai = FALSE
-        )
-      },
-      error_type = "processing"
-    )
+      auto_text <- safe_operation(
+        operation_name = "Auto-generate analysis text",
+        code = {
+          BFHcharts::bfh_generate_analysis(
+            result$bfh_qic_result,
+            metadata = auto_metadata,
+            use_ai = FALSE
+          )
+        },
+        error_type = "processing"
+      )
 
-    if (is.null(auto_text) || nchar(auto_text) == 0) {
-      return()
-    }
+      if (is.null(auto_text) || nchar(auto_text) == 0) {
+        return()
+      }
 
-    # Opdatér kun hvis feltet er tomt eller indeholder den forrige auto-tekst
-    current_text <- shiny::isolate(input$pdf_improvement) %||% ""
-    prev_auto <- shiny::isolate(last_auto_analysis())
-    user_has_edited <- nchar(trimws(current_text)) > 0 && current_text != prev_auto
+      # Opdatér kun hvis feltet er tomt eller indeholder den forrige auto-tekst
+      current_text <- shiny::isolate(input$pdf_improvement) %||% ""
+      prev_auto <- shiny::isolate(last_auto_analysis())
+      user_has_edited <- nchar(trimws(current_text)) > 0 && current_text != prev_auto
 
-    if (!user_has_edited) {
-      last_auto_analysis(auto_text)
-      shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
-    }
-  }, priority = OBSERVER_PRIORITIES$LOW)
+      if (!user_has_edited) {
+        last_auto_analysis(auto_text)
+        shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
+      }
+    },
+    priority = OBSERVER_PRIORITIES$LOW
+  )
 
   # Vis/skjul auto-indikator: synlig når feltets tekst matcher auto-teksten
   shiny::observe({

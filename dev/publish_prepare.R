@@ -61,8 +61,9 @@ suppressPackageStartupMessages({
 
 SIBLINGS <- list(
   BFHcharts = "johanreventlow/BFHcharts",
-  BFHtheme  = "johanreventlow/BFHtheme",
-  BFHllm    = "johanreventlow/BFHllm"
+  BFHtheme  = "johanreventlow/BFHtheme"
+  # BFHllm midlertidigt fjernet — reaktivér når AI-suggestions genindføres.
+  # BFHllm    = "johanreventlow/BFHllm"
 )
 
 gate_log_step <- function(n, total, msg) {

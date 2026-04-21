@@ -144,6 +144,7 @@ test_that("Vectorized part processing performance benchmark", {
       chart = "i"
     ),
     iterations = 10,
+    memory = FALSE,
     check = FALSE
   )
 

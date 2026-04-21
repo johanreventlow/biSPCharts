@@ -104,7 +104,8 @@ test_that("create_cached_reactive haandterer cache-udloeb", {
 
     result1 <- cached()
     expect_equal(eval_count, 1)
-    Sys.sleep(0.2)
+    session$elapse(200)
+    session$flushReact()
     result2 <- cached()
     expect_equal(eval_count, 2)
   })

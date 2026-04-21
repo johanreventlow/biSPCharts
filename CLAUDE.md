@@ -347,12 +347,12 @@ git push
 # Hurtig pre-push (kun lintr + udvalgte unit-tests, ~2 min)
 PREPUSH_MODE=fast git push
 
-# Bypass (brug sparsomt, fx når #239-paraply blokerer)
+# Bypass (brug sparsomt, fx når #279/#280 blokerer)
 SKIP_PREPUSH=1 git push
 git push --no-verify        # Git-native alternativ
 ```
 
-⚠️ **VIGTIG:** Pre-push-hooken vil blokere push indtil paraply-issue #239 er lukket (suite har 43 fails + 21 errors pre-existing). Brug `SKIP_PREPUSH=1` midlertidigt.
+⚠️ **VIGTIG:** Test-suiten har stadig 2 fails + 17 errors pre-existing, sporet i #279 (BFHcharts-integration) og #280 (E2E shinytest2). Pre-push-hooken blokerer push indtil disse er lukket. Brug `SKIP_PREPUSH=1` midlertidigt.
 
 **Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
 

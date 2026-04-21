@@ -146,9 +146,9 @@ install_git_hooks <- function(force = FALSE, uninstall = FALSE) {
     message(" Bypass (nyttigt nu):   SKIP_PREPUSH=1 git push")
     message(" Fuld dokumentation:    docs/CONFIGURATION.md §Git Hooks")
     message("")
-    message(" ⚠ VIGTIG: Pre-push vil blokere push indtil #239-paraply er")
-    message("   lukket (43 fails + 21 errors i suite). Brug SKIP_PREPUSH=1")
-    message("   indtil da. Se CLAUDE.md §6 for detaljer.")
+    message(" ⚠ VIGTIG: Pre-push vil blokere push indtil #279 + #280 er lukket")
+    message("   (2 fails + 17 errors i suite). Brug SKIP_PREPUSH=1 indtil da.")
+    message("   Se CLAUDE.md §6 for detaljer.")
     message("")
   }
 

@@ -4,7 +4,9 @@
 # ==============================================================================
 # §3.1.1 af harden-test-suite-regression-gate openspec change.
 #
-# Formål: Forhindre at rød test-suite eller lintr-fejl pushes til remote.
+# Formål: Forhindre at lintr-fejl, invalid test-manifest eller røde
+# hurtige regressionstests pushes til remote. Tunge browser-/visual-tests er
+# opt-in, fordi de er miljøfølsomme på lokale udviklermaskiner.
 #
 # Installation:
 #   Rscript dev/install_git_hooks.R
@@ -15,8 +17,9 @@
 #   SKIP_BRANCH_CHECK=1 git push  # Bypass branch-check (master)
 #
 # Hurtig vs fuld tilstand (§3.1.5):
-#   PREPUSH_MODE=fast git push  # Kun lintr + unit-tests (~2 min)
-#   PREPUSH_MODE=full git push  # Alt inkl. performance + integration (default)
+#   git push                    # fast default: lintr + manifest + små tests
+#   PREPUSH_MODE=fast git push  # samme som default
+#   PREPUSH_MODE=full git push  # hele testthat-suiten; shinytest2 stadig opt-in
 #
 # Exit koder:
 #   0 = alle checks bestået, push tilladt
@@ -52,7 +55,7 @@ if [ "${SKIP_PREPUSH:-0}" = "1" ]; then
   exit 0
 fi
 
-MODE="${PREPUSH_MODE:-full}"
+MODE="${PREPUSH_MODE:-fast}"
 START_TIME=$(date +%s)
 
 # --- Tjek at Rscript er tilgængelig ---
@@ -75,7 +78,7 @@ echo "════════════════════════�
 
 # --- Step 1: lintr ---
 echo ""
-echo "[1/2] Kører lintr::lint_package() ..."
+echo "[1/3] Kører lintr::lint_package() ..."
 LINT_OUTPUT=$(Rscript -e '
   suppressPackageStartupMessages(library(lintr))
   lints <- lintr::lint_package()
@@ -99,35 +102,56 @@ LINT_OUTPUT=$(Rscript -e '
 }
 echo "$LINT_OUTPUT"
 
-# --- Step 2: testthat ---
+# --- Step 2: manifest validation ---
+echo ""
+echo "[2/3] Validerer test-classification manifest ..."
+Rscript dev/classify_tests.R --validate || {
+  echo ""
+  echo "✗ Test-classification manifest er invalid — push blokeret"
+  echo "  Kør: Rscript dev/classify_tests.R --validate"
+  exit 1
+}
+
+# --- Step 3: testthat ---
 # SECURITY (§post-review fix): Brug heredoc med single-quoted delimiter
 # ('REOF') så shell IKKE interpolerer R-koden. Tidligere design brugte
 # `Rscript -e "$TEST_CMD"` med double-quoting som tillod shell-expansion
 # af metacharacters i env-variabler → potentiel kode-injection.
 echo ""
 if [ "$MODE" = "fast" ]; then
-  echo "[2/2] Kører unit-tests (hurtig tilstand) ..."
+  echo "[3/3] Kører hurtige regressionstests ..."
   Rscript - <<'REOF'
 suppressPackageStartupMessages({ library(devtools); library(testthat) })
-res <- devtools::test_active_file(
-  "tests/testthat/helper-bootstrap.R",
-  reporter = testthat::SummaryReporter$new()
-)
-# Hurtig: kun udvalgte små testfiler
+run_checked_file <- function(path) {
+  res <- testthat::test_file(path, reporter = testthat::SummaryReporter$new())
+  df <- as.data.frame(res)
+  fails <- sum(df$failed)
+  errs <- sum(df$error == TRUE)
+  if (fails > 0 || errs > 0) {
+    cat(sprintf("\n✗ %s fejlede: %d fail, %d err\n", path, fails, errs))
+    quit(status = 1)
+  }
+}
+
+source("tests/testthat/helper-bootstrap.R", chdir = TRUE)
+
 quick_files <- c(
+  "test-audit-classifier.R",
   "test-event-context-handlers.R",
   "test-helper-mocks-contracts.R",
-  "test-negative-assertions-phase2-5.R"
+  "test-negative-assertions-phase2-5.R",
+  "test-utils-export-analysis-metadata.R",
+  "test-utils_logging.R"
 )
 for (f in quick_files) {
   p <- file.path("tests/testthat", f)
-  if (file.exists(p)) devtools::test_active_file(p, reporter = testthat::SummaryReporter$new())
+  if (file.exists(p)) run_checked_file(p)
 }
 cat("✓ Hurtig pre-push bestået\n")
 REOF
   TEST_EXIT=$?
 else
-  echo "[2/2] Kører fuld testthat-suite (kan tage 5-10 min) ..."
+  echo "[3/3] Kører fuld testthat-suite (kan tage 5-10 min) ..."
   Rscript - <<'REOF'
 suppressPackageStartupMessages({ library(devtools); library(testthat) })
 res <- devtools::test(stop_on_failure = FALSE, reporter = testthat::SummaryReporter$new())

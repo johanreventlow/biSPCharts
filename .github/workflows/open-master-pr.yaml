@@ -1,0 +1,156 @@
+# Opens a develop -> master PR once the develop CI gate is green.
+#
+# This workflow intentionally does not merge anything. It only creates the PR
+# so a human can review and approve promotion to master.
+name: open-master-pr
+
+on:
+  workflow_run:
+    workflows: ["R-CMD-check"]
+    branches: [develop]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+
+concurrency:
+  group: open-master-pr-develop
+  cancel-in-progress: false
+
+jobs:
+  open-pr:
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.conclusion == 'success'
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Verify develop is ahead of master
+        id: diff
+        run: |
+          set -euo pipefail
+          git fetch origin master develop
+          COUNT=$(git rev-list --count origin/master..origin/develop)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "develop has no commits ahead of master; skipping PR."
+          fi
+
+      - name: Wait for develop CI gate
+        if: ${{ steps.diff.outputs.count != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          REQUIRED_WORKFLOWS: "lint,validate-manifest,R-CMD-check"
+        run: |
+          set -euo pipefail
+
+          IFS=',' read -r -a workflows <<< "$REQUIRED_WORKFLOWS"
+
+          check_workflow() {
+            local workflow="$1"
+            gh run list \
+              --repo "$REPO" \
+              --workflow "$workflow" \
+              --commit "$SHA" \
+              --json status,conclusion,databaseId,url \
+              --jq '.[0] // empty'
+          }
+
+          for attempt in $(seq 1 30); do
+            all_done=1
+
+            for workflow in "${workflows[@]}"; do
+              run_json="$(check_workflow "$workflow")"
+
+              if [ -z "$run_json" ]; then
+                echo "[$attempt/30] $workflow: no run found for $SHA yet"
+                all_done=0
+                continue
+              fi
+
+              status="$(jq -r '.status' <<< "$run_json")"
+              conclusion="$(jq -r '.conclusion // ""' <<< "$run_json")"
+              url="$(jq -r '.url' <<< "$run_json")"
+
+              echo "[$attempt/30] $workflow: status=$status conclusion=${conclusion:-pending} $url"
+
+              if [ "$status" != "completed" ]; then
+                all_done=0
+                continue
+              fi
+
+              if [ "$conclusion" != "success" ]; then
+                echo "::error::$workflow did not succeed for $SHA: conclusion=$conclusion"
+                exit 1
+              fi
+            done
+
+            if [ "$all_done" -eq 1 ]; then
+              echo "All required workflows succeeded for $SHA."
+              exit 0
+            fi
+
+            sleep 20
+          done
+
+          echo "::error::Timed out waiting for required workflows for $SHA"
+          exit 1
+
+      - name: Open or report develop to master PR
+        if: ${{ steps.diff.outputs.count != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          set -euo pipefail
+
+          existing_url="$(gh pr list \
+            --repo "$REPO" \
+            --base master \
+            --head develop \
+            --state open \
+            --json url \
+            --jq '.[0].url // ""')"
+
+          if [ -n "$existing_url" ]; then
+            echo "Open develop -> master PR already exists: $existing_url"
+            exit 0
+          fi
+
+          body="$(cat <<EOF
+          Automatisk PR fra \`develop\` til \`master\`.
+
+          Oprettet fordi CI-gaten på \`develop\` er grøn for commit:
+
+          \`$SHA\`
+
+          Denne PR merger ikke automatisk. Review og merge skal stadig ske manuelt.
+
+          Checklist:
+          - [ ] CI er grøn på PR'en
+          - [ ] Release-/deploy-impact er forstået
+          - [ ] NEWS.md er opdateret hvis ændringen er en egentlig release
+          EOF
+          )"
+
+          gh pr create \
+            --repo "$REPO" \
+            --base master \
+            --head develop \
+            --title "Promote develop to master" \
+            --body "$body"

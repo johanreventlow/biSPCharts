@@ -70,12 +70,10 @@ Suggests:
     microbenchmark (>= 1.4.0),
     covr (>= 3.6.0),
     qicharts2 (>= 0.7.0),
-    curl (>= 4.3.0),
-    BFHllm (>= 0.1.1)
+    curl (>= 4.3.0)
 Config/testthat/edition: 3
-Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration
+Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration. BFHllm midlertidigt fjernet fra deploy-bundle (Python/reticulate-dep via ragnar) — reaktivér ved at tilføje BFHllm til Suggests + Remotes.
 Remotes:
     johanreventlow/BFHcharts,
-    johanreventlow/BFHtheme,
-    johanreventlow/BFHllm
+    johanreventlow/BFHtheme
 VignetteBuilder: knitr

@@ -61,8 +61,9 @@ suppressPackageStartupMessages({
 
 SIBLINGS <- list(
   BFHcharts = "johanreventlow/BFHcharts",
-  BFHtheme  = "johanreventlow/BFHtheme",
-  BFHllm    = "johanreventlow/BFHllm"
+  BFHtheme  = "johanreventlow/BFHtheme"
+  # BFHllm midlertidigt fjernet — reaktivér når AI-suggestions genindføres.
+  # BFHllm    = "johanreventlow/BFHllm"
 )
 
 gate_log_step <- function(n, total, msg) {
@@ -370,25 +371,11 @@ phase_manifest <- function() {
       cat("  [skipped] tests/e2e/run_e2e.R ikke fundet\n")
     }
 
-    # Trin 4: Coverage threshold (§4.2 + §4.3.1 trin 4)
-    gate_log_step(5, total, "Kør coverage-threshold-check (§4.3.1 trin 4)")
-    cov_path <- file.path(getwd(), "tests", "coverage.R")
-    cov_res <- tryCatch(
-      {
-        source(cov_path, local = TRUE)
-        run_coverage_gate(stop_on_failure = TRUE)
-      },
-      error = function(e) e
-    )
-    if (inherits(cov_res, "error")) {
-      log_gate(4, "FAIL", cov_res$message)
-      gate_log_fail(sprintf("Coverage-gate fejlede: %s", cov_res$message))
-    }
-    log_gate(4, "OK", sprintf("overall=%.1f%%", cov_res$overall_coverage))
-    gate_log_ok(sprintf(
-      "Coverage OK (overall=%.1f%%, hard gate=%d%%)",
-      cov_res$overall_coverage, 80L
-    ))
+    # Trin 4: Coverage threshold — fjernet fra publish-gate (for tidskrævende,
+    # ikke relevant for deploy-sikkerhed). Kør via GitHub Actions eller on-demand:
+    #   Rscript tests/coverage.R
+    gate_log_step(5, total, "Coverage-check (skipped — kør via GH Actions)")
+    log_gate(4, "SKIP", "coverage fjernet fra publish-gate — ikke deploy-kritisk")
   } else {
     log_gate(1, "SKIP", "SKIP_PUBLISH_GATE=1")
     log_gate(2, "SKIP", "SKIP_PUBLISH_GATE=1")
@@ -399,7 +386,7 @@ phase_manifest <- function() {
   # Trin 5: writeManifest (kun hvis trin 1-4 grønne ELLER skip_gate)
   gate_log_step(total, total, "Regenerér manifest.json (§4.3.1 trin 5)")
   res <- tryCatch(
-    rsconnect::writeManifest(appDir = ".", quiet = TRUE),
+    rsconnect::writeManifest(appDir = "."),
     error = function(e) e
   )
   if (inherits(res, "error")) {

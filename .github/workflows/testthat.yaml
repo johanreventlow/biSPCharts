@@ -1,0 +1,48 @@
+# Kører den fulde testthat-suite paa PRs mod master og ved direkte master-push.
+# Dette holder develop-pushes hurtige, mens master stadig får den dybe testdækning.
+name: testthat
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  testthat:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      CI_SKIP_SHINYTEST2: "true"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat
+          needs: check
+
+      - name: Install local package
+        run: R CMD INSTALL .
+        shell: bash
+
+      - name: Run testthat
+        run: |
+          options(testthat.output_file = "test-results.xml")
+          testthat::test_dir("tests/testthat", reporter = "summary", stop_on_failure = FALSE)
+        shell: Rscript {0}

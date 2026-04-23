@@ -38,7 +38,6 @@ sanitize_selection(c("a", "b")) # → "a"
 sanitize_selection("") # → NULL
 sanitize_selection("  ") # → NULL
 sanitize_selection("valid") # → "valid"
-
 }
 }
 \concept{input_validation}

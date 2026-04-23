@@ -4,12 +4,17 @@
 \alias{time_breaks}
 \title{Generér tids-naturlige tick-breaks}
 \usage{
-time_breaks(y_values, target_n = 5L)
+time_breaks(y_values, target_n = 5L, input_unit = NULL)
 }
 \arguments{
 \item{y_values}{numeric. Data-range at generere ticks til.}
 
 \item{target_n}{integer. Minimums-antal ticks. Default 5L.}
+
+\item{input_unit}{character eller NULL. En af 'time_minutes',
+'time_hours', 'time_days'. Begraenser hvilke kandidat-intervaller
+der overvejes (fx time_days bruger kun >= 12t intervaller).
+Default NULL = alle kandidater (bagudkompatibel).}
 }
 \value{
 numeric vektor. Tick-positioner i minutter.
@@ -23,9 +28,9 @@ Begge ender snappes med floor() til multipla af det valgte interval
 }
 \examples{
 \dontrun{
-time_breaks(c(0, 120))    # 0 30 60 90 120
-time_breaks(c(15, 185))   # 0 30 60 90 120 150 180
-time_breaks(c(0, 480))    # 0 120 240 360 480
+time_breaks(c(0, 120)) # 0 30 60 90 120
+time_breaks(c(15, 185)) # 0 30 60 90 120 150 180
+time_breaks(c(0, 480)) # 0 120 240 360 480
 }
 }
 \keyword{internal}

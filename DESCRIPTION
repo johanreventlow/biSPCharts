@@ -15,19 +15,17 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-LazyData: true
 URL: https://github.com/johanreventlow/biSPCharts
 BugReports: https://github.com/johanreventlow/biSPCharts/issues
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports:
     shiny (>= 1.7.0),
     bslib (>= 0.4.0),
     shinyjs (>= 2.1.0),
     ggplot2 (>= 3.4.0),
-    ggpp (>= 0.5.0),
-    ggrepel (>= 0.9.0),
-    geomtextpath (>= 0.1.0),
+    htmltools (>= 0.5.0),
+    rlang (>= 1.0.0),
     BFHcharts (>= 0.8.2),
     readr (>= 2.0.0),
     readxl (>= 1.4.0),
@@ -38,7 +36,6 @@ Imports:
     gert (>= 1.9.0),
     yaml (>= 2.3.0),
     digest,
-    withr,
     jsonlite (>= 1.8.0),
     shinylogs (>= 0.2.0),
     tools,
@@ -46,7 +43,6 @@ Imports:
     grDevices,
     graphics,
     stats,
-    data.table,
     golem (>= 0.4.0),
     excelR,
     purrr (>= 1.0.0),
@@ -55,10 +51,7 @@ Imports:
     stringr (>= 1.5.0),
     forcats (>= 1.0.0),
     config (>= 0.3.0),
-    systemfonts (>= 1.0.0),
-    ragg (>= 1.2.0),
-    pdftools (>= 3.3.0),
-    svglite (>= 2.1.0)
+    systemfonts (>= 1.0.0)
 Suggests:
     testthat (>= 3.0.0),
     shinytest2,
@@ -70,10 +63,10 @@ Suggests:
     microbenchmark (>= 1.4.0),
     covr (>= 3.6.0),
     qicharts2 (>= 0.7.0),
-    curl (>= 4.3.0)
+    curl (>= 4.3.0),
+    pkgload
 Config/testthat/edition: 3
 Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration. BFHllm midlertidigt fjernet fra deploy-bundle (Python/reticulate-dep via ragnar) — reaktivér ved at tilføje BFHllm til Suggests + Remotes.
 Remotes:
     johanreventlow/BFHcharts,
     johanreventlow/BFHtheme
-VignetteBuilder: knitr

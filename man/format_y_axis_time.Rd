@@ -4,10 +4,14 @@
 \alias{format_y_axis_time}
 \title{Format Y-Axis for Time Data (Composite Format: "1t 30m", "2d 4t")}
 \usage{
-format_y_axis_time(qic_data)
+format_y_axis_time(qic_data, input_unit = NULL)
 }
 \arguments{
 \item{qic_data}{Data frame with qic data containing y column (time values in minutes)}
+
+\item{input_unit}{character eller NULL. En af 'time_minutes',
+'time_hours', 'time_days' (eller legacy 'time'). Bruges til at
+filtrere kandidat-intervaller i time_breaks(). NULL = alle kandidater.}
 }
 \value{
 ggplot2 scale_y_continuous layer for time formatting

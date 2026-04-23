@@ -20,7 +20,6 @@ Tillader danske karakterer og standard kolonne navn patterns.
 \dontrun{
 sanitize_column_name("Dato & tid") # Returns "Dato  tid"
 sanitize_column_name("Y-værdi_1") # Returns "Y-værdi_1"
-
 }
 }
 \keyword{internal}

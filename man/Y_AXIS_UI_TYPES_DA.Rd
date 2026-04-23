@@ -5,12 +5,15 @@
 \alias{Y_AXIS_UI_TYPES_DA}
 \title{UI-typer for Y-akse (simpel valg)}
 \format{
-An object of class \code{list} of length 4.
+An object of class \code{list} of length 6.
 }
 \usage{
 Y_AXIS_UI_TYPES_DA
 }
 \description{
-UI-typer for Y-akse (simpel valg)
+Tids-enheder er eksplicit adskilt fra Fase 2 af
+docs/superpowers/specs/2026-04-17-time-yaxis-design.md. Legacy "time"
+er fjernet fra UI men accepteres stadig af is_time_unit() for
+bagudkompatibilitet og migration.
 }
 \keyword{internal}

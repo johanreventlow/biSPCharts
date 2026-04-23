@@ -19,10 +19,10 @@ ved dage+timer vises ikke minutter.
 }
 \examples{
 \dontrun{
-format_time_composite(90)    # "1t 30m"
-format_time_composite(51)    # "51m"
-format_time_composite(3660)  # "2d 13t"
-format_time_composite(-30)   # "-30m"
+format_time_composite(90) # "1t 30m"
+format_time_composite(51) # "51m"
+format_time_composite(3660) # "2d 13t"
+format_time_composite(-30) # "-30m"
 }
 }
 \keyword{internal}

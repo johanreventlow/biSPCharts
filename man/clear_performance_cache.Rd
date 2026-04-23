@@ -17,7 +17,6 @@ og efter store data changes.
 \dontrun{
 clear_performance_cache() # Clear alt
 clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
-
 }
 }
 \keyword{internal}

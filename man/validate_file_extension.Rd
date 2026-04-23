@@ -22,7 +22,6 @@ Sikker validation af file extensions med whitelist approach.
 validate_file_extension("csv") # TRUE
 validate_file_extension(".xlsx") # TRUE
 validate_file_extension("exe") # FALSE
-
 }
 }
 \keyword{internal}

@@ -25,15 +25,15 @@ This function provides a single source of truth for log level configuration.
 \examples{
 \dontrun{
 # Default behavior: reads from YAML config
-get_effective_log_level()  # Returns "DEBUG" in dev, "ERROR" in prod
+get_effective_log_level() # Returns "DEBUG" in dev, "ERROR" in prod
 
 # Environment variable overrides YAML
 Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
-get_effective_log_level()  # Always returns "DEBUG" now
+get_effective_log_level() # Always returns "DEBUG" now
 
 # Clear override to use YAML again
 Sys.unsetenv("SPC_LOG_LEVEL")
-get_effective_log_level()  # Back to YAML config
+get_effective_log_level() # Back to YAML config
 }
 
 }

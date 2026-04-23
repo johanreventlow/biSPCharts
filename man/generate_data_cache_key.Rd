@@ -24,7 +24,6 @@ Sikrer at cache keys ændres når data ændres.
 \dontrun{
 key <- generate_data_cache_key(my_data, "autodetect")
 key_detailed <- generate_data_cache_key(my_data, "processing", TRUE)
-
 }
 }
 \keyword{internal}

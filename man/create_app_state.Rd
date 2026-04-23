@@ -57,7 +57,6 @@ names(app_state) # "data", "columns", "test_mode", "session", "ui"
 # Opdater data
 app_state$data$current_data <- data.frame(Dato = Sys.Date(), Værdi = 10)
 app_state$columns$mappings$x_column <- "Dato"
-
 }
 }
 \seealso{

@@ -288,86 +288,16 @@ compute_spc_results_bfh <- function(
       # This eliminates qicharts2 dependency for SPC calculation
       extra_params <- list(...)
 
-      # 7a. Extract parameters
-      target_value <- extra_params$target_value
-      centerline_value <- extra_params$centerline_value
-      y_axis_unit <- extra_params$y_axis_unit %||% "count"
-
-      # Skalér target/centerline til kanoniske minutter hvis y-enheden er
-      # en tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90
-      # med time_days = 90 dage), men y-data er allerede i minutter efter
-      # step 4b. Uden denne skalering ville target = 90 blive plottet som
-      # 90 minutter i stedet for 90 dage (= 129600 min).
-      if (is_time_unit(y_axis_unit)) {
-        if (!is.null(target_value) && length(target_value) > 0) {
-          scaled_target <- parse_time_to_minutes(target_value, input_unit = y_axis_unit)
-          log_debug(
-            paste0(
-              "Skalerer target_value ", target_value, " (", y_axis_unit,
-              ") -> ", scaled_target, " min"
-            ),
-            .context = "BFH_SERVICE"
-          )
-          target_value <- scaled_target
-        }
-        if (!is.null(centerline_value) && length(centerline_value) > 0) {
-          scaled_cl <- parse_time_to_minutes(centerline_value, input_unit = y_axis_unit)
-          log_debug(
-            paste0(
-              "Skalerer centerline_value ", centerline_value, " (", y_axis_unit,
-              ") -> ", scaled_cl, " min"
-            ),
-            .context = "BFH_SERVICE"
-          )
-          centerline_value <- scaled_cl
-        }
-      }
-
-      # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent",
-      # "rate", "time". Map de nye biSPCharts-enheder (time_minutes/hours/days)
-      # til den kanoniske "time" — data er allerede parsed til minutter (se 4b).
-      if (is_time_unit(y_axis_unit) && !identical(y_axis_unit, "time")) {
-        log_debug(
-          paste0(
-            "Mapper y_axis_unit='", y_axis_unit,
-            "' -> 'time' for BFHcharts (data er i kanoniske minutter)"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        y_axis_unit <- "time"
-      }
+      # 7a. Bestem akse-konfiguration
+      axes <- resolve_axis_units(prepared)
+      target_value <- axes$target_value
+      centerline_value <- axes$centerline_value
+      y_axis_unit <- axes$y_axis_unit
+      target_text <- axes$target_text
       chart_title <- resolve_bfh_chart_title(
         extra_params$chart_title_reactive %||% extra_params$chart_title
       )
-      target_text <- extra_params$target_text
 
-      # Formatér target_text som komposit-tid hvis y-enheden er en tids-enhed.
-      # target_text er brugerens rå input (fx "90" eller "<90"). Vi bevarer
-      # evt. operator-prefix og erstatter den numeriske del med komposit-format
-      # baseret på target_value (skaleret til minutter ovenfor).
-      # Eksempel: bruger skriver target=90 med "Tid (dage)" → label viser "90d";
-      # 90 timer → label viser "3d 18t".
-      original_y_unit <- extra_params$y_axis_unit %||% "count"
-      if (is_time_unit(original_y_unit) &&
-        !is.null(target_text) &&
-        !is.null(target_value) &&
-        length(target_value) > 0) {
-        operator_match <- regmatches(
-          target_text,
-          regexpr("^[<>=]+", target_text)
-        )
-        operator_prefix <- if (length(operator_match) > 0) operator_match else ""
-        formatted_value <- format_time_composite(target_value)
-        new_target_text <- paste0(operator_prefix, formatted_value)
-        log_debug(
-          paste0(
-            "Formaterer target_text '", target_text, "' -> '",
-            new_target_text, "' (y_axis_unit=", original_y_unit, ")"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        target_text <- new_target_text
-      }
 
       # Guard: Fjern nævner for chart types der ikke bruger den.
       # Forhindrer at BFHcharts dividerer y med n (giver alle værdier = 1).

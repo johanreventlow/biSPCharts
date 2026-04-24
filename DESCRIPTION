@@ -69,5 +69,5 @@ Suggests:
 Config/testthat/edition: 3
 Config/Notes: qicharts2 moved to Suggests for regression testing during BFHcharts migration. BFHllm midlertidigt fjernet fra deploy-bundle (Python/reticulate-dep via ragnar) — reaktivér ved at tilføje BFHllm til Suggests + Remotes.
 Remotes:
-    johanreventlow/BFHcharts,
-    johanreventlow/BFHtheme
+    johanreventlow/BFHcharts@v0.8.2,
+    johanreventlow/BFHtheme@v0.5.0

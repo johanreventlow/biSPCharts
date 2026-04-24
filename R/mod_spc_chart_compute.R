@@ -262,15 +262,7 @@ create_spc_results_reactive <- function(
         list(plot = plot, qic_data = qic_data)
       },
       fallback = function(e) {
-        user_msg <- if (inherits(e, "spc_input_error")) {
-          paste("Ugyldigt input:", e$message)
-        } else if (inherits(e, "spc_prepare_error")) {
-          paste("Datafejl:", e$message)
-        } else if (inherits(e, "spc_render_error")) {
-          "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
-        } else {
-          "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
-        }
+        user_msg <- spc_error_user_message(e)
         log_error(
           paste("Graf-generering fejlede:", e$message),
           .context = "SPC_PIPELINE"

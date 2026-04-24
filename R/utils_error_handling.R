@@ -282,3 +282,24 @@ spc_abort <- function(message, class, ..., call = rlang::caller_env()) {
     call = call
   )
 }
+
+#' Map SPC pipeline error to Danish user message
+#'
+#' Converts a typed `spc_error` condition to a short Danish message
+#' suitable for display in the Shiny UI (e.g. `set_plot_state("plot_warnings", ...)`).
+#'
+#' @param e A condition object (typically caught by `tryCatch` or `safe_operation`).
+#'
+#' @return Character scalar with a Danish user message.
+#' @keywords internal
+spc_error_user_message <- function(e) {
+  if (inherits(e, "spc_input_error")) {
+    paste("Ugyldigt input:", conditionMessage(e))
+  } else if (inherits(e, "spc_prepare_error")) {
+    paste("Datafejl:", conditionMessage(e))
+  } else if (inherits(e, "spc_render_error")) {
+    "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
+  } else {
+    "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
+  }
+}

@@ -73,9 +73,10 @@
 
 ## 10. UI-boundary opdateringer
 
-- [ ] 10.1 Opdater `R/mod_spc_chart_compute.R` med typed error catching
-- [ ] 10.2 Vis danske brugervendte fejlbeskeder baseret på error-class
-- [ ] 10.3 Test: verificer at UI viser korrekt besked ved hver fejl-klasse
+- [x] 10.1 Opdater `R/mod_spc_chart_compute.R` med typed error catching
+- [x] 10.2 Vis danske brugervendte fejlbeskeder baseret på error-class
+- [x] 10.3 Test: verificer at UI viser korrekt besked ved hver fejl-klasse
+       (spc_error_user_message() extraheret til utils_error_handling.R; 5 unit tests tilføjet)
 
 ## 11. Benchmark
 
@@ -97,7 +98,7 @@
 
 - [x] 13.1 `R CMD check --as-cran` 0 warnings om unlockBinding — bekræftet: grep returnerer intet, check output ren
 - [x] 13.2 Fuld testsuite grøn (modulo #279/#280 pre-existing) — FAIL 2: shinytest2 snapshot + performance timing. Begge pre-existing, ingen relation til facade.
-- [ ] 13.3 Manuel smoke-test af Shiny-app på 3+ chart-typer
+- [ ] 13.3 Manuel smoke-test af Shiny-app på 3+ chart-typer  ← **[MANUELT TRIN]**
 - [x] 13.4 Benchmark inden for budget — se task 11.3-11.4
 
 Tracking: GitHub Issue TBD

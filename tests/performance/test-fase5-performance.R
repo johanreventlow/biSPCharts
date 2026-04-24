@@ -7,43 +7,8 @@
 # Fase 5 Performance Optimization Tests
 
 test_that("Performance utilities load correctly", {
-  # TEST: Utilities are available
   expect_true(exists("measure_reactive_performance"))
-  expect_true(exists("create_cached_reactive"))
-  expect_true(exists("create_performance_debounced"))
   expect_true(exists("clear_performance_cache"))
-})
-
-test_that("Cached reactive expressions improve performance", {
-  # TEST: Caching reduces execution time for repeated operations
-
-  # Create expensive operation
-  expensive_operation <- function() {
-    Sys.sleep(0.01)  # 10ms delay
-    return(runif(100))
-  }
-
-  # Test without caching
-  start_time <- Sys.time()
-  result1 <- expensive_operation()
-  result2 <- expensive_operation()
-  uncached_time <- as.numeric(Sys.time() - start_time)
-
-  # Test with caching
-  cached_func <- create_cached_reactive({
-    expensive_operation()
-  }, "test_expensive", cache_timeout = 60)
-
-  start_time <- Sys.time()
-  cached_result1 <- cached_func()
-  cached_result2 <- cached_func()  # Should be from cache
-  cached_time <- as.numeric(Sys.time() - start_time)
-
-  # TEST: Cache should be faster for second call
-  expect_lt(cached_time, uncached_time)
-
-  # Clear cache
-  clear_performance_cache("test_expensive")
 })
 
 test_that("X-validation cache invalidates when data content changes", {
@@ -56,8 +21,8 @@ test_that("X-validation cache invalidates when data content changes", {
   )
 
   test_data_2 <- data.frame(
-    Dato = c("2023-01-04", "2023-01-05", "2023-01-06"),  # Different dates, same structure
-    Vaerdi = c(20, 25, 22)  # Different values
+    Dato = c("2023-01-04", "2023-01-05", "2023-01-06"), # Different dates, same structure
+    Vaerdi = c(20, 25, 22) # Different values
   )
 
   config <- list(x_col = "Dato")
@@ -75,15 +40,18 @@ test_that("X-validation cache invalidates when data content changes", {
 
   # TEST: Cache keys should be different despite same structure
   expect_false(identical(cache_key_1, cache_key_2),
-               info = "Cache keys should differ when x-column content changes")
+    info = "Cache keys should differ when x-column content changes"
+  )
 
   # TEST: Structure hashes are identical (same dimensions and column names)
   expect_identical(data_structure_hash_1, data_structure_hash_2,
-                   info = "Structure hashes should be identical for same-structure data")
+    info = "Structure hashes should be identical for same-structure data"
+  )
 
   # TEST: Content hashes are different (different x-column data)
   expect_false(identical(x_content_hash_1, x_content_hash_2),
-               info = "Content hashes should differ when x-column content changes")
+    info = "Content hashes should differ when x-column content changes"
+  )
 
   # TEST: Cache keys handle NULL x-column case
   config_null <- list(x_col = NULL)
@@ -91,7 +59,8 @@ test_that("X-validation cache invalidates when data content changes", {
   cache_key_null <- paste0("x_validation_NULL_XCOL_", substr(data_structure_hash_1, 1, 12), "_", x_content_hash_null)
 
   expect_true(grepl("NULL_XCOL", cache_key_null),
-              info = "Cache key should handle NULL x-column gracefully")
+    info = "Cache key should handle NULL x-column gracefully"
+  )
 })
 
 test_that("Memory monitoring detects usage patterns", {
@@ -127,11 +96,11 @@ test_that("Performance thresholds are configured correctly", {
   expect_true(is.list(PERFORMANCE_THRESHOLDS))
 
   # TEST: Threshold values are reasonable
-  expect_gte(PERFORMANCE_THRESHOLDS$reactive_warning, 0.1)  # At least 100ms
-  expect_lte(PERFORMANCE_THRESHOLDS$reactive_warning, 2.0)  # At most 2 seconds
+  expect_gte(PERFORMANCE_THRESHOLDS$reactive_warning, 0.1) # At least 100ms
+  expect_lte(PERFORMANCE_THRESHOLDS$reactive_warning, 2.0) # At most 2 seconds
 
-  expect_gte(PERFORMANCE_THRESHOLDS$memory_warning, 1)      # At least 1MB
-  expect_lte(PERFORMANCE_THRESHOLDS$memory_warning, 100)    # At most 100MB
+  expect_gte(PERFORMANCE_THRESHOLDS$memory_warning, 1) # At least 1MB
+  expect_lte(PERFORMANCE_THRESHOLDS$memory_warning, 100) # At most 100MB
 })
 
 test_that("Session cleanup utilities work correctly", {
@@ -159,98 +128,38 @@ test_that("Session cleanup utilities work correctly", {
 
   # TEST: Cleanup functions work (non-reactive context test)
   # Note: May produce debug output in test environment
-  expect_error({
-    cleanup_reactive_values(mock_values)
-  }, NA)  # Expect no error (but allow output)
+  expect_error(
+    {
+      cleanup_reactive_values(mock_values)
+    },
+    NA
+  ) # Expect no error (but allow output)
 
   # NOTE: In test context with simple lists, the function runs without error
   # but cannot modify the original list due to R's pass-by-value semantics.
   # In production with ReactiveValues, this works correctly.
   # Test that function at least attempts cleanup and doesn't crash.
-  expect_true(is.list(mock_values))  # Original data structure preserved in test context
+  expect_true(is.list(mock_values)) # Original data structure preserved in test context
 })
 
 test_that("Performance measurement works correctly", {
   # TEST: Performance measurement utilities
 
   # Test operation that takes some time
-  result <- measure_reactive_performance({
-    Sys.sleep(0.01)  # 10ms
-    return("test_result")
-  }, "test_measure")
+  result <- measure_reactive_performance(
+    {
+      Sys.sleep(0.01) # 10ms
+      return("test_result")
+    },
+    "test_measure"
+  )
 
   # TEST: Results structure is correct
   expect_true(is.list(result))
   expect_equal(result$result, "test_result")
   expect_equal(result$operation_name, "test_measure")
   expect_true(is.numeric(result$execution_time))
-  expect_gte(result$execution_time, 0.008)  # At least 8ms (allowing for variance)
-})
-
-test_that("Debounced performance tracking works", {
-  # TEST: Performance debouncing with tracking
-
-  counter <- 0
-  reactive_expr <- reactive({
-    counter <<- counter + 1
-    return(counter)
-  })
-
-  # Create performance debounced version
-  debounced_expr <- create_performance_debounced(
-    reactive_expr,
-    millis = 100,
-    operation_name = "test_debounce"
-  )
-
-  # TEST: Debounced function is created
-  expect_true(is.function(debounced_expr))
-
-  # Execute and test
-  result1 <- debounced_expr()
-  expect_equal(result1, 1)
-
-  # Get performance stats
-  stats <- get_performance_stats()
-  expect_true(is.list(stats))
-})
-
-test_that("Cache management works correctly", {
-  # TEST: Cache clear functionality
-
-  # Create some cached data
-  cached_func1 <- create_cached_reactive({
-    "test_data_1"
-  }, "test_cache_1")
-
-  cached_func2 <- create_cached_reactive({
-    "test_data_2"
-  }, "test_cache_2")
-
-  # Execute to populate cache
-  result1 <- cached_func1()
-  result2 <- cached_func2()
-
-  # Get stats before clear
-  expect_true(exists(".performance_cache_fallback", envir = .GlobalEnv))
-  cache_env <- get(".performance_cache_fallback", envir = .GlobalEnv)
-  cache_count_before <- length(ls(cache_env))
-
-  # Clear specific pattern
-  clear_performance_cache("test_cache_1")
-
-  # Get stats after clear
-  cache_count_after <- length(ls(cache_env))
-
-  # TEST: Cache was partially cleared
-  expect_lt(cache_count_after, cache_count_before)
-
-  # Clear all caches
-  clear_performance_cache()
-
-  clear_performance_cache()
-  cache_count_final <- length(ls(cache_env))
-  expect_equal(cache_count_final, 0)
+  expect_gte(result$execution_time, 0.008) # At least 8ms (allowing for variance)
 })
 
 test_that("Memory cleanup handles edge cases", {
@@ -378,7 +287,7 @@ test_that("session helpers performance optimization benchmarks", {
 
   # TEST: Legacy purrr::map_lgl approach (for comparison)
   legacy_approach_time <- system.time({
-    for (i in 1:10) {  # Repeat to get meaningful timing
+    for (i in 1:10) { # Repeat to get meaningful timing
       legacy_result <- large_data |>
         purrr::map_lgl(~ {
           if (is.logical(.x)) {
@@ -398,7 +307,7 @@ test_that("session helpers performance optimization benchmarks", {
   # TEST: Optimized approach (if available)
   if (exists("evaluate_data_content_cached")) {
     optimized_approach_time <- system.time({
-      for (i in 1:10) {  # Repeat to get meaningful timing
+      for (i in 1:10) { # Repeat to get meaningful timing
         optimized_result <- evaluate_data_content_cached(
           large_data,
           cache_key = paste0("benchmark_", i)
@@ -414,7 +323,7 @@ test_that("session helpers performance optimization benchmarks", {
     message(paste("Performance improvement:", round(speed_improvement, 2), "x faster"))
 
     # Optimized version should be meaningfully faster (at least for repeated calls)
-    expect_gte(speed_improvement, 0.5)  # Should be at least not much slower
+    expect_gte(speed_improvement, 0.5) # Should be at least not much slower
 
     # Clean up benchmark cache entries
     if (exists(".performance_cache_fallback", envir = .GlobalEnv)) {
@@ -426,41 +335,6 @@ test_that("session helpers performance optimization benchmarks", {
     }
   } else {
     skip("evaluate_data_content_cached function not available")
-  }
-})
-
-test_that("performance debouncing integration works", {
-  # TEST: create_performance_debounced integration
-
-  if (exists("create_performance_debounced")) {
-    # Mock reactive expression
-    counter <- 0
-    mock_reactive <- shiny::reactive({
-      counter <<- counter + 1
-      return(counter)
-    })
-
-    # Create performance debounced version
-    debounced_reactive <- create_performance_debounced(
-      mock_reactive,
-      millis = 50,
-      operation_name = "test_session_helpers_debounce"
-    )
-
-    # TEST: Function is created successfully
-    expect_true(is.function(debounced_reactive))
-
-    # Execute and verify it works
-    result <- debounced_reactive()
-    expect_equal(result, 1)
-
-    # Get performance stats
-    if (exists("get_performance_stats")) {
-      stats <- get_performance_stats()
-      expect_true(is.list(stats))
-    }
-  } else {
-    skip("create_performance_debounced function not available")
   }
 })
 

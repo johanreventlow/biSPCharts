@@ -43,7 +43,9 @@ test_that("safe_operation håndterer komplekse return values", {
 
 test_that("safe_operation håndterer data frame return", {
   df <- data.frame(x = 1:3, y = 4:6)
-  result <- safe_operation("test op", code = { df })
+  result <- safe_operation("test op", code = {
+    df
+  })
   expect_equal(result, df)
 })
 
@@ -87,4 +89,52 @@ test_that("safe_getenv konverterer logisk type", {
 test_that("safe_getenv returnerer default for tom numerisk var", {
   result <- safe_getenv("NONEXISTENT_XYZ", default = 100, type = "numeric")
   expect_equal(result, 100)
+})
+
+# spc_error_user_message() ----------------------------------------------------
+
+test_that("spc_error_user_message giver dansk besked for spc_input_error", {
+  e <- structure(
+    class = c("spc_input_error", "spc_error", "error", "condition"),
+    list(message = "Ugyldig chart_type: 'xyz'", call = NULL)
+  )
+  msg <- spc_error_user_message(e)
+  expect_equal(msg, "Ugyldigt input: Ugyldig chart_type: 'xyz'")
+})
+
+test_that("spc_error_user_message giver dansk besked for spc_prepare_error", {
+  e <- structure(
+    class = c("spc_prepare_error", "spc_error", "error", "condition"),
+    list(message = "For få rækker efter filtrering", call = NULL)
+  )
+  msg <- spc_error_user_message(e)
+  expect_equal(msg, "Datafejl: For få rækker efter filtrering")
+})
+
+test_that("spc_error_user_message giver generisk besked for spc_render_error", {
+  e <- structure(
+    class = c("spc_render_error", "spc_error", "error", "condition"),
+    list(message = "BFHcharts failed", call = NULL)
+  )
+  msg <- spc_error_user_message(e)
+  expect_equal(msg, "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger.")
+})
+
+test_that("spc_error_user_message giver generisk besked for ukendt fejlklasse", {
+  e <- structure(
+    class = c("error", "condition"),
+    list(message = "uventet fejl", call = NULL)
+  )
+  msg <- spc_error_user_message(e)
+  expect_equal(msg, "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger.")
+})
+
+test_that("spc_error_user_message returnerer character scalar", {
+  e <- structure(
+    class = c("spc_input_error", "spc_error", "error", "condition"),
+    list(message = "test", call = NULL)
+  )
+  msg <- spc_error_user_message(e)
+  expect_type(msg, "character")
+  expect_length(msg, 1L)
 })

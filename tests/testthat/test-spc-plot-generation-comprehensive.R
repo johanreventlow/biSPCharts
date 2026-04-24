@@ -499,9 +499,11 @@ test_that("generateSPCPlot error handling works correctly", {
     check.names = FALSE
   )
 
-  # Should handle character(0) gracefully by setting to NULL
-  expect_no_error(
-    generateSPCPlot(valid_data, bad_config, "i", chart_title_reactive = reactive("Bad Config Test"))
+  # character(0) normaliseres til NULL (x_col → row-index), men rendering kan fejle.
+  # Typed error propagerer nu korrekt — caller (mod_spc_chart_compute) fanger den.
+  expect_error(
+    generateSPCPlot(valid_data, bad_config, "i", chart_title_reactive = reactive("Bad Config Test")),
+    class = "spc_render_error"
   )
 })
 

@@ -49,10 +49,11 @@
 #'
 #' @keywords internal
 create_spc_results_reactive <- function(
-    spc_inputs_reactive,
-    app_state,
-    set_plot_state,
-    get_plot_state) {
+  spc_inputs_reactive,
+  app_state,
+  set_plot_state,
+  get_plot_state
+) {
   shiny::reactive({
     inputs <- spc_inputs_reactive()
 
@@ -261,11 +262,12 @@ create_spc_results_reactive <- function(
         list(plot = plot, qic_data = qic_data)
       },
       fallback = function(e) {
+        user_msg <- spc_error_user_message(e)
         log_error(
           paste("Graf-generering fejlede:", e$message),
           .context = "SPC_PIPELINE"
         )
-        set_plot_state("plot_warnings", "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger.")
+        set_plot_state("plot_warnings", user_msg)
         set_plot_state("plot_ready", FALSE)
         set_plot_state("anhoej_results", list(
           longest_run = NA_real_,
@@ -277,7 +279,7 @@ create_spc_results_reactive <- function(
           crossings_signal = FALSE,
           anhoej_signal = FALSE,
           any_signal = FALSE,
-          message = "Grafgenerering fejlede. Kontroller data og indstillinger.",
+          message = user_msg,
           has_valid_data = FALSE
         ))
         set_plot_state("plot_object", NULL)
@@ -333,9 +335,10 @@ create_spc_results_reactive <- function(
 #'
 #' @keywords internal
 create_spc_plot_reactive <- function(
-    spc_results_reactive,
-    spc_inputs_reactive,
-    app_state) {
+  spc_results_reactive,
+  spc_inputs_reactive,
+  app_state
+) {
   shiny::reactive({
     result <- spc_results_reactive()
     if (is.null(result$plot)) {
@@ -375,80 +378,82 @@ create_spc_plot_reactive <- function(
 #'
 #' @keywords internal
 register_cache_aware_observer <- function(
-    spc_results_reactive,
-    app_state,
-    set_plot_state,
-    get_plot_state,
-    skift_config_reactive) {
+  spc_results_reactive,
+  app_state,
+  set_plot_state,
+  get_plot_state,
+  skift_config_reactive
+) {
   shiny::observeEvent(
     list(spc_results_reactive(), skift_config_reactive()),
     ignoreInit = TRUE,
     priority = OBSERVER_PRIORITIES$UI_SYNC,
     {
-    result <- spc_results_reactive()
-    qic_data <- result$qic_data
+      result <- spc_results_reactive()
+      qic_data <- result$qic_data
 
-    if (is.null(qic_data)) {
-      return()
-    }
+      if (is.null(qic_data)) {
+        return()
+      }
 
-    # Cache hits: bindCache short-circuiter spc_results reactive body,
-    # så set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
-    # gyldigt result med qic_data her, så plot er de-facto klar.
-    # Issue #193: Uden dette viser anhøj-bokse "Behandler data og
-    # beregner..." permanent efter session restore.
-    if (!is.null(result$plot)) {
-      set_plot_state("plot_ready", TRUE)
-      set_plot_state("is_computing", FALSE)
-      set_plot_state("plot_object", result$plot)
-    }
+      # Cache hits: bindCache short-circuiter spc_results reactive body,
+      # så set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
+      # gyldigt result med qic_data her, så plot er de-facto klar.
+      # Issue #193: Uden dette viser anhøj-bokse "Behandler data og
+      # beregner..." permanent efter session restore.
+      if (!is.null(result$plot)) {
+        set_plot_state("plot_ready", TRUE)
+        set_plot_state("is_computing", FALSE)
+        set_plot_state("plot_object", result$plot)
+      }
 
-    # Udled metrics fra qic_data (samme logik som i computation-blokken)
-    runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
+      # Udled metrics fra qic_data (samme logik som i computation-blokken)
+      runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
 
-    crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
-      n_cross <- safe_max(qic_data$n.crossings)
-      n_cross_min <- safe_max(qic_data$n.crossings.min)
-      !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-    } else {
-      FALSE
-    }
+      crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
+        n_cross <- safe_max(qic_data$n.crossings)
+        n_cross_min <- safe_max(qic_data$n.crossings.min)
+        !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
+      } else {
+        FALSE
+      }
 
-    qic_results <- list(
-      any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-      # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
-      out_of_control_count = count_outliers_latest_part(qic_data),
-      runs_signal = runs_sig,
-      crossings_signal = crossings_sig,
-      anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
-      longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
-      longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
-      n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
-      n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_
-    )
-
-    current_anhoej <- get_plot_state("anhoej_results")
-
-    # Hent show_phases fra skift_config reactive
-    skift_config <- skift_config_reactive()
-    show_phases <- skift_config$show_phases %||% FALSE
-
-    # Opdater altid når vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
-    updated_anhoej <- update_anhoej_results(current_anhoej, qic_results,
-      centerline_changed = FALSE,
-      qic_data = qic_data, show_phases = show_phases
-    )
-
-    if (!identical(updated_anhoej, current_anhoej)) {
-      log_debug(
-        sprintf(
-          "Anhoej refresh (cache-aware): longest_run=%s n_crossings=%s",
-          as.character(updated_anhoej$longest_run),
-          as.character(updated_anhoej$n_crossings)
-        ),
-        .context = "VISUALIZATION"
+      qic_results <- list(
+        any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
+        # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
+        out_of_control_count = count_outliers_latest_part(qic_data),
+        runs_signal = runs_sig,
+        crossings_signal = crossings_sig,
+        anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
+        longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
+        longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
+        n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
+        n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_
       )
-      set_plot_state("anhoej_results", updated_anhoej)
+
+      current_anhoej <- get_plot_state("anhoej_results")
+
+      # Hent show_phases fra skift_config reactive
+      skift_config <- skift_config_reactive()
+      show_phases <- skift_config$show_phases %||% FALSE
+
+      # Opdater altid når vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
+      updated_anhoej <- update_anhoej_results(current_anhoej, qic_results,
+        centerline_changed = FALSE,
+        qic_data = qic_data, show_phases = show_phases
+      )
+
+      if (!identical(updated_anhoej, current_anhoej)) {
+        log_debug(
+          sprintf(
+            "Anhoej refresh (cache-aware): longest_run=%s n_crossings=%s",
+            as.character(updated_anhoej$longest_run),
+            as.character(updated_anhoej$n_crossings)
+          ),
+          .context = "VISUALIZATION"
+        )
+        set_plot_state("anhoej_results", updated_anhoej)
+      }
     }
-  })
+  )
 }

@@ -42,11 +42,15 @@ build_export_plot <- function(app_state, title_input, dept_input,
     return(NULL)
   }
 
-  if (is.null(app_state$columns$mappings$x_column) ||
-        is.null(app_state$columns$mappings$y_column)) {
+  x_col <- normalize_mapping(app_state$columns$mappings$x_column) %||%
+    normalize_mapping(app_state$columns$auto_detect$results$x_col)
+  y_col <- normalize_mapping(app_state$columns$mappings$y_column) %||%
+    normalize_mapping(app_state$columns$auto_detect$results$y_col)
+
+  if (is.null(x_col) || is.null(y_col)) {
     log_warn(
       .context = "EXPORT_MODULE",
-      message = "build_export_plot: Missing required column mappings"
+      message = "build_export_plot: Missing required column mappings (x or y)"
     )
     return(NULL)
   }
@@ -105,8 +109,8 @@ build_export_plot <- function(app_state, title_input, dept_input,
 
       # Get chart configuration from app_state
       config <- list(
-        x_col = app_state$columns$mappings$x_column,
-        y_col = app_state$columns$mappings$y_column,
+        x_col = x_col,
+        y_col = y_col,
         n_col = mappings_n_column
       )
 

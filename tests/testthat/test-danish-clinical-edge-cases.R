@@ -258,7 +258,7 @@ test_that("Danish date format variations work", {
 
   # Check month name variations
   expect_true("marts" %in% danish_months) # Not "march"
-  expect_true("maj" %in% danish_months)   # Not "may"
+  expect_true("maj" %in% danish_months) # Not "may"
   expect_true("oktober" %in% danish_months) # Not "october"
 
   # TEST: Date parsing with different formats
@@ -426,8 +426,10 @@ test_that("Danish hospital workflow patterns work", {
   expect_equal(ncol(hospital_workflow_data), 9)
 
   # TEST: Danish column names with special characters
-  expect_true(all(c("Registreringsdato", "Genindlæggelser", "Samlede udskrivelser",
-                   "Målopfyldelse", "Særlige hændelser") %in% names(hospital_workflow_data)))
+  expect_true(all(c(
+    "Registreringsdato", "Genindlæggelser", "Samlede udskrivelser",
+    "Målopfyldelse", "Særlige hændelser"
+  ) %in% names(hospital_workflow_data)))
 
   # TEST: Department rotation pattern
   dept_pattern <- rep(c("Kardiologi", "Neurologi", "Ortopædi"), each = 4)

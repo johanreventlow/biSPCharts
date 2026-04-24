@@ -5,14 +5,16 @@
 # Create sample data
 sample_data <- data.frame(
   date = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 24),
-  value = c(35, 36, 37, 38, 37.5, 36.5, 35.5, 34.5,
-            33.5, 34, 35, 36, 37, 38, 39, 40,
-            39.5, 38.5, 37.5, 36.5, 35.5, 34.5, 33.5, 32.5)
+  value = c(
+    35, 36, 37, 38, 37.5, 36.5, 35.5, 34.5,
+    33.5, 34, 35, 36, 37, 38, 39, 40,
+    39.5, 38.5, 37.5, 36.5, 35.5, 34.5, 33.5, 32.5
+  )
 )
 
 # Create mock SPC result matching BFHcharts output structure
 sample_spc_result <- list(
-  plot = NULL,  # ggplot object not needed for AI tests
+  plot = NULL, # ggplot object not needed for AI tests
   qic_data = data.frame(
     x = sample_data$date,
     y = sample_data$value,

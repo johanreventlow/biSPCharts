@@ -77,7 +77,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   shiny::observe({
     has_data <- isTRUE(app_state$session$file_uploaded) ||
       (!is.null(app_state$data$current_data) &&
-         nrow(app_state$data$current_data) > 0)
+        nrow(app_state$data$current_data) > 0)
 
     if (has_data) {
       shinyjs::enable("download_spc_file")

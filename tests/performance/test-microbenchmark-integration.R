@@ -6,7 +6,7 @@ test_that("benchmark_spc_operation basic functionality works", {
 
   # TEST: Basic benchmarking functionality
   result <- benchmark_spc_operation(
-    expr = Sys.sleep(0.001),  # Minimal operation
+    expr = Sys.sleep(0.001), # Minimal operation
     times = 5,
     operation_name = "test_minimal_operation",
     log_results = FALSE
@@ -60,7 +60,7 @@ test_that("benchmark_autodetect_comprehensive creates proper test data", {
 
   # Mock autodetect_engine function for testing
   autodetect_engine <- function(data, trigger_type, app_state, emit) {
-    Sys.sleep(0.001)  # Minimal processing time
+    Sys.sleep(0.001) # Minimal processing time
     list(x_col = "Dato", y_col = "Taeller", n_col = "Naevner")
   }
 
@@ -76,7 +76,7 @@ test_that("benchmark_autodetect_comprehensive creates proper test data", {
     trigger_types = c("file_upload"),
     app_state = app_state,
     emit = emit,
-    times = 2  # Minimal iterations for testing
+    times = 2 # Minimal iterations for testing
   )
 
   # VERIFY: Result structure
@@ -88,7 +88,7 @@ test_that("benchmark_autodetect_comprehensive creates proper test data", {
   expect_true("trigger_type" %in% names(result))
 
   # VERIFY: Data content
-  expect_equal(result$data_size[1], 10)  # Small dataset
+  expect_equal(result$data_size[1], 10) # Small dataset
   expect_equal(result$trigger_type[1], "file_upload")
   expect_true(result$median_ms[1] > 0)
 })
@@ -99,8 +99,9 @@ test_that("benchmark_qic_generation works with mock functions", {
 
   # Mock generateSPCPlot for testing
   generateSPCPlot <- function(data, config, chart_type, ...) {
-    Sys.sleep(0.001)  # Simulate processing
-    ggplot2::ggplot() + ggplot2::geom_point()
+    Sys.sleep(0.001) # Simulate processing
+    ggplot2::ggplot() +
+      ggplot2::geom_point()
   }
 
   # TEST: QIC benchmarking
@@ -137,7 +138,7 @@ test_that("analyze_performance_comparison detects regressions and improvements",
   # Create current results with regression and improvement
   current <- data.frame(
     operation = c("test_op1", "test_op2", "test_op3"),
-    median_ms = c(150, 180, 30),  # op1: regression, op2: improvement, op3: improvement
+    median_ms = c(150, 180, 30), # op1: regression, op2: improvement, op3: improvement
     stringsAsFactors = FALSE
   )
 
@@ -151,11 +152,11 @@ test_that("analyze_performance_comparison detects regressions and improvements",
 
   # VERIFY: Regression detection
   expect_true(length(result$regressions) > 0)
-  expect_true("test_op1" %in% names(result$regressions))  # 150/100 = 1.5 > 1.2
+  expect_true("test_op1" %in% names(result$regressions)) # 150/100 = 1.5 > 1.2
 
   # VERIFY: Improvement detection
   expect_true(length(result$improvements) > 0)
-  expect_true("test_op3" %in% names(result$improvements))  # 30/50 = 0.6 < 0.9
+  expect_true("test_op3" %in% names(result$improvements)) # 30/50 = 0.6 < 0.9
 
   # VERIFY: Summary statistics
   expect_true(result$summary$total_comparisons > 0)
@@ -215,7 +216,7 @@ test_that("log_performance_results logs structured data", {
   expect_no_error(log_performance_results(test_results, warn_threshold = 1000))
 
   # TEST: Warning threshold
-  test_results$median_ms <- 600  # Above default 500ms threshold
+  test_results$median_ms <- 600 # Above default 500ms threshold
   expect_no_error(log_performance_results(test_results, warn_threshold = 500))
 })
 
@@ -243,7 +244,7 @@ test_that("performance thresholds are respected in logging", {
     operation = "slow_operation",
     times = 5,
     min_ms = 400,
-    median_ms = 800,  # Above typical 500ms threshold
+    median_ms = 800, # Above typical 500ms threshold
     mean_ms = 850,
     max_ms = 1200,
     timestamp = Sys.time()
@@ -273,13 +274,13 @@ test_that("data size categorization works correctly", {
 
   # Small data
   small_data <- data.frame(x = 1:30, y = 1:30)
-  expect_true(nrow(small_data) < 100)  # Should be "small" category
+  expect_true(nrow(small_data) < 100) # Should be "small" category
 
   # Medium data
   medium_data <- data.frame(x = 1:500, y = 1:500)
-  expect_true(nrow(medium_data) >= 100 && nrow(medium_data) < 1000)  # "medium"
+  expect_true(nrow(medium_data) >= 100 && nrow(medium_data) < 1000) # "medium"
 
   # Large data
   large_data <- data.frame(x = 1:2000, y = 1:2000)
-  expect_true(nrow(large_data) >= 1000)  # "large"
+  expect_true(nrow(large_data) >= 1000) # "large"
 })

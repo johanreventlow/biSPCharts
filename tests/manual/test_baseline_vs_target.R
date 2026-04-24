@@ -5,7 +5,7 @@
 if (requireNamespace("pkgload", quietly = TRUE)) {
   pkgload::load_all(here::here(), quiet = TRUE)
 } else {
-  source('../../global.R')
+  source("../../global.R")
 }
 
 # Test data som kan give forskellige resultater
@@ -81,7 +81,7 @@ simulate_reactive_logic <- function(input_value, field_name) {
   }
 }
 
-for (input_val in test_inputs[1:3]) {  # Test kun de første 3
+for (input_val in test_inputs[1:3]) { # Test kun de første 3
   cat("\nTesting input:", input_val, "\n")
   target_result <- simulate_reactive_logic(input_val, "Target")
   baseline_result <- simulate_reactive_logic(input_val, "Baseline")

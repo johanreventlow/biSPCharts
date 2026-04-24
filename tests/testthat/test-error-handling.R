@@ -28,15 +28,15 @@ test_that("safe_operation håndterer fejl korrekt", {
     fallback = 0
   )
   expect_equal(result, 4)
-  
+
   # Test operation der fejler
   result <- safe_operation(
-    "failing operation", 
+    "failing operation",
     code = stop("Test fejl"),
     fallback = "fallback_value"
   )
   expect_equal(result, "fallback_value")
-  
+
   # Test operation med NULL fallback
   result <- safe_operation(
     "failing operation",
@@ -95,44 +95,44 @@ test_that("safe_getenv returnerer numeric default for tom variabel", {
 test_that("observer_manager fungerer", {
   # Test observer manager creation
   manager <- observer_manager()
-  
+
   # Test count starter på 0
   expect_equal(manager$count(), 0)
-  
+
   # Test tilføjelse af mock observer
   mock_observer <- list(destroy = function() NULL)
   id <- manager$add(mock_observer, "test_observer")
-  
+
   expect_equal(manager$count(), 1)
   expect_equal(id, "test_observer")
-  
+
   # Test fjernelse
   manager$remove("test_observer")
   expect_equal(manager$count(), 0)
-  
+
   # Test cleanup_all
   manager$add(mock_observer, "obs1")
   manager$add(mock_observer, "obs2")
   expect_equal(manager$count(), 2)
-  
+
   manager$cleanup_all()
   expect_equal(manager$count(), 0)
 })
 
 test_that("create_empty_session_data returnerer korrekt struktur", {
   empty_data <- create_empty_session_data()
-  
+
   # Test at alle påkrævede kolonner er til stede
   expected_cols <- c("Skift", "Frys", "Dato", "Tæller", "Nævner", "Kommentar")
   expect_true(all(expected_cols %in% names(empty_data)))
-  
+
   # Test at der er 20 rækker
   expect_equal(nrow(empty_data), 20)
-  
+
   # Test at Skift og Frys er logiske
   expect_true(is.logical(empty_data$Skift))
   expect_true(is.logical(empty_data$Frys))
-  
+
   # Test at numeriske kolonner er numeric
   expect_true(is.numeric(empty_data$Tæller))
   expect_true(is.numeric(empty_data$Nævner))

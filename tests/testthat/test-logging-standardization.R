@@ -20,7 +20,8 @@ test_that("all logging functions exist and are callable", {
 
   for (func_name in logging_functions) {
     expect_true(exists(func_name, mode = "function"),
-                info = paste("Function", func_name, "should exist"))
+      info = paste("Function", func_name, "should exist")
+    )
   }
 })
 
@@ -124,16 +125,19 @@ test_that("logging system avoids raw cat() fallbacks in production", {
   skip_if_not(exists("log_info", mode = "function"))
 
   # Capture output to verify it's not just raw cat()
-  captured_output <- capture.output({
-    log_info("Test message for output verification", component = "TEST")
-  }, type = "message")
+  captured_output <- capture.output(
+    {
+      log_info("Test message for output verification", component = "TEST")
+    },
+    type = "message"
+  )
 
   # Output should be structured (contain timestamp, level, context)
   if (length(captured_output) > 0) {
     combined_output <- paste(captured_output, collapse = " ")
     # Should contain structured elements like timestamp format
-    expect_true(grepl("\\[.*\\]", combined_output) ||  # Timestamp in brackets
-                grepl("INFO|ERROR|WARN|DEBUG", combined_output)) # Log level
+    expect_true(grepl("\\[.*\\]", combined_output) || # Timestamp in brackets
+      grepl("INFO|ERROR|WARN|DEBUG", combined_output)) # Log level
   }
 })
 
@@ -196,8 +200,10 @@ test_that("logging operations are performant", {
   # Batch logging should be reasonable
   expect_lt(batch_time, 1.0) # Less than 1 second for 100 messages
 
-  message(sprintf("Logging performance: single=%.6fs, 100x=%.3fs",
-                  single_time, batch_time))
+  message(sprintf(
+    "Logging performance: single=%.6fs, 100x=%.3fs",
+    single_time, batch_time
+  ))
 })
 
 # Test safe_operation integration with logging
@@ -264,9 +270,12 @@ test_that("logging output follows consistent format", {
   skip_if_not(exists("log_info", mode = "function"))
 
   # Capture log output
-  captured_output <- capture.output({
-    log_info("Format test message", component = "FORMAT_TEST")
-  }, type = "message")
+  captured_output <- capture.output(
+    {
+      log_info("Format test message", component = "FORMAT_TEST")
+    },
+    type = "message"
+  )
 
   if (length(captured_output) > 0) {
     output_line <- captured_output[1]

@@ -163,7 +163,7 @@ test_that("Data workflow handles missing columns gracefully", {
   detected_columns <- list(
     x_column = "Dato",
     y_column = "Værdi",
-    n_column = NULL,  # Not detected
+    n_column = NULL, # Not detected
     kommentar_column = NULL
   )
 
@@ -187,7 +187,7 @@ test_that("Data workflow handles missing columns gracefully", {
       generateSPCPlot(
         data = incomplete_data,
         config = config,
-        chart_type = "run",  # Run chart doesn't need n_col
+        chart_type = "run", # Run chart doesn't need n_col
         qic_cache = qic_cache
       )
     },
@@ -314,10 +314,10 @@ test_that("Session lifecycle: initialization → data load → reset", {
 
 test_that("Performance: QIC caching reduces computation time", {
   skip_if_not_installed("qicharts2")
-  skip_on_cran()  # Performance tests can be slow
+  skip_on_cran() # Performance tests can be slow
 
   app_state <- create_test_app_state()
-  test_data <- create_test_data(100)  # Larger dataset
+  test_data <- create_test_data(100) # Larger dataset
 
   qic_cache <- get_or_init_qic_cache(app_state)
 
@@ -349,7 +349,8 @@ test_that("Performance: QIC caching reduces computation time", {
 
   # Cache hit should be significantly faster
   expect_lt(time_hit, time_miss * 0.5,
-            info = paste("Cache miss:", time_miss, "s, Cache hit:", time_hit, "s"))
+    info = paste("Cache miss:", time_miss, "s, Cache hit:", time_hit, "s")
+  )
 
   # Both results should be identical
   expect_equal(class(result1$plot), class(result2$plot))

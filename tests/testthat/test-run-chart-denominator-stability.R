@@ -38,8 +38,10 @@ test_that("Run chart with denominator sends raw y and n data to qic", {
     expect_true(!is.null(result), "Run chart with denominator should generate successfully")
 
     # Verify that we don't inject any prepared data columns
-    expect_false(".y_run_prepared" %in% names(test_data),
-                "Should not inject .y_run_prepared - let qic handle ratios")
+    expect_false(
+      ".y_run_prepared" %in% names(test_data),
+      "Should not inject .y_run_prepared - let qic handle ratios"
+    )
 
     if (!is.null(result) && "qic_data" %in% names(result)) {
       qic_data <- result$qic_data
@@ -57,14 +59,18 @@ test_that("Run chart with denominator sends raw y and n data to qic", {
       # Verify run rules are calculated properly by qic
       if ("longest.run" %in% names(qic_data)) {
         longest_run_values <- qic_data$longest.run
-        expect_true(!all(is.na(longest_run_values)),
-                    "qic should calculate longest.run values for ratio data")
+        expect_true(
+          !all(is.na(longest_run_values)),
+          "qic should calculate longest.run values for ratio data"
+        )
       }
 
       if ("n.crossings" %in% names(qic_data)) {
         n_crossings_values <- qic_data$n.crossings
-        expect_true(!all(is.na(n_crossings_values)),
-                    "qic should calculate n.crossings values for ratio data")
+        expect_true(
+          !all(is.na(n_crossings_values)),
+          "qic should calculate n.crossings values for ratio data"
+        )
       }
     }
   }
@@ -83,7 +89,7 @@ test_that("Run chart without denominator works normally", {
   config <- list(
     x_col = "x",
     y_col = "y",
-    n_col = NULL  # No denominator
+    n_col = NULL # No denominator
   )
 
   if (exists("generateSPCPlot", mode = "function")) {
@@ -105,8 +111,10 @@ test_that("Run chart without denominator works normally", {
     expect_true(!is.null(result), "Run chart without denominator should work normally")
 
     # Should not inject any prepared data
-    expect_false(".y_run_prepared" %in% names(test_data),
-                "Should not inject prepared data for standard run charts")
+    expect_false(
+      ".y_run_prepared" %in% names(test_data),
+      "Should not inject prepared data for standard run charts"
+    )
   }
 })
 
@@ -143,8 +151,10 @@ test_that("Proportion charts (p, u) still receive n parameter correctly", {
         fallback = NULL
       )
 
-      expect_true(!is.null(result),
-                  paste(chart_type, "chart with denominator should work"))
+      expect_true(
+        !is.null(result),
+        paste(chart_type, "chart with denominator should work")
+      )
     }
   }
 })

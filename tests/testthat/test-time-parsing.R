@@ -48,7 +48,7 @@ test_that("parse_time_to_minutes haandterer difftime med forskellige enheder", {
 
 test_that("parse_time_to_minutes haandterer hms objekter", {
   skip_if_not_installed("hms")
-  h <- hms::hms(seconds = c(90 * 60, 30 * 60))  # 90 min og 30 min
+  h <- hms::hms(seconds = c(90 * 60, 30 * 60)) # 90 min og 30 min
   expect_equal(parse_time_to_minutes(h), c(90, 30))
 })
 

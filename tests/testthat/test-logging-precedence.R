@@ -13,7 +13,8 @@ test_that("get_effective_log_level returns valid log level (from YAML or default
   result <- get_effective_log_level()
   # Should be a valid log level (from YAML or "INFO" fallback)
   expect_true(result %in% c("DEBUG", "INFO", "WARN", "ERROR"),
-              info = "Should return valid log level from YAML or default")
+    info = "Should return valid log level from YAML or default"
+  )
 })
 
 test_that("Environment variable SPC_LOG_LEVEL has highest priority", {
@@ -59,7 +60,8 @@ test_that("Invalid environment variable is ignored, falls back to YAML/default",
   result <- get_effective_log_level()
   # Should fallback to default since invalid
   expect_true(result %in% c("INFO", "DEBUG", "WARN", "ERROR"),
-              info = "Should return valid level when env var is invalid")
+    info = "Should return valid level when env var is invalid"
+  )
 
   # Clean up
   Sys.unsetenv("SPC_LOG_LEVEL")
@@ -71,7 +73,8 @@ test_that("Empty environment variable is ignored", {
 
   result <- get_effective_log_level()
   expect_true(result %in% c("INFO", "DEBUG", "WARN", "ERROR"),
-              info = "Should ignore empty env var and fallback")
+    info = "Should ignore empty env var and fallback"
+  )
 
   # Clean up
   Sys.unsetenv("SPC_LOG_LEVEL")
@@ -119,7 +122,8 @@ test_that("get_log_level_name() uses unified precedence", {
   result <- get_log_level_name()
   # Should be valid log level name
   expect_true(result %in% c("DEBUG", "INFO", "WARN", "ERROR"),
-              info = "Should return valid log level")
+    info = "Should return valid log level"
+  )
 })
 
 test_that("Multiple calls to get_effective_log_level return consistent results", {

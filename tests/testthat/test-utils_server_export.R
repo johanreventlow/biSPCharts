@@ -61,7 +61,8 @@ test_that("generate_pdf_preview() returns NULL when Quarto unavailable", {
   # Create mock bfh_qic_result (minimal structure)
   mock_result <- structure(
     list(
-      plot = ggplot2::ggplot() + ggplot2::geom_blank(),
+      plot = ggplot2::ggplot() +
+        ggplot2::geom_blank(),
       summary = list(),
       config = list(chart_title = "Test")
     ),

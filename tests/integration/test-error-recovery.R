@@ -89,7 +89,7 @@ test_that("Plot generation recovers from QIC errors", {
 
   # Invalid configuration: missing required columns
   invalid_config <- list(
-    x_col = NULL,  # Missing x column
+    x_col = NULL, # Missing x column
     y_col = "y",
     n_col = NULL
   )
@@ -191,7 +191,7 @@ test_that("State corruption detection and recovery", {
 
   # Simulate state corruption: conflicting flags
   app_state$columns$auto_detect$in_progress <- TRUE
-  app_state$columns$auto_detect$completed <- TRUE  # Conflicting state
+  app_state$columns$auto_detect$completed <- TRUE # Conflicting state
 
   # Detection logic should identify corruption
   is_corrupted <- app_state$columns$auto_detect$in_progress &&
@@ -218,8 +218,8 @@ test_that("File upload handles encoding errors", {
   # Simulate non-UTF8 data
   problematic_data <- data.frame(
     Dato = as.Date("2023-01-01") + 0:9,
-    Værdi = c(1:9, NA),  # Include NA
-    Tekst = c(letters[1:9], "")  # Include empty string
+    Værdi = c(1:9, NA), # Include NA
+    Tekst = c(letters[1:9], "") # Include empty string
   )
 
   result <- safe_operation(
@@ -352,7 +352,7 @@ test_that("Error in one observer doesn't break other observers", {
 
   # Observer 1 and 3 should succeed
   expect_true(obs1_result)
-  expect_false(obs2_result)  # Expected failure
+  expect_false(obs2_result) # Expected failure
   expect_true(obs3_result)
 
   # Data should be intact

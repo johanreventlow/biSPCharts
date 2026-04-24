@@ -116,10 +116,13 @@ test_that("cache hit rate bug fix verification", {
 
   # Test that deparse(substitute()) would have caused the bug
   # (This documents the bug that was fixed)
-  expect_error({
-    # This is what the buggy code was doing - it fails
-    test_result <- exists(deparse(substitute(artifact_config$generator)), mode = "function")
-  }, class = "simpleError")
+  expect_error(
+    {
+      # This is what the buggy code was doing - it fails
+      test_result <- exists(deparse(substitute(artifact_config$generator)), mode = "function")
+    },
+    class = "simpleError"
+  )
 })
 
 test_that("startup cache performance improvements", {
@@ -310,6 +313,8 @@ test_that("startup cache system works end-to-end", {
   expect_is(cached_data, "list")
   expect_is(final_status, "list")
 
-  message(sprintf("End-to-end test successful: %d artifacts cached, %d artifacts loaded",
-                  length(cached_artifacts), length(cached_data)))
+  message(sprintf(
+    "End-to-end test successful: %d artifacts cached, %d artifacts loaded",
+    length(cached_artifacts), length(cached_data)
+  ))
 })

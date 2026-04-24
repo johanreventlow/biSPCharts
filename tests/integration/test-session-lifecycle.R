@@ -44,7 +44,7 @@ test_that("Session initialization creates complete app_state structure", {
 
   # Verify cache structure
   expect_true(is.list(app_state$cache))
-  expect_true(is.null(app_state$cache$qic))  # Lazy initialization
+  expect_true(is.null(app_state$cache$qic)) # Lazy initialization
 })
 
 test_that("Session startup follows correct initialization order", {

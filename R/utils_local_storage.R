@@ -36,8 +36,8 @@ migrate_time_yaxis_unit <- function(saved_state) {
   # Kun migrér 2.0 → 3.0. Nyere versioner returneres uændret.
   if (identical(src_version, "2.0")) {
     if (!is.null(saved_state$metadata) &&
-        !is.null(saved_state$metadata$y_axis_unit) &&
-        identical(saved_state$metadata$y_axis_unit, "time")) {
+      !is.null(saved_state$metadata$y_axis_unit) &&
+      identical(saved_state$metadata$y_axis_unit, "time")) {
       saved_state$metadata$y_axis_unit <- "time_minutes"
     }
     saved_state$version <- LOCAL_STORAGE_SCHEMA_VERSION
@@ -292,8 +292,10 @@ autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) 
   }
 
   log_info(
-    sprintf("Auto-saving %d rows x %d cols to localStorage",
-      nrow(current_data), ncol(current_data)),
+    sprintf(
+      "Auto-saving %d rows x %d cols to localStorage",
+      nrow(current_data), ncol(current_data)
+    ),
     .context = "AUTO_SAVE"
   )
 

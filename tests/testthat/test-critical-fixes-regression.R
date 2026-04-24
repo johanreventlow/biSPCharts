@@ -12,7 +12,8 @@ test_that("OBSERVER_PRIORITIES dobbelt-definition regression test", {
 
   # Test: Verify kun én autoritativ definition
   expect_true(exists("OBSERVER_PRIORITIES"),
-              info = "OBSERVER_PRIORITIES skal eksistere")
+    info = "OBSERVER_PRIORITIES skal eksistere"
+  )
 
   # Test: Search for potential duplicate definitions
   # Note: Dette kan kun testes statisk ved build-time, men vi tester struktur her
@@ -20,13 +21,16 @@ test_that("OBSERVER_PRIORITIES dobbelt-definition regression test", {
   priority_source_count <- 0
 
   # Check for structure consistency (indikator for single source)
-  required_structure <- c("STATE_MANAGEMENT", "AUTO_DETECT", "DATA_PROCESSING",
-                         "UI_SYNC", "PLOT_GENERATION", "STATUS_UPDATES",
-                         "CLEANUP", "LOGGING")
+  required_structure <- c(
+    "STATE_MANAGEMENT", "AUTO_DETECT", "DATA_PROCESSING",
+    "UI_SYNC", "PLOT_GENERATION", "STATUS_UPDATES",
+    "CLEANUP", "LOGGING"
+  )
 
   all_present <- all(required_structure %in% names(OBSERVER_PRIORITIES))
   expect_true(all_present,
-              info = "Alle required priorities skal være tilgængelige fra single source")
+    info = "Alle required priorities skal være tilgængelige fra single source"
+  )
 
   # Test: Verify legacy aliases are properly mapped (ikke gendefinserted)
   legacy_mappings <- list(
@@ -39,7 +43,8 @@ test_that("OBSERVER_PRIORITIES dobbelt-definition regression test", {
   for (alias in names(legacy_mappings)) {
     expected_target <- legacy_mappings[[alias]]
     expect_equal(OBSERVER_PRIORITIES[[alias]], OBSERVER_PRIORITIES[[expected_target]],
-                 info = paste("Alias", alias, "skal mappe til", expected_target))
+      info = paste("Alias", alias, "skal mappe til", expected_target)
+    )
   }
 })
 
@@ -103,7 +108,8 @@ test_that("Input sanitization regex double brackets regression", {
 
     # Should preserve all valid characters
     expect_equal(result, input,
-                 info = paste("Valid input skal bevares:", input))
+      info = paste("Valid input skal bevares:", input)
+    )
   }
 
   # Test: Verify problematic characters fjernes korrekt
@@ -120,7 +126,8 @@ test_that("Input sanitization regex double brackets regression", {
     result <- sanitize_user_input(input, html_escape = FALSE)
 
     expect_equal(result, expected,
-                 info = paste("Problematic input skal sanitiseres korrekt:", input))
+      info = paste("Problematic input skal sanitiseres korrekt:", input)
+    )
   }
 
   # Test: Verify danske karakterer bevares specifikt
@@ -152,7 +159,7 @@ test_that("DESCRIPTION dependencies alignment regression", {
 
     if (is.na(imports_end)) imports_end <- length(desc_content)
 
-    imports_text <- paste(desc_content[imports_start:(imports_end-1)], collapse = " ")
+    imports_text <- paste(desc_content[imports_start:(imports_end - 1)], collapse = " ")
     imports_text <- gsub("Imports:\\s*", "", imports_text)
 
     # Extract package names (simplified)
@@ -162,12 +169,15 @@ test_that("DESCRIPTION dependencies alignment regression", {
     packages <- packages[packages != ""]
 
     # Test: Critical packages should be imported (testthat og qicharts2 er i Suggests)
-    critical_packages <- c("shiny", "dplyr", "ggplot2",
-                          "purrr", "stringr", "readr")
+    critical_packages <- c(
+      "shiny", "dplyr", "ggplot2",
+      "purrr", "stringr", "readr"
+    )
 
     for (pkg in critical_packages) {
       expect_true(pkg %in% packages,
-                  info = paste("Critical package skal være i Imports:", pkg))
+        info = paste("Critical package skal være i Imports:", pkg)
+      )
     }
   }
 })
@@ -185,9 +195,9 @@ test_that("Event system priority consistency regression", {
   low_priority_events <- c("CLEANUP", "LOGGING", "STATUS_UPDATES")
 
   # Test priority ordering
-  for (i in 1:(length(high_priority_events)-1)) {
+  for (i in 1:(length(high_priority_events) - 1)) {
     current <- OBSERVER_PRIORITIES[[high_priority_events[i]]]
-    next_event <- OBSERVER_PRIORITIES[[high_priority_events[i+1]]]
+    next_event <- OBSERVER_PRIORITIES[[high_priority_events[i + 1]]]
     expect_gte(current, next_event)
   }
 
@@ -219,12 +229,14 @@ test_that("File extension validation security regression", {
   for (ext in dangerous_extensions) {
     result <- validate_file_extension(ext)
     expect_false(result,
-                 info = paste("Dangerous extension skal rejectes:", ext))
+      info = paste("Dangerous extension skal rejectes:", ext)
+    )
 
     # Test med dots
     result_with_dot <- validate_file_extension(paste0(".", ext))
     expect_false(result_with_dot,
-                 info = paste("Dangerous extension med dot skal rejectes:", ext))
+      info = paste("Dangerous extension med dot skal rejectes:", ext)
+    )
   }
 
   # Test: Safe extensions skal accepteres
@@ -233,7 +245,8 @@ test_that("File extension validation security regression", {
   for (ext in safe_extensions) {
     result <- validate_file_extension(ext)
     expect_true(result,
-                info = paste("Safe extension skal accepteres:", ext))
+      info = paste("Safe extension skal accepteres:", ext)
+    )
   }
 
   # Test: Case insensitivity
@@ -241,7 +254,8 @@ test_that("File extension validation security regression", {
   for (ext in mixed_case_extensions) {
     result <- validate_file_extension(ext)
     expect_true(result,
-                info = paste("Mixed case extension skal accepteres:", ext))
+      info = paste("Mixed case extension skal accepteres:", ext)
+    )
   }
 })
 
@@ -280,7 +294,8 @@ test_that("Logging level configuration consistency regression", {
 
   # Test: Invalid level handling
   expect_error(set_log_level("INVALID"),
-               info = "Invalid log level skal give error")
+    info = "Invalid log level skal give error"
+  )
 
   # Restore original level
   if (nzchar(original_level)) {
@@ -313,11 +328,14 @@ test_that("Safe operation fallback execution regression", {
   )
 
   expect_true(fallback_executed,
-              info = "Fallback skal blive executed på error")
+    info = "Fallback skal blive executed på error"
+  )
   expect_equal(result, "FALLBACK_SUCCESS",
-               info = "Fallback return value skal bruges")
+    info = "Fallback return value skal bruges"
+  )
   expect_true(inherits(fallback_parameter_received, "simpleError"),
-              info = "Fallback skal modtage error object som parameter")
+    info = "Fallback skal modtage error object som parameter"
+  )
 
   # Test: No fallback på success
   fallback_executed_success <- FALSE
@@ -334,36 +352,46 @@ test_that("Safe operation fallback execution regression", {
   )
 
   expect_false(fallback_executed_success,
-               info = "Fallback skal ikke execute på success")
+    info = "Fallback skal ikke execute på success"
+  )
   expect_equal(result_success, "SUCCESS",
-               info = "Success value skal returneres direkte")
+    info = "Success value skal returneres direkte"
+  )
 })
 
 # === SECTION: Critical Fixes Tests (merged from test-critical-fixes.R) ===
 
 test_that("OBSERVER_PRIORITIES er korrekt konfigureret og tilgængelig", {
   expect_true(exists("OBSERVER_PRIORITIES"),
-              info = "OBSERVER_PRIORITIES skal være defineret")
+    info = "OBSERVER_PRIORITIES skal være defineret"
+  )
 
-  required_priorities <- c("STATE_MANAGEMENT", "AUTO_DETECT", "DATA_PROCESSING",
-                          "UI_SYNC", "PLOT_GENERATION", "STATUS_UPDATES",
-                          "CLEANUP", "LOGGING")
+  required_priorities <- c(
+    "STATE_MANAGEMENT", "AUTO_DETECT", "DATA_PROCESSING",
+    "UI_SYNC", "PLOT_GENERATION", "STATUS_UPDATES",
+    "CLEANUP", "LOGGING"
+  )
 
   for (priority in required_priorities) {
     expect_true(priority %in% names(OBSERVER_PRIORITIES),
-                info = paste("OBSERVER_PRIORITIES skal indeholde", priority))
+      info = paste("OBSERVER_PRIORITIES skal indeholde", priority)
+    )
     expect_true(is.numeric(OBSERVER_PRIORITIES[[priority]]),
-                info = paste(priority, "skal have numerisk værdi"))
+      info = paste(priority, "skal have numerisk værdi")
+    )
     expect_true(OBSERVER_PRIORITIES[[priority]] > 0,
-                info = paste(priority, "skal have positiv værdi"))
+      info = paste(priority, "skal have positiv værdi")
+    )
   }
 
   compatibility_aliases <- c("HIGH", "MEDIUM", "LOW", "LOWEST")
   for (alias in compatibility_aliases) {
     expect_true(alias %in% names(OBSERVER_PRIORITIES),
-                info = paste("OBSERVER_PRIORITIES skal indeholde alias", alias))
+      info = paste("OBSERVER_PRIORITIES skal indeholde alias", alias)
+    )
     expect_true(is.numeric(OBSERVER_PRIORITIES[[alias]]),
-                info = paste("Alias", alias, "skal have numerisk værdi"))
+      info = paste("Alias", alias, "skal have numerisk værdi")
+    )
   }
 
   # OBSERVER_PRIORITIES har kun UPPERCASE aliases (HIGH, MEDIUM, LOW, LOWEST)
@@ -372,28 +400,35 @@ test_that("OBSERVER_PRIORITIES er korrekt konfigureret og tilgængelig", {
   uppercase_legacy_aliases <- c("HIGH", "MEDIUM", "LOW", "LOWEST")
   for (legacy in uppercase_legacy_aliases) {
     expect_true(legacy %in% names(OBSERVER_PRIORITIES),
-                info = paste("OBSERVER_PRIORITIES skal indeholde legacy alias", legacy))
+      info = paste("OBSERVER_PRIORITIES skal indeholde legacy alias", legacy)
+    )
   }
 })
 
 test_that("OBSERVER_PRIORITIES har logisk hierarki", {
   expect_true(OBSERVER_PRIORITIES$STATE_MANAGEMENT > OBSERVER_PRIORITIES$AUTO_DETECT,
-              info = "STATE_MANAGEMENT skal have højere prioritet end AUTO_DETECT")
+    info = "STATE_MANAGEMENT skal have højere prioritet end AUTO_DETECT"
+  )
 
   expect_true(OBSERVER_PRIORITIES$AUTO_DETECT > OBSERVER_PRIORITIES$UI_SYNC,
-              info = "AUTO_DETECT skal have højere prioritet end UI_SYNC")
+    info = "AUTO_DETECT skal have højere prioritet end UI_SYNC"
+  )
 
   expect_true(OBSERVER_PRIORITIES$UI_SYNC > OBSERVER_PRIORITIES$CLEANUP,
-              info = "UI_SYNC skal have højere prioritet end CLEANUP")
+    info = "UI_SYNC skal have højere prioritet end CLEANUP"
+  )
 
   expect_equal(OBSERVER_PRIORITIES$HIGH, OBSERVER_PRIORITIES$STATE_MANAGEMENT,
-               info = "HIGH alias skal mappe til STATE_MANAGEMENT")
+    info = "HIGH alias skal mappe til STATE_MANAGEMENT"
+  )
 
   expect_equal(OBSERVER_PRIORITIES$LOW, OBSERVER_PRIORITIES$UI_SYNC,
-               info = "LOW alias skal mappe til UI_SYNC")
+    info = "LOW alias skal mappe til UI_SYNC"
+  )
 
   expect_equal(OBSERVER_PRIORITIES$LOWEST, OBSERVER_PRIORITIES$CLEANUP,
-               info = "LOWEST alias skal mappe til CLEANUP")
+    info = "LOWEST alias skal mappe til CLEANUP"
+  )
 })
 
 test_that("Logging API understøtter component/message/details pattern", {
@@ -431,20 +466,24 @@ test_that("Logging API understøtter component/message/details pattern", {
 test_that("Input sanitization regex fungerer korrekt", {
   result1 <- sanitize_user_input("Test123_æøå.-", max_length = 100, html_escape = FALSE)
   expect_equal(result1, "Test123_æøå.-",
-               info = "Gyldige karakterer skal bevares")
+    info = "Gyldige karakterer skal bevares"
+  )
 
   result2 <- sanitize_user_input("Test@#$%123", max_length = 100, html_escape = FALSE)
   expect_equal(result2, "Test123",
-               info = "Ikke-tilladte karakterer skal fjernes")
+    info = "Ikke-tilladte karakterer skal fjernes"
+  )
 
   result3 <- sanitize_user_input("Størrelse_økonomi-År.2023", max_length = 100, html_escape = FALSE)
   expect_equal(result3, "Størrelse_økonomi-År.2023",
-               info = "Danske karakterer (æ,ø,å) skal bevares")
+    info = "Danske karakterer (æ,ø,å) skal bevares"
+  )
 
   result4 <- sanitize_user_input("Hello[World]&lt;script&gt;", max_length = 100, html_escape = FALSE)
   # Faktisk: & og ; fjernes af char-whitelist, men lt/gt-bogstaver bevares
   expect_equal(result4, "HelloWorldltscriptgt",
-               info = "HTML/script tags skal fjernes")
+    info = "HTML/script tags skal fjernes"
+  )
 })
 
 test_that("Column name sanitization fungerer med dansk indhold", {

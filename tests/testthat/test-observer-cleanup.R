@@ -5,23 +5,26 @@
 
 test_that("Observer destroy pattern virker korrekt", {
   obs_reg <- list()
-  obs_reg$test1 <- shiny::observe({ })
-  obs_reg$test2 <- shiny::observe({ })
-  obs_reg$test3 <- shiny::observe({ })
+  obs_reg$test1 <- shiny::observe({})
+  obs_reg$test2 <- shiny::observe({})
+  obs_reg$test3 <- shiny::observe({})
 
   initial_count <- length(obs_reg)
   failed_count <- 0
 
   nullified <- 0
   for (name in names(obs_reg)) {
-    tryCatch({
-      if (!is.null(obs_reg[[name]])) {
-        obs_reg[[name]]$destroy()
-        nullified <- nullified + 1
+    tryCatch(
+      {
+        if (!is.null(obs_reg[[name]])) {
+          obs_reg[[name]]$destroy()
+          nullified <- nullified + 1
+        }
+      },
+      error = function(e) {
+        failed_count <<- failed_count + 1
       }
-    }, error = function(e) {
-      failed_count <<- failed_count + 1
-    })
+    )
   }
 
   expect_equal(initial_count, 3)
@@ -33,7 +36,7 @@ test_that("Fejlende observer tracker sin fejl ved cleanup", {
   obs_reg <- list()
 
   # Fungerende observer
-  obs_reg$working <- shiny::observe({ })
+  obs_reg$working <- shiny::observe({})
 
   # Simuleret fejlende observer
   obs_reg$failing <- list(
@@ -43,28 +46,34 @@ test_that("Fejlende observer tracker sin fejl ved cleanup", {
   failed_obs <- character(0)
 
   for (name in names(obs_reg)) {
-    tryCatch({
-      if (!is.null(obs_reg[[name]])) {
-        obs_reg[[name]]$destroy()
-        obs_reg[[name]] <- NULL
+    tryCatch(
+      {
+        if (!is.null(obs_reg[[name]])) {
+          obs_reg[[name]]$destroy()
+          obs_reg[[name]] <- NULL
+        }
+      },
+      error = function(e) {
+        failed_obs <- c(failed_obs, name)
       }
-    }, error = function(e) {
-      failed_obs <- c(failed_obs, name)
-    })
+    )
   }
 
   # Udfyldt i trycatch — kontrollér direkte i loop
   failed_direct <- character(0)
   obs_reg2 <- list()
-  obs_reg2$working <- shiny::observe({ })
+  obs_reg2$working <- shiny::observe({})
   obs_reg2$failing <- list(destroy = function() stop("Simuleret fejl"))
 
   for (name in names(obs_reg2)) {
-    tryCatch({
-      obs_reg2[[name]]$destroy()
-    }, error = function(e) {
-      failed_direct <<- c(failed_direct, name)
-    })
+    tryCatch(
+      {
+        obs_reg2[[name]]$destroy()
+      },
+      error = function(e) {
+        failed_direct <<- c(failed_direct, name)
+      }
+    )
   }
 
   expect_true("failing" %in% failed_direct)
@@ -73,23 +82,26 @@ test_that("Fejlende observer tracker sin fejl ved cleanup", {
 
 test_that("100pct cleanup success rate for standard observere", {
   obs_reg <- list()
-  obs_reg$a <- shiny::observe({ })
-  obs_reg$b <- shiny::observe({ })
-  obs_reg$c <- shiny::observe({ })
+  obs_reg$a <- shiny::observe({})
+  obs_reg$b <- shiny::observe({})
+  obs_reg$c <- shiny::observe({})
 
   initial_count <- length(obs_reg)
   failed_count <- 0
 
   destroyed <- 0
   for (name in names(obs_reg)) {
-    tryCatch({
-      if (!is.null(obs_reg[[name]])) {
-        obs_reg[[name]]$destroy()
-        destroyed <- destroyed + 1
+    tryCatch(
+      {
+        if (!is.null(obs_reg[[name]])) {
+          obs_reg[[name]]$destroy()
+          destroyed <- destroyed + 1
+        }
+      },
+      error = function(e) {
+        failed_count <<- failed_count + 1
       }
-    }, error = function(e) {
-      failed_count <<- failed_count + 1
-    })
+    )
   }
 
   success_rate <- (initial_count - failed_count) / initial_count

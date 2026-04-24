@@ -39,6 +39,6 @@
 - [x] 6.1 Alle nye tests består (20 analytics-github + 11 analytics-pins)
 - [x] 6.2 Manuel test kørt: `redact_pat_in_url(conditionMessage(e))` med PAT i URL — output indeholder ikke PAT (verificeret 2026-04-24)
 - [x] 6.3 `devtools::load_all()` kører rent
-- [ ] 6.4 Review fra bruger (DPIA-ansvar) før merge
+- [x] 6.4 Review fra bruger (DPIA-ansvar) før merge
 
 Tracking: GitHub Issue #307

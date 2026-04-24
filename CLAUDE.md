@@ -246,8 +246,28 @@ anhoej_metadata <- extract_anhoej_metadata(qic_result)
 ❌ **qicharts2 KUN til:** Anhøj rules, metadata extraction
 ✅ **BFHcharts til:** Plot rendering, chart types, theming, notes, target lines, freezing
 
+**SPC Pipeline (facade-refaktorering):**
+```
+compute_spc_results_bfh()  ← offentlig API (uændret)
+  └─ validate_spc_request()  → spc_request S3 (fct_spc_validate.R)
+  └─ prepare_spc_data()      → spc_prepared S3 (fct_spc_prepare.R)
+  └─ resolve_axis_units()    → spc_axes S3 (fct_spc_prepare.R)
+  └─ build_bfh_args()        → BFHcharts parameter-list (fct_spc_execute.R)
+  └─ execute_bfh_request()   → standardized result (fct_spc_execute.R)
+  └─ decorate_plot_for_display() → + Anhøj metadata (fct_spc_decorate.R)
+```
+
+**Typed errors (alle arver fra `spc_error`):**
+- `spc_input_error` — ugyldig input (manglende kolonner, forkert chart_type)
+- `spc_prepare_error` — data-fejl (for få punkter, parsing-fejl)
+- `spc_render_error` — BFHcharts rendering fejlede
+
 **Files involved:**
-- `R/fct_spc_bfh_service.R` - BFHcharts service + qicharts2 Anhøj rules
+- `R/fct_spc_bfh_facade.R` - Orkestrator + cache helpers
+- `R/fct_spc_validate.R` - Input validering med S3 `spc_request`
+- `R/fct_spc_prepare.R` - Data-preparation + axis-resolution
+- `R/fct_spc_execute.R` - BFHcharts invocation
+- `R/fct_spc_decorate.R` - Anhøj metadata + backend-flag
 - `R/utils_qic_preparation.R` - qicharts2 input prep
 - `R/utils_qic_caching.R` - Anhøj rules caching
 - `R/utils_qic_debug_logging.R` - qicharts2 debug logging

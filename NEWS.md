@@ -2,6 +2,18 @@
 
 ## Interne ændringer
 
+* **SPC-facade refaktorering** (refactor-spc-facade): Den monolitiske
+  `compute_spc_results_bfh()` (778 linjer) er splittet i et pipeline af
+  typede, testbare helpers. Nye filer: `fct_spc_validate.R`,
+  `fct_spc_prepare.R`, `fct_spc_execute.R`, `fct_spc_decorate.R`.
+  S3-kontrakter (`spc_request`, `spc_prepared`, `spc_axes`) sikrer
+  type-sikkerhed mellem pipeline-trin. Typed error-klasser
+  (`spc_input_error`, `spc_prepare_error`, `spc_render_error`) erstatter
+  silent `safe_operation()`-swallowing. Cache-helpers ekstraheret
+  (`build_cache_key()`, `read_spc_cache()`, `write_spc_cache()`).
+  `unlock_cache_statistics()` fjernet fra `zzz.R`. UI-boundary viser nu
+  klasse-specifikke danske fejlbeskeder.
+
 * **Package hygiene** (#287, #290–#293): Oprydning af `R CMD check`-WARNINGs
   (13 → 7). `Depends: R (>= 4.1.0)` (pipe `|>` kræver 4.1+). Tilføjet
   `htmltools` og `rlang` til `Imports:` (manglede trods direkte brug). Fjernet

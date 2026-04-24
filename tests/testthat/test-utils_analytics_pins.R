@@ -96,6 +96,127 @@ test_that("read_shinylogs_all() haandterer non-existent path", {
   expect_equal(nrow(result$sessions), 0)
 })
 
+make_test_all_data <- function(session_id = "raw-token-abc123",
+                               with_pat_in_error = FALSE) {
+  sessions_df <- data.frame(
+    sessionid = session_id,
+    app = "biSPCharts",
+    user = "test_user",
+    user_agent = "Mozilla/5.0",
+    server_connected = "2026-04-15T10:00:00Z",
+    server_disconnected = "2026-04-15T10:15:00Z",
+    stringsAsFactors = FALSE
+  )
+  inputs_df <- data.frame(
+    sessionid = session_id,
+    name = "chart_type",
+    timestamp = "2026-04-15T10:01:00Z",
+    value = "p-chart",
+    type = "shiny.action",
+    binding = "selectInput",
+    stringsAsFactors = FALSE
+  )
+  outputs_df <- data.frame(
+    sessionid = session_id,
+    name = "spc_plot",
+    timestamp = "2026-04-15T10:01:05Z",
+    binding = "plotOutput",
+    stringsAsFactors = FALSE
+  )
+  error_msg <- if (with_pat_in_error) {
+    "clone: https://x-access-token:ghp_LEAKED_PAT@github.com/owner/repo"
+  } else {
+    "render failed: column not found"
+  }
+  errors_df <- data.frame(
+    sessionid = session_id,
+    name = "render_error",
+    timestamp = "2026-04-15T10:02:00Z",
+    error = error_msg,
+    stringsAsFactors = FALSE
+  )
+  list(
+    sessions = sessions_df, inputs = inputs_df,
+    outputs = outputs_df, errors = errors_df
+  )
+}
+
+test_that("filter_shinylogs_allowlist() fjerner ikke-tilladte kolonner", {
+  all_data <- make_test_all_data()
+  filtered <- filter_shinylogs_allowlist(all_data)
+
+  # sessionid erstattet med session_hash
+  expect_true("session_hash" %in% names(filtered$sessions))
+  expect_false("sessionid" %in% names(filtered$sessions))
+
+  # sensitive sessions-kolonner fjernet
+  expect_false("user" %in% names(filtered$sessions))
+  expect_false("user_agent" %in% names(filtered$sessions))
+
+  # inputs: type og binding fjernet
+  expect_false("type" %in% names(filtered$inputs))
+  expect_false("binding" %in% names(filtered$inputs))
+  expect_true("name" %in% names(filtered$inputs))
+  expect_true("value" %in% names(filtered$inputs))
+
+  # outputs: binding fjernet
+  expect_false("binding" %in% names(filtered$outputs))
+  expect_true("name" %in% names(filtered$outputs))
+
+  # errors: error-kolonne erstattet med redacted_message
+  expect_false("error" %in% names(filtered$errors))
+  expect_true("redacted_message" %in% names(filtered$errors))
+})
+
+test_that("filter_shinylogs_allowlist() hashes session_id korrekt", {
+  all_data <- make_test_all_data(session_id = "raw-token-abc123")
+  filtered <- filter_shinylogs_allowlist(all_data)
+
+  # session_hash er 8-tegns hex
+  expect_match(filtered$sessions$session_hash, "^[0-9a-f]{8}$")
+
+  # raa token optræder ikke i session_hash
+  expect_false(grepl("raw-token", filtered$sessions$session_hash, fixed = TRUE))
+
+  # alle dataframes har samme session_hash
+  expect_equal(filtered$sessions$session_hash, filtered$inputs$session_hash)
+  expect_equal(filtered$sessions$session_hash, filtered$outputs$session_hash)
+  expect_equal(filtered$sessions$session_hash, filtered$errors$session_hash)
+})
+
+test_that("filter_shinylogs_allowlist() redacter PAT i errors", {
+  all_data <- make_test_all_data(with_pat_in_error = TRUE)
+  filtered <- filter_shinylogs_allowlist(all_data)
+
+  expect_false(grepl("ghp_LEAKED_PAT", filtered$errors$redacted_message, fixed = TRUE))
+  expect_true(grepl("[REDACTED]", filtered$errors$redacted_message, fixed = TRUE))
+})
+
+test_that("filter_shinylogs_allowlist() haandterer tomme dataframes", {
+  empty_data <- list(
+    sessions = data.frame(),
+    inputs = data.frame(),
+    outputs = data.frame(),
+    errors = data.frame()
+  )
+  result <- filter_shinylogs_allowlist(empty_data)
+  expect_s3_class(result$sessions, "data.frame")
+  expect_equal(nrow(result$sessions), 0)
+  expect_equal(nrow(result$inputs), 0)
+})
+
+test_that("redact_error_messages() omdoeber error til redacted_message", {
+  errors_df <- data.frame(
+    sessionid = "abc",
+    error = "clone: https://x-access-token:ghp_SECRET@github.com",
+    stringsAsFactors = FALSE
+  )
+  result <- redact_error_messages(errors_df)
+  expect_true("redacted_message" %in% names(result))
+  expect_false("error" %in% names(result))
+  expect_false(grepl("ghp_SECRET", result$redacted_message, fixed = TRUE))
+})
+
 test_that("rotate_log_files() komprimerer gamle filer", {
   tmp_dir <- withr::local_tempdir()
 

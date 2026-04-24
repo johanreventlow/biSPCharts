@@ -128,6 +128,7 @@ classify_error_source <- function(error) {
 }
 
 compute_anhoej_metadata_local <- function(data, config) {
+  require_qicharts2()
   safe_operation(
     operation_name = "Anhøj metadata local computation",
     code = {

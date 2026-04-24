@@ -70,6 +70,11 @@ setup_shinylogs <- function(enable_tracking = TRUE,
 initialize_shinylogs_tracking <- function(session,
                                           app_name = "SPC_APP",
                                           log_directory = "logs/") {
+  if (!requireNamespace("shinylogs", quietly = TRUE)) {
+    log_warn("shinylogs ikke installeret — analytics tracking deaktiveret", .context = "ANALYTICS")
+    return(invisible(FALSE))
+  }
+
   # Initializing shinylogs tracking
 
   # Start tracking with correct API
@@ -79,15 +84,15 @@ initialize_shinylogs_tracking <- function(session,
     storage_mode = shinylogs::store_json(path = log_directory),
     what = c("session", "input", "output", "error"),
     exclude_input_id = c(
-      "main_data_table",          # excelR tabeldata (stor payload, hyppige updates)
-      "auto_restore_data",        # Session restore payload (kan vaere stor)
-      "loaded_app_state",         # localStorage payload
-      "session_peek",             # Session metadata peek
+      "main_data_table", # excelR tabeldata (stor payload, hyppige updates)
+      "auto_restore_data", # Session restore payload (kan vaere stor)
+      "loaded_app_state", # localStorage payload
+      "session_peek", # Session metadata peek
       "local_storage_save_result" # Save result callback
     ),
     exclude_input_regex = paste0(
-      "^(\\.clientdata|",         # Shiny interne clientdata inputs
-      "analytics_consent)"        # Analytics consent input (ikke data)
+      "^(\\.clientdata|", # Shiny interne clientdata inputs
+      "analytics_consent)" # Analytics consent input (ikke data)
     ),
     app_name = app_name,
     session = session

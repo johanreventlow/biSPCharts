@@ -215,6 +215,18 @@ reset_qic_performance_counters <- function() {
   invisible()
 }
 
+.onAttach <- function(libname, pkgname) {
+  bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilgængelig" else "ikke installeret"
+  qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilgængelig" else "ikke installeret"
+  quarto_status <- if (nzchar(Sys.which("quarto"))) "tilgængelig" else "ikke fundet i PATH"
+  packageStartupMessage(
+    "biSPCharts optional features: ",
+    "BFHllm=", bfhllm_status, ", ",
+    "qicharts2=", qic_status, ", ",
+    "Quarto=", quarto_status
+  )
+}
+
 #' Initialize package-level global variables
 #'
 #' @noRd

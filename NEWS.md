@@ -1,5 +1,15 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Breaking changes
+
+* **Dependency-guards for valgfri pakker** (#314): `qicharts2`, `pins`,
+  `gert` og `shinylogs` er flyttet fra `Imports:` til `Suggests:`. Disse
+  pakker er ikke længere krævet for minimal-installation. Anhøj-beregninger
+  kaster nu en typed `spc_dependency_error` hvis `qicharts2` ikke er
+  installeret. Analytics-features degraderer gracefully uden `pins`, `gert`
+  eller `shinylogs`. Installer alle features med:
+  `install.packages(c("qicharts2", "pins", "gert", "shinylogs"))`.
+
 ## Interne ændringer
 
 * **SPC-facade refaktorering** (refactor-spc-facade): Den monolitiske

@@ -350,6 +350,7 @@ log_qic_results <- function(qic_result, call_context = "UNKNOWN", call_number = 
 #' @return Resultat fra qic() kaldet
 #' @keywords internal
 log_qic_call_wrapper <- function(qic_args, call_context = "UNKNOWN", call_number = NULL, qic_cache = NULL, ...) {
+  require_qicharts2()
   # SPRINT 4: Check if caching is enabled and available
   use_cache <- !is.null(qic_cache) && !is.null(qic_args$data)
 

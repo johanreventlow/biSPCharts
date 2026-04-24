@@ -11,131 +11,6 @@
 # 4. Output standardization (via fct_spc_bfh_output)
 # 5. Anhøj metadata beregning (via fct_spc_bfh_signals)
 
-#' Valider input til compute_spc_results_bfh()
-#'
-#' Intern hjælpefunktion der tjekker alle obligatoriske parametre og
-#' data-egenskaber FØR safe_operation() kaldes. Fejl propagerer direkte
-#' til caller med danske brugervenlige beskeder.
-#'
-#' @param data data.frame eller NULL
-#' @param x_var character eller NULL
-#' @param y_var character eller NULL
-#' @param chart_type character eller NULL
-#' @param n_var character eller NULL
-#' @return Usynlig NULL (kaster fejl ved ugyldig input)
-#' @keywords internal
-validate_spc_inputs <- function(data, x_var, y_var, chart_type, n_var = NULL) {
-  # 1. data er påkrævet og skal være data.frame
-  if (is.null(data)) {
-    stop("data parameter er p\u00e5kr\u00e6vet (data required): m\u00e5 ikke v\u00e6re NULL")
-  }
-  if (!is.data.frame(data)) {
-    stop("data skal v\u00e6re en data.frame")
-  }
-
-  # 2. x_var er påkrævet
-  if (is.null(x_var) || !nzchar(trimws(x_var))) {
-    stop("x_var parameter er p\u00e5kr\u00e6vet (x_var required): angiv kolonnenavn for x-aksen")
-  }
-
-  # 3. y_var er påkrævet
-  if (is.null(y_var) || !nzchar(trimws(y_var))) {
-    stop("y_var parameter er p\u00e5kr\u00e6vet (y_var required): angiv kolonnenavn for m\u00e5lekolonnen")
-  }
-
-  # 4. chart_type er påkrævet
-  if (is.null(chart_type) || !nzchar(trimws(chart_type))) {
-    stop("chart_type parameter er p\u00e5kr\u00e6vet (chart_type required)")
-  }
-
-  # 5. chart_type skal v\u00e6re en understøttet type
-  ct_normalized <- tolower(trimws(chart_type))
-  if (!ct_normalized %in% SUPPORTED_CHART_TYPES_BFH) {
-    stop(paste0(
-      "chart_type '", chart_type, "' er invalid (ugyldig diagramtype). ",
-      "Must be one of: ",
-      paste(SUPPORTED_CHART_TYPES_BFH, collapse = ", ")
-    ))
-  }
-
-  # 6. n_var er påkrævet for P-, U-kort (og pp, up)
-  if (ct_normalized %in% c("p", "pp", "u", "up") && is.null(n_var)) {
-    stop(paste0(
-      "n_var (denominator) required for ", ct_normalized, "-kort. ",
-      "Angiv kolonnenavnet for n\u00e6vneren."
-    ))
-  }
-
-  # 7. data m\u00e5 ikke v\u00e6re tom (tjekkes f\u00f8r kolonne-opslag for klar fejlbesked)
-  if (nrow(data) == 0) {
-    stop("Ingen r\u00e6kker fundet i data (empty dataset). Upload data f\u00f8rst.")
-  }
-
-  # 8. Mindst 3 datapunkter kr\u00e6ves for meningsfuld SPC-analyse
-  if (nrow(data) < 3) {
-    stop(paste0(
-      "For f\u00e5 datapunkter: ", nrow(data), " r\u00e6kke(r) fundet (too few/insufficient). ",
-      "minimum 3 datapunkter kr\u00e6ves for SPC-analyse."
-    ))
-  }
-
-  # 9. x_var og y_var skal eksistere som kolonner i data
-  if (!x_var %in% names(data)) {
-    stop(paste0("X-kolonne '", x_var, "' blev ikke fundet i data (missing column: x_var)"))
-  }
-  if (!y_var %in% names(data)) {
-    stop(paste0("Y-kolonne '", y_var, "' blev ikke fundet i data (missing column: y_var)"))
-  }
-  if (!is.null(n_var) && !n_var %in% names(data)) {
-    stop(paste0("N\u00e6vner-kolonne '", n_var, "' blev ikke fundet i data (missing column: n_var)"))
-  }
-
-  # 10. y_var m\u00e5 ikke udelukkende best\u00e5 af NA
-  y_vals <- data[[y_var]]
-  if (all(is.na(y_vals))) {
-    stop(paste0(
-      "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier. ",
-      "Ingen komplette datapunkter til r\u00e5dighed (all NA/no valid values)."
-    ))
-  }
-
-  # 11. y_var skal v\u00e6re numerisk (eller konverterbar — inkl. danske talformater med komma)
-  if (!is.numeric(y_vals)) {
-    # Fors\u00f8g f\u00f8rst standard konvertering, s\u00e5 dansk format (komma som decimalseparator)
-    std_converted <- suppressWarnings(as.numeric(as.character(y_vals)))
-    danish_converted <- suppressWarnings(as.numeric(gsub(",", ".", as.character(y_vals))))
-    # Accepter kolonnen hvis mindst \u00e9n konverteringsmetode giver gyldige v\u00e6rdier
-    any_convertible <- !all(is.na(std_converted)) || !all(is.na(danish_converted))
-    non_na_vals <- !all(is.na(y_vals))
-    if (non_na_vals && !any_convertible) {
-      stop(paste0(
-        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid/convert). ",
-        "Kolonnen skal indeholde tal (ogs\u00e5 dansk talformat med komma accepteres)."
-      ))
-    }
-  }
-
-  # 12. n_var m\u00e5 ikke indeholde nul-v\u00e6rdier for rate-baserede kort (p, u)
-  ct_normalized_check <- tolower(trimws(chart_type))
-  if (!is.null(n_var) && n_var %in% names(data) &&
-    ct_normalized_check %in% c("p", "pp", "u", "up")) {
-    n_vals <- data[[n_var]]
-    # H\u00e5ndter b\u00e5de standard og dansk talformat (komma som decimalseparator)
-    n_numeric <- suppressWarnings(as.numeric(n_vals))
-    if (all(is.na(n_numeric)) && is.character(n_vals)) {
-      n_numeric <- suppressWarnings(as.numeric(gsub(",", ".", n_vals)))
-    }
-    if (any(!is.na(n_numeric) & n_numeric == 0)) {
-      stop(paste0(
-        "N\u00e6vner-kolonnen '", n_var, "' indeholder nul-v\u00e6rdier. ",
-        "N\u00e6vner m\u00e5 ikke v\u00e6re nul for ", toupper(ct_normalized_check), "-kort."
-      ))
-    }
-  }
-
-  invisible(NULL)
-}
-
 
 #' Compute SPC Results Using BFHchart Backend
 #'
@@ -281,19 +156,25 @@ compute_spc_results_bfh <- function(
   app_state = NULL,
   ...
 ) {
-  # Validering UDEN safe_operation — fejl skal propagere til caller (fx testthat)
-  validate_spc_inputs(
+  # Validering UDEN safe_operation — fejl propagerer som spc_input_error til caller
+  req <- validate_spc_request(
     data = if (missing(data)) NULL else data,
     x_var = if (missing(x_var)) NULL else x_var,
     y_var = if (missing(y_var)) NULL else y_var,
     chart_type = if (missing(chart_type)) NULL else chart_type,
-    n_var = n_var
+    n_var = n_var,
+    cl_var = cl_var,
+    freeze_var = freeze_var,
+    part_var = part_var,
+    notes_column = notes_column,
+    multiply = multiply,
+    ...
   )
 
   safe_operation(
     operation_name = "BFHchart SPC computation",
     code = {
-      # 1. (Validering sker i validate_spc_inputs() FØR safe_operation)
+      # 1. (Validering sker i validate_spc_request() FØR safe_operation)
       # 1b. Cache key generation (before expensive validation)
       # Extract parameters for cache key
       extra_params <- list(...)
@@ -396,17 +277,8 @@ compute_spc_results_bfh <- function(
         }
       }
 
-      # 2. Validate chart type
-      validated_chart_type <- validate_chart_type_bfh(chart_type)
-
-      # 3. Check if denominator required for chart type
-      if (validated_chart_type %in% c("p", "pp", "u", "up") && is.null(n_var)) {
-        stop(paste0(
-          "n_var (denominator) is required for ",
-          validated_chart_type,
-          " charts"
-        ))
-      }
+      # 2+3. Chart type og denominator er valideret i validate_spc_request()
+      validated_chart_type <- req$chart_type
 
       # 4. Filter complete data using existing validator
       complete_data <- filter_complete_spc_data(

@@ -151,7 +151,7 @@ cat("✓ Hurtig pre-push bestået\n")
 REOF
   TEST_EXIT=$?
 else
-  echo "[3/3] Kører fuld testthat-suite (kan tage 5-10 min) ..."
+  echo "[3/4] Kører fuld testthat-suite (kan tage 5-10 min) ..."
   Rscript - <<'REOF'
 suppressPackageStartupMessages({ library(devtools); library(testthat) })
 res <- devtools::test(stop_on_failure = FALSE, reporter = testthat::SummaryReporter$new())
@@ -169,6 +169,28 @@ if (fails > 0 || errs > 0) {
 cat("✓ Alle tests grønne\n")
 REOF
   TEST_EXIT=$?
+
+  # --- Step 4 (full only): R CMD check --as-cran ---
+  echo ""
+  echo "[4/4] Kører R CMD check --as-cran (ingen tests/manual/vignettes) ..."
+  Rscript -e '
+    result <- rcmdcheck::rcmdcheck(
+      args = c("--as-cran", "--no-tests", "--no-manual", "--no-vignettes", "--no-build-vignettes"),
+      quiet = TRUE
+    )
+    warnings <- result$warnings
+    if (length(warnings) > 0) {
+      cat(sprintf("✗ R CMD check: %d WARNING(s) fundet:\n", length(warnings)))
+      for (w in warnings) cat(sprintf("  - %s\n", trimws(w)))
+      cat("\n  Fix warnings eller brug SKIP_PREPUSH=1 git push til bypass\n")
+      quit(status = 1)
+    }
+    cat(sprintf("✓ R CMD check OK (%d NOTEs ignoreres)\n", length(result$notes)))
+  ' || {
+    echo ""
+    echo "✗ R CMD check fejlede — push blokeret"
+    exit 1
+  }
 fi
 
 if [ "$TEST_EXIT" -ne 0 ]; then

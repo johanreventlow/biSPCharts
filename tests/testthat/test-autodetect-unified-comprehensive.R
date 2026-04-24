@@ -787,6 +787,42 @@ test_that("find_numeric_columns identificerer numeriske kolonner", {
   expect_false("Navn" %in% result)
 })
 
+test_that("find_numeric_columns detekterer danske talformater (komma-decimal)", {
+  test_data <- data.frame(
+    Dato = c("2024-01-01", "2024-01-02", "2024-01-03"),
+    Tæller = c("10,5", "3,14", "100,0"),
+    Tekst = c("Ja", "Nej", "Ja"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- find_numeric_columns(test_data)
+  expect_true("Tæller" %in% result, info = "Kolonne med komma-decimaler skal detekteres som numerisk")
+  expect_false("Dato" %in% result)
+  expect_false("Tekst" %in% result)
+})
+
+test_that("find_numeric_columns detekterer engelske talformater (punktum-decimal)", {
+  test_data <- data.frame(
+    Dato = c("2024-01-01", "2024-01-02", "2024-01-03"),
+    Tæller = c("10.5", "3.14", "100.0"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- find_numeric_columns(test_data)
+  expect_true("Tæller" %in% result, info = "Engelske talformater (punktum) skal fortsat virke")
+})
+
+test_that("find_numeric_columns returnerer tom vektor for rene tekst-kolonner", {
+  test_data <- data.frame(
+    A = c("Ja", "Nej", "Måske"),
+    B = c("Afd. 1", "Afd. 2", "Afd. 3"),
+    stringsAsFactors = FALSE
+  )
+
+  result <- find_numeric_columns(test_data)
+  expect_length(result, 0)
+})
+
 test_that("detect_columns_name_based finder danske kolonne navne", {
   col_names <- c("Dato", "Tæller", "Nævner", "Kommentar", "Skift", "Frys", "ID")
   result <- detect_columns_name_based(col_names)

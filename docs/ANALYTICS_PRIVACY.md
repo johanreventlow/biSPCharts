@@ -74,7 +74,7 @@ Analytics-data uploades til et **privat** GitHub-repository
 (`biSPCharts-analytics-data`) ved session-afslutning.
 
 - Format: `.rds`-fil per session i `sessions/`-mappe
-- Adgang: begrænset til maintainer (Johan Reventlow)
+- Adgang: begrænset til maintainer 
 - Filnavn: `YYYYMMDDTHHMMSSZ_<session_hash>.rds` — ingen PII i filnavn
 - Indhold: allowlist-filtreret subset (se tabeller ovenfor)
 
@@ -97,17 +97,6 @@ Backend kræver:
 ---
 
 ## Brugerrettigheder
-
-### Indsigt
-
-Kontakt Johan Reventlow (johan@reventlow.dk) for en kopi af data
-tilknyttet din brug. Session-hashes kan ikke kobles til person uden
-adgang til den originale session-token.
-
-### Sletning
-
-Data kan slettes fra det private analytics-repo på anmodning. Kontakt
-Johan Reventlow med tidspunkt for brug.
 
 ### Tilbagetrækning af consent
 

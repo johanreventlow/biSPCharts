@@ -156,7 +156,6 @@ compute_spc_results_bfh <- function(
   app_state = NULL,
   ...
 ) {
-  # Validering UDEN safe_operation — fejl propagerer som spc_input_error til caller
   req <- validate_spc_request(
     data = if (missing(data)) NULL else data,
     x_var = if (missing(x_var)) NULL else x_var,
@@ -171,185 +170,123 @@ compute_spc_results_bfh <- function(
     ...
   )
 
-  safe_operation(
-    operation_name = "BFHchart SPC computation",
-    code = {
-      # 1. (Validering sker i validate_spc_request() FØR safe_operation)
-      # 1b. Cache key generation (before expensive validation)
-      # Extract parameters for cache key
-      extra_params <- list(...)
+  extra_params <- list(...)
+  cache_key <- build_cache_key(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache)
+
+  cached <- read_spc_cache(cache_key, app_state)
+  if (!is.null(cached)) {
+    return(cached)
+  }
+
+  prepared <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prepared)
+  bfh_params <- build_bfh_args(prepared, axes, extra_params)
+  standardized <- execute_bfh_request(bfh_params, prepared)
+  standardized <- decorate_plot_for_display(standardized, prepared)
+
+  write_spc_cache(cache_key, standardized, app_state)
+
+  log_info(
+    message = "SPC computation completed successfully",
+    .context = "BFH_SERVICE",
+    details = list(
+      chart_type = req$chart_type,
+      n_points = nrow(standardized$qic_data),
+      signals_detected = sum(standardized$qic_data$signal, na.rm = TRUE),
+      has_notes = !is.null(notes_column),
+      cached = !is.null(cache_key)
+    )
+  )
+
+  standardized
+}
+
+
+#' Byg cache-nøgle for SPC-beregning
+#'
+#' @keywords internal
+build_cache_key <- function(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache) {
+  if (!use_cache) {
+    return(NULL)
+  }
+  tryCatch(
+    {
       cache_config <- list(
         chart_type = chart_type,
         x_column = x_var,
         y_column = y_var,
         n_column = n_var,
-        freeze_position = if (!is.null(freeze_var)) {
-          # Extract freeze position from data if available
-          NULL # Will be computed after data filtering
-        } else {
-          NULL
-        },
-        part_positions = NULL, # Will be computed after data filtering
+        freeze_position = NULL,
+        part_positions = NULL,
         target_value = extra_params$target_value,
         centerline_value = extra_params$centerline_value,
         y_axis_unit = extra_params$y_axis_unit,
         multiply_by = multiply,
-        # CRITICAL: Include viewport dimensions for context-aware caching
-        # Different contexts (analysis, export_preview, export_pdf) have different
-        # viewport dimensions which affect label placement in BFHcharts.
-        # Without this, plots generated in one context would be incorrectly cached
-        # and reused in another context with different dimensions.
+        # Viewport dimensions inkluderes: ellers ville plots fra export (andre dims)
+        # fejlagtigt genbruges fra analysis-cache eller omvendt.
         viewport_width = extra_params$width,
         viewport_height = extra_params$height
       )
-
-      # Generate cache key
-      cache_key <- if (use_cache) {
-        tryCatch(
-          {
-            if (exists("generate_spc_cache_key", mode = "function")) {
-              generate_spc_cache_key(data, cache_config)
-            } else {
-              NULL
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache key generation failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-            NULL
-          }
-        )
-      } else {
-        NULL
-      }
-
-      # 1c. Check cache before expensive computation
-      if (!is.null(cache_key) && !is.null(app_state)) {
-        qic_cache <- tryCatch(
-          {
-            if (exists("get_or_init_qic_cache", mode = "function")) {
-              get_or_init_qic_cache(app_state)
-            } else {
-              NULL
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache initialization failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-            NULL
-          }
-        )
-
-        if (!is.null(qic_cache)) {
-          cached_result <- tryCatch(
-            {
-              if (exists("get_cached_spc_result", mode = "function")) {
-                get_cached_spc_result(cache_key, qic_cache)
-              } else {
-                NULL
-              }
-            },
-            error = function(e) {
-              log_warn(
-                paste("Cache retrieval failed:", e$message),
-                .context = "BFH_SERVICE"
-              )
-              NULL
-            }
-          )
-
-          if (!is.null(cached_result)) {
-            log_info(
-              paste("Cache hit - returning cached result:", substr(cache_key, 1, 40), "..."),
-              .context = "BFH_SERVICE"
-            )
-            return(cached_result)
-          } else {
-            log_debug(
-              paste("Cache miss - computing fresh result:", substr(cache_key, 1, 40), "..."),
-              .context = "BFH_SERVICE"
-            )
-          }
-        }
-      }
-
-      # 2+3. Chart type og denominator er valideret i validate_spc_request()
-      validated_chart_type <- req$chart_type
-
-      # 4-6c. Filtrer, parser og forbered data
-      prepared <- prepare_spc_data(req)
-      complete_data <- prepared$data
-
-      # 7. PURE BFHCHARTS WORKFLOW: Direct BFHcharts::bfh_qic() call
-      # This eliminates qicharts2 dependency for SPC calculation
-      extra_params <- list(...)
-
-      # 7a. Bestem akse-konfiguration
-      axes <- resolve_axis_units(prepared)
-
-      # 7b-7d. Byg BFHcharts-argumenter og eksekvér rendering
-      bfh_params <- build_bfh_args(prepared, axes, extra_params)
-      standardized <- execute_bfh_request(bfh_params, prepared)
-
-
-      # 7e+7g. Dekorér plot og udfyld metadata
-      standardized <- decorate_plot_for_display(standardized, prepared)
-
-      # 8. Store result in cache if enabled
-      if (!is.null(cache_key) && !is.null(app_state)) {
-        tryCatch(
-          {
-            qic_cache <- if (exists("get_or_init_qic_cache", mode = "function")) {
-              get_or_init_qic_cache(app_state)
-            } else {
-              NULL
-            }
-
-            if (!is.null(qic_cache) && exists("cache_spc_result", mode = "function")) {
-              # Use 1 hour TTL (3600 seconds) by default
-              cache_ttl <- CACHE_CONFIG$default_timeout_seconds %||% 3600
-              cache_spc_result(cache_key, standardized, qic_cache, ttl = cache_ttl)
-
-              log_debug(
-                paste("Result cached with TTL:", cache_ttl, "seconds"),
-                .context = "BFH_SERVICE"
-              )
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache storage failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-          }
-        )
-      }
-
-      # 9. Log success
-      log_info(
-        message = "SPC computation completed successfully",
-        .context = "BFH_SERVICE",
-        details = list(
-          chart_type = validated_chart_type,
-          n_points = nrow(standardized$qic_data),
-          signals_detected = sum(standardized$qic_data$signal, na.rm = TRUE),
-          has_notes = !is.null(notes_column),
-          cached = !is.null(cache_key)
-        )
-      )
-
-      # NOTE: Don't use return() inside safe_operation code blocks!
-      # R's force() evaluation doesn't handle return() correctly
-      standardized
+      generate_spc_cache_key(data, cache_config)
     },
-    fallback = NULL,
-    show_user = TRUE,
-    error_type = "bfh_service"
+    error = function(e) {
+      log_warn(paste("Cache key generation failed:", e$message), .context = "BFH_SERVICE")
+      NULL
+    }
   )
+}
+
+
+#' Læs cachet SPC-resultat
+#'
+#' @keywords internal
+read_spc_cache <- function(cache_key, app_state) {
+  if (is.null(cache_key) || is.null(app_state)) {
+    return(NULL)
+  }
+  tryCatch(
+    {
+      qic_cache <- get_or_init_qic_cache(app_state)
+      if (is.null(qic_cache)) {
+        return(NULL)
+      }
+      result <- get_cached_spc_result(cache_key, qic_cache)
+      if (!is.null(result)) {
+        log_info(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+      } else {
+        log_debug(paste("Cache miss:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+      }
+      result
+    },
+    error = function(e) {
+      log_warn(paste("Cache retrieval failed:", e$message), .context = "BFH_SERVICE")
+      NULL
+    }
+  )
+}
+
+
+#' Gem SPC-resultat i cache
+#'
+#' @keywords internal
+write_spc_cache <- function(cache_key, result, app_state) {
+  if (is.null(cache_key) || is.null(app_state)) {
+    return(invisible(NULL))
+  }
+  tryCatch(
+    {
+      qic_cache <- get_or_init_qic_cache(app_state)
+      if (!is.null(qic_cache)) {
+        cache_ttl <- CACHE_CONFIG$default_timeout_seconds %||% 3600
+        cache_spc_result(cache_key, result, qic_cache, ttl = cache_ttl)
+        log_debug(paste("Result cached with TTL:", cache_ttl, "seconds"), .context = "BFH_SERVICE")
+      }
+    },
+    error = function(e) {
+      log_warn(paste("Cache storage failed:", e$message), .context = "BFH_SERVICE")
+    }
+  )
+  invisible(NULL)
 }
 
 

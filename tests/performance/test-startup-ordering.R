@@ -82,8 +82,10 @@ test_that("Development environment gets correct log level", {
 
   # Development should default to DEBUG if YAML config not available
   log_level <- Sys.getenv("SPC_LOG_LEVEL", "")
-  expect_true(log_level %in% c("DEBUG", "INFO"),
-              "Development environment should use DEBUG or INFO log level")
+  expect_true(
+    log_level %in% c("DEBUG", "INFO"),
+    "Development environment should use DEBUG or INFO log level"
+  )
 })
 
 test_that("Production environment gets correct log level", {
@@ -140,11 +142,13 @@ test_that("Explicit log level override works regardless of environment", {
   Sys.unsetenv("GOLEM_CONFIG_ACTIVE")
   Sys.unsetenv("SPC_LOG_LEVEL")
 
-  configure_app_environment(enable_test_mode = FALSE)  # Sets production
-  configure_logging_from_yaml(log_level = "INFO")     # Override to INFO
+  configure_app_environment(enable_test_mode = FALSE) # Sets production
+  configure_logging_from_yaml(log_level = "INFO") # Override to INFO
 
-  expect_equal(Sys.getenv("SPC_LOG_LEVEL"), "INFO",
-               "Explicit log level should override environment defaults")
+  expect_equal(
+    Sys.getenv("SPC_LOG_LEVEL"), "INFO",
+    "Explicit log level should override environment defaults"
+  )
 })
 
 test_that("Invalid log level falls back to YAML/environment defaults", {
@@ -168,11 +172,13 @@ test_that("Invalid log level falls back to YAML/environment defaults", {
   Sys.unsetenv("GOLEM_CONFIG_ACTIVE")
   Sys.unsetenv("SPC_LOG_LEVEL")
 
-  configure_app_environment(enable_test_mode = TRUE)     # Sets development
-  configure_logging_from_yaml(log_level = "INVALID")    # Invalid level
+  configure_app_environment(enable_test_mode = TRUE) # Sets development
+  configure_logging_from_yaml(log_level = "INVALID") # Invalid level
 
   # Should fall back to development default (DEBUG)
   log_level <- Sys.getenv("SPC_LOG_LEVEL", "")
-  expect_equal(log_level, "DEBUG",
-               "Invalid log level should fall back to environment default")
+  expect_equal(
+    log_level, "DEBUG",
+    "Invalid log level should fall back to environment default"
+  )
 })

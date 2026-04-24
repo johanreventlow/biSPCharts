@@ -184,11 +184,13 @@ test_that("generate_export_filename uses separator constant", {
   )
 
   # Should use separator between components
-  expect_match(result, paste0(EXPORT_FILENAME_PREFIX,
-                              EXPORT_FILENAME_SEPARATOR,
-                              "Dept",
-                              EXPORT_FILENAME_SEPARATOR,
-                              "Test"))
+  expect_match(result, paste0(
+    EXPORT_FILENAME_PREFIX,
+    EXPORT_FILENAME_SEPARATOR,
+    "Dept",
+    EXPORT_FILENAME_SEPARATOR,
+    "Test"
+  ))
 })
 
 test_that("generate_export_filename sanitizes title", {
@@ -353,7 +355,7 @@ test_that("generate_export_filename handles NULL title and department", {
   # Should handle NULL gracefully (treat as empty)
   expect_error(
     generate_export_filename(format = "pdf", title = NULL, department = NULL),
-    NA  # No error expected
+    NA # No error expected
   )
 })
 

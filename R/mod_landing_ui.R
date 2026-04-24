@@ -88,8 +88,10 @@ landing_default_ui <- function(ns) {
           "Shiny.setInputValue('%s', Math.random()); return false;",
           ns("goto_app_guide")
         ),
-        style = paste0("text-decoration: underline; color: ",
-          get_hospital_colors()$ui_grey_dark, ";"),
+        style = paste0(
+          "text-decoration: underline; color: ",
+          get_hospital_colors()$ui_grey_dark, ";"
+        ),
         "S\u00e5dan bruger du appen"
       ),
       " \u00b7 ",
@@ -99,8 +101,10 @@ landing_default_ui <- function(ns) {
           "Shiny.setInputValue('%s', Math.random()); return false;",
           ns("goto_spc")
         ),
-        style = paste0("text-decoration: underline; color: ",
-          get_hospital_colors()$ui_grey_dark, ";"),
+        style = paste0(
+          "text-decoration: underline; color: ",
+          get_hospital_colors()$ui_grey_dark, ";"
+        ),
         "L\u00e6r om SPC"
       )
     )

@@ -139,7 +139,9 @@ set_viewport_dims <- function(app_state, width, height, emit = NULL) {
     !identical(current$width, width) ||
     !identical(current$height, height)
 
-  if (!dims_changed) return(invisible(NULL))
+  if (!dims_changed) {
+    return(invisible(NULL))
+  }
 
   shiny::isolate({
     app_state$visualization$viewport_dims <- list(

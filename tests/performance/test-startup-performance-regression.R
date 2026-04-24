@@ -40,14 +40,15 @@ test_that("Memory usage stays within reasonable bounds during startup", {
   # Check that memory increase is reasonable (less than 50MB for startup)
   final_snapshot <- .startup_metrics$memory_snapshots[[5]]
   expect_lt(final_snapshot$memory_diff_mb, 50,
-            info = "Startup memory increase should be less than 50MB")
+    info = "Startup memory increase should be less than 50MB"
+  )
 })
 
 test_that("Event sequence timing is within acceptable ranges", {
   init_startup_metrics()
 
   # Simulate typical startup event sequence with timing
-  Sys.sleep(0.01)  # Simulate small delay
+  Sys.sleep(0.01) # Simulate small delay
   track_event("test_mode_ready", "timing_test")
 
   Sys.sleep(0.01)
@@ -65,7 +66,8 @@ test_that("Event sequence timing is within acceptable ranges", {
   # Check that total startup time is reasonable
   metrics <- get_enhanced_startup_metrics()
   expect_lt(metrics$total_duration_seconds, 10,
-            info = "Total startup should complete within 10 seconds")
+    info = "Total startup should complete within 10 seconds"
+  )
 
   # Check that events are in chronological order
   event_times <- sapply(.startup_metrics$event_sequence, function(e) e$time_since_start)
@@ -151,5 +153,6 @@ test_that("Startup monitoring doesn't significantly impact performance", {
 
   # Monitoring overhead should be minimal (less than 1 second for 10 operations)
   expect_lt(monitoring_duration, 1.0,
-            info = "Performance monitoring overhead should be minimal")
+    info = "Performance monitoring overhead should be minimal"
+  )
 })

@@ -62,7 +62,7 @@ safe_max <- function(x, na.rm = TRUE) {
 #' @keywords internal
 count_outliers_latest_part <- function(qic_data) {
   if (is.null(qic_data) || nrow(qic_data) == 0 ||
-        !"sigma.signal" %in% names(qic_data)) {
+    !"sigma.signal" %in% names(qic_data)) {
     return(0L)
   }
 

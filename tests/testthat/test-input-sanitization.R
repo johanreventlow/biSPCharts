@@ -93,11 +93,14 @@ test_that("Column selection UI updates handle empty states", {
   if (exists("update_column_choices_unified")) {
     # Should not crash with empty data
     empty_data <- data.frame()
-    result <- tryCatch({
-      update_column_choices_unified(empty_data, session = list())
-    }, error = function(e) {
-      "error_handled"
-    })
+    result <- tryCatch(
+      {
+        update_column_choices_unified(empty_data, session = list())
+      },
+      error = function(e) {
+        "error_handled"
+      }
+    )
     expect_true(is.list(result) || result == "error_handled")
   }
 })

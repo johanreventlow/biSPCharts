@@ -67,7 +67,7 @@ describe("count_test_blocks()", {
       'describe("group", {',
       '  it("first", { expect_true(TRUE) })',
       '  it("second", { expect_true(TRUE) })',
-      '})'
+      "})"
     ), tmp)
 
     expect_equal(count_test_blocks(tmp), 2L)
@@ -197,57 +197,73 @@ source(file.path(audit_dir, "classifier.R"))
 describe("classify_file()", {
   it("klassificerer stub ved faa test-blokke", {
     static <- list(n_test_blocks = 1L)
-    dynamic <- list(exit_code = 0L, n_pass = 1L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = character(0), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 0L, n_pass = 1L, n_fail = 0L, n_skip = 0L,
+      missing_functions = character(0), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "stub")
   })
 
   it("klassificerer skipped-all", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 0L, n_pass = 0L, n_fail = 0L, n_skip = 10L,
-                    missing_functions = character(0), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 0L, n_pass = 0L, n_fail = 0L, n_skip = 10L,
+      missing_functions = character(0), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "skipped-all")
   })
 
   it("klassificerer broken-missing-fn", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = c("missing_fn"), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
+      missing_functions = c("missing_fn"), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "broken-missing-fn")
   })
 
   it("klassificerer broken-api-drift", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = character(0), api_drift_detected = TRUE)
+    dynamic <- list(
+      exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
+      missing_functions = character(0), api_drift_detected = TRUE
+    )
     expect_equal(classify_file(static, dynamic), "broken-api-drift")
   })
 
   it("klassificerer broken-other som fallback", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = character(0), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
+      missing_functions = character(0), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "broken-other")
   })
 
   it("klassificerer green-partial", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 0L, n_pass = 5L, n_fail = 3L, n_skip = 0L,
-                    missing_functions = character(0), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 0L, n_pass = 5L, n_fail = 3L, n_skip = 0L,
+      missing_functions = character(0), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "green-partial")
   })
 
   it("klassificerer green", {
     static <- list(n_test_blocks = 10L)
-    dynamic <- list(exit_code = 0L, n_pass = 10L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = character(0), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 0L, n_pass = 10L, n_fail = 0L, n_skip = 0L,
+      missing_functions = character(0), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "green")
   })
 
   it("prioriterer stub over broken", {
     static <- list(n_test_blocks = 1L)
-    dynamic <- list(exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
-                    missing_functions = c("fn"), api_drift_detected = FALSE)
+    dynamic <- list(
+      exit_code = 1L, n_pass = 0L, n_fail = 0L, n_skip = 0L,
+      missing_functions = c("fn"), api_drift_detected = FALSE
+    )
     expect_equal(classify_file(static, dynamic), "stub")
   })
 })

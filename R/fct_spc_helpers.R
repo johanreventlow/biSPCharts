@@ -13,9 +13,13 @@
 #' @return Logical. TRUE hvis kolonnen er numerisk nok.
 #' @keywords internal
 is_column_numeric <- function(col, threshold = 0.5) {
-  if (is.numeric(col)) return(TRUE)
+  if (is.numeric(col)) {
+    return(TRUE)
+  }
   non_na <- col[!is.na(col)]
-  if (length(non_na) == 0) return(TRUE)
+  if (length(non_na) == 0) {
+    return(TRUE)
+  }
   parsed <- suppressWarnings(as.numeric(as.character(non_na)))
   sum(!is.na(parsed)) / length(non_na) >= threshold
 }

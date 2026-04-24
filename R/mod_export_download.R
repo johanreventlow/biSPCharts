@@ -220,4 +220,3 @@ generate_png_export <- function(input, app_state, file) {
 
   shiny::showNotification("PNG genereret og downloadet", type = "message", duration = 3)
 }
-

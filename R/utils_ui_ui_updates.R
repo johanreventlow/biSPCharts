@@ -29,11 +29,12 @@ create_ui_update_service <- function(session, app_state) {
   # @param columns Vector of column input IDs to update
   # @param clear_selections If TRUE, clear all selections
   #
-  update_column_choices <- function(
-      choices = NULL, selected = NULL,
-      columns = c("x_column", "y_column", "n_column",
-                  "skift_column", "frys_column", "kommentar_column"),
-      clear_selections = FALSE) {
+  update_column_choices <- function(choices = NULL, selected = NULL,
+                                    columns = c(
+                                      "x_column", "y_column", "n_column",
+                                      "skift_column", "frys_column", "kommentar_column"
+                                    ),
+                                    clear_selections = FALSE) {
     # Generate choices from current data if not provided
     if (is.null(choices)) {
       current_data <- app_state$data$current_data
@@ -103,10 +104,11 @@ create_ui_update_service <- function(session, app_state) {
   # @param selected Named list of selected values (e.g., list(x_column="Dato", y_column="Værdi"))
   # @param columns Vector of input IDs to update (defaults to all SPC columns)
   #
-  update_all_columns <- function(
-      choices, selected = list(),
-      columns = c("x_column", "y_column", "n_column",
-                  "skift_column", "frys_column", "kommentar_column")) {
+  update_all_columns <- function(choices, selected = list(),
+                                 columns = c(
+                                   "x_column", "y_column", "n_column",
+                                   "skift_column", "frys_column", "kommentar_column"
+                                 )) {
     safe_programmatic_ui_update(session, app_state, function() {
       for (col in columns) {
         selected_value <- if (col %in% names(selected)) selected[[col]] else ""

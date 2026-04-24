@@ -194,18 +194,24 @@ test_that("log_debug_block funktionalitet", {
   Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 
   # Test start block
-  expect_output(log_debug_block("TEST_CONTEXT", "Starting test operation"),
-                "DEBUG.*\\[TEST_CONTEXT\\].*=====")
-  expect_output(log_debug_block("TEST_CONTEXT", "Starting test operation"),
-                "DEBUG.*\\[TEST_CONTEXT\\].*Starting test operation")
+  expect_output(
+    log_debug_block("TEST_CONTEXT", "Starting test operation"),
+    "DEBUG.*\\[TEST_CONTEXT\\].*====="
+  )
+  expect_output(
+    log_debug_block("TEST_CONTEXT", "Starting test operation"),
+    "DEBUG.*\\[TEST_CONTEXT\\].*Starting test operation"
+  )
 
   # Test stop block
-  expect_output(log_debug_block("TEST_CONTEXT", "Test operation", type = "stop"),
-                "DEBUG.*\\[TEST_CONTEXT\\].*Test operation - completed")
+  expect_output(
+    log_debug_block("TEST_CONTEXT", "Test operation", type = "stop"),
+    "DEBUG.*\\[TEST_CONTEXT\\].*Test operation - completed"
+  )
 
   # Test both type
   output <- capture.output(log_debug_block("TEST_CONTEXT", "Full test operation", type = "both"))
-  expect_equal(length(output), 4L)  # Separator, action, completion, separator
+  expect_equal(length(output), 4L) # Separator, action, completion, separator
   expect_match(output[1], "DEBUG.*\\[TEST_CONTEXT\\].*=====")
   expect_match(output[2], "DEBUG.*\\[TEST_CONTEXT\\].*Full test operation$")
   expect_match(output[3], "DEBUG.*\\[TEST_CONTEXT\\].*Full test operation - completed")
@@ -231,14 +237,18 @@ test_that("log_debug_kv funktionalitet", {
 
   # Test liste data
   test_list <- list(rows = 100, cols = 5, type = "data.frame")
-  expect_output(log_debug_kv(.list_data = test_list, .context = "TEST"),
-                "DEBUG.*\\[TEST\\].*rows: 100")
-  expect_output(log_debug_kv(.list_data = test_list, .context = "TEST"),
-                "DEBUG.*\\[TEST\\].*cols: 5")
+  expect_output(
+    log_debug_kv(.list_data = test_list, .context = "TEST"),
+    "DEBUG.*\\[TEST\\].*rows: 100"
+  )
+  expect_output(
+    log_debug_kv(.list_data = test_list, .context = "TEST"),
+    "DEBUG.*\\[TEST\\].*cols: 5"
+  )
 
   # Test kombineret usage
   output <- capture.output(log_debug_kv(direct_arg = "value", .list_data = list(list_arg = "list_value"), .context = "TEST"))
-  expect_true(length(output) == 2)  # Should have 2 lines
+  expect_true(length(output) == 2) # Should have 2 lines
   expect_match(output[1], "DEBUG.*\\[TEST\\].*direct_arg: value")
   expect_match(output[2], "DEBUG.*\\[TEST\\].*list_arg: list_value")
 

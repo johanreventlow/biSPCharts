@@ -60,7 +60,7 @@ test_that("module_data_reactive filters empty rows from data", {
 
   # Rows 1, 3 have at least one non-NA value = 2 rows
   expect_equal(nrow(filtered), 2)
-  expect_equal(nrow(test_data), 4)  # Original has 4 rows
+  expect_equal(nrow(test_data), 4) # Original has 4 rows
 })
 
 test_that("module_data_reactive preserves hide_anhoej_rules attribute", {
@@ -197,11 +197,11 @@ test_that("spc_inputs_raw uses default y_axis_unit when NULL", {
 # ==============================================================================
 
 test_that("spc_results returns list with plot, data, metadata", {
-  test_data <- create_test_data(15)  # Need reasonable sample for Anhøj
+  test_data <- create_test_data(15) # Need reasonable sample for Anhøj
 
   # Minimal SPC result structure
   spc_result <- list(
-    plot = NULL,  # Would be ggplot2 object
+    plot = NULL, # Would be ggplot2 object
     data = test_data,
     metadata = list(
       anhoej_rules = NA_integer_,
@@ -360,19 +360,19 @@ test_that("spc_results uses cache key based on inputs + viewport", {
   cache_key <- paste(spc_inputs_hash, paste(unlist(viewport_dims), collapse = ","))
 
   expect_true(nchar(cache_key) > 0)
-  expect_true(grepl(",", cache_key))  # Should contain viewport dims
+  expect_true(grepl(",", cache_key)) # Should contain viewport dims
 })
 
 test_that("spc_results cache is invalidated when inputs change", {
   key1 <- "hash1_800,600"
-  key2 <- "hash2_800,600"  # Different inputs
+  key2 <- "hash2_800,600" # Different inputs
 
   expect_false(key1 == key2)
 })
 
 test_that("spc_results cache is invalidated when viewport changes", {
   key1 <- "hash1_800,600"
-  key2 <- "hash1_900,700"  # Same inputs, different viewport
+  key2 <- "hash1_900,700" # Same inputs, different viewport
 
   expect_false(key1 == key2)
 })
@@ -518,7 +518,7 @@ test_that("Reactive chain handles very small dataset (edge case)", {
 
   is_valid <- nrow(small_data) > 0
 
-  expect_true(is_valid)  # Even 1 row should process
+  expect_true(is_valid) # Even 1 row should process
 })
 
 test_that("Reactive chain handles missing columns gracefully", {

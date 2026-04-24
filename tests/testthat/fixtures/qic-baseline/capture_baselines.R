@@ -53,18 +53,18 @@ create_test_data <- function(n_points = 36, scenario = "basic", chart_type = "ru
       # Create pattern for Anhøj violations (runs ≥8 on one side)
       # First 18 points above median, next 18 below
       data$Taeller <- c(
-        rpois(18, lambda = 95) + 90,  # Higher values (above median)
-        rpois(18, lambda = 85) + 75   # Lower values (below median)
+        rpois(18, lambda = 95) + 90, # Higher values (above median)
+        rpois(18, lambda = 85) + 75 # Lower values (below median)
       )
       data$Naevner <- rpois(n_points, lambda = 100) + 95
     } else if (scenario == "freeze") {
       # Stable baseline, then shift after freeze
       data$Taeller <- c(
-        rpois(24, lambda = 90) + 80,  # Baseline (24 months)
-        rpois(12, lambda = 95) + 90   # Improved (12 months)
+        rpois(24, lambda = 90) + 80, # Baseline (24 months)
+        rpois(12, lambda = 95) + 90 # Improved (12 months)
       )
       data$Naevner <- rpois(n_points, lambda = 100) + 95
-      data$Frys[24] <- TRUE  # Freeze at month 24
+      data$Frys[24] <- TRUE # Freeze at month 24
     }
   } else {
     # Charts with single value (i, c, g, mr, s, xbar)
@@ -74,14 +74,14 @@ create_test_data <- function(n_points = 36, scenario = "basic", chart_type = "ru
     } else if (scenario == "anhoej") {
       # Create pattern for Anhøj violations
       data$Vaerdi <- c(
-        rnorm(18, mean = 55, sd = 3),  # Above median
-        rnorm(18, mean = 45, sd = 3)   # Below median
+        rnorm(18, mean = 55, sd = 3), # Above median
+        rnorm(18, mean = 45, sd = 3) # Below median
       )
     } else if (scenario == "freeze") {
       # Stable baseline, then shift
       data$Vaerdi <- c(
-        rnorm(24, mean = 50, sd = 5),  # Baseline
-        rnorm(12, mean = 45, sd = 4)   # Improved
+        rnorm(24, mean = 50, sd = 5), # Baseline
+        rnorm(12, mean = 45, sd = 4) # Improved
       )
       data$Frys[24] <- TRUE
     }
@@ -156,20 +156,30 @@ capture_qic_baseline <- function(data, chart_type, scenario) {
           ucl = unique(qic_result$ucl[!is.na(qic_result$ucl)]),
           lcl = unique(qic_result$lcl[!is.na(qic_result$lcl)])
         )
-      } else NULL,
+      } else {
+        NULL
+      },
       center_line = if (!is.null(qic_result$cl)) {
         unique(qic_result$cl[!is.na(qic_result$cl)])
-      } else NULL,
+      } else {
+        NULL
+      },
       anhoej_rules = list(
         runs_signal = if ("runs.signal" %in% names(qic_result)) {
           any(qic_result$runs.signal, na.rm = TRUE)
-        } else FALSE,
+        } else {
+          FALSE
+        },
         n_crossings = if ("n.crossings" %in% names(qic_result)) {
           unique(qic_result$n.crossings[!is.na(qic_result$n.crossings)])[1]
-        } else NA,
+        } else {
+          NA
+        },
         n_crossings_min = if ("n.crossings.min" %in% names(qic_result)) {
           unique(qic_result$n.crossings.min[!is.na(qic_result$n.crossings.min)])[1]
-        } else NA
+        } else {
+          NA
+        }
       ),
       ggplot_object = plot
     ),
@@ -201,29 +211,31 @@ for (chart_type in chart_types) {
   for (scenario in scenarios) {
     baseline_name <- paste(chart_type, scenario, sep = "-")
 
-    tryCatch({
-      # Generate appropriate test data
-      data <- create_test_data(
-        n_points = 36,
-        scenario = scenario,
-        chart_type = chart_type
-      )
+    tryCatch(
+      {
+        # Generate appropriate test data
+        data <- create_test_data(
+          n_points = 36,
+          scenario = scenario,
+          chart_type = chart_type
+        )
 
-      # Capture baseline
-      baseline <- capture_qic_baseline(data, chart_type, scenario)
+        # Capture baseline
+        baseline <- capture_qic_baseline(data, chart_type, scenario)
 
-      # Save to RDS
-      output_file <- file.path(output_dir, paste0(baseline_name, ".rds"))
-      saveRDS(baseline, output_file)
+        # Save to RDS
+        output_file <- file.path(output_dir, paste0(baseline_name, ".rds"))
+        saveRDS(baseline, output_file)
 
-      # Track success
-      captured[[baseline_name]] <- output_file
-      message(sprintf("✓ Saved: %s", basename(output_file)))
-
-    }, error = function(e) {
-      failed[[baseline_name]] <- e$message
-      message(sprintf("✗ Failed: %s - %s", baseline_name, e$message))
-    })
+        # Track success
+        captured[[baseline_name]] <- output_file
+        message(sprintf("✓ Saved: %s", basename(output_file)))
+      },
+      error = function(e) {
+        failed[[baseline_name]] <- e$message
+        message(sprintf("✗ Failed: %s - %s", baseline_name, e$message))
+      }
+    )
   }
 }
 
@@ -259,17 +271,20 @@ cat("Verifying baseline files are loadable...\n")
 verification_failed <- FALSE
 for (name in names(captured)) {
   file_path <- captured[[name]]
-  tryCatch({
-    baseline <- readRDS(file_path)
-    # Basic structure checks
-    if (!is.list(baseline)) stop("Not a list")
-    if (!"qic_output" %in% names(baseline)) stop("Missing qic_output")
-    if (!"input_data" %in% names(baseline)) stop("Missing input_data")
-    cat(sprintf("  ✓ %s verified\n", name))
-  }, error = function(e) {
-    cat(sprintf("  ✗ %s verification failed: %s\n", name, e$message))
-    verification_failed <- TRUE
-  })
+  tryCatch(
+    {
+      baseline <- readRDS(file_path)
+      # Basic structure checks
+      if (!is.list(baseline)) stop("Not a list")
+      if (!"qic_output" %in% names(baseline)) stop("Missing qic_output")
+      if (!"input_data" %in% names(baseline)) stop("Missing input_data")
+      cat(sprintf("  ✓ %s verified\n", name))
+    },
+    error = function(e) {
+      cat(sprintf("  ✗ %s verification failed: %s\n", name, e$message))
+      verification_failed <- TRUE
+    }
+  )
 }
 
 if (!verification_failed && length(failed) == 0) {

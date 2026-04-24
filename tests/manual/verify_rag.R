@@ -2,7 +2,7 @@
 # Manuel test script til at verificere RAG integration
 
 # Source required files (development mode)
-source("R/utils_error_handling.R")  # For safe_getenv()
+source("R/utils_error_handling.R") # For safe_getenv()
 source("R/config_log_contexts.R")
 source("R/utils_logging.R")
 source("R/utils_ragnar_integration.R")

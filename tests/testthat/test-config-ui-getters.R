@@ -93,10 +93,10 @@ test_that("get_ui_layout_proportion returns correct values for known proportions
 
   # Check third and two_thirds with tolerance for floating point
   third <- get_ui_layout_proportion("third")
-  expect_true(abs(third - 1/3) < 0.001, info = "third should be ~0.333")
+  expect_true(abs(third - 1 / 3) < 0.001, info = "third should be ~0.333")
 
   two_thirds <- get_ui_layout_proportion("two_thirds")
-  expect_true(abs(two_thirds - 2/3) < 0.001, info = "two_thirds should be ~0.667")
+  expect_true(abs(two_thirds - 2 / 3) < 0.001, info = "two_thirds should be ~0.667")
 })
 
 test_that("get_ui_layout_proportion returns NULL for unknown proportions", {

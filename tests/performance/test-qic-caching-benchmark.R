@@ -65,7 +65,7 @@ test_that("QIC caching provides measurable performance improvement", {
 
   # Assert performance improvement
   # Cache hit should be faster (allowing for measurement noise)
-  expect_lt(time_cache_hit, time_cache_miss * 1.1)  # At most 10% slower due to overhead
+  expect_lt(time_cache_hit, time_cache_miss * 1.1) # At most 10% slower due to overhead
 
   # Check cache stats
   cache_stats <- get_qic_cache_stats(qic_cache)

@@ -14,9 +14,9 @@ test_that("extract_comment_data uses stable row-id mapping", {
 
   # Simulate qic_data that has reordered/filtered rows (common with phases)
   qic_data_reordered <- data.frame(
-    x = as.Date(c("2023-01-04", "2023-01-01", "2023-01-03")),  # Reordered: 4,1,3
-    y = c(18, 10, 12),  # Corresponding values
-    .original_row_id = c(4, 1, 3),  # Row IDs from original data
+    x = as.Date(c("2023-01-04", "2023-01-01", "2023-01-03")), # Reordered: 4,1,3
+    y = c(18, 10, 12), # Corresponding values
+    .original_row_id = c(4, 1, 3), # Row IDs from original data
     stringsAsFactors = FALSE
   )
 
@@ -27,10 +27,10 @@ test_that("extract_comment_data uses stable row-id mapping", {
   expect_equal(nrow(comment_data), 2)
 
   # TEST: Comments should be correctly mapped to their original rows
-  expect_true("Fourth" %in% comment_data$comment)  # From row 4
-  expect_true("First" %in% comment_data$comment)   # From row 1
+  expect_true("Fourth" %in% comment_data$comment) # From row 4
+  expect_true("First" %in% comment_data$comment) # From row 1
   expect_false("Second" %in% comment_data$comment) # Row 2 not in qic_data
-  expect_false("" %in% comment_data$comment)       # Empty comment filtered out
+  expect_false("" %in% comment_data$comment) # Empty comment filtered out
 
   # TEST: x,y coordinates should match qic_data
   fourth_comment_row <- comment_data[comment_data$comment == "Fourth", ]

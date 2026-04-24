@@ -775,7 +775,6 @@ create_ui_upload_page <- function() {
     shiny::div(
       class = "container-fluid d-flex align-items-center justify-content-center",
       style = "max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 120px);",
-
       shiny::div(
         style = "width: 100%;",
 
@@ -783,90 +782,90 @@ create_ui_upload_page <- function() {
         shiny::div(
           style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
 
-        # Knap 1: Kopiér & Indsæt data (default valgt via JS)
-        shiny::div(
-          style = "flex: 0 0 120px;",
-          square_button(
-            "show_paste_area", "Kopiér &\nIndsæt data", "clipboard",
-            "Indsæt data fra Excel eller CSV"
-          )
-        ),
-
-        # Knap 2: Indlæs XLS/CSV
-        shiny::div(
-          style = "flex: 0 0 120px;",
-          # Skjult fileInput
+          # Knap 1: Kopiér & Indsæt data (default valgt via JS)
           shiny::div(
-            style = "display: none;",
-            shiny::fileInput(
-              "direct_file_upload",
-              label = NULL,
-              accept = c(".csv", ".xlsx", ".xls"),
-              buttonLabel = "Vælg fil"
+            style = "flex: 0 0 120px;",
+            square_button(
+              "show_paste_area", "Kopiér &\nIndsæt data", "clipboard",
+              "Indsæt data fra Excel eller CSV"
             )
           ),
-          square_button(
-            "trigger_file_upload", "Indlæs\nXLS/CSV", "table",
-            "V\u00e6lg Excel/CSV eller en tidligere gemt biSPCharts-fil"
-          )
-        ),
 
-        # Knap 3: Prøv med eksempeldata (med dropdown)
-        shiny::div(
-          style = "flex: 0 0 120px; position: relative;",
-          square_button(
-            "toggle_sample_dropdown", "Pr\u00f8v med\neksempeldata", "flask",
-            "V\u00e6lg et SPC-eksempeldatas\u00e6t"
-          ),
-          # Dropdown-menu med eksempeldatasæt
+          # Knap 2: Indlæs XLS/CSV
           shiny::div(
-            id = "sample_data_dropdown",
-            class = "sample-data-dropdown",
-            lapply(SAMPLE_DATASETS, function(ds) {
-              shiny::tags$button(
-                class = "sample-data-item",
-                onclick = sprintf(
-                  "Shiny.setInputValue('selected_sample', '%s', {priority: 'event'}); document.getElementById('sample_data_dropdown').style.display='none';",
-                  ds$id
-                ),
-                shiny::tags$span(class = "sample-label", ds$label),
-                shiny::tags$span(class = "sample-desc", ds$description)
+            style = "flex: 0 0 120px;",
+            # Skjult fileInput
+            shiny::div(
+              style = "display: none;",
+              shiny::fileInput(
+                "direct_file_upload",
+                label = NULL,
+                accept = c(".csv", ".xlsx", ".xls"),
+                buttonLabel = "Vælg fil"
               )
-            })
-          )
-        ),
-
-        # Knap 4: Blank session
-        shiny::div(
-          style = "flex: 0 0 120px;",
-          square_button(
-            "clear_saved", "Blank\nsession", "file-circle-plus",
-            "Start med tomt datas\u00e6t"
-          )
-        ),
-
-        # Paste-felt (fylder resten af pladsen)
-        shiny::div(
-          style = "flex: 1 1 auto; display: flex; flex-direction: column; margin-left: 20px;",
-          shiny::textAreaInput(
-            "paste_data_input",
-            label = NULL,
-            value = "",
-            rows = 6,
-            width = "100%",
-            placeholder = "Inds\u00e6t data fra Excel eller CSV her..."
+            ),
+            square_button(
+              "trigger_file_upload", "Indlæs\nXLS/CSV", "table",
+              "V\u00e6lg Excel/CSV eller en tidligere gemt biSPCharts-fil"
+            )
           ),
+
+          # Knap 3: Prøv med eksempeldata (med dropdown)
           shiny::div(
-            style = "display: flex; justify-content: flex-end;",
-            shiny::actionButton(
-              "load_paste_data",
-              shiny::tagList("Forts\u00e6t ", shiny::icon("arrow-right")),
-              class = "btn-primary",
-              style = "width: 200px;",
-              title = "Indl\u00e6s data og g\u00e5 til analyse"
+            style = "flex: 0 0 120px; position: relative;",
+            square_button(
+              "toggle_sample_dropdown", "Pr\u00f8v med\neksempeldata", "flask",
+              "V\u00e6lg et SPC-eksempeldatas\u00e6t"
+            ),
+            # Dropdown-menu med eksempeldatasæt
+            shiny::div(
+              id = "sample_data_dropdown",
+              class = "sample-data-dropdown",
+              lapply(SAMPLE_DATASETS, function(ds) {
+                shiny::tags$button(
+                  class = "sample-data-item",
+                  onclick = sprintf(
+                    "Shiny.setInputValue('selected_sample', '%s', {priority: 'event'}); document.getElementById('sample_data_dropdown').style.display='none';",
+                    ds$id
+                  ),
+                  shiny::tags$span(class = "sample-label", ds$label),
+                  shiny::tags$span(class = "sample-desc", ds$description)
+                )
+              })
+            )
+          ),
+
+          # Knap 4: Blank session
+          shiny::div(
+            style = "flex: 0 0 120px;",
+            square_button(
+              "clear_saved", "Blank\nsession", "file-circle-plus",
+              "Start med tomt datas\u00e6t"
+            )
+          ),
+
+          # Paste-felt (fylder resten af pladsen)
+          shiny::div(
+            style = "flex: 1 1 auto; display: flex; flex-direction: column; margin-left: 20px;",
+            shiny::textAreaInput(
+              "paste_data_input",
+              label = NULL,
+              value = "",
+              rows = 6,
+              width = "100%",
+              placeholder = "Inds\u00e6t data fra Excel eller CSV her..."
+            ),
+            shiny::div(
+              style = "display: flex; justify-content: flex-end;",
+              shiny::actionButton(
+                "load_paste_data",
+                shiny::tagList("Forts\u00e6t ", shiny::icon("arrow-right")),
+                class = "btn-primary",
+                style = "width: 200px;",
+                title = "Indl\u00e6s data og g\u00e5 til analyse"
+              )
             )
           )
-        )
         ), # Luk flex-row div
 
         # Download tom skabelon-link under knapperne

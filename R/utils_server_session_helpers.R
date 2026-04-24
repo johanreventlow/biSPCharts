@@ -206,7 +206,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       # NB: last_save_time opdateres af local_storage_save_result observer
       # når JS-siden bekræfter success — ikke her.
       autoSaveAppState(session, save_data$data, save_data$metadata,
-        app_state = app_state)
+        app_state = app_state
+      )
     })
 
     # Register observer with manager
@@ -324,7 +325,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       # NB: last_save_time opdateres af local_storage_save_result observer
       # når JS-siden bekræfter success — ikke her.
       autoSaveAppState(session, save_data$data, save_data$metadata,
-        app_state = app_state)
+        app_state = app_state
+      )
     })
   } else {
     NULL

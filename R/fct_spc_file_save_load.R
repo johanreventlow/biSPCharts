@@ -34,20 +34,26 @@ build_spc_excel <- function(data, metadata) {
     "Dette ark bruges af biSPCharts til at gendanne dine indstillinger. ",
     "Du kan redigere v\u00e6rdierne, men undg\u00e5 at slette arket."
   )
-  openxlsx::writeData(wb, sheet = "Indstillinger",
-    x = data.frame(Besked = kommentar), startRow = 1, colNames = FALSE)
+  openxlsx::writeData(wb,
+    sheet = "Indstillinger",
+    x = data.frame(Besked = kommentar), startRow = 1, colNames = FALSE
+  )
 
   meta_df <- data.frame(
-    Felt   = names(metadata),
+    Felt = names(metadata),
     Vaerdi = vapply(metadata, function(x) {
-      if (is.null(x) || (length(x) == 0)) return("")
+      if (is.null(x) || (length(x) == 0)) {
+        return("")
+      }
       x_clean <- x[!is.na(x)]
       if (length(x_clean) == 0) "" else paste(x_clean, collapse = ", ")
     }, character(1)),
     stringsAsFactors = FALSE
   )
-  openxlsx::writeData(wb, sheet = "Indstillinger",
-    x = meta_df, startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE)
+  openxlsx::writeData(wb,
+    sheet = "Indstillinger",
+    x = meta_df, startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE
+  )
 
   # Gem til temp-fil
   temp_path <- tempfile(fileext = ".xlsx")
@@ -62,33 +68,39 @@ build_spc_excel <- function(data, metadata) {
 #'   hvis arket mangler eller er korrupt
 #' @keywords internal
 parse_spc_excel <- function(file_path, sheets = NULL) {
-  tryCatch({
-    if (is.null(sheets)) sheets <- readxl::excel_sheets(file_path)
-    if (!"Indstillinger" %in% sheets) {
-      return(NULL)
+  tryCatch(
+    {
+      if (is.null(sheets)) sheets <- readxl::excel_sheets(file_path)
+      if (!"Indstillinger" %in% sheets) {
+        return(NULL)
+      }
+
+      # skip = INDSTILLINGER_HEADER_ROWS: matcher startRow i build_spc_excel()
+      raw <- suppressMessages(
+        readxl::read_excel(file_path,
+          sheet = "Indstillinger",
+          skip = INDSTILLINGER_HEADER_ROWS, col_names = TRUE
+        )
+      )
+
+      if (ncol(raw) < 2 || nrow(raw) == 0) {
+        return(NULL)
+      }
+
+      fields <- as.character(raw[[1]])
+      values <- as.character(raw[[2]])
+      values[is.na(values)] <- ""
+
+      metadata <- as.list(values)
+      names(metadata) <- fields
+
+      metadata
+    },
+    error = function(e) {
+      log_warn(paste("Kunne ikke parse Indstillinger-ark:", e$message),
+        .context = "FILE_SAVE_LOAD"
+      )
+      NULL
     }
-
-    # skip = INDSTILLINGER_HEADER_ROWS: matcher startRow i build_spc_excel()
-    raw <- suppressMessages(
-      readxl::read_excel(file_path, sheet = "Indstillinger",
-        skip = INDSTILLINGER_HEADER_ROWS, col_names = TRUE)
-    )
-
-    if (ncol(raw) < 2 || nrow(raw) == 0) {
-      return(NULL)
-    }
-
-    fields <- as.character(raw[[1]])
-    values <- as.character(raw[[2]])
-    values[is.na(values)] <- ""
-
-    metadata <- as.list(values)
-    names(metadata) <- fields
-
-    metadata
-  }, error = function(e) {
-    log_warn(paste("Kunne ikke parse Indstillinger-ark:", e$message),
-      .context = "FILE_SAVE_LOAD")
-    NULL
-  })
+  )
 }

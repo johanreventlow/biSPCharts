@@ -227,49 +227,6 @@ test_that("Logging API performance under load", {
   expect_lt(memory_growth, 10)
 })
 
-test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
-  # Observer execution order kan ikke testes udenfor en reaktiv kontekst (shinytest2/shinyApp)
-  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
-
-  skip_if_not(exists("reactiveVal"), message = "Shiny reactive functions not available")
-
-  # Setup test reactive value
-  test_trigger <- reactiveVal(0)
-  execution_order <- character(0)
-
-  # Register observers med forskellige priorities
-  observeEvent(test_trigger(), priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    execution_order <<- c(execution_order, "HIGH_PRIORITY")
-  })
-
-  observeEvent(test_trigger(), priority = OBSERVER_PRIORITIES$UI_SYNC, {
-    execution_order <<- c(execution_order, "LOW_PRIORITY")
-  })
-
-  observeEvent(test_trigger(), priority = OBSERVER_PRIORITIES$CLEANUP, {
-    execution_order <<- c(execution_order, "LOWEST_PRIORITY")
-  })
-
-  # Trigger execution
-  isolate({
-    test_trigger(1)
-
-    # Allow observers to execute
-    Sys.sleep(0.1)
-
-    # Verify execution order respects priorities
-    expect_equal(execution_order[1], "HIGH_PRIORITY",
-      info = "STATE_MANAGEMENT should execute first"
-    )
-    expect_equal(execution_order[2], "LOW_PRIORITY",
-      info = "UI_SYNC should execute second"
-    )
-    expect_equal(execution_order[3], "LOWEST_PRIORITY",
-      info = "CLEANUP should execute last"
-    )
-  })
-})
-
 test_that("Error boundaries fungerer med structured logging", {
   # Test fejlhåndtering gennem logging system
 

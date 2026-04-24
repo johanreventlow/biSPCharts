@@ -15,11 +15,11 @@
 
 
 metadata:
-  total_files: 122
+  total_files: 116
   audit_run: 2026-04-19T16:03:42+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 122
+    reviewed: 116
     unreviewed: 0
     needs_triage: 0
 files:
@@ -355,14 +355,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-event-context-handlers.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: §2.2 unit-tests for event context handlers (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-event-system-emit.R
     audit_category: green
     type: unit
@@ -465,14 +457,6 @@ files:
       Fix-in-phase-3. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-helper-mocks-contracts.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: §2.4 kanoniske mocks + helper-split + contract tests (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-input-debouncing-comprehensive.R
     audit_category: green
     type: e2e
@@ -560,14 +544,6 @@ files:
     rationale: Green-partial med 3/44 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-mod-landing-server.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: §2.3 testServer-kontrakter for landing server-modul (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-mod-spc-chart-comprehensive.R
     audit_category: green
     type: integration
@@ -586,14 +562,6 @@ files:
       pga. 1 test_that-block.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-negative-assertions-phase2-5.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: §2.5 negative asserts — foundation + 6 explicit scenarier (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-no-file-dependencies.R
     audit_category: green
     type: unit
@@ -889,15 +857,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-utils-export-analysis-metadata.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Unit-test for export analysis metadata helper added after audit run;
-      covers metadata enrichment, percent centerline formatting, and fallback context.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-utils_export_filename.R
     audit_category: green
     type: unit
@@ -920,15 +879,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-utils_logging.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Regression tests for utils_logging signatures added after audit run;
-      verifies session_id is passed through details and unknown top-level args fail.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-utils_performance_caching.R
     audit_category: green
     type: benchmark
@@ -1001,3 +951,4 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+

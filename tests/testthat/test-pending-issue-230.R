@@ -1,13 +1,9 @@
-# Konsolideret placeholder for tests der afventer testServer-migration.
-# Issue #230 (harden-test-suite fase 2/4) er lukket, men 11 tests kræver
-# stadig konvertering til shiny::testServer()-kontekst.
-# Se: https://github.com/johanreventlow/biSPCharts/issues/230
-
 test_that("testServer-migration: 11 tests afventer implementering (se #230)", {
   skip(paste(
     "testServer-migration afventer implementering.",
     "Issue #230 er lukket, men disse tests kræver shiny::testServer()-kontekst.",
     "Konsolideret fra 4 filer, cleanup-package-artifacts (2026-04-24).",
+    "Se: https://github.com/johanreventlow/biSPCharts/issues/230",
     "\n\nPending tests:",
     "\n  [test-state-management-hierarchical.R]",
     "\n    - app_state hierarchical column management works",

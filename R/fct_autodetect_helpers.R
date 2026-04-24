@@ -211,8 +211,8 @@ find_numeric_columns <- function(data) {
     # Test sample for performance
     test_sample <- head(non_missing, 20)
 
-    # Try to convert to numeric
-    converted <- suppressWarnings(as.numeric(test_sample))
+    # Try to convert to numeric (parse_danish_number håndterer komma-decimaler)
+    converted <- suppressWarnings(parse_danish_number(test_sample))
     success_rate <- sum(!is.na(converted)) / length(test_sample)
 
     # If most values convert successfully, consider it numeric
@@ -417,9 +417,9 @@ score_by_data_characteristics <- function(col_data, role = NULL, type = NULL) {
     return(0)
   }
 
-  # Convert to numeric if needed
+  # Convert to numeric if needed (parse_danish_number håndterer komma-decimaler)
   if (!is.numeric(clean_data)) {
-    clean_data <- suppressWarnings(as.numeric(as.character(clean_data)))
+    clean_data <- suppressWarnings(parse_danish_number(as.character(clean_data)))
     clean_data <- clean_data[!is.na(clean_data)]
     if (length(clean_data) == 0) {
       return(0)
@@ -497,9 +497,9 @@ score_by_statistical_properties <- function(col_data, role = NULL, type = NULL) 
     return(0)
   }
 
-  # Convert to numeric if needed
+  # Convert to numeric if needed (parse_danish_number håndterer komma-decimaler)
   if (!is.numeric(clean_data)) {
-    clean_data <- suppressWarnings(as.numeric(as.character(clean_data)))
+    clean_data <- suppressWarnings(parse_danish_number(as.character(clean_data)))
     clean_data <- clean_data[!is.na(clean_data)]
     if (length(clean_data) < 2) {
       return(0)

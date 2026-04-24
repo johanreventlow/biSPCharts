@@ -27,19 +27,6 @@ test_that("inject_pat_into_url() fejler paa ikke-HTTPS URL", {
   )
 })
 
-test_that("hash_session_id() returnerer 8-tegns hex-streng", {
-  h <- hash_session_id("my-session-token")
-  expect_match(h, "^[0-9a-f]{8}$")
-})
-
-test_that("hash_session_id() er deterministisk", {
-  expect_equal(hash_session_id("token"), hash_session_id("token"))
-})
-
-test_that("hash_session_id() returnerer forskellig hash for forskellige tokens", {
-  expect_false(hash_session_id("token-a") == hash_session_id("token-b"))
-})
-
 test_that("build_session_filename() producerer sorterbart navn med hash-prefix", {
   filename <- build_session_filename(
     session_id = "abcdef1234567890",

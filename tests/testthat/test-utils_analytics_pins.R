@@ -97,7 +97,6 @@ test_that("read_shinylogs_all() haandterer non-existent path", {
 })
 
 make_test_all_data <- function(session_id = "raw-token-abc123",
-                               extra_session_cols = FALSE,
                                with_pat_in_error = FALSE) {
   sessions_df <- data.frame(
     sessionid = session_id,

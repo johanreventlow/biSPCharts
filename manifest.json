@@ -6661,7 +6661,7 @@
       "checksum": "26efa6fe71f4d2d46fb1af2f6de3d828"
     },
     ".claude/settings.local.json": {
-      "checksum": "64461dfd95fd95993bdf1d687f773ff5"
+      "checksum": "c916af7d28abf75b572e7f526fe4f0ef"
     },
     ".claude/worktrees/agent-a04e9c51/_brand.yml": {
       "checksum": "cbfb22d6dafe610562099fc8b031f058"
@@ -21277,7 +21277,7 @@
       "checksum": "6df1bcc93de858211a1ed26097bc4a44"
     },
     "DESCRIPTION": {
-      "checksum": "a24615f62c6cba838649303381643e8f"
+      "checksum": "454378572f3eb6c60be29f79cd5206a4"
     },
     "dev/ARCHITECTURE_ANALYSIS.md": {
       "checksum": "596f533ca4698ce24f1666046cdf8d84"
@@ -21340,7 +21340,10 @@
       "checksum": "609d0f37cb2de385b475a245ca5bad94"
     },
     "dev/audit-output/publish-gate-20260424-185350.log": {
-      "checksum": "27f81330ea3bac426117091ce5ad15e6"
+      "checksum": "2c7e8205ff4e4c344d1d0a57f9f4e48d"
+    },
+    "dev/audit-output/publish-gate-20260424-214326.log": {
+      "checksum": "0a0718213c45c60e131269e164f5e886"
     },
     "dev/audit-output/test-audit.json": {
       "checksum": "15e0db96435639b2ae5b395e5f6374fc"
@@ -25921,7 +25924,7 @@
       "checksum": "53096f0dbca4ae357668f69cccfbe749"
     },
     "tests/testthat/Rplots.pdf": {
-      "checksum": "cc07b6523d641e295afdf6bb967ca5a2"
+      "checksum": "5d3dcbcc00bf76301801c1b208f06f75"
     },
     "tests/testthat/test-100x-mismatch-prevention.R": {
       "checksum": "15d12e6c7a539b24e8cbf9e7f2553513"

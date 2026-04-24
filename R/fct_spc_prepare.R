@@ -169,3 +169,107 @@ prepare_spc_data <- function(req) {
     n_rows_filtered = nrow(complete_data)
   )
 }
+
+#' Bestem akse-konfiguration fra en forberedt SPC-anmodning
+#'
+#' Skalerer tids-target/centerline til kanoniske minutter, mapper biSPCharts-
+#' tidsenheder til BFHcharts' kanoniske "time", og formaterer target_text som
+#' komposit-tid. Returnerer et `spc_axes`-objekt klar til BFHcharts-rendering.
+#'
+#' @param prepared `spc_prepared` objekt fra `prepare_spc_data()`.
+#'
+#' @return `spc_axes` S3-objekt.
+#' @keywords internal
+resolve_axis_units <- function(prepared) {
+  options <- prepared$options
+  original_y_unit <- options$y_axis_unit %||% "count"
+  y_axis_unit <- original_y_unit
+  target_value <- options$target_value
+  centerline_value <- options$centerline_value
+  target_text <- options$target_text
+
+  # Skalér target/centerline til kanoniske minutter hvis y-enheden er en
+  # tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90 med
+  # time_days = 90 dage), men y-data er allerede i minutter efter step 4b.
+  if (is_time_unit(y_axis_unit)) {
+    if (!is.null(target_value) && length(target_value) > 0) {
+      scaled_target <- parse_time_to_minutes(target_value, input_unit = y_axis_unit)
+      log_debug(
+        paste0(
+          "Skalerer target_value ", target_value, " (", y_axis_unit,
+          ") -> ", scaled_target, " min"
+        ),
+        .context = "BFH_SERVICE"
+      )
+      target_value <- scaled_target
+    }
+    if (!is.null(centerline_value) && length(centerline_value) > 0) {
+      scaled_cl <- parse_time_to_minutes(centerline_value, input_unit = y_axis_unit)
+      log_debug(
+        paste0(
+          "Skalerer centerline_value ", centerline_value, " (", y_axis_unit,
+          ") -> ", scaled_cl, " min"
+        ),
+        .context = "BFH_SERVICE"
+      )
+      centerline_value <- scaled_cl
+    }
+  }
+
+  # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent", "rate", "time".
+  # Map de nye biSPCharts-enheder (time_minutes/hours/days) til den kanoniske "time"
+  # — data er allerede parsed til minutter (se step 4b i prepare_spc_data).
+  if (is_time_unit(y_axis_unit) && !identical(y_axis_unit, "time")) {
+    log_debug(
+      paste0(
+        "Mapper y_axis_unit='", y_axis_unit,
+        "' -> 'time' for BFHcharts (data er i kanoniske minutter)"
+      ),
+      .context = "BFH_SERVICE"
+    )
+    y_axis_unit <- "time"
+  }
+
+  # Formatér target_text som komposit-tid hvis y-enheden er en tids-enhed.
+  if (is_time_unit(original_y_unit) &&
+    !is.null(target_text) &&
+    !is.null(target_value) &&
+    length(target_value) > 0) {
+    operator_match <- regmatches(
+      target_text,
+      regexpr("^[<>=]+", target_text)
+    )
+    operator_prefix <- if (length(operator_match) > 0) operator_match else ""
+    formatted_value <- format_time_composite(target_value)
+    new_target_text <- paste0(operator_prefix, formatted_value)
+    log_debug(
+      paste0(
+        "Formaterer target_text '", target_text, "' -> '",
+        new_target_text, "' (y_axis_unit=", original_y_unit, ")"
+      ),
+      .context = "BFH_SERVICE"
+    )
+    target_text <- new_target_text
+  }
+
+  # Guard: "percent" kræver nævner — uden nævner er det en fejldetektering
+  if (identical(y_axis_unit, "percent") && is.null(prepared$n_var)) {
+    log_warn(
+      paste(
+        "y_axis_unit='percent' uden nævner (n_var=NULL) for chart_type=",
+        prepared$chart_type,
+        "— overskriver til 'count' for at undgå forkert normalisering"
+      ),
+      .context = "BFH_SERVICE"
+    )
+    y_axis_unit <- "count"
+  }
+
+  new_spc_axes(
+    y_axis_unit = y_axis_unit,
+    multiply = prepared$multiply,
+    target_value = target_value,
+    centerline_value = centerline_value,
+    target_text = target_text
+  )
+}

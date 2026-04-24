@@ -1,5 +1,18 @@
 # biSPCharts 0.2.0-dev (development)
 
+## Interne ændringer
+
+* **Package hygiene** (#287, #290–#293): Oprydning af `R CMD check`-WARNINGs
+  (13 → 7). `Depends: R (>= 4.1.0)` (pipe `|>` kræver 4.1+). Tilføjet
+  `htmltools` og `rlang` til `Imports:` (manglede trods direkte brug). Fjernet
+  8 ubrugte `Imports:` (`data.table`, `ggpp`, `geomtextpath`, `ggrepel`,
+  `pdftools`, `ragg`, `svglite`, `withr`). `LazyData` og `VignetteBuilder`
+  fjernet. `R/NAMESPACE`-duplikat slettet. `man/*.Rd` regenereret.
+  `log_warn()`-signatur-bug i rate limiter fixet. Committed artefakter
+  (`.DS_Store`, `Rplots.pdf`, `testthat-problems.rds`) fjernet og
+  `.gitignore` udvidet. `R CMD check --as-cran` tilføjet til pre-push
+  full-mode gate. `docs/PRE_RELEASE_CHECKLIST.md` oprettet.
+
 ## Security
 
 * **Session token-tests opdateret til SHA256** (#239): To test-filer testede

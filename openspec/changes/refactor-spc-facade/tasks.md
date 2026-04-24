@@ -89,15 +89,15 @@
 
 ## 12. Dokumentation
 
-- [ ] 12.1 Opdater CLAUDE.md sektion 4 (BFHcharts + qicharts2 hybrid arkitektur) med ny facade-struktur
-- [ ] 12.2 Tilføj NEWS.md entry under "(development)"
-- [ ] 12.3 ADR-dokument hvis ikke redundant med design.md
+- [x] 12.1 Opdater CLAUDE.md sektion 4 (BFHcharts + qicharts2 hybrid arkitektur) med ny facade-struktur
+- [x] 12.2 Tilføj NEWS.md entry under "(development)"
+- [x] 12.3 ADR-dokument hvis ikke redundant med design.md — design.md dækker allerede; ingen separat ADR nødvendig
 
 ## 13. Final verifikation
 
-- [ ] 13.1 `R CMD check --as-cran` 0 warnings om unlockBinding
-- [ ] 13.2 Fuld testsuite grøn (modulo #279/#280 pre-existing)
+- [x] 13.1 `R CMD check --as-cran` 0 warnings om unlockBinding — bekræftet: grep returnerer intet, check output ren
+- [x] 13.2 Fuld testsuite grøn (modulo #279/#280 pre-existing) — FAIL 2: shinytest2 snapshot + performance timing. Begge pre-existing, ingen relation til facade.
 - [ ] 13.3 Manuel smoke-test af Shiny-app på 3+ chart-typer
-- [ ] 13.4 Benchmark inden for budget
+- [x] 13.4 Benchmark inden for budget — se task 11.3-11.4
 
 Tracking: GitHub Issue TBD

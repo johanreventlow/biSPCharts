@@ -45,46 +45,6 @@ test_that("Chart generation performance meets benchmarks", {
   expect_lt(generation_time, 5.0)
 })
 
-test_that("Chart module handles reactive updates correctly", {
-  set.seed(42)
-  skip("testServer-migration — se harden-test-suite §2.3 (#230)")
-  skip_if_not_installed("shiny")
-
-  # Mock reactive environment
-  app_state <- create_app_state()
-
-  # Test data manager
-  data_manager <- safe_operation(
-    "Create module data manager",
-    code = {
-      create_module_data_manager(app_state)
-    }
-  )
-
-  expect_true(!is.null(data_manager))
-  expect_true(is.list(data_manager))
-
-  # Test reactive data updates
-  test_data <- data.frame(
-    x = 1:10,
-    y = rnorm(10),
-    stringsAsFactors = FALSE
-  )
-
-  # Simulate data update
-  safe_operation(
-    "Update module data",
-    code = {
-      set_current_data(app_state, test_data)
-    }
-  )
-
-  # Verify state consistency
-  retrieved_data <- app_state$data$current_data
-  expect_true(!is.null(retrieved_data))
-  expect_equal(nrow(retrieved_data), 10)
-})
-
 test_that("Chart module memory cleanup prevents leaks", {
   skip_if_not_installed("shiny")
 

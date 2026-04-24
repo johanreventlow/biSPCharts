@@ -11,131 +11,6 @@
 # 4. Output standardization (via fct_spc_bfh_output)
 # 5. Anhøj metadata beregning (via fct_spc_bfh_signals)
 
-#' Valider input til compute_spc_results_bfh()
-#'
-#' Intern hjælpefunktion der tjekker alle obligatoriske parametre og
-#' data-egenskaber FØR safe_operation() kaldes. Fejl propagerer direkte
-#' til caller med danske brugervenlige beskeder.
-#'
-#' @param data data.frame eller NULL
-#' @param x_var character eller NULL
-#' @param y_var character eller NULL
-#' @param chart_type character eller NULL
-#' @param n_var character eller NULL
-#' @return Usynlig NULL (kaster fejl ved ugyldig input)
-#' @keywords internal
-validate_spc_inputs <- function(data, x_var, y_var, chart_type, n_var = NULL) {
-  # 1. data er påkrævet og skal være data.frame
-  if (is.null(data)) {
-    stop("data parameter er p\u00e5kr\u00e6vet (data required): m\u00e5 ikke v\u00e6re NULL")
-  }
-  if (!is.data.frame(data)) {
-    stop("data skal v\u00e6re en data.frame")
-  }
-
-  # 2. x_var er påkrævet
-  if (is.null(x_var) || !nzchar(trimws(x_var))) {
-    stop("x_var parameter er p\u00e5kr\u00e6vet (x_var required): angiv kolonnenavn for x-aksen")
-  }
-
-  # 3. y_var er påkrævet
-  if (is.null(y_var) || !nzchar(trimws(y_var))) {
-    stop("y_var parameter er p\u00e5kr\u00e6vet (y_var required): angiv kolonnenavn for m\u00e5lekolonnen")
-  }
-
-  # 4. chart_type er påkrævet
-  if (is.null(chart_type) || !nzchar(trimws(chart_type))) {
-    stop("chart_type parameter er p\u00e5kr\u00e6vet (chart_type required)")
-  }
-
-  # 5. chart_type skal v\u00e6re en understøttet type
-  ct_normalized <- tolower(trimws(chart_type))
-  if (!ct_normalized %in% SUPPORTED_CHART_TYPES_BFH) {
-    stop(paste0(
-      "chart_type '", chart_type, "' er invalid (ugyldig diagramtype). ",
-      "Must be one of: ",
-      paste(SUPPORTED_CHART_TYPES_BFH, collapse = ", ")
-    ))
-  }
-
-  # 6. n_var er påkrævet for P-, U-kort (og pp, up)
-  if (ct_normalized %in% c("p", "pp", "u", "up") && is.null(n_var)) {
-    stop(paste0(
-      "n_var (denominator) required for ", ct_normalized, "-kort. ",
-      "Angiv kolonnenavnet for n\u00e6vneren."
-    ))
-  }
-
-  # 7. data m\u00e5 ikke v\u00e6re tom (tjekkes f\u00f8r kolonne-opslag for klar fejlbesked)
-  if (nrow(data) == 0) {
-    stop("Ingen r\u00e6kker fundet i data (empty dataset). Upload data f\u00f8rst.")
-  }
-
-  # 8. Mindst 3 datapunkter kr\u00e6ves for meningsfuld SPC-analyse
-  if (nrow(data) < 3) {
-    stop(paste0(
-      "For f\u00e5 datapunkter: ", nrow(data), " r\u00e6kke(r) fundet (too few/insufficient). ",
-      "minimum 3 datapunkter kr\u00e6ves for SPC-analyse."
-    ))
-  }
-
-  # 9. x_var og y_var skal eksistere som kolonner i data
-  if (!x_var %in% names(data)) {
-    stop(paste0("X-kolonne '", x_var, "' blev ikke fundet i data (missing column: x_var)"))
-  }
-  if (!y_var %in% names(data)) {
-    stop(paste0("Y-kolonne '", y_var, "' blev ikke fundet i data (missing column: y_var)"))
-  }
-  if (!is.null(n_var) && !n_var %in% names(data)) {
-    stop(paste0("N\u00e6vner-kolonne '", n_var, "' blev ikke fundet i data (missing column: n_var)"))
-  }
-
-  # 10. y_var m\u00e5 ikke udelukkende best\u00e5 af NA
-  y_vals <- data[[y_var]]
-  if (all(is.na(y_vals))) {
-    stop(paste0(
-      "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier. ",
-      "Ingen komplette datapunkter til r\u00e5dighed (all NA/no valid values)."
-    ))
-  }
-
-  # 11. y_var skal v\u00e6re numerisk (eller konverterbar — inkl. danske talformater med komma)
-  if (!is.numeric(y_vals)) {
-    # Fors\u00f8g f\u00f8rst standard konvertering, s\u00e5 dansk format (komma som decimalseparator)
-    std_converted <- suppressWarnings(as.numeric(as.character(y_vals)))
-    danish_converted <- suppressWarnings(as.numeric(gsub(",", ".", as.character(y_vals))))
-    # Accepter kolonnen hvis mindst \u00e9n konverteringsmetode giver gyldige v\u00e6rdier
-    any_convertible <- !all(is.na(std_converted)) || !all(is.na(danish_converted))
-    non_na_vals <- !all(is.na(y_vals))
-    if (non_na_vals && !any_convertible) {
-      stop(paste0(
-        "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid/convert). ",
-        "Kolonnen skal indeholde tal (ogs\u00e5 dansk talformat med komma accepteres)."
-      ))
-    }
-  }
-
-  # 12. n_var m\u00e5 ikke indeholde nul-v\u00e6rdier for rate-baserede kort (p, u)
-  ct_normalized_check <- tolower(trimws(chart_type))
-  if (!is.null(n_var) && n_var %in% names(data) &&
-    ct_normalized_check %in% c("p", "pp", "u", "up")) {
-    n_vals <- data[[n_var]]
-    # H\u00e5ndter b\u00e5de standard og dansk talformat (komma som decimalseparator)
-    n_numeric <- suppressWarnings(as.numeric(n_vals))
-    if (all(is.na(n_numeric)) && is.character(n_vals)) {
-      n_numeric <- suppressWarnings(as.numeric(gsub(",", ".", n_vals)))
-    }
-    if (any(!is.na(n_numeric) & n_numeric == 0)) {
-      stop(paste0(
-        "N\u00e6vner-kolonnen '", n_var, "' indeholder nul-v\u00e6rdier. ",
-        "N\u00e6vner m\u00e5 ikke v\u00e6re nul for ", toupper(ct_normalized_check), "-kort."
-      ))
-    }
-  }
-
-  invisible(NULL)
-}
-
 
 #' Compute SPC Results Using BFHchart Backend
 #'
@@ -281,568 +156,137 @@ compute_spc_results_bfh <- function(
   app_state = NULL,
   ...
 ) {
-  # Validering UDEN safe_operation — fejl skal propagere til caller (fx testthat)
-  validate_spc_inputs(
+  req <- validate_spc_request(
     data = if (missing(data)) NULL else data,
     x_var = if (missing(x_var)) NULL else x_var,
     y_var = if (missing(y_var)) NULL else y_var,
     chart_type = if (missing(chart_type)) NULL else chart_type,
-    n_var = n_var
+    n_var = n_var,
+    cl_var = cl_var,
+    freeze_var = freeze_var,
+    part_var = part_var,
+    notes_column = notes_column,
+    multiply = multiply,
+    ...
   )
 
-  safe_operation(
-    operation_name = "BFHchart SPC computation",
-    code = {
-      # 1. (Validering sker i validate_spc_inputs() FØR safe_operation)
-      # 1b. Cache key generation (before expensive validation)
-      # Extract parameters for cache key
-      extra_params <- list(...)
+  extra_params <- list(...)
+  cache_key <- build_cache_key(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache)
+
+  cached <- read_spc_cache(cache_key, app_state)
+  if (!is.null(cached)) {
+    return(cached)
+  }
+
+  prepared <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prepared)
+  bfh_params <- build_bfh_args(prepared, axes, extra_params)
+  standardized <- execute_bfh_request(bfh_params, prepared)
+  standardized <- decorate_plot_for_display(standardized, prepared)
+
+  write_spc_cache(cache_key, standardized, app_state)
+
+  log_info(
+    message = "SPC computation completed successfully",
+    .context = "BFH_SERVICE",
+    details = list(
+      chart_type = req$chart_type,
+      n_points = nrow(standardized$qic_data),
+      signals_detected = sum(standardized$qic_data$signal, na.rm = TRUE),
+      has_notes = !is.null(notes_column),
+      cached = !is.null(cache_key)
+    )
+  )
+
+  standardized
+}
+
+
+#' Byg cache-nøgle for SPC-beregning
+#'
+#' @keywords internal
+build_cache_key <- function(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache) {
+  if (!use_cache) {
+    return(NULL)
+  }
+  tryCatch(
+    {
       cache_config <- list(
         chart_type = chart_type,
         x_column = x_var,
         y_column = y_var,
         n_column = n_var,
-        freeze_position = if (!is.null(freeze_var)) {
-          # Extract freeze position from data if available
-          NULL # Will be computed after data filtering
-        } else {
-          NULL
-        },
-        part_positions = NULL, # Will be computed after data filtering
+        freeze_position = NULL,
+        part_positions = NULL,
         target_value = extra_params$target_value,
         centerline_value = extra_params$centerline_value,
         y_axis_unit = extra_params$y_axis_unit,
         multiply_by = multiply,
-        # CRITICAL: Include viewport dimensions for context-aware caching
-        # Different contexts (analysis, export_preview, export_pdf) have different
-        # viewport dimensions which affect label placement in BFHcharts.
-        # Without this, plots generated in one context would be incorrectly cached
-        # and reused in another context with different dimensions.
+        # Viewport dimensions inkluderes: ellers ville plots fra export (andre dims)
+        # fejlagtigt genbruges fra analysis-cache eller omvendt.
         viewport_width = extra_params$width,
         viewport_height = extra_params$height
       )
-
-      # Generate cache key
-      cache_key <- if (use_cache) {
-        tryCatch(
-          {
-            if (exists("generate_spc_cache_key", mode = "function")) {
-              generate_spc_cache_key(data, cache_config)
-            } else {
-              NULL
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache key generation failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-            NULL
-          }
-        )
-      } else {
-        NULL
-      }
-
-      # 1c. Check cache before expensive computation
-      if (!is.null(cache_key) && !is.null(app_state)) {
-        qic_cache <- tryCatch(
-          {
-            if (exists("get_or_init_qic_cache", mode = "function")) {
-              get_or_init_qic_cache(app_state)
-            } else {
-              NULL
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache initialization failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-            NULL
-          }
-        )
-
-        if (!is.null(qic_cache)) {
-          cached_result <- tryCatch(
-            {
-              if (exists("get_cached_spc_result", mode = "function")) {
-                get_cached_spc_result(cache_key, qic_cache)
-              } else {
-                NULL
-              }
-            },
-            error = function(e) {
-              log_warn(
-                paste("Cache retrieval failed:", e$message),
-                .context = "BFH_SERVICE"
-              )
-              NULL
-            }
-          )
-
-          if (!is.null(cached_result)) {
-            log_info(
-              paste("Cache hit - returning cached result:", substr(cache_key, 1, 40), "..."),
-              .context = "BFH_SERVICE"
-            )
-            return(cached_result)
-          } else {
-            log_debug(
-              paste("Cache miss - computing fresh result:", substr(cache_key, 1, 40), "..."),
-              .context = "BFH_SERVICE"
-            )
-          }
-        }
-      }
-
-      # 2. Validate chart type
-      validated_chart_type <- validate_chart_type_bfh(chart_type)
-
-      # 3. Check if denominator required for chart type
-      if (validated_chart_type %in% c("p", "pp", "u", "up") && is.null(n_var)) {
-        stop(paste0(
-          "n_var (denominator) is required for ",
-          validated_chart_type,
-          " charts"
-        ))
-      }
-
-      # 4. Filter complete data using existing validator
-      complete_data <- filter_complete_spc_data(
-        data = data,
-        y_col = y_var,
-        n_col = n_var,
-        x_col = x_var
-      )
-
-      # DEBUG: Check x column type after filtering
-      log_debug(
-        paste(
-          "After filter_complete_spc_data - x column type:",
-          "x(", x_var, ")=", class(complete_data[[x_var]])[1]
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # Check if data is sufficient
-      if (nrow(complete_data) == 0) {
-        stop("No valid data rows found after filtering")
-      }
-      if (nrow(complete_data) < 3) {
-        stop(paste0(
-          "Insufficient data points: ",
-          nrow(complete_data),
-          ". Minimum 3 points required for SPC charts"
-        ))
-      }
-
-      # 4b. Parse tids-input til kanoniske minutter hvis y-enheden er en
-      # tids-enhed. Input kan være numeric, hms, difftime eller HH:MM-streng.
-      # Sker FØR parse_and_validate_spc_data for at undgå at HH:MM-strenge
-      # bliver til NA i as.numeric()-fallbacken.
-      y_axis_unit_early <- list(...)$y_axis_unit %||% "count"
-      if (is_time_unit(y_axis_unit_early)) {
-        complete_data[[y_var]] <- parse_time_to_minutes(
-          complete_data[[y_var]],
-          input_unit = y_axis_unit_early
-        )
-        log_debug(
-          paste0(
-            "Parsede tids-kolonne '", y_var,
-            "' til kanoniske minutter via input_unit='", y_axis_unit_early, "'"
-          ),
-          .context = "BFH_SERVICE"
-        )
-      }
-
-      # 5. Parse and validate numeric data
-      y_data_raw <- complete_data[[y_var]]
-      n_data_raw <- if (!is.null(n_var)) complete_data[[n_var]] else NULL
-
-      validated <- parse_and_validate_spc_data(
-        y_data = y_data_raw,
-        n_data = n_data_raw,
-        y_col = y_var,
-        n_col = n_var
-      )
-
-      # 6. Apply parsed numeric data back to complete_data
-      # CRITICAL: BFHcharts needs numeric data, not character strings from CSV
-      complete_data[[y_var]] <- validated$y_data
-      if (!is.null(n_var)) {
-        complete_data[[n_var]] <- validated$n_data
-      }
-
-      # 6b. DEBUG: Verify numeric data was applied correctly
-      log_debug(
-        paste(
-          "After numeric parsing - Data types:",
-          "y(", y_var, ")=", class(complete_data[[y_var]])[1],
-          if (!is.null(n_var)) paste0(", n(", n_var, ")=", class(complete_data[[n_var]])[1]) else "",
-          " | First 3 y values:", paste(head(complete_data[[y_var]], 3), collapse = ", ")
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # 6c. CRITICAL FIX: Parse x-axis to Date/POSIXct if it's character
-      # BFHcharts requires proper date types for x-axis, not character strings
-      if (!inherits(complete_data[[x_var]], c("Date", "POSIXct", "POSIXt"))) {
-        log_debug(
-          paste("X column is character, attempting to parse to Date:", x_var),
-          .context = "BFH_SERVICE"
-        )
-
-        # Try to parse as date using lubridate
-        parsed_x <- tryCatch(
-          {
-            x_raw <- complete_data[[x_var]]
-
-            # Try multiple date formats
-            parsed <- lubridate::parse_date_time(
-              x_raw,
-              orders = c("dmy", "ymd", "mdy", "dmy HMS", "ymd HMS", "mdy HMS"),
-              quiet = TRUE
-            )
-
-            # If parsing succeeded, convert to Date if no time component
-            if (!is.null(parsed) && !all(is.na(parsed))) {
-              # Check if all times are midnight (no time component)
-              if (all(lubridate::hour(parsed) == 0 & lubridate::minute(parsed) == 0)) {
-                as.Date(parsed)
-              } else {
-                parsed # Keep as POSIXct if time component present
-              }
-            } else {
-              NULL
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Failed to parse x column as date:", e$message),
-              .context = "BFH_SERVICE"
-            )
-            NULL
-          }
-        )
-
-        if (!is.null(parsed_x)) {
-          complete_data[[x_var]] <- parsed_x
-          log_info(
-            paste(
-              "X column parsed successfully:",
-              x_var, "→", class(complete_data[[x_var]])[1],
-              "| First value:", as.character(complete_data[[x_var]][1])
-            ),
-            .context = "BFH_SERVICE"
-          )
-        } else {
-          # Dato-parsing fejlede — x-kolonnen er ren tekst (fx "Uge 1", "Uge 2")
-          # Konverter til numerisk sekvens og gem originale labels til x-aksen
-          log_info(
-            paste("X column is text, converting to numeric sequence:", x_var),
-            .context = "BFH_SERVICE"
-          )
-          complete_data[[paste0(".x_labels_", x_var)]] <- complete_data[[x_var]]
-          complete_data[[x_var]] <- seq_len(nrow(complete_data))
-        }
-      }
-
-      # 7. PURE BFHCHARTS WORKFLOW: Direct BFHcharts::bfh_qic() call
-      # This eliminates qicharts2 dependency for SPC calculation
-      extra_params <- list(...)
-
-      # 7a. Extract parameters
-      target_value <- extra_params$target_value
-      centerline_value <- extra_params$centerline_value
-      y_axis_unit <- extra_params$y_axis_unit %||% "count"
-
-      # Skalér target/centerline til kanoniske minutter hvis y-enheden er
-      # en tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90
-      # med time_days = 90 dage), men y-data er allerede i minutter efter
-      # step 4b. Uden denne skalering ville target = 90 blive plottet som
-      # 90 minutter i stedet for 90 dage (= 129600 min).
-      if (is_time_unit(y_axis_unit)) {
-        if (!is.null(target_value) && length(target_value) > 0) {
-          scaled_target <- parse_time_to_minutes(target_value, input_unit = y_axis_unit)
-          log_debug(
-            paste0(
-              "Skalerer target_value ", target_value, " (", y_axis_unit,
-              ") -> ", scaled_target, " min"
-            ),
-            .context = "BFH_SERVICE"
-          )
-          target_value <- scaled_target
-        }
-        if (!is.null(centerline_value) && length(centerline_value) > 0) {
-          scaled_cl <- parse_time_to_minutes(centerline_value, input_unit = y_axis_unit)
-          log_debug(
-            paste0(
-              "Skalerer centerline_value ", centerline_value, " (", y_axis_unit,
-              ") -> ", scaled_cl, " min"
-            ),
-            .context = "BFH_SERVICE"
-          )
-          centerline_value <- scaled_cl
-        }
-      }
-
-      # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent",
-      # "rate", "time". Map de nye biSPCharts-enheder (time_minutes/hours/days)
-      # til den kanoniske "time" — data er allerede parsed til minutter (se 4b).
-      if (is_time_unit(y_axis_unit) && !identical(y_axis_unit, "time")) {
-        log_debug(
-          paste0(
-            "Mapper y_axis_unit='", y_axis_unit,
-            "' -> 'time' for BFHcharts (data er i kanoniske minutter)"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        y_axis_unit <- "time"
-      }
-      chart_title <- resolve_bfh_chart_title(
-        extra_params$chart_title_reactive %||% extra_params$chart_title
-      )
-      target_text <- extra_params$target_text
-
-      # Formatér target_text som komposit-tid hvis y-enheden er en tids-enhed.
-      # target_text er brugerens rå input (fx "90" eller "<90"). Vi bevarer
-      # evt. operator-prefix og erstatter den numeriske del med komposit-format
-      # baseret på target_value (skaleret til minutter ovenfor).
-      # Eksempel: bruger skriver target=90 med "Tid (dage)" → label viser "90d";
-      # 90 timer → label viser "3d 18t".
-      original_y_unit <- extra_params$y_axis_unit %||% "count"
-      if (is_time_unit(original_y_unit) &&
-        !is.null(target_text) &&
-        !is.null(target_value) &&
-        length(target_value) > 0) {
-        operator_match <- regmatches(
-          target_text,
-          regexpr("^[<>=]+", target_text)
-        )
-        operator_prefix <- if (length(operator_match) > 0) operator_match else ""
-        formatted_value <- format_time_composite(target_value)
-        new_target_text <- paste0(operator_prefix, formatted_value)
-        log_debug(
-          paste0(
-            "Formaterer target_text '", target_text, "' -> '",
-            new_target_text, "' (y_axis_unit=", original_y_unit, ")"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        target_text <- new_target_text
-      }
-
-      # Guard: Fjern nævner for chart types der ikke bruger den.
-      # Forhindrer at BFHcharts dividerer y med n (giver alle værdier = 1).
-      if (!is.null(n_var) && !chart_type_requires_denominator(validated_chart_type)) {
-        log_warn(
-          paste(
-            "n_var fjernet for chart_type=", validated_chart_type,
-            "— denne type bruger ikke nævner (n_var var:", n_var, ")"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        n_var <- NULL
-      }
-
-      # Guard: "percent" kræver nævner — uden nævner er det en fejldetektering
-      if (identical(y_axis_unit, "percent") && is.null(n_var)) {
-        log_warn(
-          paste(
-            "y_axis_unit='percent' uden nævner (n_var=NULL) for chart_type=",
-            validated_chart_type,
-            "— overskriver til 'count' for at undgå forkert normalisering"
-          ),
-          .context = "BFH_SERVICE"
-        )
-        y_axis_unit <- "count"
-      }
-
-      log_debug(
-        paste(
-          "Pure BFHcharts workflow parameters:",
-          "chart_type =", validated_chart_type,
-          ", y_axis_unit =", y_axis_unit,
-          ", n_var =", if (is.null(n_var)) "NULL" else n_var,
-          ", has_target =", !is.null(target_value),
-          ", has_chart_title =", !is.null(chart_title)
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # Diagnostisk log af y-værdier sendt til BFHcharts
-      log_debug(
-        paste(
-          "[DEBUG_Y_VALUES] chart_type =", validated_chart_type,
-          "| y_axis_unit =", y_axis_unit,
-          "| n_var =", if (is.null(n_var)) "NULL" else n_var,
-          "| y_col =", y_var,
-          "| y_class =", class(complete_data[[y_var]])[1],
-          "| y_first5 =", paste(head(complete_data[[y_var]], 5), collapse = ", "),
-          "| y_range =", paste(range(complete_data[[y_var]], na.rm = TRUE), collapse = "-")
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # 7b. Map parameters to BFHcharts format
-      # VIGTIGT: width/height/units forwarded til bfh_qic() for korrekt
-      # label-placering (bredde-baseret skalering i BFHcharts)
-      bfh_params <- map_to_bfh_params(
-        data = complete_data,
-        x_var = x_var,
-        y_var = y_var,
-        chart_type = validated_chart_type,
-        n_var = n_var,
-        cl_var = cl_var,
-        freeze_var = freeze_var,
-        part_var = part_var,
-        notes_column = notes_column,
-        target_value = target_value,
-        centerline_value = centerline_value,
-        chart_title = chart_title,
-        y_axis_unit = y_axis_unit,
-        target_text = target_text,
-        multiply = multiply,
-        width = extra_params$width,
-        height = extra_params$height,
-        units = extra_params$units,
-        # Bevar base_size=14 — uden dette aktiverer width/height
-        # calculate_base_size() som giver base_size=8 (for lille)
-        base_size = 14
-      )
-
-      if (is.null(bfh_params)) {
-        stop("Parameter mapping failed")
-      }
-
-      # 7c. Call BFHcharts high-level API directly
-      t_bfh_start <- Sys.time()
-      bfh_result <- call_bfh_chart(bfh_params)
-      log_info(paste("Step 7c bfh_qic:", round(difftime(Sys.time(), t_bfh_start, units = "secs"), 2), "sek"), .context = "BFH_TIMING")
-
-      if (is.null(bfh_result)) {
-        stop("BFHcharts rendering failed")
-      }
-
-      # 7c2. Tilføj tekst-labels på x-aksen til bfh_result (bruges af PDF preview/eksport)
-      x_labels_col <- paste0(".x_labels_", x_var)
-      if (x_labels_col %in% names(complete_data)) {
-        x_labels <- complete_data[[x_labels_col]]
-        x_breaks <- seq_along(x_labels)
-        x_scale <- ggplot2::scale_x_continuous(breaks = x_breaks, labels = x_labels)
-        x_theme <- ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-        # Opdater bfh_result plot (for PDF/PNG eksport)
-        if (!is.null(bfh_result$plot)) {
-          bfh_result$plot <- bfh_result$plot + x_scale + x_theme
-        }
-      }
-
-      # 7d. Transform BFHcharts output to standardized format
-      t_transform_start <- Sys.time()
-      standardized <- transform_bfh_output(
-        bfh_result = bfh_result,
-        multiply = multiply,
-        chart_type = validated_chart_type,
-        original_data = complete_data,
-        freeze_applied = !is.null(freeze_var) && freeze_var %in% names(complete_data)
-      )
-
-      log_info(paste("Step 7d transform:", round(difftime(Sys.time(), t_transform_start, units = "secs"), 2), "sek"), .context = "BFH_TIMING")
-
-      if (is.null(standardized)) {
-        stop("Output transformation failed")
-      }
-
-      # 7d2. Tilføj tekst-labels på standardized plot (analyse-visning)
-      if (x_labels_col %in% names(complete_data) && !is.null(standardized$plot)) {
-        standardized$plot <- standardized$plot + x_scale + x_theme
-      }
-
-      # 7e. Anhøj metadata: brug BFHcharts' allerede beregnede metadata
-      # transform_bfh_output() udtrækker Anhøj-regler fra BFHcharts qic_data.
-      # compute_anhoej_metadata_local() (qicharts2::qic) er FJERNET da den var
-      # redundant og tog ~24 sek for P-kort pga. intern ggplot rendering.
-      # Fallback til qicharts2 kun hvis BFHcharts metadata mangler.
-      if (is.null(standardized$metadata$anhoej_rules)) {
-        log_warn(
-          "BFHcharts Anhøj metadata mangler — falder tilbage til qicharts2",
-          .context = "BFH_SERVICE"
-        )
-        anhoej_metadata_local <- compute_anhoej_metadata_local(
-          data = complete_data,
-          config = list(
-            x_col = x_var,
-            y_col = y_var,
-            n_col = n_var,
-            chart_type = validated_chart_type
-          )
-        )
-        if (!is.null(anhoej_metadata_local)) {
-          standardized$metadata$anhoej_rules <- list(
-            runs_detected = anhoej_metadata_local$runs_signal,
-            crossings_detected = anhoej_metadata_local$crossings_signal,
-            longest_run = anhoej_metadata_local$longest_run,
-            n_crossings = anhoej_metadata_local$n_crossings,
-            n_crossings_min = anhoej_metadata_local$n_crossings_min
-          )
-        }
-      }
-
-      # 7g. Add backend flag to indicate BFHcharts workflow
-      standardized$metadata$backend <- "bfhcharts"
-
-      # 8. Store result in cache if enabled
-      if (!is.null(cache_key) && !is.null(app_state)) {
-        tryCatch(
-          {
-            qic_cache <- if (exists("get_or_init_qic_cache", mode = "function")) {
-              get_or_init_qic_cache(app_state)
-            } else {
-              NULL
-            }
-
-            if (!is.null(qic_cache) && exists("cache_spc_result", mode = "function")) {
-              # Use 1 hour TTL (3600 seconds) by default
-              cache_ttl <- CACHE_CONFIG$default_timeout_seconds %||% 3600
-              cache_spc_result(cache_key, standardized, qic_cache, ttl = cache_ttl)
-
-              log_debug(
-                paste("Result cached with TTL:", cache_ttl, "seconds"),
-                .context = "BFH_SERVICE"
-              )
-            }
-          },
-          error = function(e) {
-            log_warn(
-              paste("Cache storage failed:", e$message),
-              .context = "BFH_SERVICE"
-            )
-          }
-        )
-      }
-
-      # 9. Log success
-      log_info(
-        message = "SPC computation completed successfully",
-        .context = "BFH_SERVICE",
-        details = list(
-          chart_type = validated_chart_type,
-          n_points = nrow(standardized$qic_data),
-          signals_detected = sum(standardized$qic_data$signal, na.rm = TRUE),
-          has_notes = !is.null(notes_column),
-          cached = !is.null(cache_key)
-        )
-      )
-
-      # NOTE: Don't use return() inside safe_operation code blocks!
-      # R's force() evaluation doesn't handle return() correctly
-      standardized
+      generate_spc_cache_key(data, cache_config)
     },
-    fallback = NULL,
-    show_user = TRUE,
-    error_type = "bfh_service"
+    error = function(e) {
+      log_warn(paste("Cache key generation failed:", e$message), .context = "BFH_SERVICE")
+      NULL
+    }
   )
+}
+
+
+#' Læs cachet SPC-resultat
+#'
+#' @keywords internal
+read_spc_cache <- function(cache_key, app_state) {
+  if (is.null(cache_key) || is.null(app_state)) {
+    return(NULL)
+  }
+  tryCatch(
+    {
+      qic_cache <- get_or_init_qic_cache(app_state)
+      if (is.null(qic_cache)) {
+        return(NULL)
+      }
+      result <- get_cached_spc_result(cache_key, qic_cache)
+      if (!is.null(result)) {
+        log_info(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+      } else {
+        log_debug(paste("Cache miss:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+      }
+      result
+    },
+    error = function(e) {
+      log_warn(paste("Cache retrieval failed:", e$message), .context = "BFH_SERVICE")
+      NULL
+    }
+  )
+}
+
+
+#' Gem SPC-resultat i cache
+#'
+#' @keywords internal
+write_spc_cache <- function(cache_key, result, app_state) {
+  if (is.null(cache_key) || is.null(app_state)) {
+    return(invisible(NULL))
+  }
+  tryCatch(
+    {
+      qic_cache <- get_or_init_qic_cache(app_state)
+      if (!is.null(qic_cache)) {
+        cache_ttl <- CACHE_CONFIG$default_timeout_seconds %||% 3600
+        cache_spc_result(cache_key, result, qic_cache, ttl = cache_ttl)
+        log_debug(paste("Result cached with TTL:", cache_ttl, "seconds"), .context = "BFH_SERVICE")
+      }
+    },
+    error = function(e) {
+      log_warn(paste("Cache storage failed:", e$message), .context = "BFH_SERVICE")
+    }
+  )
+  invisible(NULL)
 }
 
 

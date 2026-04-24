@@ -4,6 +4,18 @@
 # Hver Shiny-session skriver en enkelt .rds-fil til sessions/ mappen.
 # Se bispcharts-analytics-data repo for layout.
 
+#' Rediger PAT-del af GitHub auth-URL i fejlbeskeder
+#'
+#' Matcher \code{x-access-token:<TOKEN>@} i fejlbeskeder og erstatter
+#' tokenet med \code{[REDACTED]}. Prevents PAT-lækage via conditionMessage().
+#'
+#' @param msg Fejlbesked (tegnstreng)
+#' @return Besked med PAT erstattet af [REDACTED]
+#' @keywords internal
+redact_pat_in_url <- function(msg) {
+  gsub("x-access-token:[^@]+@", "x-access-token:[REDACTED]@", msg)
+}
+
 #' Indsæt PAT i HTTPS git-URL for autentificering
 #'
 #' Omsætter `https://github.com/owner/repo.git` til
@@ -23,9 +35,10 @@ inject_pat_into_url <- function(url, pat) {
 
 #' Byg sorterbart filnavn til session-data
 #'
-#' Format: `<YYYYMMDDTHHMMSSZ>_<session-prefix>.rds`. Lexikografisk
-#' sortering svarer til kronologisk sortering. Session prefix er
-#' foerste 8 tegn af session_id (eller "s<unix-epoch>" hvis NULL).
+#' Format: `<YYYYMMDDTHHMMSSZ>_<session-hash>.rds`. Lexikografisk
+#' sortering svarer til kronologisk sortering. Session-delen er
+#' SHA-256-hash (8 tegn) af session_id — raa token optræder aldrig
+#' i filnavnet. Fallback ved NULL: hash af timestamp + entropi.
 #'
 #' @param session_id Shiny session token (eller NULL)
 #' @param timestamp POSIXct tidspunkt (default: Sys.time())
@@ -34,11 +47,9 @@ inject_pat_into_url <- function(url, pat) {
 build_session_filename <- function(session_id = NULL, timestamp = Sys.time()) {
   ts_str <- format(timestamp, "%Y%m%dT%H%M%SZ", tz = "UTC")
   prefix <- if (is.null(session_id) || nchar(session_id) == 0) {
-    paste0("s", as.integer(timestamp))
-  } else if (nchar(session_id) >= 8) {
-    substr(session_id, 1, 8)
+    sanitize_session_token(paste0(as.integer(timestamp), stats::runif(1L)))
   } else {
-    session_id
+    sanitize_session_token(session_id)
   }
   paste0(ts_str, "_", prefix, ".rds")
 }
@@ -96,7 +107,8 @@ sync_logs_to_github <- function(all_data,
 
       sessions_dir <- file.path(tmp_dir, "sessions")
       dir.create(sessions_dir, showWarnings = FALSE, recursive = TRUE)
-      saveRDS(all_data, file.path(sessions_dir, filename))
+      safe_data <- filter_shinylogs_allowlist(all_data)
+      saveRDS(safe_data, file.path(sessions_dir, filename))
 
       gert::git_add("sessions/", repo = tmp_dir)
       commit_msg <- sprintf(
@@ -122,7 +134,7 @@ sync_logs_to_github <- function(all_data,
             list(ok = TRUE)
           },
           error = function(e) {
-            list(ok = FALSE, error = conditionMessage(e))
+            list(ok = FALSE, error = redact_pat_in_url(conditionMessage(e)))
           }
         )
 
@@ -155,7 +167,7 @@ sync_logs_to_github <- function(all_data,
     error = function(e) {
       list(
         success = FALSE, reason = "clone_or_commit_failed",
-        error = conditionMessage(e)
+        error = redact_pat_in_url(conditionMessage(e))
       )
     }
   )

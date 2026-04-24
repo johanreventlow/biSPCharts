@@ -139,15 +139,6 @@ files:
       efter API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-cache-reactive-lazy-evaluation.R
-    audit_category: green
-    type: e2e
-    handling: keep
-    reviewed: yes
-    rationale: 'Fase 2 salvage: manage_cache_size() ikke i namespace — alle testServer-tests
-      SKIP+TODO. 2 PASS, 7 SKIP. Klar til CI.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-centerline-handling.R
     audit_category: green
     type: unit
@@ -1011,4 +1002,3 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-

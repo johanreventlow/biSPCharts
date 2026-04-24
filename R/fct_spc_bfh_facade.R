@@ -295,38 +295,9 @@ compute_spc_results_bfh <- function(
       bfh_params <- build_bfh_args(prepared, axes, extra_params)
       standardized <- execute_bfh_request(bfh_params, prepared)
 
-      # 7e. Anhøj metadata: brug BFHcharts' allerede beregnede metadata
-      # transform_bfh_output() udtrækker Anhøj-regler fra BFHcharts qic_data.
-      # compute_anhoej_metadata_local() (qicharts2::qic) er FJERNET da den var
-      # redundant og tog ~24 sek for P-kort pga. intern ggplot rendering.
-      # Fallback til qicharts2 kun hvis BFHcharts metadata mangler.
-      if (is.null(standardized$metadata$anhoej_rules)) {
-        log_warn(
-          "BFHcharts Anhøj metadata mangler — falder tilbage til qicharts2",
-          .context = "BFH_SERVICE"
-        )
-        anhoej_metadata_local <- compute_anhoej_metadata_local(
-          data = complete_data,
-          config = list(
-            x_col = x_var,
-            y_col = y_var,
-            n_col = n_var,
-            chart_type = validated_chart_type
-          )
-        )
-        if (!is.null(anhoej_metadata_local)) {
-          standardized$metadata$anhoej_rules <- list(
-            runs_detected = anhoej_metadata_local$runs_signal,
-            crossings_detected = anhoej_metadata_local$crossings_signal,
-            longest_run = anhoej_metadata_local$longest_run,
-            n_crossings = anhoej_metadata_local$n_crossings,
-            n_crossings_min = anhoej_metadata_local$n_crossings_min
-          )
-        }
-      }
 
-      # 7g. Add backend flag to indicate BFHcharts workflow
-      standardized$metadata$backend <- "bfhcharts"
+      # 7e+7g. Dekorér plot og udfyld metadata
+      standardized <- decorate_plot_for_display(standardized, prepared)
 
       # 8. Store result in cache if enabled
       if (!is.null(cache_key) && !is.null(app_state)) {

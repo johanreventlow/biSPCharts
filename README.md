@@ -361,6 +361,7 @@ R -e "source('tests/coverage.R'); run_coverage_report()"
 - **[CLAUDE.md](CLAUDE.md)**: Comprehensive development guide
 - **[REFACTORING_PLAN.md](REFACTORING_PLAN.md)**: Roadmap og progress tracking
 - **[ARCHITECTURE.md](ARCHITECTURE.md)**: System architecture
+- **[docs/ANALYTICS_PRIVACY.md](docs/ANALYTICS_PRIVACY.md)**: Analytics payload-kontrakt, opt-in mekanisme og DPIA-status
 
 ### API Documentation
 ```r

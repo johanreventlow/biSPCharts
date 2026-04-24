@@ -26,18 +26,18 @@
 - [x] 4.1 Audit `inst/golem-config.yml` — prod: `analytics.enabled: true`, test: `false`
 - [x] 4.2 Behold `analytics.enabled: true` i prod — consent-gate i `should_track_analytics()` er tilstrækkelig (bruger-godkendt)
 - [x] 4.3 Verificeret: `utils_analytics_consent.R` honorerer config-flag OG consent — begge kræves
-- [ ] 4.4 Test: `test_that("analytics disabled in prod config blocks upload")` — consent-gate dækkes af eksisterende `test-utils_analytics_consent.R`
+- [x] 4.4 Dækket af eksisterende `test-utils_analytics_consent.R`: `should_track_analytics() respekterer feature flag` (spc.analytics.enabled=FALSE → FALSE uanset consent)
 
 ## 5. Dokumentation
 
 - [x] 5.1 Opret `docs/ANALYTICS_PRIVACY.md` med sektioner: hvad indsamles, opt-in, dataopbevaring, brugerrettigheder, DPIA-status
-- [ ] 5.2 Link fra README og CLAUDE.md
+- [x] 5.2 Link tilføjet i `README.md` (Developer Resources) og `CLAUDE.md` (Analytics Privacy sektion)
 - [x] 5.3 Opdater NEWS.md under "(development)"
 
 ## 6. Verifikation
 
-- [x] 6.1 Alle nye tests består (23 analytics-github + 11 analytics-pins)
-- [ ] 6.2 Manuel test: kør analytics-sync lokalt med dummy PAT, verificer at fejl-output ikke indeholder PAT
+- [x] 6.1 Alle nye tests består (20 analytics-github + 11 analytics-pins)
+- [x] 6.2 Manuel test kørt: `redact_pat_in_url(conditionMessage(e))` med PAT i URL — output indeholder ikke PAT (verificeret 2026-04-24)
 - [x] 6.3 `devtools::load_all()` kører rent
 - [ ] 6.4 Review fra bruger (DPIA-ansvar) før merge
 

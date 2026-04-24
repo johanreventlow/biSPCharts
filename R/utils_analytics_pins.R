@@ -176,21 +176,18 @@ SHINYLOGS_ALLOWLIST <- list(
 filter_shinylogs_allowlist <- function(all_data) {
   hash_col <- function(df) {
     if ("sessionid" %in% names(df) && nrow(df) > 0) {
-      df$session_hash <- vapply(as.character(df$sessionid), hash_session_id, character(1L))
+      df$session_hash <- vapply(as.character(df$sessionid), sanitize_session_token, character(1L))
       df$sessionid <- NULL
     }
     df
   }
 
   keep_allowed <- function(df, allowed) {
-    if (nrow(df) == 0) {
-      return(df[, intersect(names(df), allowed), drop = FALSE])
-    }
     df[, intersect(names(df), allowed), drop = FALSE]
   }
 
   processed <- lapply(all_data, hash_col)
-  if (!is.null(processed$errors) && nrow(processed$errors) > 0) {
+  if (nrow(processed$errors) > 0) {
     processed$errors <- redact_error_messages(processed$errors)
   }
 

@@ -4,21 +4,6 @@
 # Hver Shiny-session skriver en enkelt .rds-fil til sessions/ mappen.
 # Se bispcharts-analytics-data repo for layout.
 
-#' Beregn SHA-256 hash af session_id
-#'
-#' Returnerer de foerste \code{length} tegn af SHA-256 hex-digest.
-#' Bruges til at undgaa at raa session-tokens optræder i filnavne
-#' eller persisterede data.
-#'
-#' @param session_id Shiny session token (tegnstreng)
-#' @param length Antal hex-tegn der returneres (default: 8)
-#' @return Tegnstreng med hash-prefix (lowercase hex)
-#' @keywords internal
-hash_session_id <- function(session_id, length = 8L) {
-  h <- digest::digest(session_id, algo = "sha256", serialize = FALSE)
-  substr(h, 1L, length)
-}
-
 #' Rediger PAT-del af GitHub auth-URL i fejlbeskeder
 #'
 #' Matcher \code{x-access-token:<TOKEN>@} i fejlbeskeder og erstatter
@@ -62,9 +47,9 @@ inject_pat_into_url <- function(url, pat) {
 build_session_filename <- function(session_id = NULL, timestamp = Sys.time()) {
   ts_str <- format(timestamp, "%Y%m%dT%H%M%SZ", tz = "UTC")
   prefix <- if (is.null(session_id) || nchar(session_id) == 0) {
-    hash_session_id(paste0(as.integer(timestamp), stats::runif(1L)))
+    sanitize_session_token(paste0(as.integer(timestamp), stats::runif(1L)))
   } else {
-    hash_session_id(session_id)
+    sanitize_session_token(session_id)
   }
   paste0(ts_str, "_", prefix, ".rds")
 }

@@ -251,3 +251,34 @@ safe_getenv <- function(var_name, default = "", type = "character") {
     error_type = "configuration"
   )
 }
+
+#' Typed error helper for SPC pipeline
+#'
+#' Throws a typed condition that inherits from `spc_error` and `error`.
+#' Domain helpers use this instead of `stop()` so callers can distinguish
+#' failure modes and the orchestrator can catch by class.
+#'
+#' @section Error classes:
+#' - `spc_input_error`: Ugyldig input (forkert chart_type, manglende kolonner).
+#' - `spc_prepare_error`: Data-prep fejl (dato-/talparse, filtrering).
+#' - `spc_render_error`: BFHcharts-fejl under rendering.
+#' - `spc_cache_error`: Cache-læs/skriv fejl (typisk warn, ikke error).
+#'
+#' All classes inherit from `"spc_error"` → generic `tryCatch(error = ...)` still works.
+#'
+#' @param message Character string. Dansk bruger-vendt fejlbesked.
+#' @param class Character string. One of `"spc_input_error"`, `"spc_prepare_error"`,
+#'   `"spc_render_error"`, `"spc_cache_error"`.
+#' @param ... Additional metadata passed to `rlang::abort()` (e.g. `data`, `column`).
+#' @param call Environment. Defaults to caller environment for correct traceback.
+#'
+#' @return Does not return — always throws.
+#' @keywords internal
+spc_abort <- function(message, class, ..., call = rlang::caller_env()) {
+  rlang::abort(
+    message = message,
+    class = c(class, "spc_error", "error", "condition"),
+    ...,
+    call = call
+  )
+}

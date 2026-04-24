@@ -15,16 +15,16 @@
 
 
 metadata:
-  total_files: 122
-  audit_run: 2026-04-19T16:03:42+0200
+  total_files: 128
+  audit_run: 2026-04-24T11:23:31+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 122
-    unreviewed: 0
+    reviewed: 116
+    unreviewed: 12
     needs_triage: 0
 files:
   - file: test-100x-mismatch-prevention.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -46,7 +46,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-app-initialization.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -77,7 +77,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-bfh-error-handling.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -122,7 +122,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-cache-data-signature-bugs.R
-    audit_category: green-partial
+    audit_category: green
     type: e2e
     handling: fix-in-phase-3
     reviewed: yes
@@ -235,7 +235,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-critical-fixes-integration.R
-    audit_category: green-partial
+    audit_category: green
     type: snapshot
     handling: fix-in-phase-3
     reviewed: yes
@@ -289,7 +289,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-data-validation.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -341,7 +341,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-edge-cases-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -359,10 +359,7 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    rationale: §2.2 unit-tests for event context handlers (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
+    reviewed: no
   - file: test-event-system-emit.R
     audit_category: green
     type: unit
@@ -373,7 +370,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-event-system-observers.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -409,6 +406,21 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-fct_spc_contracts.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_spc_decorate.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_spc_execute.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-fct_spc_file_save_load.R
     audit_category: green
     type: unit
@@ -416,8 +428,23 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-fct_spc_prepare.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_spc_resolve_axis_units.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_spc_validate.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-file-io-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -425,7 +452,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-file-operations-tidyverse.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -469,10 +496,7 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    rationale: §2.4 kanoniske mocks + helper-split + contract tests (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
+    reviewed: no
   - file: test-input-debouncing-comprehensive.R
     audit_category: green
     type: e2e
@@ -497,7 +521,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-label-formatting.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -553,7 +577,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-mod_export.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -562,12 +586,9 @@ files:
     reviewed_date: '2026-04-17'
   - file: test-mod-landing-server.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
-    reviewed: yes
-    rationale: §2.3 testServer-kontrakter for landing server-modul (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
+    reviewed: no
   - file: test-mod-spc-chart-comprehensive.R
     audit_category: green
     type: integration
@@ -590,10 +611,7 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    rationale: §2.5 negative asserts — foundation + 6 explicit scenarier (#228, #230). Tilføjet efter audit-kørsel.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
+    reviewed: no
   - file: test-no-file-dependencies.R
     audit_category: green
     type: unit
@@ -619,7 +637,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-package-initialization.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -627,7 +645,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-package-namespace-validation.R
-    audit_category: green-partial
+    audit_category: green
     type: policy-guard
     handling: fix-in-phase-3
     reviewed: yes
@@ -670,7 +688,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-plot-generation-performance.R
-    audit_category: green-partial
+    audit_category: green
     type: e2e
     handling: fix-in-phase-3
     reviewed: yes
@@ -733,7 +751,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-security-session-tokens.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -748,7 +766,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-session-token-sanitization.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -756,7 +774,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-shared-data-signatures.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -764,7 +782,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-bfh-service.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -773,7 +791,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-cache-integration.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -782,7 +800,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-plot-generation-comprehensive.R
-    audit_category: green
+    audit_category: green-partial
     type: unit
     handling: keep
     reviewed: yes
@@ -816,7 +834,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-tidyverse-purrr-operations.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -889,15 +907,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-utils-export-analysis-metadata.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Unit-test for export analysis metadata helper added after audit run;
-      covers metadata enrichment, percent centerline formatting, and fallback context.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
   - file: test-utils_export_filename.R
     audit_category: green
     type: unit
@@ -906,7 +915,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_export_validation.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -924,11 +933,7 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    rationale: Regression tests for utils_logging signatures added after audit run;
-      verifies session_id is passed through details and unknown top-level args fail.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-21'
+    reviewed: no
   - file: test-utils_performance_caching.R
     audit_category: green
     type: benchmark
@@ -951,6 +956,11 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-utils-export-analysis-metadata.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-utils-state-accessors.R
     audit_category: green
     type: unit
@@ -969,7 +979,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-visualization-server.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -994,10 +1004,11 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-yaml-config-adherence.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+

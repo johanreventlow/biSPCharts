@@ -15,6 +15,17 @@
 
 ## Security
 
+* **Analytics privacy hardening** (#307): Session-tokens eksponeres ikke
+  længere i filnavne — `build_session_filename()` bruger nu SHA-256 hash
+  (8 tegn) via ny `hash_session_id()` helper. GitHub PAT kan ikke lække
+  via fejlbeskeder — `redact_pat_in_url()` rensker `conditionMessage()`
+  i alle error paths i `sync_logs_to_github()`. Shinylogs-payload
+  filtreres via `filter_shinylogs_allowlist()` og `SHINYLOGS_ALLOWLIST`
+  konstanterne inden upload — kolonner som `user`, `user_agent`,
+  `screen_res` droppes. Fejl-beskeder redactes til `redacted_message`.
+  `docs/ANALYTICS_PRIVACY.md` oprettet med fuld beskrivelse af hvad
+  indsamles, opt-in mekanisme og brugerrettigheder.
+
 * **Session token-tests opdateret til SHA256** (#239): To test-filer testede
   den tidligere SHA1-implementering. Implementeringen var allerede opgraderet
   til SHA256 (stærkere hashing), men testene forventede stadig SHA1-output.

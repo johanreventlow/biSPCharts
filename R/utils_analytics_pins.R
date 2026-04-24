@@ -148,6 +148,83 @@ rotate_log_files <- function(log_directory,
   invisible(NULL)
 }
 
+#' Tilladte kolonner i analytics-upload (allowlist)
+#'
+#' Definerer praecist hvilke kolonner der maa optaede i persisterede
+#' analytics-filer. Alle andre kolonner droppes foer upload.
+#' Brug `filter_shinylogs_allowlist()` til at anvende filteret.
+#'
+#' Opdatér `docs/ANALYTICS_PRIVACY.md` naar denne liste aendres.
+#'
+#' @format Named list med vectors af tilladte kolonnenavne
+#' @keywords internal
+SHINYLOGS_ALLOWLIST <- list(
+  sessions = c("session_hash", "app", "server_connected", "server_disconnected"),
+  inputs   = c("session_hash", "name", "timestamp", "value"),
+  outputs  = c("session_hash", "name", "timestamp"),
+  errors   = c("session_hash", "name", "timestamp", "redacted_message")
+)
+
+#' Filtrer shinylogs-data til allowlistede kolonner
+#'
+#' Hash'er sessionid-kolonnen, redacterer fejlbeskeder og beholder
+#' kun kolonner fra \code{SHINYLOGS_ALLOWLIST}.
+#'
+#' @param all_data Navngivet liste fra \code{read_shinylogs_all()}
+#' @return Filtreret liste med samme struktur
+#' @keywords internal
+filter_shinylogs_allowlist <- function(all_data) {
+  hash_col <- function(df) {
+    if ("sessionid" %in% names(df) && nrow(df) > 0) {
+      df$session_hash <- vapply(as.character(df$sessionid), hash_session_id, character(1L))
+      df$sessionid <- NULL
+    }
+    df
+  }
+
+  keep_allowed <- function(df, allowed) {
+    if (nrow(df) == 0) {
+      return(df[, intersect(names(df), allowed), drop = FALSE])
+    }
+    df[, intersect(names(df), allowed), drop = FALSE]
+  }
+
+  processed <- lapply(all_data, hash_col)
+  if (!is.null(processed$errors) && nrow(processed$errors) > 0) {
+    processed$errors <- redact_error_messages(processed$errors)
+  }
+
+  list(
+    sessions = keep_allowed(processed$sessions, SHINYLOGS_ALLOWLIST$sessions),
+    inputs   = keep_allowed(processed$inputs, SHINYLOGS_ALLOWLIST$inputs),
+    outputs  = keep_allowed(processed$outputs, SHINYLOGS_ALLOWLIST$outputs),
+    errors   = keep_allowed(processed$errors, SHINYLOGS_ALLOWLIST$errors)
+  )
+}
+
+#' Rediger sensitive data i shinylogs errors-dataframe
+#'
+#' Anvender PAT-redaction paa \code{error}-kolonnen og omdoeber
+#' den til \code{redacted_message} saa allowlist-filteret kan matche.
+#'
+#' @param errors_df data.frame fra shinylogs errors-element
+#' @return data.frame med \code{redacted_message}-kolonne
+#' @keywords internal
+redact_error_messages <- function(errors_df) {
+  if (nrow(errors_df) == 0) {
+    return(errors_df)
+  }
+  if ("error" %in% names(errors_df)) {
+    errors_df$redacted_message <- vapply(
+      as.character(errors_df$error),
+      redact_pat_in_url,
+      character(1L)
+    )
+    errors_df$error <- NULL
+  }
+  errors_df
+}
+
 #' Aggreger logs og sync til analytics-storage
 #'
 #' Prioriteret backend:

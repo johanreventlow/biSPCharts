@@ -27,12 +27,43 @@ test_that("inject_pat_into_url() fejler paa ikke-HTTPS URL", {
   )
 })
 
-test_that("build_session_filename() producerer sorterbart navn", {
+test_that("hash_session_id() returnerer 8-tegns hex-streng", {
+  h <- hash_session_id("my-session-token")
+  expect_match(h, "^[0-9a-f]{8}$")
+})
+
+test_that("hash_session_id() er deterministisk", {
+  expect_equal(hash_session_id("token"), hash_session_id("token"))
+})
+
+test_that("hash_session_id() returnerer forskellig hash for forskellige tokens", {
+  expect_false(hash_session_id("token-a") == hash_session_id("token-b"))
+})
+
+test_that("build_session_filename() producerer sorterbart navn med hash-prefix", {
   filename <- build_session_filename(
     session_id = "abcdef1234567890",
     timestamp = as.POSIXct("2026-04-17 08:42:11", tz = "UTC")
   )
-  expect_equal(filename, "20260417T084211Z_abcdef12.rds")
+  expect_match(filename, "^20260417T084211Z_[0-9a-f]{8}\\.rds$")
+})
+
+test_that("build_session_filename() never exposes raw session_id", {
+  session_id <- "abcdef1234567890"
+  filename <- build_session_filename(
+    session_id = session_id,
+    timestamp = as.POSIXct("2026-04-17 08:42:11", tz = "UTC")
+  )
+  expect_false(grepl(substr(session_id, 1L, 8L), filename, fixed = TRUE))
+  expect_false(grepl(session_id, filename, fixed = TRUE))
+})
+
+test_that("build_session_filename() er deterministisk (samme input, samme hash)", {
+  ts <- as.POSIXct("2026-04-17 08:42:11", tz = "UTC")
+  expect_equal(
+    build_session_filename("my-session", ts),
+    build_session_filename("my-session", ts)
+  )
 })
 
 test_that("build_session_filename() haandterer NULL session_id", {
@@ -40,15 +71,34 @@ test_that("build_session_filename() haandterer NULL session_id", {
     session_id = NULL,
     timestamp = as.POSIXct("2026-04-17 08:42:11", tz = "UTC")
   )
-  expect_match(filename, "^20260417T084211Z_s\\d+\\.rds$")
+  expect_match(filename, "^20260417T084211Z_[0-9a-f]{8}\\.rds$")
 })
 
-test_that("build_session_filename() haandterer kort session_id", {
+test_that("build_session_filename() haandterer tom session_id", {
   filename <- build_session_filename(
-    session_id = "abc",
+    session_id = "",
     timestamp = as.POSIXct("2026-04-17 08:42:11", tz = "UTC")
   )
-  expect_equal(filename, "20260417T084211Z_abc.rds")
+  expect_match(filename, "^20260417T084211Z_[0-9a-f]{8}\\.rds$")
+})
+
+test_that("redact_pat_in_url() fjerner PAT fra GitHub auth-URL", {
+  msg <- "Failed: https://x-access-token:ghp_SECRET123@github.com/owner/repo.git: 403"
+  result <- redact_pat_in_url(msg)
+  expect_false(grepl("ghp_SECRET123", result, fixed = TRUE))
+  expect_true(grepl("x-access-token:[REDACTED]@", result, fixed = TRUE))
+})
+
+test_that("redact_pat_in_url() er no-op paa besked uden credentials", {
+  msg <- "Network timeout after 30s"
+  expect_equal(redact_pat_in_url(msg), msg)
+})
+
+test_that("redact_pat_in_url() haandterer token med specialtegn", {
+  msg <- "clone: https://x-access-token:abc_DEF-123.xyz@github.com/r.git"
+  result <- redact_pat_in_url(msg)
+  expect_false(grepl("abc_DEF-123.xyz", result, fixed = TRUE))
+  expect_true(grepl("[REDACTED]", result, fixed = TRUE))
 })
 
 test_that("sync_logs_to_github() returnerer env_not_set uden PAT", {

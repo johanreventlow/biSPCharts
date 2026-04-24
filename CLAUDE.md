@@ -362,6 +362,12 @@ git push --no-verify        # Git-native alternativ
 
 **Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
 
+### Analytics Privacy
+
+**Payload-kontrakt, opt-in mekanisme og DPIA-status:** `docs/ANALYTICS_PRIVACY.md`
+
+Opdatér `ANALYTICS_PRIVACY.md` og `SHINYLOGS_ALLOWLIST` i `R/utils_analytics_pins.R` synkront ved enhver ændring af hvad der indsamles.
+
 ### Issue Tracking (GitHub Issues)
 
 ✅ **OBLIGATORISK:** Alle fejl, rettelser, todo-emner og forbedringsforslag dokumenteres som GitHub Issues.

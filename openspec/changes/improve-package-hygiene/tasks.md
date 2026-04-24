@@ -41,8 +41,8 @@
 ## 8. Verifikation
 
 - [x] 8.1 `devtools::load_all()` kører rent — verificeret #293
-- [ ] 8.2 `devtools::test()` bestået (modulo #279/#280 pre-existing) — verificeres ved merge af PR #300
-- [ ] 8.3 Shiny-app starter — verificeres manuelt
+- [x] 8.2 `devtools::test()` bestået: 4513 pass, 2 fail (begge pre-existing: #279 BFHcharts-integration, #280 E2E-tests), 0 err, 128 skip — verificeret 2026-04-24
+- [ ] 8.3 Shiny-app starter — verificeres manuelt (kræver browser)
 - [x] 8.4 R CMD check: 7 WARNINGs (alle kendte og accepterede)
 
 Tracking: GitHub Issue #287

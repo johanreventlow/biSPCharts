@@ -147,3 +147,24 @@ test_that("validate_spc_request fejlbesked ved ugyldig chart_type arver fra spc_
   expect_true(inherits(err, "spc_error"))
   expect_true(inherits(err, "spc_input_error"))
 })
+
+test_that("spc fejlklasser producerer korrekte UI-brugermeddelelser", {
+  make_err <- function(msg, cls) {
+    tryCatch(spc_abort(msg, class = cls), error = function(e) e)
+  }
+  classify_msg <- function(e) {
+    if (inherits(e, "spc_input_error")) {
+      paste("Ugyldigt input:", e$message)
+    } else if (inherits(e, "spc_prepare_error")) {
+      paste("Datafejl:", e$message)
+    } else if (inherits(e, "spc_render_error")) {
+      "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
+    } else {
+      "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
+    }
+  }
+  expect_true(startsWith(classify_msg(make_err("kolonne mangler", "spc_input_error")), "Ugyldigt input:"))
+  expect_true(startsWith(classify_msg(make_err("for få punkter", "spc_prepare_error")), "Datafejl:"))
+  expect_match(classify_msg(make_err("rendering", "spc_render_error")), "Grafgenerering fejlede")
+  expect_match(classify_msg(simpleError("ukendt")), "Grafgenerering fejlede")
+})

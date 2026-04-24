@@ -313,7 +313,6 @@ spc_error_user_message <- function(e) {
 require_optional_package <- function(pkg, reason = pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     cond <- structure(
-      class = c("spc_dependency_error", "spc_error", "error", "condition"),
       list(
         message = paste0(
           "Pakken '", pkg, "' er ikke installeret. ",
@@ -322,7 +321,8 @@ require_optional_package <- function(pkg, reason = pkg) {
         ),
         package = pkg,
         call = sys.call(-1)
-      )
+      ),
+      class = c("spc_dependency_error", "spc_error", "error", "condition")
     )
     stop(cond)
   }

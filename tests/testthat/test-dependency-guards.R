@@ -3,8 +3,6 @@
 project_root <- normalizePath(file.path("..", ".."), winslash = "/", mustWork = TRUE)
 r_files <- list.files(file.path(project_root, "R"), pattern = "[.]R$", full.names = TRUE)
 
-# --- Task 1.3: require_qicharts2 / require_optional_package ---
-
 test_that("require_optional_package kaster spc_dependency_error for ukendt pakke", {
   err <- tryCatch(
     require_optional_package("biSPCharts_definitely_nonexistent_xyz123", "test formål"),
@@ -28,8 +26,6 @@ test_that("require_optional_package returnerer invisible NULL for installeret pa
   expect_null(result)
 })
 
-# --- Task 3.4: ingen BFHcharts:::-kald i R/ ---
-
 test_that("ingen BFHcharts:::-kald i R/ (triple-colon forbudt)", {
   offending <- character(0)
   for (f in r_files) {
@@ -46,5 +42,5 @@ test_that("ingen BFHcharts:::-kald i R/ (triple-colon forbudt)", {
       paste(offending, collapse = "\n")
     ))
   }
-  expect_true(TRUE)
+  succeed()
 })

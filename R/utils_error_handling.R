@@ -303,3 +303,39 @@ spc_error_user_message <- function(e) {
     "Grafgenerering fejlede. Kontroller venligst dine data og indstillinger."
   }
 }
+
+#' Guard: kræv valgfri pakke eller kast typed error
+#'
+#' @param pkg Pakkenavn som character string
+#' @param reason Kort beskrivelse af hvad pakken bruges til (dansk)
+#' @return Invisible NULL hvis pakke er tilgængelig
+#' @keywords internal
+require_optional_package <- function(pkg, reason = pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    cond <- structure(
+      class = c("spc_dependency_error", "spc_error", "error", "condition"),
+      list(
+        message = paste0(
+          "Pakken '", pkg, "' er ikke installeret. ",
+          "Den er krævet for: ", reason, ". ",
+          "Installer med: install.packages('", pkg, "')"
+        ),
+        package = pkg,
+        call = sys.call(-1)
+      )
+    )
+    stop(cond)
+  }
+  invisible(NULL)
+}
+
+#' Guard: kræv qicharts2 for Anhøj-beregninger
+#'
+#' @return Invisible NULL hvis qicharts2 er tilgængelig
+#' @keywords internal
+require_qicharts2 <- function() {
+  require_optional_package(
+    "qicharts2",
+    "Anhøj regler og SPC signal-beregning"
+  )
+}

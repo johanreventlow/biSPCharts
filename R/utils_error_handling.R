@@ -42,6 +42,21 @@
 #' })
 #' ```
 #'
+#' @section Hvornår safe_operation() er korrekt:
+#' Brug `safe_operation()` KUN til **ikke-essentiel kode** der kan fejle uden
+#' at appens kernefunktionalitet brydes:
+#' - UI-refresh og layout-opdateringer
+#' - Analytics-emit og logging side-effects
+#' - Ikke-kritisk post-processing
+#'
+#' **BRUG IKKE `safe_operation()` til:**
+#' - Core data-processing (filindlæsning, parsing, transformation)
+#' - Input-validering
+#' - Beregninger der driver UI-output
+#'
+#' Til fejlhåndtering med diagnostik ved multiple strategier,
+#' brug i stedet `try_with_diagnostics()`.
+#'
 #' @param operation_name Character string describing the operation for logging
 #' @param code Expression or code block to execute safely
 #' @param fallback Default value to return if operation fails. Default is NULL.
@@ -338,4 +353,53 @@ require_qicharts2 <- function() {
     "qicharts2",
     "Anhøj regler og SPC signal-beregning"
   )
+}
+
+#' Prøv multiple strategier og opsaml fejl
+#'
+#' Itererer en navngivet liste af funktioner og returnerer første succesfulde
+#' resultat. Hvis alle fejler, kaldes `on_all_fail` med en navngivet liste af
+#' fejlbeskeder. Hvert attempt SKAL enten returnere en værdi eller kaste en
+#' fejl — returnér aldrig `NULL` som signal for fejl.
+#'
+#' @param attempts Named list af zero-argument funktioner. Køres i rækkefølge.
+#'   Første der returnerer uden fejl vinder. Funktioner der returnerer `NULL`
+#'   behandles som succes med `NULL`-resultat — brug `stop()` for at signalere
+#'   fejl.
+#' @param on_all_fail Funktion der modtager named character vector af
+#'   fejlbeskeder (navn = attempt-navn, værdi = `conditionMessage(e)`).
+#'   Typisk brugt til at kaste en aggregeret fejl eller vise brugerbesked.
+#'
+#' @return Resultatet fra det første succesfulde attempt, eller hvad
+#'   `on_all_fail` returnerer/kaster.
+#'
+#' @examples
+#' \dontrun{
+#' result <- try_with_diagnostics(
+#'   attempts = list(
+#'     "semikolon" = function() readr::read_csv2("fil.csv"),
+#'     "komma"     = function() readr::read_csv("fil.csv")
+#'   ),
+#'   on_all_fail = function(errors) {
+#'     msgs <- paste(names(errors), errors, sep = ": ", collapse = "; ")
+#'     stop(paste("Alle strategier fejlede:", msgs))
+#'   }
+#' )
+#' }
+#' @keywords internal
+try_with_diagnostics <- function(attempts, on_all_fail) {
+  errors <- character(0)
+  for (attempt_name in names(attempts)) {
+    result <- tryCatch(
+      attempts[[attempt_name]](),
+      error = function(e) {
+        errors[[attempt_name]] <<- conditionMessage(e)
+        NULL
+      }
+    )
+    if (!attempt_name %in% names(errors)) {
+      return(result)
+    }
+  }
+  on_all_fail(errors)
 }

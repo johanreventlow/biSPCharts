@@ -111,6 +111,11 @@ verify_branding_setup <- function() {
     colors_available = FALSE
   )
 
+  log_app_init_error <- function(e) {
+    log_debug(conditionMessage(e), .context = "APP_INIT")
+    NULL
+  }
+
   # Brug getter funktioner i stedet for at checke globale variabler
   tryCatch(
     {
@@ -120,7 +125,7 @@ verify_branding_setup <- function() {
         results$hospital_name <- hospital_name
       }
     },
-    error = function(e) NULL
+    error = log_app_init_error
   )
 
   tryCatch(
@@ -131,7 +136,7 @@ verify_branding_setup <- function() {
         results$theme_class <- class(theme)
       }
     },
-    error = function(e) NULL
+    error = log_app_init_error
   )
 
   tryCatch(
@@ -142,7 +147,7 @@ verify_branding_setup <- function() {
         results$logo_path <- logo_path
       }
     },
-    error = function(e) NULL
+    error = log_app_init_error
   )
 
   tryCatch(
@@ -153,7 +158,7 @@ verify_branding_setup <- function() {
         results$color_count <- length(colors)
       }
     },
-    error = function(e) NULL
+    error = log_app_init_error
   )
 
   results$complete <- all(

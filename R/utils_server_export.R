@@ -198,9 +198,10 @@ inject_template_assets <- function(template_dir) {
 get_hospital_name_for_export <- function() {
   # Prøv at hente fra branding config
   if (exists("get_hospital_name") && is.function(get_hospital_name)) {
+    # Silent-fail korrekt: hospital-navn til eksport er ikke-essentiel (valgfri metadata)
     name <- tryCatch(
       get_hospital_name(),
-      error = function(e) NULL
+      error = function(e) NULL # nolint: swallowed_error_linter
     )
 
     if (!is.null(name) && nchar(name) > 0) {

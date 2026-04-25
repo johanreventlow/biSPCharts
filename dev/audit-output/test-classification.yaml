@@ -858,6 +858,14 @@ files:
     rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 28 tests passer.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-try-with-diagnostics.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Tests for try_with_diagnostics() helper (feat error-handling, commit 612ee3b).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-25'
   - file: test-ui-synchronization.R
     audit_category: green
     type: unit

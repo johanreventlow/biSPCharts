@@ -139,11 +139,6 @@ files:
       efter API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-cache-reactive-lazy-evaluation.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-centerline-handling.R
     audit_category: green
     type: unit
@@ -300,6 +295,11 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-dependency-guards.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-denominator-field-toggle.R
     audit_category: stub
     type: unit
@@ -667,6 +667,11 @@ files:
       detect_columns-funktioner ikke i namespace. 6 PASS, 9 SKIP+TODO. Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-pending-issue-230.R
+    audit_category: skip
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-phase-2c-reactive-chain.R
     audit_category: green
     type: unit

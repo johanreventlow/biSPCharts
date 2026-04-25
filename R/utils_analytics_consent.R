@@ -87,7 +87,8 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
             # registreret sin egen onSessionEnded — ellers loeber
             # vores callback foer shinylogs har skrevet JSON-filerne
             # til disk, og vi laeser tom logs/ mappe.
-            session_token <- tryCatch(session$token, error = function(e) NULL)
+            # Silent-fail korrekt: session$token kan mangle før session er initialiseret
+            session_token <- tryCatch(session$token, error = function(e) NULL) # nolint: swallowed_error_linter
             session$onSessionEnded(function() {
               safe_operation(
                 "Aggregate analytics on session end",

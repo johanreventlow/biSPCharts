@@ -474,27 +474,24 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   # 1. Dansk standard (semikolon + komma-decimal)
   # 2. Fallback: auto-detect
   # 3. Fallback: engelsk (komma + punkt-decimal)
+  # Alle fejl opsamles og vises i brugerbesked ved total-fail.
 
-  data <- tryCatch(
-    {
-      result <- readr::read_csv2(
-        file_path,
-        locale = readr::locale(
-          decimal_mark = ",",
-          grouping_mark = ".",
-          encoding = UTF8_ENCODING
-        ),
-        show_col_types = FALSE
-      )
-      if (ncol(result) >= 2) result else NULL
-    },
-    error = function(e) NULL
-  )
-
-  if (is.null(data)) {
-    # Fallback: auto-detect separator
-    data <- tryCatch(
-      {
+  data <- try_with_diagnostics(
+    attempts = list(
+      "semikolon-separator (dansk standard)" = function() {
+        result <- readr::read_csv2(
+          file_path,
+          locale = readr::locale(
+            decimal_mark = ",",
+            grouping_mark = ".",
+            encoding = UTF8_ENCODING
+          ),
+          show_col_types = FALSE
+        )
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
+      },
+      "auto-detect separator" = function() {
         result <- readr::read_delim(
           file_path,
           delim = NULL,
@@ -502,33 +499,48 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
           show_col_types = FALSE,
           trim_ws = TRUE
         )
-        if (ncol(result) >= 2) result else NULL
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
       },
-      error = function(e) NULL
-    )
-  }
-
-  if (is.null(data)) {
-    # Fallback: engelsk CSV (komma + punkt-decimal)
-    data <- tryCatch(
-      readr::read_csv(
-        file_path,
-        locale = readr::locale(
-          decimal_mark = ".",
-          grouping_mark = ",",
-          encoding = UTF8_ENCODING
+      "komma-separator (engelsk standard)" = function() {
+        result <- readr::read_csv(
+          file_path,
+          locale = readr::locale(
+            decimal_mark = ".",
+            grouping_mark = ",",
+            encoding = UTF8_ENCODING
+          ),
+          show_col_types = FALSE
+        )
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
+      }
+    ),
+    on_all_fail = function(errors) {
+      attempt_names <- names(errors)
+      fejldetaljer <- paste(attempt_names, errors, sep = ": ", collapse = "\n")
+      log_warn(
+        "CSV-parsing fejlede for alle tre strategier",
+        .context = "FILE_UPLOAD",
+        details = list(
+          attempts = attempt_names,
+          errors = as.list(errors)
+        )
+      )
+      shiny::showNotification(
+        paste0(
+          "CSV-filen kunne ikke l\u00e6ses. Pr\u00f8vede:\n",
+          fejldetaljer,
+          "\nKontroll\u00e9r at filen er gyldig CSV med UTF-8 eller Windows-1252 encoding."
         ),
-        show_col_types = FALSE
-      ),
-      error = function(e) NULL
-    )
-  }
+        type = "error",
+        duration = 10
+      )
+      NULL
+    }
+  )
 
-  if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
-    shiny::showNotification(
-      "Kunne ikke parse CSV-filen. Kontroll\u00e9r format og encoding.",
-      type = "error", duration = 5
-    )
+  if (is.null(data) || nrow(data) < 1) {
     return(invisible(NULL))
   }
 
@@ -661,6 +673,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   data <- NULL
   best_fallback <- NULL
   for (sep in c(";", "\t", ",")) {
+    # Silent-fail korrekt: multi-separator loop — fejl pr. separator er forventet
     attempt <- tryCatch(
       readr::read_delim(
         I(text_data),
@@ -669,7 +682,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
         show_col_types = FALSE,
         trim_ws = TRUE
       ),
-      error = function(e) NULL
+      error = function(e) NULL # nolint: swallowed_error_linter
     )
     if (!is.null(attempt) && ncol(attempt) >= 3) {
       data <- attempt

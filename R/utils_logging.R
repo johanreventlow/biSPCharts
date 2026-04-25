@@ -116,7 +116,8 @@ get_effective_log_level <- function() {
         NULL
       }
     },
-    error = function(e) NULL
+    # Silent-fail korrekt: golem-config er ikke tilgængelig under bootstrap/tests
+    error = function(e) NULL # nolint: swallowed_error_linter
   )
 
   if (!is.null(yaml_level) && yaml_level %in% names(LOG_LEVELS)) {

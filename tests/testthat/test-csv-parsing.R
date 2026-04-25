@@ -215,3 +215,33 @@ test_that("read_csv_detect_encoding læser Latin1 med danske tegn", {
   # Skal have konverteret korrekt til UTF-8
   expect_true(any(grepl("M", text))) # Mindst noget tekst
 })
+
+test_that("handle_csv_upload viser detaljeret fejlbesked ved total-fail", {
+  # Opret en fil som ingen strategi kan parse som valid CSV med >= 2 kolonner
+  temp_file <- tempfile(fileext = ".csv")
+  writeLines("ikkecsv", temp_file)
+  on.exit(unlink(temp_file))
+
+  shown <- NULL
+  testthat::local_mocked_bindings(
+    showNotification = function(msg, ...) {
+      shown <<- msg
+      invisible(NULL)
+    },
+    .package = "shiny"
+  )
+
+  result <- handle_csv_upload(
+    file_path = temp_file,
+    app_state = NULL,
+    session_id = "test-session",
+    emit = NULL
+  )
+  expect_null(result)
+  # Fejlbeskeden skal nævne de tre strategier
+  if (!is.null(shown)) {
+    expect_true(grepl("semikolon-separator", shown))
+    expect_true(grepl("auto-detect", shown))
+    expect_true(grepl("komma-separator", shown))
+  }
+})

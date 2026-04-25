@@ -1,22 +1,22 @@
 # server_file_upload.R
-# Server logik til håndtering af fil uploads og import
+# Server logik til haandtering af fil uploads og import
 
 # Dependencies ----------------------------------------------------------------
 # Bruger readxl og readr til fil-import
 
-#' Læs tekstfil med automatisk encoding-detection
+#' Laes tekstfil med automatisk encoding-detection
 #'
-#' Prøver UTF-8 først, derefter Latin1 som fallback for danske filer
+#' Proever UTF-8 foerst, derefter Latin1 som fallback for danske filer
 #' fra Windows-systemer.
 #'
 #' @param file_path Sti til fil
 #' @return Character vector med filens linjer (altid UTF-8)
 #' @noRd
 read_csv_detect_encoding <- function(file_path) {
-  # Læs som UTF-8 først (mest sandsynligt)
+  # Laes som UTF-8 foerst (mest sandsynligt)
   text <- readLines(file_path, warn = FALSE, encoding = "UTF-8")
 
-  # Tjek om resultatet er valid UTF-8 — hvis ikke, er filen sandsynligvis Latin1
+  # Tjek om resultatet er valid UTF-8 -- hvis ikke, er filen sandsynligvis Latin1
   # (typisk for danske CSV-filer eksporteret fra Windows/Excel)
   if (length(text) > 0 && !all(validEnc(text))) {
     text <- readLines(file_path, warn = FALSE, encoding = "latin1")
@@ -27,7 +27,7 @@ read_csv_detect_encoding <- function(file_path) {
 
 #' Upload-successnotifikation med kolonnenavne
 #' @param source_label Kildelabel (fx "CSV", "Excel", "Indsatte data")
-#' @param data Data frame der blev indlæst
+#' @param data Data frame der blev indlaest
 #' @noRd
 notify_upload_success <- function(source_label, data) {
   col_names <- names(data)
@@ -135,7 +135,7 @@ validate_safe_file_path <- function(uploaded_path) {
   return(file_path)
 }
 
-# UPLOAD HÅNDTERING ===========================================================
+# UPLOAD HAaNDTERING ===========================================================
 
 ## Setup fil upload funktionalitet
 setup_file_upload <- function(input, output, session, app_state, emit, ui_service = NULL) {
@@ -179,7 +179,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
     shiny::req(input$data_file)
 
-    # Luk upload-modal automatisk når fil er valgt (#167)
+    # Luk upload-modal automatisk naar fil er valgt (#167)
     shiny::removeModal()
 
     # Start workflow tracer for file upload
@@ -297,7 +297,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
   # The event system automatically triggers auto-detection when new data is loaded
 }
 
-## Håndter Excel fil upload
+## Haandter Excel fil upload
 handle_excel_upload <- function(file_path, session, app_state, emit, ui_service = NULL) {
   excel_sheets <- readxl::excel_sheets(file_path)
 
@@ -310,13 +310,13 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     data_frame <- as.data.frame(data)
 
     if (!is.null(metadata) && !is.null(ui_service)) {
-      # Fuld restore: spejl localStorage-session_restore-flowet så auto-detect
-      # IKKE kører og gemte mappings ikke overskrives. Rækkefølge er kritisk:
-      # 1) Guard-flag sættes FØR state-skriv så listeners suppresses korrekt.
-      # 2) Kolonne-mappings skrives til app_state FØR emit, så downstream-
-      #    listeners ser korrekt state i første iteration.
-      # 3) restore_metadata() scheduleres via session$onFlushed — den må IKKE
-      #    køre synkront, da selectize-choices først populeres af
+      # Fuld restore: spejl localStorage-session_restore-flowet saa auto-detect
+      # IKKE koerer og gemte mappings ikke overskrives. Raekkefoelge er kritisk:
+      # 1) Guard-flag saettes FOeR state-skriv saa listeners suppresses korrekt.
+      # 2) Kolonne-mappings skrives til app_state FOeR emit, saa downstream-
+      #    listeners ser korrekt state i foerste iteration.
+      # 3) restore_metadata() scheduleres via session$onFlushed -- den maa IKKE
+      #    koere synkront, da selectize-choices foerst populeres af
       #    handle_session_restore_context().
       # 4) emit("session_restore") router til session_restore-handler (exact
       #    match), som kalder update_column_choices_unified + navigation +
@@ -375,7 +375,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
       )
     } else {
       # Fallback: Indstillinger-ark kunne ikke parses. Behandl som almindelig
-      # data-upload og kør auto-detection i stedet.
+      # data-upload og koer auto-detection i stedet.
       set_current_data(app_state, data_frame)
       app_state$data$original_data <- data_frame
       app_state$session$file_uploaded <- TRUE
@@ -413,7 +413,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
   app_state$session$file_uploaded <- TRUE
   # Unified state assignment only - Set auto detect flag
   app_state$columns$auto_detect$completed <- FALSE
-  # Unified state assignment only - Re-enable Anhøj rules when real data is uploaded
+  # Unified state assignment only - Re-enable Anhoej rules when real data is uploaded
   app_state$ui$hide_anhoej_rules <- FALSE
 
   # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
@@ -422,17 +422,17 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
   notify_upload_success("Excel", data)
 }
 
-#' Håndter CSV fil upload med dansk formattering
+#' Haandter CSV fil upload med dansk formattering
 #'
-#' Indlæser og processer CSV filer med danske standarder inklusive
+#' Indlaeser og processer CSV filer med danske standarder inklusive
 #' encoding, decimal separatorer og standard kolonner. Funktionen
-#' håndterer fejl robust og opdaterer app state accordingly.
+#' haandterer fejl robust og opdaterer app state accordingly.
 #'
 #' @param file_path Character string med sti til CSV fil
 #' @param values Reactive values list til opdatering af app state
 #'
 #' @details
-#' CSV læsning konfiguration:
+#' CSV laesning konfiguration:
 #' \itemize{
 #'   \item Encoding: UTF-8 (danske karakterer)
 #'   \item Decimal mark: komma (,)
@@ -442,10 +442,10 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
 #'
 #' Behandling proces:
 #' \enumerate{
-#'   \item Læs CSV med readr::read_csv2 og dansk locale
-#'   \item Tilføj standard SPC kolonner hvis manglende
+#'   \item Laes CSV med readr::read_csv2 og dansk locale
+#'   \item Tilfoej standard SPC kolonner hvis manglende
 #'   \item Opdater reactive values med ny data
-#'   \item Sæt file_uploaded flag til TRUE
+#'   \item Saet file_uploaded flag til TRUE
 #'   \item Vis success notification til bruger
 #' }
 #'
@@ -463,6 +463,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
 #' }
 #'
 #' @seealso \code{\link{handle_excel_upload}}, \code{\link{ensure_standard_columns}}
+#' @noRd
 handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NULL) {
   debug_log("CSV upload processing started", "FILE_UPLOAD_FLOW",
     level = "INFO",
@@ -474,27 +475,24 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   # 1. Dansk standard (semikolon + komma-decimal)
   # 2. Fallback: auto-detect
   # 3. Fallback: engelsk (komma + punkt-decimal)
+  # Alle fejl opsamles og vises i brugerbesked ved total-fail.
 
-  data <- tryCatch(
-    {
-      result <- readr::read_csv2(
-        file_path,
-        locale = readr::locale(
-          decimal_mark = ",",
-          grouping_mark = ".",
-          encoding = UTF8_ENCODING
-        ),
-        show_col_types = FALSE
-      )
-      if (ncol(result) >= 2) result else NULL
-    },
-    error = function(e) NULL
-  )
-
-  if (is.null(data)) {
-    # Fallback: auto-detect separator
-    data <- tryCatch(
-      {
+  data <- try_with_diagnostics(
+    attempts = list(
+      "semikolon-separator (dansk standard)" = function() {
+        result <- readr::read_csv2(
+          file_path,
+          locale = readr::locale(
+            decimal_mark = ",",
+            grouping_mark = ".",
+            encoding = UTF8_ENCODING
+          ),
+          show_col_types = FALSE
+        )
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
+      },
+      "auto-detect separator" = function() {
         result <- readr::read_delim(
           file_path,
           delim = NULL,
@@ -502,33 +500,48 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
           show_col_types = FALSE,
           trim_ws = TRUE
         )
-        if (ncol(result) >= 2) result else NULL
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
       },
-      error = function(e) NULL
-    )
-  }
-
-  if (is.null(data)) {
-    # Fallback: engelsk CSV (komma + punkt-decimal)
-    data <- tryCatch(
-      readr::read_csv(
-        file_path,
-        locale = readr::locale(
-          decimal_mark = ".",
-          grouping_mark = ",",
-          encoding = UTF8_ENCODING
+      "komma-separator (engelsk standard)" = function() {
+        result <- readr::read_csv(
+          file_path,
+          locale = readr::locale(
+            decimal_mark = ".",
+            grouping_mark = ",",
+            encoding = UTF8_ENCODING
+          ),
+          show_col_types = FALSE
+        )
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
+      }
+    ),
+    on_all_fail = function(errors) {
+      attempt_names <- names(errors)
+      fejldetaljer <- paste(attempt_names, errors, sep = ": ", collapse = "\n")
+      log_warn(
+        "CSV-parsing fejlede for alle tre strategier",
+        .context = "FILE_UPLOAD",
+        details = list(
+          attempts = attempt_names,
+          errors = as.list(errors)
+        )
+      )
+      shiny::showNotification(
+        paste0(
+          "CSV-filen kunne ikke l\u00e6ses. Pr\u00f8vede:\n",
+          fejldetaljer,
+          "\nKontroll\u00e9r at filen er gyldig CSV med UTF-8 eller Windows-1252 encoding."
         ),
-        show_col_types = FALSE
-      ),
-      error = function(e) NULL
-    )
-  }
+        type = "error",
+        duration = 10
+      )
+      NULL
+    }
+  )
 
-  if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
-    shiny::showNotification(
-      "Kunne ikke parse CSV-filen. Kontroll\u00e9r format og encoding.",
-      type = "error", duration = 5
-    )
+  if (is.null(data) || nrow(data) < 1) {
     return(invisible(NULL))
   }
 
@@ -610,7 +623,7 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   app_state$session$file_uploaded <- TRUE
   # Unified state assignment - Set auto detect flag
   app_state$columns$auto_detect$completed <- FALSE
-  # Unified state assignment - Re-enable Anhøj rules when real data is uploaded
+  # Unified state assignment - Re-enable Anhoej rules when real data is uploaded
   app_state$ui$hide_anhoej_rules <- FALSE
 
   # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
@@ -651,16 +664,17 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
 handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NULL) {
   # Valider input
   if (is.null(text_data) || !nzchar(trimws(text_data))) {
-    shiny::showNotification("Indsæt data først", type = "warning", duration = 3)
+    shiny::showNotification("Inds\u00e6t data f\u00f8rst", type = "warning", duration = 3)
     return(invisible(NULL))
   }
 
-  # Smart separator detection: prøv eksplicitte separatorer først
-  # read_delim(delim=NULL) auto-detect fejler på semikolon-filer med mellemrum
-  # i kolonnenavne (fx "Uge tekst"), så vi prøver dansk standard først.
+  # Smart separator detection: proev eksplicitte separatorer foerst
+  # read_delim(delim=NULL) auto-detect fejler paa semikolon-filer med mellemrum
+  # i kolonnenavne (fx "Uge tekst"), saa vi proever dansk standard foerst.
   data <- NULL
   best_fallback <- NULL
   for (sep in c(";", "\t", ",")) {
+    # Silent-fail korrekt: multi-separator loop -- fejl pr. separator er forventet
     attempt <- tryCatch(
       readr::read_delim(
         I(text_data),
@@ -669,7 +683,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
         show_col_types = FALSE,
         trim_ws = TRUE
       ),
-      error = function(e) NULL
+      error = function(e) NULL # nolint: swallowed_error_linter
     )
     if (!is.null(attempt) && ncol(attempt) >= 3) {
       data <- attempt
@@ -683,7 +697,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
     data <- best_fallback
   }
 
-  # Valider resultat — fang ustruktureret fritekst uden kolonner/separatorer
+  # Valider resultat -- fang ustruktureret fritekst uden kolonner/separatorer
   if (is.null(data) || ncol(data) < 2 || nrow(data) < 1) {
     shiny::showNotification(
       paste0(
@@ -695,7 +709,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
     return(invisible(NULL))
   }
 
-  # Fritekst med tilfældige separatorer kan passere strukturel validering
+  # Fritekst med tilfaeldige separatorer kan passere strukturel validering
   has_numeric <- any(vapply(data, is_column_numeric, logical(1), threshold = 0))
 
   if (!has_numeric) {
@@ -738,7 +752,7 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
 
   data <- preprocessing_result$data
 
-  # Tilføj Skift/Frys kolonner hvis de mangler
+  # Tilfoej Skift/Frys kolonner hvis de mangler
   data <- ensure_standard_columns(data)
 
   # Gem i app state (samme moenster som handle_csv_upload)
@@ -759,4 +773,4 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
 }
 
 
-# Validering, fejlhåndtering og preprocessing er udtrukket til fct_file_validation.R
+# Validering, fejlhaandtering og preprocessing er udtrukket til fct_file_validation.R

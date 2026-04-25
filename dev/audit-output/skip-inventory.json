@@ -1,0 +1,3137 @@
+{
+  "generated_at": "2026-04-25T05:33:51Z",
+  "summary": {
+    "environment": 162,
+    "permanent": 303,
+    "todo": 56,
+    "total": 521
+  },
+  "skips": [
+    {
+      "file": "test-100x-mismatch-prevention.R",
+      "line": 151,
+      "category": "todo",
+      "snippet": "paste(     \"BFHcharts 0.8.0 y-axis refactor: display_scaler fjernet fra\",     \"generateSPCPlot() return struktur. Displa"
+    },
+    {
+      "file": "test-100x-mismatch-prevention.R",
+      "line": 161,
+      "category": "todo",
+      "snippet": "paste(     \"BFHcharts 0.8.0 target-line rendering refactor: target er ikke\",     \"længere rendered som geom_hline med yi"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 24,
+      "category": "permanent",
+      "snippet": "sprintf(\"Baseline fixture not found: %s\", fixture_path))"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 294,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 328,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 371,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 372,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 403,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 404,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 422,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 423,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 442,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 443,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 462,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 463,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 481,
+      "category": "permanent",
+      "snippet": "\"BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 482,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 524,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 545,
+      "category": "permanent",
+      "snippet": "\"Baseline-fixture har forkert kolonne-layout for aktuel facade — se rationale øverst i baseline comparison-sektion\")"
+    },
+    {
+      "file": "test-anhoej-rules.R",
+      "line": 546,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 7,
+      "category": "permanent",
+      "snippet": "exists(\"get_qic_chart_type\", mode = \"function\"),     \"get_qic_chart_type not available - check global.R loading\"   )"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 21,
+      "category": "permanent",
+      "snippet": "\"HOSPITAL_NAME not defined - this is OK in test environment\")"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 32,
+      "category": "permanent",
+      "snippet": "paste(\"Function\", func, \"not available - this is expected for some functions\"))"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 42,
+      "category": "permanent",
+      "snippet": "\"TEST_MODE_AUTO_LOAD not defined - this is OK\")"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 48,
+      "category": "permanent",
+      "snippet": "\"TEST_MODE_FILE_PATH not defined - this is OK\")"
+    },
+    {
+      "file": "test-app-initialization.R",
+      "line": 53,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 5,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 55,
+      "category": "permanent",
+      "snippet": "\"autodetect_engine or create_app_state not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 94,
+      "category": "permanent",
+      "snippet": "\"detect_columns_name_based function not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 136,
+      "category": "permanent",
+      "snippet": "\"detect_columns_full_analysis function not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 179,
+      "category": "permanent",
+      "snippet": "\"update_all_column_mappings or create_app_state not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 228,
+      "category": "permanent",
+      "snippet": "\"autodetect_engine not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 260,
+      "category": "permanent",
+      "snippet": "\"detect_date_columns_robust function not available\")"
+    },
+    {
+      "file": "test-autodetect-tidyverse-integration.R",
+      "line": 293,
+      "category": "permanent",
+      "snippet": "\"score_column_candidates function not available\")"
+    },
+    {
+      "file": "test-autodetect-unified-comprehensive.R",
+      "line": 373,
+      "category": "permanent",
+      "snippet": "exists(\"create_app_state\", mode = \"function\"),     \"create_app_state not available - check test setup\"   )"
+    },
+    {
+      "file": "test-autodetect-unified-comprehensive.R",
+      "line": 502,
+      "category": "todo",
+      "snippet": "# Se docs/test-suite-inventory-203.md § \"Inventory af skip('TODO')-kald\" og"
+    },
+    {
+      "file": "test-autodetect-unified-comprehensive.R",
+      "line": 508,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-autodetect-unified-comprehensive.R",
+      "line": 557,
+      "category": "permanent",
+      "snippet": "\"autodetect_engine or create_app_state functions not available\")"
+    },
+    {
+      "file": "test-autodetect-unified-comprehensive.R",
+      "line": 587,
+      "category": "permanent",
+      "snippet": "\"detect_columns_full_analysis function not available\")"
+    },
+    {
+      "file": "test-bfh-error-handling.R",
+      "line": 67,
+      "category": "permanent",
+      "snippet": "\"sanitize_log_details blev fjernet i logging-refactor. Ansvaret er flyttet til log_info/log_warn/log_error som strukture"
+    },
+    {
+      "file": "test-bfh-error-handling.R",
+      "line": 104,
+      "category": "permanent",
+      "snippet": "\"sanitize_log_details blev fjernet i logging-refactor.\")"
+    },
+    {
+      "file": "test-bfh-error-handling.R",
+      "line": 116,
+      "category": "permanent",
+      "snippet": "\"log_with_throttle blev fjernet. Throttling håndteres nu af logger-backend via options(spc.log.level) og .context-filtre"
+    },
+    {
+      "file": "test-bfh-error-handling.R",
+      "line": 143,
+      "category": "permanent",
+      "snippet": "\"log_with_throttle blev fjernet i logging-refactor.\")"
+    },
+    {
+      "file": "test-bfh-error-handling.R",
+      "line": 261,
+      "category": "permanent",
+      "snippet": "\"sanitize_log_details blev fjernet i logging-refactor — PII-filtrering sker nu implicit i log_*-kald og tests for dette "
+    },
+    {
+      "file": "test-bfh-module-integration.R",
+      "line": 17,
+      "category": "environment",
+      "snippet": "\"shinytest2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 6,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 7,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 32,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 33,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 59,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 60,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 90,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 91,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 118,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 119,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-bfhcharts-integration.R",
+      "line": 147,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-cache-data-signature-bugs.R",
+      "line": 97,
+      "category": "todo",
+      "snippet": "exists(\"evaluate_data_content_cached\"),     \"evaluate_data_content_cached not loaded\"   )"
+    },
+    {
+      "file": "test-cache-data-signature-bugs.R",
+      "line": 141,
+      "category": "permanent",
+      "snippet": "exists(\"evaluate_data_content_cached\"),     \"evaluate_data_content_cached not loaded\"   )"
+    },
+    {
+      "file": "test-cache-data-signature-bugs.R",
+      "line": 255,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-cache-data-signature-bugs.R",
+      "line": 281,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_with_cache\"),     \"detect_columns_with_cache not available\"   )"
+    },
+    {
+      "file": "test-cache-invalidation-sprint3.R",
+      "line": 126,
+      "category": "permanent",
+      "snippet": "\"get_cache_stats() blev fjernet. Intern .performance_cache er ikke længere eksponeret via public API — se manage_cache_s"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 4,
+      "category": "permanent",
+      "snippet": "exists(\"build_qic_arguments\", mode = \"function\"), \"SPC plot helpers ikke tilgængelige\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 5,
+      "category": "permanent",
+      "snippet": "exists(\"execute_qic_call\", mode = \"function\"), \"qic execution helper ikke tilgængelig\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 6,
+      "category": "permanent",
+      "snippet": "exists(\"prepare_qic_data_parameters\", mode = \"function\"), \"QIC data forberedelse ikke tilgængelig\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 7,
+      "category": "permanent",
+      "snippet": "exists(\"validate_x_column_format\", mode = \"function\"), \"X-kolonne validering mangler\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 8,
+      "category": "permanent",
+      "snippet": "exists(\"parse_danish_target\", mode = \"function\"), \"Dansk målværdi parser mangler\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 9,
+      "category": "permanent",
+      "snippet": "exists(\"prepare_qic_data_optimized\", mode = \"function\"), \"Optimized QIC data helper ikke tilgængelig\")"
+    },
+    {
+      "file": "test-centerline-handling.R",
+      "line": 10,
+      "category": "permanent",
+      "snippet": "exists(\"preprocess_spc_data_optimized\", mode = \"function\"), \"Optimized preprocessing helper ikke tilgængelig\")"
+    },
+    {
+      "file": "test-clean-qic-call-args.R",
+      "line": 5,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-clean-qic-call-args.R",
+      "line": 21,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-config_export.R",
+      "line": 266,
+      "category": "todo",
+      "snippet": "# § \"Inventory af skip('TODO')-kald\"."
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 31,
+      "category": "permanent",
+      "snippet": "\"PLOT_CONTEXT_DIMENSIONS blev fjernet. get_context_dimensions() bruger hardcoded defaults — se test 'get_context_dimensi"
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 35,
+      "category": "permanent",
+      "snippet": "\"PLOT_CONTEXT_DIMENSIONS blev fjernet. Struktur-validering sker nu via get_context_dimensions(context).\")"
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 123,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 154,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 189,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-context-aware-plots.R",
+      "line": 303,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-critical-fixes-integration.R",
+      "line": 12,
+      "category": "permanent",
+      "snippet": "exists(\"app_state\"), message = \"app_state not available in test environment\")"
+    },
+    {
+      "file": "test-critical-fixes-integration.R",
+      "line": 106,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\"), message = \"safe_operation not available\")"
+    },
+    {
+      "file": "test-critical-fixes-integration.R",
+      "line": 232,
+      "category": "permanent",
+      "snippet": "exists(\"reactiveVal\"), message = \"Shiny reactive functions not available\")"
+    },
+    {
+      "file": "test-critical-fixes-integration.R",
+      "line": 236,
+      "category": "todo",
+      "snippet": "\"Reaktive observers udløses ikke i isolate()-kontekst uden Shiny flush-cyklus (#239)\")"
+    },
+    {
+      "file": "test-critical-fixes-regression.R",
+      "line": 148,
+      "category": "permanent",
+      "snippet": "file.exists(desc_file), \"DESCRIPTION file not found\")"
+    },
+    {
+      "file": "test-critical-fixes-regression.R",
+      "line": 189,
+      "category": "permanent",
+      "snippet": "exists(\"OBSERVER_PRIORITIES\"), \"OBSERVER_PRIORITIES not available\")"
+    },
+    {
+      "file": "test-critical-fixes-regression.R",
+      "line": 312,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\"), \"safe_operation function not available\")"
+    },
+    {
+      "file": "test-critical-fixes-security.R",
+      "line": 30,
+      "category": "permanent",
+      "snippet": "exists(\"validate_safe_file_path\", mode = \"function\"),     \"validate_safe_file_path not available\"   )"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 44,
+      "category": "permanent",
+      "snippet": "\"No test data file found\")"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 63,
+      "category": "permanent",
+      "snippet": "\"ensure_standard_columns function not available\")"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 72,
+      "category": "permanent",
+      "snippet": "exists(\"ensure_standard_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 92,
+      "category": "permanent",
+      "snippet": "exists(\"ensure_standard_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 109,
+      "category": "permanent",
+      "snippet": "exists(\"ensure_standard_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 139,
+      "category": "permanent",
+      "snippet": "exists(\"handle_csv_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 155,
+      "category": "permanent",
+      "snippet": "exists(\"handle_csv_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 171,
+      "category": "permanent",
+      "snippet": "exists(\"handle_csv_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 191,
+      "category": "permanent",
+      "snippet": "exists(\"read_csv_detect_encoding\", mode = \"function\"))"
+    },
+    {
+      "file": "test-csv-parsing.R",
+      "line": 204,
+      "category": "permanent",
+      "snippet": "exists(\"read_csv_detect_encoding\", mode = \"function\"))"
+    },
+    {
+      "file": "test-data-validation.R",
+      "line": 33,
+      "category": "permanent",
+      "snippet": "exists(\"validate_numeric_column\", mode = \"function\"), \"validate_numeric_column function not available\")"
+    },
+    {
+      "file": "test-data-validation.R",
+      "line": 63,
+      "category": "permanent",
+      "snippet": "exists(\"safe_date_parse\", mode = \"function\"), \"safe_date_parse function not available\")"
+    },
+    {
+      "file": "test-debug-context-filtering.R",
+      "line": 151,
+      "category": "permanent",
+      "snippet": "# Non-matching context should silently skip (not error)"
+    },
+    {
+      "file": "test-dependency-guards.R",
+      "line": 19,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 13,
+      "category": "permanent",
+      "snippet": ") {"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 14,
+      "category": "environment",
+      "snippet": "\"shinytest2\")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 15,
+      "category": "environment",
+      "snippet": "\"chromote\")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 18,
+      "category": "permanent",
+      "snippet": "\"CI_SKIP_SHINYTEST2 env-flag sat\")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 50,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 51,
+      "category": "environment",
+      "snippet": ") # Skip on CI unless configured for headless testing"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 78,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 79,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 125,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 126,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 171,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 172,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 227,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 228,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 281,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 282,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 324,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 325,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 365,
+      "category": "permanent",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-user-workflows.R",
+      "line": 366,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 8,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 9,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 137,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 163,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — create_chart_validator() ikke i namespace (#203-followup)\"   ))"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 173,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-e2e-workflows.R",
+      "line": 234,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 72,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_name_based\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 79,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_full_analysis\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 91,
+      "category": "permanent",
+      "snippet": "exists(\"find_numeric_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 102,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 118,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_full_analysis\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 130,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_full_analysis\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 143,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 152,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 192,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_name_based\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 230,
+      "category": "permanent",
+      "snippet": "exists(\"parse_danish_dates\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 256,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_name_based\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 294,
+      "category": "permanent",
+      "snippet": "exists(\"score_by_data_characteristics\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 305,
+      "category": "permanent",
+      "snippet": "exists(\"score_by_statistical_properties\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 333,
+      "category": "permanent",
+      "snippet": "exists(\"score_by_data_characteristics\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 347,
+      "category": "permanent",
+      "snippet": "exists(\"score_by_data_characteristics\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 355,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 356,
+      "category": "permanent",
+      "snippet": "\"Visual inspection needed for extreme ranges\")"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 387,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_full_analysis\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 407,
+      "category": "permanent",
+      "snippet": "exists(\"find_numeric_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 420,
+      "category": "permanent",
+      "snippet": "\"Manual memory test\")"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 428,
+      "category": "permanent",
+      "snippet": "exists(\"validate_csv_file\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 457,
+      "category": "permanent",
+      "snippet": "exists(\"MIN_SPC_ROWS\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 467,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 476,
+      "category": "permanent",
+      "snippet": "exists(\"MIN_SPC_ROWS\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 486,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 504,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_name_based\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 513,
+      "category": "permanent",
+      "snippet": "exists(\"RECOMMENDED_SPC_POINTS\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 536,
+      "category": "permanent",
+      "snippet": "exists(\"find_numeric_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 558,
+      "category": "permanent",
+      "snippet": "exists(\"detect_date_columns_robust\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 580,
+      "category": "permanent",
+      "snippet": "exists(\"detect_date_columns_robust\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 598,
+      "category": "permanent",
+      "snippet": "exists(\"detect_columns_full_analysis\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 614,
+      "category": "permanent",
+      "snippet": "exists(\"find_numeric_columns\", mode = \"function\"))"
+    },
+    {
+      "file": "test-edge-cases-comprehensive.R",
+      "line": 662,
+      "category": "permanent",
+      "snippet": "exists(\"preprocess_uploaded_data\", mode = \"function\"))"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 22,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 41,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 67,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 97,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 113,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 147,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 172,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 203,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-emit.R",
+      "line": 222,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-event-system-observers.R",
+      "line": 740,
+      "category": "permanent",
+      "snippet": "testthat::skip(\"Stub recording kræver fuld Shiny session; tokens verificeret uden entries\")"
+    },
+    {
+      "file": "test-fct_ai_improvement_suggestions.R",
+      "line": 24,
+      "category": "environment",
+      "snippet": "\"BFHllm\")"
+    },
+    {
+      "file": "test-fct_export_png.R",
+      "line": 83,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-fct_spc_file_save_load.R",
+      "line": 165,
+      "category": "permanent",
+      "snippet": "exists(\"handle_excel_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-fct_spc_file_save_load.R",
+      "line": 166,
+      "category": "permanent",
+      "snippet": "exists(\"build_spc_excel\", mode = \"function\"))"
+    },
+    {
+      "file": "test-fct_spc_file_save_load.R",
+      "line": 277,
+      "category": "permanent",
+      "snippet": "exists(\"handle_excel_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-io-comprehensive.R",
+      "line": 5,
+      "category": "environment",
+      "snippet": "\"readr\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 5,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 6,
+      "category": "environment",
+      "snippet": "\"stringr\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 63,
+      "category": "permanent",
+      "snippet": "\"preprocess_uploaded_data function not available\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 97,
+      "category": "permanent",
+      "snippet": "\"validate_data_for_auto_detect function not available\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 102,
+      "category": "environment",
+      "snippet": "\"readr\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 151,
+      "category": "permanent",
+      "snippet": "\"CSV upload functions not available\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 206,
+      "category": "permanent",
+      "snippet": "\"validate_uploaded_file function not available\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 211,
+      "category": "environment",
+      "snippet": "\"readxl\")"
+    },
+    {
+      "file": "test-file-operations-tidyverse.R",
+      "line": 240,
+      "category": "permanent",
+      "snippet": "\"Excel upload functions not available\")"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 186,
+      "category": "permanent",
+      "snippet": "exists(\"validate_safe_file_path\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 198,
+      "category": "permanent",
+      "snippet": "exists(\"validate_safe_file_path\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 210,
+      "category": "permanent",
+      "snippet": "exists(\"validate_file_extension\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 220,
+      "category": "permanent",
+      "snippet": "exists(\"validate_uploaded_file\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 239,
+      "category": "permanent",
+      "snippet": "exists(\"validate_uploaded_file\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 259,
+      "category": "permanent",
+      "snippet": "exists(\"collect_metadata\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 288,
+      "category": "permanent",
+      "snippet": "exists(\"collect_metadata\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 321,
+      "category": "permanent",
+      "snippet": "exists(\"preprocess_uploaded_data\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 339,
+      "category": "permanent",
+      "snippet": "exists(\"preprocess_uploaded_data\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 358,
+      "category": "permanent",
+      "snippet": "exists(\"preprocess_uploaded_data\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 381,
+      "category": "permanent",
+      "snippet": "exists(\"handle_upload_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 397,
+      "category": "permanent",
+      "snippet": "exists(\"handle_upload_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 413,
+      "category": "permanent",
+      "snippet": "exists(\"handle_upload_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 434,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 452,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 468,
+      "category": "permanent",
+      "snippet": "exists(\"validate_data_for_auto_detect\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 562,
+      "category": "permanent",
+      "snippet": "\"Performance test - run manually\")"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 612,
+      "category": "permanent",
+      "snippet": "exists(\"sanitize_csv_output\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 627,
+      "category": "permanent",
+      "snippet": "exists(\"validate_uploaded_file\", mode = \"function\"))"
+    },
+    {
+      "file": "test-file-operations.R",
+      "line": 648,
+      "category": "permanent",
+      "snippet": "\"Requires session state and timing\")"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 75,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — handle_csv_upload() kræver reaktiv kontekst \",     \"(kalder app_state$data$c"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 92,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — handle_excel_upload() kræver reaktiv kontekst (#203-followup)\\n\",     \"Nuvae"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 96,
+      "category": "environment",
+      "snippet": "\"readxl\")"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 97,
+      "category": "permanent",
+      "snippet": "requireNamespace(\"openxlsx\", quietly = TRUE))"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 111,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-file-upload.R",
+      "line": 112,
+      "category": "permanent",
+      "snippet": "exists(\"setup_file_upload\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 62,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts run-chart scope — ucl/lcl returneres uventet — se #245 (cross-repo BFHcharts)\")"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 63,
+      "category": "todo",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 87,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 116,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 140,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 167,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 192,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 215,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 243,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 267,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts time-transformation for under-60 format — se #245 (relateret #238)\")"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 268,
+      "category": "todo",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 299,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 340,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 372,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 409,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 437,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 457,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 487,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts factor-konvertering for character x-kolonner — se #245 (cross-repo BFHcharts)\")"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 488,
+      "category": "todo",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 518,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 535,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 559,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 586,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 610,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 638,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 667,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 668,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-generateSPCPlot-comprehensive.R",
+      "line": 703,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"))"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 10,
+      "category": "environment",
+      "snippet": "# Pattern: skip_if_not_installed() + formals() sammenligning."
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 18,
+      "category": "environment",
+      "snippet": "\"BFHllm\")"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 31,
+      "category": "environment",
+      "snippet": "\"BFHcharts\")"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 47,
+      "category": "environment",
+      "snippet": "\"pins\")"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 60,
+      "category": "environment",
+      "snippet": "\"gert\")"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 69,
+      "category": "environment",
+      "snippet": "\"gert\")"
+    },
+    {
+      "file": "test-helper-mocks-contracts.R",
+      "line": 82,
+      "category": "environment",
+      "snippet": "\"httr2\")"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 10,
+      "category": "environment",
+      "snippet": "testthat::skip_on_ci()"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 84,
+      "category": "environment",
+      "snippet": "testthat::skip_on_ci()"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 121,
+      "category": "permanent",
+      "snippet": "\"Tidsafhængig assertion — debouncing verificeres via shinytest2\")"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 128,
+      "category": "environment",
+      "snippet": "testthat::skip_on_ci()"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 165,
+      "category": "environment",
+      "snippet": "testthat::skip_on_ci()"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 199,
+      "category": "permanent",
+      "snippet": "\"Performance benchmark - kør manuelt med microbenchmark\")"
+    },
+    {
+      "file": "test-input-debouncing-comprehensive.R",
+      "line": 322,
+      "category": "permanent",
+      "snippet": "\"Integration test - kræver shinytest2 setup\")"
+    },
+    {
+      "file": "test-input-sanitization.R",
+      "line": 39,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-input-sanitization.R",
+      "line": 84,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-input-sanitization.R",
+      "line": 109,
+      "category": "environment",
+      "snippet": "\"microbenchmark\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 16,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 106,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 155,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 212,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 262,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 316,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 361,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 404,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 444,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-integration-workflows.R",
+      "line": 496,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-label-placement-core.R",
+      "line": 50,
+      "category": "todo",
+      "snippet": "paste0(     \"BFHcharts-followup: place_two_labels_npc() validerer ikke label_height_npc > 0.5 \",     \"i nuvaerende BFHch"
+    },
+    {
+      "file": "test-label-placement-core.R",
+      "line": 258,
+      "category": "todo",
+      "snippet": "paste0(     \"BFHcharts-followup: yA=0.30, yB=0.38, label_h=0.18 loeses af \",     \"over/under-strategien uden at udloese "
+    },
+    {
+      "file": "test-label-placement-core.R",
+      "line": 286,
+      "category": "todo",
+      "snippet": "paste0(     \"BFHcharts-followup: yA=0.50, yB=0.52, label_h=0.35 giver quality='optimal' \",     \"i nuvaerende BFHcharts-v"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 14,
+      "category": "permanent",
+      "snippet": "\"Context information only - not a real test\")"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 30,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 31,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 32,
+      "category": "permanent",
+      "snippet": "exists(\"log_warn\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 33,
+      "category": "permanent",
+      "snippet": "exists(\"log_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 44,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 45,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 46,
+      "category": "permanent",
+      "snippet": "exists(\"log_warn\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 47,
+      "category": "permanent",
+      "snippet": "exists(\"log_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 58,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 59,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 60,
+      "category": "permanent",
+      "snippet": "exists(\"log_warn\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 61,
+      "category": "permanent",
+      "snippet": "exists(\"log_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 72,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 82,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug_kv\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 97,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 98,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 125,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 146,
+      "category": "permanent",
+      "snippet": "exists(\"log_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 172,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 183,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 211,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 242,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 264,
+      "category": "permanent",
+      "snippet": "\"pryr package not available for memory testing\")"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 270,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 294,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 315,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 327,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug_kv\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 351,
+      "category": "permanent",
+      "snippet": "exists(\"log_debug\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 352,
+      "category": "permanent",
+      "snippet": "exists(\"log_info\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 353,
+      "category": "permanent",
+      "snippet": "exists(\"log_warn\", mode = \"function\"))"
+    },
+    {
+      "file": "test-logging-standardization.R",
+      "line": 354,
+      "category": "permanent",
+      "snippet": "exists(\"log_error\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 301,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 335,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 346,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 357,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 367,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 377,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 387,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 398,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod_export.R",
+      "line": 409,
+      "category": "permanent",
+      "snippet": "\"Reactive context testing requires manual app integration tests\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 15,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 49,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 78,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 190,
+      "category": "todo",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 242,
+      "category": "permanent",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 258,
+      "category": "permanent",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 318,
+      "category": "permanent",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 342,
+      "category": "permanent",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 388,
+      "category": "todo",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 433,
+      "category": "todo",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 483,
+      "category": "todo",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 484,
+      "category": "environment",
+      "snippet": "\"later\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 624,
+      "category": "permanent",
+      "snippet": "exists(\"visualizationModuleServer\", mode = \"function\"))"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 650,
+      "category": "permanent",
+      "snippet": "\"Requires full Shiny session with clientData\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 658,
+      "category": "permanent",
+      "snippet": "\"Debouncing requires time-based testing framework\")"
+    },
+    {
+      "file": "test-mod-spc-chart-comprehensive.R",
+      "line": 662,
+      "category": "permanent",
+      "snippet": "\"Debouncing requires time-based testing framework\")"
+    },
+    {
+      "file": "test-namespace-integrity.R",
+      "line": 3,
+      "category": "permanent",
+      "snippet": "file.exists(namespace_path), \"NAMESPACE fil mangler\")"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 24,
+      "category": "permanent",
+      "snippet": "exists(\"generate_improvement_suggestion\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 25,
+      "category": "environment",
+      "snippet": "\"BFHllm\") # Midlertidigt fjernet fra deploy-bundle"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 55,
+      "category": "permanent",
+      "snippet": "exists(\"generate_improvement_suggestion\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 56,
+      "category": "environment",
+      "snippet": "\"BFHllm\") # Midlertidigt fjernet fra deploy-bundle"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 99,
+      "category": "environment",
+      "snippet": "\"httr2\")"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 128,
+      "category": "permanent",
+      "snippet": "exists(\"autoSaveAppState\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 171,
+      "category": "permanent",
+      "snippet": "exists(\"autoSaveAppState\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 190,
+      "category": "permanent",
+      "snippet": "# expect_no_error validerer graceful skip (ingen crash)"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 219,
+      "category": "environment",
+      "snippet": "\"readr\")"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 254,
+      "category": "permanent",
+      "snippet": "exists(\"compute_spc_results_bfh\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 296,
+      "category": "permanent",
+      "snippet": "exists(\"validate_numeric_column\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 320,
+      "category": "permanent",
+      "snippet": "exists(\"compute_spc_results_bfh\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 349,
+      "category": "permanent",
+      "snippet": "exists(\"compute_spc_results_bfh\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 377,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 394,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 410,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 432,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 458,
+      "category": "permanent",
+      "snippet": "exists(\"compute_spc_results_bfh\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 485,
+      "category": "todo",
+      "snippet": "exists(\"sanitize_column_name\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 512,
+      "category": "todo",
+      "snippet": "exists(\"validate_file_extension\", mode = \"function\"))"
+    },
+    {
+      "file": "test-negative-assertions-phase2-5.R",
+      "line": 530,
+      "category": "todo",
+      "snippet": "exists(\"sanitize_csv_output\", mode = \"function\"))"
+    },
+    {
+      "file": "test-observer-cleanup.R",
+      "line": 114,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — testServer(app = function(...)) pattern virker ikke \",     \"i nuvaerende shi"
+    },
+    {
+      "file": "test-observer-cleanup.R",
+      "line": 142,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — testServer(app = function(...)) pattern virker ikke (#203-followup)\"   ))"
+    },
+    {
+      "file": "test-package-namespace-validation.R",
+      "line": 8,
+      "category": "environment",
+      "snippet": "\"pkgload\")"
+    },
+    {
+      "file": "test-package-namespace-validation.R",
+      "line": 34,
+      "category": "permanent",
+      "snippet": "file.exists(desc_path), \"DESCRIPTION file not found\")"
+    },
+    {
+      "file": "test-package-namespace-validation.R",
+      "line": 49,
+      "category": "permanent",
+      "snippet": "file.exists(ns_path), \"NAMESPACE file not found\")"
+    },
+    {
+      "file": "test-package-namespace-validation.R",
+      "line": 74,
+      "category": "permanent",
+      "snippet": "file.exists(desc_path), \"DESCRIPTION file not found\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 71,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (y_axis_unit=percent, ingen y-data)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 78,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (y_axis_unit=count, ingen y-data)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 85,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (percent y-data skaleringsfejl)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 94,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (integer y-data fejldetekteres som proportion)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 101,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (permille unit)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 108,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (rate_1000/rate_100000 units)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 119,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (absolute units: count/days/hours/...)\")"
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 133,
+      "category": "todo",
+      "snippet": "# \"Inventory af skip('TODO')-kald\"."
+    },
+    {
+      "file": "test-parse-danish-target-unit-conversion.R",
+      "line": 136,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (fallback uden y_axis_unit)\")"
+    },
+    {
+      "file": "test-pending-issue-230.R",
+      "line": 2,
+      "category": "todo",
+      "snippet": "paste(     \"testServer-migration afventer implementering.\",     \"Issue #230 er lukket, men disse tests kræver shiny::tes"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 110,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 111,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 128,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 129,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 153,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 164,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — detect_columns_full_analysis() ikke i namespace (#203-followup)\"   ))"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 177,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — detect_columns_name_based() ikke i namespace (#203-followup)\"   ))"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 203,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — detect_columns_full_analysis() ikke i namespace (#203-followup)\"   ))"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 218,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-performance-benchmarks.R",
+      "line": 219,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-plot-core.R",
+      "line": 31,
+      "category": "todo",
+      "snippet": "paste0(     \"TODO Fase 3: R-bug afsloeret — 'MR-kort' chart-type ikke i CHART_TYPES_DA (#203-followup)\\n\",     \"Nuvaeren"
+    },
+    {
+      "file": "test-plot-core.R",
+      "line": 39,
+      "category": "environment",
+      "snippet": "\"ggplot2\")"
+    },
+    {
+      "file": "test-plot-core.R",
+      "line": 40,
+      "category": "permanent",
+      "snippet": "exists(\"HOSPITAL_COLORS\") && exists(\"apply_hospital_theme\", mode = \"function\"),     \"Hospital theme functions not availa"
+    },
+    {
+      "file": "test-plot-core.R",
+      "line": 51,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-core.R",
+      "line": 70,
+      "category": "permanent",
+      "snippet": "exists(\"safe_operation\", mode = \"function\"))"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 15,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 16,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 56,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 57,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 96,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 97,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 123,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 124,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 125,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 126,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 127,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 163,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 164,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 195,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-plot-generation-performance.R",
+      "line": 196,
+      "category": "environment",
+      "snippet": "\"dplyr\")"
+    },
+    {
+      "file": "test-plot-generation.R",
+      "line": 151,
+      "category": "environment",
+      "snippet": "\"ggrepel\")"
+    },
+    {
+      "file": "test-reactive-batching.R",
+      "line": 9,
+      "category": "permanent",
+      "snippet": "requireNamespace(\"later\", quietly = TRUE), \"later package not available\")"
+    },
+    {
+      "file": "test-reactive-batching.R",
+      "line": 32,
+      "category": "todo",
+      "snippet": "# \"Inventory af skip('TODO')-kald\"."
+    },
+    {
+      "file": "test-reactive-batching.R",
+      "line": 57,
+      "category": "permanent",
+      "snippet": "requireNamespace(\"later\", quietly = TRUE), \"later package not available\")"
+    },
+    {
+      "file": "test-run-app.R",
+      "line": 38,
+      "category": "permanent",
+      "snippet": "\"pkgload er ikke installeret i testmiljøet\")"
+    },
+    {
+      "file": "test-run-app.R",
+      "line": 46,
+      "category": "permanent",
+      "snippet": "\"pkgload::dev_package() er ikke tilgængelig i denne konfiguration\")"
+    },
+    {
+      "file": "test-run-app.R",
+      "line": 51,
+      "category": "permanent",
+      "snippet": "\"pkgload::dev_package() returnerer NULL - ingen load_all() session aktiv\")"
+    },
+    {
+      "file": "test-run-chart-denominator-stability.R",
+      "line": 5,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-run-chart-denominator-stability.R",
+      "line": 80,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-runtime-config-comprehensive.R",
+      "line": 66,
+      "category": "permanent",
+      "snippet": "exists(\"determine_environment_type_from_context\", mode = \"function\"),     \"determine_environment_type_from_context not a"
+    },
+    {
+      "file": "test-runtime-config-comprehensive.R",
+      "line": 95,
+      "category": "permanent",
+      "snippet": "exists(\"setup_development_config\", mode = \"function\"),     \"setup_development_config not available - check test setup\"  "
+    },
+    {
+      "file": "test-runtime-config-comprehensive.R",
+      "line": 115,
+      "category": "permanent",
+      "snippet": "exists(\"setup_environment_features\", mode = \"function\"),     \"setup_environment_features not available - check test setu"
+    },
+    {
+      "file": "test-runtime-config-comprehensive.R",
+      "line": 136,
+      "category": "permanent",
+      "snippet": "exists(\"setup_logging_features\", mode = \"function\"),     \"setup_logging_features not available - check test setup\"   )"
+    },
+    {
+      "file": "test-runtime-config-comprehensive.R",
+      "line": 261,
+      "category": "environment",
+      "snippet": "\"golem\")"
+    },
+    {
+      "file": "test-safe-operation-comprehensive.R",
+      "line": 102,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 14,
+      "category": "permanent",
+      "snippet": "\"Context information only - not a real test\")"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 18,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 35,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 56,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 78,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 96,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 110,
+      "category": "permanent",
+      "snippet": "\"digest-pakken ikke tilgængelig for SHA256-verifikation\")"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 115,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 139,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 156,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 188,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 213,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 237,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 265,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-security-session-tokens.R",
+      "line": 286,
+      "category": "permanent",
+      "snippet": "exists(\"hash_session_token\", mode = \"function\"))"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 72,
+      "category": "permanent",
+      "snippet": "exists(\"saveDataLocally\", mode = \"function\"),     \"saveDataLocally not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 126,
+      "category": "permanent",
+      "snippet": "file.exists(js_file), \"local-storage.js not found\")"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 151,
+      "category": "permanent",
+      "snippet": "file.exists(js_file), \"local-storage.js not found\")"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 172,
+      "category": "permanent",
+      "snippet": "exists(\"autoSaveAppState\", mode = \"function\"),     \"autoSaveAppState not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 209,
+      "category": "permanent",
+      "snippet": "exists(\"autoSaveAppState\", mode = \"function\"),     \"autoSaveAppState not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 213,
+      "category": "permanent",
+      "snippet": "\"app_state\" %in% names(formals(autoSaveAppState)),     \"autoSaveAppState has no app_state parameter yet\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 238,
+      "category": "permanent",
+      "snippet": "exists(\"extract_class_info\", mode = \"function\"),     \"extract_class_info not yet implemented (Fase 3)\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 242,
+      "category": "permanent",
+      "snippet": "exists(\"restore_column_class\", mode = \"function\"),     \"restore_column_class not yet implemented (Fase 3)\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 389,
+      "category": "permanent",
+      "snippet": "exists(\"collect_metadata\", mode = \"function\"),     \"collect_metadata not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 430,
+      "category": "permanent",
+      "snippet": "exists(\"collect_metadata\", mode = \"function\"),     \"collect_metadata not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 458,
+      "category": "permanent",
+      "snippet": "exists(\"collect_metadata\", mode = \"function\"),     \"collect_metadata not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 493,
+      "category": "permanent",
+      "snippet": "\"Restore bounds-check kræver integration test — dækkes i Fase 3 tasks\")"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 500,
+      "category": "permanent",
+      "snippet": "exists(\"autoSaveAppState\", mode = \"function\"),     \"autoSaveAppState not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 504,
+      "category": "permanent",
+      "snippet": "\"app_state\" %in% names(formals(autoSaveAppState)),     \"autoSaveAppState has no app_state parameter yet\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 546,
+      "category": "permanent",
+      "snippet": "exists(\"get_auto_save_enabled\", mode = \"function\"),     \"get_auto_save_enabled not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 550,
+      "category": "permanent",
+      "snippet": "exists(\"get_save_interval_ms\", mode = \"function\"),     \"get_save_interval_ms not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 554,
+      "category": "permanent",
+      "snippet": "exists(\"get_settings_save_interval_ms\", mode = \"function\"),     \"get_settings_save_interval_ms not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 568,
+      "category": "permanent",
+      "snippet": "exists(\"get_session_config\", mode = \"function\"),     \"get_session_config not available\"   )"
+    },
+    {
+      "file": "test-session-persistence.R",
+      "line": 593,
+      "category": "permanent",
+      "snippet": "exists(\"saveDataLocally\", mode = \"function\"),     \"saveDataLocally not available\"   )"
+    },
+    {
+      "file": "test-shared-data-signatures.R",
+      "line": 189,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-spc-bfh-service.R",
+      "line": 606,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (cl mismatch, baseline run-basic)\")"
+    },
+    {
+      "file": "test-spc-bfh-service.R",
+      "line": 628,
+      "category": "todo",
+      "snippet": "\"Baseline file not found - run Task #29 first\")"
+    },
+    {
+      "file": "test-spc-bfh-service.R",
+      "line": 633,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (Anhøj signal mismatch, baseline p-anhoej)\")"
+    },
+    {
+      "file": "test-spc-bfh-service.R",
+      "line": 650,
+      "category": "todo",
+      "snippet": "\"Baseline file not found - run Task #29 first\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 28,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 48,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 72,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 93,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 118,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 152,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 175,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 202,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 213,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 242,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 272,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 308,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 362,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 411,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-cache-integration.R",
+      "line": 441,
+      "category": "environment",
+      "snippet": "\"digest\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 10,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 54,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 91,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 132,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 205,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 252,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 300,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 301,
+      "category": "todo",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 302,
+      "category": "environment",
+      "snippet": "\"rlang\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 341,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 342,
+      "category": "todo",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 343,
+      "category": "environment",
+      "snippet": "\"rlang\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 382,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 427,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 515,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 560,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 592,
+      "category": "permanent",
+      "snippet": "# Use skip_if_not for configuration objects"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 605,
+      "category": "todo",
+      "snippet": "\"Afventer BFHcharts factor-konvertering for tekstbaserede månedsnavne — se #245 (cross-repo BFHcharts)\")"
+    },
+    {
+      "file": "test-spc-plot-generation-comprehensive.R",
+      "line": 609,
+      "category": "permanent",
+      "snippet": "exists(\"generateSPCPlot\", mode = \"function\"), \"generateSPCPlot function not available\")"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 43,
+      "category": "permanent",
+      "snippet": "sprintf(\"Baseline fixture not found: %s\", basename(fixture_path)))"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 52,
+      "category": "permanent",
+      "snippet": "sprintf(       \"Invalid baseline structure (missing: %s)\",       paste(missing_keys, collapse = \", \")     ))"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 136,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (cl mismatch + strict expect_named)\")"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 210,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (cl mismatch, run freeze)\")"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 591,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (ucl/lcl mismatch, xbar subgroup means)\")"
+    },
+    {
+      "file": "test-spc-regression-bfh-vs-qic.R",
+      "line": 672,
+      "category": "todo",
+      "snippet": "\"BFHcharts-followup — se BFHcharts#154 (ucl/lcl/cl mismatch, s chart SD)\")"
+    },
+    {
+      "file": "test-startup-optimization.R",
+      "line": 6,
+      "category": "permanent",
+      "snippet": "exists(\"init_startup_metrics\", mode = \"function\"),   \"Performance monitoring functions not available\" )"
+    },
+    {
+      "file": "test-startup-optimization.R",
+      "line": 238,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-startup-optimization.R",
+      "line": 239,
+      "category": "permanent",
+      "snippet": "interactive(), \"Performance test only for interactive sessions\")"
+    },
+    {
+      "file": "test-startup-optimization.R",
+      "line": 275,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-startup-optimization.R",
+      "line": 334,
+      "category": "environment",
+      "snippet": ")"
+    },
+    {
+      "file": "test-state-management-hierarchical.R",
+      "line": 10,
+      "category": "permanent",
+      "snippet": "exists(\"create_app_state\", mode = \"function\"), \"create_app_state function not available\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 56,
+      "category": "permanent",
+      "snippet": "\"evaluate_has_data_status function not available\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 61,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 92,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 131,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 159,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 160,
+      "category": "environment",
+      "snippet": "\"ggplot2\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 190,
+      "category": "permanent",
+      "snippet": "\"HOSPITAL_COLORS not available\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 227,
+      "category": "environment",
+      "snippet": "\"purrr\")"
+    },
+    {
+      "file": "test-tidyverse-purrr-operations.R",
+      "line": 259,
+      "category": "environment",
+      "snippet": "\"bench\")"
+    },
+    {
+      "file": "test-time-parsing.R",
+      "line": 50,
+      "category": "environment",
+      "snippet": "\"hms\")"
+    },
+    {
+      "file": "test-utils_server_export.R",
+      "line": 32,
+      "category": "permanent",
+      "snippet": "\"Requires reactive context - test via Shiny testServer or manual testing\")"
+    },
+    {
+      "file": "test-utils_server_export.R",
+      "line": 81,
+      "category": "permanent",
+      "snippet": "quarto_available(), \"Quarto not available\")"
+    },
+    {
+      "file": "test-utils_server_export.R",
+      "line": 82,
+      "category": "permanent",
+      "snippet": "requireNamespace(\"BFHcharts\", quietly = TRUE), \"BFHcharts not installed\")"
+    },
+    {
+      "file": "test-utils_server_export.R",
+      "line": 86,
+      "category": "permanent",
+      "snippet": "\"Requires full BFHcharts installation and test data\")"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 8,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 10,
+      "category": "permanent",
+      "snippet": "exists(\"setup_visualization\", mode = \"function\"),     \"setup_visualization function not available - check test setup\"   "
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 19,
+      "category": "permanent",
+      "snippet": "exists(\"create_app_state\", mode = \"function\"),     \"create_app_state not available - check test setup\"   )"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 40,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 41,
+      "category": "permanent",
+      "snippet": "exists(\"create_app_state\", mode = \"function\"),     \"create_app_state not available - check test setup\"   )"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 73,
+      "category": "permanent",
+      "snippet": "exists(\"get_qic_chart_type\", mode = \"function\"),     \"get_qic_chart_type not available - check test setup\"   )"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 88,
+      "category": "environment",
+      "snippet": "\"qicharts2\")"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 120,
+      "category": "environment",
+      "snippet": "\"shiny\")"
+    },
+    {
+      "file": "test-visualization-server.R",
+      "line": 121,
+      "category": "permanent",
+      "snippet": "exists(\"create_app_state\", mode = \"function\"),     \"create_app_state not available - check test setup\"   )"
+    },
+    {
+      "file": "test-y-axis-scaling-overhaul.R",
+      "line": 234,
+      "category": "todo",
+      "snippet": "\"Afventer parse_danish_target unit-awareness refactor — se #213 (backwards-compat)\")"
+    },
+    {
+      "file": "test-y-axis-scaling-overhaul.R",
+      "line": 523,
+      "category": "permanent",
+      "snippet": "\"Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R\")"
+    },
+    {
+      "file": "test-y-axis-scaling-overhaul.R",
+      "line": 527,
+      "category": "permanent",
+      "snippet": "paste(     \"format_time_with_unit er fjernet og erstattet af format_time_composite\",     \"(R/utils_time_formatting.R). E"
+    },
+    {
+      "file": "test-y-axis-scaling-overhaul.R",
+      "line": 610,
+      "category": "permanent",
+      "snippet": "\"Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R\")"
+    },
+    {
+      "file": "test-yaml-config-adherence.R",
+      "line": 5,
+      "category": "permanent",
+      "snippet": "file.exists(\"inst/golem-config.yml\"), \"golem-config.yml not found\")"
+    },
+    {
+      "file": "test-yaml-config-adherence.R",
+      "line": 46,
+      "category": "permanent",
+      "snippet": "file.exists(\"inst/golem-config.yml\"), \"golem-config.yml not found\")"
+    }
+  ]
+}

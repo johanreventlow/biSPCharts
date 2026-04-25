@@ -4,6 +4,9 @@ library(testthat)
   if (is.null(x)) y else x
 }
 
+if (!file.exists(file.path("..", "..", "R", "utils_export_analysis_metadata.R"))) {
+  skip("Source files not available in R CMD check environment")
+}
 source(file.path("..", "..", "R", "utils_export_helpers.R"), local = environment())
 source(file.path("..", "..", "R", "utils_export_analysis_metadata.R"), local = environment())
 

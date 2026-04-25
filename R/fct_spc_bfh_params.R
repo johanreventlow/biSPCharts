@@ -2,32 +2,32 @@
 # BFHchart Parameter Transformation
 #
 # Mapper biSPCharts parametre til BFHcharts API-format.
-# Håndterer:
+# Haandterer:
 # - Kolonne-navnemapping (sanitisering af danske karakterer for BFHcharts)
-# - Skalering og normalisering (procent ↔ decimal)
+# - Skalering og normalisering (procent [U+2194] decimal)
 # - Freeze/part position-beregning
 # - Notes/comment-integrering
 
 #' Map biSPCharts Parameters to BFHchart API
 #'
 #' Transforms biSPCharts-style parameters to BFHchart API conventions. Handles
-#' parameter name mapping, scale normalization (percentage ↔ decimal), and
+#' parameter name mapping, scale normalization (percentage [U+2194] decimal), and
 #' data structure preparation. Isolates biSPCharts from BFHchart API changes.
 #'
 #' @details
 #' **Transformation Responsibilities:**
-#' - Column name mapping (x_var, y_var, n_var → BFHchart parameters)
+#' - Column name mapping (x_var, y_var, n_var -> BFHchart parameters)
 #' - Chart type validation and translation
-#' - Scale normalization (e.g., target 75 → 0.75 for percentage charts)
+#' - Scale normalization (e.g., target 75 -> 0.75 for percentage charts)
 #' - Freeze/part position adjustment for NA-removed rows
 #' - Row ID injection (`.original_row_id`) for comment mapping stability
 #' - NSE (non-standard evaluation) handling if required by BFHchart
 #'
 #' **Parameter Mappings (Expected):**
-#' - biSPCharts `part_var` → BFHchart `part` parameter
-#' - biSPCharts `cl_var` → BFHchart centerline override
-#' - biSPCharts `freeze_var` → BFHchart `freeze` parameter
-#' - Scale: biSPCharts percentages (0-100) → BFHchart decimals (0-1) if needed
+#' - biSPCharts `part_var` -> BFHchart `part` parameter
+#' - biSPCharts `cl_var` -> BFHchart centerline override
+#' - biSPCharts `freeze_var` -> BFHchart `freeze` parameter
+#' - Scale: biSPCharts percentages (0-100) -> BFHchart decimals (0-1) if needed
 #'
 #' @param data data.frame. Cleaned input data (post-validation).
 #' @param x_var character. X-axis column name.
@@ -93,6 +93,7 @@
 #' \code{\link{compute_spc_results_bfh}} for facade interface
 #' \code{\link{call_bfh_chart}} for BFHchart invocation
 #' @keywords internal
+#' @noRd
 map_to_bfh_params <- function(
   data,
   x_var,
@@ -124,15 +125,15 @@ map_to_bfh_params <- function(
         .context = "BFH_SERVICE"
       )
 
-      # 1b. CRITICAL FIX: BFHcharts rejects Danish characters (æøå) in column names
+      # 1b. CRITICAL FIX: BFHcharts rejects Danish characters (aeoeaa) in column names
       # Temporarily sanitize column names to ASCII-safe versions
-      # Strategy: Create mapping of original → sanitized names, rename data, use sanitized in params
+      # Strategy: Create mapping of original -> sanitized names, rename data, use sanitized in params
 
       sanitize_column_name <- function(name) {
         # Replace Danish characters with ASCII equivalents
-        name <- gsub("æ", "ae", name, ignore.case = TRUE)
-        name <- gsub("ø", "oe", name, ignore.case = TRUE)
-        name <- gsub("å", "aa", name, ignore.case = TRUE)
+        name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
+        name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
+        name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
         # Remove any remaining non-ASCII characters
         name <- iconv(name, to = "ASCII//TRANSLIT")
         # Remove spaces and special chars (keep only alphanumeric and underscore)
@@ -140,7 +141,7 @@ map_to_bfh_params <- function(
         return(name)
       }
 
-      # Create column name mapping (original → sanitized)
+      # Create column name mapping (original -> sanitized)
       col_mapping <- setNames(
         sapply(names(data), sanitize_column_name, USE.NAMES = FALSE),
         names(data)
@@ -155,7 +156,7 @@ map_to_bfh_params <- function(
           "col_mapping check:",
           "class =", class(col_mapping),
           "| length =", length(col_mapping),
-          "| example:", if (length(col_mapping) > 0) paste(names(col_mapping)[1], "→", col_mapping[1]) else "empty"
+          "| example:", if (length(col_mapping) > 0) paste(names(col_mapping)[1], "\u2192", col_mapping[1]) else "empty"
         ),
         .context = "BFH_SERVICE"
       )
@@ -172,8 +173,8 @@ map_to_bfh_params <- function(
       log_debug(
         paste(
           "Column name sanitization:",
-          if (x_var != x_var_sanitized) paste(x_var, "→", x_var_sanitized) else "none",
-          if (y_var != y_var_sanitized) paste(y_var, "→", y_var_sanitized) else "none"
+          if (x_var != x_var_sanitized) paste(x_var, "\u2192", x_var_sanitized) else "none",
+          if (y_var != y_var_sanitized) paste(y_var, "\u2192", y_var_sanitized) else "none"
         ),
         .context = "BFH_SERVICE"
       )
@@ -232,7 +233,7 @@ map_to_bfh_params <- function(
       # 5. Add part parameter if provided
       if (!is.null(part_var_sanitized) && part_var_sanitized %in% names(data)) {
         # BUG FIX: Each TRUE in Skift column marks a part boundary directly
-        # Previous implementation used diff() which found BOTH TRUE→FALSE and FALSE→TRUE changes,
+        # Previous implementation used diff() which found BOTH TRUE->FALSE and FALSE->TRUE changes,
         # resulting in double boundaries (e.g., marking row 13 gave boundaries at 12 AND 13)
         part_col <- data[[part_var_sanitized]]
 
@@ -273,7 +274,7 @@ map_to_bfh_params <- function(
         )
       }
 
-      # 7b. Add notes column if provided (map kommentarer → notes)
+      # 7b. Add notes column if provided (map kommentarer -> notes)
       # BFHcharts expects a character vector for the notes parameter
       # IMPORTANT: notes_column refers to ORIGINAL column name (before sanitization)
 
@@ -292,7 +293,7 @@ map_to_bfh_params <- function(
             log_debug(
               paste(
                 "[NOTES_TRACE] Case-insensitive match:",
-                notes_column, "→", original_names[match_idx[1]]
+                notes_column, "\u2192", original_names[match_idx[1]]
               ),
               .context = "BFH_SERVICE"
             )
@@ -330,7 +331,7 @@ map_to_bfh_params <- function(
         notes_char[is.na(notes_char)] <- ""
 
         # Kun send notes hvis der faktisk er ikke-tomme noter
-        # Tomme notes-vektorer kan forårsage langsom label placement i BFHcharts
+        # Tomme notes-vektorer kan foraarsage langsom label placement i BFHcharts
         if (any(nzchar(notes_char))) {
           params$notes <- notes_char
         }
@@ -388,7 +389,7 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
         log_debug(
           paste(
             "Normalized", param_name, "for", chart_type, "chart:",
-            value, "→", normalized
+            value, "\u2192", normalized
           ),
           .context = "BFH_SERVICE"
         )

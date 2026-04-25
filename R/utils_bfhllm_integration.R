@@ -19,12 +19,12 @@
 #'
 #' @keywords internal
 get_ai_config <- function() {
-  # Try to get from golem config
+  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
   ai_config <- tryCatch(
     {
       golem::get_golem_options("ai")
     },
-    error = function(e) NULL
+    error = function(e) NULL # nolint: swallowed_error_linter
   )
 
   # Default values
@@ -63,6 +63,7 @@ get_session_config <- function() {
   # NB: Brug get_golem_config (lokal wrapper, læser fra YAML via config::get)
   # i stedet for golem::get_golem_options (som læser fra runtime-options).
   # Dette sikrer at YAML er single source of truth.
+  # Silent-fail korrekt: get_golem_config kan mangle i tests; falder tilbage til defaults
   session_config <- tryCatch(
     {
       if (exists("get_golem_config", mode = "function")) {
@@ -71,7 +72,7 @@ get_session_config <- function() {
         NULL
       }
     },
-    error = function(e) NULL
+    error = function(e) NULL # nolint: swallowed_error_linter
   )
 
   defaults <- list(
@@ -100,12 +101,12 @@ get_session_config <- function() {
 #'
 #' @keywords internal
 get_rag_config <- function() {
-  # Try to get from golem config (nested under ai.rag)
+  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
   ai_config <- tryCatch(
     {
       golem::get_golem_options("ai")
     },
-    error = function(e) NULL
+    error = function(e) NULL # nolint: swallowed_error_linter
   )
 
   # Default values

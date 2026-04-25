@@ -4,12 +4,12 @@
 
 # Dependencies ----------------------------------------------------------------
 
-# HJÆLPEFUNKTIONER ============================================================
+# HJAeLPEFUNKTIONER ============================================================
 
-#' Tjek om en kolonne primært indeholder numeriske værdier
+#' Tjek om en kolonne primaert indeholder numeriske vaerdier
 #'
 #' @param col Vector. Kolonne at tjekke.
-#' @param threshold Numeric. Andel non-NA værdier der skal være numeriske (0-1).
+#' @param threshold Numeric. Andel non-NA vaerdier der skal vaere numeriske (0-1).
 #' @return Logical. TRUE hvis kolonnen er numerisk nok.
 #' @keywords internal
 is_column_numeric <- function(col, threshold = 0.5) {
@@ -24,7 +24,7 @@ is_column_numeric <- function(col, threshold = 0.5) {
   sum(!is.na(parsed)) / length(non_na) >= threshold
 }
 
-#' Bestem value box theme baseret på signal-status
+#' Bestem value box theme baseret paa signal-status
 #'
 #' Bruger dark/light for at signalere udfald uden at antyde fejl/succes.
 #'
@@ -35,10 +35,10 @@ is_column_numeric <- function(col, threshold = 0.5) {
 value_box_signal_theme <- function(status_info, signal) {
   colors <- get_hospital_colors()
   if (status_info$status == "ready" && isTRUE(signal)) {
-    # Signal detekteret: medium grå baggrund med hvid tekst (matcher btn-secondary)
+    # Signal detekteret: medium graa baggrund med hvid tekst (matcher btn-secondary)
     bslib::value_box_theme(bg = colors$ui_grey_mid, fg = "#ffffff")
   } else if (status_info$status == "ready") {
-    # Ingen signal (OK): lys grå baggrund med mørk tekst
+    # Ingen signal (OK): lys graa baggrund med moerk tekst
     bslib::value_box_theme(bg = colors$ui_grey_light, fg = colors$dark)
   } else {
     status_info$theme
@@ -57,7 +57,7 @@ get_unit_label <- function(unit_code, unit_list) {
     return("")
   }
 
-  # Find dansk navn baseret på værdi
+  # Find dansk navn baseret paa vaerdi
   unit_names <- names(unit_list)[unit_list == unit_code]
   if (length(unit_names) > 0) {
     return(unit_names[1])
@@ -70,21 +70,21 @@ get_unit_label <- function(unit_code, unit_list) {
 #' Valider og formater X-akse data til SPC charts
 #'
 #' Intelligent validering og formatering af X-akse data, med automatisk
-#' detektion af dato formater og optimeret visning baseret på data interval.
+#' detektion af dato formater og optimeret visning baseret paa data interval.
 #'
-#' @param x_data Vector. Rå X-akse data (datoer, tal eller tekst)
+#' @param x_data Vector. Raa X-akse data (datoer, tal eller tekst)
 #' @return List med formateret data og metadata
 #' @details
 #' Validering proces:
 #' \enumerate{
 #'   \item Tjek om x_col eksisterer i data
-#'   \item Forsøg dato parsing for forskellige formater
+#'   \item Forsoeg dato parsing for forskellige formater
 #'   \item Beregn optimal date interval hvis dato
 #'   \item Generer formaterings string for qicharts2
 #'   \item Fallback til numerisk sekvensnummerering
 #' }
 #'
-#' Understøttede dato formater:
+#' Understoettede dato formater:
 #' \itemize{
 #'   \item "dd-mm-yyyy" (dansk standard)
 #'   \item "yyyy-mm-dd" (ISO)
@@ -94,7 +94,7 @@ get_unit_label <- function(unit_code, unit_list) {
 #'
 #' @return List med formateret X-akse data:
 #' \describe{
-#'   \item{x_data}{Formateret X-akse værdier}
+#'   \item{x_data}{Formateret X-akse vaerdier}
 #'   \item{x.format}{qicharts2 formaterings string eller NULL}
 #'   \item{is_date}{Logical - om data er datoer}
 #'   \item{interval_info}{Liste med interval statistik (kun datoer)}
@@ -105,15 +105,16 @@ get_unit_label <- function(unit_code, unit_list) {
 #' # Dato data
 #' data <- data.frame(
 #'   Dato = c("01-01-2024", "01-02-2024", "01-03-2024"),
-#'   Værdi = c(95, 92, 98)
+#'   Vaerdi = c(95, 92, 98)
 #' )
 #' result <- validate_x_column_format(data, "Dato", "day")
 #'
 #' # Numerisk data
-#' data_num <- data.frame(Obs = 1:10, Værdi = rnorm(10))
+#' data_num <- data.frame(Obs = 1:10, Vaerdi = rnorm(10))
 #' result <- validate_x_column_format(data_num, "Obs", "observation")
 #' }
 #'
+#' @noRd
 validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
   # Return default hvis ingen x-kolonne
   if (is.null(x_col) || !x_col %in% names(data)) {
@@ -137,7 +138,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
     ))
   }
 
-  # Forsøg intelligent date detection med lubridate
+  # Forsoeg intelligent date detection med lubridate
   if (is.character(x_data) || is.factor(x_data)) {
     char_data <- as.character(x_data)[!is.na(x_data)]
 
@@ -145,7 +146,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
       # Test sample til date detection
       test_sample <- char_data[1:min(5, length(char_data))]
 
-      # FØRST: Test danske dato-formater direkte (mest almindelige)
+      # FOeRST: Test danske dato-formater direkte (mest almindelige)
       danish_parsed <- suppressWarnings(lubridate::dmy(char_data))
       danish_success_rate <- sum(!is.na(danish_parsed)) / length(danish_parsed)
 
@@ -171,7 +172,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
           )
 
           if (!is.null(guessed_formats) && length(guessed_formats) > 0) {
-            # Filtrer ugyldige formater (undgå "n" format problem)
+            # Filtrer ugyldige formater (undgaa "n" format problem)
             valid_formats <- guessed_formats[!grepl("^n$|Unknown", guessed_formats)]
 
             if (length(valid_formats) > 0) {
@@ -223,7 +224,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
   }
 }
 
-## Simpel formatering baseret på x_axis_unit
+## Simpel formatering baseret paa x_axis_unit
 get_x_format_string <- function(x_axis_unit) {
   switch(x_axis_unit,
     "date" = "%Y-%m-%d",
@@ -276,7 +277,7 @@ process_chart_title <- function(chart_title_reactive, config) {
   title_result <- sanitize_user_input(
     input_value = title_result,
     max_length = 200,
-    allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?/",
+    allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?/",
     html_escape = TRUE
   )
 
@@ -302,7 +303,7 @@ validateDataForChart <- function(data, config, chart_type) {
   )
 
   if (is.null(data) || !is.data.frame(data) || nrow(data) == 0) {
-    warnings <- c(warnings, "Ingen data tilgængelig")
+    warnings <- c(warnings, "Ingen data tilg\u00e6ngelig")
     log_debug_kv(
       message = "VALIDATION FAILED: No data",
       .context = "[DEBUG_VALIDATION]"
@@ -322,7 +323,7 @@ validateDataForChart <- function(data, config, chart_type) {
 
   if (chart_type %in% c("p", "pp", "u", "up")) {
     if (is.null(config$n_col) || !config$n_col %in% names(data)) {
-      warnings <- c(warnings, paste("Chart type", chart_type, "kræver en nævner-kolonne"))
+      warnings <- c(warnings, paste("Chart type", chart_type, "kr\u00e6ver en n\u00e6vner-kolonne"))
       log_debug_kv(
         message = "VALIDATION FAILED: Chart type requires denominator",
         chart_type = chart_type,
@@ -336,17 +337,17 @@ validateDataForChart <- function(data, config, chart_type) {
   # Check for missing values
   y_data <- data[[config$y_col]]
   if (all(is.na(y_data))) {
-    warnings <- c(warnings, "Alle værdier i Y-kolonnen er tomme")
+    warnings <- c(warnings, "Alle v\u00e6rdier i Y-kolonnen er tomme")
     return(list(valid = FALSE, warnings = warnings))
   }
 
   # Skift column validation handled by qicharts2::qic() internally
 
   if (nrow(data) < 8) {
-    warnings <- c(warnings, paste("Kun", nrow(data), "datapunkter - SPC analyse er mest pålidelig med mindst 15-20 punkter"))
+    warnings <- c(warnings, paste("Kun", nrow(data), "datapunkter - SPC analyse er mest p\u00e5lidelig med mindst 15-20 punkter"))
   }
 
   return(list(valid = TRUE, warnings = warnings))
 }
 
-## Generér SPC plot med tilpasset styling
+## Generer SPC plot med tilpasset styling

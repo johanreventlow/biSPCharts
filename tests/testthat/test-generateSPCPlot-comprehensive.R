@@ -693,10 +693,10 @@ describe("Performance", {
     verify_plot_structure(result)
 
     # BFHcharts-backend inkluderer nu ekstra metadata/signalanalyse.
-    # Lokalt målt til ~0.7s (mean) / ~0.8s (max) for 1000 rækker; 1.5s
-    # giver ~2x buffer for CI-variabilitet uden at gemme reelle regressioner.
+    # Lokalt målt til ~0.7s (mean) / ~0.8s (max) for 1000 rækker; 3.0s
+    # giver ~4x buffer for GitHub Actions CI-variabilitet (observeret ~1.66s).
     # Se #284 for follow-up på BFHcharts-backend-performance.
-    expect_lt(elapsed, 1.5)
+    expect_lt(elapsed, 3.0)
   })
 
   it("caches x-column validation", {

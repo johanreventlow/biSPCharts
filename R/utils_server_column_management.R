@@ -4,13 +4,13 @@
 
 # Dependencies ----------------------------------------------------------------
 
-# KOLONNEHÅNDTERING SETUP ====================================================
+# KOLONNEHAaNDTERING SETUP ====================================================
 
-#' Opsæt kolonnehåndtering for SPC app
+#' Opsaet kolonnehaandtering for SPC app
 #'
-#' Hovedfunktion der opsætter al server-side logik relateret til kolonne-management,
+#' Hovedfunktion der opsaetter al server-side logik relateret til kolonne-management,
 #' inklusive auto-detektion, validering og reactive observers for kolonnevalg.
-#' Understøtter både legacy values-baseret og ny centraliseret state management.
+#' Understoetter baade legacy values-baseret og ny centraliseret state management.
 #'
 #' @param input Shiny input object med brugerinteraktioner
 #' @param output Shiny output object for rendering
@@ -19,16 +19,16 @@
 #' @param app_state List med centraliseret app state (Phase 4 system), optional
 #'
 #' @details
-#' Funktionen opsætter følgende observers:
+#' Funktionen opsaetter foelgende observers:
 #' \itemize{
-#'   \item Kolonneopdatering ved data ændringer
+#'   \item Kolonneopdatering ved data aendringer
 #'   \item Auto-detektion trigger ved file upload
 #'   \item UI synkronisering efter auto-detektion
-#'   \item Fejlhåndtering og user feedback
+#'   \item Fejlhaandtering og user feedback
 #' }
 #'
 #' Compatibility: Funktionen detekterer automatisk om centraliseret
-#' state management er tilgængeligt og tilpasser sig entsprechend.
+#' state management er tilgaengeligt og tilpasser sig entsprechend.
 #'
 #' @return NULL (side effects via observers)
 #'
@@ -39,6 +39,7 @@
 #' }
 #'
 #' @seealso \code{\link{autodetect_engine}}, \code{\link{ensure_standard_columns}}
+#' @noRd
 setup_column_management <- function(input, output, session, app_state, emit) {
   log_debug_block("COLUMN_MGMT", "Setting up column management")
   # log_debug("Received app_state environment address:", capture.output(print(app_state)), .context = "COLUMN_MGMT")
@@ -72,7 +73,7 @@ setup_column_management <- function(input, output, session, app_state, emit) {
   # The complete UI sync logic is implemented in utils_event_system.R
   # log_debug("Auto-detection and UI sync handled by unified event system", .context = "AUTODETECT_SETUP")
 
-  # Auto-detekterings knap handler - kører altid når bruger trykker
+  # Auto-detekterings knap handler - koerer altid naar bruger trykker
   shiny::observeEvent(input$auto_detect_columns, {
     # FASE 3: Use event-driven manual trigger for consistency
     safe_operation(
@@ -89,17 +90,17 @@ setup_column_management <- function(input, output, session, app_state, emit) {
     )
   })
 
-  # Redigér kolonnenavne modal
+  # Rediger kolonnenavne modal
   shiny::observeEvent(input$edit_column_names, {
     show_column_edit_modal(session, app_state)
   })
 
-  # Bekræft kolonnenavn ændringer
+  # Bekraeft kolonnenavn aendringer
   shiny::observeEvent(input$confirm_column_names, {
     handle_column_name_changes(input, session, app_state, emit)
   })
 
-  # Tilføj kolonne
+  # Tilfoej kolonne
   shiny::observeEvent(input$add_column, {
     show_add_column_modal()
   })
@@ -115,7 +116,7 @@ setup_column_management <- function(input, output, session, app_state, emit) {
 
 # MODAL FUNKTIONER ============================================================
 
-## Vis kolonne-redigeré modal
+## Vis kolonne-redigere modal
 # Viser modal dialog for redigering af kolonnenavne
 show_column_edit_modal <- function(session, app_state = NULL) {
   # Use unified state management
@@ -134,11 +135,11 @@ show_column_edit_modal <- function(session, app_state = NULL) {
   })
 
   shiny::showModal(shiny::modalDialog(
-    title = "Redigér kolonnenavne",
+    title = "Redig\u00e9r kolonnenavne",
     size = "m",
     shiny::div(
       style = "margin-bottom: 15px;",
-      shiny::h6("Nuværende kolonnenavne:", style = "font-weight: 500;"),
+      shiny::h6("Nuv\u00e6rende kolonnenavne:", style = "font-weight: 500;"),
       shiny::p(paste(current_names, collapse = ", "), style = "color: #666; font-style: italic;")
     ),
     shiny::div(
@@ -147,13 +148,13 @@ show_column_edit_modal <- function(session, app_state = NULL) {
     ),
     footer = shiny::tagList(
       shiny::modalButton("Annuller"),
-      shiny::actionButton("confirm_column_names", "Gem ændringer", class = "btn-primary")
+      shiny::actionButton("confirm_column_names", "Gem \u00e6ndringer", class = "btn-primary")
     )
   ))
 }
 
-## Håndtér kolonnenavn ændringer
-# Behandler ændringer af kolonnenavne fra modal dialog
+## Haandter kolonnenavn aendringer
+# Behandler aendringer af kolonnenavne fra modal dialog
 handle_column_name_changes <- function(input, session, app_state = NULL, emit = NULL) {
   # Use unified state management
   current_data_check <- app_state$data$current_data
@@ -174,7 +175,7 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
   # Check for duplicates using tidyverse approach
   if (length(new_names) != length(unique(new_names))) {
     shiny::showNotification(
-      "Kolonnenavne skal være unikke. Ret duplikater og prøv igen.",
+      "Kolonnenavne skal v\u00e6re unikke. Ret duplikater og pr\u00f8v igen.",
       type = "error",
       duration = 5
     )
@@ -207,28 +208,28 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
       duration = 4
     )
   } else {
-    shiny::showNotification("Ingen ændringer i kolonnenavne", type = "message", duration = 2)
+    shiny::showNotification("Ingen \u00e6ndringer i kolonnenavne", type = "message", duration = 2)
   }
 }
 
-## Vis tilføj kolonne modal
-# Viser modal dialog for tilføjelse af nye kolonner
+## Vis tilfoej kolonne modal
+# Viser modal dialog for tilfoejelse af nye kolonner
 show_add_column_modal <- function() {
   shiny::showModal(shiny::modalDialog(
-    title = "Tilføj ny kolonne",
+    title = "Tilf\u00f8j ny kolonne",
     shiny::textInput("new_col_name", "Kolonnenavn:", value = "Ny_kolonne"),
     shiny::selectInput("new_col_type", "Type:",
       choices = list("Numerisk" = "numeric", "Tekst" = "text", "Dato" = "date")
     ),
     footer = shiny::tagList(
       shiny::modalButton("Annuller"),
-      shiny::actionButton("confirm_add_col", "Tilføj", class = "btn-primary")
+      shiny::actionButton("confirm_add_col", "Tilf\u00f8j", class = "btn-primary")
     )
   ))
 }
 
-## Håndtér tilføjelse af kolonne
-# Behandler tilføjelse af nye kolonner til data
+## Haandter tilfoejelse af kolonne
+# Behandler tilfoejelse af nye kolonner til data
 handle_add_column <- function(input, session, app_state = NULL, emit = NULL) {
   # Use unified state management
   current_data_check <- app_state$data$current_data
@@ -256,13 +257,13 @@ handle_add_column <- function(input, session, app_state = NULL, emit = NULL) {
   shiny::removeModal()
   # K2 FIX: Sanitize column name to prevent XSS
   safe_col_name <- htmltools::htmlEscape(new_col_name)
-  shiny::showNotification(paste("Kolonne", safe_col_name, "tilføjet"), type = "message")
+  shiny::showNotification(paste("Kolonne", safe_col_name, "tilf\u00f8jet"), type = "message")
 }
 
 # DATA TABLE FUNKTIONER ======================================================
 
 ## Hovedfunktion for datatabel
-# Opsætter al server logik relateret til data-tabel håndtering
+# Opsaetter al server logik relateret til data-tabel haandtering
 setup_data_table <- function(input, output, session, app_state, emit) {
   log_debug_block("DATA_TABLE", "Setting up data table with unified state")
 
@@ -283,7 +284,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     data <- current_data_check
 
-    # Formatér numeriske kolonner til dansk format (komma-decimal) for visning
+    # Formater numeriske kolonner til dansk format (komma-decimal) for visning
     numeric_cols <- names(data)[vapply(data, is.numeric, logical(1))]
     # Ekskluder Skift/Frys (logiske kolonner)
     numeric_cols <- setdiff(numeric_cols, c("Skift", "Frys"))
@@ -308,7 +309,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
           names(data) == "Skift" ~ 60,
           names(data) == "Frys" ~ 60,
           names(data) == "Dato" ~ 100,
-          names(data) %in% c("Tæller", "Nævner") ~ 80,
+          names(data) %in% c("T\u00e6ller", "N\u00e6vner") ~ 80,
           names(data) == "Kommentar" ~ 300,
           TRUE ~ 120
         ),
@@ -326,7 +327,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     )
   })
 
-  # Håndtér excelR tabel ændringer
+  # Haandter excelR tabel aendringer
   shiny::observeEvent(input$main_data_table,
     {
       # Use unified state management
@@ -366,39 +367,39 @@ setup_data_table <- function(input, output, session, app_state, emit) {
           }
 
 
-          # excelR sender data i new_data$data som liste af rækker
+          # excelR sender data i new_data$data som liste af raekker
           if (!is.null(new_data$data) && length(new_data$data) > 0) {
             # Hent kolonnenavne fra colHeaders
             col_names <- unlist(new_data$colHeaders)
 
-            # Konvertér liste af rækker til data frame ved navn-baseret matching
+            # Konverter liste af raekker til data frame ved navn-baseret matching
             row_list <- new_data$data
 
             # Sikker rekonstruktion med tidyverse - navne-baseret i stedet for positions-baseret
             new_df <- purrr::map_dfr(row_list, function(row_data) {
-              # Pad row_data til at matche col_names længde hvis nødvendigt
+              # Pad row_data til at matche col_names laengde hvis noedvendigt
               if (length(row_data) < length(col_names)) {
                 row_data <- c(row_data, rep(NA, length(col_names) - length(row_data)))
               }
-              # Konvertér alle til character først for at undgå type-konflikter
+              # Konverter alle til character foerst for at undgaa type-konflikter
               row_data_char <- as.character(row_data[seq_along(col_names)])
-              # Opret navngivet vektor og konvertér til tibble row
+              # Opret navngivet vektor og konverter til tibble row
               named_row <- stats::setNames(row_data_char, col_names)
               tibble::as_tibble_row(named_row)
             })
 
-            # Konvertér datatyper korrekt med tidyverse patterns
+            # Konverter datatyper korrekt med tidyverse patterns
             new_df <- new_df |>
               dplyr::mutate(
-                # Logiske kolonner - alle er nu character, så konvertér direkte
+                # Logiske kolonner - alle er nu character, saa konverter direkte
                 dplyr::across(
                   dplyr::any_of(c("Skift", "Frys")),
                   ~ .x %in% c("TRUE", "true")
                 ),
-                # Numeriske kolonner — brug parse_danish_number for at håndtere
-                # både dansk (komma-decimal) og engelsk (punkt-decimal) format
+                # Numeriske kolonner -- brug parse_danish_number for at haandtere
+                # baade dansk (komma-decimal) og engelsk (punkt-decimal) format
                 dplyr::across(
-                  dplyr::any_of(c("Tæller", "Nævner")),
+                  dplyr::any_of(c("T\u00e6ller", "N\u00e6vner")),
                   ~ parse_danish_number(.x)
                 ),
                 # Karakter kolonner (allerede character, men eksplicit for tydelighed)
@@ -417,7 +418,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
           # Emit event to trigger downstream effects
           emit$data_updated("table_cells_edited")
 
-          # Stille opdatering — ingen notification ved hver celleredigering
+          # Stille opdatering -- ingen notification ved hver celleredigering
         },
         error_type = "processing",
         emit = emit,
@@ -429,13 +430,13 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     ignoreInit = TRUE
   )
 
-  # Tilføj række
+  # Tilfoej raekke
   shiny::observeEvent(input$add_row, {
     # UNIFIED EVENT SYSTEM: Direct access to current data
     current_data_check <- app_state$data$current_data
     shiny::req(current_data_check)
 
-    # Sæt vedvarende flag for at forhindre auto-save interferens
+    # Saet vedvarende flag for at forhindre auto-save interferens
     # Use unified state management
     app_state$data$table_operation_in_progress <- TRUE
 
@@ -449,7 +450,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     # Emit event to trigger downstream effects
     emit$data_updated("column_changed")
 
-    shiny::showNotification("Ny række tilføjet", type = "message")
+    shiny::showNotification("Ny r\u00e6kke tilf\u00f8jet", type = "message")
 
     # Trigger event-driven cleanup instead of timing-based
     # Use unified state management

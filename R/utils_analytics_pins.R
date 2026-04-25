@@ -15,7 +15,7 @@ read_shinylogs_sessions <- function(log_directory) {
 #' Laes alle shinylogs kategorier til navngivet liste
 #'
 #' Laeser `shinylogs_*.json`-filer som shinylogs::store_json skriver
-#' direkte i log_directory (én fil per session, samlet struktur:
+#' direkte i log_directory (en fil per session, samlet struktur:
 #' session/inputs/outputs/errors). Delegerer til
 #' shinylogs::read_json_logs hvis pakken er tilgaengelig, ellers
 #' fallback til manuel parsing.
@@ -46,7 +46,7 @@ read_shinylogs_all <- function(log_directory) {
     return(empty_result)
   }
 
-  # Brug shinylogs' egen parser hvis tilgaengelig — den haandterer
+  # Brug shinylogs' egen parser hvis tilgaengelig -- den haandterer
   # to_dt-konverteringer og setTime-parsing korrekt
   if (requireNamespace("shinylogs", quietly = TRUE)) {
     parsed <- tryCatch(
@@ -60,7 +60,7 @@ read_shinylogs_all <- function(log_directory) {
     )
     if (!is.null(parsed)) {
       # shinylogs returnerer session/inputs/errors/outputs (session singular)
-      # — vi normaliserer til sessions/inputs/outputs/errors
+      # -- vi normaliserer til sessions/inputs/outputs/errors
       return(list(
         sessions = as.data.frame(parsed$session %||% data.frame()),
         inputs = as.data.frame(parsed$inputs %||% data.frame()),
@@ -154,7 +154,7 @@ rotate_log_files <- function(log_directory,
 #' analytics-filer. Alle andre kolonner droppes foer upload.
 #' Brug `filter_shinylogs_allowlist()` til at anvende filteret.
 #'
-#' Opdatér `docs/ANALYTICS_PRIVACY.md` naar denne liste aendres.
+#' Opdater `docs/ANALYTICS_PRIVACY.md` naar denne liste aendres.
 #'
 #' @format Named list med vectors af tilladte kolonnenavne
 #' @keywords internal
@@ -225,9 +225,9 @@ redact_error_messages <- function(errors_df) {
 #' Aggreger logs og sync til analytics-storage
 #'
 #' Prioriteret backend:
-#' 1. GitHub privat repo (GITHUB_PAT + PIN_REPO_URL sat) — append-model,
-#'    hver session-afslutning skriver én .rds-fil til data-repo.
-#' 2. Posit Connect Server pins (CONNECT_SERVER sat) — legacy/lokal dev.
+#' 1. GitHub privat repo (GITHUB_PAT + PIN_REPO_URL sat) -- append-model,
+#'    hver session-afslutning skriver en .rds-fil til data-repo.
+#' 2. Posit Connect Server pins (CONNECT_SERVER sat) -- legacy/lokal dev.
 #' 3. No-op hvis ingen backend er konfigureret.
 #'
 #' @param log_directory Sti til log-mappe
@@ -281,7 +281,7 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
     log_warn(
       paste(
         "Ingen shinylogs data fundet i", log_directory,
-        "— pin sync overspringes. Tjek om shinylogs::track_usage",
+        "\u2014 pin sync overspringes. Tjek om shinylogs::track_usage",
         "faktisk flushes foer onSessionEnded."
       ),
       .context = LOG_CONTEXTS$analytics$pins
@@ -306,7 +306,7 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
         } else {
           log_warn(
             paste(
-              "GitHub sync fejlede — reason:", result$reason,
+              "GitHub sync fejlede \u2014 reason:", result$reason,
               if (!is.null(result$error)) paste("-", result$error)
             ),
             .context = LOG_CONTEXTS$analytics$pins

@@ -1,7 +1,7 @@
 # ==============================================================================
 # CONFIG_SPC_CONFIG.R
 # ==============================================================================
-# FORMÅL: SPC-specifikke konstanter for data validation, column detection og
+# FORMAaL: SPC-specifikke konstanter for data validation, column detection og
 #         visualization settings. Centraliserer alle Statistical Process Control
 #         defaults og thresholds.
 #
@@ -20,7 +20,7 @@
 
 # DATA VALIDATION CONSTANTS ====================================================
 
-#' Minimum antal rækker for SPC analyse
+#' Minimum antal raekker for SPC analyse
 #' @keywords internal
 MIN_SPC_ROWS <- 10
 
@@ -28,11 +28,11 @@ MIN_SPC_ROWS <- 10
 #' @keywords internal
 RECOMMENDED_SPC_POINTS <- 20
 
-#' Maximum missing values procent før advarsel
+#' Maximum missing values procent foer advarsel
 #' @keywords internal
 MAX_MISSING_PERCENT <- 20
 
-#' Minimum procent numeriske værdier for kolonne detection
+#' Minimum procent numeriske vaerdier for kolonne detection
 #' @keywords internal
 MIN_NUMERIC_PERCENT <- 0.8
 
@@ -42,9 +42,9 @@ MIN_NUMERIC_PERCENT <- 0.8
 #' @keywords internal
 SPC_COLUMN_NAMES <- list(
   x = c("Dato", "Date", "Tid", "Time", "Periode", "Period"),
-  y = c("Tæller", "Count", "Værdi", "Value", "Antal", "Number"),
-  n = c("Nævner", "Denominator", "Total", "Sum"),
-  cl = c("Centerlinje", "CL", "Center", "Målværdi", "Target"),
+  y = c("T\u00e6ller", "Count", "V\u00e6rdi", "Value", "Antal", "Number"),
+  n = c("N\u00e6vner", "Denominator", "Total", "Sum"),
+  cl = c("Centerlinje", "CL", "Center", "M\u00e5lv\u00e6rdi", "Target"),
   freeze = "Frys",
   shift = "Skift",
   comment = "Kommentar"
@@ -57,7 +57,7 @@ SPC_COLUMN_NAMES <- list(
 Y_AXIS_UNITS_DA <- list(
   "Antal" = "count",
   "Procent (%)" = "percent",
-  "Promille (‰)" = "permille",
+  "Promille (\u2030)" = "permille",
   "Rate pr. 1000" = "rate_1000",
   "Rate pr. 100.000" = "rate_100000",
   "Rate" = "rate",
@@ -92,25 +92,25 @@ Y_AXIS_UI_TYPES_DA <- list(
 #' @keywords internal
 SPC_COLORS <- list(
   # Target linjer
-  target_line = "#2E8B57", # SeaGreen for målværdi linjer
-  control_line = "#FF6B6B", # Coral for kontrolgrænser
+  target_line = "#2E8B57", # SeaGreen for maalvaerdi linjer
+  control_line = "#FF6B6B", # Coral for kontrolgraenser
 
   # Data punkter
-  normal_point = "#4A90E2", # Blå for normale datapunkter
-  special_cause = "#FF4444", # Rød for special cause punkter
+  normal_point = "#4A90E2", # Blaa for normale datapunkter
+  special_cause = "#FF4444", # Roed for special cause punkter
 
   # Chart baggrund
   chart_bg = "#FFFFFF", # Hvid baggrund
-  grid_line = "#E8E8E8", # Lys grå for grid
+  grid_line = "#E8E8E8", # Lys graa for grid
 
   # UI elementer
-  success = "#28A745", # Grøn for success states
+  success = "#28A745", # Groen for success states
   warning = "#FFC107", # Gul for warnings
-  error = "#DC3545", # Rød for errors
-  info = "#17A2B8" # Blå for info
+  error = "#DC3545", # Roed for errors
+  info = "#17A2B8" # Blaa for info
 )
 
-#' Alpha værdier for gennemsigtighed
+#' Alpha vaerdier for gennemsigtighed
 #' @keywords internal
 SPC_ALPHA_VALUES <- list(
   target_line = 0.8,
@@ -141,15 +141,15 @@ SPC_LINE_WIDTHS <- list(
 # SPC COMMENT PROCESSING CONSTANTS =============================================
 
 #' Kommentar behandling konfiguration
-#' M3: Centraliseret magic numbers for kommentar længdebegrænsninger
+#' M3: Centraliseret magic numbers for kommentar laengdebegraensninger
 #' @keywords internal
 SPC_COMMENT_CONFIG <- list(
-  # Maximum længde før sanitization trunkering
+  # Maximum laengde foer sanitization trunkering
   max_length = 100,
 
-  # Display længde før afkortning med "..."
+  # Display laengde foer afkortning med "..."
   display_length = 40,
 
-  # Afkortning prefix længde
+  # Afkortning prefix laengde
   truncate_length = 37
 )

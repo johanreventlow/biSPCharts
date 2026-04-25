@@ -39,11 +39,11 @@ export_format_button <- function(ns, suffix, icon_name, label_text) {
 #' Export Module UI
 #'
 #' Brugerinterface til eksport af SPC charts.
-#' Understøtter PDF og PNG formater med live preview.
+#' Understoetter PDF og PNG formater med live preview.
 #'
 #' Layout:
 #' - Venstre panel (40%): Format selector, metadata input fields
-#' - Højre panel (60%): Live preview af chart
+#' - Hoejre panel (60%): Live preview af chart
 #'
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element
@@ -78,7 +78,7 @@ mod_export_ui <- function(id) {
               class = "control-label",
               style = "font-weight: 500; margin-bottom: 10px; display: block;"
             ),
-            # Hidden input — værdi styres udelukkende af JS via Shiny.setInputValue()
+            # Hidden input -- vaerdi styres udelukkende af JS via Shiny.setInputValue()
             shiny::tags$input(
               type = "hidden",
               id = ns("export_format"),
@@ -111,7 +111,7 @@ mod_export_ui <- function(id) {
           ),
           shiny::hr(),
 
-          # Sammenklapbar hjælp (minimal footprint når sammenklappet)
+          # Sammenklapbar hjaelp (minimal footprint naar sammenklappet)
           shiny::div(
             shiny::tags$button(
               class = "btn btn-sm btn-link text-muted p-0",
@@ -141,8 +141,8 @@ mod_export_ui <- function(id) {
               ns("export_title"),
               "Titel:",
               value = "",
-              # placeholder = "Skriv en kort og sigende titel,\n**eller konkludér, hvad grafen viser**",
-              placeholder = "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**",
+              # placeholder = "Skriv en kort og sigende titel,\n**eller konkluder, hvad grafen viser**",
+              placeholder = "Skriv en kort titel, eller tilf\u00f8j en konklusion,\n**der tydeligt opsummerer, hvad grafen fort\u00e6ller**",
               width = "100%",
               rows = 2,
               resize = "vertical"
@@ -205,7 +205,7 @@ mod_export_ui <- function(id) {
                     bslib::tooltip("Beskriv hvad indikatoren m\u00e5ler og hvordan data er opgjort. Fx: \u201cAndel patienter m\u00f8dt til ambulant aftale (m\u00f8dt/tilkaldt), opgjort m\u00e5nedligt.\u201d")
                 ),
                 value = "",
-                placeholder = "Beskriv hvad indikatoren måler og hvordan data opgøres",
+                placeholder = "Beskriv hvad indikatoren m\u00e5ler og hvordan data opg\u00f8res",
                 width = "100%",
                 rows = 4,
                 resize = "vertical"
@@ -225,7 +225,7 @@ mod_export_ui <- function(id) {
                     bslib::tooltip("Beskriv hvad diagrammet viser \u2014 er processen stabil? Er der signaler? Hvad kan forklare eventuelle udsving?")
                 ),
                 value = "",
-                placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret på data",
+                placeholder = "Beskriv hvad SPC-analysen viser, eller lad feltet auto-udfylde baseret p\u00e5 data",
                 width = "100%",
                 rows = 4,
                 resize = "vertical"
@@ -242,13 +242,13 @@ mod_export_ui <- function(id) {
                 " Auto-genereret analyse \u2014 rediger for at tilpasse"
               ),
             ),
-            # AI Suggestion Button — midlertidigt skjult, genaktiveres senere
+            # AI Suggestion Button -- midlertidigt skjult, genaktiveres senere
             # Funktionaliteten er intakt i mod_export_server.R og fct_ai_improvement_suggestions.R
             shiny::div(
               style = "display: none;",
               shiny::actionButton(
                 ns("ai_generate_suggestion"),
-                label = "Generér forslag med AI",
+                label = "Gener\u00e9r forslag med AI",
                 icon = shiny::icon("wand-magic-sparkles"),
                 class = "btn-primary btn-sm",
                 style = "margin-top: 5px;"
@@ -258,7 +258,7 @@ mod_export_ui <- function(id) {
                 class = "text-muted",
                 style = "font-size: 0.85rem; margin-top: 8px; margin-bottom: 0;",
                 shiny::icon("info-circle"),
-                " AI kan hjælpe med at formulere en mere detaljeret analyse af processen. Teksten kan redigeres efter behov."
+                " AI kan hj\u00e6lpe med at formulere en mere detaljeret analyse af processen. Teksten kan redigeres efter behov."
               )
             )
           ),
@@ -290,7 +290,7 @@ mod_export_ui <- function(id) {
             ),
             shiny::div(
               style = "margin-bottom: 15px;",
-              shiny::tags$label("Størrelse (px):", class = "control-label"),
+              shiny::tags$label("St\u00f8rrelse (px):", class = "control-label"),
               shiny::div(
                 style = "display: flex; align-items: center; gap: 8px;",
                 shiny::numericInput(
@@ -325,7 +325,7 @@ mod_export_ui <- function(id) {
         )
       ),
 
-      # HØJRE PANEL: Live preview ----
+      # HOeJRE PANEL: Live preview ----
       bslib::card(
         full_screen = TRUE,
         height = "100%",
@@ -348,7 +348,7 @@ mod_export_ui <- function(id) {
               class = "alert alert-warning",
               style = "margin: 20px; padding: 20px;",
               shiny::icon("exclamation-triangle"),
-              " Ingen graf er genereret endnu. Gå til hovedsiden for at oprette en SPC-graf først."
+              " Ingen graf er genereret endnu. G\u00e5 til hovedsiden for at oprette en SPC-graf f\u00f8rst."
             )
           ),
           # Show PDF preview when PDF format selected
@@ -401,7 +401,7 @@ mod_export_ui <- function(id) {
                   height = "auto"
                 )
               ),
-              # Skalér preview-billedet til at passe inden for rammen
+              # Skaler preview-billedet til at passe inden for rammen
               shiny::tags$style(shiny::HTML(paste0(
                 "#", ns("export_preview"), " img { ",
                 "max-width: 100%; max-height: calc(100vh - 340px); ",
@@ -413,7 +413,7 @@ mod_export_ui <- function(id) {
         )
       )
     ),
-    # Tilbage/Gem/Eksportér knapper under cards
+    # Tilbage/Gem/Eksporter knapper under cards
     shiny::div(
       style = "display: flex; justify-content: space-between; align-items: center;",
       shiny::actionButton(
@@ -421,7 +421,7 @@ mod_export_ui <- function(id) {
         shiny::tagList(shiny::icon("arrow-left"), " Tilbage"),
         class = "btn-secondary",
         style = "width: 200px;",
-        title = "Gå tilbage til analyse"
+        title = "G\u00e5 tilbage til analyse"
       ),
       shinyjs::disabled(
         shiny::downloadButton(
@@ -434,7 +434,7 @@ mod_export_ui <- function(id) {
       ),
       shiny::downloadButton(
         ns("download_export"),
-        "Eksportér",
+        "Eksport\u00e9r",
         icon = shiny::icon("file-export"),
         class = "btn-primary",
         style = "width: 200px; text-align: center; color: white !important;"

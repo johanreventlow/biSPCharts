@@ -378,7 +378,14 @@ SKIP_PREPUSH=1 git push
 git push --no-verify        # Git-native alternativ
 ```
 
-⚠️ **VIGTIG:** BFHcharts/shinytest2 screenshot-tests er miljøfølsomme og opt-in via `RUN_SHINYTEST2=1`. De må ikke være en normal lokal push-blokering; stabil browser/visual regression hører hjemme i en separat CI-job med kontrolleret Chrome/Chromium-miljø.
+⚠️ **VIGTIG:** BFHcharts/shinytest2 screenshot-tests er miljøfølsomme og opt-in via `RUN_SHINYTEST2=1`. De må ikke være en normal lokal push-blokering; stabil browser/visual regression hører hjemme i den separate `shinytest2.yaml` CI-job (nightly, kontrolleret Chrome/Chromium-miljø).
+
+**CI-gates (se `.github/workflows/README.md` for hierarki):**
+- `R-CMD-check` (smoke) — kører på alle pushes; kun ERRORs blokerer
+- `R-CMD-check-gate` + `release-gate` — kører kun på PRs mod master og tags; WARNINGs blokerer
+- `testthat` — kører på master + develop; fuld suite med `stop_on_failure = TRUE`
+- `skip-inventory` — kommenterer TODO-skip-delta på PRs; fejler ved uberettiget stigning
+- `shinytest2` — nightly opt-in, IKKE per-PR-gate
 
 **Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
 

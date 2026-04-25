@@ -78,7 +78,7 @@ echo "════════════════════════�
 
 # --- Step 1: lintr ---
 echo ""
-echo "[1/3] Kører lintr::lint_package() ..."
+echo "[1/4] Kører lintr::lint_package() ..."
 LINT_OUTPUT=$(Rscript -e '
   suppressPackageStartupMessages(library(lintr))
   lints <- lintr::lint_package()
@@ -102,9 +102,34 @@ LINT_OUTPUT=$(Rscript -e '
 }
 echo "$LINT_OUTPUT"
 
+# --- Step 1b: swallowed-error check ---
+# Fejler ved nye error = function(e) NULL uden log_debug eller # nolint kommentar.
+# Undtagelser: linjer med "# nolint: swallowed_error_linter" er tilladt.
+echo ""
+echo "[1b/4] Tjekker for ubeskyttede swallowed errors ..."
+SWALLOWED=$(grep -rn "error = function(e) NULL" R/ \
+  | grep -v "# nolint" \
+  | grep -v "log_debug" \
+  || true)
+if [ -n "$SWALLOWED" ]; then
+  echo ""
+  echo "✗ Ubeskyttede 'error = function(e) NULL' fundet — push blokeret"
+  echo ""
+  echo "$SWALLOWED"
+  echo ""
+  echo "  Fix: Tilføj enten:"
+  echo "    (a) log_debug(conditionMessage(e), .context = ...) i error-handler"
+  echo "    (b) # nolint: swallowed_error_linter # Begrundelse: ..."
+  echo "    (c) Erstat med try_with_diagnostics()"
+  echo ""
+  echo "  Bypass: git push --no-verify"
+  exit 1
+fi
+echo "✓ Swallowed error check OK"
+
 # --- Step 2: manifest validation ---
 echo ""
-echo "[2/3] Validerer test-classification manifest ..."
+echo "[2/4] Validerer test-classification manifest ..."
 Rscript dev/classify_tests.R --validate || {
   echo ""
   echo "✗ Test-classification manifest er invalid — push blokeret"
@@ -119,7 +144,7 @@ Rscript dev/classify_tests.R --validate || {
 # af metacharacters i env-variabler → potentiel kode-injection.
 echo ""
 if [ "$MODE" = "fast" ]; then
-  echo "[3/3] Kører hurtige regressionstests ..."
+  echo "[3/4] Kører hurtige regressionstests ..."
   Rscript - <<'REOF'
 suppressPackageStartupMessages({ library(devtools); library(testthat) })
 run_checked_file <- function(path) {

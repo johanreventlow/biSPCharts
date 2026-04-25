@@ -1,26 +1,26 @@
 # fct_anhoej_rules.R
-# Anhøj Rules Detection and Metadata Extraction
+# Anhoej Rules Detection and Metadata Extraction
 #
-# Dette modul implementerer funktioner til at arbejde med Anhøj rules i SPC charts.
-# BFHchart pakken beregner allerede Anhøj rules (runs test og crossings test),
-# så disse funktioner ekstraherer og standardiserer output fra BFHchart.
+# Dette modul implementerer funktioner til at arbejde med Anhoej rules i SPC charts.
+# BFHchart pakken beregner allerede Anhoej rules (runs test og crossings test),
+# saa disse funktioner ekstraherer og standardiserer output fra BFHchart.
 #
-# Anhøj Rules:
-# 1. Runs test: ≥8 consecutive points above or below center line
+# Anhoej Rules:
+# 1. Runs test: [U+2265]8 consecutive points above or below center line
 # 2. Crossings test: Too few median crossings (statistical threshold)
 #
 # Design princip: BFHchart er primary source, vi standardiserer kun output
 
-#' Extract Anhøj Rules Metadata from BFHchart Output
+#' Extract Anhoej Rules Metadata from BFHchart Output
 #'
-#' Extracts standardized Anhøj rules metadata from BFHchart qic_data.
-#' BFHchart already computes Anhøj rules (runs and crossings tests), so this
+#' Extracts standardized Anhoej rules metadata from BFHchart qic_data.
+#' BFHchart already computes Anhoej rules (runs and crossings tests), so this
 #' function simply extracts and formats the results into a consistent structure
 #' matching qicharts2 conventions.
 #'
 #' @details
-#' **BFHchart Anhøj Columns:**
-#' - `runs.signal`: Logical indicating if runs test triggered (≥8 consecutive points)
+#' **BFHchart Anhoej Columns:**
+#' - `runs.signal`: Logical indicating if runs test triggered ([U+2265]8 consecutive points)
 #' - `longest.run`: Length of longest run above or below center line
 #' - `longest.run.max`: Maximum acceptable run length
 #' - `n.crossings`: Actual number of median crossings observed
@@ -32,15 +32,15 @@
 #' matching the baseline fixture structure from Task #29.
 #'
 #' **Per-Phase Handling:**
-#' If data contains multiple phases (part column), Anhøj rules are applied
+#' If data contains multiple phases (part column), Anhoej rules are applied
 #' per-phase by BFHchart. This function preserves per-point signals and
 #' returns overall status.
 #'
-#' @param qic_data data.frame or tibble. BFHchart qic_data with Anhøj columns.
+#' @param qic_data data.frame or tibble. BFHchart qic_data with Anhoej columns.
 #'   Must contain at least: `runs.signal`, `n.crossings`, `n.crossings.min`.
 #'   Optional: `longest.run`, `longest.run.max`, `anhoej.signal`.
 #'
-#' @return list with Anhøj rules metadata:
+#' @return list with Anhoej rules metadata:
 #'   \describe{
 #'     \item{runs_signal}{logical. TRUE if any runs violation detected.}
 #'     \item{crossings_signal}{logical. TRUE if crossings violation detected.}
@@ -48,7 +48,7 @@
 #'     \item{n_crossings_min}{numeric. Minimum expected crossings (first value if per-phase).}
 #'     \item{longest_run}{integer. Length of longest run (if available).}
 #'     \item{longest_run_max}{numeric. Maximum acceptable run (if available).}
-#'     \item{signal_points}{logical vector. Per-point combined Anhøj signal.}
+#'     \item{signal_points}{logical vector. Per-point combined Anhoej signal.}
 #'   }
 #'   Returns NULL if required columns missing (with warning).
 #'
@@ -82,13 +82,13 @@ extract_anhoej_metadata <- function(qic_data) {
     return(NULL)
   }
 
-  # 2. Check for required Anhøj columns
+  # 2. Check for required Anhoej columns
   required_cols <- c("runs.signal", "n.crossings", "n.crossings.min")
   missing_cols <- setdiff(required_cols, names(qic_data))
 
   if (length(missing_cols) > 0) {
     warning(paste(
-      "Missing required Anhøj columns:",
+      "Missing required Anh\u00f8j columns:",
       paste(missing_cols, collapse = ", ")
     ))
     return(NULL)
@@ -148,9 +148,9 @@ extract_anhoej_metadata <- function(qic_data) {
 }
 
 
-#' Validate Anhøj Columns in QIC Data
+#' Validate Anhoej Columns in QIC Data
 #'
-#' Internal helper to validate that required Anhøj columns are present in
+#' Internal helper to validate that required Anhoej columns are present in
 #' qic_data from BFHchart. Used for defensive programming and early error detection.
 #'
 #' @param qic_data data.frame. BFHchart qic_data to validate.
@@ -164,7 +164,7 @@ extract_anhoej_metadata <- function(qic_data) {
 #' @examples
 #' \dontrun{
 #' if (!validate_anhoej_columns(qic_data)) {
-#'   stop("Invalid qic_data: missing Anhøj columns")
+#'   stop("Invalid qic_data: missing Anhoej columns")
 #' }
 #' }
 validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
@@ -173,7 +173,7 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
     return(FALSE)
   }
 
-  # Required columns for Anhøj metadata extraction
+  # Required columns for Anhoej metadata extraction
   required_cols <- c("runs.signal", "n.crossings", "n.crossings.min")
 
   if (require_signal) {
@@ -184,7 +184,7 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
 
   if (length(missing_cols) > 0) {
     warning(paste(
-      "Missing Anhøj columns:",
+      "Missing Anh\u00f8j columns:",
       paste(missing_cols, collapse = ", ")
     ))
     return(FALSE)
@@ -194,9 +194,9 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
 }
 
 
-#' Calculate Combined Anhøj Signal from Components
+#' Calculate Combined Anhoej Signal from Components
 #'
-#' Computes combined Anhøj signal (runs OR crossings) from individual components.
+#' Computes combined Anhoej signal (runs OR crossings) from individual components.
 #' This is a fallback function used when BFHchart doesn't provide `anhoej.signal`
 #' column directly.
 #'
@@ -212,7 +212,7 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
 #'
 #' @param qic_data data.frame. BFHchart qic_data with runs and crossings columns.
 #'
-#' @return logical vector. Per-point combined Anhøj signal.
+#' @return logical vector. Per-point combined Anhoej signal.
 #'   Returns vector of FALSE if validation fails.
 #'
 #' @keywords internal
@@ -222,6 +222,7 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
 #' signal <- calculate_combined_anhoej_signal(qic_data)
 #' qic_data$signal <- signal
 #' }
+#' @noRd
 calculate_combined_anhoej_signal <- function(qic_data) {
   # Validate input
   if (!validate_anhoej_columns(qic_data, require_signal = FALSE)) {
@@ -251,16 +252,16 @@ calculate_combined_anhoej_signal <- function(qic_data) {
 }
 
 
-#' Format Anhøj Metadata for Display
+#' Format Anhoej Metadata for Display
 #'
-#' Formats Anhøj rules metadata into human-readable Danish text for logging
+#' Formats Anhoej rules metadata into human-readable Danish text for logging
 #' or UI display. Useful for debugging and user notifications.
 #'
-#' @param anhoej_meta list. Anhøj metadata from `extract_anhoej_metadata()`.
+#' @param anhoej_meta list. Anhoej metadata from `extract_anhoej_metadata()`.
 #'
-#' @return character. Formatted Danish text describing Anhøj rule violations.
+#' @return character. Formatted Danish text describing Anhoej rule violations.
 #'   Example: "Runs: Ja (8 punkter), Crossings: Nej (9/13)"
-#'   Returns "Ingen Anhøj violations" if no signals detected.
+#'   Returns "Ingen Anhoej violations" if no signals detected.
 #'
 #' @examples
 #' \dontrun{
@@ -271,7 +272,7 @@ calculate_combined_anhoej_signal <- function(qic_data) {
 #' @keywords internal
 format_anhoej_metadata <- function(anhoej_meta) {
   if (is.null(anhoej_meta)) {
-    return("Anhøj metadata ikke tilgængelig")
+    return("Anh\u00f8j metadata ikke tilg\u00e6ngelig")
   }
 
   # Runs text
@@ -294,7 +295,7 @@ format_anhoej_metadata <- function(anhoej_meta) {
 
   # Overall signal
   if (!anhoej_meta$runs_signal && !anhoej_meta$crossings_signal) {
-    return("Ingen Anhøj violations")
+    return("Ingen Anh\u00f8j violations")
   }
 
   # Combine

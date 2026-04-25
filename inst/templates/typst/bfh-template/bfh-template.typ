@@ -24,7 +24,7 @@
     margin: (top: 42mm, left: 25mm),
     header-ascent: 0.71cm,
     header: [
-      #place(left, image("Logo_Bispebjerg_og Frederiksberg_RGB.png", height: 15mm), dy: 12mm)
+      #place(left, image("Logo_Bispebjerg_og_Frederiksberg_RGB.png", height: 15mm), dy: 12mm)
       #place(right + bottom)[
         #author\
         #if type(date) == datetime [
@@ -71,7 +71,7 @@
     margin: (5mm),
     header: [
       #place(left, 
-      image("images/Logo_Bispebjerg_og Frederiksberg_RGB.png", 
+      image("images/Logo_Bispebjerg_og_Frederiksberg_RGB.png", 
       //image("Logo_Bispebjerg_png.png", 
       height: 14mm,
     ), dy: 18.67mm, dx: 4.67mm)

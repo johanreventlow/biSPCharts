@@ -4,20 +4,20 @@
 # SPC COMPUTATION MODULE FOR SPC CHART VISUALIZATION
 #
 # Purpose: Core SPC computation pipeline. Calls BFHcharts API, computes
-#          Anhøj rules via qicharts2, manages plot caching, and handles
+#          Anhoej rules via qicharts2, manages plot caching, and handles
 #          all state mutations via set_plot_state().
 #
 # Extracted from: mod_spc_chart_server.R (Stage 4 of Phase 2c refactoring)
 # Depends on: spc_inputs reactive (from mod_spc_chart_inputs)
 #            app_state (centralized state + set_plot_state/get_plot_state)
 #            BFHcharts API (via generateSPCPlot)
-#            qicharts2 (via Anhøj rules extraction)
+#            qicharts2 (via Anhoej rules extraction)
 # ==============================================================================
 
 #' Create SPC Results Reactive
 #'
 #' Core computation pipeline for SPC chart generation. Calls BFHcharts to
-#' generate plots, extracts Anhøj rules from qicharts2, and manages cache
+#' generate plots, extracts Anhoej rules from qicharts2, and manages cache
 #' with context-aware cache keys for plot isolation.
 #'
 #' @param spc_inputs_reactive Reactive expression returning SPC parameters
@@ -27,7 +27,7 @@
 #'
 #' @return Reactive expression returning list with:
 #'   - plot: ggplot2 object (or NULL if validation failed)
-#'   - qic_data: Data frame with Anhøj rules results
+#'   - qic_data: Data frame with Anhoej rules results
 #'   - cache_key: Cache key used for this computation
 #'
 #' @details
@@ -35,7 +35,7 @@
 #' 1. Build context-aware cache key including viewport dimensions
 #' 2. Validate data against chart requirements
 #' 3. Call generateSPCPlot (BFHcharts API)
-#' 4. Extract Anhøj rules from qic_data
+#' 4. Extract Anhoej rules from qic_data
 #' 5. Update plot state and anhoej_results
 #' 6. Handle errors with fallback results
 #' 7. Cache results using bindCache with context isolation
@@ -57,7 +57,7 @@ create_spc_results_reactive <- function(
   shiny::reactive({
     inputs <- spc_inputs_reactive()
 
-    # Inkludér kolonnemapping i cache-key for at invalidere ved dropdownændringer
+    # Inkluder kolonnemapping i cache-key for at invalidere ved dropdownaendringer
     config_key <- paste0(
       inputs$config$x_col %||% "NULL", "|",
       inputs$config$y_col %||% "NULL", "|",
@@ -83,14 +83,14 @@ create_spc_results_reactive <- function(
         inputs$title,
         inputs$y_axis_unit,
         inputs$kommentar_column,
-        inputs$base_size, # FIX: Invalidér cache ved breddeændring/fuldskærm
+        inputs$base_size, # FIX: Invalider cache ved breddeaendring/fuldskaerm
         vp_dims$width, # NEW: Viewport width for dimension-aware caching
         vp_dims$height # NEW: Viewport height for dimension-aware caching
       ),
       algo = "xxhash64"
     )
 
-    # Registrér om baseline/centerline er ændret (inkl. ryddet)
+    # Registrer om baseline/centerline er aendret (inkl. ryddet)
     last_centerline <- shiny::isolate(app_state$visualization$last_centerline_value)
     centerline_changed <- !identical(inputs$centerline_value, last_centerline)
 
@@ -190,7 +190,7 @@ create_spc_results_reactive <- function(
         set_plot_state("plot_ready", TRUE)
 
         if (!is.null(qic_data)) {
-          # Beregn runs_signal og crossings_signal først
+          # Beregn runs_signal og crossings_signal foerst
           runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
 
           crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
@@ -203,17 +203,17 @@ create_spc_results_reactive <- function(
 
           qic_results <- list(
             any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-            # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
+            # Konsistent med BFHcharts' PDF-tabel: tael outliers i seneste part.
             out_of_control_count = count_outliers_latest_part(qic_data),
             runs_signal = runs_sig,
             crossings_signal = crossings_sig,
-            anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
+            anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhoej-signal
             longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
             longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
             n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
             n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_,
             message = if (inputs$chart_type == "run") {
-              if (any(qic_data$sigma.signal, na.rm = TRUE)) "Særlig årsag detekteret" else "Ingen særlige årsager fundet"
+              if (any(qic_data$sigma.signal, na.rm = TRUE)) "S\u00e6rlig \u00e5rsag detekteret" else "Ingen s\u00e6rlige \u00e5rsager fundet"
             } else {
               if (any(qic_data$sigma.signal, na.rm = TRUE)) "Punkter uden for kontrol detekteret" else "Alle punkter inden for kontrol"
             }
@@ -226,7 +226,7 @@ create_spc_results_reactive <- function(
             qic_data = qic_data, show_phases = show_phases
           )
 
-          # Log kun når vi reelt ændrer state (for at reducere støj)
+          # Log kun naar vi reelt aendrer state (for at reducere stoej)
           if (!identical(updated_anhoej, current_anhoej)) {
             log_debug(
               sprintf(
@@ -239,7 +239,7 @@ create_spc_results_reactive <- function(
             )
             set_plot_state("anhoej_results", updated_anhoej)
           }
-          # Opdater sidste kendte centerline værdi EFTER vi har brugt den til changed-detektion
+          # Opdater sidste kendte centerline vaerdi EFTER vi har brugt den til changed-detektion
           app_state$visualization$last_centerline_value <- inputs$centerline_value
         } else {
           # No qic_data - set to default state with informative message
@@ -315,7 +315,7 @@ create_spc_results_reactive <- function(
         inputs$title,
         inputs$y_axis_unit,
         inputs$kommentar_column,
-        inputs$base_size, # FIX: Invalidér cache ved breddeændring/fuldskærm
+        inputs$base_size, # FIX: Invalider cache ved breddeaendring/fuldskaerm
         vp_dims$width, # NEW: Invalidate cache on viewport width change
         vp_dims$height # NEW: Invalidate cache on viewport height change
       )
@@ -358,7 +358,7 @@ create_spc_plot_reactive <- function(
       list(
         "spc_plot",
         result$cache_key %||% "empty",
-        inputs$base_size # FIX: Eksplicit breddeafhængig invalidering
+        inputs$base_size # FIX: Eksplicit breddeafhaengig invalidering
       )
     })
 }
@@ -367,7 +367,7 @@ create_spc_plot_reactive <- function(
 #'
 #' Ensures anhoej_results are updated even when bindCache short-circuits
 #' spc_results reactive body (cache hit). Handles state synchronization
-#' and Anhøj signal computation.
+#' and Anhoej signal computation.
 #'
 #' @param spc_results_reactive Reactive expression returning SPC results
 #' @param app_state Reactive values object
@@ -397,9 +397,9 @@ register_cache_aware_observer <- function(
       }
 
       # Cache hits: bindCache short-circuiter spc_results reactive body,
-      # så set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
-      # gyldigt result med qic_data her, så plot er de-facto klar.
-      # Issue #193: Uden dette viser anhøj-bokse "Behandler data og
+      # saa set_plot_state("plot_ready", TRUE) kaldes aldrig. Vi har et
+      # gyldigt result med qic_data her, saa plot er de-facto klar.
+      # Issue #193: Uden dette viser anhoej-bokse "Behandler data og
       # beregner..." permanent efter session restore.
       if (!is.null(result$plot)) {
         set_plot_state("plot_ready", TRUE)
@@ -420,11 +420,11 @@ register_cache_aware_observer <- function(
 
       qic_results <- list(
         any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
-        # Konsistent med BFHcharts' PDF-tabel: tæl outliers i seneste part.
+        # Konsistent med BFHcharts' PDF-tabel: tael outliers i seneste part.
         out_of_control_count = count_outliers_latest_part(qic_data),
         runs_signal = runs_sig,
         crossings_signal = crossings_sig,
-        anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhøj-signal
+        anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhoej-signal
         longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
         longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
         n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
@@ -437,7 +437,7 @@ register_cache_aware_observer <- function(
       skift_config <- skift_config_reactive()
       show_phases <- skift_config$show_phases %||% FALSE
 
-      # Opdater altid når vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
+      # Opdater altid naar vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
       updated_anhoej <- update_anhoej_results(current_anhoej, qic_results,
         centerline_changed = FALSE,
         qic_data = qic_data, show_phases = show_phases

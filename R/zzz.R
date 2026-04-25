@@ -201,8 +201,8 @@ reset_qic_performance_counters <- function() {
   # Set up resource paths for static files
   setup_resource_paths()
 
-  # Registrer Mari font FØR Roboto — BFHtheme cacher første match,
-  # og Mari har højeste prioritet i get_bfh_font()
+  # Registrer Mari font FOeR Roboto -- BFHtheme cacher foerste match,
+  # og Mari har hoejeste prioritet i get_bfh_font()
   if (exists("register_mari_font", mode = "function")) {
     register_mari_font()
   }
@@ -216,9 +216,9 @@ reset_qic_performance_counters <- function() {
 }
 
 .onAttach <- function(libname, pkgname) {
-  bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilgængelig" else "ikke installeret"
-  qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilgængelig" else "ikke installeret"
-  quarto_status <- if (nzchar(Sys.which("quarto"))) "tilgængelig" else "ikke fundet i PATH"
+  bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
+  qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
+  quarto_status <- if (nzchar(Sys.which("quarto"))) "tilg\u00e6ngelig" else "ikke fundet i PATH"
   packageStartupMessage(
     "biSPCharts optional features: ",
     "BFHllm=", bfhllm_status, ", ",

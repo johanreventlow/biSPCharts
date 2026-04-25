@@ -61,6 +61,7 @@ NULL
 #' }
 #'
 #' @keywords internal
+#' @noRd
 handle_column_input <- function(col_name, new_value, app_state, emit) {
   # Timestamp for performance tracking (optional)
   input_received_time <- Sys.time()

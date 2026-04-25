@@ -14,7 +14,7 @@
 #' @param log_directory Directory til log filer (default: "logs/")
 #'
 #' @details
-#' shinylogs giver følgende funktionaliteter:
+#' shinylogs giver foelgende funktionaliteter:
 #' - Real-time web-baseret log viewer
 #' - Automatisk tracking af inputs, outputs og fejl
 #' - Performance metrics og timing
@@ -60,18 +60,19 @@ setup_shinylogs <- function(enable_tracking = TRUE,
 
 #' Initialize shinylogs tracking for app
 #'
-#' Starter shinylogs tracking når applikationen initialiseres.
+#' Starter shinylogs tracking naar applikationen initialiseres.
 #' Skal kaldes i app_server funktionen.
 #'
 #' @param session Shiny session object
 #' @param custom_fields List med custom felter til logging
-#' @param app_name Navn på applikationen (default: "SPC_APP")
+#' @param app_name Navn paa applikationen (default: "SPC_APP")
 #'
+#' @noRd
 initialize_shinylogs_tracking <- function(session,
                                           app_name = "SPC_APP",
                                           log_directory = "logs/") {
   if (!requireNamespace("shinylogs", quietly = TRUE)) {
-    log_warn("shinylogs ikke installeret — analytics tracking deaktiveret", .context = "ANALYTICS")
+    log_warn("shinylogs ikke installeret \u2014 analytics tracking deaktiveret", .context = "ANALYTICS")
     return(invisible(FALSE))
   }
 

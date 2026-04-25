@@ -55,7 +55,7 @@ main_app_server <- function(input, output, session) {
   setup_background_tasks(session, app_state, emit)
 
   # Test Tilstand ------------------------------------------------------------
-  # TEST MODE: Auto-indlæs eksempel data hvis aktiveret
+  # TEST MODE: Auto-indlaes eksempel data hvis aktiveret
   test_mode_auto_load <- get_test_mode_auto_load()
 
   log_debug(
@@ -111,14 +111,14 @@ main_app_server <- function(input, output, session) {
               .context = "[TEST_MODE_STARTUP]"
             )
 
-            # Bestem hvilken loader der skal bruges baseret på fil-extension
+            # Bestem hvilken loader der skal bruges baseret paa fil-extension
             file_extension <- tools::file_ext(test_file_path)
 
             if (file_extension %in% c("xlsx", "xls")) {
               # Load Excel file
               test_data <- readxl::read_excel(
                 test_file_path,
-                sheet = 1, # Læs første sheet
+                sheet = 1, # Laes foerste sheet
                 .name_repair = "minimal"
               )
             } else {
@@ -158,17 +158,17 @@ main_app_server <- function(input, output, session) {
             # Take state snapshot after auto-load
             debug_state_snapshot("after_test_data_autoload", app_state, session_id = hashed_token)
 
-            # NOTE: Flag sættes efter setup_column_management() for at undgå race condition
+            # NOTE: Flag saettes efter setup_column_management() for at undgaa race condition
 
             # Debug output
-            log_info(paste("Auto-indlæst fil:", test_file_path), .context = "TEST_MODE")
+            log_info(paste("Auto-indl\u00e6st fil:", test_file_path), .context = "TEST_MODE")
             log_info(paste("Data dimensioner:", nrow(test_data), "x", ncol(test_data)), .context = "TEST_MODE")
             log_info(paste("Kolonner:", paste(names(test_data), collapse = ", ")), .context = "TEST_MODE")
 
             autoload_tracer$step("test_data_autoload_complete")
           },
           fallback = function(e) {
-            log_error(paste("Fejl ved indlæsning af", test_file_path, ":", e$message), .context = "TEST_MODE")
+            log_error(paste("Fejl ved indl\u00e6sning af", test_file_path, ":", e$message), .context = "TEST_MODE")
           },
           error_type = "processing"
         )
@@ -187,7 +187,7 @@ main_app_server <- function(input, output, session) {
 
 
   # Server Setup ------------------------------------------------------------
-  # Opsæt alle server-komponenter
+  # Opsaet alle server-komponenter
 
   ## Session management logik
   setup_session_management(input, output, session, app_state, emit, ui_service)
@@ -198,7 +198,7 @@ main_app_server <- function(input, output, session) {
   ## Data tabel logik
   setup_data_table(input, output, session, app_state, emit)
 
-  ## Hjælpe observers (IMPORTANT: Must be set up before visualization for unified navigation)
+  ## Hjaelpe observers (IMPORTANT: Must be set up before visualization for unified navigation)
   setup_helper_observers(input, output, session, obs_manager, app_state)
 
   ## Kolonne management logik
@@ -212,7 +212,7 @@ main_app_server <- function(input, output, session) {
   # Pass app_state (read-only) to export module for chart access
   export_module_status <- mod_export_server("export", app_state, parent_session = session)
 
-  ## Track forrige tab for kontekstuel tilbagenavigation på hjælpesider
+  ## Track forrige tab for kontekstuel tilbagenavigation paa hjaelpesider
   current_tab <- shiny::reactiveVal("start")
   previous_tab <- shiny::reactiveVal("start")
   shiny::observeEvent(input$main_navbar, ignoreInit = TRUE, {
@@ -228,14 +228,14 @@ main_app_server <- function(input, output, session) {
   ## App-vejledning modul (tilbagenavigation til forrige tab)
   mod_app_guide_server("app_guide", parent_session = session, previous_tab = previous_tab)
 
-  ## Hjælpeside modul (tilbagenavigation til forrige tab)
+  ## Hjaelpeside modul (tilbagenavigation til forrige tab)
   mod_help_server("help", parent_session = session, previous_tab = previous_tab)
 
   ## Landing page modul
   mod_landing_server("landing", parent_session = session, app_state = app_state)
 
   # Wizard-trin skjules ved start via wizard-nav.js (shiny:connected handler)
-  # Logo-klik håndteres også i wizard-nav.js (se logo_home_link handler)
+  # Logo-klik haandteres ogsaa i wizard-nav.js (se logo_home_link handler)
 
   session_debugger$event("server_setup_complete")
   log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")
@@ -269,13 +269,13 @@ main_app_server <- function(input, output, session) {
   }
 
   # Initial UI Setup --------------------------------------------------------
-  # Sæt standard chart_type når appen starter
+  # Saet standard chart_type naar appen starter
   shiny::observe({
     shiny::updateSelectizeInput(session, "chart_type", selected = "run")
   }) |> bindEvent(TRUE, once = TRUE)
 
   # Session Cleanup ---------------------------------------------------------
-  # Additional cleanup når session lukker
+  # Additional cleanup naar session lukker
   session$onSessionEnded(function() {
     session_debugger$event("session_cleanup_started")
     log_debug("Session cleanup initiated", .context = "SESSION_LIFECYCLE")

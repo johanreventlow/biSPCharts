@@ -1,7 +1,7 @@
 # fct_spc_bfh_signals.R
-# Anhøj Signals & Error Handling
+# Anhoej Signals & Error Handling
 #
-# Beregner Anhøj-regler metadata og klassificerer fejl.
+# Beregner Anhoej-regler metadata og klassificerer fejl.
 # Funktioner:
 # - calculate_combined_anhoej_signal() - kombinerer runs + crossings signals
 # - classify_error_source() - attribuerer fejl til komponent
@@ -13,7 +13,7 @@ calculate_combined_anhoej_signal <- function(
   crossings_col = "crossings.signal"
 ) {
   safe_operation(
-    operation_name = "Anhøj signal calculation",
+    operation_name = "Anh\u00f8j signal calculation",
     code = {
       # Initialize signal to FALSE
       signal <- rep(FALSE, nrow(data))
@@ -130,7 +130,7 @@ classify_error_source <- function(error) {
 compute_anhoej_metadata_local <- function(data, config) {
   require_qicharts2()
   safe_operation(
-    operation_name = "Anhøj metadata local computation",
+    operation_name = "Anh\u00f8j metadata local computation",
     code = {
       # 1. Validate required parameters
       if (is.null(data)) {
@@ -233,7 +233,7 @@ compute_anhoej_metadata_local <- function(data, config) {
         ))
       }
 
-      # 7. Call qicharts2::qic() for Anhøj rules calculation
+      # 7. Call qicharts2::qic() for Anhoej rules calculation
       # Wrap in tryCatch to provide better error messages
       qic_result <- tryCatch(
         {
@@ -263,7 +263,7 @@ compute_anhoej_metadata_local <- function(data, config) {
         stop("qicharts2::qic() did not return valid data frame")
       }
 
-      # 7. Extract Anhøj metadata using existing utility
+      # 7. Extract Anhoej metadata using existing utility
       metadata <- extract_anhoej_metadata(qic_result)
 
       if (is.null(metadata)) {
@@ -272,7 +272,7 @@ compute_anhoej_metadata_local <- function(data, config) {
 
       log_info(
         message = paste(
-          "Anhøj metadata computed:",
+          "Anh\u00f8j metadata computed:",
           "runs_signal =", metadata$runs_signal,
           ", crossings_signal =", metadata$crossings_signal,
           ", longest_run =", metadata$longest_run
@@ -283,7 +283,7 @@ compute_anhoej_metadata_local <- function(data, config) {
       return(metadata)
     },
     fallback = NULL,
-    show_user = FALSE, # Don't show internal Anhøj calculation errors to user
+    show_user = FALSE, # Don't show internal Anhoej calculation errors to user
     error_type = "anhoej_metadata_local"
   )
 }

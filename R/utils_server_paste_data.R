@@ -179,10 +179,15 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
           rows <- vapply(seq_len(nrow(data)), function(i) {
             vals <- vapply(names(data), function(col) {
               v <- data[[col]][[i]]
-              if (is.na(v))                               ""
-              else if (is.numeric(v))                      format(v, decimal.mark = ",", scientific = FALSE)
-              else if (inherits(v, c("Date", "POSIXct"))) format(v, "%Y-%m-%d")
-              else                                        as.character(v)
+              if (is.na(v)) {
+                ""
+              } else if (is.numeric(v)) {
+                format(v, decimal.mark = ",", scientific = FALSE)
+              } else if (inherits(v, c("Date", "POSIXct"))) {
+                format(v, "%Y-%m-%d")
+              } else {
+                as.character(v)
+              }
             }, character(1))
             paste(vals, collapse = "\t")
           }, character(1))

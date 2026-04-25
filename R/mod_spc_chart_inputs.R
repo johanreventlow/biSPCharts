@@ -90,18 +90,19 @@ create_data_ready_reactive <- function(module_data_reactive) {
 #'
 #' @keywords internal
 create_spc_inputs_reactive <- function(
-    data_ready_reactive,
-    chart_config,
-    session,
-    ns,
-    y_axis_unit_reactive = NULL,
-    target_value_reactive = NULL,
-    target_text_reactive = NULL,
-    centerline_value_reactive = NULL,
-    skift_config_reactive = NULL,
-    frys_config_reactive = NULL,
-    chart_title_reactive = NULL,
-    kommentar_column_reactive = NULL) {
+  data_ready_reactive,
+  chart_config,
+  session,
+  ns,
+  y_axis_unit_reactive = NULL,
+  target_value_reactive = NULL,
+  target_text_reactive = NULL,
+  centerline_value_reactive = NULL,
+  skift_config_reactive = NULL,
+  frys_config_reactive = NULL,
+  chart_title_reactive = NULL,
+  kommentar_column_reactive = NULL
+) {
   shiny::reactive({
     data <- data_ready_reactive()
     config <- chart_config()

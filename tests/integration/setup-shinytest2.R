@@ -34,7 +34,7 @@ create_test_app_driver <- function(app_dir = ".", timeout = 10, load_timeout = 5
   app <- shinytest2::AppDriver$new(
     app_dir = app_dir,
     name = "spc-app-test",
-    timeout = timeout * 1000,  # Convert to milliseconds
+    timeout = timeout * 1000, # Convert to milliseconds
     load_timeout = load_timeout * 1000
   )
 
@@ -51,7 +51,9 @@ create_test_app_driver <- function(app_dir = ".", timeout = 10, load_timeout = 5
 #'
 #' @return TRUE if element found, FALSE otherwise
 wait_for_element <- function(app, selector, timeout = 5) {
-  if (is.null(app)) return(FALSE)
+  if (is.null(app)) {
+    return(FALSE)
+  }
 
   start_time <- Sys.time()
   while (Sys.time() - start_time < timeout) {
@@ -75,7 +77,9 @@ wait_for_element <- function(app, selector, timeout = 5) {
 #'
 #' @return TRUE if successful
 simulate_file_upload <- function(app, input_id, file_path) {
-  if (is.null(app)) return(FALSE)
+  if (is.null(app)) {
+    return(FALSE)
+  }
 
   if (!file.exists(file_path)) {
     warning(paste("Test file not found:", file_path))
@@ -97,7 +101,9 @@ simulate_file_upload <- function(app, input_id, file_path) {
 #'
 #' @return TRUE if errors found, FALSE otherwise
 check_for_errors <- function(app, selector = ".shiny-notification-error") {
-  if (is.null(app)) return(FALSE)
+  if (is.null(app)) {
+    return(FALSE)
+  }
 
   error_html <- app$get_html(selector)
   return(!is.null(error_html) && nchar(error_html) > 0)
@@ -112,7 +118,9 @@ check_for_errors <- function(app, selector = ".shiny-notification-error") {
 #'
 #' @return Output value or NULL
 get_app_state <- function(app, output_id) {
-  if (is.null(app)) return(NULL)
+  if (is.null(app)) {
+    return(NULL)
+  }
 
   value <- app$get_value(output = output_id)
   return(value)

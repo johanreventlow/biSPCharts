@@ -6,8 +6,10 @@ library(testthat)
 
 test_that("appears_numeric function works correctly with various inputs", {
   # TEST: Core appears_numeric functionality
-  expect_true(exists("appears_numeric", mode = "function"),
-              "appears_numeric function must be available")
+  expect_true(
+    exists("appears_numeric", mode = "function"),
+    "appears_numeric function must be available"
+  )
 
   # TEST: Pure numeric strings
   numeric_strings <- c("123", "45.67", "0.89", "1000")
@@ -30,9 +32,9 @@ test_that("appears_numeric function works correctly with various inputs", {
   expect_true(appears_numeric(mixed_mostly_numeric))
 
   # TEST: Edge cases
-  expect_false(appears_numeric(character(0)))  # Empty vector
-  expect_false(appears_numeric(c(NA, NA, NA)))  # All NA
-  expect_false(appears_numeric(123))  # Not character input
+  expect_false(appears_numeric(character(0))) # Empty vector
+  expect_false(appears_numeric(c(NA, NA, NA))) # All NA
+  expect_false(appears_numeric(123)) # Not character input
 
   # TEST: Danish number formats
   danish_numbers <- c("123,45", "1.234,56", "0,75")
@@ -41,8 +43,10 @@ test_that("appears_numeric function works correctly with various inputs", {
 
 test_that("appears_date function works correctly with various date formats", {
   # TEST: Core appears_date functionality
-  expect_true(exists("appears_date", mode = "function"),
-              "appears_date function must be available")
+  expect_true(
+    exists("appears_date", mode = "function"),
+    "appears_date function must be available"
+  )
 
   # TEST: ISO date format (YYYY-MM-DD)
   iso_dates <- c("2024-01-01", "2024-12-31", "2023-06-15")
@@ -69,9 +73,9 @@ test_that("appears_date function works correctly with various date formats", {
   expect_false(appears_date(number_strings))
 
   # TEST: Edge cases
-  expect_false(appears_date(character(0)))  # Empty vector
-  expect_false(appears_date(c(NA, NA, NA)))  # All NA
-  expect_false(appears_date(as.Date("2024-01-01")))  # Not character input
+  expect_false(appears_date(character(0))) # Empty vector
+  expect_false(appears_date(c(NA, NA, NA))) # All NA
+  expect_false(appears_date(as.Date("2024-01-01"))) # Not character input
 
   # TEST: Mixed date and non-date content
   mixed_dates <- c("2024-01-01", "abc", "2024-12-31", "def")
@@ -81,8 +85,10 @@ test_that("appears_date function works correctly with various date formats", {
 })
 
 test_that("find_numeric_columns works with data frames", {
-  skip_if_not(exists("find_numeric_columns", mode = "function"),
-              "find_numeric_columns not available - check test setup")
+  skip_if_not(
+    exists("find_numeric_columns", mode = "function"),
+    "find_numeric_columns not available - check test setup"
+  )
 
   # TEST: Mixed data frame
   mixed_df <- data.frame(
@@ -152,7 +158,7 @@ test_that("performance helpers work with Danish clinical data patterns", {
   hospital_percentages <- c("85,5%", "90,2%", "87,8%")
   # Should handle percentage signs in number detection
   result_percentages <- appears_numeric(hospital_percentages)
-  expect_type(result_percentages, "logical")  # May or may not detect as numeric
+  expect_type(result_percentages, "logical") # May or may not detect as numeric
 
   # Clinical measurement units
   clinical_measurements <- c("12,5 mg", "15,0 ml", "8,7 cm")
@@ -226,5 +232,6 @@ test_that("performance helpers memory efficiency", {
 
   # Large vector should not be significantly slower due to sampling
   expect_lt(duration_large / duration_small, 3,
-           info = paste("Large vector (", duration_large, ") should not be >3x slower than small (", duration_small, ")"))
+    info = paste("Large vector (", duration_large, ") should not be >3x slower than small (", duration_small, ")")
+  )
 })

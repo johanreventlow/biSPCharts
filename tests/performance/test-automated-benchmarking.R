@@ -137,7 +137,7 @@ test_that("Phase 3 debounced startup optimization shows improvement", {
   track_event("test_mode_startup_phase_changed", "phase: data_ready")
 
   # Simulate debounced auto-detection
-  Sys.sleep(0.01)  # Small delay to simulate debounce
+  Sys.sleep(0.01) # Small delay to simulate debounce
   track_event("test_mode_debounced_autodetect", "debounced")
 
   track_event("auto_detection_started", "phase3_test")

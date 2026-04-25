@@ -10,9 +10,9 @@ test_that("basic ggplot SPC chart generation works", {
   qic_data <- data.frame(
     x = 1:10,
     y = c(0.92, 0.93, 0.95, 0.92, 0.91, 0.92, 0.90, 0.86, 0.89, 0.91),
-    cl = rep(0.90, 10),  # Center line
+    cl = rep(0.90, 10), # Center line
     ucl = rep(0.96, 10), # Upper control limit
-    lcl = rep(0.84, 10)  # Lower control limit
+    lcl = rep(0.84, 10) # Lower control limit
   )
 
   # TEST: Basic SPC plot construction
@@ -112,7 +112,7 @@ test_that("phase separation lines work correctly", {
     x = 1:12,
     y = c(0.88, 0.91, 0.93, 0.89, 0.87, 0.90, 0.92, 0.88, 0.85, 0.87, 0.89, 0.86),
     cl = rep(0.89, 12),
-    part = c(rep(1, 6), rep(2, 6))  # Phase change at observation 7
+    part = c(rep(1, 6), rep(2, 6)) # Phase change at observation 7
   )
 
   # Find phase change point
@@ -366,11 +366,14 @@ test_that("error handling in plot generation works", {
   # TEST: Empty data handling - ggplot doesn't error on creation, only on rendering
   empty_data <- data.frame()
 
-  empty_plot <- tryCatch({
-    ggplot2::ggplot(empty_data, ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_line() +
-      ggplot2::geom_point()
-  }, error = function(e) e)
+  empty_plot <- tryCatch(
+    {
+      ggplot2::ggplot(empty_data, ggplot2::aes(x = x, y = y)) +
+        ggplot2::geom_line() +
+        ggplot2::geom_point()
+    },
+    error = function(e) e
+  )
 
   # ggplot creation doesn't error, but rendering would
   expect_s3_class(empty_plot, "ggplot")
@@ -378,18 +381,21 @@ test_that("error handling in plot generation works", {
   # TEST: Missing column handling - also doesn't error on creation
   incomplete_data <- data.frame(x = 1:5)
 
-  incomplete_plot <- tryCatch({
-    ggplot2::ggplot(incomplete_data, ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_line() +
-      ggplot2::geom_point()
-  }, error = function(e) e)
+  incomplete_plot <- tryCatch(
+    {
+      ggplot2::ggplot(incomplete_data, ggplot2::aes(x = x, y = y)) +
+        ggplot2::geom_line() +
+        ggplot2::geom_point()
+    },
+    error = function(e) e
+  )
 
   # ggplot creation doesn't error for missing columns
   expect_s3_class(incomplete_plot, "ggplot")
 
   # TEST: Invalid data frame creation (this should error)
   expect_error({
-    data.frame(x = 1:5, y = c(0.88, 0.91, 0.89))  # Mismatched lengths
+    data.frame(x = 1:5, y = c(0.88, 0.91, 0.89)) # Mismatched lengths
   })
 
   # TEST: Valid data with potential rendering issues
@@ -419,11 +425,11 @@ test_that("plot accessibility and usability features work", {
 
   # TEST: High contrast colors and clear styling
   accessible_plot <- ggplot2::ggplot(qic_data, ggplot2::aes(x = x, y = y)) +
-    ggplot2::geom_line(color = "#000000", linewidth = 1.5) +  # Black for high contrast
-    ggplot2::geom_point(size = 3, color = "#000000", shape = 16) +  # Larger points
-    ggplot2::geom_line(ggplot2::aes(y = cl), color = "#0066CC", linetype = "solid", linewidth = 2) +  # Blue CL
-    ggplot2::geom_line(ggplot2::aes(y = ucl), color = "#CC0000", linetype = "dashed", linewidth = 1.5) +  # Red UCL
-    ggplot2::geom_line(ggplot2::aes(y = lcl), color = "#CC0000", linetype = "dashed", linewidth = 1.5) +  # Red LCL
+    ggplot2::geom_line(color = "#000000", linewidth = 1.5) + # Black for high contrast
+    ggplot2::geom_point(size = 3, color = "#000000", shape = 16) + # Larger points
+    ggplot2::geom_line(ggplot2::aes(y = cl), color = "#0066CC", linetype = "solid", linewidth = 2) + # Blue CL
+    ggplot2::geom_line(ggplot2::aes(y = ucl), color = "#CC0000", linetype = "dashed", linewidth = 1.5) + # Red UCL
+    ggplot2::geom_line(ggplot2::aes(y = lcl), color = "#CC0000", linetype = "dashed", linewidth = 1.5) + # Red LCL
     ggplot2::labs(
       title = "Accessible SPC Chart",
       subtitle = "High contrast colors and clear styling",
@@ -493,8 +499,8 @@ test_that("plot export and sizing work correctly", {
     ggplot2::labs(title = "Export-Ready SPC Chart", x = "Observation", y = "Proportion") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      plot.title = ggplot2::element_text(hjust = 0.5),  # Center title
-      plot.margin = ggplot2::margin(t = 20, r = 20, b = 20, l = 20, unit = "pt")  # Margins for export
+      plot.title = ggplot2::element_text(hjust = 0.5), # Center title
+      plot.margin = ggplot2::margin(t = 20, r = 20, b = 20, l = 20, unit = "pt") # Margins for export
     )
 
   expect_s3_class(export_plot, "ggplot")
@@ -504,7 +510,7 @@ test_that("plot export and sizing work correctly", {
   # Note: Actual sizing would be tested in rendering, but we can verify structure
   wide_plot <- export_plot +
     ggplot2::theme(
-      aspect.ratio = 1/2,  # Wide aspect ratio
+      aspect.ratio = 1 / 2, # Wide aspect ratio
       panel.background = ggplot2::element_rect(fill = "white", color = NA),
       plot.background = ggplot2::element_rect(fill = "white", color = NA)
     )
@@ -513,7 +519,7 @@ test_that("plot export and sizing work correctly", {
 
   square_plot <- export_plot +
     ggplot2::theme(
-      aspect.ratio = 1,  # Square aspect ratio
+      aspect.ratio = 1, # Square aspect ratio
       panel.background = ggplot2::element_rect(fill = "white", color = NA),
       plot.background = ggplot2::element_rect(fill = "white", color = NA)
     )

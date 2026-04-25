@@ -14,8 +14,10 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
   use_centralized_state <- !is.null(app_state)
   # Log auto-restore feature flag ved session start (diagnostik)
   log_info(
-    sprintf("auto_restore_data observer registered (auto_restore_enabled=%s)",
-            isTRUE(get_auto_restore_enabled())),
+    sprintf(
+      "auto_restore_data observer registered (auto_restore_enabled=%s)",
+      isTRUE(get_auto_restore_enabled())
+    ),
     .context = "SESSION_RESTORE"
   )
 
@@ -54,8 +56,10 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
       saved_version <- peek$version %||% "unknown"
       if (!identical(saved_version, LOCAL_STORAGE_SCHEMA_VERSION)) {
         log_info(
-          paste("session_peek: version mismatch", saved_version, "\u2260", LOCAL_STORAGE_SCHEMA_VERSION,
-                "\u2014 ryder localStorage lydl\u00f8st"),
+          paste(
+            "session_peek: version mismatch", saved_version, "\u2260", LOCAL_STORAGE_SCHEMA_VERSION,
+            "\u2014 ryder localStorage lydl\u00f8st"
+          ),
           .context = "SESSION_RESTORE"
         )
         clearDataLocally(session)
@@ -76,11 +80,11 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
       )
       app_state$session$peek_result <- list(
         has_payload = TRUE,
-        timestamp     = peek$timestamp,
-        nrows         = peek$nrows,
-        ncols         = peek$ncols,
+        timestamp = peek$timestamp,
+        nrows = peek$nrows,
+        ncols = peek$ncols,
         indicator_title = peek$indicator_title %||% "",
-        active_tab    = peek$active_tab
+        active_tab = peek$active_tab
       )
     }
   )
@@ -160,16 +164,16 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             max_cells <- 1e7 # 10 million total cells max
 
             if (is.null(saved_data$values) || is.null(saved_data$nrows) ||
-                  is.null(saved_data$ncols)) {
+              is.null(saved_data$ncols)) {
               stop("Invalid saved data format - missing required fields")
             }
 
             # Validate dimensions before reconstruction
             if (!is.numeric(saved_data$nrows) || !is.numeric(saved_data$ncols) ||
-                  saved_data$nrows < 0 || saved_data$ncols < 0 ||
-                  saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
-                  (saved_data$nrows * saved_data$ncols) > max_cells ||
-                  length(saved_data$values) != saved_data$ncols) {
+              saved_data$nrows < 0 || saved_data$ncols < 0 ||
+              saved_data$nrows > max_rows || saved_data$ncols > max_cols ||
+              (saved_data$nrows * saved_data$ncols) > max_cells ||
+              length(saved_data$values) != saved_data$ncols) {
               stop("Invalid data dimensions or structure - rejecting restoration payload")
             }
 
@@ -214,8 +218,10 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             # skal være populeret først.
             if (!is.null(saved_state$metadata)) {
               saved_meta <- saved_state$metadata
-              for (field in c("x_column", "y_column", "n_column",
-                              "skift_column", "frys_column", "kommentar_column")) {
+              for (field in c(
+                "x_column", "y_column", "n_column",
+                "skift_column", "frys_column", "kommentar_column"
+              )) {
                 val <- saved_meta[[field]]
                 if (!is.null(val) && nzchar(val)) {
                   app_state$columns$mappings[[field]] <- val
@@ -258,7 +264,11 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
               is.character(saved_tab_raw) &&
                 length(saved_tab_raw) == 1 &&
                 saved_tab_raw %in% valid_restore_tabs
-            ) saved_tab_raw else "analyser"
+            ) {
+              saved_tab_raw
+            } else {
+              "analyser"
+            }
 
             # Unlock wizard-trin 2 og navigér (gør det synligt straks)
             session$sendCustomMessage("wizard-complete-step", 1)
@@ -350,8 +360,10 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       vapply(metadata, function(v) !is.null(v) && !identical(v, ""), logical(1))
     ]
     log_info(
-      sprintf("restore_metadata called with %d non-empty fields: %s",
-              length(present_fields), paste(present_fields, collapse = ", ")),
+      sprintf(
+        "restore_metadata called with %d non-empty fields: %s",
+        length(present_fields), paste(present_fields, collapse = ", ")
+      ),
       .context = "SESSION_RESTORE"
     )
 
@@ -412,7 +424,7 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
     valid_restore_tabs <- c("analyser", "eksporter", "upload")
     active_tab <- metadata$active_tab
     if (!is.null(active_tab) && nzchar(active_tab) &&
-          active_tab %in% valid_restore_tabs) {
+      active_tab %in% valid_restore_tabs) {
       bslib::nav_select("main_navbar", selected = active_tab, session = session)
     } else {
       bslib::nav_select("main_navbar", selected = "analyser", session = session)

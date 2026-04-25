@@ -95,15 +95,15 @@ test_that("PNG export integration uses correct dimension conversion", {
   width_inches <- preset$width / preset$dpi
   height_inches <- preset$height / preset$dpi
 
-  expect_equal(width_inches, 12.5)  # 1200/96
-  expect_equal(height_inches, 9.375)  # 900/96
+  expect_equal(width_inches, 12.5) # 1200/96
+  expect_equal(height_inches, 9.375) # 900/96
 
   # Convert to mm for BFHcharts
   width_mm <- width_inches * 25.4
   height_mm <- height_inches * 25.4
 
-  expect_equal(width_mm, 317.5)  # 12.5 * 25.4
-  expect_equal(height_mm, 238.125)  # 9.375 * 25.4
+  expect_equal(width_mm, 317.5) # 12.5 * 25.4
+  expect_equal(height_mm, 238.125) # 9.375 * 25.4
 })
 
 test_that("Small preset dimension conversion is correct", {
@@ -170,8 +170,8 @@ test_that("Custom dimensions in inches convert correctly", {
   width_mm <- width_inches * 25.4
   height_mm <- height_inches * 25.4
 
-  expect_equal(width_mm, 203.2)  # 8 * 25.4
-  expect_equal(height_mm, 152.4)  # 6 * 25.4
+  expect_equal(width_mm, 203.2) # 8 * 25.4
+  expect_equal(height_mm, 152.4) # 6 * 25.4
 })
 
 # ==============================================================================

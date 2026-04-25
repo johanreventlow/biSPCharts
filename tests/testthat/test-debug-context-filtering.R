@@ -43,9 +43,9 @@ test_that("Context filtering is case-sensitive", {
   expect_true(.should_log_context("data"))
 
   # Case variations don't match
-  expect_false(.should_log_context("state"))  # lowercase
-  expect_false(.should_log_context("Data"))   # mixed case
-  expect_false(.should_log_context("DATA"))   # uppercase
+  expect_false(.should_log_context("state")) # lowercase
+  expect_false(.should_log_context("Data")) # mixed case
+  expect_false(.should_log_context("DATA")) # uppercase
 
   # Cleanup
   options(spc.debug.context = NULL)
@@ -161,7 +161,7 @@ test_that("log_info respects context filtering", {
   # Both log_info and other functions should respect filtering
   # (Just verify they don't error when context filtering is set)
   expect_no_error(log_info("test", .context = "data"))
-  expect_no_error(log_info("test", .context = "other"))  # Should skip silently
+  expect_no_error(log_info("test", .context = "other")) # Should skip silently
 
   # Cleanup
   options(spc.debug.context = NULL)
@@ -171,7 +171,7 @@ test_that("log_warn respects context filtering", {
   set_debug_context(c("performance"))
 
   expect_no_error(log_warn("test", .context = "performance"))
-  expect_no_error(log_warn("test", .context = "other"))  # Should skip silently
+  expect_no_error(log_warn("test", .context = "other")) # Should skip silently
 
   # Cleanup
   options(spc.debug.context = NULL)
@@ -181,7 +181,7 @@ test_that("log_error respects context filtering", {
   set_debug_context(c("debug"))
 
   expect_no_error(log_error("test", .context = "debug"))
-  expect_no_error(log_error("test", .context = "other"))  # Should skip silently
+  expect_no_error(log_error("test", .context = "other")) # Should skip silently
 
   # Cleanup
   options(spc.debug.context = NULL)

@@ -13,7 +13,6 @@
 #' @export
 mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-
     # Dynamisk landing body — venter på peek_result fra JS/R peek-observer.
     # NULL = endnu ikke afklaret (viser ingenting for at undgå flash),
     # has_payload = FALSE → default-landing,
@@ -82,6 +81,5 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
         app_state$session$peek_result <- list(has_payload = FALSE)
       }
     })
-
   })
 }

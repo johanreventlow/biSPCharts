@@ -39,9 +39,9 @@ test_that("create_qic_cache stats tracker hits og misses", {
   cache <- create_qic_cache()
   cache$set("key1", "value1", timeout = 3600)
 
-  cache$get("key1")  # Hit
-  cache$get("key1")  # Hit
-  cache$get("missing")  # Miss
+  cache$get("key1") # Hit
+  cache$get("key1") # Hit
+  cache$get("missing") # Miss
 
   stats <- cache$stats()
   expect_equal(stats$hits, 2)

@@ -27,9 +27,9 @@ register_ai_button_state <- function(session, input, output, app_state) {
   # Review fund #4: Cache BFHllm availability per session.
   # is_bfhllm_available() kalder BFHllm::bfhllm_chat_available() som
   # har log-sideeffekter ("BFHllm setup validated successfully") og evt.
-  # netværksarbejde. API-nøglen ændrer sig ikke under session-levetid,
-  # så vi cacher resultatet én gang per session. Det fjerner støj-loggen
-  # uden at ændre funktionaliteten.
+  # netvaerksarbejde. API-noeglen aendrer sig ikke under session-levetid,
+  # saa vi cacher resultatet en gang per session. Det fjerner stoej-loggen
+  # uden at aendre funktionaliteten.
   bfhllm_available_cached <- NULL
   get_bfhllm_available <- function() {
     if (is.null(bfhllm_available_cached)) {
@@ -59,12 +59,12 @@ register_ai_button_state <- function(session, input, output, app_state) {
     # Update tooltip based on state
     tooltip_js <- if (!has_spc_data) {
       sprintf(
-        "$('#%s').attr('title', 'Generér først en SPC-graf for at bruge AI-forslag');",
+        "$('#%s').attr('title', 'Gener\u00e9r f\u00f8rst en SPC-graf for at bruge AI-forslag');",
         session$ns("ai_generate_suggestion")
       )
     } else if (!api_ready) {
       sprintf(
-        "$('#%s').attr('title', 'AI-funktionalitet kræver Google API-nøgle. Kontakt administrator.');",
+        "$('#%s').attr('title', 'AI-funktionalitet kr\u00e6ver Google API-n\u00f8gle. Kontakt administrator.');",
         session$ns("ai_generate_suggestion")
       )
     } else {
@@ -131,7 +131,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
         message = "AI suggestion requested by user"
       )
 
-      # Generer SPC result via fælles helper (deler cache med PDF context)
+      # Generer SPC result via faelles helper (deler cache med PDF context)
       spc_result <- build_export_plot(
         app_state = app_state,
         title_input = input$export_title %||% "",
@@ -147,7 +147,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
         )
 
         shiny::showNotification(
-          "Kunne ikke analysere SPC-data. Prøv igen.",
+          "Kunne ikke analysere SPC-data. Pr\u00f8v igen.",
           type = "error",
           duration = 5
         )
@@ -196,7 +196,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
       if (!is.null(suggestion)) {
         shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
         shiny::showNotification(
-          "✓ Analyse genereret. Du kan nu redigere teksten efter behov.",
+          "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
           type = "message",
           duration = 3
         )
@@ -208,7 +208,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
       } else {
         # Failure: Show error
         shiny::showNotification(
-          "Kunne ikke generere AI-analyse. Tjek internetforbindelse og prøv igen, eller skriv analysen manuelt.",
+          "Kunne ikke generere AI-analyse. Tjek internetforbindelse og pr\u00f8v igen, eller skriv analysen manuelt.",
           type = "error",
           duration = 8
         )

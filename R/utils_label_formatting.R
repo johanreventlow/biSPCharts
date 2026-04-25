@@ -1,17 +1,17 @@
 # utils_label_formatting.R
-# Delt formatering af y-akse værdier for konsistens mellem labels og akser
+# Delt formatering af y-akse vaerdier for konsistens mellem labels og akser
 #
-# Sikrer at labels formateres PRÆCIS som y-aksen for alle enhedstyper
+# Sikrer at labels formateres PRAeCIS som y-aksen for alle enhedstyper
 
-#' Formatér y-akse værdi til display string
+#' Formater y-akse vaerdi til display string
 #'
-#' Formaterer numeriske værdier til display strings der matcher y-akse formatting.
-#' Understøtter flere enhedstyper: count, percent, rate, time.
+#' Formaterer numeriske vaerdier til display strings der matcher y-akse formatting.
+#' Understoetter flere enhedstyper: count, percent, rate, time.
 #'
-#' @param val numeric værdi at formatere
+#' @param val numeric vaerdi at formatere
 #' @param y_unit character enhedstype ("count", "percent", "rate", "time", eller andet)
 #' @param y_range numeric(2) legacy-parameter, ikke laengere brugt. Bevaret
-#'   for bagudkompatibilitet — tidligere brugt til kontekst-baseret enhedsvalg
+#'   for bagudkompatibilitet -- tidligere brugt til kontekst-baseret enhedsvalg
 #'   for "time"-enheden.
 #' @return character formateret string
 #'
@@ -19,7 +19,7 @@
 #' Formatering per enhedstype:
 #' - **count**: K/M/mia notation for store tal, dansk decimal/tusind separator
 #' - **percent**: scales::label_percent() formatering
-#' - **rate**: dansk decimal notation, decimaler kun hvis nødvendigt
+#' - **rate**: dansk decimal notation, decimaler kun hvis noedvendigt
 #' - **time**: komposit-format via format_time_composite() (0m, 30m, 1t, 1t 30m, 1d, 2d 13t)
 #' - **default**: dansk decimal notation
 #'
@@ -43,7 +43,7 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
   }
 
   if (!is.numeric(val)) {
-    warning("format_y_value: val skal være numerisk, modtog: ", class(val))
+    warning("format_y_value: val skal v\u00e6re numerisk, modtog: ", class(val))
     return(as.character(val))
   }
 
@@ -88,9 +88,9 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
   }
 
   # Rate formatting - kun decimaler hvis tilstede
-  # Bemærk: formatC med format="f" giver round-half-up (123.45 → 123,5) som
-  # matcher klinisk læsevaner. R's base round() bruger banker's rounding
-  # (123.45 → 123.4) som opfattes forvirrende for slut-brugere.
+  # Bemaerk: formatC med format="f" giver round-half-up (123.45 -> 123,5) som
+  # matcher klinisk laesevaner. R's base round() bruger banker's rounding
+  # (123.45 -> 123.4) som opfattes forvirrende for slut-brugere.
   if (y_unit == "rate") {
     if (val == round(val)) {
       return(format(round(val), decimal.mark = ","))
@@ -100,9 +100,9 @@ format_y_value <- function(val, y_unit, y_range = NULL) {
   }
 
   # Time formatting (input: kanoniske minutter) - komposit-format
-  # Dækker legacy "time" og nye time_minutes/time_hours/time_days.
+  # Daekker legacy "time" og nye time_minutes/time_hours/time_days.
   # Bruger format_time_composite() for konsistens med format_y_axis_time().
-  # y_range-parameteren er ikke laengere relevant — komposit-format haandterer
+  # y_range-parameteren er ikke laengere relevant -- komposit-format haandterer
   # minutter/timer/dage automatisk (0m, 30m, 1t, 1t 30m, 1d, 2d 13t).
   if (is_time_unit(y_unit)) {
     return(format_time_composite(val))

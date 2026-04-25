@@ -4,7 +4,7 @@
 #' App Guide Module UI
 #'
 #' Detaljeret trin-for-trin vejledning i brug af biSPCharts-appen.
-#' Indholdet er statisk og kr\u00e6ver ingen server-logik.
+#' Indholdet er statisk og kraever ingen server-logik.
 #'
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element

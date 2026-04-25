@@ -1,6 +1,6 @@
 # R/utils_y_axis_scaling.R
 # Robust Y-axis scaling system with separated concerns
-# Implements the 3-layer architecture: Parsing → Unit Clarification → Conversion
+# Implements the 3-layer architecture: Parsing -> Unit Clarification -> Conversion
 
 # CORE CONSTANTS ==============================================================
 
@@ -17,6 +17,7 @@ INTERNAL_UNITS_BY_PLOTTYPE <- list(
 
 #' Chart types that use proportion internal unit [0,1]
 #' @keywords internal
+#' @noRd
 PROPORTION_CHART_TYPES <- c("p", "pp", "run")
 
 #' Chart types that use absolute internal unit (no scaling)
@@ -30,9 +31,9 @@ ABSOLUTE_CHART_TYPES <- c("c", "u", "up", "i", "mr", "g")
 #' Pure parsing function that extracts numeric value and symbol without scaling.
 #' Idempotent - calling multiple times returns same result.
 #'
-#' @param x Character string to parse (e.g., "80%", "8‰", "0,5")
+#' @param x Character string to parse (e.g., "80%", "8%%", "0,5")
 #' @return List with elements:
-#'   - value: Numeric value as written (80% → 80, not 0.8)
+#'   - value: Numeric value as written (80% -> 80, not 0.8)
 #'   - symbol: One of "percent", "permille", "none"
 #' @keywords internal
 parse_number_da <- function(x) {
@@ -57,7 +58,7 @@ parse_number_da <- function(x) {
 
   # Detect symbols
   has_percent <- grepl("%", x)
-  has_permille <- grepl("‰", x)
+  has_permille <- grepl("\u2030", x)
 
   # Invalid: both symbols present
   if (has_percent && has_permille) {
@@ -68,7 +69,7 @@ parse_number_da <- function(x) {
   symbol <- if (has_percent) "percent" else if (has_permille) "permille" else "none"
 
   # Clean number: remove symbols, spaces, handle comma decimal
-  x_clean <- gsub("[%‰\\s]", "", x)
+  x_clean <- gsub("[%\u2030\\s]", "", x)
   x_normalized <- gsub(",", ".", x_clean)
 
   # Parse numeric value
@@ -82,11 +83,12 @@ parse_number_da <- function(x) {
 
 # CHART-TYPE AWARE UNIT SELECTION ============================================
 
-#' Determine internal unit based on chart type (eliminates 100× mismatch)
+#' Determine internal unit based on chart type (eliminates 100x mismatch)
 #'
 #' @param chart_type Character. QIC chart type (e.g., "p", "run", "c", "u")
 #' @return Character. Internal unit: "proportion" for [0,1] charts, "absolute" for count charts
 #' @keywords internal
+#' @noRd
 determine_internal_unit_by_chart_type <- function(chart_type) {
   if (is.null(chart_type) || chart_type == "") {
     log_debug("No chart type specified, defaulting to proportion internal unit", .context = "Y_AXIS_SCALING")
@@ -217,9 +219,9 @@ detect_unit_from_data <- function(y_data) {
     }
   }
 
-  # Percent detection er fjernet fra data-heuristik. Tal i 0-100 kan være
-  # minutter, scores, counts osv. Chart type (p/pp) + nævner er den korrekte
-  # indikator for procent — styres via chart_type_to_ui_type().
+  # Percent detection er fjernet fra data-heuristik. Tal i 0-100 kan vaere
+  # minutter, scores, counts osv. Chart type (p/pp) + naevner er den korrekte
+  # indikator for procent -- styres via chart_type_to_ui_type().
 
   # Rule 2: Default to absolute
   return("absolute")
@@ -227,12 +229,12 @@ detect_unit_from_data <- function(y_data) {
 
 # LAYER 3A: HARMONIZATION TO TARGET UNIT ====================================
 
-#' Convert parsed input to target unit using deterministic matrix (100×-mismatch safe)
+#' Convert parsed input to target unit using deterministic matrix (100x-mismatch safe)
 #'
-#' Enhanced conversion matrix that prevents 100×-mismatch by being explicit
+#' Enhanced conversion matrix that prevents 100x-mismatch by being explicit
 #' about when scaling occurs and when it doesn't.
 #'
-#' KEY RULE: Only symbols (%, ‰) trigger scaling. No symbols = no implicit scaling.
+#' KEY RULE: Only symbols (%, %%) trigger scaling. No symbols = no implicit scaling.
 #'
 #' @param parsed List from parse_number_da() with value and symbol
 #' @param target_unit Character. Target unit to convert to
@@ -249,51 +251,51 @@ coerce_to_target_unit <- function(parsed, target_unit) {
 
   log_debug("Converting:", value, "with symbol:", symbol, "to target unit:", target_unit, .context = "Y_AXIS_SCALING")
 
-  # Enhanced conversion matrix: from symbol × to target_unit
+  # Enhanced conversion matrix: from symbol x to target_unit
   if (target_unit == "proportion") {
     if (symbol == "percent") {
-      result <- value / 100 # 80% → 0.8
-      log_debug("Percent to proportion:", value, "% →", result, .context = "Y_AXIS_SCALING")
+      result <- value / 100 # 80% -> 0.8
+      log_debug("Percent to proportion:", value, "% \u2192", result, .context = "Y_AXIS_SCALING")
       return(result)
     } else if (symbol == "permille") {
-      result <- value / 1000 # 8‰ → 0.008
-      log_debug("Permille to proportion:", value, "‰ →", result, .context = "Y_AXIS_SCALING")
+      result <- value / 1000 # 8%% -> 0.008
+      log_debug("Permille to proportion:", value, "\u2030 \u2192", result, .context = "Y_AXIS_SCALING")
       return(result)
     } else if (symbol == "none") {
       # CRITICAL: No implicit scaling - treat as already in target unit
       log_debug("No symbol to proportion: treating", value, "as already in proportion scale", .context = "Y_AXIS_SCALING")
-      return(value) # 0.8 → 0.8 (NOT 0.008)
+      return(value) # 0.8 -> 0.8 (NOT 0.008)
     }
   } else if (target_unit == "percent") {
     if (symbol == "percent") {
       log_debug("Percent to percent (identity):", value, .context = "Y_AXIS_SCALING")
-      return(value) # 80% → 80
+      return(value) # 80% -> 80
     } else if (symbol == "permille") {
-      result <- value / 10 # 80‰ → 8%
-      log_debug("Permille to percent:", value, "‰ →", result, "%", .context = "Y_AXIS_SCALING")
+      result <- value / 10 # 80%% -> 8%
+      log_debug("Permille to percent:", value, "\u2030 \u2192", result, "%", .context = "Y_AXIS_SCALING")
       return(result)
     } else if (symbol == "none") {
       # CRITICAL: No implicit scaling - treat as already in target unit
       log_debug("No symbol to percent: treating", value, "as already in percent scale", .context = "Y_AXIS_SCALING")
-      return(value) # 80 → 80 (NOT 0.8)
+      return(value) # 80 -> 80 (NOT 0.8)
     }
   } else if (target_unit == "permille") {
     if (symbol == "percent") {
-      result <- value * 10 # 8% → 80‰
-      log_debug("Percent to permille:", value, "% →", result, "‰", .context = "Y_AXIS_SCALING")
+      result <- value * 10 # 8% -> 80%%
+      log_debug("Percent to permille:", value, "% \u2192", result, "\u2030", .context = "Y_AXIS_SCALING")
       return(result)
     } else if (symbol == "permille") {
       log_debug("Permille to permille (identity):", value, .context = "Y_AXIS_SCALING")
-      return(value) # 80‰ → 80
+      return(value) # 80%% -> 80
     } else if (symbol == "none") {
       # CRITICAL: No implicit scaling - treat as already in target unit
       log_debug("No symbol to permille: treating", value, "as already in permille scale", .context = "Y_AXIS_SCALING")
-      return(value) # 80 → 80 (NOT 0.08)
+      return(value) # 80 -> 80 (NOT 0.08)
     }
   } else if (target_unit == "absolute") {
     # For absolute units, remove symbols but keep numeric value
     log_debug("Converting to absolute: removing symbols, keeping value", value, .context = "Y_AXIS_SCALING")
-    return(value) # 80% → 80, 80‰ → 80, 80 → 80
+    return(value) # 80% -> 80, 80%% -> 80, 80 -> 80
   } else {
     # Unknown target unit - this should be caught earlier
     log_error(
@@ -306,9 +308,9 @@ coerce_to_target_unit <- function(parsed, target_unit) {
 
 # LAYER 3B: CONVERSION TO INTERNAL CANONICAL ================================
 
-#' Convert from target unit to internal canonical unit (100×-mismatch safe)
+#' Convert from target unit to internal canonical unit (100x-mismatch safe)
 #'
-#' Enhanced internal conversion that prevents 100×-mismatch with better logging
+#' Enhanced internal conversion that prevents 100x-mismatch with better logging
 #' and more explicit error handling for incompatible conversions.
 #'
 #' @param value_in_target_unit Numeric value in target unit
@@ -333,12 +335,12 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
   # Deterministic conversion rules
   if (internal_unit == "proportion") {
     if (target_unit == "percent") {
-      result <- value_in_target_unit / 100 # 80 → 0.8
-      log_debug("Target percent to internal proportion:", value_in_target_unit, "→", result, .context = "Y_AXIS_SCALING")
+      result <- value_in_target_unit / 100 # 80 -> 0.8
+      log_debug("Target percent to internal proportion:", value_in_target_unit, "\u2192", result, .context = "Y_AXIS_SCALING")
       return(result)
     } else if (target_unit == "permille") {
-      result <- value_in_target_unit / 1000 # 80 → 0.08
-      log_debug("Target permille to internal proportion:", value_in_target_unit, "→", result, .context = "Y_AXIS_SCALING")
+      result <- value_in_target_unit / 1000 # 80 -> 0.08
+      log_debug("Target permille to internal proportion:", value_in_target_unit, "\u2192", result, .context = "Y_AXIS_SCALING")
       return(result)
     } else if (target_unit == "absolute") {
       # This is problematic - absolute values can't be converted to proportions without context
@@ -374,13 +376,13 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
 
 # MAIN API FUNCTION ===========================================================
 
-#' Normalize axis value using complete 3-layer architecture (100×-mismatch safe)
+#' Normalize axis value using complete 3-layer architecture (100x-mismatch safe)
 #'
 #' Main entry point that combines parsing, unit resolution, and conversion.
 #' This replaces parse_danish_target() with cleaner separation of concerns.
-#' Now includes chart-type awareness to prevent 100×-mismatch.
+#' Now includes chart-type awareness to prevent 100x-mismatch.
 #'
-#' @param x Character string input (e.g., "80%", "0,8", "25‰")
+#' @param x Character string input (e.g., "80%", "0,8", "25%%")
 #' @param user_unit Character. Explicit user unit choice (priority 1)
 #' @param col_unit Character. Column metadata unit (priority 2)
 #' @param y_sample Numeric. Sample of Y data for heuristics (priority 3)
@@ -390,7 +392,7 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
 #' @keywords internal
 normalize_axis_value <- function(x, user_unit = NULL, col_unit = NULL,
                                  y_sample = NULL, internal_unit = "proportion", chart_type = NULL) {
-  # CRITICAL: If chart_type is provided, determine internal_unit from it (prevents 100×-mismatch)
+  # CRITICAL: If chart_type is provided, determine internal_unit from it (prevents 100x-mismatch)
   if (!is.null(chart_type)) {
     internal_unit <- determine_internal_unit_by_chart_type(chart_type)
     log_debug("Chart type", chart_type, "determined internal unit:", internal_unit, .context = "Y_AXIS_SCALING")
@@ -468,7 +470,7 @@ validate_axis_value <- function(value, internal_unit) {
 #' @return Numeric value (legacy format)
 #' @keywords internal
 parse_danish_target <- function(target_input, y_data = NULL, y_axis_unit = NULL) {
-  # NULL-guard: undgå fejl i normalize_axis_value if-check
+  # NULL-guard: undgaa fejl i normalize_axis_value if-check
   if (is.null(target_input)) {
     return(NULL)
   }

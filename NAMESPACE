@@ -3,7 +3,6 @@
 S3method(print,spc_axes)
 S3method(print,spc_prepared)
 S3method(print,spc_request)
-export("%||%")
 export(ANALYTICS_CONFIG)
 export(aggregate_and_pin_logs)
 export(app_server)

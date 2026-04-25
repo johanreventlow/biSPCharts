@@ -3,8 +3,8 @@
 
 #' Log levels liste til SPC App logging system
 #'
-#' Definerer numeriske værdier for forskellige log-niveauer til brug i det
-#' konfigurerede logging-system. **Lavere tal betyder højere prioritet.**
+#' Definerer numeriske vaerdier for forskellige log-niveauer til brug i det
+#' konfigurerede logging-system. **Lavere tal betyder hoejere prioritet.**
 #'
 #' @details
 #' Log levels:
@@ -22,22 +22,22 @@ LOG_LEVELS <- list(
   ERROR = 4L
 )
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .level_name <- function(x) {
   inv <- setNames(names(LOG_LEVELS), unlist(LOG_LEVELS, use.names = FALSE))
   inv[as.character(x)] %||% "INFO"
 }
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || identical(a, "")) b else a
 
 #' Hent aktuel log level fra environment variabel
 #'
-#' Læser `SPC_LOG_LEVEL` fra environment og returnerer tilsvarende numeriske værdi.
-#' Understøtter både navne (f.eks. `"DEBUG"`) og tal (f.eks. `"1"`).
-#' Fald tilbage til `INFO` ved ugyldig værdi.
+#' Laeser `SPC_LOG_LEVEL` fra environment og returnerer tilsvarende numeriske vaerdi.
+#' Understoetter baade navne (f.eks. `"DEBUG"`) og tal (f.eks. `"1"`).
+#' Fald tilbage til `INFO` ved ugyldig vaerdi.
 #'
-#' @return Heltalsværdi svarende til log-niveau (se `LOG_LEVELS`)
+#' @return Heltalsvaerdi svarende til log-niveau (se `LOG_LEVELS`)
 #' @examples
 #' \dontrun{
 #' get_log_level()
@@ -116,7 +116,7 @@ get_effective_log_level <- function() {
         NULL
       }
     },
-    # Silent-fail korrekt: golem-config er ikke tilgængelig under bootstrap/tests
+    # Silent-fail korrekt: golem-config er ikke tilgaengelig under bootstrap/tests
     error = function(e) NULL # nolint: swallowed_error_linter
   )
 
@@ -128,7 +128,7 @@ get_effective_log_level <- function() {
   "INFO"
 }
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .should_log <- function(level_chr) {
   lvl <- LOG_LEVELS[[toupper(level_chr)]]
   if (is.null(lvl)) {
@@ -141,8 +141,8 @@ get_effective_log_level <- function() {
   lvl >= cur
 }
 
-# intern hjælper (ikke-eksporteret)
-# Checker om et givet context skal logges baseret på spc.debug.context option
+# intern hjaelper (ikke-eksporteret)
+# Checker om et givet context skal logges baseret paa spc.debug.context option
 .should_log_context <- function(context) {
   # Hent den filtrerede context liste fra option
   filtered_contexts <- getOption("spc.debug.context", default = NULL)
@@ -171,7 +171,7 @@ get_effective_log_level <- function() {
   context %in% filtered_contexts
 }
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .safe_format <- function(x) {
   # Direct tryCatch to avoid circular dependency with safe_operation
   tryCatch(
@@ -186,7 +186,7 @@ get_effective_log_level <- function() {
         if (length(x) > 10) {
           return(paste0(
             paste(utils::head(x, 10), collapse = " "),
-            " … (n=", length(x), ")"
+            " \u2026 (n=", length(x), ")"
           ))
         } else {
           return(paste(x, collapse = " "))
@@ -197,7 +197,7 @@ get_effective_log_level <- function() {
           "<data.frame: %d x %d> cols=[%s%s]",
           nrow(x), ncol(x),
           paste(utils::head(names(x), 6), collapse = ", "),
-          if (ncol(x) > 6) ", …" else ""
+          if (ncol(x) > 6) ", \u2026" else ""
         ))
       }
       if (is.list(x)) {
@@ -208,7 +208,7 @@ get_effective_log_level <- function() {
           "<list: %d> [%s%s]",
           length(x),
           paste(keys, collapse = ", "),
-          if (length(x) > 6) ", …" else ""
+          if (length(x) > 6) ", \u2026" else ""
         ))
       }
       paste(capture.output(utils::str(x, max.level = 1, vec.len = 10, give.attr = FALSE)),
@@ -221,7 +221,7 @@ get_effective_log_level <- function() {
   )
 }
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .safe_collapse <- function(args_list) {
   tryCatch(
     {
@@ -234,26 +234,26 @@ get_effective_log_level <- function() {
   )
 }
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .component_or_fallback <- function(x) x %||% "UNSPECIFIED"
 
-# intern hjælper (ikke-eksporteret)
+# intern hjaelper (ikke-eksporteret)
 .timestamp <- function() format(Sys.time(), "%H:%M:%S")
 
-#' Primær logging-funktion med level-filtering
+#' Primaer logging-funktion med level-filtering
 #'
-#' Central logging-funktion der håndterer alle log-beskeder med automatisk
-#' level-filtering baseret på `SPC_LOG_LEVEL`.
+#' Central logging-funktion der haandterer alle log-beskeder med automatisk
+#' level-filtering baseret paa `SPC_LOG_LEVEL`.
 #'
 #' @param message Besked (karakter/string) der skal logges
-#' @param level Log-niveau som string. Gyldige værdier: `"DEBUG"`, `"INFO"`, `"WARN"`, `"ERROR"`
+#' @param level Log-niveau som string. Gyldige vaerdier: `"DEBUG"`, `"INFO"`, `"WARN"`, `"ERROR"`
 #' @param component Valgfrit komponent-tag for organisering (f.eks. `"AUTO_DETECT"`, `"FILE_UPLOAD"`)
 #'
 #' @return `invisible(NULL)`. Beskeder skrives til konsol hvis niveauet tillader det.
 #' @examples
 #' \dontrun{
 #' log_msg("System startet", "INFO")
-#' log_msg("Data læst", "INFO", "FILE_UPLOAD")
+#' log_msg("Data laest", "INFO", "FILE_UPLOAD")
 #' Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 #' log_msg("Detaljer", "DEBUG", "DATA_PROC")
 #' }
@@ -280,22 +280,22 @@ log_msg <- function(message, level = "INFO", component = NULL) {
 #' Log debug-besked (variadisk og Shiny-sikker)
 #'
 #' Convenience-funktion til logging af DEBUG-beskeder.
-#' Accepterer vilkårligt antal argumenter (`...`) og formaterer dem robust
-#' (tåler lister, data.frames m.m.) uden at crashe i Shiny renderers.
+#' Accepterer vilkaarligt antal argumenter (`...`) og formaterer dem robust
+#' (taaler lister, data.frames m.m.) uden at crashe i Shiny renderers.
 #'
 #' **Kontekst-filtrering:**
-#' Når `spc.debug.context` option er sat, logges kun debug-beskeder hvis deres
-#' `.context` er i listen. Gør det muligt at filtrere debugging-output ned til
-#' relevante områder uden at øge token-forbrug.
+#' Naar `spc.debug.context` option er sat, logges kun debug-beskeder hvis deres
+#' `.context` er i listen. Goer det muligt at filtrere debugging-output ned til
+#' relevante omraader uden at oege token-forbrug.
 #'
-#' @param ... Variable argumenter der sammenkædes til en debug-besked
+#' @param ... Variable argumenter der sammenkaedes til en debug-besked
 #' @param .context Valgfri kontekst-tag (f.eks. `"RENDER_PLOT"`, `"AUTO_DETECT"`)
 #'
 #' @return `invisible(NULL)`.
 #' @examples
 #' \dontrun{
 #' log_debug("Status:", TRUE, .context = "RENDER_PLOT")
-#' log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
+#' log_debug("Raekke:", 42, list(a = 1), .context = "DATA_PROC")
 #'
 #' # Kontekst-filtrering
 #' options(spc.debug.context = c("state", "data", "ai"))
@@ -347,7 +347,7 @@ log_debug <- function(..., .context = NULL) {
 #' Convenience-funktion til logging af INFO-beskeder.
 #'
 #' **Kontekst-filtrering:**
-#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#' Understoetter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
 #'
 #' @param message Besked der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"FILE_UPLOAD"`) - legacy parameter
@@ -393,7 +393,7 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #' Convenience-funktion til logging af WARN-beskeder.
 #'
 #' **Kontekst-filtrering:**
-#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#' Understoetter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
 #'
 #' @param message Besked der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"DATA_VALIDATION"`) - legacy parameter
@@ -436,11 +436,11 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 
 #' Log error-besked
 #'
-#' Convenience-funktion til logging af ERROR-beskeder. Accepterer også en
-#' `condition` direkte (beskeden udtrækkes med `conditionMessage()`).
+#' Convenience-funktion til logging af ERROR-beskeder. Accepterer ogsaa en
+#' `condition` direkte (beskeden udtraekkes med `conditionMessage()`).
 #'
 #' **Kontekst-filtrering:**
-#' Understøtter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#' Understoetter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
 #'
 #' @param message Besked eller condition der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"ERROR_HANDLING"`) - legacy parameter
@@ -450,7 +450,7 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #' @return `invisible(NULL)`.
 #' @examples
 #' \dontrun{
-#' log_error("Kunne ikke læse fil", .context = "FILE_UPLOAD")
+#' log_error("Kunne ikke laese fil", .context = "FILE_UPLOAD")
 #' log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))
 #' tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 #' }
@@ -484,9 +484,9 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
   }
 }
 
-#' Log afgrænsede debug-blokke (start/stop)
+#' Log afgraensede debug-blokke (start/stop)
 #'
-#' Helper-funktion til logging af visuelt afgrænsede debug-blokke
+#' Helper-funktion til logging af visuelt afgraensede debug-blokke
 #' med separatorlinjer. Erstatter hardcodede separatorer i koden.
 #'
 #' @param context Kontekst-tag for blokken (f.eks. `"COLUMN_MGMT"`, `"AUTO_DETECT"`)
@@ -526,10 +526,10 @@ log_debug_block <- function(context, action, type = "start") {
 #' Log strukturerede key-value par (kompakt)
 #'
 #' Helper-funktion til logging af strukturerede key-value data.
-#' Understøtter både navngivne `...`-argumenter og en liste via `.list_data`.
-#' Værdier formatteres robust (tåler komplekse objekter) uden at crashe i Shiny.
+#' Understoetter baade navngivne `...`-argumenter og en liste via `.list_data`.
+#' Vaerdier formatteres robust (taaler komplekse objekter) uden at crashe i Shiny.
 #'
-#' @param ... Navngivne argumenter der logges som key-value (`navn = værdi`)
+#' @param ... Navngivne argumenter der logges som key-value (`navn = vaerdi`)
 #' @param .context Kontekst-tag (f.eks. `"DATA_PROC"`, `"AUTO_DETECT"`)
 #' @param .list_data Valgfri liste med key-value data
 #'
@@ -668,13 +668,13 @@ get_log_level_name <- function() {
 
 #' Set debug context filtering
 #'
-#' Setter den `spc.debug.context` option til at filtrere logging baseret på context.
-#' Dette reducerer token-forbrug ved debugging ved kun at logge relevante områder.
+#' Setter den `spc.debug.context` option til at filtrere logging baseret paa context.
+#' Dette reducerer token-forbrug ved debugging ved kun at logge relevante omraader.
 #'
 #' **Eksempler:**
-#' - `set_debug_context(c("state", "data"))` – log kun state og data contexts
-#' - `set_debug_context(NULL)` – log alt (default behavior)
-#' - `set_debug_context(character(0))` – log intet
+#' - `set_debug_context(c("state", "data"))` - log kun state og data contexts
+#' - `set_debug_context(NULL)` - log alt (default behavior)
+#' - `set_debug_context(character(0))` - log intet
 #'
 #' @param contexts Character vector af contexts som skal logges, eller `NULL` for at logge alt
 #'
@@ -684,12 +684,12 @@ get_log_level_name <- function() {
 #' \dontrun{
 #' # Log kun state og AI-relateret debugging
 #' set_debug_context(c("state", "ai"))
-#' log_debug("Dette logges", .context = "state") # ✓ Vises
-#' log_debug("Dette logges ikke", .context = "performance") # ✗ Skjult
+#' log_debug("Dette logges", .context = "state") # [U+2713] Vises
+#' log_debug("Dette logges ikke", .context = "performance") # [U+2717] Skjult
 #'
 #' # Genop alle logninger
 #' set_debug_context(NULL)
-#' log_debug("Alt logges nu", .context = "performance") # ✓ Vises
+#' log_debug("Alt logges nu", .context = "performance") # [U+2713] Vises
 #' }
 #'
 #' @keywords internal
@@ -717,7 +717,7 @@ set_debug_context <- function(contexts = NULL) {
 
 #' Get current debug context filter
 #'
-#' Returnerer den nuværende `spc.debug.context` option værdi.
+#' Returnerer den nuvaerende `spc.debug.context` option vaerdi.
 #'
 #' @return Character vector af de filtrerede contexts, eller `NULL` hvis ingen filtrering er aktiv
 #'
@@ -736,17 +736,17 @@ get_debug_context <- function() {
 
 #' List available log contexts
 #'
-#' Returnerer alle tilgængelige log context-værdier fra `LOG_CONTEXTS`.
+#' Returnerer alle tilgaengelige log context-vaerdier fra `LOG_CONTEXTS`.
 #' Nyttigt til at finde de rigtige context-navne for `set_debug_context()`.
 #'
-#' @return Character vector af alle tilgængelige log contexts
+#' @return Character vector af alle tilgaengelige log contexts
 #'
 #' @examples
 #' \dontrun{
 #' all_contexts <- list_available_log_contexts()
-#' head(all_contexts) # Se de første contexts
+#' head(all_contexts) # Se de foerste contexts
 #'
-#' # Brug til at sætte filtrering
+#' # Brug til at saette filtrering
 #' state_contexts <- grep("^state", all_contexts, value = TRUE)
 #' set_debug_context(state_contexts)
 #' }
@@ -768,7 +768,7 @@ list_available_log_contexts <- function() {
 
 #' Print all available debug contexts in organized table
 #'
-#' Viser alle tilgængelige log contexts organiseret efter kategori.
+#' Viser alle tilgaengelige log contexts organiseret efter kategori.
 #' Nyttigt til at finde de rigtige context-navne for `set_debug_context()`.
 #'
 #' @return Invisible NULL. Printer en organiseret tabel til konsolen.

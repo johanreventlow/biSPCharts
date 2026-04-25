@@ -42,7 +42,6 @@ generate_export_filename("pdf", "Min Graf", "Kardiologi")
 
 generate_export_filename("png", "SPC Oversigt")
 # "SPC_SPC_Oversigt.png"
-
 }
 
 }

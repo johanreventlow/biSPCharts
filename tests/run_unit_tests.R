@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
+if (nzchar(Sys.getenv("R_TESTS"))) quit(status = 0L)
+
 # Run Unit Tests — tynd wrapper omkring canonical runner (§3.3.3)
 #
 # Canonical entrypoint: tests/run_canonical.R

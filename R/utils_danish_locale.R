@@ -1,10 +1,10 @@
 # R/utils/danish_numbers.R
-# Hjælpefunktioner til håndtering af danske talformater (komma som decimalseparator)
+# Hjaelpefunktioner til haandtering af danske talformater (komma som decimalseparator)
 
 # DANSK TAL KONVERTERING =====================================================
 
-## Konverter dansk talstreng til numerisk værdi
-# Håndterer både komma og punktum som decimalseparator samt procent/promille symboler
+## Konverter dansk talstreng til numerisk vaerdi
+# Haandterer baade komma og punktum som decimalseparator samt procent/promille symboler
 parse_danish_number <- function(x) {
   if (is.null(x) || length(x) == 0) {
     return(numeric(0))
@@ -32,10 +32,10 @@ parse_danish_number <- function(x) {
   }
 
   # Remove common symbols that appear in Danish data
-  # - Remove % and ‰ symbols (but keep the numeric value)
+  # - Remove % and %% symbols (but keep the numeric value)
   # - Remove thousand separators (spaces or dots in specific patterns)
   x_cleaned <- x
-  x_cleaned <- gsub("[%‰]", "", x_cleaned) # Remove percent and permille symbols
+  x_cleaned <- gsub("[%\u2030]", "", x_cleaned) # Remove percent and permille symbols
   x_cleaned <- gsub("\\s+", "", x_cleaned) # Remove spaces
   x_cleaned <- trimws(x_cleaned)
 

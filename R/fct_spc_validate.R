@@ -1,19 +1,19 @@
 # fct_spc_validate.R
 # Validerings-helper for SPC pipeline.
 
-#' Valider SPC-anmodning og returnér et spc_request-objekt
+#' Valider SPC-anmodning og returner et spc_request-objekt
 #'
 #' Tjekker alle obligatoriske parametre og data-egenskaber, og returnerer
 #' et `spc_request` S3-objekt hvis input er gyldigt. Kaster `spc_input_error`
-#' ved ugyldig input — fejl propagerer direkte til caller.
+#' ved ugyldig input -- fejl propagerer direkte til caller.
 #'
 #' @param data data.frame med SPC-data.
 #' @param x_var character. Kolonne-navn for x-aksen.
-#' @param y_var character. Kolonne-navn for måle-kolonnen.
+#' @param y_var character. Kolonne-navn for maale-kolonnen.
 #' @param chart_type character. SPC chart-type (fx "run", "p", "u").
-#' @param n_var character eller NULL. Kolonne-navn for nævner.
+#' @param n_var character eller NULL. Kolonne-navn for naevner.
 #' @param cl_var character eller NULL. Manuel centerlinje-kolonne.
-#' @param freeze_var character eller NULL. Freeze-grænse-kolonne.
+#' @param freeze_var character eller NULL. Freeze-graense-kolonne.
 #' @param part_var character eller NULL. Fase-opdeling-kolonne.
 #' @param notes_column character eller NULL. Noter-kolonne.
 #' @param multiply numeric. Multiplikator for y-akse (default 1).
@@ -35,43 +35,43 @@ validate_spc_request <- function(
   multiply = 1,
   ...
 ) {
-  # 1. data er påkrævet og skal være data.frame
+  # 1. data er paakraevet og skal vaere data.frame
   if (is.null(data)) {
     spc_abort(
-      "data parameter er påkrævet (data required): må ikke være NULL",
+      "data parameter er p\u00e5kr\u00e6vet (data required): m\u00e5 ikke v\u00e6re NULL",
       class = "spc_input_error"
     )
   }
   if (!is.data.frame(data)) {
-    spc_abort("data skal være en data.frame", class = "spc_input_error")
+    spc_abort("data skal v\u00e6re en data.frame", class = "spc_input_error")
   }
 
-  # 2. x_var er påkrævet
+  # 2. x_var er paakraevet
   if (is.null(x_var) || !nzchar(trimws(x_var))) {
     spc_abort(
-      "x_var parameter er påkrævet (x_var required): angiv kolonnenavn for x-aksen",
+      "x_var parameter er p\u00e5kr\u00e6vet (x_var required): angiv kolonnenavn for x-aksen",
       class = "spc_input_error"
     )
   }
 
-  # 3. y_var er påkrævet
+  # 3. y_var er paakraevet
   if (is.null(y_var) || !nzchar(trimws(y_var))) {
     spc_abort(
-      "y_var parameter er påkrævet (y_var required): angiv kolonnenavn for målekolonnen",
+      "y_var parameter er p\u00e5kr\u00e6vet (y_var required): angiv kolonnenavn for m\u00e5lekolonnen",
       class = "spc_input_error"
     )
   }
 
-  # 4. chart_type er påkrævet og skal normaliseres
+  # 4. chart_type er paakraevet og skal normaliseres
   if (is.null(chart_type) || !nzchar(trimws(chart_type))) {
     spc_abort(
-      "chart_type parameter er påkrævet (chart_type required)",
+      "chart_type parameter er p\u00e5kr\u00e6vet (chart_type required)",
       class = "spc_input_error"
     )
   }
   ct_normalized <- tolower(trimws(chart_type))
 
-  # 5. chart_type skal være en understøttet type
+  # 5. chart_type skal vaere en understoettet type
   if (!ct_normalized %in% SUPPORTED_CHART_TYPES_BFH) {
     spc_abort(
       paste0(
@@ -83,31 +83,31 @@ validate_spc_request <- function(
     )
   }
 
-  # 6. n_var er påkrævet for P-, U-kort (og pp, up)
+  # 6. n_var er paakraevet for P-, U-kort (og pp, up)
   if (ct_normalized %in% c("p", "pp", "u", "up") && is.null(n_var)) {
     spc_abort(
       paste0(
         "n_var (denominator) required for ", ct_normalized, "-kort. ",
-        "Angiv kolonnenavnet for nævneren."
+        "Angiv kolonnenavnet for n\u00e6vneren."
       ),
       class = "spc_input_error"
     )
   }
 
-  # 7. data må ikke være tom
+  # 7. data maa ikke vaere tom
   if (nrow(data) == 0) {
     spc_abort(
-      "Ingen rækker fundet i data (empty dataset). Upload data først.",
+      "Ingen r\u00e6kker fundet i data (empty dataset). Upload data f\u00f8rst.",
       class = "spc_input_error"
     )
   }
 
-  # 8. Mindst 3 datapunkter kræves
+  # 8. Mindst 3 datapunkter kraeves
   if (nrow(data) < 3) {
     spc_abort(
       paste0(
-        "For få datapunkter: ", nrow(data), " række(r) fundet (too few/insufficient). ",
-        "minimum 3 datapunkter kræves for SPC-analyse."
+        "For f\u00e5 datapunkter: ", nrow(data), " r\u00e6kke(r) fundet (too few/insufficient). ",
+        "minimum 3 datapunkter kr\u00e6ves for SPC-analyse."
       ),
       class = "spc_input_error"
     )
@@ -128,24 +128,24 @@ validate_spc_request <- function(
   }
   if (!is.null(n_var) && !n_var %in% names(data)) {
     spc_abort(
-      paste0("Nævner-kolonne '", n_var, "' blev ikke fundet i data (missing column: n_var)"),
+      paste0("N\u00e6vner-kolonne '", n_var, "' blev ikke fundet i data (missing column: n_var)"),
       class = "spc_input_error"
     )
   }
 
-  # 10. y_var må ikke udelukkende bestå af NA
+  # 10. y_var maa ikke udelukkende bestaa af NA
   y_vals <- data[[y_var]]
   if (all(is.na(y_vals))) {
     spc_abort(
       paste0(
-        "Kolonnen '", y_var, "' indeholder udelukkende NA-værdier. ",
-        "Ingen komplette datapunkter til rådighed (all NA/no valid values)."
+        "Kolonnen '", y_var, "' indeholder udelukkende NA-v\u00e6rdier. ",
+        "Ingen komplette datapunkter til r\u00e5dighed (all NA/no valid values)."
       ),
       class = "spc_input_error"
     )
   }
 
-  # 11. y_var skal være numerisk (eller konverterbar — inkl. danske talformater)
+  # 11. y_var skal vaere numerisk (eller konverterbar -- inkl. danske talformater)
   if (!is.numeric(y_vals)) {
     std_converted <- suppressWarnings(as.numeric(as.character(y_vals)))
     danish_converted <- suppressWarnings(as.numeric(gsub(",", ".", as.character(y_vals))))
@@ -154,15 +154,15 @@ validate_spc_request <- function(
     if (non_na_vals && !any_convertible) {
       spc_abort(
         paste0(
-          "Kolonnen '", y_var, "' indeholder ikke-numeriske værdier og kan ikke konverteres (invalid/convert). ",
-          "Kolonnen skal indeholde tal (også dansk talformat med komma accepteres)."
+          "Kolonnen '", y_var, "' indeholder ikke-numeriske v\u00e6rdier og kan ikke konverteres (invalid/convert). ",
+          "Kolonnen skal indeholde tal (ogs\u00e5 dansk talformat med komma accepteres)."
         ),
         class = "spc_input_error"
       )
     }
   }
 
-  # 12. n_var må ikke indeholde nul-værdier for rate-baserede kort
+  # 12. n_var maa ikke indeholde nul-vaerdier for rate-baserede kort
   if (!is.null(n_var) && n_var %in% names(data) &&
     ct_normalized %in% c("p", "pp", "u", "up")) {
     n_vals <- data[[n_var]]
@@ -173,8 +173,8 @@ validate_spc_request <- function(
     if (any(!is.na(n_numeric) & n_numeric == 0)) {
       spc_abort(
         paste0(
-          "Nævner-kolonnen '", n_var, "' indeholder nul-værdier. ",
-          "Nævner må ikke være nul for ", toupper(ct_normalized), "-kort."
+          "N\u00e6vner-kolonnen '", n_var, "' indeholder nul-v\u00e6rdier. ",
+          "N\u00e6vner m\u00e5 ikke v\u00e6re nul for ", toupper(ct_normalized), "-kort."
         ),
         class = "spc_input_error"
       )

@@ -22,14 +22,14 @@ NULL
 #' @examples
 #' \dontrun{
 #' sanitize_column_name("Dato & tid") # Returns "Dato  tid"
-#' sanitize_column_name("Y-værdi_1") # Returns "Y-værdi_1"
+#' sanitize_column_name("Y-vaerdi_1") # Returns "Y-vaerdi_1"
 #' }
 #' @keywords internal
 sanitize_column_name <- function(column_name) {
   sanitize_user_input(
     input_value = column_name,
     max_length = 100, # Kortere for kolonne navne
-    allowed_chars = "A-Za-z0-9_æøåÆØÅ .-", # Tillad danske karakterer og common patterns
+    allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .-", # Tillad danske karakterer og common patterns
     html_escape = TRUE
   )
 }
@@ -58,7 +58,7 @@ validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xls
   # Normalize extension - fjern dots og convert til lowercase
   clean_ext <- gsub("^\\.", "", trimws(tolower(as.character(file_ext))))
 
-  # Length check - undgå very long extensions
+  # Length check - undgaa very long extensions
   if (nchar(clean_ext) > 10) {
     log_warn(
       message = "Suspicious file extension length detected",
@@ -89,7 +89,7 @@ validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xls
 #'
 #' Standardiseret creation af sikkerhedsrelaterede warning messages til UI.
 #'
-#' @param field_name Navn på feltet der fejlede validation
+#' @param field_name Navn paa feltet der fejlede validation
 #' @param issue_type Type af sikkerhedsproblem ("invalid_chars", "too_long", "invalid_format")
 #' @param additional_info Ekstra information til brugeren
 #'
@@ -102,7 +102,7 @@ validate_file_extension <- function(file_ext, allowed_extensions = c("csv", "xls
 #' }
 #' @keywords internal
 create_security_warning <- function(field_name, issue_type, additional_info = NULL) {
-  # Sanitize field_name først for at undgå XSS i error messages
+  # Sanitize field_name foerst for at undgaa XSS i error messages
   safe_field_name <- sanitize_user_input(field_name, max_length = 50)
 
   base_message <- switch(issue_type,
@@ -113,7 +113,7 @@ create_security_warning <- function(field_name, issue_type, additional_info = NU
     paste0("Validation fejl i ", safe_field_name) # Default fallback
   )
 
-  # Tilføj additional info hvis givet
+  # Tilfoej additional info hvis givet
   if (!is.null(additional_info) && nchar(additional_info) > 0) {
     safe_additional <- sanitize_user_input(additional_info, max_length = 200)
     base_message <- paste0(base_message, ". ", safe_additional)
@@ -126,11 +126,11 @@ create_security_warning <- function(field_name, issue_type, additional_info = NU
 #'
 #' Sikrer at data eksporteret til CSV/Excel ikke kan eksekvere formler.
 #' Forhindrer CSV injection attacks hvor formler som =SUM() eller @WEBSERVICE()
-#' kan eksekveres når filen åbnes i Excel.
+#' kan eksekveres naar filen aabnes i Excel.
 #'
 #' @param data Data frame at sanitize for export
 #'
-#' @return Data frame med sanitized værdier
+#' @return Data frame med sanitized vaerdier
 #'
 #' @details
 #' Karakterer der kan starte en formel i Excel:
@@ -141,11 +141,11 @@ create_security_warning <- function(field_name, issue_type, additional_info = NU
 #' - \\t (tab - kan bruges til command injection)
 #' - \\r (carriage return - kan bruges til command injection)
 #'
-#' Løsning: Prefix med single quote (') for at tvinge text mode.
+#' Loesning: Prefix med single quote (') for at tvinge text mode.
 #'
 #' @examples
 #' \dontrun{
-#' # Eksempel med farlige værdier
+#' # Eksempel med farlige vaerdier
 #' data <- data.frame(
 #'   normal = c("test", "data"),
 #'   dangerous = c("=SUM(A1:A10)", "@WEBSERVICE('evil.com')")
@@ -158,7 +158,7 @@ create_security_warning <- function(field_name, issue_type, additional_info = NU
 #' @keywords internal
 sanitize_csv_output <- function(data) {
   if (!is.data.frame(data)) {
-    stop("Input skal være en data frame")
+    stop("Input skal v\u00e6re en data frame")
   }
 
   # Karakterer der kan starte en formel i Excel
@@ -171,10 +171,10 @@ sanitize_csv_output <- function(data) {
         dplyr::where(is.character),
         ~ {
           dplyr::if_else(
-            # Check om første karakter er farlig
+            # Check om foerste karakter er farlig
             !is.na(.x) & substr(.x, 1, 1) %in% formula_chars,
             paste0("'", .x), # Prefix med ' for at tvinge text mode
-            .x # Bevar uændret hvis sikker
+            .x # Bevar uaendret hvis sikker
           )
         }
       )

@@ -100,31 +100,9 @@ configure_app_environment <- function(enable_test_mode = NULL, golem_options = l
     }
   }
 
-  # Apply configuration via golem config instead of direct env vars
   if (enable_test_mode) {
-    # Use golem config values for test mode
-    tryCatch(
-      {
-        if (exists("golem::get_golem_config", mode = "function")) {
-          test_config <- golem::get_golem_config("testing", config = config_profile)
-          if (!is.null(test_config$auto_load_test_data)) {
-            Sys.setenv(TEST_MODE_AUTO_LOAD = ifelse(test_config$auto_load_test_data, "TRUE", "FALSE"))
-          }
-          if (!is.null(test_config$test_data_file)) {
-            Sys.setenv(TEST_MODE_FILE_PATH = test_config$test_data_file)
-          }
-        } else {
-          # Fallback to direct settings if golem config not available
-          Sys.setenv(TEST_MODE_AUTO_LOAD = "TRUE")
-          Sys.setenv(TEST_MODE_FILE_PATH = "inst/extdata/spc_exampledata.csv")
-        }
-      },
-      error = function(e) {
-        # Fallback configuration
-        Sys.setenv(TEST_MODE_AUTO_LOAD = "TRUE")
-        Sys.setenv(TEST_MODE_FILE_PATH = "inst/extdata/spc_exampledata.csv")
-      }
-    )
+    Sys.setenv(TEST_MODE_AUTO_LOAD = "TRUE")
+    Sys.setenv(TEST_MODE_FILE_PATH = "inst/extdata/spc_exampledata.csv")
   } else {
     Sys.setenv(TEST_MODE_AUTO_LOAD = "FALSE")
     Sys.unsetenv("TEST_MODE_FILE_PATH")

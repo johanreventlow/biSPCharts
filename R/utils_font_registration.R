@@ -4,12 +4,12 @@
 #' Register Roboto Fonts (Medium and Bold)
 #'
 #' Registrerer bundlede Roboto Medium og Bold fonts med systemfonts pakken.
-#' Dette sikrer at fonterne er tilgængelige på alle systemer, uanset om
+#' Dette sikrer at fonterne er tilgaengelige paa alle systemer, uanset om
 #' Roboto er installeret lokalt.
 #'
-#' Funktionen køres automatisk ved app-start for at sikre font-tilgængelighed.
+#' Funktionen koeres automatisk ved app-start for at sikre font-tilgaengelighed.
 #' Roboto Medium registreres som "plain" variant og Roboto Bold som "bold" variant,
-#' så marquee kan bruge **bold** markup korrekt.
+#' saa marquee kan bruge **bold** markup korrekt.
 #'
 #' @return NULL (invisible). Registrerer fonts som sideeffekt.
 #'
@@ -17,7 +17,7 @@
 #' Roboto Medium og Bold fonts er bundlet i inst/fonts/ mappen og licenseret under
 #' Apache License 2.0 (se inst/fonts/LICENSE).
 #'
-#' Font-registrering håndteres af systemfonts pakken, som er cross-platform
+#' Font-registrering haandteres af systemfonts pakken, som er cross-platform
 #' kompatibel (Windows, macOS, Linux).
 #'
 #' @examples
@@ -40,8 +40,8 @@ register_roboto_font <- function() {
   if (!requireNamespace("systemfonts", quietly = TRUE)) {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "systemfonts package ikke tilgængelig - font-registrering sprunget over",
-      details = list(fallback = "System vil forsøge at bruge lokalt installeret Roboto")
+      message = "systemfonts package ikke tilg\u00e6ngelig - font-registrering sprunget over",
+      details = list(fallback = "System vil fors\u00f8ge at bruge lokalt installeret Roboto")
     )
     return(invisible(NULL))
   }
@@ -49,7 +49,7 @@ register_roboto_font <- function() {
   # Definer font-stier (udvikling vs. installeret pakke)
   font_path_medium <- tryCatch(
     {
-      # Forsøg at finde font i installeret pakke
+      # Forsoeg at finde font i installeret pakke
       system.file("fonts", "Roboto-Medium.ttf", package = "biSPCharts")
     },
     error = function(e) {
@@ -75,7 +75,7 @@ register_roboto_font <- function() {
       details = list(
         expected_path = font_path_medium,
         working_directory = getwd(),
-        fallback = "System vil forsøge at bruge lokalt installeret Roboto"
+        fallback = "System vil fors\u00f8ge at bruge lokalt installeret Roboto"
       )
     )
     return(invisible(NULL))
@@ -84,13 +84,13 @@ register_roboto_font <- function() {
   if (!file.exists(font_path_bold) || font_path_bold == "") {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "Roboto-Bold.ttf font-fil ikke fundet - fortsætter kun med Medium",
+      message = "Roboto-Bold.ttf font-fil ikke fundet - forts\u00e6tter kun med Medium",
       details = list(
         expected_path = font_path_bold,
         impact = "Bold text vil ikke vises korrekt i labels"
       )
     )
-    # Fortsæt med kun Medium variant
+    # Fortsaet med kun Medium variant
     font_path_bold <- NULL
   }
 
@@ -125,7 +125,7 @@ register_roboto_font <- function() {
 
         log_info(
           component = "[FONT_REGISTRATION]",
-          message = "Roboto Medium font registreret (Bold ikke tilgængelig)",
+          message = "Roboto Medium font registreret (Bold ikke tilg\u00e6ngelig)",
           details = list(
             medium_path = font_path_medium,
             medium_size_kb = round(file.size(font_path_medium) / 1024, 1)
@@ -139,10 +139,10 @@ register_roboto_font <- function() {
     fallback = function(e) {
       log_warn(
         component = "[FONT_REGISTRATION]",
-        message = "Font-registrering fejlede - fortsætter med system-standard",
+        message = "Font-registrering fejlede - forts\u00e6tter med system-standard",
         details = list(
           error = e$message,
-          fallback = "System vil forsøge at bruge lokalt installeret Roboto"
+          fallback = "System vil fors\u00f8ge at bruge lokalt installeret Roboto"
         )
       )
     },
@@ -155,16 +155,16 @@ register_roboto_font <- function() {
 #' Register Mari Fonts (Regular and Bold)
 #'
 #' Registrerer bundlede Mari fonts med systemfonts pakken.
-#' Dette sikrer at BFHtheme vælger Mari (højeste prioritet) i stedet for
-#' fallback til Roboto/sans på systemer hvor Mari ikke er installeret
+#' Dette sikrer at BFHtheme vaelger Mari (hoejeste prioritet) i stedet for
+#' fallback til Roboto/sans paa systemer hvor Mari ikke er installeret
 #' (f.eks. Posit Connect Cloud).
 #'
 #' @return NULL (invisible). Registrerer fonts som sideeffekt.
 #'
 #' @details
 #' Mari fonts er bundlet i inst/templates/typst/bfh-template/fonts/ mappen.
-#' Fonten er proprietær (Bispebjerg og Frederiksberg Hospital) og må ikke
-#' distribueres i public packages — derfor ligger den i biSPCharts (private).
+#' Fonten er proprietaer (Bispebjerg og Frederiksberg Hospital) og maa ikke
+#' distribueres i public packages -- derfor ligger den i biSPCharts (private).
 #'
 #' @family font_registration
 #' @keywords internal
@@ -180,13 +180,13 @@ register_mari_font <- function() {
 
   # Idempotens-guard: Hvis Mari allerede er installeret som system-font
   # (fx MacOS user fonts), afviser systemfonts::register_font at registrere
-  # over — derfor springer vi over. Undgår spurious "already exists"-fejl
-  # ved gentagne test-sessions på dev-maskiner hvor Mari er systeminstalleret.
+  # over -- derfor springer vi over. Undgaar spurious "already exists"-fejl
+  # ved gentagne test-sessions paa dev-maskiner hvor Mari er systeminstalleret.
   sys_fonts <- systemfonts::system_fonts()
   if ("Mari" %in% sys_fonts$family) {
     log_debug(
       component = "[FONT_REGISTRATION]",
-      message = "Mari allerede tilgængelig som system-font — registrering sprunget over",
+      message = "Mari allerede tilg\u00e6ngelig som system-font \u2014 registrering sprunget over",
       details = list(variants = sum(sys_fonts$family == "Mari"))
     )
     assign(".mari_registered", TRUE, envir = .GlobalEnv)
@@ -208,7 +208,7 @@ register_mari_font <- function() {
   if (!file.exists(font_plain)) {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "MariOffice-Book.ttf ikke fundet — Mari font-registrering sprunget over",
+      message = "MariOffice-Book.ttf ikke fundet \u2014 Mari font-registrering sprunget over",
       details = list(expected_path = font_plain)
     )
     return(invisible(NULL))
@@ -239,7 +239,7 @@ register_mari_font <- function() {
     fallback = function(e) {
       log_warn(
         component = "[FONT_REGISTRATION]",
-        message = "Mari font-registrering fejlede — BFHtheme vil bruge fallback",
+        message = "Mari font-registrering fejlede \u2014 BFHtheme vil bruge fallback",
         details = list(error = e$message)
       )
     },

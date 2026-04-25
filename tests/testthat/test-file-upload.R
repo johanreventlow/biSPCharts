@@ -117,15 +117,18 @@ test_that("setup_file_upload haandterer opkald korrekt", {
   mock_app_state <- list()
   mock_emit <- list()
 
-  result <- tryCatch({
-    setup_file_upload(
-      mock_input, mock_output, mock_session,
-      mock_app_state, mock_emit, NULL
-    )
-    "success"
-  }, error = function(e) {
-    "error"
-  })
+  result <- tryCatch(
+    {
+      setup_file_upload(
+        mock_input, mock_output, mock_session,
+        mock_app_state, mock_emit, NULL
+      )
+      "success"
+    },
+    error = function(e) {
+      "error"
+    }
+  )
 
   expect_true(result == "success" || result == "error")
 })

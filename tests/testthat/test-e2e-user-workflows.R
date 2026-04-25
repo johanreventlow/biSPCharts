@@ -24,8 +24,10 @@ skip_if_no_shinytest2_runtime <- function() {
     chromote::find_chrome(),
     error = function(e) ""
   )
-  skip_if(is.null(chrome_path) || !nzchar(chrome_path),
-          "Chrome/Chromium ikke fundet til shinytest2")
+  skip_if(
+    is.null(chrome_path) || !nzchar(chrome_path),
+    "Chrome/Chromium ikke fundet til shinytest2"
+  )
 }
 
 create_e2e_driver <- function(name, width = 1200, height = 800, ...) {

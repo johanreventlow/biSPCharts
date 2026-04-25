@@ -61,9 +61,11 @@ test_that("chart_type_requires_denominator accepterer danske labels", {
 test_that("CHART_TYPES_DA indeholder aktive diagramtyper", {
   # Aktuelt 5 aktive typer (mr, pp, up, g er udkommenteret i config_chart_types.R)
   expect_true(length(CHART_TYPES_DA) >= 5,
-              info = "CHART_TYPES_DA skal indeholde mindst 5 aktive diagramtyper")
+    info = "CHART_TYPES_DA skal indeholde mindst 5 aktive diagramtyper"
+  )
   expect_true(all(unlist(CHART_TYPES_DA) %in% c("run", "i", "mr", "p", "pp", "u", "up", "c", "g")),
-              info = "Alle aktive typer skal have gyldige engelske koder")
+    info = "Alle aktive typer skal have gyldige engelske koder"
+  )
 })
 
 test_that("CHART_TYPE_DESCRIPTIONS dækker alle engelske koder", {

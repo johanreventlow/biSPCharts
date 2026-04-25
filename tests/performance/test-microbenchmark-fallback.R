@@ -42,7 +42,9 @@ test_that("Benchmark operation fallback works when microbenchmark fails", {
 
   # Test fallback mechanism
   result <- benchmark_spc_operation(
-    expr = { 2 + 2 },
+    expr = {
+      2 + 2
+    },
     times = 1,
     operation_name = "test_fallback",
     log_results = FALSE
@@ -50,8 +52,10 @@ test_that("Benchmark operation fallback works when microbenchmark fails", {
 
   expect_true(is.list(result), "Should return list result")
   expect_true("operation" %in% names(result), "Should include operation name")
-  expect_true("mean_ms" %in% names(result) || "median_ms" %in% names(result),
-              "Should include timing information")
+  expect_true(
+    "mean_ms" %in% names(result) || "median_ms" %in% names(result),
+    "Should include timing information"
+  )
 })
 
 test_that("Feature flag controls benchmark execution in SPC plot generation", {
@@ -181,8 +185,10 @@ test_that("Anhoej results are properly generated when QIC succeeds", {
 
     if (!is.null(qic_result)) {
       # Check for anhoej-related data structure
-      expect_true(is.data.frame(qic_result$data) || inherits(qic_result, "qic"),
-                  "Should return qic object with data")
+      expect_true(
+        is.data.frame(qic_result$data) || inherits(qic_result, "qic"),
+        "Should return qic object with data"
+      )
 
       # Verify this would not result in NULL anhoej_results
       if (is.data.frame(qic_result$data)) {
@@ -229,7 +235,10 @@ test_that("Benchmark gracefully handles missing dependencies", {
       "Test benchmark fallback path",
       code = {
         benchmark_spc_operation(
-          expr = { Sys.sleep(0.001); "test_result" },
+          expr = {
+            Sys.sleep(0.001)
+            "test_result"
+          },
           times = 1,
           operation_name = "test_fallback_path",
           log_results = FALSE
@@ -245,7 +254,9 @@ test_that("Benchmark gracefully handles missing dependencies", {
 
 test_that("Environment validation in benchmark functions works correctly", {
   # Test function environment validation
-  test_function <- function() { "test" }
+  test_function <- function() {
+    "test"
+  }
 
   # Should work with standard function
   result <- safe_operation(

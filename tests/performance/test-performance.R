@@ -14,8 +14,10 @@ test_that("File upload performance is acceptable", {
   temp_file <- tempfile(fileext = ".csv")
   write.csv(large_test_data, temp_file, row.names = FALSE)
 
-  skip_if_not(exists("handle_csv_upload", mode = "function"),
-              "handle_csv_upload not available - check test setup")
+  skip_if_not(
+    exists("handle_csv_upload", mode = "function"),
+    "handle_csv_upload not available - check test setup"
+  )
 
   # Use either real microbenchmark or lightweight mock
   if (requireNamespace("microbenchmark", quietly = TRUE)) {
@@ -60,8 +62,10 @@ test_that("Auto-detection performance scales with data size", {
     z = sample(letters, 1000, replace = TRUE)
   )
 
-  skip_if_not(exists("find_numeric_columns", mode = "function"),
-              "find_numeric_columns not available - check test setup")
+  skip_if_not(
+    exists("find_numeric_columns", mode = "function"),
+    "find_numeric_columns not available - check test setup"
+  )
 
   small_time <- system.time({
     find_numeric_columns(small_data)
@@ -82,8 +86,10 @@ test_that("Auto-detection performance scales with data size", {
 test_that("Reactive performance under rapid updates", {
   skip_if_not_installed("shiny")
 
-  skip_if_not(exists("create_app_state", mode = "function"),
-              "create_app_state not available - check test setup")
+  skip_if_not(
+    exists("create_app_state", mode = "function"),
+    "create_app_state not available - check test setup"
+  )
 
   app_state <- create_app_state()
 
@@ -139,8 +145,10 @@ test_that("Plot generation performance with large datasets", {
 })
 
 test_that("Memory usage stays within bounds", {
-  skip_if_not(exists("create_app_state", mode = "function"),
-              "create_app_state not available - check test setup")
+  skip_if_not(
+    exists("create_app_state", mode = "function"),
+    "create_app_state not available - check test setup"
+  )
 
   # Measure memory before
   gc()
@@ -181,8 +189,10 @@ test_that("Concurrent operations don't degrade performance significantly", {
     Nævner = rep(100, 100)
   )
 
-  skip_if_not(exists("appears_numeric", mode = "function"),
-              "appears_numeric not available - check test setup")
+  skip_if_not(
+    exists("appears_numeric", mode = "function"),
+    "appears_numeric not available - check test setup"
+  )
 
   # Sequential timing
   sequential_time <- system.time({

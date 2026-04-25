@@ -3,8 +3,10 @@
 # Tests for startup performance monitoring and optimization infrastructure
 
 # Skip all tests if performance monitoring not available
-skip_if_not(exists("init_startup_metrics", mode = "function"),
-  "Performance monitoring functions not available")
+skip_if_not(
+  exists("init_startup_metrics", mode = "function"),
+  "Performance monitoring functions not available"
+)
 
 test_that("init_startup_metrics initializes correctly", {
   # SETUP
@@ -367,9 +369,12 @@ test_that("startup metrics integrate with app_state", {
 # ============================================================================
 
 # Clean up after all tests
-withr::defer({
-  if (exists(".startup_metrics")) {
-    rm(".startup_metrics", envir = .GlobalEnv)
-  }
-  reset_qic_counters()
-}, envir = parent.frame())
+withr::defer(
+  {
+    if (exists(".startup_metrics")) {
+      rm(".startup_metrics", envir = .GlobalEnv)
+    }
+    reset_qic_counters()
+  },
+  envir = parent.frame()
+)

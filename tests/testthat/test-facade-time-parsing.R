@@ -33,7 +33,7 @@ test_that("is_time_unit identificerer korrekt for BFHcharts-mapping", {
   expect_true(is_time_unit("time_minutes"))
   expect_true(is_time_unit("time_hours"))
   expect_true(is_time_unit("time_days"))
-  expect_true(is_time_unit("time"))  # legacy
+  expect_true(is_time_unit("time")) # legacy
   expect_false(is_time_unit("count"))
 })
 

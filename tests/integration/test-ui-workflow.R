@@ -11,7 +11,7 @@ context("UI Workflow Integration")
 
 test_that("UI initializes correctly", {
   skip_if_not_installed("shinytest2")
-  skip_on_cran()  # UI tests are slow
+  skip_on_cran() # UI tests are slow
 
   app <- create_test_app_driver()
   skip_if(is.null(app), "shinytest2 not available")

@@ -79,11 +79,11 @@ cat("   ---\n")
 
 # Handle different response formats from ellmer
 response_text <- if (is.character(response)) {
-  response  # Response is already a character vector
+  response # Response is already a character vector
 } else if (is.list(response) && !is.null(response$text)) {
-  response$text  # Response is a list with $text field
+  response$text # Response is a list with $text field
 } else {
-  as.character(response)  # Fallback
+  as.character(response) # Fallback
 }
 
 cat("   ", response_text, "\n", sep = "")

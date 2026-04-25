@@ -161,8 +161,10 @@ test_that("lazy loading improves startup performance", {
   expect_lte(normal_time, force_time + 0.1) # Allow small tolerance
 
   # Log performance metrics
-  message(sprintf("Lazy loading performance: normal=%.3fs (%d modules), force=%.3fs (%d modules)",
-                  normal_time, length(normal_modules), force_time, length(all_modules)))
+  message(sprintf(
+    "Lazy loading performance: normal=%.3fs (%d modules), force=%.3fs (%d modules)",
+    normal_time, length(normal_modules), force_time, length(all_modules)
+  ))
 
   # Both operations should be reasonably fast
   expect_lt(normal_time, 2.0)
@@ -259,8 +261,10 @@ test_that("lazy loading manages memory efficiently", {
     mem_increase <- as.numeric(mem_after - mem_before) / 1024^2
     expect_lt(mem_increase, 100) # Should not increase by more than 100MB
 
-    message(sprintf("Lazy loading memory usage: %.2f MB for %d modules",
-                    mem_increase, length(loaded_modules)))
+    message(sprintf(
+      "Lazy loading memory usage: %.2f MB for %d modules",
+      mem_increase, length(loaded_modules)
+    ))
   } else {
     skip("pryr package not available for memory testing")
   }
@@ -352,6 +356,8 @@ test_that("lazy loading system works end-to-end", {
   expect_is(loaded_modules, "character")
   expect_is(final_status, "list")
 
-  message(sprintf("End-to-end lazy loading test successful: %d modules loaded",
-                  length(loaded_modules)))
+  message(sprintf(
+    "End-to-end lazy loading test successful: %d modules loaded",
+    length(loaded_modules)
+  ))
 })

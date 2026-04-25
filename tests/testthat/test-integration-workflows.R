@@ -74,8 +74,8 @@ test_that("Complete workflow: upload → autodetect → plot", {
 
     # Verify auto-detect system is functional (either completed, in progress, or has results)
     has_auto_detect_activity <- !is.null(autodetect_results) ||
-                                autodetect_completed ||
-                                autodetect_in_progress
+      autodetect_completed ||
+      autodetect_in_progress
 
     # If auto-detect hasn't run, verify data is at least ready
     if (!has_auto_detect_activity) {
@@ -121,7 +121,7 @@ test_that("Upload workflow handles multiple data formats", {
     # TEST: Danish number format
     danish_data <- data.frame(
       Dato = c("01-01-2023", "02-01-2023", "03-01-2023"),
-      Værdi = c("5,5", "10,2", "15,8"),  # Comma as decimal
+      Værdi = c("5,5", "10,2", "15,8"), # Comma as decimal
       stringsAsFactors = FALSE
     )
 
@@ -385,7 +385,7 @@ test_that("Table edit workflow preserves selections", {
 
     # STEP 2: User edits table cell
     edited_data <- test_data
-    edited_data$Værdi[1] <- 15  # User changed value
+    edited_data$Værdi[1] <- 15 # User changed value
 
     app_state$data$current_data <- edited_data
     emit$data_updated(context = "table_cells_edited")

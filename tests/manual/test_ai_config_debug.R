@@ -30,19 +30,19 @@ cat("=== DIAGNOSIS ===\n")
 if (!setup_valid) {
   cat("❌ PROBLEM: validate_gemini_setup() returned FALSE\n")
   cat("Checking why...\n\n")
-  
+
   # Check ellmer
   has_ellmer <- requireNamespace("ellmer", quietly = TRUE)
   cat("1. ellmer installed:", has_ellmer, "\n")
-  
+
   # Check API key
   has_key <- api_key != "" && api_key != "your_api_key_here"
   cat("2. API key valid:", has_key, "\n")
-  
+
   # Check config enabled
   cat("3. ai_config$enabled:", ai_config$enabled, "\n")
   cat("4. isTRUE(ai_config$enabled):", isTRUE(ai_config$enabled), "\n\n")
-  
+
   if (!isTRUE(ai_config$enabled)) {
     cat("🎯 ROOT CAUSE: ai_config$enabled is not TRUE!\n")
     cat("   This is why validation fails on line 52 of validate_gemini_setup()\n\n")

@@ -56,7 +56,7 @@ test_that("Performance assessment works correctly", {
 
   # Test with high call count (should need optimization)
   init_startup_metrics()
-  for(i in 1:8) {
+  for (i in 1:8) {
     track_qic_call(paste("test", i))
   }
 

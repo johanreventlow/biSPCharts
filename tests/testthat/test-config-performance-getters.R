@@ -167,5 +167,5 @@ test_that("Getter functions support future YAML configuration via documented pat
 
   # Functions that can return NULL or logical should support that too
   expect_true(is.logical(get_test_mode_config("lazy_plot_generation")) ||
-              is.null(get_test_mode_config("nonexistent")))
+    is.null(get_test_mode_config("nonexistent")))
 })

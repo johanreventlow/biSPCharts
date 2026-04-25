@@ -51,7 +51,6 @@
 #'
 #' generate_export_filename("png", "SPC Oversigt")
 #' # "SPC_SPC_Oversigt.png"
-#'
 #' }
 #'
 #' @keywords internal

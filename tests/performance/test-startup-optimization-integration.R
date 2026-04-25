@@ -127,8 +127,10 @@ test_that("startup optimizations provide measurable performance benefits", {
   combined_time <- cache_load_time + lazy_load_time
   expect_lt(combined_time, 1.0)
 
-  message(sprintf("Performance benefits: cache=%.3fs, lazy=%.3fs, combined=%.3fs",
-                  cache_load_time, lazy_load_time, combined_time))
+  message(sprintf(
+    "Performance benefits: cache=%.3fs, lazy=%.3fs, combined=%.3fs",
+    cache_load_time, lazy_load_time, combined_time
+  ))
 })
 
 # Test error handling integration across all optimizations
@@ -285,7 +287,8 @@ test_that("security improvements are integrated across all components", {
     # Log with hashed token (safe for logs)
     expect_no_error({
       log_info(paste("Security test for scenario:", scenario),
-               component = paste0("SECURITY_", toupper(gsub("_", "", scenario))))
+        component = paste0("SECURITY_", toupper(gsub("_", "", scenario)))
+      )
     })
   }
 })
@@ -349,7 +352,9 @@ test_that("startup optimizations maintain backwards compatibility", {
     # Error handling should still work
     safe_operation(
       operation_name = "Backwards compatibility test",
-      code = { "success" },
+      code = {
+        "success"
+      },
       fallback = "fallback"
     )
   })

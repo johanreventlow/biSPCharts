@@ -24,23 +24,26 @@ test_that("generateSPCPlot with tidyverse data processing", {
     )
 
     # Test basic plot generation
-    result <- tryCatch({
-      generateSPCPlot(
-        data = test_data,
-        config = config,
-        chart_type = "p",
-        target_value = 0.1,
-        centerline_value = NULL,
-        show_phases = TRUE,
-        skift_column = "Skift",
-        frys_column = "Frys",
-        chart_title_reactive = function() "Test SPC Chart",
-        y_axis_unit = "percent",
-        kommentar_column = "Kommentar"
-      )
-    }, error = function(e) {
-      list(error = e$message)
-    })
+    result <- tryCatch(
+      {
+        generateSPCPlot(
+          data = test_data,
+          config = config,
+          chart_type = "p",
+          target_value = 0.1,
+          centerline_value = NULL,
+          show_phases = TRUE,
+          skift_column = "Skift",
+          frys_column = "Frys",
+          chart_title_reactive = function() "Test SPC Chart",
+          y_axis_unit = "percent",
+          kommentar_column = "Kommentar"
+        )
+      },
+      error = function(e) {
+        list(error = e$message)
+      }
+    )
 
     if (is.list(result) && "plot" %in% names(result)) {
       expect_s3_class(result$plot, "ggplot")
@@ -71,14 +74,14 @@ test_that("pipe operator chains in plot data processing", {
       x = c(1, 2, NA, 4, 5, 6, NA, 8, 9, 10),
       y = c(10, 15, NA, 20, 25, 30, NA, 35, 40, 45),
       n = c(100, 150, NA, 200, 250, 300, NA, 350, 400, 450),
-      part = c(3, 7),  # Original part positions
+      part = c(3, 7), # Original part positions
       return.data = TRUE
     )
 
     cleaned_args <- clean_qic_call_args(call_args)
 
     expect_true(is.list(cleaned_args))
-    expect_equal(length(cleaned_args$x), 8)  # Should remove 2 NA cases
+    expect_equal(length(cleaned_args$x), 8) # Should remove 2 NA cases
     expect_equal(length(cleaned_args$y), 8)
     expect_equal(length(cleaned_args$n), 8)
 
@@ -111,7 +114,7 @@ test_that("purrr::reduce for plot enhancement", {
 
   # Verify base plot is correctly constructed
   expect_s3_class(base_plot, "ggplot")
-  expect_equal(length(base_plot$layers), 1)  # Single geom_point layer
+  expect_equal(length(base_plot$layers), 1) # Single geom_point layer
 
   # Note: Plot enhancements (extended lines, target lines, etc.) are now handled by BFHcharts backend
 })
@@ -224,7 +227,7 @@ test_that("complex pipe chains maintain data integrity", {
     dplyr::summarise(
       avg_value = mean(value, na.rm = TRUE),
       count = n(),
-      .groups = 'drop'
+      .groups = "drop"
     ) |>
     dplyr::arrange(category, week)
 
@@ -247,20 +250,24 @@ test_that("error propagation in tidyverse chains", {
   )
 
   # This should handle errors gracefully
-  safe_result <- tryCatch({
-    problematic_data |>
-      dplyr::mutate(x_numeric = as.numeric(x)) |>
-      dplyr::filter(!is.na(x_numeric)) |>
-      dplyr::summarise(mean_x = mean(x_numeric))
-  }, error = function(e) {
-    list(error = e$message)
-  }, warning = function(w) {
-    # Warnings are acceptable (like NA coercion)
-    problematic_data |>
-      dplyr::mutate(x_numeric = suppressWarnings(as.numeric(x))) |>
-      dplyr::filter(!is.na(x_numeric)) |>
-      dplyr::summarise(mean_x = mean(x_numeric))
-  })
+  safe_result <- tryCatch(
+    {
+      problematic_data |>
+        dplyr::mutate(x_numeric = as.numeric(x)) |>
+        dplyr::filter(!is.na(x_numeric)) |>
+        dplyr::summarise(mean_x = mean(x_numeric))
+    },
+    error = function(e) {
+      list(error = e$message)
+    },
+    warning = function(w) {
+      # Warnings are acceptable (like NA coercion)
+      problematic_data |>
+        dplyr::mutate(x_numeric = suppressWarnings(as.numeric(x))) |>
+        dplyr::filter(!is.na(x_numeric)) |>
+        dplyr::summarise(mean_x = mean(x_numeric))
+    }
+  )
 
   expect_true(is.data.frame(safe_result) || is.list(safe_result))
   if (is.data.frame(safe_result)) {

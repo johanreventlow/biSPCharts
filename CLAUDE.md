@@ -429,7 +429,11 @@ gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
 **Architecture (efter BFHllm migration):**
 - **biSPCharts facade:** `R/fct_ai_improvement_suggestions.R` - Thin wrapper
 - **Integration layer:** `R/utils_bfhllm_integration.R` - biSPCharts-specific config
-- **Core AI logic:** Delegeret til `BFHllm` package (v0.1.0+)
+- **Core AI logic:** Delegeret til `BFHllm` package (v0.1.1, Suggests + Remotes)
+
+**Dependency-status:** BFHllm er i `Suggests:` + `Remotes:` (pinned `@v0.1.1`). Ikke krævet for
+minimal-install. AI-features degraderer gracefully via `requireNamespace()`-guards i
+`utils_bfhllm_integration.R`. Installer med: `remotes::install_github("johanreventlow/BFHllm@v0.1.1")`.
 
 **biSPCharts API (unchanged for users):**
 

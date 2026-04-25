@@ -236,7 +236,7 @@ get_hospital_name_for_export <- function() {
 #' @details
 #' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
 #' 1. Genererer chart PNG via \code{ggplot2::ggsave()}
-#' 2. Opretter Typst dokument via \code{BFHcharts:::bfh_create_typst_document()}
+#' 2. Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
 #' 3. Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 #'
 #' PNG filen er midlertidig og vil blive slettet når R session afsluttes.
@@ -330,7 +330,7 @@ generate_pdf_preview <- function(bfh_qic_result,
 
         # 4. Create Typst document
         typst_file <- file.path(temp_dir, "document.typ")
-        BFHcharts:::bfh_create_typst_document(
+        BFHcharts::bfh_create_typst_document(
           chart_image = chart_png,
           output = typst_file,
           metadata = metadata_full,

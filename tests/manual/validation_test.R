@@ -42,45 +42,50 @@ supported_types <- character()
 unsupported_types <- character()
 
 for (chart_type in chart_types) {
-  tryCatch({
-    if (chart_type %in% c("p", "u", "c")) {
-      # Types requiring denominator
-      result <- create_spc_chart(
-        data = test_data,
-        x = x,
-        y = y,
-        n = n,
-        chart_type = chart_type,
-        y_axis_unit = "count",
-        chart_title = paste(toupper(chart_type), "chart test")
-      )
-    } else {
-      # Types without denominator
-      result <- create_spc_chart(
-        data = test_data,
-        x = x,
-        y = y,
-        chart_type = chart_type,
-        y_axis_unit = "count",
-        chart_title = paste(toupper(chart_type), "chart test")
-      )
-    }
+  tryCatch(
+    {
+      if (chart_type %in% c("p", "u", "c")) {
+        # Types requiring denominator
+        result <- create_spc_chart(
+          data = test_data,
+          x = x,
+          y = y,
+          n = n,
+          chart_type = chart_type,
+          y_axis_unit = "count",
+          chart_title = paste(toupper(chart_type), "chart test")
+        )
+      } else {
+        # Types without denominator
+        result <- create_spc_chart(
+          data = test_data,
+          x = x,
+          y = y,
+          chart_type = chart_type,
+          y_axis_unit = "count",
+          chart_title = paste(toupper(chart_type), "chart test")
+        )
+      }
 
-    if (inherits(result, "ggplot")) {
-      supported_types <- c(supported_types, chart_type)
-      cat(sprintf("  ✓ %s chart: SUPPORTED\n", toupper(chart_type)))
-    } else {
-      unsupported_types <- c(unsupported_types, chart_type)
-      cat(sprintf("  ✗ %s chart: Returns non-ggplot object\n", toupper(chart_type)))
+      if (inherits(result, "ggplot")) {
+        supported_types <- c(supported_types, chart_type)
+        cat(sprintf("  ✓ %s chart: SUPPORTED\n", toupper(chart_type)))
+      } else {
+        unsupported_types <- c(unsupported_types, chart_type)
+        cat(sprintf("  ✗ %s chart: Returns non-ggplot object\n", toupper(chart_type)))
+      }
+    },
+    error = function(e) {
+      unsupported_types <<- c(unsupported_types, chart_type)
+      cat(sprintf("  ✗ %s chart: ERROR - %s\n", toupper(chart_type), e$message))
     }
-  }, error = function(e) {
-    unsupported_types <<- c(unsupported_types, chart_type)
-    cat(sprintf("  ✗ %s chart: ERROR - %s\n", toupper(chart_type), e$message))
-  })
+  )
 }
 
-cat(sprintf("\nSummary: %d/%d chart types supported\n",
-            length(supported_types), length(chart_types)))
+cat(sprintf(
+  "\nSummary: %d/%d chart types supported\n",
+  length(supported_types), length(chart_types)
+))
 if (length(unsupported_types) > 0) {
   cat("Unsupported:", paste(unsupported_types, collapse = ", "), "\n")
 }
@@ -105,12 +110,15 @@ cat("Return type:", class(plot), "\n")
 cat("✓ Returns ggplot object:", inherits(plot, "ggplot"), "\n")
 
 # Test layer addition
-tryCatch({
-  plot2 <- plot + ggplot2::theme_minimal()
-  cat("✓ Can add ggplot2 layers: TRUE\n")
-}, error = function(e) {
-  cat("✗ Cannot add ggplot2 layers:", e$message, "\n")
-})
+tryCatch(
+  {
+    plot2 <- plot + ggplot2::theme_minimal()
+    cat("✓ Can add ggplot2 layers: TRUE\n")
+  },
+  error = function(e) {
+    cat("✗ Cannot add ggplot2 layers:", e$message, "\n")
+  }
+)
 
 cat("\n")
 
@@ -167,7 +175,7 @@ cat("--------------------------\n")
 # Test with data that should trigger runs signal
 run_data <- data.frame(
   x = 1:20,
-  y = c(rep(12, 10), rep(8, 10))  # 10 consecutive points above/below mean
+  y = c(rep(12, 10), rep(8, 10)) # 10 consecutive points above/below mean
 )
 
 qic_runs <- qicharts2::qic(
@@ -221,53 +229,62 @@ cat("P0-7: Freeze and Phase Parameters\n")
 cat("---------------------------------\n")
 
 # Test freeze parameter
-tryCatch({
-  plot_freeze <- create_spc_chart(
-    data = test_data,
-    x = x,
-    y = y,
-    chart_type = "run",
-    y_axis_unit = "count",
-    freeze = 10,
-    chart_title = "Freeze test"
-  )
-  cat("  ✓ Freeze parameter: SUPPORTED\n")
-}, error = function(e) {
-  cat("  ✗ Freeze parameter: ERROR -", e$message, "\n")
-})
+tryCatch(
+  {
+    plot_freeze <- create_spc_chart(
+      data = test_data,
+      x = x,
+      y = y,
+      chart_type = "run",
+      y_axis_unit = "count",
+      freeze = 10,
+      chart_title = "Freeze test"
+    )
+    cat("  ✓ Freeze parameter: SUPPORTED\n")
+  },
+  error = function(e) {
+    cat("  ✗ Freeze parameter: ERROR -", e$message, "\n")
+  }
+)
 
 # Test part parameter
-tryCatch({
-  plot_part <- create_spc_chart(
-    data = test_data,
-    x = x,
-    y = y,
-    chart_type = "run",
-    y_axis_unit = "count",
-    part = c(10),
-    chart_title = "Part test"
-  )
-  cat("  ✓ Part parameter: SUPPORTED\n")
-}, error = function(e) {
-  cat("  ✗ Part parameter: ERROR -", e$message, "\n")
-})
+tryCatch(
+  {
+    plot_part <- create_spc_chart(
+      data = test_data,
+      x = x,
+      y = y,
+      chart_type = "run",
+      y_axis_unit = "count",
+      part = c(10),
+      chart_title = "Part test"
+    )
+    cat("  ✓ Part parameter: SUPPORTED\n")
+  },
+  error = function(e) {
+    cat("  ✗ Part parameter: ERROR -", e$message, "\n")
+  }
+)
 
 # Test freeze + part combination
-tryCatch({
-  plot_combined <- create_spc_chart(
-    data = test_data,
-    x = x,
-    y = y,
-    chart_type = "run",
-    y_axis_unit = "count",
-    freeze = 10,
-    part = c(15),
-    chart_title = "Freeze + Part test"
-  )
-  cat("  ✓ Freeze + Part combination: SUPPORTED\n")
-}, error = function(e) {
-  cat("  ✗ Freeze + Part combination: ERROR -", e$message, "\n")
-})
+tryCatch(
+  {
+    plot_combined <- create_spc_chart(
+      data = test_data,
+      x = x,
+      y = y,
+      chart_type = "run",
+      y_axis_unit = "count",
+      freeze = 10,
+      part = c(15),
+      chart_title = "Freeze + Part test"
+    )
+    cat("  ✓ Freeze + Part combination: SUPPORTED\n")
+  },
+  error = function(e) {
+    cat("  ✗ Freeze + Part combination: ERROR -", e$message, "\n")
+  }
+)
 
 cat("\n")
 
@@ -277,24 +294,27 @@ cat("\n")
 cat("P0-8: Notes/Comments Parameter\n")
 cat("------------------------------\n")
 
-tryCatch({
-  plot_notes <- create_spc_chart(
-    data = test_data,
-    x = x,
-    y = y,
-    chart_type = "run",
-    y_axis_unit = "count",
-    notes = comment,
-    chart_title = "Notes test"
-  )
-  cat("  ✓ Notes parameter: SUPPORTED\n")
-  cat("  ✓ NSE support for notes column\n")
+tryCatch(
+  {
+    plot_notes <- create_spc_chart(
+      data = test_data,
+      x = x,
+      y = y,
+      chart_type = "run",
+      y_axis_unit = "count",
+      notes = comment,
+      chart_title = "Notes test"
+    )
+    cat("  ✓ Notes parameter: SUPPORTED\n")
+    cat("  ✓ NSE support for notes column\n")
 
-  # Check if notes are rendered (can't fully validate without visual inspection)
-  cat("  ℹ Visual validation required for note placement\n")
-}, error = function(e) {
-  cat("  ✗ Notes parameter: ERROR -", e$message, "\n")
-})
+    # Check if notes are rendered (can't fully validate without visual inspection)
+    cat("  ℹ Visual validation required for note placement\n")
+  },
+  error = function(e) {
+    cat("  ✗ Notes parameter: ERROR -", e$message, "\n")
+  }
+)
 
 cat("\n")
 
@@ -336,9 +356,9 @@ summary_items <- list(
   "ggplot2 compatibility" = inherits(plot, "ggplot"),
   "Control limits (ucl/lcl/cl)" = all(c("ucl", "lcl", "cl") %in% names(qic_result)),
   "Anhøj rules (runs/crossings)" = all(c("runs.signal", "n.crossings") %in% names(qic_result)),
-  "Freeze parameter" = TRUE,  # Tested above
-  "Part parameter" = TRUE,     # Tested above
-  "Notes parameter" = TRUE     # Tested above
+  "Freeze parameter" = TRUE, # Tested above
+  "Part parameter" = TRUE, # Tested above
+  "Notes parameter" = TRUE # Tested above
 )
 
 for (item in names(summary_items)) {

@@ -253,7 +253,7 @@ detect_columns_name_based <- function(col_names, app_state = NULL) {
 
   # X-column (date/time detection) - Enhanced time-specific patterns
   dato_patterns <- c(
-    "dato", "date", "tid", "time", "år", "year", "måned", "month",
+    "dato", "date", "tid", "time", "\u00e5r", "year", "m\u00e5ned", "month",
     "uge", "week", "dag", "day", "periode", "period", "kvartal", "quarter",
     "jan", "feb", "mar", "apr", "maj", "jun",
     "jul", "aug", "sep", "okt", "nov", "dec"
@@ -261,11 +261,11 @@ detect_columns_name_based <- function(col_names, app_state = NULL) {
   x_col <- find_column_by_patterns(dato_patterns, col_names, col_names_lower)
 
   # Y-column (count patterns)
-  count_patterns <- c("tæller", "tael", "num", "count", "værdi", "value", "antal")
+  count_patterns <- c("t\u00e6ller", "tael", "num", "count", "v\u00e6rdi", "value", "antal")
   y_col <- find_column_by_patterns(count_patterns, col_names, col_names_lower)
 
   # N-column (denominator patterns)
-  denom_patterns <- c("nævner", "naev", "denom", "total", "samlet")
+  denom_patterns <- c("n\u00e6vner", "naev", "denom", "total", "samlet")
   n_col <- find_column_by_patterns(denom_patterns, col_names, col_names_lower)
 
   # Special columns
@@ -275,7 +275,7 @@ detect_columns_name_based <- function(col_names, app_state = NULL) {
   frys_patterns <- c("frys", "freeze", "frossen", "frozen")
   frys_col <- find_column_by_patterns(frys_patterns, col_names, col_names_lower)
 
-  comment_patterns <- c("kommentar", "comment", "note", "bemærkning")
+  comment_patterns <- c("kommentar", "comment", "note", "bem\u00e6rkning")
   kommentar_col <- find_column_by_patterns(comment_patterns, col_names, col_names_lower)
 
   # Compile results
@@ -358,7 +358,7 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
   # 3. COMBINE RESULTS with preference for data-driven detection
   final_y_col <- if (length(y_candidates) > 0) names(y_candidates)[1] else name_based_results$y_col
 
-  # Ekskludér y_col fra n_candidates — n_col skal være en ANDEN kolonne end y_col
+  # Ekskluder y_col fra n_candidates -- n_col skal vaere en ANDEN kolonne end y_col
   if (!is.null(final_y_col) && length(n_candidates) > 0) {
     n_candidates <- n_candidates[names(n_candidates) != final_y_col]
   }
@@ -396,6 +396,7 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
 #' @param results Detection results from autodetect engine
 #' @param existing_columns Existing column state (optional)
 #' @return Updated column state
+#' @noRd
 update_all_column_mappings <- function(results, existing_columns = NULL, app_state = NULL) {
   log_debug_block("UPDATE_MAPPINGS", "Updating column mappings in unified state")
 
@@ -409,7 +410,7 @@ update_all_column_mappings <- function(results, existing_columns = NULL, app_sta
     # K4 FIX: Update individual column mappings - ALWAYS assign (including NULL)
     # Previous code only updated when results$X_col was not NULL, causing old mappings
     # to persist when autodetect couldn't find a column in new data.
-    # This caused ratio charts to reference non-existent columns → "For få gyldige datapunkter" errors
+    # This caused ratio charts to reference non-existent columns -> "For faa gyldige datapunkter" errors
     shiny::isolate({
       # Always assign results - NULL explicitly clears old mappings
       app_state$columns$mappings$x_column <- results$x_col

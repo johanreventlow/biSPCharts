@@ -72,8 +72,8 @@ register_export_downloads <- function(output, input, session, app_state) {
           )
           shiny::showNotification(
             paste0(
-              "Eksport fejlede. Prøv igen, ",
-              "eller kontakt Dataenheden hvis problemet fortsætter."
+              "Eksport fejlede. Pr\u00f8v igen, ",
+              "eller kontakt Dataenheden hvis problemet forts\u00e6tter."
             ),
             type = "error",
             duration = 10
@@ -103,7 +103,7 @@ generate_pdf_export <- function(input, app_state, file) {
     hospital = input$export_hospital
   )
 
-  # Generer SPC plot via fælles helper
+  # Generer SPC plot via faelles helper
   pdf_plot_result <- build_export_plot(
     app_state = app_state,
     title_input = input$export_title %||% "",
@@ -112,7 +112,7 @@ generate_pdf_export <- function(input, app_state, file) {
   )
 
   if (is.null(pdf_plot_result) || is.null(pdf_plot_result$bfh_qic_result)) {
-    stop("Ingen plot tilgængeligt til eksport")
+    stop("Ingen plot tilg\u00e6ngeligt til eksport")
   }
 
   # PDF-specifik metadata til BFHcharts Typst-template
@@ -185,7 +185,7 @@ generate_png_export <- function(input, app_state, file) {
     stop("Ingen plot tilg\u00e6ngeligt til PNG-eksport")
   }
 
-  # Tilføj subtitle (hospital + afdeling) og margin til PNG-plottet
+  # Tilfoej subtitle (hospital + afdeling) og margin til PNG-plottet
   plot <- png_plot_result$bfh_qic_result$plot
 
   dept_text <- trimws(input$export_department %||% "")
@@ -198,7 +198,7 @@ generate_png_export <- function(input, app_state, file) {
     plot <- plot + ggplot2::labs(caption = footnote_text)
   }
 
-  # Margin for pænere PNG-output (top, right, bottom, left)
+  # Margin for paenere PNG-output (top, right, bottom, left)
   plot <- plot + ggplot2::theme(
     plot.margin = ggplot2::margin(8, 8, 8, 8, "mm")
   )

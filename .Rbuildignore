@@ -19,3 +19,11 @@
 ^\.lintr$
 ^CHANGELOG\.md$
 ^\.Renviron\.example$
+^\.DS_Store$
+^\.\.Rcheck$
+^Rplots\.pdf$
+\.backup$
+^logs$
+^rsconnect$
+^todo$
+^updates$

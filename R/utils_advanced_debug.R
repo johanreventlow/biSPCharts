@@ -13,11 +13,11 @@ if (!requireNamespace("digest", quietly = TRUE)) {
 ## Debug Log Categories
 DEBUG_CATEGORIES <- list(
   SESSION_LIFECYCLE = "SESSION_LIFECYCLE", # Session init/cleanup
-  FILE_UPLOAD_FLOW = "FILE_UPLOAD_FLOW", # Upload → processing → storage
-  AUTO_DETECT_FLOW = "AUTO_DETECT_FLOW", # Detection → UI sync
+  FILE_UPLOAD_FLOW = "FILE_UPLOAD_FLOW", # Upload -> processing -> storage
+  AUTO_DETECT_FLOW = "AUTO_DETECT_FLOW", # Detection -> UI sync
   STATE_TRANSITION = "STATE_TRANSITION", # State changes
   UI_SYNC_FLOW = "UI_SYNC_FLOW", # UI update operations
-  NAVIGATION_FLOW = "NAVIGATION_FLOW", # Welcome → main app
+  NAVIGATION_FLOW = "NAVIGATION_FLOW", # Welcome -> main app
   PERFORMANCE = "PERFORMANCE", # Timing metrics
   ERROR_HANDLING = "ERROR_HANDLING", # Error context
   WORKFLOW_TRACE = "WORKFLOW_TRACE" # End-to-end operation tracking
@@ -532,7 +532,7 @@ debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = 
           workflow = workflow_name,
           total_seconds = round(total_elapsed, 3),
           steps = length(steps),
-          step_sequence = paste(step_names, collapse = " → ")
+          step_sequence = paste(step_names, collapse = " \u2192 ")
         )
 
         debug_log(paste("Workflow trace completed:", workflow_name),
@@ -664,7 +664,7 @@ initialize_advanced_debug <- function(enable_history = TRUE, max_history_entries
     log_info("- debug_state_snapshot()   State inspection og comparison", "ADVANCED_DEBUG")
     log_info("- debug_performance_timer() High-precision operation timing", "ADVANCED_DEBUG")
     log_info("- debug_workflow_tracer()   End-to-end workflow tracking", "ADVANCED_DEBUG")
-    log_info("- debug_session_lifecycle() Session creation → cleanup tracking", "ADVANCED_DEBUG")
+    log_info("- debug_session_lifecycle() Session creation \u2192 cleanup tracking", "ADVANCED_DEBUG")
     log_info("=====================================", .context = "ADVANCED_DEBUG")
   }
 }

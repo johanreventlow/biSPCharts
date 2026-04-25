@@ -351,6 +351,7 @@ create_app_state <- function() {
 #' emit$data_loaded() # Triggers shiny::observeEvent(app_state$events$data_loaded, ...)
 #' }
 #' @keywords internal
+#' @noRd
 create_emit_api <- function(app_state) {
   list(
     # Data lifecycle events (CONSOLIDATED - FASE 2.2)

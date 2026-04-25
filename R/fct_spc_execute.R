@@ -3,10 +3,10 @@
 
 #' Byg BFHcharts-argumenter fra forberedt SPC-data og akseconfig
 #'
-#' Kortlægger `spc_prepared` og `spc_axes` til BFHcharts' `bfh_qic()`-format.
+#' Kortlaegger `spc_prepared` og `spc_axes` til BFHcharts' `bfh_qic()`-format.
 #' Anvender denominator-guard (fjerner n_var for chart-typer der ikke bruger den)
 #' og konverterer chart_title via `resolve_bfh_chart_title()`. Kaster
-#' `spc_render_error` ved kortlægningsfejl.
+#' `spc_render_error` ved kortlaegningsfejl.
 #'
 #' @param prepared `spc_prepared` objekt fra `prepare_spc_data()`.
 #' @param axes `spc_axes` objekt fra `resolve_axis_units()`.
@@ -19,18 +19,18 @@ build_bfh_args <- function(prepared, axes, extra_params) {
   n_var <- prepared$n_var
   y_axis_unit <- axes$y_axis_unit
 
-  # Guard: Fjern nævner for chart types der ikke bruger den.
-  # Forhindrer at BFHcharts dividerer y med n (giver alle værdier = 1).
+  # Guard: Fjern naevner for chart types der ikke bruger den.
+  # Forhindrer at BFHcharts dividerer y med n (giver alle vaerdier = 1).
   if (!is.null(n_var) && !chart_type_requires_denominator(prepared$chart_type)) {
     log_warn(
       paste(
         "n_var fjernet for chart_type=", prepared$chart_type,
-        "— denne type bruger ikke nævner (n_var var:", n_var, ")"
+        "\u2014 denne type bruger ikke n\u00e6vner (n_var var:", n_var, ")"
       ),
       .context = "BFH_SERVICE"
     )
     n_var <- NULL
-    # Re-check: percent uden nævner er ugyldig
+    # Re-check: percent uden naevner er ugyldig
     if (identical(y_axis_unit, "percent")) {
       y_axis_unit <- "count"
     }
@@ -88,7 +88,7 @@ build_bfh_args <- function(prepared, axes, extra_params) {
     width = extra_params$width,
     height = extra_params$height,
     units = extra_params$units,
-    # Bevar base_size=14 — uden dette aktiverer width/height
+    # Bevar base_size=14 -- uden dette aktiverer width/height
     # calculate_base_size() som giver base_size=8 (for lille)
     base_size = 14
   )
@@ -103,7 +103,7 @@ build_bfh_args <- function(prepared, axes, extra_params) {
 #' Kald BFHcharts og transformer output til standardiseret format
 #'
 #' Kalder `call_bfh_chart()` med de mappede parametre og transformer resultatet
-#' via `transform_bfh_output()`. Tilføjer tekst-labels på x-aksen hvis x-kolonnen
+#' via `transform_bfh_output()`. Tilfoejer tekst-labels paa x-aksen hvis x-kolonnen
 #' var konverteret til numerisk sekvens (se `prepare_spc_data()`). Kaster
 #' `spc_render_error` ved rendering- eller transformationsfejl.
 #'
@@ -129,7 +129,7 @@ execute_bfh_request <- function(bfh_params, prepared) {
     spc_abort("BFHcharts rendering failed", class = "spc_render_error")
   }
 
-  # Beregn x-labels en gang — bruges til begge plots (bfh_result og standardized)
+  # Beregn x-labels en gang -- bruges til begge plots (bfh_result og standardized)
   x_labels_col <- paste0(".x_labels_", prepared$x_var)
   x_scale <- NULL
   x_theme <- NULL

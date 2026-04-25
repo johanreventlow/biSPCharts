@@ -1,23 +1,23 @@
 # fct_spc_decorate.R
 # Plot-dekoration og metadata-udfyldning for SPC pipeline.
 
-#' Dekorer standardiseret SPC-result med Anhøj-metadata og backend-flag
+#' Dekorer standardiseret SPC-result med Anhoej-metadata og backend-flag
 #'
-#' Tjekker om BFHcharts leverede Anhøj-regler; falder ved behov tilbage til
-#' qicharts2 som fallback. Sætter `metadata$backend = "bfhcharts"`.
+#' Tjekker om BFHcharts leverede Anhoej-regler; falder ved behov tilbage til
+#' qicharts2 som fallback. Saetter `metadata$backend = "bfhcharts"`.
 #'
 #' @param standardized list. Standardiseret result fra `execute_bfh_request()`.
-#' @param prepared `spc_prepared` objekt. Bruges ved Anhøj-fallback.
+#' @param prepared `spc_prepared` objekt. Bruges ved Anhoej-fallback.
 #'
 #' @return Opdateret `standardized` list.
 #' @keywords internal
 decorate_plot_for_display <- function(standardized, prepared) {
-  # 7e. Anhøj metadata: brug BFHcharts' allerede beregnede metadata.
-  # transform_bfh_output() udtrækker Anhøj-regler fra BFHcharts qic_data.
+  # 7e. Anhoej metadata: brug BFHcharts' allerede beregnede metadata.
+  # transform_bfh_output() udtraekker Anhoej-regler fra BFHcharts qic_data.
   # Fallback til qicharts2 kun hvis BFHcharts metadata mangler.
   if (is.null(standardized$metadata$anhoej_rules)) {
     log_warn(
-      "BFHcharts Anhøj metadata mangler — falder tilbage til qicharts2",
+      "BFHcharts Anh\u00f8j metadata mangler \u2014 falder tilbage til qicharts2",
       .context = "BFH_SERVICE"
     )
     anhoej_metadata_local <- compute_anhoej_metadata_local(

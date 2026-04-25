@@ -42,10 +42,10 @@ create_ui_update_service <- function(session, app_state) {
         all_cols <- names(current_data)
         choices <- setNames(
           c("", all_cols),
-          c("Vælg kolonne...", all_cols)
+          c("V\u00e6lg kolonne...", all_cols)
         )
       } else {
-        choices <- setNames("", "Vælg kolonne...")
+        choices <- setNames("", "V\u00e6lg kolonne...")
       }
     }
 
@@ -101,7 +101,7 @@ create_ui_update_service <- function(session, app_state) {
   # This centralizes the pattern seen 56 times across the codebase.
   #
   # @param choices Named vector of choices for all dropdowns
-  # @param selected Named list of selected values (e.g., list(x_column="Dato", y_column="Værdi"))
+  # @param selected Named list of selected values (e.g., list(x_column="Dato", y_column="Vaerdi"))
   # @param columns Vector of input IDs to update (defaults to all SPC columns)
   #
   update_all_columns <- function(choices, selected = list(),
@@ -169,7 +169,7 @@ create_ui_update_service <- function(session, app_state) {
   #
   update_form_fields <- function(metadata, fields = NULL) {
     if (is.null(fields)) {
-      # Default fields to update — includes advanced column mappings
+      # Default fields to update -- includes advanced column mappings
       # (skift/frys/kommentar) og eksport-modul felter for complete
       # session restore (Issue #193).
       fields <- c(
@@ -179,7 +179,7 @@ create_ui_update_service <- function(session, app_state) {
         "x_column", "y_column", "n_column",
         "skift_column", "frys_column", "kommentar_column",
         "target_value", "centerline_value", "y_axis_unit",
-        # Trin 3 (Eksporter) — namespaced med "export-" prefix
+        # Trin 3 (Eksporter) -- namespaced med "export-" prefix
         "export_title", "export_hospital", "export_department", "export_footnote", "export_format",
         "pdf_description", "pdf_improvement",
         "png_width", "png_height"
@@ -187,10 +187,10 @@ create_ui_update_service <- function(session, app_state) {
     }
 
     # Review fund #1 (HIGH): Wrap programmatic updates i
-    # safe_programmatic_ui_update() så observers ser
+    # safe_programmatic_ui_update() saa observers ser
     # app_state$ui$updating_programmatically = TRUE og skipper deres
     # logik under restore. Ellers fyrer y_axis_unit/n_column observers
-    # på halv state og logger fx "N-kolonne kræves for valgt Y-akse-type"
+    # paa halv state og logger fx "N-kolonne kraeves for valgt Y-akse-type"
     # selvom mappingen faktisk findes i metadata.
     safe_programmatic_ui_update(session, app_state, function() {
       safe_operation(
@@ -225,8 +225,8 @@ create_ui_update_service <- function(session, app_state) {
                 shiny::updateTextInput(session, "export-export_footnote", value = metadata[[field]])
               } else if (field == "export_format") {
                 # Issue #193 fund #3: export_format er en hidden input uden
-                # Shiny input binding. updateTextInput virker ikke — vi skal
-                # gå via JS setActiveExportBtn() så knap-state, hidden input
+                # Shiny input binding. updateTextInput virker ikke -- vi skal
+                # gaa via JS setActiveExportBtn() saa knap-state, hidden input
                 # og Shiny.setInputValue() alle synkroniseres.
                 fmt <- metadata[[field]]
                 if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png")) {
@@ -338,7 +338,7 @@ create_ui_update_service <- function(session, app_state) {
           # Required field validation
           if (isTRUE(rule$required) && (is.null(field_value) || field_value == "")) {
             validation_results$valid <- FALSE
-            validation_results$errors[[field_name]] <- "Dette felt er påkrævet"
+            validation_results$errors[[field_name]] <- "Dette felt er p\u00e5kr\u00e6vet"
 
             if (show_feedback) {
               shinyjs::addClass(field_name, "has-error")
@@ -349,7 +349,7 @@ create_ui_update_service <- function(session, app_state) {
           if (!is.null(rule$type) && rule$type == "numeric" && !is.null(field_value) && field_value != "") {
             if (is.na(as.numeric(field_value))) {
               validation_results$valid <- FALSE
-              validation_results$errors[[field_name]] <- "Skal være et tal"
+              validation_results$errors[[field_name]] <- "Skal v\u00e6re et tal"
 
               if (show_feedback) {
                 shinyjs::addClass(field_name, "has-error")
@@ -547,7 +547,7 @@ create_ui_update_service <- function(session, app_state) {
 #' # Standard usage with default 500ms delay
 #' safe_programmatic_ui_update(session, app_state, function() {
 #'   shiny::updateSelectizeInput(session, "x_column", choices = choices, selected = "Dato")
-#'   shiny::updateSelectizeInput(session, "y_column", choices = choices, selected = "Tæller")
+#'   shiny::updateSelectizeInput(session, "y_column", choices = choices, selected = "Taeller")
 #' })
 #'
 #' # Custom delay for slow environments

@@ -174,11 +174,13 @@ visualizationModuleServer <- function(
         plot_result <- spc_plot()
         if (is.null(plot_result)) {
           # Show contextual empty state with helpful message
-          config <- tryCatch(column_config_reactive(), error = function(e) NULL)
+          # Silent-fail korrekt: UI-diagnose af tom plot-tilstand, ikke core-path
+          config <- tryCatch(column_config_reactive(), error = function(e) NULL) # nolint: swallowed_error_linter
           empty_state_msg <- if (is.null(config) || is.null(config$y_col)) {
             "V\u00e6lg en numerisk Y-akse-kolonne\nfor at generere diagrammet."
           } else {
-            y_col_data <- tryCatch(data[[config$y_col]], error = function(e) NULL)
+            # Silent-fail korrekt: kolonne-adgang til UI-diagnose, reaktiv context kan fejle
+            y_col_data <- tryCatch(data[[config$y_col]], error = function(e) NULL) # nolint: swallowed_error_linter
             if (!is.null(y_col_data) && !is_column_numeric(y_col_data)) {
               "Den valgte Y-akse-kolonne indeholder\nikke numeriske data."
             } else {

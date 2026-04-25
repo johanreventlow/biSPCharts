@@ -17,6 +17,7 @@ NULL
 #' @param output Shiny output
 #' @param session Shiny session
 #'
+#' @noRd
 sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_service = NULL) {
   safe_operation(
     "UI sync debug block",
@@ -45,7 +46,7 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
     code = {
       if (!is.null(ui_service)) {
         # Use centralized UI service with detected selections for all 6 columns
-        col_choices <- setNames(c("", col_names), c("Vælg kolonne...", col_names))
+        col_choices <- setNames(c("", col_names), c("V\u00e6lg kolonne...", col_names))
         selected_columns <- list(
           x_column = shiny::isolate(columns_state$mappings$x_column) %||% "",
           y_column = shiny::isolate(columns_state$mappings$y_column) %||% "",
@@ -62,7 +63,7 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
         )
       } else {
         # SPRINT 2: Use centralized column update helper with state isolation
-        standard_choices <- setNames(c("", col_names), c("Vælg kolonne...", col_names))
+        standard_choices <- setNames(c("", col_names), c("V\u00e6lg kolonne...", col_names))
         ui_service$update_all_columns_from_state(
           choices = standard_choices,
           columns_state = columns_state,
@@ -89,6 +90,7 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
 #' @param session Shiny session
 #' @param reason Character string describing why the update is happening
 #'
+#' @noRd
 update_column_choices_unified <- function(app_state, input, output, session, ui_service = NULL, reason = "manual") {
   log_debug_block("COLUMN_CHOICES_UNIFIED", "Starting column choices update")
 
@@ -123,7 +125,7 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
     # Create column choices
     col_choices <- setNames(
       c("", all_cols),
-      c("Vælg kolonne...", all_cols)
+      c("V\u00e6lg kolonne...", all_cols)
     )
 
     # Retain existing selections from both input and app_state
@@ -190,7 +192,7 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       # FIX: Mappings ligger under app_state$columns$mappings$<col>, ikke
       # app_state$columns$<col>. Den forkerte sti gjorde at state-fallback
       # altid returnerede NULL under session restore og satte selected=""
-      # på selectize-inputs inden restore_metadata fik fyldt dem.
+      # paa selectize-inputs inden restore_metadata fik fyldt dem.
       state_val_raw <- tryCatch(
         shiny::isolate(app_state$columns$mappings[[col]]),
         error = function(...) NULL

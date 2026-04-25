@@ -1,8 +1,8 @@
 # ==============================================================================
 # UTILS_EXPORT_FILENAME.R
 # ==============================================================================
-# FORMÅL: Filename generation og sanitization for export funktioner.
-#         Sikrer cross-platform kompatibilitet og korrekt håndtering af
+# FORMAaL: Filename generation og sanitization for export funktioner.
+#         Sikrer cross-platform kompatibilitet og korrekt haandtering af
 #         danske karakterer.
 #
 # FUNKTIONER:
@@ -18,14 +18,14 @@
 #   - Prefix: "SPC" (fra EXPORT_FILENAME_PREFIX)
 #   - Separator: "_" (fra EXPORT_FILENAME_SEPARATOR)
 #   - Format: SPC_Department_Title.extension
-#   - Danske karakterer bevares (æøåÆØÅ)
+#   - Danske karakterer bevares (aeoeaaAeOeAa)
 #   - Special characters fjernes for cross-platform kompatibilitet
 # ==============================================================================
 
 #' Generate Export Filename
 #'
-#' Genererer sanitized filnavn til export baseret på format, titel og afdeling.
-#' Inkluderer korrekt file extension og håndterer danske karakterer.
+#' Genererer sanitized filnavn til export baseret paa format, titel og afdeling.
+#' Inkluderer korrekt file extension og haandterer danske karakterer.
 #'
 #' @param format Export format ("pdf" eller "png")
 #' @param title Chart titel (optional)
@@ -40,9 +40,9 @@
 #' - Alle komponenter saniteres via sanitize_filename()
 #'
 #' Supported formats:
-#' - "pdf" → ".pdf"
-#' - "png" → ".png"
-#' - Unknown → ".pdf" (default)
+#' - "pdf" -> ".pdf"
+#' - "png" -> ".png"
+#' - Unknown -> ".pdf" (default)
 #'
 #' @examples
 #' \dontrun{
@@ -97,7 +97,7 @@ generate_export_filename <- function(format, title = "", department = "") {
 #' Sanitize Filename
 #'
 #' Renser filnavn komponent for special characters og sikrer cross-platform
-#' kompatibilitet. Bevarer danske karakterer (æøåÆØÅ).
+#' kompatibilitet. Bevarer danske karakterer (aeoeaaAeOeAa).
 #'
 #' @param text Input text til sanitization
 #'
@@ -114,7 +114,7 @@ generate_export_filename <- function(format, title = "", department = "") {
 #' Allowed characters:
 #' - A-Z, a-z (Latin letters)
 #' - 0-9 (Numbers)
-#' - æøåÆØÅ (Danish characters)
+#' - aeoeaaAeOeAa (Danish characters)
 #' - _ (Underscore)
 #' - - (Hyphen)
 #'
@@ -125,8 +125,8 @@ generate_export_filename <- function(format, title = "", department = "") {
 #'
 #' @examples
 #' \dontrun{
-#' sanitize_filename("København Sygehus")
-#' # "København_Sygehus"
+#' sanitize_filename("Koebenhavn Sygehus")
+#' # "Koebenhavn_Sygehus"
 #'
 #' sanitize_filename("Test@#$Name")
 #' # "TestName"
@@ -154,8 +154,8 @@ sanitize_filename <- function(text) {
   text <- gsub(" ", "_", text, fixed = TRUE)
 
   # Remove special characters (keep alphanumeric, Danish chars, underscore, hyphen)
-  # Pattern: keep A-Z, a-z, 0-9, æøåÆØÅ, underscore, hyphen
-  text <- gsub("[^A-Za-z0-9_æøåÆØÅ-]", "", text)
+  # Pattern: keep A-Z, a-z, 0-9, aeoeaaAeOeAa, underscore, hyphen
+  text <- gsub("[^A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5-]", "", text)
 
   # Collapse multiple underscores to single underscore
   text <- gsub("_{2,}", "_", text)

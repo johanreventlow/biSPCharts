@@ -1,5 +1,5 @@
 # fct_file_validation.R
-# Fil-validering, fejlhåndtering og data preprocessing for uploads
+# Fil-validering, fejlhaandtering og data preprocessing for uploads
 # Udtrukket fra fct_file_operations.R for bedre separation of concerns
 
 # ENHANCED FILE VALIDATION ===================================================
@@ -29,12 +29,12 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
         )
       )
     }
-    errors <- c(errors, paste("Filstørrelse overskrider maksimum på", max_size_mb, "MB"))
+    errors <- c(errors, paste("Filst\u00f8rrelse overskrider maksimum p\u00e5", max_size_mb, "MB"))
   }
 
   # Additional DoS protection: Row count limits for data files
   if (tolower(tools::file_ext(file_info$name)) == "csv") {
-    # Quick row count check for CSV files uden at læse al data
+    # Quick row count check for CSV files uden at laese al data
     safe_operation(
       "Quick CSV row count validation",
       code = {
@@ -90,13 +90,13 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
 
   # MIME type validation - sikr at file extension matcher content type
   if (length(errors) == 0) {
-    # Basic MIME type check baseret på file header
+    # Basic MIME type check baseret paa file header
     file_header <- readBin(file_info$datapath, what = "raw", n = 8)
 
     # Check for common malicious patterns eller uoverensstemmelser
     is_valid_mime <- switch(tolower(trimws(file_ext)),
       "csv" = {
-        # CSV filer bør ikke have binary headers
+        # CSV filer boer ikke have binary headers
         !any(file_header[1:4] == as.raw(c(0x50, 0x4B, 0x03, 0x04))) # ZIP header (Excel)
       },
       "xlsx" = {

@@ -1,7 +1,7 @@
 # ==============================================================================
 # CONFIG_BRANDING_GETTERS.R
 # ==============================================================================
-# FORMÅL: Safe access til hospital branding (navn, logo, theme, farver) uden
+# FORMAaL: Safe access til hospital branding (navn, logo, theme, farver) uden
 #         global environment pollution. Loader brand.yml og eksponerer via
 #         getter-funktioner.
 #
@@ -65,7 +65,7 @@ load_brand_config <- function() {
     return(list(
       meta = list(
         name = "SPC Hospital",
-        description = "Statistical Process Control værktøj"
+        description = "Statistical Process Control v\u00e6rkt\u00f8j"
       ),
       logo = list(
         image = "www/BISPCHARTS.png"
@@ -109,9 +109,9 @@ load_brand_config <- function() {
 
 #' Create Bootstrap Theme from Brand Configuration
 #'
-#' Bygger et custom bslib theme baseret på brand.yml farver.
+#' Bygger et custom bslib theme baseret paa brand.yml farver.
 #' Bruger Flatly som base-preset og overskriver alle farver og
-#' navbar-styling med hospitalets officielle BFHtheme-værdier.
+#' navbar-styling med hospitalets officielle BFHtheme-vaerdier.
 #'
 #' @noRd
 create_brand_theme <- function(config = NULL) {
@@ -134,7 +134,7 @@ create_brand_theme <- function(config = NULL) {
         light = colors$light %||% "#f8f8f8",
         dark = colors$dark %||% "#333333",
 
-        # Navbar: hospital primary blå med hvid tekst
+        # Navbar: hospital primary blaa med hvid tekst
         "navbar-bg" = colors$primary %||% "#007dbb",
         "navbar-dark-color" = "rgba(255,255,255,0.85)",
         "navbar-dark-hover-color" = "white",
@@ -146,7 +146,7 @@ create_brand_theme <- function(config = NULL) {
         "headings-font-family" = "Mari, Arial, Helvetica, sans-serif",
         "headings-font-weight" = 400
       ) |>
-        # Knapper: lysere sekundær-knapper end koncern-grå
+        # Knapper: lysere sekundaer-knapper end koncern-graa
         bslib::bs_add_rules(paste0(
           ".btn-secondary {",
           "  --bs-btn-bg: ", colors$ui_grey_mid %||% "#8f8f8f", ";",

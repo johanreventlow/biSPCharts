@@ -34,6 +34,7 @@ is_time_unit <- function(ui_type) {
 #' @param n_present Logical – om N-kolonne er valgt (bruges som n/exposure)
 #' @return Character – intern klasse
 #' @keywords internal
+#' @noRd
 determine_internal_class <- function(ui_type, y, n_present = FALSE) {
   ui <- tolower(ui_type %||% "count")
 
@@ -117,6 +118,7 @@ decide_default_y_axis_ui_type <- function(chart_type, n_present) {
 #' @param chart_type qicharts2-kode eller dansk label
 #' @return one of {"count","percent","rate","time"}
 #' @keywords internal
+#' @noRd
 chart_type_to_ui_type <- function(chart_type) {
   # "t", "pp" og "up" er kendte qic-koder, men ikke i CHART_TYPES_EN endnu,
   # så vi matcher dem direkte før kaldet til get_qic_chart_type() (som

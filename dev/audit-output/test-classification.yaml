@@ -19,8 +19,8 @@ metadata:
   audit_run: 2026-04-24T11:23:31+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 116
-    unreviewed: 12
+    reviewed: 115
+    unreviewed: 13
     needs_triage: 0
 files:
   - file: test-100x-mismatch-prevention.R
@@ -139,6 +139,11 @@ files:
       efter API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-cache-reactive-lazy-evaluation.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-centerline-handling.R
     audit_category: green
     type: unit
@@ -1002,3 +1007,4 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+

@@ -1,10 +1,16 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+#
+# Job hierarchy:
+#   R-CMD-check    — hurtig smoke check på alle branches (--no-tests, error-on error)
+#   R-CMD-check-gate — fuld check med tests + warning-gate (kun PRs→master + tags)
+#   release-gate   — tarball build + --as-cran check + artifact audit (kun PRs→master + tags)
 name: R-CMD-check
 
 on:
   push:
     branches: [master, develop]
+    tags: ['v*']
   pull_request:
     branches: [master, develop]
   workflow_dispatch:
@@ -12,23 +18,21 @@ on:
 permissions: read-all
 
 jobs:
+  # --- 1. Hurtig smoke check (alle pushes/PRs) ---
   R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    runs-on: ubuntu-latest
+    name: smoke (${{ matrix.config.r }})
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      # Signal til testthat-skip helpers; supplement til den automatiske CI=true
       CI_SKIP_SHINYTEST2: "true"
-      # AI/RAG features kraever API-keys og er ikke aktive paa CI
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
 
@@ -43,21 +47,116 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      # Cross-repo deps haandteres nu transitivt via Remotes-felter i
-      # biSPCharts (top-level), BFHcharts (>= 0.8.1) og BFHllm (>= 0.1.2).
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      # Pragmatisk konfiguration for biSPCharts (Shiny app, pre-1.0):
-      # - --no-tests: package-checken holdes hurtig paa develop-pushes
-      # - error-on "error": kun ERRORs blokerer; WARNINGs/NOTEs er synlige men
-      #   non-blocking (pre-existing pakke-hygiejne issues)
-      # CI validerer nu: NAMESPACE-integritet, dep-resolution, kompilering,
-      # pakke-installation, examples (efter \dontrun{} cleanup), basal struktur.
+      # Hurtig smoke: ingen tests, kun ERRORs blokerer.
+      # Holder develop-pushes hurtige (< 5 min).
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           error-on: '"error"'
           args: 'c("--no-manual", "--no-tests")'
+
+  # --- 2. PR-gate: fuld check med tests + warning-gate ---
+  R-CMD-check-gate:
+    runs-on: ubuntu-latest
+    name: gate (tests + warnings)
+    if: >
+      (github.event_name == 'pull_request' && github.base_ref == 'master') ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      CI_SKIP_SHINYTEST2: "true"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      # Fuld gate: tests kører, WARNINGs blokerer.
+      # Kræver at eksisterende WARNINGs er ryddet (se openspec/changes/
+      # fix-dependency-namespace-guards + cleanup-package-artifacts).
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          error-on: '"warning"'
+          args: 'c("--no-manual")'
+
+  # --- 3. Release-gate: tarball build + --as-cran check ---
+  release-gate:
+    runs-on: ubuntu-latest
+    name: release-gate (tarball + as-cran)
+    if: >
+      (github.event_name == 'pull_request' && github.base_ref == 'master') ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      CI_SKIP_SHINYTEST2: "true"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      _R_CHECK_CRAN_INCOMING_REMOTE_: false
+      _R_CHECK_FORCE_SUGGESTS_: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - name: Build tarball
+        run: R CMD build --no-manual --no-build-vignettes .
+        shell: bash
+
+      - name: Check tarball (--as-cran)
+        run: |
+          TARBALL=$(ls biSPCharts_*.tar.gz | head -1)
+          R CMD check --as-cran --no-manual --no-build-vignettes "$TARBALL"
+        shell: bash
+
+      - name: Audit tarball contents (no forbidden artifacts)
+        run: |
+          TARBALL=$(ls biSPCharts_*.tar.gz | head -1)
+          FORBIDDEN=$(tar -tzf "$TARBALL" | grep -E '(\.claude|\.worktrees|\.DS_Store|\.\.Rcheck|Rplots\.pdf|\.backup|/logs/|/rsconnect/)' || true)
+          if [ -n "$FORBIDDEN" ]; then
+            echo "ERROR: Forbidden artifacts found in tarball:"
+            echo "$FORBIDDEN"
+            exit 1
+          fi
+          echo "Tarball audit: clean"
+        shell: bash
+
+      - name: Upload tarball check output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-check-output
+          path: biSPCharts.Rcheck/
+          if-no-files-found: ignore

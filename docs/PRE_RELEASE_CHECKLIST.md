@@ -6,7 +6,9 @@ Køres før hvert release-tag (`vX.Y.Z`) — alle punkter SKAL bekræftes.
 
 - [ ] `devtools::test()` grøn (0 FAIL, 0 ERR)
 - [ ] `devtools::check()` ren — 0 ERRORs, 0 WARNINGs
-- [ ] `R CMD check --as-cran --no-tests --no-manual --no-vignettes --no-build-vignettes` — 0 WARNINGs
+- [ ] Tarball-check: `R CMD build --no-manual . && R CMD check --as-cran --no-manual biSPCharts_*.tar.gz` — 0 WARNINGs
+- [ ] Tarball-audit: `tar -tzf biSPCharts_*.tar.gz | grep -E '(\.claude|\.worktrees|\.DS_Store|\.\.Rcheck|Rplots\.pdf|\.backup)'` — ingen output
+- [ ] Skip-inventory: `Rscript dev/audit_test_skips.R` — ingen uventede TODO-skips tilføjet
 - [ ] Manuelle smoke-tests: app starter, upload virker, chart renderes
 
 ## 2. DESCRIPTION og versioning
@@ -52,4 +54,17 @@ Følgende NOTEs er kendte og accepterede:
 
 ---
 
-*Sidst opdateret: 2026-04-24 (improve-package-hygiene #287)*
+---
+
+## 8. CI gates (verificér at alle er grønne)
+
+- [ ] `R-CMD-check` (smoke) — grøn på master-branch
+- [ ] `R-CMD-check-gate` (tests + warnings) — grøn på PR mod master
+- [ ] `release-gate` (tarball + --as-cran) — grøn på PR mod master
+- [ ] `testthat` — grøn
+- [ ] `skip-inventory` — grøn (ingen uventede TODO-stigninger)
+- [ ] `shinytest2` nightly — se seneste nightly run for visuel regression
+
+---
+
+*Sidst opdateret: 2026-04-25 (harden-ci-quality-gates #315)*

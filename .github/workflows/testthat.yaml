@@ -1,12 +1,12 @@
-# Kører den fulde testthat-suite paa PRs mod master og ved direkte master-push.
-# Dette holder develop-pushes hurtige, mens master stadig får den dybe testdækning.
+# Kører den fulde testthat-suite på PRs og push mod master + develop.
+# stop_on_failure = TRUE: CI fejler ved røde tests.
 name: testthat
 
 on:
   pull_request:
-    branches: [master]
+    branches: [master, develop]
   push:
-    branches: [master]
+    branches: [master, develop]
   workflow_dispatch:
 
 permissions: read-all
@@ -43,6 +43,5 @@ jobs:
 
       - name: Run testthat
         run: |
-          options(testthat.output_file = "test-results.xml")
-          testthat::test_dir("tests/testthat", reporter = "summary", stop_on_failure = FALSE)
+          testthat::test_dir("tests/testthat", reporter = "summary", stop_on_failure = TRUE)
         shell: Rscript {0}

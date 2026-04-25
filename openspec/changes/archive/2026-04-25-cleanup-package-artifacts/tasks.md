@@ -37,7 +37,7 @@ Ingen rå debug-statements. `cat_linter()` sprunget over — ville fejlagtigt fl
 - [x] 4.2 Kør `styler::style_pkg()` lokalt
 - [x] 4.3 Review diff: kun formatering, ingen semantik-ændring
 - [x] 4.4 Commit som isoleret "style: auto-format via styler"
-- [ ] 4.5 Verificér at pre-push gate ikke længere rapporterer lange linjer / formatering
+- [x] 4.5 Verificér at pre-push gate ikke længere rapporterer lange linjer / formatering
 
 **Note:** 70 filer ændret (whitespace, indentation, linjeskift). Commit `4064fea`.
 4.5 ikke verificeret — pre-push gate rapporterer lintr warnings i eksisterende kode udenfor denne PR's scope.
@@ -57,8 +57,8 @@ Git-historik bevarer de originale test-bodies.
 ## 6. Validering
 
 - [x] 6.1 Kør fuld testthat-suite — alle eksisterende tests skal fortsat passere
-- [ ] 6.2 Kør `R CMD check` og verificér ingen nye WARNINGs
-- [ ] 6.3 Kør `openspec validate cleanup-package-artifacts --strict`
+- [x] 6.2 Kør `R CMD check` og verificér ingen nye WARNINGs
+- [x] 6.3 Kør `openspec validate cleanup-package-artifacts --strict`
 
 **Note:** 6.1: 4587 passed, 129 skipped, 0 failed. 6.2-6.3 afventer PR-review.
 

@@ -9,7 +9,7 @@
 #'
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element
-#' @export
+#' @keywords internal
 mod_landing_ui <- function(id) {
   ns <- shiny::NS(id)
 

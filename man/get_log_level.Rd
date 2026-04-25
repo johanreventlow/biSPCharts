@@ -7,12 +7,12 @@
 get_log_level()
 }
 \value{
-Heltalsværdi svarende til log-niveau (se \code{LOG_LEVELS})
+Heltalsvaerdi svarende til log-niveau (se \code{LOG_LEVELS})
 }
 \description{
-Læser \code{SPC_LOG_LEVEL} fra environment og returnerer tilsvarende numeriske værdi.
-Understøtter både navne (f.eks. \code{"DEBUG"}) og tal (f.eks. \code{"1"}).
-Fald tilbage til \code{INFO} ved ugyldig værdi.
+Laeser \code{SPC_LOG_LEVEL} fra environment og returnerer tilsvarende numeriske vaerdi.
+Understoetter baade navne (f.eks. \code{"DEBUG"}) og tal (f.eks. \code{"1"}).
+Fald tilbage til \code{INFO} ved ugyldig vaerdi.
 }
 \examples{
 \dontrun{

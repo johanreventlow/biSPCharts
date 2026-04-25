@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_y_axis_scaling.R
 \name{normalize_axis_value}
 \alias{normalize_axis_value}
-\title{Normalize axis value using complete 3-layer architecture (100×-mismatch safe)}
+\title{Normalize axis value using complete 3-layer architecture (100x-mismatch safe)}
 \usage{
 normalize_axis_value(
   x,
@@ -14,7 +14,7 @@ normalize_axis_value(
 )
 }
 \arguments{
-\item{x}{Character string input (e.g., "80\%", "0,8", "25‰")}
+\item{x}{Character string input (e.g., "80\%", "0,8", "25\%\%")}
 
 \item{user_unit}{Character. Explicit user unit choice (priority 1)}
 
@@ -32,6 +32,6 @@ Numeric value in internal unit, ready for qicharts2
 \description{
 Main entry point that combines parsing, unit resolution, and conversion.
 This replaces parse_danish_target() with cleaner separation of concerns.
-Now includes chart-type awareness to prevent 100×-mismatch.
+Now includes chart-type awareness to prevent 100x-mismatch.
 }
 \keyword{internal}

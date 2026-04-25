@@ -3,7 +3,7 @@
 \docType{data}
 \name{MIN_SPC_ROWS}
 \alias{MIN_SPC_ROWS}
-\title{Minimum antal rækker for SPC analyse}
+\title{Minimum antal raekker for SPC analyse}
 \format{
 An object of class \code{numeric} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 MIN_SPC_ROWS
 }
 \description{
-Minimum antal rækker for SPC analyse
+Minimum antal raekker for SPC analyse
 }
 \keyword{internal}

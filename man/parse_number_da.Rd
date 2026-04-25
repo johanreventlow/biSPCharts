@@ -7,12 +7,12 @@
 parse_number_da(x)
 }
 \arguments{
-\item{x}{Character string to parse (e.g., "80\%", "8‰", "0,5")}
+\item{x}{Character string to parse (e.g., "80\%", "8\%\%", "0,5")}
 }
 \value{
 List with elements:
 \itemize{
-\item value: Numeric value as written (80\% → 80, not 0.8)
+\item value: Numeric value as written (80\% -> 80, not 0.8)
 \item symbol: One of "percent", "permille", "none"
 }
 }

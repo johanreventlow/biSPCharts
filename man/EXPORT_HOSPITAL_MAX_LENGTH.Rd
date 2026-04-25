@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 EXPORT_HOSPITAL_MAX_LENGTH
 }
 \description{
-Begrænser hospitalsnavn til 250 karakterer.
+Begraenser hospitalsnavn til 250 karakterer.
 }
 \keyword{internal}

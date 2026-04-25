@@ -13,8 +13,8 @@ parse_hhmm_strings(x)
 Numeric vektor med minutter.
 }
 \description{
-Sekunder konverteres til brøkdele af minutter (rundes ikke her —
-det håndteres af format_time_composite() ved render-tid).
+Sekunder konverteres til broekdele af minutter (rundes ikke her --
+det haandteres af format_time_composite() ved render-tid).
 Ugyldige strenge returnerer NA.
 }
 \keyword{internal}

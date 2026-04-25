@@ -10,7 +10,7 @@ get_debug_context()
 Character vector af de filtrerede contexts, eller \code{NULL} hvis ingen filtrering er aktiv
 }
 \description{
-Returnerer den nuværende \code{spc.debug.context} option værdi.
+Returnerer den nuvaerende \code{spc.debug.context} option vaerdi.
 }
 \examples{
 \dontrun{

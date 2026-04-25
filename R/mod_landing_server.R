@@ -10,7 +10,7 @@
 #' @param parent_session Shiny session. Parent session for navbar navigation og custom messages.
 #' @param app_state Centraliseret app state. Bruges til at observere peek_result.
 #' @return NULL
-#' @export
+#' @keywords internal
 mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
     # Dynamisk landing body — venter på peek_result fra JS/R peek-observer.

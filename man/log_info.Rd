@@ -23,7 +23,7 @@ Convenience-funktion til logging af INFO-beskeder.
 }
 \details{
 \strong{Kontekst-filtrering:}
-Understøtter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
+Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
 }
 \examples{
 \dontrun{

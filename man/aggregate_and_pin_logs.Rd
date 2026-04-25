@@ -14,9 +14,10 @@ aggregate_and_pin_logs(log_directory = "logs/", session_id = NULL)
 \description{
 Prioriteret backend:
 \enumerate{
-\item GitHub privat repo (GITHUB_PAT + PIN_REPO_URL sat) — append-model,
-hver session-afslutning skriver én .rds-fil til data-repo.
-\item Posit Connect Server pins (CONNECT_SERVER sat) — legacy/lokal dev.
+\item GitHub privat repo (GITHUB_PAT + PIN_REPO_URL sat) -- append-model,
+hver session-afslutning skriver en .rds-fil til data-repo.
+\item Posit Connect Server pins (CONNECT_SERVER sat) -- legacy/lokal dev.
 \item No-op hvis ingen backend er konfigureret.
 }
 }
+\keyword{internal}

@@ -17,8 +17,8 @@ generate_export_filename(format, title = "", department = "")
 Complete filename med extension (e.g., "SPC_Kardiologi_Graf.pdf")
 }
 \description{
-Genererer sanitized filnavn til export baseret på format, titel og afdeling.
-Inkluderer korrekt file extension og håndterer danske karakterer.
+Genererer sanitized filnavn til export baseret paa format, titel og afdeling.
+Inkluderer korrekt file extension og haandterer danske karakterer.
 }
 \details{
 Filename structure:
@@ -30,9 +30,9 @@ Filename structure:
 
 Supported formats:
 \itemize{
-\item "pdf" → ".pdf"
-\item "png" → ".png"
-\item Unknown → ".pdf" (default)
+\item "pdf" -> ".pdf"
+\item "png" -> ".png"
+\item Unknown -> ".pdf" (default)
 }
 }
 \examples{

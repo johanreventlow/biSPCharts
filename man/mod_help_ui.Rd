@@ -16,3 +16,4 @@ Shiny UI element
 Hjælpeside med SPC-grundbegreber og app-vejledning.
 Indholdet er statisk og kræver ingen server-logik.
 }
+\keyword{internal}

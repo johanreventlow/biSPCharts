@@ -2,7 +2,7 @@
 % Please edit documentation in R/config_chart_types.R
 \name{chart_type_requires_denominator}
 \alias{chart_type_requires_denominator}
-\title{Kræver diagramtype en nævner (n)?}
+\title{Kraever diagramtype en naevner (n)?}
 \usage{
 chart_type_requires_denominator(chart_type)
 }
@@ -10,13 +10,13 @@ chart_type_requires_denominator(chart_type)
 \item{chart_type}{Valgt diagramtype (dansk label eller engelsk kode)}
 }
 \value{
-TRUE hvis nævner er relevant (skal være aktiv i UI), ellers FALSE
+TRUE hvis naevner er relevant (skal vaere aktiv i UI), ellers FALSE
 }
 \description{
-Hjælper der afgør om nævner-feltet (n_column) er relevant for den valgte
+Hjaelper der afgoer om naevner-feltet (n_column) er relevant for den valgte
 diagramtype. Bruges til at styre UI (enable/disable) og til at undlade at
 sende \code{n} til qicharts2 for irrelevante typer.
 }
 \details{
-Acceptér både danske labels og engelske qicharts2-koder.
+Accepter baade danske labels og engelske qicharts2-koder.
 }

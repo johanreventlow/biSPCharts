@@ -21,7 +21,7 @@ hash_session_token <- function(token) {
 #'
 #' @param input,output,session Internal Shiny parameters
 #'
-#' @export
+#' @keywords internal
 main_app_server <- function(input, output, session) {
   # Get session token and hash it for secure logging
   session_token <- session$token %||% paste0("session_", Sys.time(), "_", sample(1000:9999, 1))

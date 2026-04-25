@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_spc_helpers.R
 \name{value_box_signal_theme}
 \alias{value_box_signal_theme}
-\title{Bestem value box theme baseret på signal-status}
+\title{Bestem value box theme baseret paa signal-status}
 \usage{
 value_box_signal_theme(status_info, signal)
 }

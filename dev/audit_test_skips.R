@@ -51,9 +51,6 @@ parse_file <- function(path) {
       # Collect the full call (may span multiple lines) — simple heuristic
       call_buf <- line
       j <- i
-      open_parens <- sum(chartr("(", "(", line) == "(", na.rm = TRUE) -
-        nchar(gsub("[^(]", "", line))
-      close_parens <- nchar(gsub("[^)]", "", line))
       balance <- nchar(gsub("[^(]", "", line)) - nchar(gsub("[^)]", "", line))
 
       while (balance > 0 && j < length(lines)) {

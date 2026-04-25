@@ -7,7 +7,7 @@
 #' Validerer input-konfiguration for SPC plot generation.
 #' Ekstraeret fra generateSPCPlot for bedre testability.
 #'
-#' @param config List med konfigurationsværdier (x_col, y_col, n_col)
+#' @param config List med konfigurationsvaerdier (x_col, y_col, n_col)
 #' @return Sanitized configuration list
 #' @keywords internal
 sanitize_spc_config <- function(config) {
@@ -19,7 +19,7 @@ sanitize_spc_config <- function(config) {
         config$x_col <- NULL
       }
       if (!is.null(config$y_col) && (length(config$y_col) == 0 || identical(config$y_col, character(0)))) {
-        stop("Y-kolonne kan ikke være character(0)")
+        stop("Y-kolonne kan ikke v\u00e6re character(0)")
       }
       if (!is.null(config$n_col) && (length(config$n_col) == 0 || identical(config$n_col, character(0)))) {
         config$n_col <- NULL
@@ -34,7 +34,7 @@ sanitize_spc_config <- function(config) {
 
 #' Process chart title with reactive handling
 #'
-#' Processor chart titel med robust reactive værdi håndtering.
+#' Processor chart titel med robust reactive vaerdi haandtering.
 #' Ekstraeret fra generateSPCPlot for bedre separation of concerns.
 #'
 # process_chart_title er defineret i fct_spc_helpers.R (med XSS-sanitering)
@@ -42,7 +42,7 @@ sanitize_spc_config <- function(config) {
 
 #' Filter data to complete rows with type preservation
 #'
-#' Filtrerer data til komplette rækker mens POSIXct/Date formats bevares.
+#' Filtrerer data til komplette raekker mens POSIXct/Date formats bevares.
 #' Ekstraeret fra generateSPCPlot for genbrug og testability.
 #'
 #' @param data Original data frame
@@ -61,7 +61,7 @@ filter_complete_spc_data <- function(data, y_col, n_col = NULL, x_col = NULL) {
         complete_rows <- !is.na(y_data_raw) & trimws(as.character(y_data_raw)) != ""
 
         if (!any(complete_rows)) {
-          stop(paste("Ingen gyldige værdier fundet i", y_col, "kolonnen. Tjek at kolonne indeholder numeriske værdier."))
+          stop(paste("Ingen gyldige v\u00e6rdier fundet i", y_col, "kolonnen. Tjek at kolonne indeholder numeriske v\u00e6rdier."))
         }
       } else {
         # Ratio chart data filtering
@@ -73,7 +73,7 @@ filter_complete_spc_data <- function(data, y_col, n_col = NULL, x_col = NULL) {
           trimws(as.character(naevner_raw)) != ""
 
         if (!any(complete_rows)) {
-          stop("Ingen komplette datarækker fundet. Tjek at både tæller og nævner kolonner har gyldige værdier.")
+          stop("Ingen komplette datar\u00e6kker fundet. Tjek at b\u00e5de t\u00e6ller og n\u00e6vner kolonner har gyldige v\u00e6rdier.")
         }
       }
 
@@ -125,7 +125,7 @@ parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_co
 
       if (any(is.na(parsed_y))) {
         invalid_count <- sum(is.na(parsed_y))
-        stop(paste("Kunne ikke konvertere", invalid_count, "værdier i", y_col, "til numeriske værdier"))
+        stop(paste("Kunne ikke konvertere", invalid_count, "v\u00e6rdier i", y_col, "til numeriske v\u00e6rdier"))
       }
 
       result <- list(y_data = parsed_y)
@@ -136,12 +136,12 @@ parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_co
 
         if (any(is.na(parsed_n))) {
           invalid_count <- sum(is.na(parsed_n))
-          stop(paste("Kunne ikke konvertere", invalid_count, "værdier i", n_col, "til numeriske værdier"))
+          stop(paste("Kunne ikke konvertere", invalid_count, "v\u00e6rdier i", n_col, "til numeriske v\u00e6rdier"))
         }
 
         # Check for zero denominators
         if (any(parsed_n == 0)) {
-          stop("Nævner kan ikke være nul (division by zero)")
+          stop("N\u00e6vner kan ikke v\u00e6re nul (division by zero)")
         }
 
         result$n_data <- parsed_n
@@ -156,7 +156,7 @@ parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_co
 
 #' Calculate Y-axis data based on chart type
 #'
-#' Beregner Y-axis data baseret på chart type og tilgængelige data.
+#' Beregner Y-axis data baseret paa chart type og tilgaengelige data.
 #' Ekstraeret fra generateSPCPlot for bedre modularity.
 #'
 #' @param chart_type Chart type ("run", "p", "pp", "u", "up", etc.)
@@ -189,7 +189,7 @@ calculate_y_axis_data <- function(chart_type, y_data, n_data = NULL) {
 
 #' Generate Y-axis label based on chart type and configuration
 #'
-#' Genererer Y-axis label baseret på chart type, enheder og kolonnenavne.
+#' Genererer Y-axis label baseret paa chart type, enheder og kolonnenavne.
 #' Ekstraeret fra generateSPCPlot for consistency og testability.
 #'
 #' @param chart_type Chart type

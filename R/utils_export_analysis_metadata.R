@@ -51,11 +51,11 @@ compute_at_target <- function(centerline, target_value, target_text = NULL) {
   tolerance <- max(abs(target_value) * 0.05, 0.01)
   close_enough <- abs(centerline - target_value) <= tolerance
 
-  if (grepl("^\\s*(>|>=|≥|↑)", target_label)) {
+  if (grepl("^\\s*(>|>=|\u2265|\u2191)", target_label)) {
     return(close_enough || centerline >= target_value)
   }
 
-  if (grepl("^\\s*(<|<=|≤|↓)", target_label)) {
+  if (grepl("^\\s*(<|<=|\u2264|\u2193)", target_label)) {
     return(close_enough || centerline <= target_value)
   }
 

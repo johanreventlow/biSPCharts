@@ -7,7 +7,7 @@
 # ==============================================================================
 
 setup_paste_data_observers <- function(input, output, app_state, session, emit, ui_service = NULL) {
-  # Observer: "Fortsæt" knap — indlæs pasted data
+  # Observer: "Fortsaet" knap -- indlaes pasted data
   shiny::observeEvent(input$load_paste_data, {
     shinyjs::disable("load_paste_data")
     shinyjs::html(
@@ -26,15 +26,15 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
         ))
       )
     })
-    # Bevar chart_type fra eksempeldatasæt-valg (reset_form_fields sætter den til "run")
+    # Bevar chart_type fra eksempeldatasaet-valg (reset_form_fields saetter den til "run")
     current_chart_type <- input$chart_type
 
-    # Nulstil alle indstillinger inden nyt datasæt processeres
+    # Nulstil alle indstillinger inden nyt datasaet processeres
     if (!is.null(ui_service)) {
       ui_service$reset_form_fields()
     }
 
-    # Gendan chart_type hvis den var sat (fx fra eksempeldatasæt)
+    # Gendan chart_type hvis den var sat (fx fra eksempeldatasaet)
     if (!is.null(current_chart_type) && nzchar(current_chart_type) && current_chart_type != CHART_TYPES_EN$run) {
       shiny::updateSelectizeInput(session, "chart_type", selected = current_chart_type)
     }
@@ -65,16 +65,16 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
     )
   })
 
-  # Observer: Toggle dropdown for eksempeldatasæt
+  # Observer: Toggle dropdown for eksempeldatasaet
   shiny::observeEvent(input$toggle_sample_dropdown, {
     shinyjs::toggle("sample_data_dropdown")
   })
 
-  # Observer: Bruger vælger eksempeldatasæt fra dropdown
+  # Observer: Bruger vaelger eksempeldatasaet fra dropdown
   shiny::observeEvent(input$selected_sample, {
     sample_id <- input$selected_sample
 
-    # Find datasæt-metadata fra config
+    # Find datasaet-metadata fra config
     dataset <- NULL
     for (ds in SAMPLE_DATASETS) {
       if (ds$id == sample_id) {
@@ -91,7 +91,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       return()
     }
 
-    # Læs CSV-fil fra inst/extdata/
+    # Laes CSV-fil fra inst/extdata/
     sample_path <- system.file("extdata", dataset$file, package = "biSPCharts")
     if (sample_path == "" || !file.exists(sample_path)) {
       sample_path <- file.path("inst", "extdata", dataset$file)
@@ -103,7 +103,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
         session, "paste_data_input",
         value = paste(sample_text, collapse = "\n")
       )
-      # Sæt chart type dropdown til det anbefalede chart type for datasættet
+      # Saet chart type dropdown til det anbefalede chart type for datasaettet
       shiny::updateSelectizeInput(
         session, "chart_type",
         selected = dataset$chart_type
@@ -140,18 +140,18 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
     }
   )
 
-  # Observer: "Indlæs xlsx/csv" knap — trigger skjult fileInput
+  # Observer: "Indlaes xlsx/csv" knap -- trigger skjult fileInput
   shiny::observeEvent(input$trigger_file_upload, {
-    # Klik på det skjulte fileInput via JS
+    # Klik paa det skjulte fileInput via JS
     shinyjs::click("direct_file_upload")
   })
 
-  # Observer: Direkte fil-upload — validér og behandl via eksisterende upload-logik
+  # Observer: Direkte fil-upload -- valider og behandl via eksisterende upload-logik
   shiny::observeEvent(input$direct_file_upload, {
     req(input$direct_file_upload)
     file_info <- input$direct_file_upload
 
-    # Filvalidering (rate limiting, størrelse, MIME, korruption)
+    # Filvalidering (rate limiting, stoerrelse, MIME, korruption)
     validation_result <- validate_uploaded_file(
       file_info, sanitize_session_token(session$token)
     )
@@ -173,7 +173,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
           handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
         } else {
           # Standard Excel: kolonne-aware formatering med komma-decimal
-          # Bevarer type-information (i modsætning til apply som koercerer til matrix)
+          # Bevarer type-information (i modsaetning til apply som koercerer til matrix)
           data <- readxl::read_excel(file_info$datapath, col_names = TRUE)
           header <- paste(names(data), collapse = "\t")
           rows <- vapply(seq_len(nrow(data)), function(i) {
@@ -210,7 +210,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
           type = "message", duration = 3
         )
       } else {
-        shiny::showNotification("Kun xlsx, xls og csv filer understøttes", type = "error")
+        shiny::showNotification("Kun xlsx, xls og csv filer underst\u00f8ttes", type = "error")
       }
     })
   })

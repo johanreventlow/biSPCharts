@@ -1,7 +1,7 @@
 # ==============================================================================
 # CONFIG_EXPORT_CONFIG.R
 # ==============================================================================
-# FORMÅL: Export-specifikke konstanter for PDF og PNG eksport.
+# FORMAaL: Export-specifikke konstanter for PDF og PNG eksport.
 #         Centraliserer alle export defaults, size presets, DPI options og
 #         metadata limitations.
 #
@@ -21,15 +21,15 @@
 
 #' Export size presets for different output formats
 #'
-#' Prædefinerede størrelser til eksport af SPC plots.
-#' Hver preset inkluderer bredde, højde, DPI og display label.
+#' Praedefinerede stoerrelser til eksport af SPC plots.
+#' Hver preset inkluderer bredde, hoejde, DPI og display label.
 #'
 #' @format Named list med size preset objekter
 #' @details
 #' Presets inkluderer:
 #' - small: 800x600px ved 96 DPI (lille web/email format)
-#' - medium: 1200x900px ved 96 DPI (standard præsentation)
-#' - large: 1920x1440px ved 96 DPI (høj opløsning)
+#' - medium: 1200x900px ved 96 DPI (standard praesentation)
+#' - large: 1920x1440px ved 96 DPI (hoej oploesning)
 #'
 #' @keywords internal
 EXPORT_SIZE_PRESETS <- list(
@@ -38,43 +38,43 @@ EXPORT_SIZE_PRESETS <- list(
     height = 600,
     dpi = 96,
     unit = "px",
-    label = "Lille (800 × 600 px)"
+    label = "Lille (800 \u00d7 600 px)"
   ),
   medium = list(
     width = 1200,
     height = 900,
     dpi = 96,
     unit = "px",
-    label = "Medium (1200 × 900 px)"
+    label = "Medium (1200 \u00d7 900 px)"
   ),
   large = list(
     width = 1920,
     height = 1440,
     dpi = 96,
     unit = "px",
-    label = "Stor (1920 × 1440 px)"
+    label = "Stor (1920 \u00d7 1440 px)"
   )
 )
 
 #' Convert Size Preset to Dimensions
 #'
-#' Konverterer en size preset navn til konkrete dimensioner og DPI værdier.
-#' Bruges til at mappe UI dropdown værdier til faktiske export parametre.
+#' Konverterer en size preset navn til konkrete dimensioner og DPI vaerdier.
+#' Bruges til at mappe UI dropdown vaerdier til faktiske export parametre.
 #'
 #' @param preset_name Character preset name ("small", "medium", "large")
 #'
 #' @return Named list med width, height, dpi, unit, label
-#'   - width: Numeric width (pixels eller inches afhængig af unit)
-#'   - height: Numeric height (pixels eller inches afhængig af unit)
+#'   - width: Numeric width (pixels eller inches afhaengig af unit)
+#'   - height: Numeric height (pixels eller inches afhaengig af unit)
 #'   - dpi: Numeric DPI resolution
 #'   - unit: Character unit type ("px" eller "in")
 #'   - label: Character display label for UI
 #'
 #' @details
 #' Available presets (fra EXPORT_SIZE_PRESETS):
-#' - small: 800×600px @ 96 DPI (lille web/email format)
-#' - medium: 1200×900px @ 96 DPI (standard præsentation)
-#' - large: 1920×1440px @ 96 DPI (høj opløsning)
+#' - small: 800x600px @ 96 DPI (lille web/email format)
+#' - medium: 1200x900px @ 96 DPI (standard praesentation)
+#' - large: 1920x1440px @ 96 DPI (hoej oploesning)
 #'
 #' Default fallback: medium preset hvis preset_name ikke findes
 #'
@@ -86,7 +86,7 @@ EXPORT_SIZE_PRESETS <- list(
 #'
 #' # Unknown preset falls back to medium
 #' preset <- get_size_from_preset("unknown")
-#' # Returns: medium preset (1200×900px @ 96 DPI)
+#' # Returns: medium preset (1200x900px @ 96 DPI)
 #' }
 #'
 #' @keywords internal
@@ -127,9 +127,9 @@ get_size_from_preset <- function(preset_name) {
 
 #' DPI (Dots Per Inch) options for export
 #'
-#' Standard DPI værdier til forskellige export kvaliteter.
+#' Standard DPI vaerdier til forskellige export kvaliteter.
 #'
-#' @format Integer vector med tilgængelige DPI værdier
+#' @format Integer vector med tilgaengelige DPI vaerdier
 #' @details
 #' - 72 DPI: Web graphics (low quality)
 #' - 96 DPI: Standard screen resolution
@@ -159,28 +159,28 @@ EXPORT_ASPECT_RATIO_MAX <- 2.0
 
 #' Maximum character length for export title
 #'
-#' Begrænser titel længde til 200 karakterer for at undgå layout problemer.
+#' Begraenser titel laengde til 200 karakterer for at undgaa layout problemer.
 #'
 #' @keywords internal
 EXPORT_TITLE_MAX_LENGTH <- 200
 
 #' Maximum character length for export description
 #'
-#' Begrænser beskrivelse længde til 2000 karakterer for PDF metadata.
+#' Begraenser beskrivelse laengde til 2000 karakterer for PDF metadata.
 #'
 #' @keywords internal
 EXPORT_DESCRIPTION_MAX_LENGTH <- 2000
 
 #' Maximum character length for department name
 #'
-#' Begrænser afdeling/afsnit navn til 250 karakterer.
+#' Begraenser afdeling/afsnit navn til 250 karakterer.
 #'
 #' @keywords internal
 EXPORT_DEPARTMENT_MAX_LENGTH <- 250
 
 #' Maximum character length for hospital name
 #'
-#' Begrænser hospitalsnavn til 250 karakterer.
+#' Begraenser hospitalsnavn til 250 karakterer.
 #'
 #' @keywords internal
 EXPORT_HOSPITAL_MAX_LENGTH <- 250
@@ -205,7 +205,7 @@ EXPORT_FILENAME_SEPARATOR <- "_"
 
 #' Export format options
 #'
-#' Tilgængelige eksport formater med display labels.
+#' Tilgaengelige eksport formater med display labels.
 #'
 #' @format Named character vector med format labels
 #' @keywords internal
@@ -218,7 +218,7 @@ EXPORT_FORMAT_OPTIONS <- c(
 
 #' Export validation rules
 #'
-#' Regler til validering af export inputs før generering.
+#' Regler til validering af export inputs foer generering.
 #'
 #' @format Named list med validation parameters
 #' @keywords internal

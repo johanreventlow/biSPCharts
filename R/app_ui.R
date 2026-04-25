@@ -9,9 +9,9 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
-    # CSS: Skjul wizard-trin og hjælp i navbar fra start.
-    # Klassen 'wizard-nav-active' på <body> viser dem (tilføjes af JS ved "Kom i gang").
-    # Dette undgår FOUC (flash of unstyled content) i langsomme browsere.
+    # CSS: Skjul wizard-trin og hjaelp i navbar fra start.
+    # Klassen 'wizard-nav-active' paa <body> viser dem (tilfoejes af JS ved "Kom i gang").
+    # Dette undgaar FOUC (flash of unstyled content) i langsomme browsere.
     shiny::tags$style(htmltools::HTML("
       .navbar .nav-link[data-value='upload'],
       .navbar .nav-link[data-value='analyser'],
@@ -42,9 +42,9 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
         display: block !important;
       }
-      /* Flash-mitigation: undgå tom landing mens peek-resultatet afklares */
+      /* Flash-mitigation: undgaa tom landing mens peek-resultatet afklares */
       #landing-landing_body:empty { min-height: 60vh; }
-      /* Grå linkfarve på hjælpesider (matcher download-template-link) */
+      /* Graa linkfarve paa hjaelpesider (matcher download-template-link) */
       .tab-pane a { color: #666666; }
       .tab-pane a:hover { color: #333333; }
     ")),
@@ -80,7 +80,7 @@ app_ui <- function(request) {
       ),
 
       # Navigation tabs (wizard trin)
-      # data-step attributter tilføjes via JS (wizard-nav.js) da bslib
+      # data-step attributter tilfoejes via JS (wizard-nav.js) da bslib
       # genererer nav-links dynamisk. value param bruges til identifikation.
 
       # Trin 1: Upload
@@ -91,23 +91,23 @@ app_ui <- function(request) {
         create_ui_upload_page()
       ),
 
-      # Trin 2: Analysér
+      # Trin 2: Analyser
       bslib::nav_panel(
-        title = "Analysér",
+        title = "Analys\u00e9r",
         icon = shiny::icon("chart-line"),
         value = "analyser",
         create_ui_main_content()
       ),
 
-      # Trin 3: Eksportér
+      # Trin 3: Eksporter
       bslib::nav_panel(
-        title = "Eksportér",
+        title = "Eksport\u00e9r",
         icon = shiny::icon("file-export"),
         value = "eksporter",
         mod_export_ui("export")
       ),
 
-      # Visuelt skel mellem wizard-trin og hjælp
+      # Visuelt skel mellem wizard-trin og hjaelp
       bslib::nav_spacer(),
 
       # Auto-save status i navbar (synlig fra alle wizard-trin)
@@ -123,9 +123,9 @@ app_ui <- function(request) {
         mod_app_guide_ui("app_guide")
       ),
 
-      # Hjælp (adskilt fra wizard-flow)
+      # Hjaelp (adskilt fra wizard-flow)
       bslib::nav_panel(
-        title = "Lær om SPC",
+        title = "L\u00e6r om SPC",
         icon = shiny::icon("book-open"),
         value = "hjaelp",
         mod_help_ui("help")
@@ -155,7 +155,7 @@ golem_add_external_resources <- function() {
         path = app_sys("app/www"),
         app_title = "biSPCharts"
       ),
-      # Accessibility: aria-live på Shinys notification-panel
+      # Accessibility: aria-live paa Shinys notification-panel
       shiny::tags$script(htmltools::HTML(
         "$(function(){
           var p = document.getElementById('shiny-notification-panel');

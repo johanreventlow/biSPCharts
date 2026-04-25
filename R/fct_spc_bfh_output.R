@@ -2,9 +2,9 @@
 # BFHchart Output Processing & Comment Integration
 #
 # Transformerer BFHcharts-output til standardiseret format.
-# Håndterer:
+# Haandterer:
 # - Output-strukturering (plot, qic_data, metadata)
-# - Anhøj-rules-ekstrahering
+# - Anhoej-rules-ekstrahering
 # - Comment-annotation (note-placering med ggrepel)
 
 transform_bfh_output <- function(
@@ -99,7 +99,7 @@ transform_bfh_output <- function(
         qic_data$lcl <- NA_real_
       }
 
-      # 7. Extract Anhøj rules metadata from BFHchart output
+      # 7. Extract Anhoej rules metadata from BFHchart output
       anhoej_metadata <- extract_anhoej_metadata(qic_data)
 
       # 8. Use BFHchart's anhoej.signal or calculate combined signal
@@ -120,14 +120,14 @@ transform_bfh_output <- function(
       # 10. Convert to tibble for consistency
       qic_data <- tibble::as_tibble(qic_data)
 
-      # 11. Build metadata with Anhøj rules
+      # 11. Build metadata with Anhoej rules
       metadata <- list(
         chart_type = chart_type,
         n_points = nrow(qic_data),
         n_phases = length(unique(qic_data$part)),
         freeze_applied = freeze_applied, # Use parameter passed from compute_spc_results_bfh
         signals_detected = if ("signal" %in% names(qic_data) && "part" %in% names(qic_data)) {
-          # Tæl antal parts med signal (anhoej.signal er per-part, ikke per-punkt)
+          # Tael antal parts med signal (anhoej.signal er per-part, ikke per-punkt)
           sum(tapply(qic_data$signal, qic_data$part, function(x) any(x, na.rm = TRUE)))
         } else {
           sum(qic_data$signal, na.rm = TRUE)
@@ -155,10 +155,10 @@ transform_bfh_output <- function(
         .context = "BFH_SERVICE"
       )
 
-      # Log Anhøj metadata if available
+      # Log Anhoej metadata if available
       if (!is.null(anhoej_metadata)) {
         log_debug(
-          paste("Anhøj rules:", format_anhoej_metadata(anhoej_metadata)),
+          paste("Anh\u00f8j rules:", format_anhoej_metadata(anhoej_metadata)),
           .context = "BFH_SERVICE"
         )
       }

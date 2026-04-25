@@ -208,6 +208,7 @@ call_bfh_chart <- function(bfh_params) {
 #' \code{\link{call_bfh_chart}} for BFHchart invocation
 #' @keywords internal
 
+#' @noRd
 validate_chart_type_bfh <- function(chart_type) {
   safe_operation(
     operation_name = "Chart type validation",

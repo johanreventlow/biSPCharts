@@ -6,12 +6,12 @@
 
 #' Extract SPC Statistics from App State
 #'
-#' Udtræk Anhøj rules statistikker fra app_state til brug i export funktioner.
-#' Returnerer named list med expected og actual værdier for runs, crossings, outliers.
+#' Udtraek Anhoej rules statistikker fra app_state til brug i export funktioner.
+#' Returnerer named list med expected og actual vaerdier for runs, crossings, outliers.
 #'
 #' @param app_state Reactive values. Global app state med visualization data.
 #'
-#' @return List med SPC statistikker eller NULL hvis ikke tilgængelige.
+#' @return List med SPC statistikker eller NULL hvis ikke tilgaengelige.
 #'   Liste indeholder: runs_expected, runs_actual, crossings_expected,
 #'   crossings_actual, outliers_expected, outliers_actual
 #'
@@ -32,36 +32,36 @@ extract_spc_statistics <- function(app_state) {
       # NOTE: Don't use return() inside safe_operation code blocks!
       result <- NULL
 
-      # Validér app_state eksisterer
+      # Valider app_state eksisterer
       if (is.null(app_state)) {
         log_warn(
           component = "[EXPORT]",
-          message = "app_state er NULL - kan ikke udtrække SPC statistikker"
+          message = "app_state er NULL - kan ikke udtr\u00e6kke SPC statistikker"
         )
       } else {
-        # Hent Anhøj results fra visualization state
+        # Hent Anhoej results fra visualization state
         anhoej <- app_state$visualization$anhoej_results
 
         if (is.null(anhoej)) {
           log_warn(
             component = "[EXPORT]",
-            message = "Ingen Anhøj results tilgængelige"
+            message = "Ingen Anh\u00f8j results tilg\u00e6ngelige"
           )
         } else if (!isTRUE(anhoej$has_valid_data)) {
           # Check om vi har valid data
           log_debug(
             component = "[EXPORT]",
-            message = "Anhøj results ikke valid endnu",
+            message = "Anh\u00f8j results ikke valid endnu",
             details = list(message = anhoej$message %||% "Ingen besked")
           )
         } else {
-          # Udtræk statistikker
+          # Udtraek statistikker
           result <- list(
             runs_expected = anhoej$longest_run_max,
             runs_actual = anhoej$longest_run,
             crossings_expected = anhoej$n_crossings_min,
             crossings_actual = anhoej$n_crossings,
-            outliers_expected = 0, # Anhøj rules forventer 0 outliers normalt
+            outliers_expected = 0, # Anhoej rules forventer 0 outliers normalt
             outliers_actual = anhoej$out_of_control_count %||% 0
           )
 
@@ -82,7 +82,7 @@ extract_spc_statistics <- function(app_state) {
     fallback = function(e) {
       log_error(
         component = "[EXPORT]",
-        message = "Fejl ved udtrækning af SPC statistikker",
+        message = "Fejl ved udtr\u00e6kning af SPC statistikker",
         details = list(error = e$message)
       )
       NULL
@@ -92,20 +92,20 @@ extract_spc_statistics <- function(app_state) {
 }
 
 # Details string genereres nu af BFHcharts::bfh_generate_details() automatisk.
-# generate_details_string() er fjernet — se bfh_export_pdf(auto_details).
+# generate_details_string() er fjernet -- se bfh_export_pdf(auto_details).
 
 # CHECK QUARTO AVAILABILITY ===================================================
 
 #' Check if Quarto is Available
 #'
-#' Tjekker om Quarto CLI er tilgængelig på systemet.
-#' Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
+#' Tjekker om Quarto CLI er tilgaengelig paa systemet.
+#' Bruges til at vise/skjule PDF export option baseret paa Quarto tilgaengelighed.
 #'
 #' @return Logical. Altid TRUE da Quarto er inkluderet i RStudio.
 #'
 #' @note
 #' Denne funktion returnerer altid TRUE, da Quarto er bundled med RStudio.
-#' BFHcharts::bfh_export_pdf() håndterer Quarto errors internt.
+#' BFHcharts::bfh_export_pdf() haandterer Quarto errors internt.
 #'
 #' @examples
 #' \dontrun{
@@ -118,7 +118,7 @@ extract_spc_statistics <- function(app_state) {
 #' @keywords internal
 quarto_available <- function() {
   # Altid TRUE - Quarto er inkluderet i RStudio
-  # BFHcharts::quarto_available() er ikke exporteret, så vi undgår namespace fejl
+  # BFHcharts::quarto_available() er ikke exporteret, saa vi undgaar namespace fejl
   TRUE
 }
 
@@ -147,18 +147,18 @@ inject_template_assets <- function(template_dir) {
         return(invisible(FALSE))
       }
 
-      # Kopier fonts — kun Mari Book + Bold (OTF) og Arial.
+      # Kopier fonts -- kun Mari Book + Bold (OTF) og Arial.
       # Ekskluderer Mari Regular (visuelt identisk med Book pga. weight 400
-      # metadata, men Typst kan foretrække "Regular" style over "Book").
-      # MariOffice TTF udelades da Typst's weight-matching vælger Bold (700)
+      # metadata, men Typst kan foretraekke "Regular" style over "Book").
+      # MariOffice TTF udelades da Typst's weight-matching vaelger Bold (700)
       # som default i stedet for Book (300).
       src_fonts <- file.path(src_base, "fonts")
       dst_fonts <- file.path(template_dir, "fonts")
       if (dir.exists(src_fonts)) {
         if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
-        allowed <- c("Mari Book.otf", "Mari Bold.otf")
+        allowed <- c("Mari_Book.otf", "Mari_Bold.otf")
         font_files <- list.files(src_fonts, full.names = TRUE)
-        # Inkludér: allowed Mari-varianter + alle Arial-filer
+        # Inkluder: allowed Mari-varianter + alle Arial-filer
         is_allowed <- basename(font_files) %in% allowed |
           grepl("^ARI", basename(font_files), ignore.case = TRUE)
         file.copy(font_files[is_allowed], dst_fonts, overwrite = FALSE)
@@ -184,7 +184,7 @@ inject_template_assets <- function(template_dir) {
 #' Get Hospital Name for Export
 #'
 #' Henter hospital navn fra branding config til brug i exports.
-#' Fallback til default hvis ikke tilgængeligt.
+#' Fallback til default hvis ikke tilgaengeligt.
 #'
 #' @return Character. Hospital navn.
 #'
@@ -196,7 +196,7 @@ inject_template_assets <- function(template_dir) {
 #' @family export_helpers
 #' @keywords internal
 get_hospital_name_for_export <- function() {
-  # Prøv at hente fra branding config
+  # Proev at hente fra branding config
   if (exists("get_hospital_name") && is.function(get_hospital_name)) {
     # Silent-fail korrekt: hospital-navn til eksport er ikke-essentiel (valgfri metadata)
     name <- tryCatch(
@@ -235,12 +235,12 @@ get_hospital_name_for_export <- function() {
 #' @return Character path til PNG preview fil eller NULL ved fejl.
 #'
 #' @details
-#' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
+#' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF->PNG):
 #' 1. Genererer chart PNG via \code{ggplot2::ggsave()}
 #' 2. Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
 #' 3. Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 #'
-#' PNG filen er midlertidig og vil blive slettet når R session afsluttes.
+#' PNG filen er midlertidig og vil blive slettet naar R session afsluttes.
 #'
 #' @examples
 #' \dontrun{
@@ -275,7 +275,7 @@ generate_pdf_preview <- function(bfh_qic_result,
 
       result <- NULL
 
-      # Validér inputs - must be bfh_qic_result object
+      # Valider inputs - must be bfh_qic_result object
       valid_input <- !is.null(bfh_qic_result) && BFHcharts::is_bfh_qic_result(bfh_qic_result)
 
       if (!valid_input) {
@@ -287,7 +287,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         # Check Quarto availability (includes Typst)
         log_warn(
           component = "[EXPORT]",
-          message = "Quarto ikke tilgængelig - PDF preview kan ikke genereres"
+          message = "Quarto ikke tilg\u00e6ngelig - PDF preview kan ikke genereres"
         )
       } else {
         # Create temp directory for Typst compilation
@@ -308,7 +308,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         chart_png <- file.path(temp_dir, "chart.png")
 
         # Use same dimensions as export_pdf config for consistency
-        # R/config_plot_contexts.R: export_pdf = 200×120mm @ 300 DPI
+        # R/config_plot_contexts.R: export_pdf = 200x120mm @ 300 DPI
         ggplot2::ggsave(
           filename = chart_png,
           plot = plot_no_title,
@@ -320,10 +320,10 @@ generate_pdf_preview <- function(bfh_qic_result,
         )
 
         # 2. Extract SPC stats using BFHcharts public API.
-        #    Send hele bfh_qic_result (ikke kun $summary) så S3-dispatch sender
+        #    Send hele bfh_qic_result (ikke kun $summary) saa S3-dispatch sender
         #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
         #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
-        #    ville tabellen "OBS. UDEN FOR KONTROLGRÆNSE" være tom i preview.
+        #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
         spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
 
         # 3. Merge metadata with chart title
@@ -342,7 +342,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke)
         inject_template_assets(file.path(temp_dir, "bfh-template"))
 
-        # 5. Compile Typst directly to PNG (more efficient than PDF→PNG)
+        # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
         temp_png <- tempfile(fileext = ".png")
 
         # Use quarto typst compile with PNG format
@@ -384,7 +384,7 @@ generate_pdf_preview <- function(bfh_qic_result,
         } else {
           log_info(
             component = "[EXPORT]",
-            message = "PDF preview genereret succesfuldt (Typst→PNG)",
+            message = "PDF preview genereret succesfuldt (Typst\u2192PNG)",
             details = list(
               png = temp_png,
               size_kb = round(file.size(temp_png) / 1024, 1),

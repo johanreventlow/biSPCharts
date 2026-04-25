@@ -39,11 +39,11 @@ create_data_ready_reactive <- function(module_data_reactive) {
     data <- module_data_reactive()
     shiny::req(shiny::isTruthy(data))
     shiny::req(nrow(data) > 0)
-    # Guard: kræv mindst 3 rækker med reelle data (SPC kræver minimum 3 punkter)
+    # Guard: kraev mindst 3 raekker med reelle data (SPC kraever minimum 3 punkter)
     data_cols <- setdiff(names(data), c("Skift", "Frys"))
     if (length(data_cols) > 0) {
       data_subset <- data[, data_cols, drop = FALSE]
-      # Brug kun !is.na() — undgå != "" som fejler for Date/POSIXct kolonner
+      # Brug kun !is.na() -- undgaa != "" som fejler for Date/POSIXct kolonner
       rows_with_values <- sum(rowSums(!is.na(data_subset)) > 0)
       shiny::req(rows_with_values >= 3)
     }
@@ -108,7 +108,7 @@ create_spc_inputs_reactive <- function(
     config <- chart_config()
     shiny::req(config)
 
-    # FIX: Hent y_axis_unit tidligt for at afgøre om n_col skal cleares
+    # FIX: Hent y_axis_unit tidligt for at afgoere om n_col skal cleares
     unit_value <- if (!is.null(y_axis_unit_reactive)) y_axis_unit_reactive() else "count"
 
     # DEBUG: Log config BEFORE n_col clearing
@@ -123,8 +123,8 @@ create_spc_inputs_reactive <- function(
     )
 
     # FIX: For run charts med y_axis_unit = "count", clear n_col fra config
-    # Run charts kan kun bruge nævner (denominator) når y_axis_unit = "percent"
-    # Dette forhindrer plot generation failure når bruger skifter fra percent til count
+    # Run charts kan kun bruge naevner (denominator) naar y_axis_unit = "percent"
+    # Dette forhindrer plot generation failure naar bruger skifter fra percent til count
     qic_chart_type <- get_qic_chart_type(config$chart_type %||% "run")
     if (identical(qic_chart_type, "run") && identical(unit_value, "count")) {
       config$n_col <- NULL
@@ -157,9 +157,9 @@ create_spc_inputs_reactive <- function(
     kommentar_value <- if (!is.null(kommentar_column_reactive)) kommentar_column_reactive() else NULL
     target_text_value <- if (!is.null(target_text_reactive)) target_text_reactive() else NULL
 
-    # VIEWPORT DIMENSIONS: Kræv faktiske clientData dimensioner.
+    # VIEWPORT DIMENSIONS: Kraev faktiske clientData dimensioner.
     # Blokerer evaluering indtil browseren har rapporteret reelle dimensioner.
-    # Eliminerer label-placering baseret på forkerte 800×600 defaults.
+    # Eliminerer label-placering baseret paa forkerte 800x600 defaults.
     width_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
     height_px <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_height")]]
 
@@ -167,22 +167,22 @@ create_spc_inputs_reactive <- function(
 
     if (getOption("spc.debug.label_placement", FALSE)) {
       log_debug(
-        sprintf("Viewport: %d×%d px (clientData)", width_px, height_px),
+        sprintf("Viewport: %d\u00d7%d px (clientData)", width_px, height_px),
         "VIEWPORT_DIMENSIONS"
       )
     }
 
-    # Beregn responsive base_size baseret på viewport diagonal (geometric mean)
+    # Beregn responsive base_size baseret paa viewport diagonal (geometric mean)
     # Konfiguration i FONT_SCALING_CONFIG (R/config_ui.R)
     #
     # VIGTIG: Vi dividerer IKKE med pixelratio fordi Shiny's renderPlot()
     # automatisk multiplicerer res med pixelratio (res = 96 * pixelratio).
-    # Dette sikrer at fonts har samme visuelle størrelse på både standard
+    # Dette sikrer at fonts har samme visuelle stoerrelse paa baade standard
     # og Retina displays.
     #
     # GEOMETRIC MEAN APPROACH: sqrt(width_px * height_px) giver balanced scaling
-    # baseret på både bredde og højde. Dette sikrer at fonts skalerer intuitivt
-    # med den samlede plotstørrelse, ikke kun én dimension.
+    # baseret paa baade bredde og hoejde. Dette sikrer at fonts skalerer intuitivt
+    # med den samlede plotstoerrelse, ikke kun en dimension.
     pixelratio <- session$clientData$pixelratio %||% 1
     viewport_diagonal <- sqrt(width_px * height_px)
     base_size <- max(

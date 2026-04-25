@@ -170,7 +170,7 @@ verify_branding_setup <- function() {
   if (results$complete) {
     log_debug("Branding verification PASSED", .context = "BRANDING_VERIFICATION")
   } else {
-    log_debug("⚠ Branding verification PARTIAL - some elements missing", .context = "BRANDING_VERIFICATION")
+    log_debug("\u26a0 Branding verification PARTIAL - some elements missing", .context = "BRANDING_VERIFICATION")
   }
 
   return(results)

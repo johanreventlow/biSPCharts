@@ -10,6 +10,9 @@
 #   - Console summary of coverage metrics
 #   - HTML report in coverage/index.html (optional)
 
+# Skip during R CMD check (covr cannot introspect installed package in .Rcheck/)
+if (nzchar(Sys.getenv("R_TESTS"))) quit(status = 0L)
+
 # Ensure covr is available
 if (!requireNamespace("covr", quietly = TRUE)) {
   stop(

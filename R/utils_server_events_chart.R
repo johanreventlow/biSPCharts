@@ -102,8 +102,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             } else {
               qic_ct <- get_qic_chart_type(ct)
               if (!identical(qic_ct, "run")) {
-                # Brug ct (original) ikke qic_ct, så "t" matches direkte i
-                # chart_type_to_ui_type() — get_qic_chart_type("t") fallbacker
+                # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
+                # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
                 # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
                 desired_ui <- chart_type_to_ui_type(ct)
                 current_ui <- input$y_axis_unit %||% "count"
@@ -168,9 +168,9 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             ui_type <- input$y_axis_unit %||% "count"
 
             # FIX: Toggle n_column enabled state for run charts based on y-axis unit
-            # Run chart + "Tal" (count) → n_column DISABLED
+            # Run chart + "Tal" (count) -> n_column DISABLED
             # (run charts only support numerator OR ratio, not both)
-            # Run chart + "Procent" (percent) → n_column ENABLED (because ratio data requires denominator)
+            # Run chart + "Procent" (percent) -> n_column ENABLED (because ratio data requires denominator)
             ct <- get_qic_chart_type(input$chart_type %||% "run")
             if (identical(ct, "run")) {
               if (identical(ui_type, "count")) {
@@ -208,10 +208,10 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             data <- shiny::isolate(app_state$data$current_data)
             n_points <- if (!is.null(data)) nrow(data) else NA_integer_
 
-            # Review fund #2: Læs n_column fra mappings-state som fallback
-            # når input$n_column endnu ikke er landet (typisk under session
+            # Review fund #2: Laes n_column fra mappings-state som fallback
+            # naar input$n_column endnu ikke er landet (typisk under session
             # restore hvor updateSelectizeInput beskeder ikke har roundtrippet).
-            # Uden fallback logger observeren falsk "N-kolonne kræves" warning.
+            # Uden fallback logger observeren falsk "N-kolonne kraeves" warning.
             n_from_input <- !is.null(input$n_column) && nzchar(input$n_column)
             if (n_from_input) {
               n_present <- TRUE
@@ -238,7 +238,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             )
 
             if (ui_type %in% c("percent", "rate") && !n_present) {
-              log_warn("N-kolonne kræves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
+              log_warn("N-kolonne kr\u00e6ves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
             }
           },
           fallback = NULL,
@@ -366,7 +366,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                   }
                 }
 
-                # Use chart-type aware normalization (eliminates 100×-mismatch)
+                # Use chart-type aware normalization (eliminates 100x-mismatch)
                 normalized_value <- normalize_axis_value(
                   x = numeric_part,
                   user_unit = y_unit,
@@ -426,7 +426,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 }
               }
 
-              # Use chart-type aware normalization (eliminates 100×-mismatch)
+              # Use chart-type aware normalization (eliminates 100x-mismatch)
               normalized_value <- normalize_axis_value(
                 x = input$centerline_value,
                 user_unit = y_unit,

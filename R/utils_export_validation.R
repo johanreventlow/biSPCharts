@@ -1,7 +1,7 @@
 # ==============================================================================
 # UTILS_EXPORT_VALIDATION.R
 # ==============================================================================
-# FORMÅL: Input validation og sanitization for export funktioner.
+# FORMAaL: Input validation og sanitization for export funktioner.
 #         Sikrer XSS protection, character limits og dimension validation.
 #
 # FUNKTIONER:
@@ -22,7 +22,7 @@
 
 #' Validate Export Inputs
 #'
-#' Validerer alle export inputs før generering af PDF/PNG.
+#' Validerer alle export inputs foer generering af PDF/PNG.
 #' Tjekker character limits, dimension ranges og aspect ratios.
 #'
 #' @param format Export format ("pdf", "png")
@@ -30,7 +30,7 @@
 #' @param department Afdeling/afsnit (max 100 tegn)
 #' @param description Indikator beskrivelse (max 2000 tegn)
 #' @param width Custom bredde i pixels (kun PNG)
-#' @param height Custom højde i pixels (kun PNG)
+#' @param height Custom hoejde i pixels (kun PNG)
 #'
 #' @return TRUE hvis alle validations passerer
 #' @throws Error hvis validation fejler med beskrivende fejlbesked
@@ -70,7 +70,7 @@ validate_export_inputs <- function(format,
   # Character limit validation
   if (nchar(title) > EXPORT_TITLE_MAX_LENGTH) {
     errors <- c(errors, sprintf(
-      "Titel må max være %d tegn (nuværende: %d)",
+      "Titel m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
       EXPORT_TITLE_MAX_LENGTH,
       nchar(title)
     ))
@@ -78,7 +78,7 @@ validate_export_inputs <- function(format,
 
   if (nchar(description) > EXPORT_DESCRIPTION_MAX_LENGTH) {
     errors <- c(errors, sprintf(
-      "Beskrivelse må max være %d tegn (nuværende: %d)",
+      "Beskrivelse m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
       EXPORT_DESCRIPTION_MAX_LENGTH,
       nchar(description)
     ))
@@ -86,7 +86,7 @@ validate_export_inputs <- function(format,
 
   if (nchar(department) > EXPORT_DEPARTMENT_MAX_LENGTH) {
     errors <- c(errors, sprintf(
-      "Afdeling må max være %d tegn (nuværende: %d)",
+      "Afdeling m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
       EXPORT_DEPARTMENT_MAX_LENGTH,
       nchar(department)
     ))
@@ -94,7 +94,7 @@ validate_export_inputs <- function(format,
 
   if (nchar(hospital) > EXPORT_HOSPITAL_MAX_LENGTH) {
     errors <- c(errors, sprintf(
-      "Hospitalsnavn må max være %d tegn (nuværende: %d)",
+      "Hospitalsnavn m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
       EXPORT_HOSPITAL_MAX_LENGTH,
       nchar(hospital)
     ))
@@ -105,7 +105,7 @@ validate_export_inputs <- function(format,
     # Width validation
     if (width < EXPORT_VALIDATION_RULES$min_width_px) {
       errors <- c(errors, sprintf(
-        "Bredde skal være mellem %d og %d pixels (nuværende: %d)",
+        "Bredde skal v\u00e6re mellem %d og %d pixels (nuv\u00e6rende: %d)",
         EXPORT_VALIDATION_RULES$min_width_px,
         EXPORT_VALIDATION_RULES$max_width_px,
         width
@@ -114,7 +114,7 @@ validate_export_inputs <- function(format,
 
     if (width > EXPORT_VALIDATION_RULES$max_width_px) {
       errors <- c(errors, sprintf(
-        "Bredde skal være mellem %d og %d pixels (nuværende: %d)",
+        "Bredde skal v\u00e6re mellem %d og %d pixels (nuv\u00e6rende: %d)",
         EXPORT_VALIDATION_RULES$min_width_px,
         EXPORT_VALIDATION_RULES$max_width_px,
         width
@@ -124,7 +124,7 @@ validate_export_inputs <- function(format,
     # Height validation
     if (height < EXPORT_VALIDATION_RULES$min_height_px) {
       errors <- c(errors, sprintf(
-        "Højde skal være mellem %d og %d pixels (nuværende: %d)",
+        "H\u00f8jde skal v\u00e6re mellem %d og %d pixels (nuv\u00e6rende: %d)",
         EXPORT_VALIDATION_RULES$min_height_px,
         EXPORT_VALIDATION_RULES$max_height_px,
         height
@@ -133,7 +133,7 @@ validate_export_inputs <- function(format,
 
     if (height > EXPORT_VALIDATION_RULES$max_height_px) {
       errors <- c(errors, sprintf(
-        "Højde skal være mellem %d og %d pixels (nuværende: %d)",
+        "H\u00f8jde skal v\u00e6re mellem %d og %d pixels (nuv\u00e6rende: %d)",
         EXPORT_VALIDATION_RULES$min_height_px,
         EXPORT_VALIDATION_RULES$max_height_px,
         height
@@ -147,7 +147,7 @@ validate_export_inputs <- function(format,
       if (aspect_ratio < EXPORT_ASPECT_RATIO_MIN ||
         aspect_ratio > EXPORT_ASPECT_RATIO_MAX) {
         errors <- c(errors, sprintf(
-          "⚠️ Ekstrem aspekt-ratio (%.2f) kan resultere i forvrænget graf (forventet: %.1f-%.1f)",
+          "\u26a0\ufe0f Ekstrem aspekt-ratio (%.2f) kan resultere i forvr\u00e6nget graf (forventet: %.1f-%.1f)",
           aspect_ratio,
           EXPORT_ASPECT_RATIO_MIN,
           EXPORT_ASPECT_RATIO_MAX
@@ -167,10 +167,10 @@ validate_export_inputs <- function(format,
 #' Sanitize User Input for XSS Protection
 #'
 #' Renser bruger input for potentielle XSS angreb og fjerner ugyldige karakterer.
-#' Understøtter danske karakterer (æøåÆØÅ) og basis tegnsætning.
+#' Understoetter danske karakterer (aeoeaaAeOeAa) og basis tegnsaetning.
 #'
 #' @param input_value Input string til sanitization
-#' @param max_length Maximum tilladt længde (NULL for ingen grænse)
+#' @param max_length Maximum tilladt laengde (NULL for ingen graense)
 #' @param allowed_chars Regex pattern for tilladte karakterer
 #' @param html_escape Escape HTML special characters (default TRUE)
 #'
@@ -179,7 +179,7 @@ validate_export_inputs <- function(format,
 #' @details
 #' Sanitization proces:
 #' 1. Konverter NULL til tom string
-#' 2. Konverter til character hvis nødvendigt
+#' 2. Konverter til character hvis noedvendigt
 #' 3. HTML escape hvis aktiveret
 #' 4. Fjern ugyldige karakterer via regex
 #' 5. Trim whitespace
@@ -190,14 +190,14 @@ validate_export_inputs <- function(format,
 #' sanitize_user_input("<script>alert('XSS')</script>")
 #' # "&lt;script&gt;alert('XSS')&lt;/script&gt;"
 #'
-#' sanitize_user_input("København Sygehus @#$")
-#' # "København Sygehus "
+#' sanitize_user_input("Koebenhavn Sygehus @#$")
+#' # "Koebenhavn Sygehus "
 #' }
 #'
 #' @keywords internal
 sanitize_user_input <- function(input_value,
                                 max_length = NULL,
-                                allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?*_",
+                                allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?*_",
                                 html_escape = TRUE) {
   # Handle NULL input
   if (is.null(input_value)) {
@@ -246,11 +246,11 @@ sanitize_user_input <- function(input_value,
 
 #' Validate Aspect Ratio
 #'
-#' Validerer aspect ratio (bredde/højde) for export dimensioner.
-#' Advarer eller fejler ved ekstreme ratios udenfor acceptable grænser.
+#' Validerer aspect ratio (bredde/hoejde) for export dimensioner.
+#' Advarer eller fejler ved ekstreme ratios udenfor acceptable graenser.
 #'
 #' @param width Bredde i pixels eller inches
-#' @param height Højde i pixels eller inches
+#' @param height Hoejde i pixels eller inches
 #' @param warn_only Emit warning i stedet for error (default TRUE)
 #'
 #' @return TRUE hvis aspect ratio er acceptable eller warn_only = TRUE
@@ -259,7 +259,7 @@ sanitize_user_input <- function(input_value,
 #'
 #' @details
 #' Acceptable aspect ratios: 0.5 - 2.0
-#' - < 0.5: For smalt (højt og snævert)
+#' - < 0.5: For smalt (hoejt og snaevert)
 #' - > 2.0: For bredt (lavt og bredt)
 #'
 #' @examples

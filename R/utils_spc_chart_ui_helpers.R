@@ -5,25 +5,25 @@
 #
 # Purpose: Extract complex UI building logic from mod_spc_chart_server.R
 #          to keep server logic focused on reactivity and state management.
-#          Provides helper functions for rendering Anhøj rules boxes and
+#          Provides helper functions for rendering Anhoej rules boxes and
 #          status displays.
 #
 # Extracted from: mod_spc_chart_server.R (Stage 6 of Phase 2c refactoring)
 # Depends on: chart_type_reactive (for chart type detection)
 #            module_data_reactive (for data availability)
-#            get_plot_state (for status and Anhøj results)
+#            get_plot_state (for status and Anhoej results)
 # ==============================================================================
 
-#' Build Anhøj Rules Value Boxes
+#' Build Anhoej Rules Value Boxes
 #'
-#' Renders three value boxes displaying Anhøj rules analysis results:
-#' Serielængde (longest run), Antal kryds (crossings), and Uden for kontrol
+#' Renders three value boxes displaying Anhoej rules analysis results:
+#' Serielaengde (longest run), Antal kryds (crossings), and Uden for kontrol
 #' (out of control points).
 #'
 #' @param data Data frame with chart data
 #' @param config Chart configuration with column mappings
 #' @param chart_type Type of SPC chart (run, p, u, i, mr, etc.)
-#' @param anhoej Anhøj results list with signal detection and metrics
+#' @param anhoej Anhoej results list with signal detection and metrics
 #' @param get_plot_state Function to retrieve plot state values
 #'
 #' @return Shiny tagList containing three value_box elements
@@ -35,8 +35,8 @@
 #' - Calculating: Shows "Calculating..." state
 #' - Ready: Shows actual metrics with signal coloring
 #'
-#' Anhøj-bokse må aldrig suspenderes: de skal altid opdateres i baggrunden
-#' så de viser korrekte værdier straks når bruger navigerer efter session
+#' Anhoej-bokse maa aldrig suspenderes: de skal altid opdateres i baggrunden
+#' saa de viser korrekte vaerdier straks naar bruger navigerer efter session
 #' restore.
 #'
 #' @keywords internal
@@ -56,7 +56,7 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
       return(FALSE)
     }))
 
-  # Bestem nuværende status og passende indhold
+  # Bestem nuvaerende status og passende indhold
   current_anhoej <- get_plot_state("anhoej_results")
   current_is_computing <- get_plot_state("is_computing")
   current_plot_ready <- get_plot_state("plot_ready")
@@ -70,7 +70,7 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
   } else if (is.null(config) || is.null(config$y_col)) {
     list(
       status = "not_configured",
-      message = "Vælg en numerisk Y-akse-kolonne for at generere diagrammet",
+      message = "V\u00e6lg en numerisk Y-akse-kolonne for at generere diagrammet",
       theme = "warning"
     )
   } else if (!is_column_numeric(data[[config$y_col]])) {
@@ -90,12 +90,12 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
     if (meaningful_count < 10) {
       list(
         status = "insufficient_data",
-        message = "Mindst 10 datapunkter nødvendigt for SPC analyse"
+        message = "Mindst 10 datapunkter n\u00f8dvendigt for SPC analyse"
       )
     } else if (get_plot_state("is_computing") %||% FALSE) {
       list(
         status = "calculating",
-        message = "Beregner nye værdier...",
+        message = "Beregner nye v\u00e6rdier...",
         theme = "info"
       )
     } else if (!(get_plot_state("plot_ready") %||% FALSE)) {
@@ -115,27 +115,27 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
 
   # Build the three value boxes with status-aware content
   shiny::tagList(
-    ### Serielængde Box
+    ### Serielaengde Box
     build_serielengde_box(status_info, anhoej),
 
     ### Antal Kryds Box
     build_antal_kryds_box(status_info, anhoej),
 
-    ### Kontrolgrænser Box
+    ### Kontrolgraenser Box
     build_kontrolgraenser_box(status_info, anhoej, chart_type)
   )
 }
 
-#' Build Serielængde Value Box
+#' Build Serielaengde Value Box
 #'
-#' Helper to build the longest run (serielængde) value box.
+#' Helper to build the longest run (serielaengde) value box.
 #'
 #' @keywords internal
 build_serielengde_box <- function(status_info, anhoej) {
   muted_color <- get_hospital_colors()$ui_grey_soft
   bslib::value_box(
     title = shiny::span(
-      "Serielængde",
+      "Seriel\u00e6ngde",
       shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
     ) |> bslib::tooltip(
       "Antal p\u00e5 hinanden f\u00f8lgende punkter p\u00e5 samme side af centrallinjen. Hvis det faktiske tal overstiger det forventede, er der tegn p\u00e5 et skift i processen."
@@ -160,7 +160,7 @@ build_serielengde_box <- function(status_info, anhoej) {
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
           "not_configured" = "Ikke konfigureret",
-          "insufficient_data" = "For få data",
+          "insufficient_data" = "For f\u00e5 data",
           "processing" = "Behandler...",
           "calculating" = "Beregner...",
           "Afventer data"
@@ -175,7 +175,7 @@ build_serielengde_box <- function(status_info, anhoej) {
         if (!is.null(anhoej$longest_run_max) && !is.na(anhoej$longest_run_max)) {
           bslib::layout_column_wrap(width = 1 / 2, shiny::div("Forventet (maksimum)"), shiny::div("Faktisk"))
         } else {
-          "Anhøj rules analyse - serielængde"
+          "Anh\u00f8j rules analyse - seriel\u00e6ngde"
         }
       } else {
         shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
@@ -218,7 +218,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
           "not_configured" = "Ikke konfigureret",
-          "insufficient_data" = "For få data",
+          "insufficient_data" = "For f\u00e5 data",
           "processing" = "Behandler...",
           "calculating" = "Beregner...",
           "Afventer data"
@@ -233,7 +233,7 @@ build_antal_kryds_box <- function(status_info, anhoej) {
         if (!is.null(anhoej$n_crossings_min) && !is.na(anhoej$n_crossings_min)) {
           bslib::layout_column_wrap(width = 1 / 2, shiny::div("Forventet (minimum)"), shiny::div("Faktisk"))
         } else {
-          "Anhøj rules analyse - median krydsninger"
+          "Anh\u00f8j rules analyse - median krydsninger"
         }
       } else {
         shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
@@ -242,19 +242,19 @@ build_antal_kryds_box <- function(status_info, anhoej) {
   )
 }
 
-#' Build Kontrolgrænser Value Box
+#' Build Kontrolgraenser Value Box
 #'
-#' Helper to build the out-of-control points (kontrolgrænser) value box.
+#' Helper to build the out-of-control points (kontrolgraenser) value box.
 #'
 #' @keywords internal
 build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
   muted_color <- get_hospital_colors()$ui_grey_soft
   bslib::value_box(
     title = if (status_info$status == "ready" && chart_type == "run") {
-      shiny::div("Uden for kontrolgrænser", style = paste0("color: ", muted_color, " !important;"))
+      shiny::div("Uden for kontrolgr\u00e6nser", style = paste0("color: ", muted_color, " !important;"))
     } else {
       shiny::span(
-        "Uden for kontrolgrænser",
+        "Uden for kontrolgr\u00e6nser",
         shiny::icon("circle-info", style = "font-size: 0.7em; opacity: 0.6; margin-left: 4px;")
       ) |> bslib::tooltip(
         "Antal datapunkter der ligger uden for kontrolgr\u00e6nserne. Disse punkter er st\u00e6rke signaler om s\u00e6rlig variation. Kun relevant for kontroldiagrammer (I-/P-/U-/C-kort)."
@@ -282,7 +282,7 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
           "no_data" = "Ingen data",
           "not_started" = "Afventer start",
           "not_configured" = "Ikke konfigureret",
-          "insufficient_data" = "For få data",
+          "insufficient_data" = "For f\u00e5 data",
           "processing" = "Behandler...",
           "calculating" = "Beregner...",
           "Afventer data"
@@ -305,7 +305,7 @@ build_kontrolgraenser_box <- function(status_info, anhoej, chart_type) {
       },
       style = if (status_info$status == "ready" && chart_type == "run") paste0("color: ", muted_color, " !important;") else NULL,
       if (status_info$status == "ready") {
-        if (chart_type == "run") "" else "Punkter uden for kontrolgrænser"
+        if (chart_type == "run") "" else "Punkter uden for kontrolgr\u00e6nser"
       } else {
         shiny::span(style = paste0("color: ", muted_color, ";"), status_info$message)
       }

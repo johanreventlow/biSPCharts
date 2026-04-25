@@ -4,7 +4,7 @@
 #' Filtrer og forbered SPC-data fra en valideret spc_request
 #'
 #' Parser, konverterer og filtrerer input-data. Returnerer et `spc_prepared`-objekt
-#' klar til akse-opsætning og BFHcharts-rendering. Kaster `spc_prepare_error`
+#' klar til akse-opsaetning og BFHcharts-rendering. Kaster `spc_prepare_error`
 #' ved parsing- eller filtering-fejl.
 #'
 #' @param req `spc_request` objekt fra `validate_spc_request()`.
@@ -15,7 +15,7 @@ prepare_spc_data <- function(req) {
   n_rows_original <- nrow(req$data)
   y_axis_unit_early <- req$options$y_axis_unit %||% "count"
 
-  # 4. Filtrer komplette datarækker
+  # 4. Filtrer komplette dataraekker
   complete_data <- filter_complete_spc_data(
     data = req$data,
     y_col = req$y_var,
@@ -49,7 +49,7 @@ prepare_spc_data <- function(req) {
   }
 
   # 4b. Parse tids-input til kanoniske minutter hvis y-enheden er en tids-enhed.
-  # Sker FØR parse_and_validate_spc_data for at undgå at HH:MM-strenge
+  # Sker FOeR parse_and_validate_spc_data for at undgaa at HH:MM-strenge
   # bliver til NA i as.numeric()-fallbacken.
   if (is_time_unit(y_axis_unit_early)) {
     complete_data[[req$y_var]] <- parse_time_to_minutes(
@@ -76,7 +76,7 @@ prepare_spc_data <- function(req) {
     n_col = req$n_var
   )
 
-  # 6. Applicer parsede numeriske værdier tilbage til complete_data
+  # 6. Applicer parsede numeriske vaerdier tilbage til complete_data
   complete_data[[req$y_var]] <- validated$y_data
   if (!is.null(req$n_var)) {
     complete_data[[req$n_var]] <- validated$n_data
@@ -97,7 +97,7 @@ prepare_spc_data <- function(req) {
   )
 
   # 6c. Parse x-akse til Date/POSIXct hvis muligt, ellers til numerisk sekvens.
-  # BFHcharts kræver korrekte dato-typer for x-aksen.
+  # BFHcharts kraever korrekte dato-typer for x-aksen.
   if (!inherits(complete_data[[req$x_var]], c("Date", "POSIXct", "POSIXt"))) {
     log_debug(
       paste("X column is character, attempting to parse to Date:", req$x_var),
@@ -136,13 +136,13 @@ prepare_spc_data <- function(req) {
       log_info(
         paste(
           "X column parsed successfully:",
-          req$x_var, "→", class(complete_data[[req$x_var]])[1],
+          req$x_var, "\u2192", class(complete_data[[req$x_var]])[1],
           "| First value:", as.character(complete_data[[req$x_var]][1])
         ),
         .context = "BFH_SERVICE"
       )
     } else {
-      # Dato-parsing fejlede — x-kolonnen er ren tekst (fx "Uge 1", "Uge 2")
+      # Dato-parsing fejlede -- x-kolonnen er ren tekst (fx "Uge 1", "Uge 2")
       # Konverter til numerisk sekvens og gem originale labels til x-aksen
       log_info(
         paste("X column is text, converting to numeric sequence:", req$x_var),
@@ -188,7 +188,7 @@ resolve_axis_units <- function(prepared) {
   centerline_value <- options$centerline_value
   target_text <- options$target_text
 
-  # Skalér target/centerline til kanoniske minutter hvis y-enheden er en
+  # Skaler target/centerline til kanoniske minutter hvis y-enheden er en
   # tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90 med
   # time_days = 90 dage), men y-data er allerede i minutter efter step 4b.
   if (is_time_unit(y_axis_unit)) {
@@ -218,7 +218,7 @@ resolve_axis_units <- function(prepared) {
 
   # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent", "rate", "time".
   # Map de nye biSPCharts-enheder (time_minutes/hours/days) til den kanoniske "time"
-  # — data er allerede parsed til minutter (se step 4b i prepare_spc_data).
+  # -- data er allerede parsed til minutter (se step 4b i prepare_spc_data).
   if (is_time_unit(y_axis_unit) && !identical(y_axis_unit, "time")) {
     log_debug(
       paste0(
@@ -230,7 +230,7 @@ resolve_axis_units <- function(prepared) {
     y_axis_unit <- "time"
   }
 
-  # Formatér target_text som komposit-tid hvis y-enheden er en tids-enhed.
+  # Formater target_text som komposit-tid hvis y-enheden er en tids-enhed.
   if (is_time_unit(original_y_unit) &&
     !is.null(target_text) &&
     !is.null(target_value) &&
@@ -252,13 +252,13 @@ resolve_axis_units <- function(prepared) {
     target_text <- new_target_text
   }
 
-  # Guard: "percent" kræver nævner — uden nævner er det en fejldetektering
+  # Guard: "percent" kraever naevner -- uden naevner er det en fejldetektering
   if (identical(y_axis_unit, "percent") && is.null(prepared$n_var)) {
     log_warn(
       paste(
-        "y_axis_unit='percent' uden nævner (n_var=NULL) for chart_type=",
+        "y_axis_unit='percent' uden n\u00e6vner (n_var=NULL) for chart_type=",
         prepared$chart_type,
-        "— overskriver til 'count' for at undgå forkert normalisering"
+        "\u2014 overskriver til 'count' for at undg\u00e5 forkert normalisering"
       ),
       .context = "BFH_SERVICE"
     )

@@ -42,7 +42,7 @@
 #' })
 #' ```
 #'
-#' @section Hvornår safe_operation() er korrekt:
+#' @section Hvornaar safe_operation() er korrekt:
 #' Brug `safe_operation()` KUN til **ikke-essentiel kode** der kan fejle uden
 #' at appens kernefunktionalitet brydes:
 #' - UI-refresh og layout-opdateringer
@@ -50,11 +50,11 @@
 #' - Ikke-kritisk post-processing
 #'
 #' **BRUG IKKE `safe_operation()` til:**
-#' - Core data-processing (filindlæsning, parsing, transformation)
+#' - Core data-processing (filindlaesning, parsing, transformation)
 #' - Input-validering
 #' - Beregninger der driver UI-output
 #'
-#' Til fejlhåndtering med diagnostik ved multiple strategier,
+#' Til fejlhaandtering med diagnostik ved multiple strategier,
 #' brug i stedet `try_with_diagnostics()`.
 #'
 #' @param operation_name Character string describing the operation for logging
@@ -277,9 +277,9 @@ safe_getenv <- function(var_name, default = "", type = "character") {
 #' - `spc_input_error`: Ugyldig input (forkert chart_type, manglende kolonner).
 #' - `spc_prepare_error`: Data-prep fejl (dato-/talparse, filtrering).
 #' - `spc_render_error`: BFHcharts-fejl under rendering.
-#' - `spc_cache_error`: Cache-læs/skriv fejl (typisk warn, ikke error).
+#' - `spc_cache_error`: Cache-laes/skriv fejl (typisk warn, ikke error).
 #'
-#' All classes inherit from `"spc_error"` → generic `tryCatch(error = ...)` still works.
+#' All classes inherit from `"spc_error"` -> generic `tryCatch(error = ...)` still works.
 #'
 #' @param message Character string. Dansk bruger-vendt fejlbesked.
 #' @param class Character string. One of `"spc_input_error"`, `"spc_prepare_error"`,
@@ -287,7 +287,7 @@ safe_getenv <- function(var_name, default = "", type = "character") {
 #' @param ... Additional metadata passed to `rlang::abort()` (e.g. `data`, `column`).
 #' @param call Environment. Defaults to caller environment for correct traceback.
 #'
-#' @return Does not return — always throws.
+#' @return Does not return -- always throws.
 #' @keywords internal
 spc_abort <- function(message, class, ..., call = rlang::caller_env()) {
   rlang::abort(
@@ -319,11 +319,11 @@ spc_error_user_message <- function(e) {
   }
 }
 
-#' Guard: kræv valgfri pakke eller kast typed error
+#' Guard: kraev valgfri pakke eller kast typed error
 #'
 #' @param pkg Pakkenavn som character string
 #' @param reason Kort beskrivelse af hvad pakken bruges til (dansk)
-#' @return Invisible NULL hvis pakke er tilgængelig
+#' @return Invisible NULL hvis pakke er tilgaengelig
 #' @keywords internal
 require_optional_package <- function(pkg, reason = pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -331,7 +331,7 @@ require_optional_package <- function(pkg, reason = pkg) {
       list(
         message = paste0(
           "Pakken '", pkg, "' er ikke installeret. ",
-          "Den er krævet for: ", reason, ". ",
+          "Den er kr\u00e6vet for: ", reason, ". ",
           "Installer med: install.packages('", pkg, "')"
         ),
         package = pkg,
@@ -344,33 +344,33 @@ require_optional_package <- function(pkg, reason = pkg) {
   invisible(NULL)
 }
 
-#' Guard: kræv qicharts2 for Anhøj-beregninger
+#' Guard: kraev qicharts2 for Anhoej-beregninger
 #'
-#' @return Invisible NULL hvis qicharts2 er tilgængelig
+#' @return Invisible NULL hvis qicharts2 er tilgaengelig
 #' @keywords internal
 require_qicharts2 <- function() {
   require_optional_package(
     "qicharts2",
-    "Anhøj regler og SPC signal-beregning"
+    "Anh\u00f8j regler og SPC signal-beregning"
   )
 }
 
-#' Prøv multiple strategier og opsaml fejl
+#' Proev multiple strategier og opsaml fejl
 #'
-#' Itererer en navngivet liste af funktioner og returnerer første succesfulde
+#' Itererer en navngivet liste af funktioner og returnerer foerste succesfulde
 #' resultat. Hvis alle fejler, kaldes `on_all_fail` med en navngivet liste af
-#' fejlbeskeder. Hvert attempt SKAL enten returnere en værdi eller kaste en
-#' fejl — returnér aldrig `NULL` som signal for fejl.
+#' fejlbeskeder. Hvert attempt SKAL enten returnere en vaerdi eller kaste en
+#' fejl -- returner aldrig `NULL` som signal for fejl.
 #'
-#' @param attempts Named list af zero-argument funktioner. Køres i rækkefølge.
-#'   Første der returnerer uden fejl vinder. Funktioner der returnerer `NULL`
-#'   behandles som succes med `NULL`-resultat — brug `stop()` for at signalere
+#' @param attempts Named list af zero-argument funktioner. Koeres i raekkefoelge.
+#'   Foerste der returnerer uden fejl vinder. Funktioner der returnerer `NULL`
+#'   behandles som succes med `NULL`-resultat -- brug `stop()` for at signalere
 #'   fejl.
 #' @param on_all_fail Funktion der modtager named character vector af
-#'   fejlbeskeder (navn = attempt-navn, værdi = `conditionMessage(e)`).
+#'   fejlbeskeder (navn = attempt-navn, vaerdi = `conditionMessage(e)`).
 #'   Typisk brugt til at kaste en aggregeret fejl eller vise brugerbesked.
 #'
-#' @return Resultatet fra det første succesfulde attempt, eller hvad
+#' @return Resultatet fra det foerste succesfulde attempt, eller hvad
 #'   `on_all_fail` returnerer/kaster.
 #'
 #' @examples

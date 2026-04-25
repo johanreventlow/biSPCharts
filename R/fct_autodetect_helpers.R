@@ -211,7 +211,7 @@ find_numeric_columns <- function(data) {
     # Test sample for performance
     test_sample <- head(non_missing, 20)
 
-    # Try to convert to numeric (parse_danish_number håndterer komma-decimaler)
+    # Try to convert to numeric (parse_danish_number haandterer komma-decimaler)
     converted <- suppressWarnings(parse_danish_number(test_sample))
     success_rate <- sum(!is.na(converted)) / length(test_sample)
 
@@ -342,7 +342,7 @@ score_by_name_patterns <- function(col_name, role = NULL, type = NULL) {
   # SPRINT 1 OPTIMIZATION: Vectorized pattern matching (2-3x faster than loops)
   if (role == "x_column") {
     # Patterns for date/time columns
-    x_patterns <- c("dato", "date", "tid", "time", "observation", "periode", "month", "år", "year")
+    x_patterns <- c("dato", "date", "tid", "time", "observation", "periode", "month", "\u00e5r", "year")
     if (any(stringr::str_detect(col_lower, stringr::regex(x_patterns, ignore_case = TRUE)))) {
       return(1.0) # Perfect match
     }
@@ -354,7 +354,7 @@ score_by_name_patterns <- function(col_name, role = NULL, type = NULL) {
     }
   } else if (role == "y_column") {
     # Patterns for count/value columns
-    y_patterns <- c("tæller", "tael", "count", "num", "antal", "værdi", "value")
+    y_patterns <- c("t\u00e6ller", "tael", "count", "num", "antal", "v\u00e6rdi", "value")
     if (any(stringr::str_detect(col_lower, stringr::regex(y_patterns, ignore_case = TRUE)))) {
       return(1.0) # Perfect match
     }
@@ -372,7 +372,7 @@ score_by_name_patterns <- function(col_name, role = NULL, type = NULL) {
     }
   } else if (role == "n_column") {
     # Patterns for denominator columns
-    n_patterns <- c("nævner", "naev", "denom", "total", "samlet")
+    n_patterns <- c("n\u00e6vner", "naev", "denom", "total", "samlet")
     if (any(stringr::str_detect(col_lower, stringr::regex(n_patterns, ignore_case = TRUE)))) {
       return(1.0) # Perfect match
     }
@@ -417,7 +417,7 @@ score_by_data_characteristics <- function(col_data, role = NULL, type = NULL) {
     return(0)
   }
 
-  # Convert to numeric if needed (parse_danish_number håndterer komma-decimaler)
+  # Convert to numeric if needed (parse_danish_number haandterer komma-decimaler)
   if (!is.numeric(clean_data)) {
     clean_data <- suppressWarnings(parse_danish_number(as.character(clean_data)))
     clean_data <- clean_data[!is.na(clean_data)]
@@ -497,7 +497,7 @@ score_by_statistical_properties <- function(col_data, role = NULL, type = NULL) 
     return(0)
   }
 
-  # Convert to numeric if needed (parse_danish_number håndterer komma-decimaler)
+  # Convert to numeric if needed (parse_danish_number haandterer komma-decimaler)
   if (!is.numeric(clean_data)) {
     clean_data <- suppressWarnings(parse_danish_number(as.character(clean_data)))
     clean_data <- clean_data[!is.na(clean_data)]

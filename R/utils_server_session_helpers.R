@@ -1,12 +1,12 @@
 # server_helpers.R
-# Server hjælpefunktioner og utility observers
+# Server hjaelpefunktioner og utility observers
 
 # Dependencies ----------------------------------------------------------------
 
-# HJÆLPEFUNKTIONER SETUP ====================================================
+# HJAeLPEFUNKTIONER SETUP ====================================================
 
-## Hovedfunktion for hjælper
-# Opsætter alle hjælper observers og status funktioner
+## Hovedfunktion for hjaelper
+# Opsaetter alle hjaelper observers og status funktioner
 setup_helper_observers <- function(input, output, session, obs_manager = NULL, app_state = NULL) {
   # Centralized state is now always available
   # UNIFIED STATE: Empty table initialization now handled through session management events
@@ -34,7 +34,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
         invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
       )
 
-      # Betragt kun data som indlæst hvis:
+      # Betragt kun data som indlaest hvis:
       # 1. Der er meningsfuldt data, ELLER
       # 2. Bruger har uploadet en fil, ELLER
       # 3. Bruger har eksplicit startet en ny session
@@ -77,7 +77,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$session$dataLoaded_status <- new_status
   })
 
-  # Data indlæsnings status flags - følger BFH UTH mønster
+  # Data indlaesnings status flags - foelger BFH UTH moenster
   output$dataLoaded <- shiny::renderText({
     # UNIFIED EVENT SYSTEM: Return value from centralized app_state
     app_state$session$dataLoaded_status
@@ -143,8 +143,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
 
   # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi
-  # oprettelsen af auto-save observers helt over. Dette gemmer både CPU og
-  # gør debugging nemmere når funktionen er slået fra.
+  # oprettelsen af auto-save observers helt over. Dette gemmer baade CPU og
+  # goer debugging nemmere naar funktionen er slaaet fra.
   auto_save_feature_enabled <- isTRUE(get_auto_save_enabled())
 
   log_info(
@@ -204,7 +204,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       shiny::req(save_data) # Only proceed if we have valid save data
 
       # NB: last_save_time opdateres af local_storage_save_result observer
-      # når JS-siden bekræfter success — ikke her.
+      # naar JS-siden bekraefter success -- ikke her.
       autoSaveAppState(session, save_data$data, save_data$metadata,
         app_state = app_state
       )
@@ -219,11 +219,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # PERFORMANCE OPTIMIZED: Reaktiv debounced settings save med performance monitoring
   settings_save_trigger <- shiny::debounce(
     shiny::reactive({
-      # KRITISK: Skab eksplicitte reactive deps på input-felterne ved at læse
+      # KRITISK: Skab eksplicitte reactive deps paa input-felterne ved at laese
       # dem HER, udenfor isolate. Uden disse reads bliver reactiven kun
       # invalideret af app_state-deps, og collect_metadata(input, app_state = app_state) returnerer
       # stale metadata fordi alle input-reads inde i funktionen er isolated.
-      # Dette er årsagen til at fx export_title og active_tab ikke blev
+      # Dette er aarsagen til at fx export_title og active_tab ikke blev
       # persisteret selv om bindEvent korrekt fyrede observeren.
       force(input$main_navbar)
       force(input$indicator_title)
@@ -276,8 +276,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
       if (!is.null(current_data_check)) {
         md <- collect_metadata(input, app_state = app_state)
-        # Diagnostik (Issue #193): verificér at felter rent faktisk fanges ved
-        # save-tidspunkt — både target, trin 3-felter og active_tab.
+        # Diagnostik (Issue #193): verificer at felter rent faktisk fanges ved
+        # save-tidspunkt -- baade target, trin 3-felter og active_tab.
         log_info(
           sprintf(
             paste0(
@@ -314,16 +314,16 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
   obs_settings_save <- if (auto_save_feature_enabled) {
     # Ingen bindEvent her: settings_save_trigger har nu selv eksplicitte
-    # input-deps, så den fyrer via sin egen debounce når inputs ændres.
-    # Observeren reagerer på trigger-invalidering og sparer dermed ikke stale
-    # metadata (tidligere fejl: bindEvent fyrede observer før debounce kunne
-    # re-computere reactiven → stale cached value blev gemt).
+    # input-deps, saa den fyrer via sin egen debounce naar inputs aendres.
+    # Observeren reagerer paa trigger-invalidering og sparer dermed ikke stale
+    # metadata (tidligere fejl: bindEvent fyrede observer foer debounce kunne
+    # re-computere reactiven -> stale cached value blev gemt).
     shiny::observe({
       save_data <- settings_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
 
       # NB: last_save_time opdateres af local_storage_save_result observer
-      # når JS-siden bekræfter success — ikke her.
+      # naar JS-siden bekraefter success -- ikke her.
       autoSaveAppState(session, save_data$data, save_data$metadata,
         app_state = app_state
       )
@@ -363,11 +363,11 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   }
 
   # Diskret save-status indikator i navbar (Issue #193)
-  # R renderer kun containeren; JS (shiny-handlers.js) håndterer
-  # tidstælling client-side hvert 5 s for at undgå reactiveTimer
-  # keepalive-effekt på Connect Cloud.
+  # R renderer kun containeren; JS (shiny-handlers.js) haandterer
+  # tidstaelling client-side hvert 5 s for at undgaa reactiveTimer
+  # keepalive-effekt paa Connect Cloud.
   output$session_save_status <- shiny::renderUI({
-    # Brug boolean flag i stedet for timestamp for at undgå re-render
+    # Brug boolean flag i stedet for timestamp for at undgaa re-render
     # ved hvert save-cycle. JS ejer tidsteksten.
     has_saved <- !is.null(app_state$session$last_save_time)
     auto_save_on <- app_state$session$auto_save_enabled
@@ -385,7 +385,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       return(NULL)
     }
 
-    # Container — JS (_spcUpdateSaveElapsed) opdaterer teksten løbende
+    # Container -- JS (_spcUpdateSaveElapsed) opdaterer teksten loebende
     shiny::span(
       shiny::icon("check"),
       " ",
@@ -395,8 +395,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     )
   })
 
-  # JS → R feedback-kanal for localStorage save-result (Issue #193)
-  # Lytter på result fra shiny-handlers.js saveAppState handler.
+  # JS -> R feedback-kanal for localStorage save-result (Issue #193)
+  # Lytter paa result fra shiny-handlers.js saveAppState handler.
   # Ved success: opdater last_save_time. Ved fejl: deaktiver auto-save og
   # vis dansk warning til brugeren.
   obs_save_result <- shiny::observeEvent(input$local_storage_save_result, {
@@ -438,7 +438,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   return(NULL)
 }
 
-# HJÆLPEFUNKTIONER ============================================================
+# HJAeLPEFUNKTIONER ============================================================
 
 ## Opret tom session data
 # Opretter standarddatastruktur for nye sessioner
@@ -447,8 +447,8 @@ create_empty_session_data <- function() {
     Skift = rep(FALSE, 20),
     Frys = rep(FALSE, 20),
     Dato = rep(NA_character_, 20),
-    Tæller = rep(NA_real_, 20),
-    Nævner = rep(NA_real_, 20),
+    "T\u00e6ller" = rep(NA_real_, 20),
+    "N\u00e6vner" = rep(NA_real_, 20),
     Kommentar = rep(NA_character_, 20),
     stringsAsFactors = FALSE
   )
@@ -457,7 +457,7 @@ create_empty_session_data <- function() {
 # ensure_standard_columns funktionen er nu defineret i global.R
 
 ## Aktuel organisatorisk enhed
-# Reaktiv funktion for nuværende organisatoriske enhed
+# Reaktiv funktion for nuvaerende organisatoriske enhed
 current_unit <- function(input) {
   shiny::reactive({
     # Helper to sanitize input values (same as in visualization server)
@@ -479,8 +479,8 @@ current_unit <- function(input) {
         "icu" = "Intensiv Afdeling",
         "amb" = "Ambulatorie",
         "akut" = "Akutmodtagelse",
-        "paed" = "Pædiatrisk Afdeling",
-        "gyn" = "Gynækologi/Obstetrik"
+        "paed" = "P\u00e6diatrisk Afdeling",
+        "gyn" = "Gyn\u00e6kologi/Obstetrik"
       )
       selected_unit <- sanitize_input(input$unit_select)
       if (selected_unit != "" && selected_unit %in% names(unit_names)) {

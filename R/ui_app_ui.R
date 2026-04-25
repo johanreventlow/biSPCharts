@@ -7,19 +7,21 @@
 
 ## Hovedfunktion for UI header
 # Opretter alle header komponenter inklusive scripts og styles
+#' Create UI header
+#' @return tagList with header components
 #' @export
 create_ui_header <- function() {
   # Get hospital colors using the proper package function
   hospital_colors <- get_hospital_colors()
 
   shiny::tagList(
-    # Aktivér shinyjs
+    # Aktiver shinyjs
     shinyjs::useShinyjs(),
     shiny::tags$head(
       # JavaScript files loades automatisk via golem::bundle_resources() i
       # golem_add_external_resources() (app_ui.R). Manuelle <script src=...>
-      # tags her 404'ede fordi stien skulle være "www/..." og ikke root.
-      # Fjernet i Issue #193 — bundle_resources håndterer alle .js/.css i
+      # tags her 404'ede fordi stien skulle vaere "www/..." og ikke root.
+      # Fjernet i Issue #193 -- bundle_resources haandterer alle .js/.css i
       # inst/app/www/ automatisk.
 
       # Inline CSS styles
@@ -119,7 +121,7 @@ create_ui_header <- function() {
 
 
 
-    /* Parent container skal være fleksibel */
+    /* Parent container skal vaere fleksibel */
     #indicator-description-wrapper {
       display: flex !important;
       flex-direction: column !important;
@@ -129,7 +131,7 @@ create_ui_header <- function() {
       padding-bottom: 0 !important;
     }
 
-    /* Textarea skal fylde tilgængelig højde */
+    /* Textarea skal fylde tilgaengelig hoejde */
     #indicator_description {
       flex: 1 1 auto !important;
       min-height: 130px !important;
@@ -139,7 +141,7 @@ create_ui_header <- function() {
       margin-bottom: 0 !important;
     }
 
-    /* Fjern margin på form-group omkring textarea */
+    /* Fjern margin paa form-group omkring textarea */
     #indicator-description-wrapper .form-group,
     #indicator_div {
       margin-bottom: 0 !important;
@@ -203,7 +205,7 @@ create_ui_header <- function() {
       color: white;
     }
 
-    /* Loading overlay på SPC plot under genberegning */
+    /* Loading overlay paa SPC plot under genberegning */
     .spc-plot-container.input-pending .shiny-plot-output,
     .spc-plot-container .recalculating {
       opacity: 0.35 !important;
@@ -252,7 +254,7 @@ create_ui_header <- function() {
 
         ")))
     ),
-    # Tooltips på Skift/Frys tabel-headere (excelR renderer dynamisk)
+    # Tooltips paa Skift/Frys tabel-headere (excelR renderer dynamisk)
     # Keys SKAL matche kolonnenavne fra ensure_standard_columns()
     shiny::tags$script(htmltools::HTML("
       (function() {
@@ -283,8 +285,8 @@ create_ui_header <- function() {
       })();
     ")),
     # Cookie-indstillinger link (synlig i bunden af siden)
-    # Skjules på trin 2 (analyser) og 3 (eksporter) for at undgå kollision
-    # med højre-justerede actionknapper ("Fortsæt" / "Eksportér").
+    # Skjules paa trin 2 (analyser) og 3 (eksporter) for at undgaa kollision
+    # med hoejre-justerede actionknapper ("Fortsaet" / "Eksporter").
     shiny::conditionalPanel(
       condition = "input.main_navbar !== 'analyser' && input.main_navbar !== 'eksporter'",
       shiny::tags$div(
@@ -302,12 +304,14 @@ create_ui_header <- function() {
 # R/ui/ui_main_content.R
 # Main content area components
 
+#' Create UI main content area
+#' @return tagList with main content components
 #' @export
 create_ui_main_content <- function() {
   shiny::div(
     style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
 
-    # Sammenklapbar hjælp (minimal footprint når sammenklappet)
+    # Sammenklapbar hjaelp (minimal footprint naar sammenklappet)
     shiny::div(
       style = "flex-shrink: 0;",
       shiny::tags$button(
@@ -400,7 +404,7 @@ create_ui_main_content <- function() {
         )
       )
     ),
-    # Tilbage/Gem/Fortsæt knapper under cards
+    # Tilbage/Gem/Fortsaet knapper under cards
     shiny::div(
       style = "display: flex; justify-content: space-between; align-items: center;",
       shiny::actionButton(
@@ -431,7 +435,7 @@ create_ui_main_content <- function() {
 }
 
 
-# Fjernet død kode: create_chart_settings_card() (med tabs: Detaljer,
+# Fjernet doed kode: create_chart_settings_card() (med tabs: Detaljer,
 # Organisatorisk, Avanceret) og create_unit_selection().
 # Erstattet af create_chart_settings_card_compact(). Se git historie.
 
@@ -554,7 +558,7 @@ create_data_table_card <- function() {
   )
 }
 
-#' Inline kolonnemapping — 6 dropdowns i \u00e9n r\u00e6kke over datatabellen
+#' Inline kolonnemapping -- 6 dropdowns i \u00e9n r\u00e6kke over datatabellen
 #' @noRd
 create_inline_column_mapping <- function() {
   # Compact selectize med forkortet label
@@ -580,7 +584,7 @@ create_inline_column_mapping <- function() {
       "display: flex; gap: 6px; padding: 4px 0 8px 0; ",
       "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;"
     ),
-    # Begræns selectize input-felt til én linje, men lad dropdown vise fulde navne
+    # Begraens selectize input-felt til en linje, men lad dropdown vise fulde navne
     shiny::tags$style(shiny::HTML(paste0(
       ".column-mapping-row .selectize-input { height: 36px; overflow: hidden; }",
       ".column-mapping-row .selectize-input > .item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
@@ -632,12 +636,12 @@ create_status_value_boxes <- function() {
 
 #' Upload-side med kvadratiske handlingsknapper og paste-felt
 #'
-#' Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (højre).
-#' Ingen cards — rent, fladt layout.
+#' Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (hoejre).
+#' Ingen cards -- rent, fladt layout.
 #' @export
 create_ui_upload_page <- function() {
   hospital_colors <- get_hospital_colors()
-  # Hjælpefunktion: kvadratisk knap med ikon og tekst
+  # Hjaelpefunktion: kvadratisk knap med ikon og tekst
   # Alle knapper har samme base-styling. CSS class "upload-btn-active" styrer valgt-tilstand.
   square_button <- function(id, label, icon_name, title_text) {
     shiny::actionButton(
@@ -656,7 +660,7 @@ create_ui_upload_page <- function() {
   shiny::tagList(
     # CSS for upload-knap active/hover tilstande
     shiny::tags$style(htmltools::HTML(paste0("
-      /* Alle upload-source knapper: normal tilstand — lys grå */
+      /* Alle upload-source knapper: normal tilstand -- lys graa */
       .btn-outline-secondary.upload-source-btn {
         transition: all 0.15s ease;
         border-color: ", hospital_colors$ui_grey_mid, " !important;
@@ -667,7 +671,7 @@ create_ui_upload_page <- function() {
         color: ", hospital_colors$ui_grey_mid, " !important;
       }
 
-      /* Hover ikke-valgt: mørkere border+tekst+ikoner */
+      /* Hover ikke-valgt: moerkere border+tekst+ikoner */
       .btn-outline-secondary.upload-source-btn:hover {
         background-color: #fff !important;
         border-color: ", hospital_colors$ui_grey_dark, " !important;
@@ -678,7 +682,7 @@ create_ui_upload_page <- function() {
         color: ", hospital_colors$ui_grey_dark, " !important;
       }
 
-      /* Hover valgt knap: mørkere baggrund, hvid tekst */
+      /* Hover valgt knap: moerkere baggrund, hvid tekst */
       .btn-outline-secondary.upload-source-btn.upload-btn-active:hover {
         background-color: ", hospital_colors$ui_grey_dark, " !important;
         border-color: ", hospital_colors$ui_grey_dark, " !important;
@@ -689,7 +693,7 @@ create_ui_upload_page <- function() {
         color: #fff !important;
       }
 
-      /* Valgt knap: medium grå baggrund */
+      /* Valgt knap: medium graa baggrund */
       .upload-source-btn.upload-btn-active {
         background-color: ", hospital_colors$ui_grey_mid, " !important;
         border-color: ", hospital_colors$ui_grey_mid, " !important;
@@ -782,16 +786,16 @@ create_ui_upload_page <- function() {
         shiny::div(
           style = "display: flex; gap: 20px; align-items: stretch; width: 100%;",
 
-          # Knap 1: Kopiér & Indsæt data (default valgt via JS)
+          # Knap 1: Kopier & Indsaet data (default valgt via JS)
           shiny::div(
             style = "flex: 0 0 120px;",
             square_button(
-              "show_paste_area", "Kopiér &\nIndsæt data", "clipboard",
-              "Indsæt data fra Excel eller CSV"
+              "show_paste_area", "Kopi\u00e9r &\nInds\u00e6t data", "clipboard",
+              "Inds\u00e6t data fra Excel eller CSV"
             )
           ),
 
-          # Knap 2: Indlæs XLS/CSV
+          # Knap 2: Indlaes XLS/CSV
           shiny::div(
             style = "flex: 0 0 120px;",
             # Skjult fileInput
@@ -801,23 +805,23 @@ create_ui_upload_page <- function() {
                 "direct_file_upload",
                 label = NULL,
                 accept = c(".csv", ".xlsx", ".xls"),
-                buttonLabel = "Vælg fil"
+                buttonLabel = "V\u00e6lg fil"
               )
             ),
             square_button(
-              "trigger_file_upload", "Indlæs\nXLS/CSV", "table",
+              "trigger_file_upload", "Indl\u00e6s\nXLS/CSV", "table",
               "V\u00e6lg Excel/CSV eller en tidligere gemt biSPCharts-fil"
             )
           ),
 
-          # Knap 3: Prøv med eksempeldata (med dropdown)
+          # Knap 3: Proev med eksempeldata (med dropdown)
           shiny::div(
             style = "flex: 0 0 120px; position: relative;",
             square_button(
               "toggle_sample_dropdown", "Pr\u00f8v med\neksempeldata", "flask",
               "V\u00e6lg et SPC-eksempeldatas\u00e6t"
             ),
-            # Dropdown-menu med eksempeldatasæt
+            # Dropdown-menu med eksempeldatasaet
             shiny::div(
               id = "sample_data_dropdown",
               class = "sample-data-dropdown",
@@ -885,7 +889,7 @@ create_ui_upload_page <- function() {
   )
 }
 
-# Fjernet død kode: create_ui_sidebar(), create_welcome_page(),
+# Fjernet doed kode: create_ui_sidebar(), create_welcome_page(),
 # create_getting_started_card(), create_understanding_spc_card(),
 # create_step_item(), create_info_section()
 # Erstattet af wizard-baseret upload-flow. Se git historie.

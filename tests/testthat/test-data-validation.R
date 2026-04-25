@@ -1,8 +1,11 @@
 # test-data-validation.R
 # Tests af data validering og hjælpefunktioner
 
-# Load required functions for testing
-source(here::here("R", "config_chart_types.R"))
+# Load required functions if not already available via package namespace
+if (!exists("get_qic_chart_type", mode = "function")) {
+  sp <- tryCatch(here::here("R", "config_chart_types.R"), error = function(e) NULL)
+  if (!is.null(sp) && file.exists(sp)) source(sp)
+}
 
 test_that("ensure_standard_columns virker korrekt", {
   # Test data uden standard kolonner

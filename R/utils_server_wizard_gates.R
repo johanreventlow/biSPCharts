@@ -22,7 +22,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   session$sendCustomMessage("wizard-lock-step", 2)
   session$sendCustomMessage("wizard-lock-step", 3)
 
-  # Gate: Data loaded -> unlock trin 2, auto-navigér
+  # Gate: Data loaded -> unlock trin 2, auto-naviger
   shiny::observeEvent(app_state$events$data_updated,
     ignoreInit = TRUE,
     priority = OBSERVER_PRIORITIES$UI_SYNC,
@@ -32,7 +32,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
         session$sendCustomMessage("wizard-complete-step", 1)
         session$sendCustomMessage("wizard-unlock-step", 2)
         # Skip auto-navigation under session restore: restore-observer har
-        # allerede valgt korrekt tab (saved_tab), og vi må ikke overskrive
+        # allerede valgt korrekt tab (saved_tab), og vi maa ikke overskrive
         # brugerens gemte valg med default "analyser". Issue #193.
         restoring <- isTRUE(shiny::isolate(app_state$session$restoring_session))
         if (!restoring) {
@@ -59,7 +59,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
     }
   )
 
-  # Gate: Plot renderet -> unlock trin 3, enable Fortsæt-knap
+  # Gate: Plot renderet -> unlock trin 3, enable Fortsaet-knap
   shiny::observe({
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
@@ -73,7 +73,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
     }
   })
 
-  # Gem-knap: aktiv når data er uploadet (trin 2 og trin 3)
+  # Gem-knap: aktiv naar data er uploadet (trin 2 og trin 3)
   shiny::observe({
     has_data <- isTRUE(app_state$session$file_uploaded) ||
       (!is.null(app_state$data$current_data) &&
@@ -133,11 +133,11 @@ setup_wizard_gates <- function(input, output, app_state, session) {
     bslib::nav_select("main_navbar", selected = "upload", session = session)
   })
 
-  # Fortsæt-knap: Trin 2 -> Trin 3 (kun hvis plot er klar)
+  # Fortsaet-knap: Trin 2 -> Trin 3 (kun hvis plot er klar)
   shiny::observeEvent(input$continue_to_export, {
     if (!isTRUE(shiny::isolate(app_state$visualization$plot_ready))) {
       shiny::showNotification(
-        "Vælg kolonner og generer et diagram først",
+        "V\u00e6lg kolonner og generer et diagram f\u00f8rst",
         type = "warning", duration = 3
       )
       return()

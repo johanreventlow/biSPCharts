@@ -93,7 +93,7 @@ extract_comment_data <- function(data, kommentar_column, qic_data) {
       sanitize_user_input(
         input_value = cmt,
         max_length = SPC_COMMENT_CONFIG$max_length,
-        allowed_chars = "A-Za-z0-9_æøåÆØÅ .,-:!?",
+        allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?",
         html_escape = TRUE
       )
     }, USE.NAMES = FALSE)
@@ -114,7 +114,7 @@ extract_comment_data <- function(data, kommentar_column, qic_data) {
 ## Clean QIC Call Arguments
 # Renser QIC kald argumenter for komplette cases og justerer part positioner
 clean_qic_call_args <- function(call_args) {
-  # Tilføj return.data = TRUE for at få underliggende data frame i stedet for plot
+  # Tilfoej return.data = TRUE for at faa underliggende data frame i stedet for plot
   call_args$return.data <- TRUE
 
   # Rens data for komplette cases
@@ -124,7 +124,7 @@ clean_qic_call_args <- function(call_args) {
     call_args$x <- call_args$x[complete_cases]
     call_args$y <- call_args$y[complete_cases]
 
-    # Håndter n-værdier hvis de findes
+    # Haandter n-vaerdier hvis de findes
     if ("n" %in% names(call_args)) {
       call_args$n <- call_args$n[complete_cases]
     }
@@ -132,9 +132,9 @@ clean_qic_call_args <- function(call_args) {
     removed_positions <- which(!complete_cases)
     total_remaining <- sum(complete_cases)
 
-    # Håndter part positioner: juster for fjernede rækker
+    # Haandter part positioner: juster for fjernede raekker
     if ("part" %in% names(call_args) && length(removed_positions) > 0) {
-      # Juster part positioner ved at trække fjernede rækker før hver position using tidyverse
+      # Juster part positioner ved at traekke fjernede raekker foer hver position using tidyverse
       adjusted_part <- call_args$part |>
         purrr::map_dbl(~ {
           pos <- .x
@@ -153,7 +153,7 @@ clean_qic_call_args <- function(call_args) {
       }
     }
 
-    # Håndter freeze position: juster eller fjern hvis ugyldig
+    # Haandter freeze position: juster eller fjern hvis ugyldig
     if ("freeze" %in% names(call_args)) {
       adjusted_freeze <- call_args$freeze
 
@@ -186,7 +186,7 @@ clean_qic_call_args <- function(call_args) {
 build_qic_call_arguments <- function(x_data, y_data, chart_type, title_text, ylab_text,
                                      n_data = NULL, freeze_position = NULL,
                                      part_positions = NULL, target_value = NULL) {
-  # Byg grundlæggende qic kald argumenter dynamisk
+  # Byg grundlaeggende qic kald argumenter dynamisk
   call_args <- list(
     x = x_data,
     y = y_data,
@@ -195,24 +195,24 @@ build_qic_call_arguments <- function(x_data, y_data, chart_type, title_text, yla
     ylab = ylab_text
   )
 
-  # NOTE: x.period og x.format parametre bruges ikke længere da vi anvender return.data=TRUE
+  # NOTE: x.period og x.format parametre bruges ikke laengere da vi anvender return.data=TRUE
 
-  # Tilføj n når nævner er valgt af bruger (qic håndterer chart type validation)
+  # Tilfoej n naar naevner er valgt af bruger (qic haandterer chart type validation)
   if (!is.null(n_data)) {
     call_args$n <- n_data
   }
 
-  # Tilføj freeze for baseline - kan bruges sammen med part
+  # Tilfoej freeze for baseline - kan bruges sammen med part
   if (!is.null(freeze_position)) {
     call_args$freeze <- freeze_position
   }
 
-  # Tilføj part for phase splits - kan bruges sammen med freeze
+  # Tilfoej part for phase splits - kan bruges sammen med freeze
   if (!is.null(part_positions)) {
     call_args$part <- part_positions
   }
 
-  # Tilføj target line hvis angivet
+  # Tilfoej target line hvis angivet
   if (!is.null(target_value) && is.numeric(target_value) && !is.na(target_value)) {
     call_args$target <- target_value
   }
@@ -223,7 +223,7 @@ build_qic_call_arguments <- function(x_data, y_data, chart_type, title_text, yla
 # DATA PROCESSING UTILITIES ===================================================
 
 ## Process Ratio Chart Data
-# Behandler data for ratio charts (med tæller/nævner)
+# Behandler data for ratio charts (med taeller/naevner)
 process_ratio_chart_data <- function(data, config, chart_type, y_axis_unit) {
   # Ratio charts (with numerator/denominator)
   data <- filter_complete_spc_data(data, config$y_col, config$n_col, config$x_col)
@@ -254,7 +254,7 @@ process_ratio_chart_data <- function(data, config, chart_type, y_axis_unit) {
 }
 
 ## Process Standard Chart Data
-# Behandler data for standard numeriske charts (enkelt værdi)
+# Behandler data for standard numeriske charts (enkelt vaerdi)
 process_standard_chart_data <- function(data, config, chart_type, y_axis_unit) {
   # Standard numeric charts (single value)
   data <- filter_complete_spc_data(data, config$y_col, NULL, config$x_col)
@@ -279,11 +279,11 @@ process_standard_chart_data <- function(data, config, chart_type, y_axis_unit) {
 # QIC DATA GENERATION UTILITIES ===============================================
 
 ## Prepare QIC Data Parameters
-# Forbereder data parametre til qicharts2 integration med NSE håndtering
+# Forbereder data parametre til qicharts2 integration med NSE haandtering
 prepare_qic_data_parameters <- function(data, config, x_validation, chart_type) {
   x_col_name <- config$x_col # Auto-detected date column or NULL
-  y_col_name <- config$y_col # Should be "Tæller"
-  # Kun medtag nævner-kolonne for diagramtyper der kræver den
+  y_col_name <- config$y_col # Should be "Taeller"
+  # Kun medtag naevner-kolonne for diagramtyper der kraever den
   n_col_name <- if (chart_type_requires_denominator(chart_type)) config$n_col else NULL
 
   # Brug data fra x_validation i stedet for duplikeret logik
@@ -301,7 +301,7 @@ prepare_qic_data_parameters <- function(data, config, x_validation, chart_type) 
   # UPDATED CONDITION: Accept both date columns AND character columns (like "Uge tekst")
   if (!is.null(x_col_name) && x_col_name %in% names(data) &&
     (x_validation$is_date || is.character(data[[x_col_name]]))) {
-    # Debug logging før opdatering
+    # Debug logging foer opdatering
 
     if (x_validation$is_date) {
       # DATE COLUMN: Use processed data from x_validation
@@ -333,7 +333,7 @@ prepare_qic_data_parameters <- function(data, config, x_validation, chart_type) 
     x_col_for_qic <- "obs_sequence"
   }
 
-  # Note: obs_sequence fjernes IKKE fra data da det måske bruges af andre komponenter
+  # Note: obs_sequence fjernes IKKE fra data da det maaske bruges af andre komponenter
 
   # Note: Use raw column names for all chart types - let qic handle calculations
 
@@ -383,7 +383,7 @@ build_qic_arguments <- function(data, x_col_for_qic, y_col_name, n_col_name,
   if (!is.null(target_value) && is.numeric(target_value) && !is.na(target_value)) {
     adjusted_target <- target_value
 
-    # RUN charts med nævner skal have target i decimal form til qicharts2
+    # RUN charts med naevner skal have target i decimal form til qicharts2
     if (!is.null(n_col_name) && chart_type == "run" && adjusted_target > 1) {
       adjusted_target <- adjusted_target / 100
     }
@@ -395,7 +395,7 @@ build_qic_arguments <- function(data, x_col_for_qic, y_col_name, n_col_name,
   if (!is.null(centerline_value) && is.numeric(centerline_value) && !is.na(centerline_value)) {
     adjusted_centerline <- centerline_value
 
-    # RUN charts med nævner skal have centerline i decimal form til qicharts2
+    # RUN charts med naevner skal have centerline i decimal form til qicharts2
     if (!is.null(n_col_name) && chart_type == "run" && adjusted_centerline > 1) {
       adjusted_centerline <- adjusted_centerline / 100
     }
@@ -407,7 +407,7 @@ build_qic_arguments <- function(data, x_col_for_qic, y_col_name, n_col_name,
 }
 
 ## Execute QIC Call with Post-processing
-# Udfører qicharts2::qic() kald og post-processerer resultaterne
+# Udfoerer qicharts2::qic() kald og post-processerer resultaterne
 execute_qic_call <- function(qic_args, chart_type, config, qic_cache = NULL) {
   # Call qic() with prepared arguments
   if (getOption("debug.mode", FALSE)) {
@@ -462,7 +462,7 @@ execute_qic_call <- function(qic_args, chart_type, config, qic_cache = NULL) {
 #' zero changes required in mod_spc_chart_server.R.
 #'
 #' **Note:** This is a pure BFHcharts implementation. qicharts2 is used only
-#' for Anhøj rules metadata extraction (internal). No fallback to qicharts2
+#' for Anhoej rules metadata extraction (internal). No fallback to qicharts2
 #' visualization occurs.
 #'
 #' @inheritParams generateSPCPlot
@@ -558,7 +558,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   )
 
   # Normaliser config-v\u00e6rdier: character(0) og tomme strings behandles som NULL
-  # (config-felter med character(0) opstår fx ved ugyldige input fra UI)
+  # (config-felter med character(0) opstaar fx ved ugyldige input fra UI)
   normalize_config_val <- function(val) {
     if (is.null(val) || length(val) == 0) {
       return(NULL)
@@ -573,7 +573,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   n_col_val <- normalize_config_val(config$n_col)
 
   # Fallback: hvis x_col er NULL (fx character(0) fra UI), inj\u00e9r r\u00e6kkenummer som x-akse
-  # S\u00e5 backend ikke fejler p\u00e5 manglende x_var — standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret
+  # S\u00e5 backend ikke fejler p\u00e5 manglende x_var -- standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret
   if (is.null(x_col_val) && is.data.frame(data) && nrow(data) > 0) {
     data[[".spc_row_index"]] <- seq_len(nrow(data))
     x_col_val <- ".spc_row_index"
@@ -602,7 +602,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         y_axis_unit = y_axis_unit,
         # CRITICAL: Pass viewport dimensions in INCHES (BFHcharts format)
         # Converted from pixels using context-specific DPI
-        # units = "in" er nødvendigt så BFHcharts ikke gætter enheden
+        # units = "in" er noedvendigt saa BFHcharts ikke gaetter enheden
         # via smart_convert_to_inches (som fejlagtigt antager cm for 10-100 range)
         width = viewport_width_inches,
         height = viewport_height_inches,

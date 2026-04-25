@@ -1,7 +1,7 @@
 # ==============================================================================
 # CONFIG_SAMPLE_DATA.R
 # ==============================================================================
-# FORMÅL: Metadata for eksempeldatasæt til dropdown-menu i trin 1.
+# FORMAaL: Metadata for eksempeldatasaet til dropdown-menu i trin 1.
 #         Hvert entry mapper et chart type til en CSV-fil med realistiske
 #         kliniske data.
 #
@@ -17,7 +17,7 @@
 
 #' Sample Dataset Definitions
 #'
-#' Liste over eksempeldatasæt med metadata til dropdown-menu.
+#' Liste over eksempeldatasaet med metadata til dropdown-menu.
 #' Hvert entry indeholder id, label, beskrivelse, filnavn og anbefalet chart type.
 #'
 #' @format Named list of lists
@@ -25,7 +25,7 @@
 SAMPLE_DATASETS <- list(
   list(
     id = "run",
-    label = "Seriediagram \u2014 Patientfremmøde ved ambulante bes\u00f8g",
+    label = "Seriediagram \u2014 Patientfremm\u00f8de ved ambulante bes\u00f8g",
     description = "Andel patienter m\u00f8dt til aftale (m\u00f8dt/tilkaldt)",
     file = "sample_run.csv",
     chart_type = "run"

@@ -12,6 +12,7 @@
 #' @param msg Fejlbesked (tegnstreng)
 #' @return Besked med PAT erstattet af [REDACTED]
 #' @keywords internal
+#' @noRd
 redact_pat_in_url <- function(msg) {
   gsub("x-access-token:[^@]+@", "x-access-token:[REDACTED]@", msg)
 }

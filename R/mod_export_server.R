@@ -8,7 +8,7 @@
 #          Acts as orchestrator for preview rendering and exports.
 #
 # Architecture Pattern:
-#   Module initialization → Register observers from sub-modules → UI rendering
+#   Module initialization -> Register observers from sub-modules -> UI rendering
 #
 # Phase 2b Refactoring: IN PROGRESS (400 LOC target, from 1157 LOC)
 #   - Stage 1: Analysis Auto-Generation (mod_export_analysis.R)
@@ -19,7 +19,7 @@
 #
 # Key design principles:
 #   - Clear separation of concerns (each module has single responsibility)
-#   - Reactive chain isolation (preview → rendering, separate from download logic)
+#   - Reactive chain isolation (preview -> rendering, separate from download logic)
 #   - Error handling (safe_operation, graceful fallbacks)
 #   - Observability (structured logging, debug context)
 # ==============================================================================
@@ -27,11 +27,11 @@
 #' Export Module Server
 #'
 #' Server logik for eksport af SPC charts.
-#' Håndterer live preview og download af charts i PDF og PNG formater.
+#' Haandterer live preview og download af charts i PDF og PNG formater.
 #'
 #' @param id Module ID
 #' @param app_state Reactive values. Global app state med data, columns og chart config.
-#'   Tilgås read-only - ingen modificering af state.
+#'   Tilgaas read-only - ingen modificering af state.
 #' @param parent_session Shiny session. Parent session for navbar navigation (Tilbage-knap).
 #'
 #' @return Liste med reactive values for module status
@@ -55,10 +55,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       }
     })
 
-    # Tab-guard: tjek om brugeren er på eksport-fanen
-    # Bruges af export reactives for at undgå beregning på trin 1/2
+    # Tab-guard: tjek om brugeren er paa eksport-fanen
+    # Bruges af export reactives for at undgaa beregning paa trin 1/2
     is_on_export_tab <- shiny::reactive({
-      # Tilgå root session navbar input via parent session
+      # Tilgaa root session navbar input via parent session
       root_input <- session$rootScope()$input
       active_tab <- root_input$main_navbar
       identical(active_tab, "eksporter")
@@ -67,11 +67,11 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # PREVIEW GENERATION ======================================================
 
     # Export plot reactive - regenerates plot with export-specific dimensions
-    # Issue #61: Separate plot generation with context "export_preview" (800×450px)
+    # Issue #61: Separate plot generation with context "export_preview" (800x450px)
     # Issue #62: Cache isolated from analysis context
     # Debounced to prevent excessive re-rendering when user types metadata
     export_plot <- shiny::reactive({
-      # Guard: kun beregn når brugeren er på eksport-fanen
+      # Guard: kun beregn naar brugeren er paa eksport-fanen
       shiny::req(is_on_export_tab())
 
       # chart_type can be NULL at startup - use default "run" as fallback
@@ -126,11 +126,11 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # PDF export reactive - regenerates plot with PDF-specific dimensions
     # This ensures correct label placement for high-res print output
-    # (200×120mm @ 300 DPI = ~2362×1417px)
+    # (200x120mm @ 300 DPI = ~2362x1417px)
     # Issue #65: Use shared helper to reduce code duplication
     # Issue #67: Helper is undebounced; reactive debounces for preview performance
     pdf_export_plot <- shiny::reactive({
-      # Guard: kun beregn når brugeren er på eksport-fanen
+      # Guard: kun beregn naar brugeren er paa eksport-fanen
       shiny::req(is_on_export_tab())
 
       shiny::req(
@@ -184,7 +184,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
                 "text",
                 x = 0.5,
                 y = 0.5,
-                label = "Ingen graf tilgængelig.\nGå til hovedsiden for at oprette en SPC-graf.",
+                label = "Ingen graf tilg\u00e6ngelig.\nG\u00e5 til hovedsiden for at oprette en SPC-graf.",
                 size = 6,
                 color = get_hospital_colors()$ui_grey_dark
               ) +
@@ -192,7 +192,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           )
         }
 
-        # Tilføj subtitle (hospital + afdeling) og margin til PNG preview
+        # Tilfoej subtitle (hospital + afdeling) og margin til PNG preview
         plot <- spc_result$plot
 
         dept_text <- trimws(input$export_department %||% "")
@@ -213,8 +213,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         800 # Fast preview-bredde
       },
       height = function() {
-        # Dynamisk højde baseret på brugerens proportioner
-        # Clamp til rimelige værdier for at undgå ragg max_dim fejl
+        # Dynamisk hoejde baseret paa brugerens proportioner
+        # Clamp til rimelige vaerdier for at undgaa ragg max_dim fejl
         # mens brugeren redigerer felterne
         w <- as.numeric(input$png_width %||% 1920)
         h <- as.numeric(input$png_height %||% 1080)
@@ -234,14 +234,14 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     })
     outputOptions(output, "plot_available", suspendWhenHidden = FALSE)
 
-    # Lazy export preview: kun genberegn når brugeren er på eksport-fanen.
-    # Shiny genberegner automatisk med aktuelle data når fanen vises.
-    # (Tidligere suspendWhenHidden = FALSE — se commit c4c0a5d for rollback)
+    # Lazy export preview: kun genberegn naar brugeren er paa eksport-fanen.
+    # Shiny genberegner automatisk med aktuelle data naar fanen vises.
+    # (Tidligere suspendWhenHidden = FALSE -- se commit c4c0a5d for rollback)
     outputOptions(output, "export_preview", suspendWhenHidden = TRUE)
 
     # PNG PRESET OBSERVERS ====================================================
 
-    # Opdater width/height når preset vælges
+    # Opdater width/height naar preset vaelges
     observeEvent(input$png_preset,
       {
         preset <- input$png_preset
@@ -260,7 +260,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       ignoreInit = TRUE
     )
 
-    # Sæt dropdown til "Brugerdefineret" når brugeren ændrer dimensioner manuelt
+    # Saet dropdown til "Brugerdefineret" naar brugeren aendrer dimensioner manuelt
     observeEvent(list(input$png_width, input$png_height),
       {
         w <- input$png_width
@@ -282,7 +282,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # PDF preview reactive - generates PNG preview of Typst PDF layout
     # Only active when format is "pdf"
-    # Debounced metadata-inputs til PDF preview (undgår re-render per tastetryk)
+    # Debounced metadata-inputs til PDF preview (undgaar re-render per tastetryk)
     debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
     debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
     debounced_hospital <- shiny::debounce(shiny::reactive(input$export_hospital %||% ""), millis = 1000)
@@ -299,25 +299,25 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       shiny::req(app_state$data$current_data)
       shiny::req(app_state$columns$mappings$y_column)
 
-      # Get result regenerated with PDF export context (200×120mm @ 300 DPI)
+      # Get result regenerated with PDF export context (200x120mm @ 300 DPI)
       # This ensures correct label placement for high-res print output
       pdf_result <- pdf_export_plot()
       shiny::req(pdf_result, pdf_result$bfh_qic_result)
 
-      # Titel og afdeling er isoleret — de trigger allerede pdf_export_plot()
+      # Titel og afdeling er isoleret -- de trigger allerede pdf_export_plot()
       # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
       # Analyse, datadefinition og hospital er debounced reactives (1000ms)
-      # så preview opdateres når brugeren stopper med at skrive
+      # saa preview opdateres naar brugeren stopper med at skrive
       analysis_input <- debounced_analysis()
       data_def_input <- debounced_data_def()
       hospital_input <- debounced_hospital()
 
       # Build metadata for PDF generation
-      # Bemærk: bfh_create_typst_document() (preview-vejen) auto-genererer ikke
-      # details — det gør kun bfh_export_pdf(). Vi sætter derfor selv details
-      # via BFHcharts::bfh_generate_details() så preview matcher eksport.
+      # Bemaerk: bfh_create_typst_document() (preview-vejen) auto-genererer ikke
+      # details -- det goer kun bfh_export_pdf(). Vi saetter derfor selv details
+      # via BFHcharts::bfh_generate_details() saa preview matcher eksport.
       metadata <- list(
         hospital = if (nzchar(hospital_input)) hospital_input else get_hospital_name_for_export(),
         department = dept_input,
@@ -380,7 +380,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
             contentType = "image/png",
             width = "100%",
             height = "auto",
-            alt = "PDF preview ikke tilgængelig"
+            alt = "PDF preview ikke tilg\u00e6ngelig"
           ))
         }
 
@@ -396,8 +396,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       deleteFile = FALSE # Don't delete temp file (will be cleaned up by R session)
     )
 
-    # Lazy PDF preview: kun genberegn når brugeren er på eksport-fanen.
-    # (Tidligere suspendWhenHidden = FALSE — se commit c4c0a5d for rollback)
+    # Lazy PDF preview: kun genberegn naar brugeren er paa eksport-fanen.
+    # (Tidligere suspendWhenHidden = FALSE -- se commit c4c0a5d for rollback)
     outputOptions(output, "pdf_preview", suspendWhenHidden = TRUE)
 
     # PDF format flag - for conditional UI rendering
@@ -408,7 +408,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     outputOptions(output, "is_pdf_format", suspendWhenHidden = FALSE)
 
     # === REGISTER SUB-MODULE OBSERVERS ======================================
-    # Placeret efter reactive-definitioner for at undgå forward references
+    # Placeret efter reactive-definitioner for at undgaa forward references
 
     # Analysis auto-generation (mod_export_analysis.R)
     register_analysis_autogen(session, input, output, export_plot, app_state)

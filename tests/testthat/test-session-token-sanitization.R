@@ -63,6 +63,7 @@ test_that("Different tokens produce different hashes", {
 
 test_that("hash_session_token uses SHA256 with 8-character prefix", {
   # Source the function (it's in app_server_main.R but not exported)
+  if (!file.exists("../../R/app_server_main.R")) skip("Source not available in R CMD check environment")
   source("../../R/app_server_main.R")
 
   test_token <- "test_session_token_xyz"
@@ -78,6 +79,7 @@ test_that("hash_session_token uses SHA256 with 8-character prefix", {
 })
 
 test_that("hash_session_token handles NULL and invalid input", {
+  if (!file.exists("../../R/app_server_main.R")) skip("Source not available in R CMD check environment")
   source("../../R/app_server_main.R")
 
   expect_equal(hash_session_token(NULL), "unknown")

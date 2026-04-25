@@ -169,4 +169,3 @@ print(result$metadata$signals_detected)
 \code{map_to_bfh_params} for parameter transformation logic
 \code{transform_bfh_output} for output standardization
 }
-\keyword{internal}

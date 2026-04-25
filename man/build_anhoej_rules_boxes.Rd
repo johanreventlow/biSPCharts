@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_spc_chart_ui_helpers.R
 \name{build_anhoej_rules_boxes}
 \alias{build_anhoej_rules_boxes}
-\title{Build Anhøj Rules Value Boxes}
+\title{Build Anhoej Rules Value Boxes}
 \usage{
 build_anhoej_rules_boxes(data, config, chart_type, anhoej, get_plot_state)
 }
@@ -13,7 +13,7 @@ build_anhoej_rules_boxes(data, config, chart_type, anhoej, get_plot_state)
 
 \item{chart_type}{Type of SPC chart (run, p, u, i, mr, etc.)}
 
-\item{anhoej}{Anhøj results list with signal detection and metrics}
+\item{anhoej}{Anhoej results list with signal detection and metrics}
 
 \item{get_plot_state}{Function to retrieve plot state values}
 }
@@ -21,8 +21,8 @@ build_anhoej_rules_boxes(data, config, chart_type, anhoej, get_plot_state)
 Shiny tagList containing three value_box elements
 }
 \description{
-Renders three value boxes displaying Anhøj rules analysis results:
-Serielængde (longest run), Antal kryds (crossings), and Uden for kontrol
+Renders three value boxes displaying Anhoej rules analysis results:
+Serielaengde (longest run), Antal kryds (crossings), and Uden for kontrol
 (out of control points).
 }
 \details{
@@ -34,8 +34,8 @@ Box content is status-aware:
 \item Ready: Shows actual metrics with signal coloring
 }
 
-Anhøj-bokse må aldrig suspenderes: de skal altid opdateres i baggrunden
-så de viser korrekte værdier straks når bruger navigerer efter session
+Anhoej-bokse maa aldrig suspenderes: de skal altid opdateres i baggrunden
+saa de viser korrekte vaerdier straks naar bruger navigerer efter session
 restore.
 }
 \keyword{internal}

@@ -10,7 +10,7 @@ mod_export_server(id, app_state, parent_session = NULL)
 \item{id}{Module ID}
 
 \item{app_state}{Reactive values. Global app state med data, columns og chart config.
-Tilgås read-only - ingen modificering af state.}
+Tilgaas read-only - ingen modificering af state.}
 
 \item{parent_session}{Shiny session. Parent session for navbar navigation (Tilbage-knap).}
 }
@@ -19,10 +19,11 @@ Liste med reactive values for module status
 }
 \description{
 Server logik for eksport af SPC charts.
-Håndterer live preview og download af charts i PDF og PNG formater.
+Haandterer live preview og download af charts i PDF og PNG formater.
 }
 \seealso{
 Other export_modules: 
 \code{\link{mod_export_ui}()}
 }
 \concept{export_modules}
+\keyword{internal}

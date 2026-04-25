@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_anhoej_results.R
 \name{update_anhoej_results}
 \alias{update_anhoej_results}
-\title{Opdater Anhøj resultater ud fra nye QIC-beregninger}
+\title{Opdater Anhoej resultater ud fra nye QIC-beregninger}
 \usage{
 update_anhoej_results(
   previous,
@@ -13,11 +13,11 @@ update_anhoej_results(
 )
 }
 \arguments{
-\item{previous}{list. Forrige \code{anhoej_results} (kan være NULL ved første kørsel)}
+\item{previous}{list. Forrige \code{anhoej_results} (kan vaere NULL ved foerste koersel)}
 
 \item{qic_results}{list. Nye beregnede metrics fra QIC-kald (kan indeholde NA)}
 
-\item{centerline_changed}{logical. TRUE hvis centerline/baseline er ændret (inkl. ryddet)}
+\item{centerline_changed}{logical. TRUE hvis centerline/baseline er aendret (inkl. ryddet)}
 
 \item{qic_data}{data.frame. QIC data (bruges til part filtrering)}
 
@@ -30,11 +30,11 @@ list. Opdateret \code{anhoej_results}
 Regler:
 \itemize{
 \item Hvis nye beregninger indeholder gyldige metrics (longest_run eller n_crossings),
-så opdateres resultaterne altid og markeres som gyldige
-\item Hvis metrics er NA og centerline (baseline) er ændret, opdateres til NA-resultater
-(vi bevarer ikke gamle værdier — UI skal afspejle den nye tilstand)
-\item Hvis metrics er NA og centerline ikke er ændret, og der fandtes gyldige værdier før,
-bevares de gamle værdier (for at undgå midlertidig flimmer under beregning)
+saa opdateres resultaterne altid og markeres som gyldige
+\item Hvis metrics er NA og centerline (baseline) er aendret, opdateres til NA-resultater
+(vi bevarer ikke gamle vaerdier -- UI skal afspejle den nye tilstand)
+\item Hvis metrics er NA og centerline ikke er aendret, og der fandtes gyldige vaerdier foer,
+bevares de gamle vaerdier (for at undgaa midlertidig flimmer under beregning)
 }
 }
 \keyword{internal}

@@ -11,7 +11,7 @@ Character. Hospital navn.
 }
 \description{
 Henter hospital navn fra branding config til brug i exports.
-Fallback til default hvis ikke tilgængeligt.
+Fallback til default hvis ikke tilgaengeligt.
 }
 \examples{
 \dontrun{

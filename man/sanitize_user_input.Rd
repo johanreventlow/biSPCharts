@@ -14,7 +14,7 @@ sanitize_user_input(
 \arguments{
 \item{input_value}{Input string til sanitization}
 
-\item{max_length}{Maximum tilladt længde (NULL for ingen grænse)}
+\item{max_length}{Maximum tilladt laengde (NULL for ingen graense)}
 
 \item{allowed_chars}{Regex pattern for tilladte karakterer}
 
@@ -25,13 +25,13 @@ Sanitized string
 }
 \description{
 Renser bruger input for potentielle XSS angreb og fjerner ugyldige karakterer.
-Understøtter danske karakterer (æøåÆØÅ) og basis tegnsætning.
+Understoetter danske karakterer (aeoeaaAeOeAa) og basis tegnsaetning.
 }
 \details{
 Sanitization proces:
 \enumerate{
 \item Konverter NULL til tom string
-\item Konverter til character hvis nødvendigt
+\item Konverter til character hvis noedvendigt
 \item HTML escape hvis aktiveret
 \item Fjern ugyldige karakterer via regex
 \item Trim whitespace
@@ -43,8 +43,8 @@ Sanitization proces:
 sanitize_user_input("<script>alert('XSS')</script>")
 # "&lt;script&gt;alert('XSS')&lt;/script&gt;"
 
-sanitize_user_input("København Sygehus @#$")
-# "København Sygehus "
+sanitize_user_input("Koebenhavn Sygehus @#$")
+# "Koebenhavn Sygehus "
 }
 
 }

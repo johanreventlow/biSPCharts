@@ -7,7 +7,7 @@
 #'
 #' @param log_directory Sti til log-mappe
 #' @return data.frame med session-data (tom data.frame hvis ingen filer)
-#' @export
+#' @keywords internal
 read_shinylogs_sessions <- function(log_directory) {
   read_shinylogs_all(log_directory)$sessions
 }
@@ -22,7 +22,7 @@ read_shinylogs_sessions <- function(log_directory) {
 #'
 #' @param log_directory Sti til log-mappe
 #' @return Navngivet liste med 4 data.frames: sessions, inputs, outputs, errors
-#' @export
+#' @keywords internal
 read_shinylogs_all <- function(log_directory) {
   empty_result <- list(
     sessions = data.frame(),
@@ -110,7 +110,7 @@ read_shinylogs_all <- function(log_directory) {
 #' @param log_directory Sti til log-mappe
 #' @param compress_after_days Komprimer filer aeldre end dette (default: 90)
 #' @param delete_after_days Slet filer aeldre end dette (default: 365)
-#' @export
+#' @keywords internal
 rotate_log_files <- function(log_directory,
                              compress_after_days = ANALYTICS_CONFIG$log_compress_after_days,
                              delete_after_days = ANALYTICS_CONFIG$log_retention_days) {
@@ -232,7 +232,7 @@ redact_error_messages <- function(errors_df) {
 #'
 #' @param log_directory Sti til log-mappe
 #' @param session_id Shiny session token (bruges i filnavn for GitHub-backend)
-#' @export
+#' @keywords internal
 aggregate_and_pin_logs <- function(log_directory = "logs/",
                                    session_id = NULL) {
   config <- get_analytics_config()

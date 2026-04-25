@@ -12,23 +12,23 @@ get_size_from_preset(preset_name)
 \value{
 Named list med width, height, dpi, unit, label
 \itemize{
-\item width: Numeric width (pixels eller inches afhængig af unit)
-\item height: Numeric height (pixels eller inches afhængig af unit)
+\item width: Numeric width (pixels eller inches afhaengig af unit)
+\item height: Numeric height (pixels eller inches afhaengig af unit)
 \item dpi: Numeric DPI resolution
 \item unit: Character unit type ("px" eller "in")
 \item label: Character display label for UI
 }
 }
 \description{
-Konverterer en size preset navn til konkrete dimensioner og DPI værdier.
-Bruges til at mappe UI dropdown værdier til faktiske export parametre.
+Konverterer en size preset navn til konkrete dimensioner og DPI vaerdier.
+Bruges til at mappe UI dropdown vaerdier til faktiske export parametre.
 }
 \details{
 Available presets (fra EXPORT_SIZE_PRESETS):
 \itemize{
-\item small: 800×600px @ 96 DPI (lille web/email format)
-\item medium: 1200×900px @ 96 DPI (standard præsentation)
-\item large: 1920×1440px @ 96 DPI (høj opløsning)
+\item small: 800x600px @ 96 DPI (lille web/email format)
+\item medium: 1200x900px @ 96 DPI (standard praesentation)
+\item large: 1920x1440px @ 96 DPI (hoej oploesning)
 }
 
 Default fallback: medium preset hvis preset_name ikke findes
@@ -41,7 +41,7 @@ preset <- get_size_from_preset("small")
 
 # Unknown preset falls back to medium
 preset <- get_size_from_preset("unknown")
-# Returns: medium preset (1200×900px @ 96 DPI)
+# Returns: medium preset (1200x900px @ 96 DPI)
 }
 
 }

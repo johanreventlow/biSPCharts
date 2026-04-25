@@ -24,13 +24,13 @@ create_spc_results_reactive(
 Reactive expression returning list with:
 \itemize{
 \item plot: ggplot2 object (or NULL if validation failed)
-\item qic_data: Data frame with Anhøj rules results
+\item qic_data: Data frame with Anhoej rules results
 \item cache_key: Cache key used for this computation
 }
 }
 \description{
 Core computation pipeline for SPC chart generation. Calls BFHcharts to
-generate plots, extracts Anhøj rules from qicharts2, and manages cache
+generate plots, extracts Anhoej rules from qicharts2, and manages cache
 with context-aware cache keys for plot isolation.
 }
 \details{
@@ -39,7 +39,7 @@ Computation flow:
 \item Build context-aware cache key including viewport dimensions
 \item Validate data against chart requirements
 \item Call generateSPCPlot (BFHcharts API)
-\item Extract Anhøj rules from qic_data
+\item Extract Anhoej rules from qic_data
 \item Update plot state and anhoej_results
 \item Handle errors with fallback results
 \item Cache results using bindCache with context isolation

@@ -71,7 +71,7 @@ For early exits, use conditional flow with a result variable instead:
 }\if{html}{\out{</div>}}
 }
 
-\section{Hvornår safe_operation() er korrekt}{
+\section{Hvornaar safe_operation() er korrekt}{
 
 Brug \code{safe_operation()} KUN til \strong{ikke-essentiel kode} der kan fejle uden
 at appens kernefunktionalitet brydes:
@@ -83,12 +83,12 @@ at appens kernefunktionalitet brydes:
 
 \strong{BRUG IKKE \code{safe_operation()} til:}
 \itemize{
-\item Core data-processing (filindlæsning, parsing, transformation)
+\item Core data-processing (filindlaesning, parsing, transformation)
 \item Input-validering
 \item Beregninger der driver UI-output
 }
 
-Til fejlhåndtering med diagnostik ved multiple strategier,
+Til fejlhaandtering med diagnostik ved multiple strategier,
 brug i stedet \code{try_with_diagnostics()}.
 }
 

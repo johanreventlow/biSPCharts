@@ -17,3 +17,4 @@ mod_landing_server(id, parent_session = NULL, app_state = NULL)
 Håndterer dynamisk rendering af landing page baseret på localStorage-peek.
 Viser restore-card når en gemt session er tilgængelig, ellers default-landing.
 }
+\keyword{internal}

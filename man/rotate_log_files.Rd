@@ -20,3 +20,4 @@ rotate_log_files(
 \description{
 Roter log-filer (komprimer gamle, slet meget gamle)
 }
+\keyword{internal}

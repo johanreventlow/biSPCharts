@@ -7,7 +7,7 @@
 sanitize_spc_config(config)
 }
 \arguments{
-\item{config}{List med konfigurationsværdier (x_col, y_col, n_col)}
+\item{config}{List med konfigurationsvaerdier (x_col, y_col, n_col)}
 }
 \value{
 Sanitized configuration list

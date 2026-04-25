@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_y_axis_scaling.R
 \name{coerce_to_target_unit}
 \alias{coerce_to_target_unit}
-\title{Convert parsed input to target unit using deterministic matrix (100×-mismatch safe)}
+\title{Convert parsed input to target unit using deterministic matrix (100x-mismatch safe)}
 \usage{
 coerce_to_target_unit(parsed, target_unit)
 }
@@ -15,10 +15,10 @@ coerce_to_target_unit(parsed, target_unit)
 Numeric value in target unit
 }
 \description{
-Enhanced conversion matrix that prevents 100×-mismatch by being explicit
+Enhanced conversion matrix that prevents 100x-mismatch by being explicit
 about when scaling occurs and when it doesn't.
 }
 \details{
-KEY RULE: Only symbols (\%, ‰) trigger scaling. No symbols = no implicit scaling.
+KEY RULE: Only symbols (\%, \%\%) trigger scaling. No symbols = no implicit scaling.
 }
 \keyword{internal}

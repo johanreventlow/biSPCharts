@@ -76,3 +76,5 @@ dev/audit-output/*.rds
 !dev/audit-output/.gitkeep
 # Undtagelse: test-audit.json er input til classify_tests.R + validation
 !dev/audit-output/test-audit.json
+# Undtagelse: skip-inventory.json er baseline for CI delta-comparison
+!dev/audit-output/skip-inventory.json

@@ -1,0 +1,130 @@
+# Tæller skip()-kald i testsuite og kommenterer delta på PRs.
+# Fejler hvis TODO-skips øges uden label 'allow-skip-increase'.
+name: skip-inventory
+
+on:
+  pull_request:
+    branches: [master, develop]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  skip-inventory:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Install jsonlite
+        run: install.packages("jsonlite", repos = "https://cloud.r-project.org")
+        shell: Rscript {0}
+
+      - name: Run skip inventory (HEAD)
+        run: Rscript dev/audit_test_skips.R
+        shell: bash
+
+      - name: Save HEAD inventory
+        run: cp dev/audit-output/skip-inventory.json /tmp/skip-inventory-head.json
+        shell: bash
+
+      - name: Fetch base branch inventory
+        run: |
+          BASE_REF="${{ github.base_ref }}"
+          git fetch origin "$BASE_REF" --depth=1
+          git show "origin/${BASE_REF}:dev/audit-output/skip-inventory.json" \
+            > /tmp/skip-inventory-base.json 2>/dev/null || echo '{"summary":{"todo":0}}' \
+            > /tmp/skip-inventory-base.json
+        shell: bash
+
+      - name: Compare and gate TODO-skip delta
+        id: delta
+        run: |
+          BASE_TODO=$(jq '.summary.todo // 0' /tmp/skip-inventory-base.json)
+          HEAD_TODO=$(jq '.summary.todo // 0' /tmp/skip-inventory-head.json)
+          BASE_TOTAL=$(jq '.summary.total // 0' /tmp/skip-inventory-base.json)
+          HEAD_TOTAL=$(jq '.summary.total // 0' /tmp/skip-inventory-head.json)
+          DELTA_TODO=$((HEAD_TODO - BASE_TODO))
+          DELTA_TOTAL=$((HEAD_TOTAL - BASE_TOTAL))
+
+          echo "base_todo=$BASE_TODO" >> "$GITHUB_OUTPUT"
+          echo "head_todo=$HEAD_TODO" >> "$GITHUB_OUTPUT"
+          echo "delta_todo=$DELTA_TODO" >> "$GITHUB_OUTPUT"
+          echo "head_total=$HEAD_TOTAL" >> "$GITHUB_OUTPUT"
+          echo "delta_total=$DELTA_TOTAL" >> "$GITHUB_OUTPUT"
+
+          # Check for label allow-skip-increase
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          if [ -n "$PR_NUMBER" ]; then
+            HAS_LABEL=$(gh pr view "$PR_NUMBER" --json labels \
+              --jq '[.labels[].name] | contains(["allow-skip-increase"])')
+          else
+            HAS_LABEL="false"
+          fi
+          echo "has_allow_label=$HAS_LABEL" >> "$GITHUB_OUTPUT"
+
+          if [ "$DELTA_TODO" -gt 0 ] && [ "$HAS_LABEL" != "true" ]; then
+            echo "gate_fail=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "gate_fail=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+      - name: Comment skip delta on PR
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_TODO: ${{ steps.delta.outputs.base_todo }}
+          HEAD_TODO: ${{ steps.delta.outputs.head_todo }}
+          DELTA_TODO: ${{ steps.delta.outputs.delta_todo }}
+          HEAD_TOTAL: ${{ steps.delta.outputs.head_total }}
+          DELTA_TOTAL: ${{ steps.delta.outputs.delta_total }}
+          GATE_FAIL: ${{ steps.delta.outputs.gate_fail }}
+        run: |
+          if [ "$GATE_FAIL" = "true" ]; then
+            STATUS="❌ **TODO-skips øget** (+${DELTA_TODO}). Tilføj label \`allow-skip-increase\` hvis intentionelt."
+          else
+            STATUS="✅ Skip-inventory OK"
+          fi
+
+          BODY="## Skip Inventory
+${STATUS}
+
+| Kategori | Antal | Delta |
+|----------|-------|-------|
+| todo | ${HEAD_TODO} | ${DELTA_TODO:+\+}${DELTA_TODO} |
+| total | ${HEAD_TOTAL} | ${DELTA_TOTAL:+\+}${DELTA_TOTAL} |
+
+Se \`dev/audit-output/skip-inventory.md\` for detaljer."
+
+          gh pr comment "$PR_NUMBER" --body "$BODY"
+        shell: bash
+
+      - name: Upload skip inventory artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: skip-inventory
+          path: |
+            dev/audit-output/skip-inventory.json
+            dev/audit-output/skip-inventory.md
+
+      - name: Fail if TODO-skips increased
+        if: steps.delta.outputs.gate_fail == 'true'
+        run: |
+          echo "TODO-skip count øget med ${{ steps.delta.outputs.delta_todo }}."
+          echo "Tilføj label 'allow-skip-increase' på PR hvis intentionelt."
+          exit 1
+        shell: bash

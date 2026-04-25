@@ -1,0 +1,97 @@
+# Opt-in shinytest2 visual regression tests.
+# Kører nightly (02:00 UTC) + on-demand (workflow_dispatch).
+# IKKE krævet som normal PR-gate — visuel regression er miljøfølsom.
+# Kør manuelt: gh workflow run shinytest2.yaml
+name: shinytest2
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  shinytest2:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      CI_SKIP_SHINYTEST2: "false"
+      RUN_SHINYTEST2: "1"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::shinytest2, any::testthat
+          needs: check
+
+      - name: Install local package
+        run: R CMD INSTALL .
+        shell: bash
+
+      - name: Run shinytest2 visual tests
+        id: shinytest2
+        run: |
+          testthat::test_dir(
+            "tests/testthat",
+            filter = "shinytest2|bfh-module-integration",
+            reporter = "summary",
+            stop_on_failure = TRUE
+          )
+        shell: Rscript {0}
+
+      - name: Upload screenshots and snapshot diffs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shinytest2-snapshots
+          path: |
+            tests/testthat/**/_snaps/
+            tests/testthat/**/*-new.png
+          if-no-files-found: ignore
+
+      - name: Create issue on nightly failure
+        if: failure() && github.event_name == 'schedule'
+        env:
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Undgå duplikate issues ved at tjekke om der allerede er et åbent issue
+          EXISTING=$(gh issue list \
+            --label "shinytest2-failure" \
+            --state open \
+            --json number \
+            --jq '.[0].number' \
+            --repo "$REPO" 2>/dev/null || echo "")
+
+          if [ -z "$EXISTING" ]; then
+            gh issue create \
+              --title "Nightly shinytest2 fejlede" \
+              --body "Automatisk oprettet af shinytest2-workflow.\n\nCI run: ${RUN_URL}\n\nSe artefakter for screenshots og snapshot-diffs." \
+              --label "shinytest2-failure,bug" \
+              --repo "$REPO" || true
+          else
+            gh issue comment "$EXISTING" \
+              --body "Ny fejl: ${RUN_URL}" \
+              --repo "$REPO" || true
+          fi
+        shell: bash

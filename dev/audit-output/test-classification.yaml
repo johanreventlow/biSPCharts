@@ -24,7 +24,7 @@ metadata:
     needs_triage: 1
 files:
   - file: test-100x-mismatch-prevention.R
-    audit_category: green
+    audit_category: green-partial
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -773,6 +773,15 @@ files:
       efter API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-spc-chart-full-flow.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil (Phase 2b, #322). 5 testServer-baserede tests for SPC pipeline
+      event orchestration. Alle grønne.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-spc-plot-generation-comprehensive.R
     audit_category: green
     type: unit
@@ -931,7 +940,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_server_export.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes

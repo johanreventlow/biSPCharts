@@ -43,6 +43,29 @@ brew install r
 # Download from: https://cran.r-project.org/bin/windows/base/
 ```
 
+### Quarto-krav (PDF/PNG-eksport)
+
+Eksport til PDF og PNG kræver Quarto 1.3+ med Typst-understøttelse.
+
+```bash
+# Verificér Quarto-version (skal være >= 1.3.0)
+quarto --version
+
+# Installér fra https://quarto.org/docs/get-started/
+# macOS
+brew install --cask quarto
+
+# Ubuntu/Debian
+wget https://quarto.org/download/latest/quarto-linux-amd64.deb
+dpkg -i quarto-linux-amd64.deb
+
+# Windows
+# Download installer fra https://quarto.org/docs/get-started/
+```
+
+**Uden Quarto:** PDF/PNG-eksport er deaktiveret med dansk fejlbesked til brugeren.
+`check_quarto_capability()` rapporterer manglende Quarto ved app-start.
+
 ### R Package Dependencies
 
 Core dependencies (automatisk installeret):
@@ -611,6 +634,20 @@ R -e "source('R/utils_startup_cache.R'); unlink(STARTUP_CACHE_CONFIG$cache_dir, 
 ## Troubleshooting
 
 ### Common Issues
+
+#### Eksport: "Quarto ikke fundet"
+
+**Symptom:** PDF/PNG-eksport giver fejl om manglende Quarto, eller preview er
+tomt med logbesked "Quarto ikke fundet i PATH".
+
+**Root cause:** Quarto CLI er ikke installeret, ikke i PATH, eller versionen er
+ældre end 1.3.0 (Typst-understøttelse kræves).
+
+**Fix:**
+1. Installér Quarto 1.3+ fra <https://quarto.org/docs/get-started/>
+2. Verificér installation: `quarto --version` (skal returnere `>= 1.3.0`)
+3. Genstart R/Shiny-server så PATH opdateres
+4. Verificér at R-processen kan finde Quarto: `Sys.which("quarto")` i R-konsol
 
 #### App won't start
 

@@ -94,32 +94,25 @@ extract_spc_statistics <- function(app_state) {
 # Details string genereres nu af BFHcharts::bfh_generate_details() automatisk.
 # generate_details_string() er fjernet -- se bfh_export_pdf(auto_details).
 
-# CHECK QUARTO AVAILABILITY ===================================================
+# VALIDATE DPI INPUT AND CAPABILITY CHECK =====================================
 
-#' Check if Quarto is Available
+#' Validér DPI-argument til eksport
 #'
-#' Tjekker om Quarto CLI er tilgaengelig paa systemet.
-#' Bruges til at vise/skjule PDF export option baseret paa Quarto tilgaengelighed.
+#' Tjekker at dpi er numerisk og inden for acceptabelt interval [72, 600].
+#' Kaster en typed \code{export_input_error} ved ugyldig vaerdi.
 #'
-#' @return Logical. Altid TRUE da Quarto er inkluderet i RStudio.
+#' @param dpi Numerisk. DPI-vaerdi til validering.
 #'
-#' @note
-#' Denne funktion returnerer altid TRUE, da Quarto er bundled med RStudio.
-#' BFHcharts::bfh_export_pdf() haandterer Quarto errors internt.
-#'
-#' @examples
-#' \dontrun{
-#' if (quarto_available()) {
-#'   # Enable PDF export (altid TRUE)
-#' }
-#' }
-#'
-#' @family export_helpers
+#' @return invisible(dpi) ved succes.
 #' @keywords internal
-quarto_available <- function() {
-  # Altid TRUE - Quarto er inkluderet i RStudio
-  # BFHcharts::quarto_available() er ikke exporteret, saa vi undgaar namespace fejl
-  TRUE
+validate_export_dpi <- function(dpi) {
+  if (!is.numeric(dpi) || length(dpi) != 1L || is.na(dpi) || dpi < 72 || dpi > 600) {
+    spc_abort(
+      paste0("dpi skal vaere numerisk mellem 72 og 600, fik: ", dpi),
+      class = "export_input_error"
+    )
+  }
+  invisible(dpi)
 }
 
 # TEMPLATE ASSET INJECTION =====================================================
@@ -218,7 +211,7 @@ get_hospital_name_for_export <- function() {
   }
 
   # Final fallback
-  return("Bispebjerg og Frederiksberg Hospital")
+  "Bispebjerg og Frederiksberg Hospital"
 }
 
 # GENERATE PDF PREVIEW ========================================================
@@ -267,6 +260,9 @@ get_hospital_name_for_export <- function() {
 generate_pdf_preview <- function(bfh_qic_result,
                                  metadata,
                                  dpi = 150) {
+  # Valid\u00e9r dpi inden safe_operation -- kaster export_input_error ved ugyldig vaerdi
+  validate_export_dpi(dpi)
+
   safe_operation(
     operation_name = "Generate PDF preview",
     code = {
@@ -283,116 +279,122 @@ generate_pdf_preview <- function(bfh_qic_result,
           component = "[EXPORT]",
           message = "Ingen valid bfh_qic_result til PDF preview"
         )
-      } else if (!quarto_available()) {
-        # Check Quarto availability (includes Typst)
-        log_warn(
-          component = "[EXPORT]",
-          message = "Quarto ikke tilg\u00e6ngelig - PDF preview kan ikke genereres"
-        )
       } else {
-        # Create temp directory for Typst compilation
-        temp_dir <- tempfile("bfh_preview_")
-        dir.create(temp_dir, recursive = TRUE)
+        # Tjek Quarto og Typst-kapabilitet via check_quarto_capability()
+        capability <- check_quarto_capability()
+        quarto_ok <- isTRUE(capability$available) && isTRUE(capability$typst_supported)
 
-        log_debug(
-          component = "[EXPORT]",
-          message = "Genererer PDF preview via Typst PNG",
-          details = list(temp_dir = temp_dir, dpi = dpi)
-        )
-
-        # 1. Generate chart PNG (same as bfh_export_pdf does internally)
-        chart_title <- bfh_qic_result$config$chart_title
-        if (is.null(chart_title)) chart_title <- ""
-
-        plot_no_title <- bfh_qic_result$plot + ggplot2::labs(title = NULL, subtitle = NULL)
-        chart_png <- file.path(temp_dir, "chart.png")
-
-        # Use same dimensions as export_pdf config for consistency
-        # R/config_plot_contexts.R: export_pdf = 200x120mm @ 300 DPI
-        ggplot2::ggsave(
-          filename = chart_png,
-          plot = plot_no_title,
-          width = 200 / 25.4, # mm to inches (aligned with export_pdf config)
-          height = 120 / 25.4, # mm to inches (aligned with export_pdf config)
-          dpi = 300,
-          units = "in",
-          device = "png"
-        )
-
-        # 2. Extract SPC stats using BFHcharts public API.
-        #    Send hele bfh_qic_result (ikke kun $summary) saa S3-dispatch sender
-        #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
-        #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
-        #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
-        spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
-
-        # 3. Merge metadata with chart title
-        metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
-
-        # 4. Create Typst document
-        typst_file <- file.path(temp_dir, "document.typ")
-        BFHcharts::bfh_create_typst_document(
-          chart_image = chart_png,
-          output = typst_file,
-          metadata = metadata_full,
-          spc_stats = spc_stats,
-          template = "bfh-diagram"
-        )
-
-        # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke)
-        inject_template_assets(file.path(temp_dir, "bfh-template"))
-
-        # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
-        temp_png <- tempfile(fileext = ".png")
-
-        # Use quarto typst compile with PNG format
-        font_path <- file.path(temp_dir, "bfh-template", "fonts")
-        compile_result <- system2(
-          "quarto",
-          args = c(
-            "typst", "compile",
-            typst_file,
-            temp_png,
-            "-f", "png",
-            "--ppi", as.character(dpi),
-            "--font-path", font_path
-          ),
-          stdout = TRUE,
-          stderr = TRUE
-        )
-
-        # Cleanup temp directory
-        unlink(temp_dir, recursive = TRUE)
-
-        # Check exit status and validate PNG
-        exit_status <- attr(compile_result, "status")
-        if (!is.null(exit_status) && exit_status != 0) {
-          log_error(
+        if (!quarto_ok) {
+          log_warn(
             component = "[EXPORT]",
-            message = "Quarto Typst compilation failed",
-            details = list(
-              exit_code = exit_status,
-              stdout = paste(compile_result, collapse = "\n")
-            )
-          )
-        } else if (!file.exists(temp_png)) {
-          log_error(
-            component = "[EXPORT]",
-            message = "PNG preview compilation failed - file not generated",
-            details = list(output = paste(compile_result, collapse = "\n"))
+            message = "Quarto eller Typst ikke tilg\u00e6ngelig - PDF preview kan ikke genereres",
+            details = list(capability = capability)
           )
         } else {
-          log_info(
+          # Create temp directory for Typst compilation
+          temp_dir <- tempfile("bfh_preview_")
+          dir.create(temp_dir, recursive = TRUE)
+
+          log_debug(
             component = "[EXPORT]",
-            message = "PDF preview genereret succesfuldt (Typst\u2192PNG)",
-            details = list(
-              png = temp_png,
-              size_kb = round(file.size(temp_png) / 1024, 1),
-              dpi = dpi
-            )
+            message = "Genererer PDF preview via Typst PNG",
+            details = list(temp_dir = temp_dir, dpi = dpi)
           )
 
-          result <- temp_png
+          # 1. Generate chart PNG (same as bfh_export_pdf does internally)
+          chart_title <- bfh_qic_result$config$chart_title
+          if (is.null(chart_title)) chart_title <- ""
+
+          plot_no_title <- bfh_qic_result$plot + ggplot2::labs(title = NULL, subtitle = NULL)
+          chart_png <- file.path(temp_dir, "chart.png")
+
+          # Use same dimensions as export_pdf config for consistency
+          # R/config_plot_contexts.R: export_pdf = 200x120mm @ 300 DPI
+          ggplot2::ggsave(
+            filename = chart_png,
+            plot = plot_no_title,
+            width = 200 / 25.4, # mm to inches (aligned with export_pdf config)
+            height = 120 / 25.4, # mm to inches (aligned with export_pdf config)
+            dpi = 300,
+            units = "in",
+            device = "png"
+          )
+
+          # 2. Extract SPC stats using BFHcharts public API.
+          #    Send hele bfh_qic_result (ikke kun $summary) saa S3-dispatch sender
+          #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
+          #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
+          #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
+          spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
+
+          # 3. Merge metadata with chart title
+          metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
+
+          # 4. Create Typst document
+          typst_file <- file.path(temp_dir, "document.typ")
+          BFHcharts::bfh_create_typst_document(
+            chart_image = chart_png,
+            output = typst_file,
+            metadata = metadata_full,
+            spc_stats = spc_stats,
+            template = "bfh-diagram"
+          )
+
+          # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke)
+          inject_template_assets(file.path(temp_dir, "bfh-template"))
+
+          # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
+          temp_png <- tempfile(fileext = ".png")
+
+          # Use quarto typst compile with PNG format
+          font_path <- file.path(temp_dir, "bfh-template", "fonts")
+          compile_result <- system2(
+            "quarto",
+            args = c(
+              "typst", "compile",
+              typst_file,
+              temp_png,
+              "-f", "png",
+              "--ppi", as.character(dpi),
+              "--font-path", font_path
+            ),
+            stdout = TRUE,
+            stderr = TRUE
+          )
+
+          # Cleanup temp directory
+          unlink(temp_dir, recursive = TRUE)
+
+          # Check exit status and validate PNG
+          exit_status <- attr(compile_result, "status")
+          if (!is.null(exit_status) && exit_status != 0) {
+            log_error(
+              component = "[EXPORT]",
+              message = "Quarto Typst compilation failed",
+              details = list(
+                exit_code = exit_status,
+                stdout = paste(compile_result, collapse = "\n")
+              )
+            )
+          } else if (!file.exists(temp_png)) {
+            log_error(
+              component = "[EXPORT]",
+              message = "PNG preview compilation failed - file not generated",
+              details = list(output = paste(compile_result, collapse = "\n"))
+            )
+          } else {
+            log_info(
+              component = "[EXPORT]",
+              message = "PDF preview genereret succesfuldt (Typst\u2192PNG)",
+              details = list(
+                png = temp_png,
+                size_kb = round(file.size(temp_png) / 1024, 1),
+                dpi = dpi
+              )
+            )
+
+            result <- temp_png
+          }
         }
       }
 

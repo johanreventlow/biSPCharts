@@ -133,6 +133,9 @@ main <- function() {
   write_markdown_report(final, md_path)
   print_console_summary(final)
 
+  # Phase 6 additions (Issue #322): skip-inventory + assertion-ratio report
+  print_phase6_audit("tests/testthat")
+
   cat(sprintf("\nJSON: %s\n", json_path))
   cat(sprintf("MD:   %s\n", md_path))
 }

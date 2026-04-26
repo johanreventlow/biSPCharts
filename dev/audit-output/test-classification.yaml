@@ -24,7 +24,7 @@ metadata:
     needs_triage: 1
 files:
   - file: test-100x-mismatch-prevention.R
-    audit_category: green
+    audit_category: green-partial
     type: unit
     handling: fix-in-phase-3
     reviewed: yes
@@ -920,7 +920,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_server_export.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes

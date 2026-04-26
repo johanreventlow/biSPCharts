@@ -30,91 +30,102 @@ test_that("should_enable_shinylogs(): tomt kill-switch falder igennem til legacy
   )
 })
 
-test_that("should_enable_shinylogs(): ENABLE_SHINYLOGS=FALSE giver FALSE naar config ikke er sat", {
+# resolve_analytics_config() — golem-config prioritet =======================
+
+test_that("resolve_analytics_config(): ENABLE_SHINYLOGS=FALSE giver FALSE naar config ikke er sat", {
   withr::with_envvar(
     list(BISPC_DISABLE_ANALYTICS = "", ENABLE_SHINYLOGS = "FALSE"),
     {
-      # Simulér at golem-config returnerer NULL (ingen config sat)
       mockery::stub(
-        should_enable_shinylogs,
+        resolve_analytics_config,
         "golem::get_golem_options",
         NULL
       )
-      expect_false(should_enable_shinylogs())
+      expect_false(resolve_analytics_config()$enabled)
     }
   )
 })
 
-test_that("should_enable_shinylogs(): config-flag FALSE returnerer FALSE", {
+test_that("resolve_analytics_config(): config-flag FALSE returnerer FALSE selv med ENABLE_SHINYLOGS=TRUE", {
   withr::with_envvar(
     list(BISPC_DISABLE_ANALYTICS = "", ENABLE_SHINYLOGS = "TRUE"),
     {
       mockery::stub(
-        should_enable_shinylogs,
+        resolve_analytics_config,
         "golem::get_golem_options",
         FALSE
       )
-      expect_false(should_enable_shinylogs())
+      expect_false(resolve_analytics_config()$enabled)
     }
   )
 })
 
-test_that("should_enable_shinylogs(): config-flag TRUE returnerer TRUE", {
+test_that("resolve_analytics_config(): config-flag TRUE returnerer TRUE", {
   withr::with_envvar(
     list(BISPC_DISABLE_ANALYTICS = ""),
     {
       mockery::stub(
-        should_enable_shinylogs,
+        resolve_analytics_config,
         "golem::get_golem_options",
         TRUE
       )
-      expect_true(should_enable_shinylogs())
+      expect_true(resolve_analytics_config()$enabled)
     }
   )
 })
 
+# redact_col_names() ==================================================
+
+test_that("redact_col_names(): PII-kolonnenavne redakteres", {
+  result <- redact_col_names(c("dato", "navn", "x"))
+  expect_equal(result[1], "dato")
+  expect_equal(result[2], "[redacted]")
+  expect_equal(result[3], "x")
+})
+
+test_that("redact_col_names(): CPR-lignende kolonnenavn redakteres", {
+  result <- redact_col_names(c("120345-6789", "value"))
+  expect_equal(result[1], "[redacted]")
+  expect_equal(result[2], "value")
+})
+
+test_that("redact_col_names(): email-tegn redakteres", {
+  result <- redact_col_names(c("email", "x_email_y", "value"))
+  expect_equal(result[1], "[redacted]")
+  expect_equal(result[2], "[redacted]")
+  expect_equal(result[3], "value")
+})
+
+test_that("redact_col_names(): patient-kolonne redakteres", {
+  result <- redact_col_names(c("patient_id", "date"))
+  expect_equal(result[1], "[redacted]")
+  expect_equal(result[2], "date")
+})
+
+test_that("redact_col_names(): ufarlige kolonnenavne passerer uredigerede", {
+  cols <- c("dato", "vaerdi", "chart_type", "x", "y")
+  result <- redact_col_names(cols)
+  expect_equal(result, cols)
+})
+
+test_that("redact_col_names(): tomt kolonnenavn-vector returneres tomt", {
+  result <- redact_col_names(character(0))
+  expect_length(result, 0)
+})
+
 # redact_debug_snapshot() ==================================================
 
-test_that("redact_debug_snapshot(): PII-kolonnenavne redakteres", {
-  result <- redact_debug_snapshot(list(), c("dato", "navn", "x"))
-  expect_equal(result$redacted_col_names[1], "dato")
-  expect_equal(result$redacted_col_names[2], "[redacted]")
-  expect_equal(result$redacted_col_names[3], "x")
+test_that("redact_debug_snapshot(): redakterer col_names i snapshot$data_summary", {
+  snapshot <- list(data_summary = list(current_data = list(col_names = c("navn", "value"))))
+  result <- redact_debug_snapshot(snapshot)
+  expect_equal(result$data_summary$current_data$col_names[1], "[redacted]")
+  expect_equal(result$data_summary$current_data$col_names[2], "value")
 })
 
-test_that("redact_debug_snapshot(): CPR-lignende kolonnenavn redakteres", {
-  result <- redact_debug_snapshot(list(), c("120345-6789", "value"))
-  expect_equal(result$redacted_col_names[1], "[redacted]")
-  expect_equal(result$redacted_col_names[2], "value")
-})
-
-test_that("redact_debug_snapshot(): email-tegn redakteres", {
-  result <- redact_debug_snapshot(list(), c("email", "x_email_y", "value"))
-  expect_equal(result$redacted_col_names[1], "[redacted]")
-  expect_equal(result$redacted_col_names[2], "[redacted]")
-  expect_equal(result$redacted_col_names[3], "value")
-})
-
-test_that("redact_debug_snapshot(): patient-kolonne redakteres", {
-  result <- redact_debug_snapshot(list(), c("patient_id", "date"))
-  expect_equal(result$redacted_col_names[1], "[redacted]")
-  expect_equal(result$redacted_col_names[2], "date")
-})
-
-test_that("redact_debug_snapshot(): ufarlige kolonnenavne passerer uredigerede", {
-  cols <- c("dato", "vaerdi", "chart_type", "x", "y")
-  result <- redact_debug_snapshot(list(), cols)
-  expect_equal(result$redacted_col_names, cols)
-})
-
-test_that("redact_debug_snapshot(): tomt kolonnenavn-vector returneres tomt", {
-  result <- redact_debug_snapshot(list(), character(0))
-  expect_length(result$redacted_col_names, 0)
-})
-
-test_that("redact_debug_snapshot(): safe_hash_input er en liste", {
-  result <- redact_debug_snapshot(list(a = 1), c("navn"))
-  expect_type(result$safe_hash_input, "list")
+test_that("redact_debug_snapshot(): returnerer snapshot uaendret hvis ingen col_names", {
+  snapshot <- list(a = 1, b = "x")
+  result <- redact_debug_snapshot(snapshot)
+  expect_equal(result, snapshot)
 })
 
 # SHINYLOGS_ALLOWLIST doc-sync ==============================================

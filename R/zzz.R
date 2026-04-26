@@ -220,34 +220,14 @@ reset_qic_performance_counters <- function() {
   qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   quarto_status <- if (nzchar(Sys.which("quarto"))) "tilg\u00e6ngelig" else "ikke fundet i PATH"
 
-  # Analytics-status: kill-switch vinder, derefter config, derefter legacy env-var
-  kill_switch_active <- toupper(Sys.getenv("BISPC_DISABLE_ANALYTICS", "")) %in%
-    c("TRUE", "1", "YES", "ON")
-  if (kill_switch_active) {
-    analytics_enabled <- FALSE
-    analytics_config_source <- "env:BISPC_DISABLE_ANALYTICS"
-  } else {
-    config_val <- tryCatch(
-      golem::get_golem_options("analytics.shinylogs_enabled"),
-      error = function(e) NULL # nolint: swallowed_error_linter. Golem-config kan lovligt mangle ved package-load udenfor app-kontekst; fallback til legacy env-var er korrekt
-    )
-    if (!is.null(config_val)) {
-      analytics_enabled <- isTRUE(config_val)
-      analytics_config_source <- "golem-config"
-    } else {
-      legacy_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE")
-      analytics_enabled <- toupper(legacy_flag) %in% c("TRUE", "1", "YES", "ON")
-      analytics_config_source <- "env:ENABLE_SHINYLOGS (legacy)"
-    }
-  }
-
+  analytics_cfg <- resolve_analytics_config()
   packageStartupMessage(
     "biSPCharts optional features: ",
     "BFHllm=", bfhllm_status, ", ",
     "qicharts2=", qic_status, ", ",
     "Quarto=", quarto_status, "\n",
-    "Analytics: shinylogs=", if (analytics_enabled) "aktiv" else "inaktiv",
-    " (kilde: ", analytics_config_source, ")"
+    "Analytics: shinylogs=", if (analytics_cfg$enabled) "aktiv" else "inaktiv",
+    " (kilde: ", analytics_cfg$source, ")"
   )
 }
 

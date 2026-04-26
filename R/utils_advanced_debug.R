@@ -133,34 +133,30 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
   }
 }
 
-# PII-regex der matches mod kolonnenavne i debug-snapshots
-.PII_COLUMN_PATTERNS <- c(
-  "(?i)(navn|name|patient|cpr|\\d{6}-?\\d{4}|@|email|mail|phone|mobil|adresse|address)"
-)
+.PII_COLUMN_PATTERN <- "(?i)(navn|name|patient|cpr|\\d{6}-?\\d{4}|@|email|mail|phone|mobil|adresse|address)"
 
-#' Redaktér PII-kolonnenavne i debug-snapshots
+#' Redaktér PII-kolonnenavne
 #'
-#' Erstatter kolonne-navne i en debug-snapshot der matcher kendte PII-mønstre
-#' med en generisk pladsholder, og beregner en hash af det samlede objekt
-#' på en måde der ikke eksponerer PII.
+#' Erstatter navne der matcher kendte PII-mønstre med `[redacted]`.
 #'
-#' @param snapshot List fra `debug_state_snapshot()` (delvist konstrueret)
-#' @param col_names Character-vector med kolonnenavne der skal redigeres
-#' @return List: `redacted_col_names` (redigerede navne) og `safe_hash_input`
-#'   (redigeret objekt til brug med `digest::digest()`)
-#'
+#' @param col_names Character-vector med kolonnenavne
+#' @return Character-vector, samme længde
 #' @keywords internal
-redact_debug_snapshot <- function(snapshot, col_names = character(0)) {
-  redacted <- vapply(col_names, function(nm) {
-    if (grepl(.PII_COLUMN_PATTERNS, nm, perl = TRUE)) "[redacted]" else nm
-  }, character(1L), USE.NAMES = FALSE)
+redact_col_names <- function(col_names) {
+  ifelse(grepl(.PII_COLUMN_PATTERN, col_names, perl = TRUE), "[redacted]", col_names)
+}
 
-  # Returnér snapshot med PII-navne fjernet, klar til hash
-  safe <- snapshot
-  if (!is.null(safe$data_summary$current_data$col_names)) {
-    safe$data_summary$current_data$col_names <- redacted
+#' Redaktér PII-kolonnenavne i debug-snapshot og returner hash-sikkert objekt
+#'
+#' @param snapshot List fra `debug_state_snapshot()` med `data_summary$current_data$col_names`
+#' @return Kopi af `snapshot` med PII-navne redakteret i `data_summary`
+#' @keywords internal
+redact_debug_snapshot <- function(snapshot) {
+  if (!is.null(snapshot$data_summary$current_data$col_names)) {
+    snapshot$data_summary$current_data$col_names <-
+      redact_col_names(snapshot$data_summary$current_data$col_names)
   }
-  list(redacted_col_names = redacted, safe_hash_input = safe)
+  snapshot
 }
 
 #' State Snapshot Utility
@@ -197,10 +193,9 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
     # Basic state information
     snapshot$state_available <- TRUE
 
-    # State hash for change detection (redaktér snapshot inden hash for at undgå PII)
+    # State hash for change detection (data_summary ikke tilføjet endnu — ingen PII her)
     if (include_hash) {
-      redacted_result <- redact_debug_snapshot(snapshot)
-      snapshot$state_hash <- digest::digest(redacted_result$safe_hash_input, algo = "xxhash64")
+      snapshot$state_hash <- digest::digest(snapshot, algo = "xxhash64")
     }
 
     # Data summary - safe reactive access
@@ -222,7 +217,7 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
       )
 
       if (!is.null(current_data)) {
-        redacted_names <- redact_debug_snapshot(list(), names(current_data))$redacted_col_names
+        redacted_names <- redact_col_names(names(current_data))
         data_summary$current_data <- list(
           rows = nrow(current_data),
           cols = ncol(current_data),

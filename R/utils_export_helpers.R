@@ -5,6 +5,99 @@
 # - Mapping normalization
 # - Plot building for export contexts
 
+# CHECK QUARTO CAPABILITY ======================================================
+
+# Session-scoped cache: resultat gemmes første gang og genbruges derefter.
+# Quarto ændrer sig ikke i løbet af en R-session, så én opslag pr. session
+# er tilstrækkeligt.
+.quarto_capability_cache <- local({
+  cached <- NULL
+  list(
+    get = function() cached,
+    set = function(val) {
+      cached <<- val
+    },
+    has = function() !is.null(cached)
+  )
+})
+
+#' Tjek Quarto CLI-kapabilitet
+#'
+#' Tjekker om Quarto CLI er tilgaengelig paa systemet og om Typst-format
+#' understoettes (kraever Quarto >= 1.3.0).
+#'
+#' Resultatet caches per R-session: Quarto aendrer sig ikke runtime,
+#' saa gentagne kald returnerer det cachede resultat uden systemkald.
+#'
+#' @return Named list med:
+#'   \describe{
+#'     \item{available}{Logical. TRUE hvis quarto er fundet i PATH.}
+#'     \item{quarto_version}{Character. Versionsstrengen, fx "1.4.0", eller NA.}
+#'     \item{typst_supported}{Logical. TRUE hvis version >= 1.3.0.}
+#'     \item{message}{Character. Dansk status- eller fejlbesked.}
+#'   }
+#'
+#' @keywords internal
+check_quarto_capability <- function() {
+  # Returnerer cachet resultat hvis allerede tjekket i denne session
+  if (.quarto_capability_cache$has()) {
+    return(.quarto_capability_cache$get())
+  }
+
+  quarto_path <- Sys.which("quarto")
+
+  if (nchar(quarto_path) == 0) {
+    result <- list(
+      available = FALSE,
+      quarto_version = NA_character_,
+      typst_supported = FALSE,
+      message = "Quarto ikke fundet i PATH. Kontakt administrator."
+    )
+    .quarto_capability_cache$set(result)
+    return(result)
+  }
+
+  # Hent version -- quarto --version returnerer typisk "1.4.0" paa en linje
+  version_raw <- tryCatch(
+    system2(quarto_path, args = "--version", stdout = TRUE, stderr = FALSE),
+    error = function(e) NA_character_
+  )
+
+  version_str <- if (length(version_raw) > 0 && !is.na(version_raw[1])) {
+    trimws(version_raw[1])
+  } else {
+    NA_character_
+  }
+
+  # Tjek om version understøtter Typst (kræver >= 1.3.0)
+  typst_supported <- tryCatch(
+    {
+      parts <- strsplit(version_str, "\\.")[[1]]
+      major <- suppressWarnings(as.integer(parts[1]))
+      minor <- suppressWarnings(as.integer(parts[2]))
+      !is.na(major) && (major > 1L || (major == 1L && !is.na(minor) && minor >= 3L))
+    },
+    error = function(e) FALSE
+  )
+
+  result <- list(
+    available = TRUE,
+    quarto_version = version_str,
+    typst_supported = typst_supported,
+    message = if (typst_supported) {
+      paste0("Quarto ", version_str, " tilgængelig med Typst-understøttelse.")
+    } else {
+      paste0(
+        "Quarto ", version_str,
+        " fundet, men Typst kræver version 1.3+. Kontakt administrator."
+      )
+    }
+  )
+
+  .quarto_capability_cache$set(result)
+  result
+}
+
 normalize_mapping <- function(value) {
   if (is.null(value) || (is.character(value) && !nzchar(trimws(value)))) {
     NULL

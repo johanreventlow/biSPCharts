@@ -334,14 +334,23 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         date = Sys.Date()
       )
 
-      # Generate PDF preview PNG using BFHcharts
+      # Generate PDF preview PNG using BFHcharts.
+      # NOTE: Synkront kald -- withProgress giver UX-feedback men blokerer
+      # stadig Shiny-sessionen. Fuld async (future-backend) er deferred --
+      # se tasks.md Task 4 for begrundelse.
       safe_operation(
         operation_name = "Generate PDF preview PNG",
         code = {
-          preview_path <- generate_pdf_preview(
-            bfh_qic_result = pdf_result$bfh_qic_result,
-            metadata = metadata,
-            dpi = 150
+          preview_path <- shiny::withProgress(
+            message = "Genererer preview...",
+            value = 0.5,
+            {
+              generate_pdf_preview(
+                bfh_qic_result = pdf_result$bfh_qic_result,
+                metadata = metadata,
+                dpi = 150
+              )
+            }
           )
 
           log_debug(

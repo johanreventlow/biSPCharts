@@ -15,13 +15,13 @@
 
 
 metadata:
-  total_files: 128
-  audit_run: 2026-04-24T11:23:31+0200
+  total_files: 127
+  audit_run: 2026-04-26T18:58:13+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 115
-    unreviewed: 13
-    needs_triage: 0
+    reviewed: 107
+    unreviewed: 20
+    needs_triage: 1
 files:
   - file: test-100x-mismatch-prevention.R
     audit_category: green
@@ -60,6 +60,11 @@ files:
     rationale: Green-partial med 1/10 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-app-server-main.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-audit-analytics-logging-privacy.R
     audit_category: green
     type: unit
@@ -125,34 +130,11 @@ files:
       R/app_run.R).
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-cache-collision-fix.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'Fase 2 salvage: create_cached_reactive() returnerer reactive(), ikke
-      direkte vaerdi. 4 PASS, 3 SKIP+TODO (manage_cache_size() mangler, cache-navne
-      aendret). Klar til CI.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-cache-data-signature-bugs.R
+  - file: test-cache.R
     audit_category: green
     type: e2e
-    handling: fix-in-phase-3
-    reviewed: yes
-    rationale: 'testthat API-drift: argumenter ikke understoettet (2/25 fejl). Fix-in-phase-3
-      efter API-opdatering.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-cache-invalidation-sprint3.R
-    audit_category: green
-    type: unit
-    handling: fix-in-phase-3
-    reviewed: yes
-    rationale: 'API-drift: refererede funktioner fjernet (1/62 fejl). Fix-in-phase-3
-      efter API-stabilisering.'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    handling: keep
+    reviewed: no
   - file: test-centerline-handling.R
     audit_category: green
     type: unit
@@ -334,14 +316,6 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-e2e-user-workflows.R
-    audit_category: skipped-all
-    type: e2e
-    handling: keep
-    reviewed: yes
-    rationale: Bevidst skip_on_ci(); kører lokalt med shinytest2.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-e2e-workflows.R
     audit_category: green
     type: integration
@@ -396,6 +370,11 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-export-quarto-capability.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-facade-time-parsing.R
     audit_category: green
     type: unit
@@ -559,35 +538,11 @@ files:
     rationale: Ny fil fra master tidsakse-PRs (#204-#207). Alle 10 tests passer.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-logging-debug-cat.R
-    audit_category: stub
-    type: policy-guard
-    handling: keep
-    reviewed: yes
-    rationale: Policy-guard mod cat("DEBUG...")-statements. Misklassificeret som stub.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-logging-precedence.R
+  - file: test-logging.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-logging-standardization.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
-  - file: test-logging-system.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed: no
   - file: test-mod_export.R
     audit_category: green
     type: unit
@@ -675,7 +630,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-pending-issue-230.R
-    audit_category: green
+    audit_category: stub
     type: unit
     handling: keep
     reviewed: yes
@@ -819,7 +774,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-spc-plot-generation-comprehensive.R
-    audit_category: green-partial
+    audit_category: green
     type: unit
     handling: keep
     reviewed: yes
@@ -976,12 +931,17 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-utils_server_export.R
-    audit_category: green
+    audit_category: green-partial
     type: unit
     handling: keep
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-utils-event-context-handlers.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-utils-export-analysis-metadata.R
     audit_category: green
     type: unit

@@ -14,6 +14,22 @@
 #'
 #' @keywords internal
 create_form_update_service <- function(session, app_state, column_service = NULL) {
+  normalize_form_value <- function(value, default = "") {
+    value <- sanitize_selection(value)
+    if (is.null(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  normalize_number_value <- function(value, default = NA_real_) {
+    value <- normalize_form_value(value, default = "")
+    if (!nzchar(value)) {
+      return(default)
+    }
+    suppressWarnings(as.numeric(value))
+  }
+
   # Felter der opdateres ved session restore (komplet liste)
   .default_fields <- c(
     "indicator_title", "unit_select", "unit_custom", "indicator_description",
@@ -28,6 +44,8 @@ create_form_update_service <- function(session, app_state, column_service = NULL
 
   # Intern helper: opdatér ét form-felt ud fra felttype (fanger session fra closure)
   .update_single_field <- function(field, value) {
+    value <- normalize_form_value(value, default = "")
+
     if (field == "indicator_title") {
       shiny::updateTextInput(session, field, value = value)
     } else if (field == "unit_custom") {
@@ -62,9 +80,9 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     } else if (field == "pdf_improvement") {
       shiny::updateTextAreaInput(session, "export-pdf_improvement", value = value)
     } else if (field == "png_width") {
-      shiny::updateNumericInput(session, "export-png_width", value = as.numeric(value))
+      shiny::updateNumericInput(session, "export-png_width", value = normalize_number_value(value))
     } else if (field == "png_height") {
-      shiny::updateNumericInput(session, "export-png_height", value = as.numeric(value))
+      shiny::updateNumericInput(session, "export-png_height", value = normalize_number_value(value))
     }
   }
 
@@ -266,7 +284,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
             condition_spec$condition
           }
 
-          if (condition_met) {
+          if (isTRUE(condition_met)) {
             if (!is.null(condition_spec$actions$show)) {
               for (element in condition_spec$actions$show) shinyjs::show(element)
             }

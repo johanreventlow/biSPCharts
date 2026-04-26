@@ -27,6 +27,17 @@
 register_chart_type_events <- function(app_state, emit, input, session, register_observer) {
   observers <- list()
 
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  has_input_value <- function(value) {
+    nzchar(input_scalar(value, default = ""))
+  }
+
   # ============================================================================
   # COLUMN SELECTION OBSERVERS (CONSOLIDATED - PERFORMANCE OPTIMIZATION)
   # ============================================================================
@@ -61,7 +72,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
         safe_operation(
           "Toggle n_column enabled state by chart type and y-axis unit",
           code = {
-            ct <- input$chart_type %||% "run"
+            ct <- input_scalar(input$chart_type, default = "run")
             enabled <- chart_type_requires_denominator(ct)
 
             # FIX: Special handling for run charts - check y-axis unit too
@@ -69,7 +80,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             qic_ct <- get_qic_chart_type(ct)
             if (identical(qic_ct, "run")) {
               # For run charts, n_column state depends on y-axis unit
-              current_ui <- input$y_axis_unit %||% "count"
+              current_ui <- input_scalar(input$y_axis_unit, default = "count")
               enabled <- identical(current_ui, "percent") # Enable only for percent, disable for count
             }
 
@@ -106,7 +117,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
                 # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
                 desired_ui <- chart_type_to_ui_type(ct)
-                current_ui <- input$y_axis_unit %||% "count"
+                current_ui <- input_scalar(input$y_axis_unit, default = "count")
                 if (!identical(current_ui, desired_ui)) {
                   safe_programmatic_ui_update(session, app_state, function() {
                     shiny::updateSelectizeInput(session, "y_axis_unit", selected = desired_ui)
@@ -124,9 +135,9 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 if (is.null(n_val)) {
                   n_val <- tryCatch(shiny::isolate(columns_state$mappings$n_column), error = function(...) NULL)
                 }
-                n_present <- !is.null(n_val) && nzchar(n_val)
+                n_present <- has_input_value(n_val)
                 if (n_present) {
-                  current_ui <- input$y_axis_unit %||% "count"
+                  current_ui <- input_scalar(input$y_axis_unit, default = "count")
                   if (!identical(current_ui, "percent")) {
                     safe_programmatic_ui_update(session, app_state, function() {
                       shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
@@ -165,13 +176,13 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               app_state$ui$pending_programmatic_inputs[["y_axis_unit"]] <- NULL
               return(invisible(NULL))
             }
-            ui_type <- input$y_axis_unit %||% "count"
+            ui_type <- input_scalar(input$y_axis_unit, default = "count")
 
             # FIX: Toggle n_column enabled state for run charts based on y-axis unit
             # Run chart + "Tal" (count) -> n_column DISABLED
             # (run charts only support numerator OR ratio, not both)
             # Run chart + "Procent" (percent) -> n_column ENABLED (because ratio data requires denominator)
-            ct <- get_qic_chart_type(input$chart_type %||% "run")
+            ct <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
             if (identical(ct, "run")) {
               if (identical(ui_type, "count")) {
                 # "Tal" enhed valgt - disable n_column
@@ -212,7 +223,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # naar input$n_column endnu ikke er landet (typisk under session
             # restore hvor updateSelectizeInput beskeder ikke har roundtrippet).
             # Uden fallback logger observeren falsk "N-kolonne kraeves" warning.
-            n_from_input <- !is.null(input$n_column) && nzchar(input$n_column)
+            n_from_input <- has_input_value(input$n_column)
             if (n_from_input) {
               n_present <- TRUE
             } else {
@@ -220,7 +231,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 shiny::isolate(app_state$columns$mappings$n_column),
                 error = function(...) NULL
               )
-              n_present <- !is.null(n_from_state) && nzchar(n_from_state)
+              n_present <- has_input_value(n_from_state)
             }
 
             y_vals <- if (!is.null(y_col) && !is.null(data) && y_col %in% names(data)) data[[y_col]] else NULL
@@ -233,7 +244,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               ui_type = ui_type,
               internal_class = internal_class,
               suggested_chart = suggested,
-              current_chart = input$chart_type %||% "run",
+              current_chart = input_scalar(input$chart_type, default = "run"),
               .context = "[Y_AXIS_UI]"
             )
 
@@ -280,11 +291,11 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               return(invisible(NULL))
             }
 
-            ct <- get_qic_chart_type(input$chart_type %||% "run")
+            ct <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
             if (identical(ct, "run")) {
-              n_present <- !is.null(input$n_column) && nzchar(input$n_column)
+              n_present <- has_input_value(input$n_column)
               if (!n_present) {
-                current_ui <- input$y_axis_unit %||% "count"
+                current_ui <- input_scalar(input$y_axis_unit, default = "count")
                 if (!identical(current_ui, "count")) {
                   safe_programmatic_ui_update(session, app_state, function() {
                     shiny::updateSelectizeInput(session, "y_axis_unit", selected = "count")
@@ -297,7 +308,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                   .context = "[Y_AXIS_UI]"
                 )
               } else {
-                current_ui <- input$y_axis_unit %||% "count"
+                current_ui <- input_scalar(input$y_axis_unit, default = "count")
                 if (!identical(current_ui, "percent")) {
                   safe_programmatic_ui_update(session, app_state, function() {
                     shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
@@ -333,11 +344,12 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # Export module reads from mappings, not from reactives
 
             # Parse target_value (same logic as in fct_visualization_server.R)
-            if (is.null(input$target_value) || input$target_value == "") {
+            target_input <- input_scalar(input$target_value, default = "")
+            if (!nzchar(target_input)) {
               app_state$columns$mappings$target_value <- NULL
               app_state$columns$mappings$target_text <- NULL
             } else {
-              trimmed_input <- trimws(input$target_value)
+              trimmed_input <- trimws(target_input)
 
               # Store raw text for operator parsing
               app_state$columns$mappings$target_text <- trimmed_input
@@ -352,8 +364,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 numeric_part <- sub("^[<>=]+", "", trimmed_input)
 
                 # Get chart type and y_axis_unit for normalization context
-                chart_type <- get_qic_chart_type(input$chart_type %||% "run")
-                y_unit <- input$y_axis_unit
+                chart_type <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
+                y_unit <- input_scalar(input$y_axis_unit, default = "count")
 
                 # Get Y sample data for heuristics (if no explicit user unit)
                 y_sample <- NULL
@@ -407,13 +419,14 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # CRITICAL: Save centerline_value to mappings
             # Export module reads from mappings, not from reactives
 
-            if (is.null(input$centerline_value) || input$centerline_value == "") {
+            centerline_input <- input_scalar(input$centerline_value, default = "")
+            if (!nzchar(centerline_input)) {
               app_state$columns$mappings$centerline_value <- NULL
             } else {
               # CRITICAL FIX: Use chart-type aware normalization (same as target_value)
               # Get chart type and y_axis_unit for normalization context
-              chart_type <- get_qic_chart_type(input$chart_type %||% "run")
-              y_unit <- input$y_axis_unit
+              chart_type <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
+              y_unit <- input_scalar(input$y_axis_unit, default = "count")
 
               # Get Y sample data for heuristics (if no explicit user unit)
               y_sample <- NULL
@@ -428,7 +441,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 
               # Use chart-type aware normalization (eliminates 100x-mismatch)
               normalized_value <- normalize_axis_value(
-                x = input$centerline_value,
+                x = centerline_input,
                 user_unit = y_unit,
                 col_unit = NULL,
                 y_sample = y_sample,

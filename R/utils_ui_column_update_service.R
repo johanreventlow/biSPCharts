@@ -12,6 +12,14 @@
 #'
 #' @keywords internal
 create_column_update_service <- function(session, app_state) {
+  normalize_select_value <- function(value, default = "") {
+    value <- sanitize_selection(value)
+    if (is.null(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
   # Opdatér kolonne-choices (enkelt eller batch)
   #
   # Unified funktion for opdatering af kolonne-selectize inputs.
@@ -50,13 +58,12 @@ create_column_update_service <- function(session, app_state) {
         current_val <- safe_operation(
           paste("Read column value for", col),
           code = {
-            session_input_val <- session$input[[col]]
-            if (!is.null(session_input_val) && session_input_val != "") {
+            session_input_val <- normalize_select_value(session$input[[col]], default = "")
+            if (nzchar(session_input_val)) {
               session_input_val
-            } else if (!is.null(shiny::isolate(app_state$columns[[col]]))) {
-              shiny::isolate(app_state$columns[[col]])
             } else {
-              ""
+              state_val <- normalize_select_value(shiny::isolate(app_state$columns[[col]]), default = "")
+              state_val
             }
           },
           fallback = "",
@@ -69,7 +76,11 @@ create_column_update_service <- function(session, app_state) {
 
     safe_programmatic_ui_update(session, app_state, function() {
       for (col in columns) {
-        selected_value <- if (!is.null(selected) && col %in% names(selected)) selected[[col]] else ""
+        selected_value <- if (!is.null(selected) && col %in% names(selected)) {
+          normalize_select_value(selected[[col]], default = "")
+        } else {
+          ""
+        }
         shiny::updateSelectizeInput(session, col, choices = choices, selected = selected_value)
       }
     })
@@ -89,7 +100,7 @@ create_column_update_service <- function(session, app_state) {
                                  )) {
     safe_programmatic_ui_update(session, app_state, function() {
       for (col in columns) {
-        selected_value <- if (col %in% names(selected)) selected[[col]] else ""
+        selected_value <- if (col %in% names(selected)) normalize_select_value(selected[[col]], default = "") else ""
         shiny::updateSelectizeInput(
           session = session,
           inputId = col,
@@ -114,7 +125,7 @@ create_column_update_service <- function(session, app_state) {
 
     safe_programmatic_ui_update(session, app_state, function() {
       for (col_id in spc_cols) {
-        col_val <- shiny::isolate(columns_state[[col_id]])
+        col_val <- normalize_select_value(shiny::isolate(columns_state[[col_id]]), default = "")
         if (!is.null(col_val)) {
           shiny::updateSelectizeInput(
             session = session,

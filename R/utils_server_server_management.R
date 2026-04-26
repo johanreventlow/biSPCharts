@@ -434,18 +434,26 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
 
 collect_metadata <- function(input, app_state = NULL) {
   shiny::isolate({
+    scalar_text <- function(value, default = "") {
+      value <- sanitize_selection(value)
+      if (is.null(value)) {
+        return(default)
+      }
+      as.character(value[[1]])
+    }
+
     # Hjaelper: prefer input, fallback til app_state$columns$mappings naar input
     # er NULL eller "". Dette undgaar race condition under session restore hvor
     # updateSelectizeInput round-trip ikke er faerdig, og vi ellers ville
     # overskrive localStorage med tomme kolonner.
     col_val <- function(input_key, mapping_key = input_key) {
-      v <- input[[input_key]]
-      if (!is.null(v) && !identical(v, "")) {
+      v <- scalar_text(input[[input_key]], default = "")
+      if (nzchar(v)) {
         return(v)
       }
       if (!is.null(app_state)) {
-        m <- app_state$columns$mappings[[mapping_key]]
-        if (!is.null(m) && !identical(m, "")) {
+        m <- scalar_text(app_state$columns$mappings[[mapping_key]], default = "")
+        if (nzchar(m)) {
           return(m)
         }
       }
@@ -460,42 +468,42 @@ collect_metadata <- function(input, app_state = NULL) {
       skift_column = col_val("skift_column"),
       frys_column = col_val("frys_column"),
       kommentar_column = col_val("kommentar_column"),
-      chart_type = input$chart_type,
+      chart_type = scalar_text(input$chart_type, default = "run"),
       # NULL-safe: jsonlite::toJSON dropper list-elementer med NULL, saa vi
       # falder tilbage til "" for at sikre roundtrip ved tomme felter.
-      target_value = if (is.null(input$target_value)) "" else input$target_value,
-      centerline_value = if (is.null(input$centerline_value)) "" else input$centerline_value,
-      y_axis_unit = if (is.null(input$y_axis_unit) || input$y_axis_unit == "") "count" else input$y_axis_unit,
+      target_value = scalar_text(input$target_value),
+      centerline_value = scalar_text(input$centerline_value),
+      y_axis_unit = scalar_text(input$y_axis_unit, default = "count"),
       # Unit-type system (select/custom) og tilhoerende vaerdier.
       # Disse triggerer autosave og opdateres i update_form_fields(),
       # saa de skal ogsaa gemmes i metadata for korrekt roundtrip.
       # NULL-safe: jsonlite::toJSON serialiserer NULL som {} (tomt object)
       # selvom auto_unbox = TRUE, hvilket giver uforudsigelig decoding i JS.
       # Fallback til "" sikrer korrekt roundtrip.
-      unit_type = if (is.null(input$unit_type)) "" else input$unit_type,
-      unit_select = if (is.null(input$unit_select)) "" else input$unit_select,
-      unit_custom = if (is.null(input$unit_custom)) "" else input$unit_custom,
-      indicator_title = if (is.null(input$indicator_title)) "" else input$indicator_title,
-      indicator_description = if (is.null(input$indicator_description)) "" else input$indicator_description,
+      unit_type = scalar_text(input$unit_type),
+      unit_select = scalar_text(input$unit_select),
+      unit_custom = scalar_text(input$unit_custom),
+      indicator_title = scalar_text(input$indicator_title),
+      indicator_description = scalar_text(input$indicator_description),
 
       # Trin 3 (Eksporter) -- export-modulets felter (namespaced med "export-")
       # NULL-safe: ellers dropper jsonlite::toJSON elementerne naar modulet
       # endnu ikke er renderet (inputs = NULL foer foerste visning af trin 3).
-      export_title = if (is.null(input[["export-export_title"]])) "" else input[["export-export_title"]],
-      export_hospital = if (is.null(input[["export-export_hospital"]])) "" else input[["export-export_hospital"]],
-      export_department = if (is.null(input[["export-export_department"]])) "" else input[["export-export_department"]],
-      export_footnote = if (is.null(input[["export-export_footnote"]])) "" else input[["export-export_footnote"]],
-      export_format = if (is.null(input[["export-export_format"]])) "" else input[["export-export_format"]],
-      pdf_description = if (is.null(input[["export-pdf_description"]])) "" else input[["export-pdf_description"]],
-      pdf_improvement = if (is.null(input[["export-pdf_improvement"]])) "" else input[["export-pdf_improvement"]],
-      png_width = if (is.null(input[["export-png_width"]])) "" else input[["export-png_width"]],
-      png_height = if (is.null(input[["export-png_height"]])) "" else input[["export-png_height"]],
+      export_title = scalar_text(input[["export-export_title"]]),
+      export_hospital = scalar_text(input[["export-export_hospital"]]),
+      export_department = scalar_text(input[["export-export_department"]]),
+      export_footnote = scalar_text(input[["export-export_footnote"]]),
+      export_format = scalar_text(input[["export-export_format"]]),
+      pdf_description = scalar_text(input[["export-pdf_description"]]),
+      pdf_improvement = scalar_text(input[["export-pdf_improvement"]]),
+      png_width = scalar_text(input[["export-png_width"]]),
+      png_height = scalar_text(input[["export-png_height"]]),
 
       # Wizard navigation state (Issue #193)
       # Valider: kun kendte string-vaerdier gemmes for at undgaa at nrows (36)
       # eller andre numeriske vaerdier sniger sig ind via reactive edge cases.
       active_tab = {
-        tab <- input$main_navbar %||% "analyser"
+        tab <- scalar_text(input$main_navbar, default = "analyser")
         valid_nav_tabs <- c("analyser", "eksporter", "upload", "start")
         if (is.character(tab) && length(tab) == 1 && tab %in% valid_nav_tabs) tab else "analyser"
       }

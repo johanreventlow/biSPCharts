@@ -299,127 +299,110 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
 ## Haandter Excel fil upload
 handle_excel_upload <- function(file_path, session, app_state, emit, ui_service = NULL) {
-  excel_sheets <- readxl::excel_sheets(file_path)
-
-  # Nyt biSPCharts gem-format: "Data" + "Indstillinger"
-  if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
-    data <- readxl::read_excel(file_path, sheet = "Data", col_names = TRUE)
-    data <- ensure_standard_columns(data)
-    metadata <- parse_spc_excel(file_path, sheets = excel_sheets)
-
-    data_frame <- as.data.frame(data)
-
-    if (!is.null(metadata) && !is.null(ui_service)) {
-      # Fuld restore: spejl localStorage-session_restore-flowet saa auto-detect
-      # IKKE koerer og gemte mappings ikke overskrives. Raekkefoelge er kritisk:
-      # 1) Guard-flag saettes FOeR state-skriv saa listeners suppresses korrekt.
-      # 2) Kolonne-mappings skrives til app_state FOeR emit, saa downstream-
-      #    listeners ser korrekt state i foerste iteration.
-      # 3) restore_metadata() scheduleres via session$onFlushed -- den maa IKKE
-      #    koere synkront, da selectize-choices foerst populeres af
-      #    handle_session_restore_context().
-      # 4) emit("session_restore") router til session_restore-handler (exact
-      #    match), som kalder update_column_choices_unified + navigation +
-      #    visualization_update_needed. Dette erstatter emit("file_loaded")
-      #    der ellers ville trigge auto_detection_started.
-      # 5) Cleanup af restoring_session-flag scheduleres efter flush.
-      app_state$session$restoring_session <- TRUE
-
-      set_current_data(app_state, data_frame)
-      app_state$data$original_data <- data_frame
-      app_state$session$file_uploaded <- TRUE
-      app_state$columns$auto_detect$completed <- TRUE
-      app_state$ui$hide_anhoej_rules <- FALSE
-
-      for (field in c(
-        "x_column", "y_column", "n_column",
-        "skift_column", "frys_column", "kommentar_column"
-      )) {
-        val <- metadata[[field]]
-        if (!is.null(val) && nzchar(val)) {
-          app_state$columns$mappings[[field]] <- val
-        }
-      }
-
-      session$onFlushed(
-        function() {
-          shiny::isolate({
-            log_debug(
-              "Restoring metadata after UI flush (Excel upload)",
-              .context = "SESSION_RESTORE"
-            )
-            restore_metadata(session, metadata, ui_service)
-          })
-        },
-        once = TRUE
+  # Brug parse_file() til pure parsing \u2014 ingen app_state-mutation her
+  parsed <- tryCatch(
+    parse_file(file_path, format = "excel"),
+    error = function(e) {
+      log_error(
+        paste("Excel-parsing fejlede:", e$message),
+        .context = "FILE_UPLOAD"
       )
-
-      emit$data_updated("session_restore")
-
-      session$onFlushed(
-        function() {
-          shiny::isolate({
-            app_state$session$restoring_session <- FALSE
-            log_debug(
-              "restoring_session flag cleared after Excel upload restore",
-              .context = "SESSION_RESTORE"
-            )
-          })
-        },
-        once = TRUE
-      )
-
-      besked <- paste0(
-        "Gendannet: ", nrow(data_frame), " r\u00e6kker, ",
-        ncol(data_frame), " kolonner + indstillinger"
-      )
-    } else {
-      # Fallback: Indstillinger-ark kunne ikke parses. Behandl som almindelig
-      # data-upload og koer auto-detection i stedet.
-      set_current_data(app_state, data_frame)
-      app_state$data$original_data <- data_frame
-      app_state$session$file_uploaded <- TRUE
-      app_state$columns$auto_detect$completed <- FALSE
-      app_state$ui$hide_anhoej_rules <- FALSE
-
-      emit$data_updated("file_loaded")
-      emit$navigation_changed()
-
-      besked <- paste0(
-        "Data indl\u00e6st: ", nrow(data_frame), " r\u00e6kker \u2014 ",
-        "indstillinger kunne ikke gendannes"
-      )
+      NULL
     }
+  )
 
-    shiny::showNotification(besked, type = "message", duration = 4)
+  if (is.null(parsed)) {
+    shiny::showNotification(
+      "Excel-filen kunne ikke l\u00e6ses.",
+      type = "error", duration = 6
+    )
     return(invisible(NULL))
   }
 
-  # Standard Excel file (uden Indstillinger-ark)
-  data <- readxl::read_excel(file_path, col_names = TRUE)
+  is_restore <- isTRUE(parsed$meta$is_bispchart_format)
+  metadata <- parsed$meta$saved_metadata
 
-  # Ensure standard columns are present and in correct order
-  data <- ensure_standard_columns(data)
+  if (is_restore && !is.null(metadata) && !is.null(ui_service)) {
+    # Fuld restore: spejl localStorage-session_restore-flowet saa auto-detect
+    # IKKE koerer og gemte mappings ikke overskrives. Raekkefoelge er kritisk:
+    # 1) Guard-flag saettes FOeR state-skriv saa listeners suppresses korrekt.
+    # 2) Kolonne-mappings skrives til app_state FOeR emit, saa downstream-
+    #    listeners ser korrekt state i foerste iteration.
+    # 3) restore_metadata() scheduleres via session$onFlushed -- den maa IKKE
+    #    koere synkront, da selectize-choices foerst populeres af
+    #    handle_session_restore_context().
+    # 4) emit("session_restore") router til session_restore-handler (exact
+    #    match), som kalder update_column_choices_unified + navigation +
+    #    visualization_update_needed. Dette erstatter emit("file_loaded")
+    #    der ellers ville trigge auto_detection_started.
+    # 5) Cleanup af restoring_session-flag scheduleres efter flush.
+    apply_state_transition(app_state, transition_session_restore(parsed))
+    # set_current_data bruger eget accessor-m\u00f8nster
+    set_current_data(app_state, parsed$data)
 
-  # Dual-state sync during migration - Excel file loading
-  data_frame <- as.data.frame(data)
-  set_current_data(app_state, data_frame)
-  app_state$data$original_data <- data_frame
+    session$onFlushed(
+      function() {
+        shiny::isolate({
+          log_debug(
+            "Restoring metadata after UI flush (Excel upload)",
+            .context = "SESSION_RESTORE"
+          )
+          restore_metadata(session, metadata, ui_service)
+        })
+      },
+      once = TRUE
+    )
 
-  # Emit unified data_updated event (replaces legacy data_loaded)
-  emit$data_updated("file_loaded")
+    emit$data_updated("session_restore")
 
-  # Unified state assignment only - Set file uploaded flag
-  app_state$session$file_uploaded <- TRUE
-  # Unified state assignment only - Set auto detect flag
-  app_state$columns$auto_detect$completed <- FALSE
-  # Unified state assignment only - Re-enable Anhoej rules when real data is uploaded
-  app_state$ui$hide_anhoej_rules <- FALSE
+    session$onFlushed(
+      function() {
+        shiny::isolate({
+          app_state$session$restoring_session <- FALSE
+          log_debug(
+            "restoring_session flag cleared after Excel upload restore",
+            .context = "SESSION_RESTORE"
+          )
+        })
+      },
+      once = TRUE
+    )
 
-  # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
-  emit$navigation_changed()
+    besked <- paste0(
+      "Gendannet: ", nrow(parsed$data), " r\u00e6kker, ",
+      ncol(parsed$data), " kolonner + indstillinger"
+    )
+  } else if (is_restore) {
+    # Fallback: Indstillinger-ark kunne ikke parses. Behandl som almindelig
+    # data-upload og koer auto-detection i stedet.
+    apply_state_transition(app_state, transition_upload_to_ready(parsed))
+    set_current_data(app_state, parsed$data)
 
-  notify_upload_success("Excel", data)
+    emit$data_updated("file_loaded")
+    emit$navigation_changed()
+
+    besked <- paste0(
+      "Data indl\u00e6st: ", nrow(parsed$data), " r\u00e6kker \u2014 ",
+      "indstillinger kunne ikke gendannes"
+    )
+  } else {
+    # Standard Excel-fil (uden Indstillinger-ark)
+    apply_state_transition(app_state, transition_upload_to_ready(parsed))
+    set_current_data(app_state, parsed$data)
+
+    emit$data_updated("file_loaded")
+    emit$navigation_changed()
+
+    besked <- NULL # notify_upload_success vises nedenfor
+  }
+
+  if (!is.null(besked)) {
+    shiny::showNotification(besked, type = "message", duration = 4)
+  } else {
+    notify_upload_success("Excel", parsed$data)
+  }
+
+  return(invisible(NULL))
 }
 
 #' Haandter CSV fil upload med dansk formattering
@@ -471,183 +454,79 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     session_id = session_id
   )
 
-  # CSV behandling med auto-detection af separator (#124)
-  # 1. Dansk standard (semikolon + komma-decimal)
-  # 2. Fallback: auto-detect
-  # 3. Fallback: engelsk (komma + punkt-decimal)
-  # Alle fejl opsamles og vises i brugerbesked ved total-fail.
-
-  data <- try_with_diagnostics(
-    attempts = list(
-      "semikolon-separator (dansk standard)" = function() {
-        result <- readr::read_csv2(
-          file_path,
-          locale = readr::locale(
-            decimal_mark = ",",
-            grouping_mark = ".",
-            encoding = UTF8_ENCODING
-          ),
-          show_col_types = FALSE
-        )
-        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
-        result
-      },
-      "auto-detect separator" = function() {
-        result <- readr::read_delim(
-          file_path,
-          delim = NULL,
-          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
-          show_col_types = FALSE,
-          trim_ws = TRUE
-        )
-        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
-        result
-      },
-      "komma-separator (engelsk standard)" = function() {
-        result <- readr::read_csv(
-          file_path,
-          locale = readr::locale(
-            decimal_mark = ".",
-            grouping_mark = ",",
-            encoding = UTF8_ENCODING
-          ),
-          show_col_types = FALSE
-        )
-        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
-        result
-      }
-    ),
-    on_all_fail = function(errors) {
-      attempt_names <- names(errors)
-      fejldetaljer <- paste(attempt_names, errors, sep = ": ", collapse = "\n")
-      log_warn(
-        "CSV-parsing fejlede for alle tre strategier",
-        .context = "FILE_UPLOAD",
-        details = list(
-          attempts = attempt_names,
-          errors = as.list(errors)
-        )
-      )
-      shiny::showNotification(
-        paste0(
-          "CSV-filen kunne ikke l\u00e6ses. Pr\u00f8vede:\n",
-          fejldetaljer,
-          "\nKontroll\u00e9r at filen er gyldig CSV med UTF-8 eller Windows-1252 encoding."
-        ),
-        type = "error",
-        duration = 10
+  # Brug parse_file() til pure parsing \u2014 ingen app_state-mutation her
+  parsed <- tryCatch(
+    parse_file(file_path, format = "csv"),
+    error = function(e) {
+      log_error(
+        paste("CSV-parsing fejlede:", e$message),
+        .context = "FILE_UPLOAD"
       )
       NULL
     }
   )
 
-  if (is.null(data) || nrow(data) < 1) {
+  if (is.null(parsed)) {
+    shiny::showNotification(
+      paste0(
+        "CSV-filen kunne ikke l\u00e6ses. ",
+        "Kontroll\u00e9r at filen er gyldig CSV med UTF-8 eller Windows-1252 encoding."
+      ),
+      type = "error",
+      duration = 10
+    )
     return(invisible(NULL))
   }
 
+  # Vis rensnings-notifikationer fra parse_file (pure lag returnerer advarsler)
+  if (length(parsed$warnings) > 0) {
+    shiny::showNotification(
+      paste("Data renset:", paste(parsed$warnings, collapse = ", ")),
+      type = "message",
+      duration = 5
+    )
+  }
 
   debug_log("CSV data loaded successfully", "FILE_UPLOAD_FLOW",
     level = "INFO",
     context = list(
-      rows = nrow(data),
-      columns = ncol(data),
-      column_names = names(data)
+      rows = parsed$meta$rows,
+      columns = parsed$meta$cols,
+      column_names = names(parsed$data)
     ),
     session_id = session_id
   )
 
-  # ENHANCED DATA PREPROCESSING: Clean and validate data
-  preprocessing_result <- preprocess_uploaded_data(
-    data,
-    list(name = basename(file_path), size = file.info(file_path)$size),
-    session_id
-  )
-  data <- preprocessing_result$data
-
-  # Show user notification if significant cleaning occurred
-  if (!is.null(preprocessing_result$cleaning_log)) {
-    cleaning_messages <- character(0)
-    if (!is.null(preprocessing_result$cleaning_log$empty_rows_removed)) {
-      cleaning_messages <- c(
-        cleaning_messages,
-        paste(preprocessing_result$cleaning_log$empty_rows_removed, "empty rows removed")
-      )
-    }
-    if (!is.null(preprocessing_result$cleaning_log$column_names_cleaned)) {
-      cleaning_messages <- c(cleaning_messages, "column names cleaned")
-    }
-
-    if (length(cleaning_messages) > 0) {
-      shiny::showNotification(
-        paste("Data renset:", paste(cleaning_messages, collapse = ", ")),
-        type = "message",
-        duration = 5
-      )
-    }
-  }
-
-  # Ensure standard columns are present and in correct order
-  data <- ensure_standard_columns(data)
-
-
-  # Take state snapshot before data assignment
+  # State snapshot til diagnostik
   if (!is.null(app_state)) {
     debug_state_snapshot("before_csv_data_assignment", app_state, session_id = session_id)
   }
 
-  # Unified state assignment only - CSV file loading
-  data_frame <- as.data.frame(data)
-
-  # Enhanced debugging: Data structure analysis before assignment
-
-
-  # Enhanced state change tracking
-  debug_state_change(
-    "CSV_UPLOAD", "app_state$data$current_data",
-    app_state$data$current_data, data_frame,
-    "file_upload_processing", session_id
-  )
-
-  set_current_data(app_state, data_frame)
-  app_state$data$original_data <- data_frame
-
-  # Verify state assignment success
-  if (is.null(app_state$data$current_data)) {
-    warning("State assignment failed: current_data is NULL")
-  }
+  # Anvend state-transition atomisk via central applier
+  apply_state_transition(app_state, transition_upload_to_ready(parsed))
+  # set_current_data bruger eget accessor-m\u00f8nster \u2014 kaldes separat
+  set_current_data(app_state, parsed$data)
 
   # Emit unified data_updated event (replaces legacy data_loaded)
   emit$data_updated(context = "session_file_loaded")
-
-  # Unified state assignment - Set file uploaded flag
-  app_state$session$file_uploaded <- TRUE
-  # Unified state assignment - Set auto detect flag
-  app_state$columns$auto_detect$completed <- FALSE
-  # Unified state assignment - Re-enable Anhoej rules when real data is uploaded
-  app_state$ui$hide_anhoej_rules <- FALSE
-
-  # NAVIGATION TRIGGER: Navigation events are now handled by the unified event system
   emit$navigation_changed()
-
-
-  # ROBUST AUTO-DETECT: Enhanced auto-detection triggering with validation
 
   debug_log("Data loaded event emitted successfully", "FILE_UPLOAD_FLOW",
     level = "INFO",
     context = list(
-      rows = nrow(data),
-      columns = ncol(data),
+      rows = parsed$meta$rows,
+      columns = parsed$meta$cols,
       event_system = "unified_event_bus"
     ),
     session_id = session_id
   )
 
-  # Take state snapshot after all state is set
+  # State snapshot efter upload
   if (!is.null(app_state)) {
     debug_state_snapshot("after_csv_upload_complete", app_state, session_id = session_id)
   }
 
-  notify_upload_success("CSV", data)
+  notify_upload_success("CSV", parsed$data)
 }
 
 #' Haandter indsatte (pasted) data fra textAreaInput
@@ -755,16 +634,17 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   # Tilfoej Skift/Frys kolonner hvis de mangler
   data <- ensure_standard_columns(data)
 
-  # Gem i app state (samme moenster som handle_csv_upload)
-  data_frame <- as.data.frame(data)
-  set_current_data(app_state, data_frame)
-  app_state$data$original_data <- data_frame
+  # Gem i app state via central applier (samme mønster som handle_csv_upload)
+  parsed_from_paste <- new_parsed_file(
+    data     = as.data.frame(data),
+    format   = "csv",
+    encoding = "UTF-8"
+  )
+  apply_state_transition(app_state, transition_upload_to_ready(parsed_from_paste))
+  set_current_data(app_state, parsed_from_paste$data)
 
   # Emit events
   emit$data_updated(context = "paste_data")
-  app_state$session$file_uploaded <- TRUE
-  app_state$columns$auto_detect$completed <- FALSE
-  app_state$ui$hide_anhoej_rules <- FALSE
   emit$navigation_changed()
 
   notify_upload_success("Indsatte data", data)

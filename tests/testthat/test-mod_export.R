@@ -139,9 +139,6 @@ test_that("mod_export_server initializes without errors", {
     mod_export_server,
     args = list(app_state = create_mock_app_state()),
     {
-      # Server should initialize successfully
-      expect_true(TRUE)
-
       # Session should exist
       expect_true(!is.null(session))
 

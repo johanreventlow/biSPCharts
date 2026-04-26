@@ -373,7 +373,7 @@ test_that("p-anhoej baseline: runs_signal og crossings_signal korrekte", {
 
   # Fra fixture metadata: runs_signal = TRUE, n_crossings = 11, n_crossings_min = 13
   expect_true(result$runs_signal)
-  expect_true(result$crossings_signal) # n_crossings=11 < n_crossings_min=13
+  expect_true(result$crossings_signal)
   expect_true(result$anhoej_signal)
   expect_equal(result$n_crossings, 11)
   expect_equal(result$n_crossings_min, 13)

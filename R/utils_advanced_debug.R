@@ -133,6 +133,32 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
   }
 }
 
+.PII_COLUMN_PATTERN <- "(?i)(navn|name|patient|cpr|\\d{6}-?\\d{4}|@|email|mail|phone|mobil|adresse|address)"
+
+#' Redaktér PII-kolonnenavne
+#'
+#' Erstatter navne der matcher kendte PII-mønstre med `[redacted]`.
+#'
+#' @param col_names Character-vector med kolonnenavne
+#' @return Character-vector, samme længde
+#' @keywords internal
+redact_col_names <- function(col_names) {
+  ifelse(grepl(.PII_COLUMN_PATTERN, col_names, perl = TRUE), "[redacted]", col_names)
+}
+
+#' Redaktér PII-kolonnenavne i debug-snapshot og returner hash-sikkert objekt
+#'
+#' @param snapshot List fra `debug_state_snapshot()` med `data_summary$current_data$col_names`
+#' @return Kopi af `snapshot` med PII-navne redakteret i `data_summary`
+#' @keywords internal
+redact_debug_snapshot <- function(snapshot) {
+  if (!is.null(snapshot$data_summary$current_data$col_names)) {
+    snapshot$data_summary$current_data$col_names <-
+      redact_col_names(snapshot$data_summary$current_data$col_names)
+  }
+  snapshot
+}
+
 #' State Snapshot Utility
 #'
 #' Creates detailed snapshot af app_state for debugging og comparison
@@ -167,9 +193,9 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
     # Basic state information
     snapshot$state_available <- TRUE
 
-    # State hash for change detection
+    # State hash for change detection (data_summary ikke tilføjet endnu — ingen PII her)
     if (include_hash) {
-      snapshot$state_hash <- digest::digest(app_state, algo = "xxhash64")
+      snapshot$state_hash <- digest::digest(snapshot, algo = "xxhash64")
     }
 
     # Data summary - safe reactive access
@@ -191,10 +217,11 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
       )
 
       if (!is.null(current_data)) {
+        redacted_names <- redact_col_names(names(current_data))
         data_summary$current_data <- list(
           rows = nrow(current_data),
           cols = ncol(current_data),
-          col_names = names(current_data)
+          col_names = redacted_names
         )
       }
 

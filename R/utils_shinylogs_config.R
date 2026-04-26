@@ -104,13 +104,38 @@ initialize_shinylogs_tracking <- function(session,
   return(invisible(TRUE))
 }
 
+#' Opløs analytics-konfiguration fra kill-switch, golem-config og legacy env-var
+#'
+#' Returnerer `list(enabled, source)` hvor `source` beskriver hvilken konfigurationskilde
+#' der vandt. Prioritetsrækkefølge: `BISPC_DISABLE_ANALYTICS` > golem-config >
+#' `ENABLE_SHINYLOGS` (legacy).
+#'
+#' @return Named list med `enabled` (logical) og `source` (character)
+#' @keywords internal
+resolve_analytics_config <- function() {
+  if (toupper(Sys.getenv("BISPC_DISABLE_ANALYTICS", "")) %in% c("TRUE", "1", "YES", "ON")) {
+    return(list(enabled = FALSE, source = "env:BISPC_DISABLE_ANALYTICS"))
+  }
+  config_val <- tryCatch(
+    golem::get_golem_options("analytics.shinylogs_enabled"),
+    error = function(e) NULL # nolint: swallowed_error_linter. Golem-config kan mangle uden for app-kontekst
+  )
+  if (!is.null(config_val)) {
+    return(list(enabled = isTRUE(config_val), source = "golem-config"))
+  }
+  enable_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE")
+  list(
+    enabled = toupper(enable_flag) %in% c("TRUE", "1", "YES", "ON"),
+    source = "env:ENABLE_SHINYLOGS (legacy)"
+  )
+}
+
 #' Environment variable configuration for shinylogs
 #'
 #' Tjekker environment variable for at kontrollere shinylogs funktioner
 #'
 should_enable_shinylogs <- function() {
-  enable_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE") # Default enabled
-  return(toupper(enable_flag) %in% c("TRUE", "1", "YES", "ON"))
+  resolve_analytics_config()$enabled
 }
 
 #' Initialize shinylogs logging announcement

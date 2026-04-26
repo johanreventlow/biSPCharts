@@ -190,28 +190,20 @@ create_spc_results_reactive <- function(
         set_plot_state("plot_ready", TRUE)
 
         if (!is.null(qic_data)) {
-          # Beregn runs_signal og crossings_signal foerst
-          runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
-
-          crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
-            n_cross <- safe_max(qic_data$n.crossings)
-            n_cross_min <- safe_max(qic_data$n.crossings.min)
-            !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-          } else {
-            FALSE
-          }
+          show_phases <- inputs$skift_config$show_phases %||% FALSE
+          anhoej <- derive_anhoej_results(qic_data, show_phases = show_phases)
 
           qic_results <- list(
             any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
             # Konsistent med BFHcharts' PDF-tabel: tael outliers i seneste part.
             out_of_control_count = count_outliers_latest_part(qic_data),
-            runs_signal = runs_sig,
-            crossings_signal = crossings_sig,
-            anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhoej-signal
-            longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
-            longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
-            n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
-            n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_,
+            runs_signal = anhoej$runs_signal,
+            crossings_signal = anhoej$crossings_signal,
+            anhoej_signal = anhoej$anhoej_signal,
+            longest_run = anhoej$longest_run,
+            longest_run_max = anhoej$longest_run_max,
+            n_crossings = anhoej$n_crossings,
+            n_crossings_min = anhoej$n_crossings_min,
             message = if (inputs$chart_type == "run") {
               if (any(qic_data$sigma.signal, na.rm = TRUE)) "S\u00e6rlig \u00e5rsag detekteret" else "Ingen s\u00e6rlige \u00e5rsager fundet"
             } else {
@@ -221,10 +213,7 @@ create_spc_results_reactive <- function(
 
           # NA-handling og bevar/opdater-politik centraliseret
           current_anhoej <- get_plot_state("anhoej_results")
-          show_phases <- inputs$skift_config$show_phases %||% FALSE
-          updated_anhoej <- update_anhoej_results(current_anhoej, qic_results, centerline_changed,
-            qic_data = qic_data, show_phases = show_phases
-          )
+          updated_anhoej <- update_anhoej_results(current_anhoej, qic_results, centerline_changed)
 
           # Log kun naar vi reelt aendrer state (for at reducere stoej)
           if (!identical(updated_anhoej, current_anhoej)) {
@@ -407,40 +396,30 @@ register_cache_aware_observer <- function(
         set_plot_state("plot_object", result$plot)
       }
 
-      # Udled metrics fra qic_data (samme logik som i computation-blokken)
-      runs_sig <- if ("runs.signal" %in% names(qic_data)) any(qic_data$runs.signal, na.rm = TRUE) else FALSE
+      # Hent show_phases fra skift_config reactive
+      skift_config <- skift_config_reactive()
+      show_phases <- skift_config$show_phases %||% FALSE
 
-      crossings_sig <- if ("n.crossings" %in% names(qic_data) && "n.crossings.min" %in% names(qic_data)) {
-        n_cross <- safe_max(qic_data$n.crossings)
-        n_cross_min <- safe_max(qic_data$n.crossings.min)
-        !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-      } else {
-        FALSE
-      }
+      anhoej <- derive_anhoej_results(qic_data, show_phases = show_phases)
 
       qic_results <- list(
         any_signal = any(qic_data$sigma.signal, na.rm = TRUE),
         # Konsistent med BFHcharts' PDF-tabel: tael outliers i seneste part.
         out_of_control_count = count_outliers_latest_part(qic_data),
-        runs_signal = runs_sig,
-        crossings_signal = crossings_sig,
-        anhoej_signal = runs_sig || crossings_sig, # Kombineret Anhoej-signal
-        longest_run = if ("longest.run" %in% names(qic_data)) safe_max(qic_data$longest.run) else NA_real_,
-        longest_run_max = if ("longest.run.max" %in% names(qic_data)) safe_max(qic_data$longest.run.max) else NA_real_,
-        n_crossings = if ("n.crossings" %in% names(qic_data)) safe_max(qic_data$n.crossings) else NA_real_,
-        n_crossings_min = if ("n.crossings.min" %in% names(qic_data)) safe_max(qic_data$n.crossings.min) else NA_real_
+        runs_signal = anhoej$runs_signal,
+        crossings_signal = anhoej$crossings_signal,
+        anhoej_signal = anhoej$anhoej_signal,
+        longest_run = anhoej$longest_run,
+        longest_run_max = anhoej$longest_run_max,
+        n_crossings = anhoej$n_crossings,
+        n_crossings_min = anhoej$n_crossings_min
       )
 
       current_anhoej <- get_plot_state("anhoej_results")
 
-      # Hent show_phases fra skift_config reactive
-      skift_config <- skift_config_reactive()
-      show_phases <- skift_config$show_phases %||% FALSE
-
       # Opdater altid naar vi har gyldige metrics, ellers bevar hvis tidligere var gyldige
       updated_anhoej <- update_anhoej_results(current_anhoej, qic_results,
-        centerline_changed = FALSE,
-        qic_data = qic_data, show_phases = show_phases
+        centerline_changed = FALSE
       )
 
       if (!identical(updated_anhoej, current_anhoej)) {

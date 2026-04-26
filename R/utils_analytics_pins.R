@@ -292,7 +292,9 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
   safe_operation(
     "Sync analytics data",
     code = {
-      if (nchar(Sys.getenv("GITHUB_PAT")) > 0 &&
+      github_sync_enabled <- isTRUE(golem::get_golem_options("analytics.github_sync_enabled"))
+      if (github_sync_enabled &&
+        nchar(Sys.getenv("GITHUB_PAT")) > 0 &&
         nchar(Sys.getenv("PIN_REPO_URL")) > 0) {
         result <- sync_logs_to_github(all_data, session_id = session_id)
         if (isTRUE(result$success)) {

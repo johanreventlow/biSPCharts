@@ -33,55 +33,18 @@ filter_latest_part <- function(qic_data, show_phases = FALSE) {
 #' - Hvis metrics er NA og centerline ikke er aendret, og der fandtes gyldige vaerdier foer,
 #'   bevares de gamle vaerdier (for at undgaa midlertidig flimmer under beregning)
 #'
+#' Fase-filtrering og Anhoej-udledning haandteres af `derive_anhoej_results()`
+#' foer dette kald. Denne funktion bevaarer udelukkende preserve-politikken.
+#'
 #' @param previous list. Forrige `anhoej_results` (kan vaere NULL ved foerste koersel)
-#' @param qic_results list. Nye beregnede metrics fra QIC-kald (kan indeholde NA)
+#' @param qic_results list. Nye beregnede metrics (fra `derive_anhoej_results()`)
 #' @param centerline_changed logical. TRUE hvis centerline/baseline er aendret (inkl. ryddet)
-#' @param qic_data data.frame. QIC data (bruges til part filtrering)
-#' @param show_phases logical. TRUE hvis parts/skift er aktivt
 #' @return list. Opdateret `anhoej_results`
 #' @keywords internal
-update_anhoej_results <- function(previous, qic_results, centerline_changed = FALSE,
-                                  qic_data = NULL, show_phases = FALSE) {
+update_anhoej_results <- function(previous, qic_results, centerline_changed = FALSE) {
   # Defensive input checks
   if (is.null(qic_results) || !is.list(qic_results)) {
     return(previous)
-  }
-
-  # Filtrer til seneste part hvis skift er aktivt
-  if (!is.null(qic_data) && isTRUE(show_phases)) {
-    qic_data_filtered <- filter_latest_part(qic_data, show_phases)
-
-    # Genberegn metrics OG signals baseret paa filtreret data
-    if (!is.null(qic_data_filtered) && nrow(qic_data_filtered) > 0) {
-      # Opdater longest_run og n_crossings fra filtreret data hvis tilgaengelig
-      if ("longest.run" %in% names(qic_data_filtered)) {
-        qic_results$longest_run <- max(qic_data_filtered$longest.run, na.rm = TRUE)
-      }
-      if ("longest.run.max" %in% names(qic_data_filtered)) {
-        qic_results$longest_run_max <- max(qic_data_filtered$longest.run.max, na.rm = TRUE)
-      }
-      if ("n.crossings" %in% names(qic_data_filtered)) {
-        qic_results$n_crossings <- max(qic_data_filtered$n.crossings, na.rm = TRUE)
-      }
-      if ("n.crossings.min" %in% names(qic_data_filtered)) {
-        qic_results$n_crossings_min <- max(qic_data_filtered$n.crossings.min, na.rm = TRUE)
-      }
-
-      # Genberegn runs_signal baseret paa filtreret data
-      if ("runs.signal" %in% names(qic_data_filtered)) {
-        qic_results$runs_signal <- any(qic_data_filtered$runs.signal, na.rm = TRUE)
-      }
-
-      # Genberegn crossings_signal baseret paa filtreret data
-      if ("n.crossings" %in% names(qic_data_filtered) && "n.crossings.min" %in% names(qic_data_filtered)) {
-        n_cross <- max(qic_data_filtered$n.crossings, na.rm = TRUE)
-        n_cross_min <- max(qic_data_filtered$n.crossings.min, na.rm = TRUE)
-        qic_results$crossings_signal <- !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
-      }
-
-      # Genberegn kombineret anhoej_signal (runs ELLER crossings)
-      qic_results$anhoej_signal <- (qic_results$runs_signal %||% FALSE) || (qic_results$crossings_signal %||% FALSE)
-    }
   }
 
   has_metrics <- (!is.null(qic_results$longest_run) && !is.na(qic_results$longest_run)) ||

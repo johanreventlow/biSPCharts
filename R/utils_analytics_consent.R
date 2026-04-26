@@ -25,7 +25,7 @@ should_track_analytics <- function(consent = NULL) {
 #'
 #' @param raw_metadata List fra Shiny.setInputValue('analytics_client_metadata')
 #' @return List med formateret metadata, eller NULL
-#' @export
+#' @keywords internal
 format_analytics_metadata <- function(raw_metadata) {
   if (is.null(raw_metadata)) {
     return(NULL)
@@ -55,7 +55,7 @@ format_analytics_metadata <- function(raw_metadata) {
 #' @param hashed_token Hashed session token for logging
 #' @param log_directory Directory for shinylogs output
 #' @return Invisible NULL
-#' @export
+#' @keywords internal
 setup_analytics_consent <- function(input, session, hashed_token, log_directory = "logs/") {
   config <- get_analytics_config()
   session$sendCustomMessage("spc_set_consent_version", config$consent_version)

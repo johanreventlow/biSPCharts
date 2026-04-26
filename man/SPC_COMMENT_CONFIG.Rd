@@ -4,7 +4,7 @@
 \name{SPC_COMMENT_CONFIG}
 \alias{SPC_COMMENT_CONFIG}
 \title{Kommentar behandling konfiguration
-M3: Centraliseret magic numbers for kommentar længdebegrænsninger}
+M3: Centraliseret magic numbers for kommentar laengdebegraensninger}
 \format{
 An object of class \code{list} of length 3.
 }
@@ -13,6 +13,6 @@ SPC_COMMENT_CONFIG
 }
 \description{
 Kommentar behandling konfiguration
-M3: Centraliseret magic numbers for kommentar længdebegrænsninger
+M3: Centraliseret magic numbers for kommentar laengdebegraensninger
 }
 \keyword{internal}

@@ -14,7 +14,7 @@ prepare_spc_data(req)
 }
 \description{
 Parser, konverterer og filtrerer input-data. Returnerer et \code{spc_prepared}-objekt
-klar til akse-opsætning og BFHcharts-rendering. Kaster \code{spc_prepare_error}
+klar til akse-opsaetning og BFHcharts-rendering. Kaster \code{spc_prepare_error}
 ved parsing- eller filtering-fejl.
 }
 \keyword{internal}

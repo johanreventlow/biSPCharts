@@ -2,20 +2,20 @@
 % Please edit documentation in R/fct_spc_decorate.R
 \name{decorate_plot_for_display}
 \alias{decorate_plot_for_display}
-\title{Dekorer standardiseret SPC-result med Anhøj-metadata og backend-flag}
+\title{Dekorer standardiseret SPC-result med Anhoej-metadata og backend-flag}
 \usage{
 decorate_plot_for_display(standardized, prepared)
 }
 \arguments{
 \item{standardized}{list. Standardiseret result fra \code{execute_bfh_request()}.}
 
-\item{prepared}{\code{spc_prepared} objekt. Bruges ved Anhøj-fallback.}
+\item{prepared}{\code{spc_prepared} objekt. Bruges ved Anhoej-fallback.}
 }
 \value{
 Opdateret \code{standardized} list.
 }
 \description{
-Tjekker om BFHcharts leverede Anhøj-regler; falder ved behov tilbage til
-qicharts2 som fallback. Sætter \code{metadata$backend = "bfhcharts"}.
+Tjekker om BFHcharts leverede Anhoej-regler; falder ved behov tilbage til
+qicharts2 som fallback. Saetter \code{metadata$backend = "bfhcharts"}.
 }
 \keyword{internal}

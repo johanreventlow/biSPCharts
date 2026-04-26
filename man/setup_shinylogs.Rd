@@ -25,7 +25,7 @@ Konfigurerer shinylogs til avanceret web-baseret logging og monitoring
 af Shiny applikationen. Integrerer med eksisterende logging system.
 }
 \details{
-shinylogs giver følgende funktionaliteter:
+shinylogs giver foelgende funktionaliteter:
 \itemize{
 \item Real-time web-baseret log viewer
 \item Automatisk tracking af inputs, outputs og fejl

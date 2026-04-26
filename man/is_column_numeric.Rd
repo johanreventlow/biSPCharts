@@ -2,19 +2,19 @@
 % Please edit documentation in R/fct_spc_helpers.R
 \name{is_column_numeric}
 \alias{is_column_numeric}
-\title{Tjek om en kolonne primært indeholder numeriske værdier}
+\title{Tjek om en kolonne primaert indeholder numeriske vaerdier}
 \usage{
 is_column_numeric(col, threshold = 0.5)
 }
 \arguments{
 \item{col}{Vector. Kolonne at tjekke.}
 
-\item{threshold}{Numeric. Andel non-NA værdier der skal være numeriske (0-1).}
+\item{threshold}{Numeric. Andel non-NA vaerdier der skal vaere numeriske (0-1).}
 }
 \value{
 Logical. TRUE hvis kolonnen er numerisk nok.
 }
 \description{
-Tjek om en kolonne primært indeholder numeriske værdier
+Tjek om en kolonne primaert indeholder numeriske vaerdier
 }
 \keyword{internal}

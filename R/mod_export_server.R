@@ -36,7 +36,7 @@
 #'
 #' @return Liste med reactive values for module status
 #' @family export_modules
-#' @export
+#' @keywords internal
 mod_export_server <- function(id, app_state, parent_session = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
     # === INITIALIZATION ======================================================

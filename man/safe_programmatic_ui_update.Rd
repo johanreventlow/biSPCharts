@@ -49,7 +49,7 @@ TIMING STRATEGY:
 # Standard usage with default 500ms delay
 safe_programmatic_ui_update(session, app_state, function() {
   shiny::updateSelectizeInput(session, "x_column", choices = choices, selected = "Dato")
-  shiny::updateSelectizeInput(session, "y_column", choices = choices, selected = "Tæller")
+  shiny::updateSelectizeInput(session, "y_column", choices = choices, selected = "Taeller")
 })
 
 # Custom delay for slow environments

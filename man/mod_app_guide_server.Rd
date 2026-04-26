@@ -17,3 +17,4 @@ mod_app_guide_server(id, parent_session = NULL, previous_tab = NULL)
 Server logik for app-vejledningssiden. Håndterer tilbagenavigation
 til den tab brugeren kom fra.
 }
+\keyword{internal}

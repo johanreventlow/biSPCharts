@@ -5,13 +5,13 @@
 \alias{EXPORT_DPI_OPTIONS}
 \title{DPI (Dots Per Inch) options for export}
 \format{
-Integer vector med tilgængelige DPI værdier
+Integer vector med tilgaengelige DPI vaerdier
 }
 \usage{
 EXPORT_DPI_OPTIONS
 }
 \description{
-Standard DPI værdier til forskellige export kvaliteter.
+Standard DPI vaerdier til forskellige export kvaliteter.
 }
 \details{
 \itemize{

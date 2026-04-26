@@ -17,7 +17,7 @@ calculate_y_axis_data(chart_type, y_data, n_data = NULL)
 Processed Y-axis data ready for plotting
 }
 \description{
-Beregner Y-axis data baseret på chart type og tilgængelige data.
+Beregner Y-axis data baseret paa chart type og tilgaengelige data.
 Ekstraeret fra generateSPCPlot for bedre modularity.
 }
 \keyword{internal}

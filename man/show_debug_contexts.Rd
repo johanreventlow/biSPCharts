@@ -10,7 +10,7 @@ show_debug_contexts()
 Invisible NULL. Printer en organiseret tabel til konsolen.
 }
 \description{
-Viser alle tilgængelige log contexts organiseret efter kategori.
+Viser alle tilgaengelige log contexts organiseret efter kategori.
 Nyttigt til at finde de rigtige context-navne for \code{set_debug_context()}.
 }
 \examples{

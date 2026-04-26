@@ -44,7 +44,6 @@ test_that("no system.file() calls in app_server", {
   expect_false(any(grepl("system\\.file", app_server_body)))
 })
 
-test_that("main_app_server is properly exported", {
-  # Verify main_app_server is in package namespace
-  expect_true("main_app_server" %in% getNamespaceExports("biSPCharts"))
+test_that("main_app_server exists i namespace (intern funktion)", {
+  expect_true(exists("main_app_server", envir = asNamespace("biSPCharts"), mode = "function"))
 })

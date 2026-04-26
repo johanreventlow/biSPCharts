@@ -47,7 +47,7 @@ zero changes required in mod_spc_chart_server.R.
 }
 \details{
 \strong{Note:} This is a pure BFHcharts implementation. qicharts2 is used only
-for Anhøj rules metadata extraction (internal). No fallback to qicharts2
+for Anhoej rules metadata extraction (internal). No fallback to qicharts2
 visualization occurs.
 }
 \keyword{internal}

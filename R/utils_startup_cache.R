@@ -53,7 +53,6 @@ STARTUP_CACHE_CONFIG <- list(
 #'
 #' @return TRUE if cache dir exists or was created, FALSE otherwise
 #' @keywords internal
-#' @export
 init_startup_cache <- function() {
   cache_dir <- STARTUP_CACHE_CONFIG$cache_dir
   if (!dir.exists(cache_dir)) {

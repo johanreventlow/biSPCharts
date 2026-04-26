@@ -2,29 +2,29 @@
 % Please edit documentation in R/utils_error_handling.R
 \name{try_with_diagnostics}
 \alias{try_with_diagnostics}
-\title{Prøv multiple strategier og opsaml fejl}
+\title{Proev multiple strategier og opsaml fejl}
 \usage{
 try_with_diagnostics(attempts, on_all_fail)
 }
 \arguments{
-\item{attempts}{Named list af zero-argument funktioner. Køres i rækkefølge.
-Første der returnerer uden fejl vinder. Funktioner der returnerer \code{NULL}
-behandles som succes med \code{NULL}-resultat — brug \code{stop()} for at signalere
+\item{attempts}{Named list af zero-argument funktioner. Koeres i raekkefoelge.
+Foerste der returnerer uden fejl vinder. Funktioner der returnerer \code{NULL}
+behandles som succes med \code{NULL}-resultat -- brug \code{stop()} for at signalere
 fejl.}
 
 \item{on_all_fail}{Funktion der modtager named character vector af
-fejlbeskeder (navn = attempt-navn, værdi = \code{conditionMessage(e)}).
+fejlbeskeder (navn = attempt-navn, vaerdi = \code{conditionMessage(e)}).
 Typisk brugt til at kaste en aggregeret fejl eller vise brugerbesked.}
 }
 \value{
-Resultatet fra det første succesfulde attempt, eller hvad
+Resultatet fra det foerste succesfulde attempt, eller hvad
 \code{on_all_fail} returnerer/kaster.
 }
 \description{
-Itererer en navngivet liste af funktioner og returnerer første succesfulde
+Itererer en navngivet liste af funktioner og returnerer foerste succesfulde
 resultat. Hvis alle fejler, kaldes \code{on_all_fail} med en navngivet liste af
-fejlbeskeder. Hvert attempt SKAL enten returnere en værdi eller kaste en
-fejl — returnér aldrig \code{NULL} som signal for fejl.
+fejlbeskeder. Hvert attempt SKAL enten returnere en vaerdi eller kaste en
+fejl -- returner aldrig \code{NULL} som signal for fejl.
 }
 \examples{
 \dontrun{

@@ -17,7 +17,7 @@ Standardiseret result-list med \verb{$plot}, \verb{$qic_data}, \verb{$metadata}.
 }
 \description{
 Kalder \code{call_bfh_chart()} med de mappede parametre og transformer resultatet
-via \code{transform_bfh_output()}. Tilføjer tekst-labels på x-aksen hvis x-kolonnen
+via \code{transform_bfh_output()}. Tilfoejer tekst-labels paa x-aksen hvis x-kolonnen
 var konverteret til numerisk sekvens (se \code{prepare_spc_data()}). Kaster
 \code{spc_render_error} ved rendering- eller transformationsfejl.
 }

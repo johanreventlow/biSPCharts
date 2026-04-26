@@ -11,18 +11,18 @@ NULL (invisible). Registrerer fonts som sideeffekt.
 }
 \description{
 Registrerer bundlede Roboto Medium og Bold fonts med systemfonts pakken.
-Dette sikrer at fonterne er tilgængelige på alle systemer, uanset om
+Dette sikrer at fonterne er tilgaengelige paa alle systemer, uanset om
 Roboto er installeret lokalt.
 }
 \details{
-Funktionen køres automatisk ved app-start for at sikre font-tilgængelighed.
+Funktionen koeres automatisk ved app-start for at sikre font-tilgaengelighed.
 Roboto Medium registreres som "plain" variant og Roboto Bold som "bold" variant,
-så marquee kan bruge \strong{bold} markup korrekt.
+saa marquee kan bruge \strong{bold} markup korrekt.
 
 Roboto Medium og Bold fonts er bundlet i inst/fonts/ mappen og licenseret under
 Apache License 2.0 (se inst/fonts/LICENSE).
 
-Font-registrering håndteres af systemfonts pakken, som er cross-platform
+Font-registrering haandteres af systemfonts pakken, som er cross-platform
 kompatibel (Windows, macOS, Linux).
 }
 \examples{

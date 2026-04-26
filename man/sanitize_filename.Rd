@@ -14,7 +14,7 @@ Sanitized filename komponent
 }
 \description{
 Renser filnavn komponent for special characters og sikrer cross-platform
-kompatibilitet. Bevarer danske karakterer (æøåÆØÅ).
+kompatibilitet. Bevarer danske karakterer (aeoeaaAeOeAa).
 }
 \details{
 Sanitization proces:
@@ -30,7 +30,7 @@ Allowed characters:
 \itemize{
 \item A-Z, a-z (Latin letters)
 \item 0-9 (Numbers)
-\item æøåÆØÅ (Danish characters)
+\item aeoeaaAeOeAa (Danish characters)
 \item _ (Underscore)
 \item 
 \itemize{
@@ -47,8 +47,8 @@ Removed characters:
 }
 \examples{
 \dontrun{
-sanitize_filename("København Sygehus")
-# "København_Sygehus"
+sanitize_filename("Koebenhavn Sygehus")
+# "Koebenhavn_Sygehus"
 
 sanitize_filename("Test@#$Name")
 # "TestName"

@@ -19,7 +19,7 @@ generate_y_axis_label(chart_type, y_unit_label, y_col, n_col = NULL)
 Y-axis label string
 }
 \description{
-Genererer Y-axis label baseret på chart type, enheder og kolonnenavne.
+Genererer Y-axis label baseret paa chart type, enheder og kolonnenavne.
 Ekstraeret fra generateSPCPlot for consistency og testability.
 }
 \keyword{internal}

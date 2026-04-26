@@ -107,9 +107,9 @@ extract_spc_statistics <- function(app_state) {
 #' @keywords internal
 validate_export_dpi <- function(dpi) {
   if (!is.numeric(dpi) || length(dpi) != 1L || is.na(dpi) || dpi < 72 || dpi > 600) {
-    rlang::abort(
+    spc_abort(
       paste0("dpi skal vaere numerisk mellem 72 og 600, fik: ", dpi),
-      class = c("export_input_error", "spc_error", "error")
+      class = "export_input_error"
     )
   }
   invisible(dpi)

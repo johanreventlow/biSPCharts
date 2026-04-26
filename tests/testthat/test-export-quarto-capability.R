@@ -11,20 +11,6 @@
 # Task 6 af harden-export-quarto-capability OpenSpec change (#319).
 # ==============================================================================
 
-# Hjælper: ryd session-cache og kør check_quarto_capability med mocks
-with_quarto_mock <- function(which_returns, version_returns, code) {
-  # Ryd cache saa mockede systemkald faktisk eksekveres
-  old_cache <- biSPCharts:::.quarto_capability_cache$get()
-  biSPCharts:::.quarto_capability_cache$set(NULL)
-  on.exit(biSPCharts:::.quarto_capability_cache$set(old_cache), add = TRUE)
-
-  mockery::stub(check_quarto_capability, "Sys.which", function(...) which_returns)
-  if (!is.null(version_returns)) {
-    mockery::stub(check_quarto_capability, "system2", function(...) version_returns)
-  }
-  code
-}
-
 # check_quarto_capability() ---------------------------------------------------
 
 test_that("check_quarto_capability returnerer FALSE hvis quarto ikke er i PATH", {

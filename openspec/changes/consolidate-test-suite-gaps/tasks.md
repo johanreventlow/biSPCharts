@@ -6,6 +6,8 @@
 
 ## 2. testServer-migration (issue #230)
 
+<!-- DEFERRED: testServer-migration er høj-risiko, håndteres separat. Se issue #230 -->
+
 - [ ] 2.1 Identificér alle `skip("TODO: #230 testServer-migration")`-forekomster
 - [ ] 2.2 Prioritér top 5 vigtigste server-funktioner at migrere:
   - `mod_spc_chart_server` (chart-rendering flow)
@@ -46,8 +48,14 @@
 - [ ] 5.3 Opret `tests/testthat/test-utils-event-context-handlers.R`:
   - Context-routing-regler
   - Alle registrerede events har matchende handler
+  <!-- NOTE: test-state-management-hierarchical.R dækker allerede task 5.1 —
+       se Phase 5 commit for dokumentation. Task 5.6 nedenfor er deferred. -->
 - [ ] 5.4 Opret `tests/testthat/test-spc-chart-full-flow.R`:
+  <!-- DEFERRED: kræver testServer-migration (Phase 2) -->
   - Upload test-CSV → autodetect → chart-type → render → eksport (via testServer)
+
+<!-- DEFERRED: Task 5.6 (anhoej derivation pure tests): kræver extract-anhoej-derivation-pure
+     (ikke deployed). Se openspec/changes/extract-anhoej-derivation-pure. -->
 
 ## 6. Udvid audit-script
 
@@ -61,6 +69,7 @@
 - [ ] 7.1 Kør fuld test-suite — alle tests skal passere
 - [ ] 7.2 Kør `covr::package_coverage()` → verificér at coverage er ≥ baseline
 - [ ] 7.3 Kør skip-inventory-step (fra `harden-ci-quality-gates`) → verificér TODO-skips er reduceret
+  <!-- DEFERRED: kræver harden-ci-quality-gates workflow (arkiveret men CI-steps afventer?) -->
 - [ ] 7.4 Kør `openspec validate consolidate-test-suite-gaps --strict`
 
 Tracking: GitHub Issue #322 (paraply), #230 (testServer-migration)

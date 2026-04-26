@@ -100,17 +100,19 @@ jobs:
             STATUS="✅ Skip-inventory OK"
           fi
 
-          BODY="## Skip Inventory
-${STATUS}
+          {
+            echo "## Skip Inventory"
+            echo "${STATUS}"
+            echo ""
+            echo "| Kategori | Antal | Delta |"
+            echo "|----------|-------|-------|"
+            echo "| todo | ${HEAD_TODO} | ${DELTA_TODO:+\+}${DELTA_TODO} |"
+            echo "| total | ${HEAD_TOTAL} | ${DELTA_TOTAL:+\+}${DELTA_TOTAL} |"
+            echo ""
+            echo "Se \`dev/audit-output/skip-inventory.md\` for detaljer."
+          } > /tmp/skip-inventory-comment.md
 
-| Kategori | Antal | Delta |
-|----------|-------|-------|
-| todo | ${HEAD_TODO} | ${DELTA_TODO:+\+}${DELTA_TODO} |
-| total | ${HEAD_TOTAL} | ${DELTA_TOTAL:+\+}${DELTA_TOTAL} |
-
-Se \`dev/audit-output/skip-inventory.md\` for detaljer."
-
-          gh pr comment "$PR_NUMBER" --body "$BODY"
+          gh pr comment "$PR_NUMBER" --body-file /tmp/skip-inventory-comment.md
         shell: bash
 
       - name: Upload skip inventory artifact

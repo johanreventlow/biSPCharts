@@ -209,3 +209,307 @@ test_that("app_state performance and memory management works", {
   expect_null(isolate(app_state$data$current_data))
   expect_null(isolate(app_state$data$original_data))
 })
+
+# ==============================================================================
+# Niveau B: Hierarkisk column management (create_app_state + isolate, ingen reaktiv kæde)
+# ==============================================================================
+
+test_that("app_state hierarchical column management works", {
+  # TEST: Hierarkisk kolonne-struktur og mappings
+
+  # SETUP: Opret app state
+  app_state <- create_app_state()
+
+  # TEST: Auto-detection sub-system (nested reactive values kræver isolate)
+  expect_false(isolate(isolate(app_state$columns$auto_detect)$in_progress))
+  expect_false(isolate(isolate(app_state$columns$auto_detect)$completed))
+  expect_null(isolate(isolate(app_state$columns$auto_detect)$results))
+
+  # Opdater auto-detection state via nested isolate
+  ad <- isolate(app_state$columns$auto_detect)
+  ad$in_progress <- TRUE
+  ad$results <- list(x_col = "Dato", y_col = "Værdi")
+
+  expect_true(isolate(ad$in_progress))
+  expect_equal(isolate(ad$results)$x_col, "Dato")
+
+  # TEST: Column mappings sub-system
+  m <- isolate(app_state$columns$mappings)
+  expect_null(isolate(m$x_column))
+  expect_null(isolate(m$y_column))
+  expect_null(isolate(m$n_column))
+
+  # Opdater column mappings
+  shiny::isolate({
+    app_state$columns$mappings$x_column <- "Dato"
+    app_state$columns$mappings$y_column <- "Tæller"
+    app_state$columns$mappings$n_column <- "Nævner"
+    app_state$columns$mappings$cl_column <- "Control_Limit"
+    app_state$columns$mappings$skift_column <- "Skift"
+    app_state$columns$mappings$frys_column <- "Frys"
+    app_state$columns$mappings$kommentar_column <- "Kommentar"
+  })
+
+  expect_equal(isolate(app_state$columns$mappings$x_column), "Dato")
+  expect_equal(isolate(app_state$columns$mappings$y_column), "Tæller")
+  expect_equal(isolate(app_state$columns$mappings$n_column), "Nævner")
+  expect_equal(isolate(app_state$columns$mappings$cl_column), "Control_Limit")
+  expect_equal(isolate(app_state$columns$mappings$skift_column), "Skift")
+  expect_equal(isolate(app_state$columns$mappings$frys_column), "Frys")
+  expect_equal(isolate(app_state$columns$mappings$kommentar_column), "Kommentar")
+
+  # TEST: UI synchronization sub-system
+  expect_false(isolate(isolate(app_state$columns$ui_sync)$needed))
+  expect_null(isolate(isolate(app_state$columns$ui_sync)$last_sync_time))
+
+  shiny::isolate({
+    app_state$columns$ui_sync$needed <- TRUE
+    app_state$columns$ui_sync$last_sync_time <- Sys.time()
+  })
+
+  expect_true(isolate(isolate(app_state$columns$ui_sync)$needed))
+  expect_true(inherits(isolate(isolate(app_state$columns$ui_sync)$last_sync_time), c("POSIXct", "POSIXt")))
+})
+
+test_that("app_state complex state transitions work", {
+  # TEST: Komplekse state-transition scenarier
+  # Opdateret: data_loaded → data_updated, ui_sync_needed → ui_sync_requested
+
+  # SETUP: Opret app state
+  app_state <- create_app_state()
+
+  # Step 1: Data upload starter
+  app_state$data$updating_table <- TRUE
+  app_state$events$data_updated <- 1L
+
+  expect_true(isolate(app_state$data$updating_table))
+  expect_equal(isolate(app_state$events$data_updated), 1L)
+
+  # Step 2: Data processeret
+  test_data <- data.frame(
+    Dato = c("01-01-2024", "01-02-2024", "01-03-2024"),
+    Tæller = c(45, 43, 48),
+    Nævner = c(50, 50, 50)
+  )
+  app_state$data$current_data <- test_data
+  app_state$data$original_data <- test_data
+
+  # Step 3: Auto-detection trigget
+  app_state$events$auto_detection_started <- 1L
+  ad <- shiny::isolate(app_state$columns$auto_detect)
+  ad$in_progress <- TRUE
+
+  # Step 4: Auto-detection fuldført
+  shiny::isolate({
+    app_state$columns$mappings$x_column <- "Dato"
+    app_state$columns$mappings$y_column <- "Tæller"
+    app_state$columns$mappings$n_column <- "Nævner"
+    app_state$columns$auto_detect$completed <- TRUE
+    app_state$columns$auto_detect$frozen_until_next_trigger <- TRUE
+  })
+  app_state$events$auto_detection_completed <- 1L
+
+  # Step 5: UI sync requested (erstatter ui_sync_needed)
+  app_state$events$ui_sync_requested <- 1L
+  us <- shiny::isolate(app_state$columns$ui_sync)
+  us$needed <- TRUE
+
+  # Step 6: Workflow fuldført
+  app_state$data$updating_table <- FALSE
+  app_state$events$ui_sync_completed <- 1L
+  us$needed <- FALSE
+
+  # Verificér final state
+  expect_false(isolate(app_state$data$updating_table))
+  expect_true(isolate(isolate(app_state$columns$auto_detect)$completed))
+  expect_true(isolate(isolate(app_state$columns$auto_detect)$frozen_until_next_trigger))
+  expect_false(isolate(isolate(app_state$columns$ui_sync)$needed))
+  expect_equal(isolate(app_state$columns$mappings$x_column), "Dato")
+  expect_equal(isolate(app_state$columns$mappings$y_column), "Tæller")
+  expect_equal(isolate(app_state$columns$mappings$n_column), "Nævner")
+})
+
+test_that("app_state backward compatibility works", {
+  # TEST: Moderne hierarkisk adgang til kolonne-state
+
+  # SETUP: Opret app state
+  app_state <- create_app_state()
+
+  # TEST: Moderne hierarkisk adgang
+  shiny::isolate({
+    app_state$columns$mappings$x_column <- "modern_x"
+  })
+  expect_equal(isolate(app_state$columns$mappings$x_column), "modern_x")
+
+  # TEST: Migration helper (hvis eksisterer)
+  if (exists("migrate_legacy_state", mode = "function")) {
+    legacy_state <- list(
+      x_column = "old_x",
+      y_column = "old_y",
+      auto_detected_columns = list(x = "detected_x")
+    )
+
+    migrated_state <- migrate_legacy_state(legacy_state, app_state)
+
+    expect_equal(isolate(migrated_state$columns$mappings$x_column), "old_x")
+    expect_equal(isolate(migrated_state$columns$mappings$y_column), "old_y")
+  } else {
+    # Funktion ikke implementeret - men hierarkisk adgang virker
+    expect_equal(isolate(app_state$columns$mappings$x_column), "modern_x")
+  }
+})
+
+test_that("app_state Danish clinical workflow works", {
+  # TEST: Komplet dansk klinisk data workflow
+  # Opdateret: data_loaded → data_updated, ui_sync_needed → ui_sync_requested
+
+  # SETUP: Opret app state
+  app_state <- create_app_state()
+
+  # TEST: Dansk klinisk data simulation
+  danish_data <- data.frame(
+    Måned = c("Jan 2024", "Feb 2024", "Mar 2024"),
+    Genindlæggelser = c(12, 8, 15),
+    `Samlede indlæggelser` = c(150, 145, 160),
+    Målestatus = c("Standard", "Under mål", "Over mål"),
+    Faseændring = c(FALSE, FALSE, TRUE),
+    `Frys baseline` = c(FALSE, FALSE, TRUE),
+    `Klinisk kommentar` = c("", "Ferieperiode", "Ny procedure"),
+    stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
+
+  # 1. Data upload
+  app_state$data$current_data <- danish_data
+  app_state$data$original_data <- danish_data
+  app_state$events$data_updated <- 1L # Erstattet data_loaded → data_updated
+
+  # 2. Auto-detection
+  shiny::isolate({
+    app_state$columns$mappings$x_column <- "Måned"
+    app_state$columns$mappings$y_column <- "Genindlæggelser"
+    app_state$columns$mappings$n_column <- "Samlede indlæggelser"
+    app_state$columns$mappings$skift_column <- "Faseændring"
+    app_state$columns$mappings$frys_column <- "Frys baseline"
+    app_state$columns$mappings$kommentar_column <- "Klinisk kommentar"
+  })
+  app_state$events$auto_detection_completed <- 1L
+
+  # 3. UI sync
+  app_state$events$ui_sync_requested <- 1L # Erstattet ui_sync_needed → ui_sync_requested
+  us <- shiny::isolate(app_state$columns$ui_sync)
+  us$needed <- TRUE
+
+  # Verificér dansk workflow state
+  expect_equal(nrow(isolate(app_state$data$current_data)), 3)
+  expect_equal(isolate(app_state$columns$mappings$x_column), "Måned")
+  expect_equal(isolate(app_state$columns$mappings$y_column), "Genindlæggelser")
+  expect_equal(isolate(app_state$columns$mappings$n_column), "Samlede indlæggelser")
+  expect_equal(isolate(app_state$columns$mappings$skift_column), "Faseændring")
+  expect_equal(isolate(app_state$columns$mappings$frys_column), "Frys baseline")
+  expect_equal(isolate(app_state$columns$mappings$kommentar_column), "Klinisk kommentar")
+
+  # Verificér dansk tegn-støtte i data
+  expect_true(all(grepl("æ|ø|å", c("Måned", "Genindlæggelser", "Samlede indlæggelser"))))
+})
+
+# ==============================================================================
+# Niveau C: testServer-baserede reaktive kæde-tests
+# ==============================================================================
+
+test_that("app_state reactive chains work correctly", {
+  # TEST: Reaktive kæder i testServer-kontekst
+  # Verificerer at data_summary reactive virker korrekt efter data er sat.
+  skip_if_not_installed("shiny")
+
+  create_server <- function() {
+    function(input, output, session) {
+      app_state <- create_app_state()
+      session$userData$app_state <- app_state
+
+      # Reaktivt udtryk afhængigt af state
+      data_summary <- shiny::reactive({
+        shiny::req(app_state$data$current_data)
+        data <- shiny::isolate(app_state$data$current_data)
+        list(
+          rows = nrow(data),
+          cols = ncol(data),
+          names = names(data)
+        )
+      })
+
+      session$userData$data_summary <- data_summary
+      session$userData$emit <- create_emit_api(app_state)
+
+      # Output til at drive reaktiviteten
+      output$summary_rows <- shiny::renderText({
+        s <- data_summary()
+        as.character(s$rows)
+      })
+    }
+  }
+
+  shiny::testServer(create_server(), {
+    app_state <- session$userData$app_state
+
+    # Sæt data og flush
+    app_state$data$current_data <- data.frame(A = 1:3, B = 4:6, C = 7:9)
+    session$flushReact()
+
+    # Verificér reaktiv state via output
+    expect_equal(output$summary_rows, "3")
+  })
+})
+
+test_that("app_state event-driven workflows work", {
+  # TEST: Event-driven state updates i testServer-kontekst
+  # Verificerer at emit-funktioner opdaterer app_state korrekt.
+  skip_if_not_installed("shiny")
+
+  create_server <- function() {
+    function(input, output, session) {
+      app_state <- create_app_state()
+      emit <- create_emit_api(app_state)
+      session$userData$app_state <- app_state
+      session$userData$emit <- emit
+    }
+  }
+
+  shiny::testServer(create_server(), {
+    app_state <- session$userData$app_state
+    emit <- session$userData$emit
+
+    # TEST: emit$data_updated inkrementerer event-counter
+    initial_data_updated <- shiny::isolate(app_state$events$data_updated)
+    emit$data_updated(context = "file_upload")
+    expect_equal(
+      shiny::isolate(app_state$events$data_updated),
+      initial_data_updated + 1L
+    )
+
+    # TEST: emit$auto_detection_started inkrementerer counter
+    initial_auto <- shiny::isolate(app_state$events$auto_detection_started)
+    emit$auto_detection_started()
+    expect_equal(
+      shiny::isolate(app_state$events$auto_detection_started),
+      initial_auto + 1L
+    )
+
+    # TEST: emit$auto_detection_completed inkrementerer counter
+    initial_completed <- shiny::isolate(app_state$events$auto_detection_completed)
+    emit$auto_detection_completed()
+    expect_equal(
+      shiny::isolate(app_state$events$auto_detection_completed),
+      initial_completed + 1L
+    )
+
+    # TEST: State kan opdateres direkte i testServer
+    shiny::isolate({
+      app_state$columns$mappings$x_column <- "detected_x"
+    })
+    expect_equal(
+      shiny::isolate(app_state$columns$mappings$x_column),
+      "detected_x"
+    )
+  })
+})

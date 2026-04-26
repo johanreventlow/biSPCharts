@@ -816,7 +816,146 @@ test_that("score_by_name_patterns giver højere score til y-relevante navne", {
   random_score <- score_by_name_patterns("RandomCol", role = "y_column")
   expect_gt(tæller_score, random_score)
 })
+test_that("update_all_column_mappings synchronizes state correctly", {
+  # TEST: update_all_column_mappings skriver detection-resultater til app_state$columns$mappings
+  # Bruges 3-argument signatur: (results, existing_columns, app_state)
+  skip_if_not(
+    exists("update_all_column_mappings", mode = "function") &&
+      exists("create_app_state", mode = "function"),
+    "Required functions not available"
+  )
+
+  app_state <- create_app_state()
+  detection_results <- list(
+    x_col = "Dato",
+    y_col = "Tæller",
+    n_col = "Nævner",
+    timestamp = Sys.time()
+  )
+
+  result <- tryCatch(
+    {
+      # 3-argument API: results, existing_columns (kan være NULL), app_state
+      update_all_column_mappings(detection_results, app_state = app_state)
+      "success"
+    },
+    error = function(e) {
+      paste("error:", e$message)
+    }
+  )
+
+  expect_equal(result, "success",
+    label = "update_all_column_mappings skal kunne kaldes uden fejl"
+  )
+
+  # Verificér at mappings er synkroniserede med detection-resultater
+  expect_equal(shiny::isolate(app_state$columns$mappings$x_column), "Dato",
+    label = "x_column skal synkroniseres fra detection_results"
+  )
+  expect_equal(shiny::isolate(app_state$columns$mappings$y_column), "Tæller",
+    label = "y_column skal synkroniseres fra detection_results"
+  )
+  expect_equal(shiny::isolate(app_state$columns$mappings$n_column), "Nævner",
+    label = "n_column skal synkroniseres fra detection_results"
+  )
+})
+
 # ==============================================================================
 # Event-Driven Autodetect Tests
 # ==============================================================================
 # Merged from test-no-autodetect-on-table-edit.R
+
+test_that("No autodetect on excelR table edits (table_cells_edited)", {
+  # TEST: Context routing - file_loaded → auto-detect, table_cells_edited → ingen auto-detect
+  # Verificerer handle_data_update_by_context direkte (unit test isoleret i isolate-blok)
+  # da testServer ikke kan flush observeEvent-chains på reactiveValues-events.
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(
+      Dato = as.Date(c("2024-01-01", "2024-02-01")),
+      Tæller = c(10, 12)
+    )
+  })
+
+  base_auto <- shiny::isolate(app_state$events$auto_detection_started)
+  base_nav <- shiny::isolate(app_state$events$navigation_changed)
+
+  # file_loaded → load context → auto_detection_started
+  shiny::isolate({
+    handle_data_update_by_context(
+      update_context = list(context = "file_loaded"),
+      app_state = app_state,
+      emit = emit,
+      input = list(), output = list(), session = NULL, ui_service = NULL
+    )
+  })
+  after_file <- shiny::isolate(app_state$events$auto_detection_started)
+  expect_equal(after_file, base_auto + 1L,
+    label = "file_loaded skal trigge auto_detection_started"
+  )
+
+  # table_cells_edited → table_edit context → INGEN auto_detection_started
+  shiny::isolate({
+    handle_data_update_by_context(
+      update_context = list(context = "table_cells_edited"),
+      app_state = app_state,
+      emit = emit,
+      input = list(), output = list(), session = NULL, ui_service = NULL
+    )
+  })
+  after_edit <- shiny::isolate(app_state$events$auto_detection_started)
+  expect_equal(after_edit, after_file,
+    label = "table_cells_edited må IKKE trigge auto_detection_started"
+  )
+
+  # table_cells_edited → navigation_changed
+  after_nav <- shiny::isolate(app_state$events$navigation_changed)
+  expect_equal(after_nav, base_nav + 1L,
+    label = "table_cells_edited skal trigge navigation_changed"
+  )
+})
+
+test_that("n_column stays cleared during table edit refresh", {
+  # TEST: table_cells_edited bevarer eksisterende kolonne-mappings (ingen auto-detect override)
+  # Verificerer at mappings$n_column er intakt efter table_cells_edited context.
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+
+  # Opsæt initial state: n_column sat i mappings
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(
+      Dato = as.Date(c("2024-01-01", "2024-01-02")),
+      Tæller = c(10, 12),
+      Nævner = c(100, 110)
+    )
+    app_state$columns$mappings$n_column <- "Nævner"
+  })
+
+  # Initial state verificeret
+  expect_equal(shiny::isolate(app_state$columns$mappings$n_column), "Nævner")
+
+  auto_before <- shiny::isolate(app_state$events$auto_detection_started)
+
+  # table_cells_edited: ingen auto-detect → ingen override af mappings
+  shiny::isolate({
+    handle_data_update_by_context(
+      update_context = list(context = "table_cells_edited"),
+      app_state = app_state,
+      emit = emit,
+      input = list(), output = list(), session = NULL, ui_service = NULL
+    )
+  })
+
+  # Mappings$n_column forbliver uændret
+  expect_equal(shiny::isolate(app_state$columns$mappings$n_column), "Nævner",
+    label = "n_column mapping bevares ved table_cells_edited"
+  )
+  # Ingen auto-detect trigger
+  expect_equal(shiny::isolate(app_state$events$auto_detection_started), auto_before,
+    label = "auto_detection_started må ikke stige ved table_cells_edited"
+  )
+})

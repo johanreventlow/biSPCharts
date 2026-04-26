@@ -755,6 +755,15 @@ files:
       efter API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-spc-chart-full-flow.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: yes
+    rationale: 'Ny fil (Phase 2b, #322). 5 testServer-baserede tests for SPC pipeline
+      event orchestration. Alle grønne.'
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-spc-plot-generation-comprehensive.R
     audit_category: green
     type: unit

@@ -630,7 +630,7 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-pending-issue-230.R
-    audit_category: green
+    audit_category: stub
     type: unit
     handling: keep
     reviewed: yes

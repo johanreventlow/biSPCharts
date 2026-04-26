@@ -229,7 +229,7 @@ reset_qic_performance_counters <- function() {
   } else {
     config_val <- tryCatch(
       golem::get_golem_options("analytics.shinylogs_enabled"),
-      error = function(e) NULL
+      error = function(e) NULL # nolint: swallowed_error_linter. Golem-config kan lovligt mangle ved package-load udenfor app-kontekst; fallback til legacy env-var er korrekt
     )
     if (!is.null(config_val)) {
       analytics_enabled <- isTRUE(config_val)

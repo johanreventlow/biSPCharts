@@ -109,8 +109,20 @@ initialize_shinylogs_tracking <- function(session,
 #' Tjekker environment variable for at kontrollere shinylogs funktioner
 #'
 should_enable_shinylogs <- function() {
-  enable_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE") # Default enabled
-  return(toupper(enable_flag) %in% c("TRUE", "1", "YES", "ON"))
+  # Kill-switch vinder over alt andet
+  if (toupper(Sys.getenv("BISPC_DISABLE_ANALYTICS", "")) %in% c("TRUE", "1", "YES", "ON")) {
+    return(FALSE)
+  }
+
+  # Config-flag (ny kilde) med fallback til legacy env-var
+  config_val <- golem::get_golem_options("analytics.shinylogs_enabled")
+  if (!is.null(config_val)) {
+    return(isTRUE(config_val))
+  }
+
+  # Legacy env-var-fallback for bagudkompatibilitet
+  enable_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE")
+  toupper(enable_flag) %in% c("TRUE", "1", "YES", "ON")
 }
 
 #' Initialize shinylogs logging announcement

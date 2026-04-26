@@ -215,6 +215,9 @@ test_that("logging functions support .context parameter for backward compatibili
   expect_no_error(log_debug("Test message", .context = "TEST_CONTEXT"))
   expect_no_error(log_warn("Test message", .context = "TEST_CONTEXT"))
   expect_no_error(log_error("Test message", .context = "TEST_CONTEXT"))
+  # Verificér at alle fire logging-funktioner er tilgængelige med .context
+  expect_true(is.function(log_info) && is.function(log_debug) &&
+    is.function(log_warn) && is.function(log_error))
 })
 
 test_that("logging functions support component parameter for new style", {
@@ -227,6 +230,8 @@ test_that("logging functions support component parameter for new style", {
   expect_no_error(log_debug("Test message", component = "TEST_COMPONENT"))
   expect_no_error(log_warn("Test message", component = "TEST_COMPONENT"))
   expect_no_error(log_error("Test message", component = "TEST_COMPONENT"))
+  # Verificér at component-parameteren er i function-signaturen
+  expect_true("component" %in% names(formals(log_info)))
 })
 
 test_that("component parameter takes precedence over .context when both provided", {
@@ -259,10 +264,13 @@ test_that("logging respects log level configuration", {
   Sys.setenv(SPC_LOG_LEVEL = "INFO")
   expect_no_error(log_info("Info message at INFO level"))
   expect_no_error(log_debug("Debug message at INFO level"))
+  # Verificér at log level kan læses korrekt efter sætning
+  expect_equal(get_effective_log_level(), "INFO")
 
   Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
   expect_no_error(log_info("Info message at DEBUG level"))
   expect_no_error(log_debug("Debug message at DEBUG level"))
+  expect_equal(get_effective_log_level(), "DEBUG")
 
   if (original_level == "") {
     Sys.unsetenv("SPC_LOG_LEVEL")

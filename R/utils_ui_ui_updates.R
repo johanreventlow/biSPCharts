@@ -69,6 +69,27 @@ create_ui_update_service <- function(session, app_state) {
 #'
 #' @keywords internal
 safe_programmatic_ui_update <- function(session, app_state, update_function, delay_ms = NULL) {
+  scalar_logical <- function(value, default = FALSE) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    isTRUE(value[[1]])
+  }
+
+  scalar_integer <- function(value, default = 0L) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.integer(value[[1]])
+  }
+
+  safe_list <- function(value) {
+    if (is.null(value) || !is.list(value)) {
+      return(list())
+    }
+    value
+  }
+
   if (is.null(delay_ms)) {
     delay_ms <- LOOP_PROTECTION_DELAYS$default
   }
@@ -85,8 +106,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
       {
         shiny::isolate(app_state$ui$updating_programmatically <- FALSE)
 
-        pending_queue <- length(shiny::isolate(app_state$ui$queued_updates))
-        queue_idle <- !isTRUE(shiny::isolate(app_state$ui$queue_processing))
+        pending_queue <- length(safe_list(shiny::isolate(app_state$ui$queued_updates)))
+        queue_idle <- !scalar_logical(shiny::isolate(app_state$ui$queue_processing))
 
         if (pending_queue > 0 && queue_idle) {
           if (requireNamespace("later", quietly = TRUE)) {
@@ -126,10 +147,11 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
     update_duration_ms <- as.numeric(difftime(performance_end, performance_start, units = "secs")) * 1000
 
     shiny::isolate({
-      app_state$ui$performance_metrics$total_updates <- app_state$ui$performance_metrics$total_updates + 1L
+      app_state$ui$performance_metrics$total_updates <-
+        scalar_integer(app_state$ui$performance_metrics$total_updates) + 1L
 
-      current_avg <- app_state$ui$performance_metrics$avg_update_duration_ms
-      total_updates <- app_state$ui$performance_metrics$total_updates
+      current_avg <- as.numeric(app_state$ui$performance_metrics$avg_update_duration_ms %||% 0)
+      total_updates <- scalar_integer(app_state$ui$performance_metrics$total_updates)
 
       if (total_updates == 1) {
         app_state$ui$performance_metrics$avg_update_duration_ms <- update_duration_ms
@@ -145,8 +167,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
   safe_operation(
     "Execute programmatic UI update",
     code = {
-      busy <- isTRUE(shiny::isolate(app_state$ui$queue_processing)) ||
-        isTRUE(shiny::isolate(app_state$ui$updating_programmatically))
+      busy <- scalar_logical(shiny::isolate(app_state$ui$queue_processing)) ||
+        scalar_logical(shiny::isolate(app_state$ui$updating_programmatically))
 
       if (busy) {
         queue_entry <- list(
@@ -157,8 +179,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
           queue_id = paste0("queue_", format(Sys.time(), "%Y%m%d%H%M%S"), "_", sample(1000:9999, 1))
         )
 
-        current_queue <- shiny::isolate(app_state$ui$queued_updates)
-        max_queue_size <- shiny::isolate(app_state$ui$memory_limits$max_queue_size)
+        current_queue <- safe_list(shiny::isolate(app_state$ui$queued_updates))
+        max_queue_size <- scalar_integer(shiny::isolate(app_state$ui$memory_limits$max_queue_size), default = 50L)
 
         if (length(current_queue) >= max_queue_size) {
           # Queue operation completed
@@ -169,16 +191,18 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
         app_state$ui$queued_updates <- new_queue
 
         shiny::isolate({
-          app_state$ui$performance_metrics$queued_updates <- app_state$ui$performance_metrics$queued_updates + 1L
-          queue_size <- length(app_state$ui$queued_updates)
-          if (queue_size > app_state$ui$performance_metrics$queue_max_size) {
+          app_state$ui$performance_metrics$queued_updates <-
+            scalar_integer(app_state$ui$performance_metrics$queued_updates) + 1L
+          queue_size <- length(safe_list(app_state$ui$queued_updates))
+          queue_max_size <- scalar_integer(app_state$ui$performance_metrics$queue_max_size)
+          if (queue_size > queue_max_size) {
             app_state$ui$performance_metrics$queue_max_size <- queue_size
           }
         })
 
         # Operation completed
 
-        if (isTRUE(shiny::isolate(app_state$ui$queue_processing))) {
+        if (scalar_logical(shiny::isolate(app_state$ui$queue_processing))) {
           enqueue_ui_update(app_state, queue_entry)
         }
 

@@ -195,6 +195,13 @@ create_module_data_reactive <- function(app_state) {
 #'
 #' @keywords internal
 register_module_data_observer <- function(app_state, input, output, session) {
+  state_flag <- function(value, default = FALSE) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    isTRUE(value[[1]])
+  }
+
   shiny::observeEvent(
     app_state$events$visualization_update_needed,
     ignoreInit = TRUE,
@@ -205,7 +212,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
       currently_updating <- tryCatch(
         {
           shiny::isolate({
-            was_updating <- app_state$visualization$cache_updating
+            was_updating <- state_flag(app_state$visualization$cache_updating)
             if (!was_updating) {
               app_state$visualization$cache_updating <- TRUE
             }
@@ -226,7 +233,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
       }
 
       # Level 3: Skip if data processing is in progress
-      if (shiny::isolate(app_state$data$updating_table) %||% FALSE) {
+      if (state_flag(shiny::isolate(app_state$data$updating_table))) {
         # Reset flag if we're bailing out
         app_state$visualization$cache_updating <- FALSE
         log_debug("Skipping visualization cache update - table update in progress", .context = "VISUALIZATION")

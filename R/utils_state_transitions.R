@@ -25,10 +25,12 @@ transition_upload_to_ready <- function(parsed_file) {
       file_info     = parsed_file$meta
     ),
     session = list(
-      file_uploaded = TRUE
+      file_uploaded = TRUE,
+      restoring_session = FALSE
     ),
     columns = list(
       auto_detect = list(
+        in_progress = FALSE,
         completed = FALSE
       )
     ),
@@ -49,8 +51,9 @@ transition_autodetect_complete <- function(result) {
   list(
     columns = list(
       auto_detect = list(
-        results   = result,
-        last_run  = result$timestamp,
+        results = result,
+        last_run = result$timestamp,
+        in_progress = FALSE,
         completed = TRUE
       ),
       mappings = list(

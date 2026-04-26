@@ -469,8 +469,9 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   if (is.null(parsed)) {
     shiny::showNotification(
       paste0(
-        "CSV-filen kunne ikke l\u00e6ses. ",
-        "Kontroll\u00e9r at filen er gyldig CSV med UTF-8 eller Windows-1252 encoding."
+        "CSV-filen kunne ikke l\u00e6ses. Fors\u00f8gte semikolon-separator, ",
+        "auto-detect og komma-separator. Kontroll\u00e9r at filen er gyldig ",
+        "CSV med UTF-8 eller Windows-1252 encoding."
       ),
       type = "error",
       duration = 10

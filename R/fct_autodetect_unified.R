@@ -102,13 +102,16 @@ autodetect_engine <- function(data = NULL,
     add = TRUE
   )
 
-  # 1. TRIGGER VALIDATION - smart unfreezing when data is available
+  # 1. TRIGGER VALIDATION
   frozen_state <- shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger) %||% FALSE
 
-  # SMART UNFREEZE: If we have data available and we're frozen, automatically unfreeze
-  if (frozen_state && !is.null(data) && nrow(data) > 0 && trigger_type == "file_upload") {
-    shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger <- FALSE)
-    frozen_state <- FALSE
+  if (frozen_state && trigger_type == "file_upload" && !is.null(data) && nrow(data) > 0) {
+    current_data_signature <- generate_data_cache_key(data, "autodetect", include_names = TRUE)
+    last_data_signature <- shiny::isolate(app_state$columns$auto_detect$last_data_signature) %||% NULL
+    if (is.null(last_data_signature) || !identical(current_data_signature, last_data_signature)) {
+      shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger <- FALSE)
+      frozen_state <- FALSE
+    }
   }
 
   if (frozen_state && trigger_type != "manual") {
@@ -210,6 +213,9 @@ autodetect_engine <- function(data = NULL,
     # K1 FIX: Store only timestamp (POSIXct) for difftime compatibility in guard (line 73-75)
     # Previous list structure caused "Fejl i as.POSIXct.default(time2)" crash
     app_state$columns$auto_detect$last_run <- Sys.time()
+    if (!is.null(data) && nrow(data) > 0) {
+      app_state$columns$auto_detect$last_data_signature <- generate_data_cache_key(data, "autodetect", include_names = TRUE)
+    }
   })
 
   log_debug_kv(

@@ -68,18 +68,10 @@ create_column_update_service <- function(session, app_state) {
     }
 
     safe_programmatic_ui_update(session, app_state, function() {
-      safe_operation(
-        "Update column choices UI",
-        code = {
-          for (col in columns) {
-            selected_value <- if (!is.null(selected) && col %in% names(selected)) selected[[col]] else ""
-            shiny::updateSelectizeInput(session, col, choices = choices, selected = selected_value)
-          }
-        },
-        fallback = NULL,
-        session = session,
-        error_type = "processing"
-      )
+      for (col in columns) {
+        selected_value <- if (!is.null(selected) && col %in% names(selected)) selected[[col]] else ""
+        shiny::updateSelectizeInput(session, col, choices = choices, selected = selected_value)
+      }
     })
   }
 
@@ -118,17 +110,10 @@ create_column_update_service <- function(session, app_state) {
   # @param log_context Valgfri log-kontekst-streng
   #
   update_all_columns_from_state <- function(choices, columns_state, log_context = "UI_SYNC_UNIFIED") {
-    columns_map <- list(
-      x_column = "x_column",
-      y_column = "y_column",
-      n_column = "n_column",
-      skift_column = "skift_column",
-      frys_column = "frys_column",
-      kommentar_column = "kommentar_column"
-    )
+    spc_cols <- c("x_column", "y_column", "n_column", "skift_column", "frys_column", "kommentar_column")
 
     safe_programmatic_ui_update(session, app_state, function() {
-      for (col_id in names(columns_map)) {
+      for (col_id in spc_cols) {
         col_val <- shiny::isolate(columns_state[[col_id]])
         if (!is.null(col_val)) {
           shiny::updateSelectizeInput(

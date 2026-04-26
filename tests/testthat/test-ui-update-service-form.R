@@ -55,84 +55,40 @@ test_that("form_service oprettes uden column_service (column_service = NULL)", {
   )
 })
 
-test_that("validate_form_fields: required-regel fejler ved tomt felt", {
+# Kræver aktiv Shiny session — tryCatch+skip ved manglende session-context
+.run_validate <- function(svc, rules) {
   skip_if_not_installed("shiny")
   skip_if_not_installed("shinyjs")
-
-  mock_session <- list(
-    input = list(indicator_title = ""),
-    sendCustomMessage = function(...) invisible(NULL)
-  )
-  svc <- create_form_update_service(mock_session, .make_mock_form_state())
-
-  # Test uden show_feedback for at undgå shinyjs::addClass i ikke-Shiny-kontekst
   result <- tryCatch(
-    svc$validate_form_fields(
-      list(indicator_title = list(required = TRUE)),
-      show_feedback = FALSE
-    ),
+    svc$validate_form_fields(rules, show_feedback = FALSE),
     error = function(e) NULL
   )
+  if (is.null(result)) skip("validate_form_fields kræver aktiv Shiny session")
+  result
+}
 
-  # Resultat er enten korrekt validering eller NULL (fejlede pga. manglende session)
-  if (!is.null(result)) {
-    expect_false(result$valid)
-    expect_true("indicator_title" %in% names(result$errors))
-  } else {
-    skip("validate_form_fields kræver aktiv Shiny session")
-  }
+test_that("validate_form_fields: required-regel fejler ved tomt felt", {
+  mock_session <- list(input = list(indicator_title = ""), sendCustomMessage = function(...) invisible(NULL))
+  svc <- create_form_update_service(mock_session, .make_mock_form_state())
+  result <- .run_validate(svc, list(indicator_title = list(required = TRUE)))
+  expect_false(result$valid)
+  expect_true("indicator_title" %in% names(result$errors))
 })
 
 test_that("validate_form_fields: numerisk regel fanger ikke-tal", {
-  skip_if_not_installed("shiny")
-  skip_if_not_installed("shinyjs")
-
-  mock_session <- list(
-    input = list(target_value = "ikke-et-tal"),
-    sendCustomMessage = function(...) invisible(NULL)
-  )
+  mock_session <- list(input = list(target_value = "ikke-et-tal"), sendCustomMessage = function(...) invisible(NULL))
   svc <- create_form_update_service(mock_session, .make_mock_form_state())
-
-  result <- tryCatch(
-    svc$validate_form_fields(
-      list(target_value = list(type = "numeric")),
-      show_feedback = FALSE
-    ),
-    error = function(e) NULL
-  )
-
-  if (!is.null(result)) {
-    expect_false(result$valid)
-    expect_true("target_value" %in% names(result$errors))
-  } else {
-    skip("validate_form_fields kræver aktiv Shiny session")
-  }
+  result <- .run_validate(svc, list(target_value = list(type = "numeric")))
+  expect_false(result$valid)
+  expect_true("target_value" %in% names(result$errors))
 })
 
 test_that("validate_form_fields: gyldigt felt passerer validering", {
-  skip_if_not_installed("shiny")
-  skip_if_not_installed("shinyjs")
-
-  mock_session <- list(
-    input = list(target_value = "42"),
-    sendCustomMessage = function(...) invisible(NULL)
-  )
+  mock_session <- list(input = list(target_value = "42"), sendCustomMessage = function(...) invisible(NULL))
   svc <- create_form_update_service(mock_session, .make_mock_form_state())
-
-  result <- tryCatch(
-    svc$validate_form_fields(
-      list(target_value = list(type = "numeric")),
-      show_feedback = FALSE
-    ),
-    error = function(e) NULL
-  )
-
-  if (!is.null(result)) {
-    expect_true(result$valid)
-    expect_equal(length(result$errors), 0)
-  } else {
-    skip("validate_form_fields kræver aktiv Shiny session")
-  }
+  result <- .run_validate(svc, list(target_value = list(type = "numeric")))
+  expect_true(result$valid)
+  expect_equal(length(result$errors), 0)
 })
 
 test_that("create_ui_update_service backward-compat wrapper merger begge APIs", {

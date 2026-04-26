@@ -45,6 +45,13 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-derive-anhoej-results.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-app-initialization.R
     audit_category: green
     type: unit
@@ -53,6 +60,13 @@ files:
     rationale: Green-partial med 1/10 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-audit-analytics-logging-privacy.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-audit-classifier.R
     audit_category: green
     type: unit
@@ -295,11 +309,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-dependency-guards.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-denominator-field-toggle.R
     audit_category: stub
     type: unit
@@ -309,6 +318,13 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-dependency-guards.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-dependency-namespace.R
     audit_category: stub
     type: policy-guard
@@ -658,6 +674,13 @@ files:
       API-stabilisering.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-pending-issue-230.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-performance-benchmarks.R
     audit_category: green
     type: benchmark
@@ -667,11 +690,6 @@ files:
       detect_columns-funktioner ikke i namespace. 6 PASS, 9 SKIP+TODO. Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-pending-issue-230.R
-    audit_category: skip
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-phase-2c-reactive-chain.R
     audit_category: green
     type: unit
@@ -863,9 +881,8 @@ files:
     type: unit
     handling: keep
     reviewed: yes
-    rationale: Tests for try_with_diagnostics() helper (feat error-handling, commit 612ee3b).
     reviewer: johanreventlow
-    reviewed_date: '2026-04-25'
+    reviewed_date: '2026-04-26'
   - file: test-ui-synchronization.R
     audit_category: green
     type: unit

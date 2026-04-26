@@ -17,7 +17,7 @@ spc_abort(message, class, ..., call = rlang::caller_env())
 \item{call}{Environment. Defaults to caller environment for correct traceback.}
 }
 \value{
-Does not return — always throws.
+Does not return -- always throws.
 }
 \description{
 Throws a typed condition that inherits from \code{spc_error} and \code{error}.
@@ -30,10 +30,10 @@ failure modes and the orchestrator can catch by class.
 \item \code{spc_input_error}: Ugyldig input (forkert chart_type, manglende kolonner).
 \item \code{spc_prepare_error}: Data-prep fejl (dato-/talparse, filtrering).
 \item \code{spc_render_error}: BFHcharts-fejl under rendering.
-\item \code{spc_cache_error}: Cache-læs/skriv fejl (typisk warn, ikke error).
+\item \code{spc_cache_error}: Cache-laes/skriv fejl (typisk warn, ikke error).
 }
 
-All classes inherit from \code{"spc_error"} → generic \code{tryCatch(error = ...)} still works.
+All classes inherit from \code{"spc_error"} -> generic \code{tryCatch(error = ...)} still works.
 }
 
 \keyword{internal}

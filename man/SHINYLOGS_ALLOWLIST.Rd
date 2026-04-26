@@ -16,6 +16,6 @@ analytics-filer. Alle andre kolonner droppes foer upload.
 Brug \code{filter_shinylogs_allowlist()} til at anvende filteret.
 }
 \details{
-Opdatér \code{docs/ANALYTICS_PRIVACY.md} naar denne liste aendres.
+Opdater \code{docs/ANALYTICS_PRIVACY.md} naar denne liste aendres.
 }
 \keyword{internal}

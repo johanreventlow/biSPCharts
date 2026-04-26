@@ -3,7 +3,7 @@
 \docType{data}
 \name{MAX_MISSING_PERCENT}
 \alias{MAX_MISSING_PERCENT}
-\title{Maximum missing values procent før advarsel}
+\title{Maximum missing values procent foer advarsel}
 \format{
 An object of class \code{numeric} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 MAX_MISSING_PERCENT
 }
 \description{
-Maximum missing values procent før advarsel
+Maximum missing values procent foer advarsel
 }
 \keyword{internal}

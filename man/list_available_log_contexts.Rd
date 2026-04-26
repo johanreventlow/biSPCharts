@@ -7,18 +7,18 @@
 list_available_log_contexts()
 }
 \value{
-Character vector af alle tilgængelige log contexts
+Character vector af alle tilgaengelige log contexts
 }
 \description{
-Returnerer alle tilgængelige log context-værdier fra \code{LOG_CONTEXTS}.
+Returnerer alle tilgaengelige log context-vaerdier fra \code{LOG_CONTEXTS}.
 Nyttigt til at finde de rigtige context-navne for \code{set_debug_context()}.
 }
 \examples{
 \dontrun{
 all_contexts <- list_available_log_contexts()
-head(all_contexts) # Se de første contexts
+head(all_contexts) # Se de foerste contexts
 
-# Brug til at sætte filtrering
+# Brug til at saette filtrering
 state_contexts <- grep("^state", all_contexts, value = TRUE)
 set_debug_context(state_contexts)
 }

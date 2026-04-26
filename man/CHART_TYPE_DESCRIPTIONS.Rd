@@ -5,7 +5,7 @@
 \alias{CHART_TYPE_DESCRIPTIONS}
 \title{Chart Type Descriptions}
 \format{
-Named list med engelsk kode → dansk beskrivelse
+Named list med engelsk kode -> dansk beskrivelse
 }
 \usage{
 CHART_TYPE_DESCRIPTIONS

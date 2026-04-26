@@ -2,17 +2,17 @@
 % Please edit documentation in R/fct_anhoej_rules.R
 \name{extract_anhoej_metadata}
 \alias{extract_anhoej_metadata}
-\title{Extract Anhøj Rules Metadata from BFHchart Output}
+\title{Extract Anhoej Rules Metadata from BFHchart Output}
 \usage{
 extract_anhoej_metadata(qic_data)
 }
 \arguments{
-\item{qic_data}{data.frame or tibble. BFHchart qic_data with Anhøj columns.
+\item{qic_data}{data.frame or tibble. BFHchart qic_data with Anhoej columns.
 Must contain at least: \code{runs.signal}, \code{n.crossings}, \code{n.crossings.min}.
 Optional: \code{longest.run}, \code{longest.run.max}, \code{anhoej.signal}.}
 }
 \value{
-list with Anhøj rules metadata:
+list with Anhoej rules metadata:
 \describe{
 \item{runs_signal}{logical. TRUE if any runs violation detected.}
 \item{crossings_signal}{logical. TRUE if crossings violation detected.}
@@ -20,20 +20,20 @@ list with Anhøj rules metadata:
 \item{n_crossings_min}{numeric. Minimum expected crossings (first value if per-phase).}
 \item{longest_run}{integer. Length of longest run (if available).}
 \item{longest_run_max}{numeric. Maximum acceptable run (if available).}
-\item{signal_points}{logical vector. Per-point combined Anhøj signal.}
+\item{signal_points}{logical vector. Per-point combined Anhoej signal.}
 }
 Returns NULL if required columns missing (with warning).
 }
 \description{
-Extracts standardized Anhøj rules metadata from BFHchart qic_data.
-BFHchart already computes Anhøj rules (runs and crossings tests), so this
+Extracts standardized Anhoej rules metadata from BFHchart qic_data.
+BFHchart already computes Anhoej rules (runs and crossings tests), so this
 function simply extracts and formats the results into a consistent structure
 matching qicharts2 conventions.
 }
 \details{
-\strong{BFHchart Anhøj Columns:}
+\strong{BFHchart Anhoej Columns:}
 \itemize{
-\item \code{runs.signal}: Logical indicating if runs test triggered (≥8 consecutive points)
+\item \code{runs.signal}: Logical indicating if runs test triggered (\link{U+2265}8 consecutive points)
 \item \code{longest.run}: Length of longest run above or below center line
 \item \code{longest.run.max}: Maximum acceptable run length
 \item \code{n.crossings}: Actual number of median crossings observed
@@ -46,7 +46,7 @@ This function extracts per-point signals and aggregates to overall metadata
 matching the baseline fixture structure from Task #29.
 
 \strong{Per-Phase Handling:}
-If data contains multiple phases (part column), Anhøj rules are applied
+If data contains multiple phases (part column), Anhoej rules are applied
 per-phase by BFHchart. This function preserves per-point signals and
 returns overall status.
 }

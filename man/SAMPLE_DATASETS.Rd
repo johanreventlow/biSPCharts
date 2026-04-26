@@ -11,7 +11,7 @@ Named list of lists
 SAMPLE_DATASETS
 }
 \description{
-Liste over eksempeldatasæt med metadata til dropdown-menu.
+Liste over eksempeldatasaet med metadata til dropdown-menu.
 Hvert entry indeholder id, label, beskrivelse, filnavn og anbefalet chart type.
 }
 \keyword{internal}

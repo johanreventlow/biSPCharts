@@ -19,16 +19,16 @@ log_error(message = NULL, component = NULL, .context = NULL, details = NULL)
 \code{invisible(NULL)}.
 }
 \description{
-Convenience-funktion til logging af ERROR-beskeder. Accepterer også en
-\code{condition} direkte (beskeden udtrækkes med \code{conditionMessage()}).
+Convenience-funktion til logging af ERROR-beskeder. Accepterer ogsaa en
+\code{condition} direkte (beskeden udtraekkes med \code{conditionMessage()}).
 }
 \details{
 \strong{Kontekst-filtrering:}
-Understøtter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
+Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
 }
 \examples{
 \dontrun{
-log_error("Kunne ikke læse fil", .context = "FILE_UPLOAD")
+log_error("Kunne ikke laese fil", .context = "FILE_UPLOAD")
 log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))
 tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 }

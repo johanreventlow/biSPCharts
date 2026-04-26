@@ -11,6 +11,6 @@ Named character vector med format labels
 EXPORT_FORMAT_OPTIONS
 }
 \description{
-Tilgængelige eksport formater med display labels.
+Tilgaengelige eksport formater med display labels.
 }
 \keyword{internal}

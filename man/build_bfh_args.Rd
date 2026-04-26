@@ -18,9 +18,9 @@ chart_title, chart_title_reactive).}
 Navngivet list klar til \code{call_bfh_chart()}.
 }
 \description{
-Kortlægger \code{spc_prepared} og \code{spc_axes} til BFHcharts' \code{bfh_qic()}-format.
+Kortlaegger \code{spc_prepared} og \code{spc_axes} til BFHcharts' \code{bfh_qic()}-format.
 Anvender denominator-guard (fjerner n_var for chart-typer der ikke bruger den)
 og konverterer chart_title via \code{resolve_bfh_chart_title()}. Kaster
-\code{spc_render_error} ved kortlægningsfejl.
+\code{spc_render_error} ved kortlaegningsfejl.
 }
 \keyword{internal}

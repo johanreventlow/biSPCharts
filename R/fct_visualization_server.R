@@ -58,53 +58,76 @@ setup_visualization <- function(input, output, session, app_state) {
     )
   })
 
-  # Simplified column config - single source of truth without debouncing for valuebox stability
+  # Simplified column config via build_visualization_config() (pure)
   column_config <- shiny::reactive({
-    # Always prioritize manual input when available (user selections)
-    manual_config_check <- manual_config()
-
-    # If user has made explicit selections, use those
-    if (!is.null(manual_config_check) && !is.null(manual_config_check$y_col)) {
-      return(manual_config_check)
-    }
-
-    # Otherwise, try auto-detected config as fallback only
-    # Simplified auto-config access with better error handling
+    manual_cfg <- manual_config()
     auto_columns <- app_state$columns$auto_detect$results
-    if (!is.null(auto_columns) && !is.null(auto_columns$y_col)) {
-      return(list(
-        x_col = auto_columns$x_col,
-        y_col = auto_columns$y_col,
-        n_col = auto_columns$n_col,
-        chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
-      ))
+    chart_type_str <- get_qic_chart_type(
+      if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type
+    )
+
+    # Byg AutodetectResult-lignende objekt fra state (kan være NULL)
+    autodetect_for_config <- if (!is.null(auto_columns)) {
+      structure(
+        list(
+          x_col = auto_columns$x_col,
+          y_col = auto_columns$y_col,
+          n_col = auto_columns$n_col
+        ),
+        class = "AutodetectResult"
+      )
+    } else {
+      NULL
     }
 
-    # Issue #193 fallback: Under session restore skrives mappings til
-    # app_state$columns$mappings FØR input$<col> har fået sin round-trip
-    # fra updateSelectizeInput. manual_config ser derfor NULL og
-    # auto_detect har aldrig kørt efter restore. Uden denne fallback fejler
-    # chart_config req → plot rendrer ikke før brugeren manuelt trigger
-    # auto-mapping. Læs mappings-state som sidste fallback.
-    mapped_y <- app_state$columns$mappings$y_column
-    if (!is.null(mapped_y) && nzchar(mapped_y)) {
-      return(list(
-        x_col = app_state$columns$mappings$x_column,
-        y_col = mapped_y,
-        n_col = app_state$columns$mappings$n_column,
-        chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
-      ))
+    # Brug pure build_visualization_config med prioriteret input
+    cfg <- build_visualization_config(
+      data = NULL, # kolonne-validering sker i render-laget
+      autodetect = autodetect_for_config,
+      user_overrides = list(
+        x_col = manual_cfg$x_col,
+        y_col = manual_cfg$y_col,
+        n_col = manual_cfg$n_col,
+        chart_type = chart_type_str,
+        # Issue #193 fallback: mappings ved session-restore
+        mappings = list(
+          x_column = app_state$columns$mappings$x_column,
+          y_column = app_state$columns$mappings$y_column,
+          n_column = app_state$columns$mappings$n_column
+        )
+      )
+    )
+
+    if (is.null(cfg)) {
+      return(NULL)
     }
 
-    # No valid config available
-    return(NULL)
+    # Returner som plain liste (bagudkompatibelt med downstream reaktiver)
+    list(
+      x_col      = cfg$x_col,
+      y_col      = cfg$y_col,
+      n_col      = cfg$n_col,
+      chart_type = cfg$chart_type
+    )
   })
 
-  # Observer to update last_valid_config (side effects outside reactives)
+  # Observer to update last_valid_config via central applier (side effects outside reactives)
   shiny::observe({
     config <- column_config()
     if (!is.null(config$y_col)) {
-      app_state$visualization$last_valid_config <- config
+      vc <- build_visualization_config(
+        data = NULL,
+        autodetect = NULL,
+        user_overrides = list(
+          x_col      = config$x_col,
+          y_col      = config$y_col,
+          n_col      = config$n_col,
+          chart_type = config$chart_type
+        )
+      )
+      if (!is.null(vc)) {
+        apply_state_transition(app_state, transition_chart_config_updated(vc))
+      }
     }
   })
 

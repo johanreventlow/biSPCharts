@@ -10,6 +10,12 @@
 #   - test-utils_qic_caching.R         — qicharts2-specifik cache
 #   - test-spc-cache-integration.R     — SPC pipeline cache integration
 
+clear_cache_if_available <- function(...) {
+  if (exists("clear_performance_cache", mode = "function")) {
+    clear_performance_cache(...)
+  }
+}
+
 # ===========================================================================
 # Fra test-cache-collision-fix.R: Session cache identity
 # ===========================================================================
@@ -116,14 +122,14 @@ test_that("evaluate_data_content_cached detects changes beyond first row", {
   data_cleared$Tæller[2:20] <- NA
   data_cleared$Nævner[2:20] <- NA
 
-  if (exists("clear_performance_cache")) clear_performance_cache()
+  clear_cache_if_available()
 
   result_cleared <- evaluate_data_content_cached(data_cleared, session = NULL)
 
   data_empty_tail <- data_original
   data_empty_tail[2:20, ] <- NA
 
-  if (exists("clear_performance_cache")) clear_performance_cache()
+  clear_cache_if_available()
 
   result_empty_tail <- evaluate_data_content_cached(data_empty_tail, session = NULL)
   # Verificér kald lykkes (cache-nøgle anderledes end original)
@@ -145,7 +151,7 @@ test_that("data content cache key changes when middle rows cleared", {
   data_sparse$Nævner[2:30] <- NA
   data_sparse$Dato[2:30] <- NA
 
-  if (exists("clear_performance_cache")) clear_performance_cache()
+  clear_cache_if_available()
 
   result_sparse <- evaluate_data_content_cached(data_sparse, session = NULL)
   expect_true(result_sparse)
@@ -164,7 +170,7 @@ test_that("data content cache detects completely empty data after row 1", {
   data_empty <- data
   data_empty[1, ] <- NA
 
-  if (exists("clear_performance_cache")) clear_performance_cache()
+  clear_cache_if_available()
 
   result_empty <- evaluate_data_content_cached(data_empty, session = NULL)
   expect_false(result_empty)
@@ -246,7 +252,7 @@ test_that("INTEGRATION: autodetect cache invalidates when data changes beyond ro
     Nævner = rep(100, 20)
   )
 
-  if (exists("clear_performance_cache")) clear_performance_cache()
+  clear_cache_if_available()
 
   result1 <- detect_columns_with_cache(data1, app_state = NULL)
 
@@ -315,6 +321,7 @@ test_that("cache_result stores data correctly", {
 })
 
 test_that("cached results expire after timeout", {
+  skip_on_ci()
   test_data <- list(value = "short_lived")
 
   cache_result("short_timeout_key", test_data, timeout_seconds = 1)

@@ -84,115 +84,100 @@ count_loc <- function(file) {
 # PHASE 6 ADDITIONS (Issue #322): Assertions per fil, skip-top5, assertion-ratio
 # ==============================================================================
 
-#' Tael assertions per fil
-#'
-#' Tæller alle expect_*-kald i en fil via AST-parsing.
-#' Udkommenterede kald ignoreres naturligt.
-#'
-#' @param file Sti til R-fil
-#' @return Integer: antal expect_*-kald
-count_assertions <- function(file) {
+# Returnerer vektor af function-call-navne fra fil, eller character(0) ved fejl.
+get_function_calls <- function(file) {
   parsed <- tryCatch(
     parse(file, keep.source = TRUE),
     error = function(e) NULL
   )
-  if (is.null(parsed) || length(parsed) == 0) return(0L)
-
+  if (is.null(parsed) || length(parsed) == 0) return(character(0))
   pd <- utils::getParseData(parsed)
-  if (is.null(pd) || nrow(pd) == 0) return(0L)
-
-  calls <- pd$text[pd$token == "SYMBOL_FUNCTION_CALL"]
-  sum(grepl("^expect_", calls))
+  if (is.null(pd) || nrow(pd) == 0) return(character(0))
+  pd$text[pd$token == "SYMBOL_FUNCTION_CALL"]
 }
 
-#' Rapportér top N filer med flest skip()-kald
+SKIP_FN_NAMES <- c("skip", "skip_on_ci", "skip_if", "skip_if_not",
+  "skip_if_not_installed", "skip_on_cran")
+
+#' Tael assertions per fil
 #'
-#' Returnerer en data.frame sorteret faldende på antal skip-kald.
-#'
-#' @param test_dir Sti til testthat-mappe
-#' @param n Top-N filer (default: 5)
-#' @return data.frame med kolonner: file, n_skips
-top_files_by_skips <- function(test_dir = "tests/testthat", n = 5L) {
-  files <- scan_test_files(test_dir)
-
-  skip_counts <- vapply(files, function(file) {
-    parsed <- tryCatch(
-      parse(file, keep.source = TRUE),
-      error = function(e) NULL
-    )
-    if (is.null(parsed) || length(parsed) == 0) return(0L)
-
-    pd <- utils::getParseData(parsed)
-    if (is.null(pd) || nrow(pd) == 0) return(0L)
-
-    calls <- pd$text[pd$token == "SYMBOL_FUNCTION_CALL"]
-    sum(calls %in% c("skip", "skip_on_ci", "skip_if", "skip_if_not",
-      "skip_if_not_installed", "skip_on_cran"))
-  }, integer(1))
-
-  result <- data.frame(
-    file = basename(files),
-    n_skips = skip_counts,
-    stringsAsFactors = FALSE
-  )
-
-  result <- result[order(-result$n_skips), ]
-  head(result, n)
+#' @param file Sti til R-fil
+#' @return Integer: antal expect_*-kald
+count_assertions <- function(file) {
+  sum(grepl("^expect_", get_function_calls(file)))
 }
 
-#' Rapportér top N filer med færrest assertions per test_that-blok
-#'
-#' Beregner assertions/test_that ratio per fil og sorterer stigende
-#' (lav ratio = potentielt svage tests).
+#' Saml alle Phase-6-metrikker i ét pas over testfiler
 #'
 #' @param test_dir Sti til testthat-mappe
-#' @param n Top-N filer (default: 5)
-#' @return data.frame med kolonner: file, n_assertions, n_blocks, ratio
-top_files_by_low_assertion_ratio <- function(test_dir = "tests/testthat", n = 5L) {
+#' @return data.frame med kolonner: file, n_assertions, n_blocks, n_skips, ratio
+collect_phase6_metrics <- function(test_dir = "tests/testthat") {
   files <- scan_test_files(test_dir)
 
   rows <- lapply(files, function(file) {
-    n_assert <- count_assertions(file)
+    calls    <- get_function_calls(file)
+    n_assert <- sum(grepl("^expect_", calls))
+    n_skips  <- sum(calls %in% SKIP_FN_NAMES)
     n_blocks <- count_test_blocks(file)
-
-    ratio <- if (n_blocks > 0) round(n_assert / n_blocks, 2) else NA_real_
+    ratio    <- if (n_blocks > 0) round(n_assert / n_blocks, 2) else NA_real_
 
     data.frame(
       file = basename(file),
       n_assertions = n_assert,
       n_blocks = n_blocks,
+      n_skips = n_skips,
       ratio = ratio,
       stringsAsFactors = FALSE
     )
   })
 
-  result <- do.call(rbind, rows)
+  do.call(rbind, rows)
+}
 
-  # Sortér stigende på ratio (laveste = svageste tests)
-  # Filer med 0 blokke (NA ratio) sorteres sidst
-  result <- result[order(is.na(result$ratio), result$ratio), ]
-  # Filtrer filer med mindst 1 blok for at undgå tomme filer
-  result <- result[!is.na(result$ratio) & result$n_blocks > 0, ]
+#' Rapportér top N filer med flest skip()-kald
+#'
+#' @param test_dir Sti til testthat-mappe
+#' @param n Top-N filer (default: 5)
+#' @return data.frame med kolonner: file, n_skips
+top_files_by_skips <- function(test_dir = "tests/testthat", n = 5L) {
+  metrics <- collect_phase6_metrics(test_dir)
+  result  <- metrics[order(-metrics$n_skips), c("file", "n_skips")]
+  head(result, n)
+}
+
+#' Rapportér top N filer med færrest assertions per test_that-blok
+#'
+#' @param test_dir Sti til testthat-mappe
+#' @param n Top-N filer (default: 5)
+#' @return data.frame med kolonner: file, n_assertions, n_blocks, ratio
+top_files_by_low_assertion_ratio <- function(test_dir = "tests/testthat", n = 5L) {
+  metrics <- collect_phase6_metrics(test_dir)
+  result  <- metrics[!is.na(metrics$ratio) & metrics$n_blocks > 0, ]
+  result  <- result[order(result$ratio), c("file", "n_assertions", "n_blocks", "ratio")]
   head(result, n)
 }
 
 #' Print audit rapport section: Phase 6 metrics
 #'
-#' Printer top-5 skip-filer og top-5 lav-assertion-ratio filer til stdout.
-#'
 #' @param test_dir Sti til testthat-mappe
 print_phase6_audit <- function(test_dir = "tests/testthat") {
   cat("\n=== Phase 6 Audit: Skip-inventory og Assertion-ratio ===\n\n")
+  metrics <- collect_phase6_metrics(test_dir)
+
+  skip_top  <- head(metrics[order(-metrics$n_skips), ], 5L)
+  ratio_top <- head(
+    metrics[!is.na(metrics$ratio) & metrics$n_blocks > 0, ][
+      order(metrics$ratio[!is.na(metrics$ratio) & metrics$n_blocks > 0]), ],
+    5L
+  )
 
   cat("Top 5 filer med flest skip()-kald:\n")
-  skip_top <- top_files_by_skips(test_dir, n = 5L)
   for (i in seq_len(nrow(skip_top))) {
     cat(sprintf("  %2d. %-60s %d skips\n",
       i, skip_top$file[i], skip_top$n_skips[i]))
   }
 
   cat("\nTop 5 filer med færrest assertions per test_that-blok:\n")
-  ratio_top <- top_files_by_low_assertion_ratio(test_dir, n = 5L)
   for (i in seq_len(nrow(ratio_top))) {
     cat(sprintf("  %2d. %-60s %.2f assertions/blok (%d assert, %d blokke)\n",
       i, ratio_top$file[i], ratio_top$ratio[i],

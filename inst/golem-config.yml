@@ -89,6 +89,8 @@ default:
     pin_name: "spc-analytics-logs"
     log_retention_days: 365
     log_compress_after_days: 90
+    shinylogs_enabled: false      # Opt-in: slå til per-miljø — IKKE standard
+    github_sync_enabled: false    # Opt-in: kræver eksplicit konfiguration
 
   # AI-powered improvement suggestions
   ai:
@@ -189,6 +191,8 @@ development:
   # Analytics (aktiv i development for test)
   analytics:
     enabled: true
+    shinylogs_enabled: true       # On i development for lokal test
+    github_sync_enabled: false    # Off — undgå utilsigtet upload under dev
 
   # AI configuration (development overrides)
   ai:
@@ -279,6 +283,8 @@ production:
   # Analytics (aktiv i production)
   analytics:
     enabled: true
+    shinylogs_enabled: false      # Opt-in: sæt til true i deployment-config
+    github_sync_enabled: false    # Opt-in: kræver eksplicit konfiguration
 
   # AI configuration (production settings)
   ai:
@@ -367,9 +373,11 @@ testing:
     enable_session_debugging: true
     cleanup_on_disconnect: true     # Clean up after tests
 
-  # Analytics (deaktiveret i tests)
+  # Analytics (delvist aktiveret i tests)
   analytics:
     enabled: false
+    shinylogs_enabled: true       # On for at kunne teste shinylogs-kode-paths
+    github_sync_enabled: false    # Altid off i tests
 
   # AI configuration (testing overrides)
   ai:

@@ -45,6 +45,13 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-derive-anhoej-results.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-26'
   - file: test-app-initialization.R
     audit_category: green
     type: unit

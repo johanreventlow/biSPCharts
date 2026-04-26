@@ -116,9 +116,9 @@ resolve_analytics_config <- function() {
   if (toupper(Sys.getenv("BISPC_DISABLE_ANALYTICS", "")) %in% c("TRUE", "1", "YES", "ON")) {
     return(list(enabled = FALSE, source = "env:BISPC_DISABLE_ANALYTICS"))
   }
-  config_val <- tryCatch( # nolint: swallowed_error_linter. Golem-config kan mangle uden for app-kontekst
+  config_val <- tryCatch(
     golem::get_golem_options("analytics.shinylogs_enabled"),
-    error = function(e) NULL
+    error = function(e) NULL # nolint: swallowed_error_linter. Golem-config kan mangle uden for app-kontekst
   )
   if (!is.null(config_val)) {
     return(list(enabled = isTRUE(config_val), source = "golem-config"))

@@ -54,7 +54,6 @@
 derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
   stopifnot(is.data.frame(qic_data))
 
-  # Filtrer til seneste part naar fase-visning er aktiv
   data <- filter_latest_part(qic_data, show_phases)
 
   if (is.null(data) || nrow(data) == 0) {
@@ -71,14 +70,17 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
     ))
   }
 
-  # --- Runs-signal (serielængde) ---
+  # as.double() sikrer konsistent double-type uanset input-kolonnens storage mode
+  col_scalar <- function(col) {
+    if (col %in% names(data)) as.double(safe_max(data[[col]])) else NA_real_
+  }
+
   runs_signal <- if ("runs.signal" %in% names(data)) {
     any(data$runs.signal, na.rm = TRUE)
   } else {
     FALSE
   }
 
-  # --- Crossings-signal (antal mediankryds) ---
   crossings_signal <- if ("n.crossings" %in% names(data) && "n.crossings.min" %in% names(data)) {
     n_cross <- safe_max(data$n.crossings)
     n_cross_min <- safe_max(data$n.crossings.min)
@@ -87,14 +89,10 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
     FALSE
   }
 
-  # --- Skalare metrics (konstante per chart-beregning) ---
-  # as.double() sikrer konsistent double-type uanset input-vektors storage mode
-  longest_run <- if ("longest.run" %in% names(data)) as.double(safe_max(data$longest.run)) else NA_real_
-  longest_run_max <- if ("longest.run.max" %in% names(data)) as.double(safe_max(data$longest.run.max)) else NA_real_
-  n_crossings <- if ("n.crossings" %in% names(data)) as.double(safe_max(data$n.crossings)) else NA_real_
-  n_crossings_min <- if ("n.crossings.min" %in% names(data)) as.double(safe_max(data$n.crossings.min)) else NA_real_
-
-  # --- Per-punkt signal-vektor ---
+  longest_run <- col_scalar("longest.run")
+  longest_run_max <- col_scalar("longest.run.max")
+  n_crossings <- col_scalar("n.crossings")
+  n_crossings_min <- col_scalar("n.crossings.min")
   special_cause_points <- if ("runs.signal" %in% names(data)) data$runs.signal else logical(0)
 
   list(

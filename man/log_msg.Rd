@@ -2,14 +2,14 @@
 % Please edit documentation in R/utils_logging.R
 \name{log_msg}
 \alias{log_msg}
-\title{Primær logging-funktion med level-filtering}
+\title{Primaer logging-funktion med level-filtering}
 \usage{
 log_msg(message, level = "INFO", component = NULL)
 }
 \arguments{
 \item{message}{Besked (karakter/string) der skal logges}
 
-\item{level}{Log-niveau som string. Gyldige værdier: \code{"DEBUG"}, \code{"INFO"}, \code{"WARN"}, \code{"ERROR"}}
+\item{level}{Log-niveau som string. Gyldige vaerdier: \code{"DEBUG"}, \code{"INFO"}, \code{"WARN"}, \code{"ERROR"}}
 
 \item{component}{Valgfrit komponent-tag for organisering (f.eks. \code{"AUTO_DETECT"}, \code{"FILE_UPLOAD"})}
 }
@@ -17,13 +17,13 @@ log_msg(message, level = "INFO", component = NULL)
 \code{invisible(NULL)}. Beskeder skrives til konsol hvis niveauet tillader det.
 }
 \description{
-Central logging-funktion der håndterer alle log-beskeder med automatisk
-level-filtering baseret på \code{SPC_LOG_LEVEL}.
+Central logging-funktion der haandterer alle log-beskeder med automatisk
+level-filtering baseret paa \code{SPC_LOG_LEVEL}.
 }
 \examples{
 \dontrun{
 log_msg("System startet", "INFO")
-log_msg("Data læst", "INFO", "FILE_UPLOAD")
+log_msg("Data laest", "INFO", "FILE_UPLOAD")
 Sys.setenv(SPC_LOG_LEVEL = "DEBUG")
 log_msg("Detaljer", "DEBUG", "DATA_PROC")
 }

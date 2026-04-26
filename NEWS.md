@@ -1,6 +1,22 @@
-# biSPCharts 0.2.0-dev (development)
+# biSPCharts 0.3.0
 
 ## Breaking changes
+
+* **Minimalt public API** (#324): 20 exports er fjernet fra NAMESPACE og gjort
+  interne. Kun `run_app()`, `compute_spc_results_bfh()`, `should_track_analytics()`
+  og `get_analytics_config()` er fortsat public. Fjernede exports:
+  - App-internals: `app_ui`, `app_server`, `main_app_server`
+  - UI-builders: `create_ui_header`, `create_ui_main_content`,
+    `create_ui_upload_page`, `create_chart_settings_card_compact`
+  - Shiny-moduler: `mod_app_guide_server/ui`, `mod_export_server/ui`,
+    `mod_help_server/ui`, `mod_landing_server/ui`
+  - Analytics-pipeline: `ANALYTICS_CONFIG`, `aggregate_and_pin_logs`,
+    `format_analytics_metadata`, `read_shinylogs_all`,
+    `read_shinylogs_sessions`, `rotate_log_files`, `setup_analytics_consent`
+  - Startup: `init_startup_cache`
+  
+  Migration: Disse funktioner var aldrig tiltænkt ekstern brug. Kald `run_app()`
+  i stedet. Ingen ekstern kode i BFH-økosystemet afhang af disse exports.
 
 * **Dependency-guards for valgfri pakker** (#314): `qicharts2`, `pins`,
   `gert` og `shinylogs` er flyttet fra `Imports:` til `Suggests:`. Disse

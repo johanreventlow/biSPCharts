@@ -12,3 +12,4 @@ tagList with main content components
 \description{
 Create UI main content area
 }
+\keyword{internal}

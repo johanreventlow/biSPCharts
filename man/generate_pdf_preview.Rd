@@ -21,14 +21,14 @@ Genererer PNG preview af PDF layout direkte fra Typst.
 Bruges af export module til at vise PDF layout preview i browseren.
 }
 \details{
-Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF→PNG):
+Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF->PNG):
 \enumerate{
 \item Genererer chart PNG via \code{ggplot2::ggsave()}
 \item Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
 \item Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 }
 
-PNG filen er midlertidig og vil blive slettet når R session afsluttes.
+PNG filen er midlertidig og vil blive slettet naar R session afsluttes.
 }
 \examples{
 \dontrun{

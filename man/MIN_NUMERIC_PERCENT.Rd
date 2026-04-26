@@ -3,7 +3,7 @@
 \docType{data}
 \name{MIN_NUMERIC_PERCENT}
 \alias{MIN_NUMERIC_PERCENT}
-\title{Minimum procent numeriske værdier for kolonne detection}
+\title{Minimum procent numeriske vaerdier for kolonne detection}
 \format{
 An object of class \code{numeric} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 MIN_NUMERIC_PERCENT
 }
 \description{
-Minimum procent numeriske værdier for kolonne detection
+Minimum procent numeriske vaerdier for kolonne detection
 }
 \keyword{internal}

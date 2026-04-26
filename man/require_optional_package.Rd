@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_error_handling.R
 \name{require_optional_package}
 \alias{require_optional_package}
-\title{Guard: kræv valgfri pakke eller kast typed error}
+\title{Guard: kraev valgfri pakke eller kast typed error}
 \usage{
 require_optional_package(pkg, reason = pkg)
 }
@@ -12,9 +12,9 @@ require_optional_package(pkg, reason = pkg)
 \item{reason}{Kort beskrivelse af hvad pakken bruges til (dansk)}
 }
 \value{
-Invisible NULL hvis pakke er tilgængelig
+Invisible NULL hvis pakke er tilgaengelig
 }
 \description{
-Guard: kræv valgfri pakke eller kast typed error
+Guard: kraev valgfri pakke eller kast typed error
 }
 \keyword{internal}

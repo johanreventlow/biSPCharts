@@ -11,14 +11,14 @@ NULL (invisible). Registrerer fonts som sideeffekt.
 }
 \description{
 Registrerer bundlede Mari fonts med systemfonts pakken.
-Dette sikrer at BFHtheme vælger Mari (højeste prioritet) i stedet for
-fallback til Roboto/sans på systemer hvor Mari ikke er installeret
+Dette sikrer at BFHtheme vaelger Mari (hoejeste prioritet) i stedet for
+fallback til Roboto/sans paa systemer hvor Mari ikke er installeret
 (f.eks. Posit Connect Cloud).
 }
 \details{
 Mari fonts er bundlet i inst/templates/typst/bfh-template/fonts/ mappen.
-Fonten er proprietær (Bispebjerg og Frederiksberg Hospital) og må ikke
-distribueres i public packages — derfor ligger den i biSPCharts (private).
+Fonten er proprietaer (Bispebjerg og Frederiksberg Hospital) og maa ikke
+distribueres i public packages -- derfor ligger den i biSPCharts (private).
 }
 \seealso{
 Other font_registration: 

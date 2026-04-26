@@ -15,3 +15,4 @@ List med formateret metadata, eller NULL
 \description{
 Konverterer raa metadata fra JS til struktureret R-format.
 }
+\keyword{internal}

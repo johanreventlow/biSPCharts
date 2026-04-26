@@ -5,7 +5,7 @@
 \alias{CHART_TYPES_DA}
 \title{Danish Chart Type Names}
 \format{
-Named list med dansk label → engelsk kode
+Named list med dansk label -> engelsk kode
 }
 \usage{
 CHART_TYPES_DA

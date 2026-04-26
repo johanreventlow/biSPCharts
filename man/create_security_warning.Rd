@@ -7,7 +7,7 @@
 create_security_warning(field_name, issue_type, additional_info = NULL)
 }
 \arguments{
-\item{field_name}{Navn på feltet der fejlede validation}
+\item{field_name}{Navn paa feltet der fejlede validation}
 
 \item{issue_type}{Type af sikkerhedsproblem ("invalid_chars", "too_long", "invalid_format")}
 

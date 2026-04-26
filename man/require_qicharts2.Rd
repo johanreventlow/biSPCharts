@@ -2,14 +2,14 @@
 % Please edit documentation in R/utils_error_handling.R
 \name{require_qicharts2}
 \alias{require_qicharts2}
-\title{Guard: kræv qicharts2 for Anhøj-beregninger}
+\title{Guard: kraev qicharts2 for Anhoej-beregninger}
 \usage{
 require_qicharts2()
 }
 \value{
-Invisible NULL hvis qicharts2 er tilgængelig
+Invisible NULL hvis qicharts2 er tilgaengelig
 }
 \description{
-Guard: kræv qicharts2 for Anhøj-beregninger
+Guard: kraev qicharts2 for Anhoej-beregninger
 }
 \keyword{internal}

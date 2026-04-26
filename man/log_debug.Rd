@@ -7,7 +7,7 @@
 log_debug(..., .context = NULL)
 }
 \arguments{
-\item{...}{Variable argumenter der sammenkædes til en debug-besked}
+\item{...}{Variable argumenter der sammenkaedes til en debug-besked}
 
 \item{.context}{Valgfri kontekst-tag (f.eks. \code{"RENDER_PLOT"}, \code{"AUTO_DETECT"})}
 }
@@ -16,19 +16,19 @@ log_debug(..., .context = NULL)
 }
 \description{
 Convenience-funktion til logging af DEBUG-beskeder.
-Accepterer vilkårligt antal argumenter (\code{...}) og formaterer dem robust
-(tåler lister, data.frames m.m.) uden at crashe i Shiny renderers.
+Accepterer vilkaarligt antal argumenter (\code{...}) og formaterer dem robust
+(taaler lister, data.frames m.m.) uden at crashe i Shiny renderers.
 }
 \details{
 \strong{Kontekst-filtrering:}
-Når \code{spc.debug.context} option er sat, logges kun debug-beskeder hvis deres
-\code{.context} er i listen. Gør det muligt at filtrere debugging-output ned til
-relevante områder uden at øge token-forbrug.
+Naar \code{spc.debug.context} option er sat, logges kun debug-beskeder hvis deres
+\code{.context} er i listen. Goer det muligt at filtrere debugging-output ned til
+relevante omraader uden at oege token-forbrug.
 }
 \examples{
 \dontrun{
 log_debug("Status:", TRUE, .context = "RENDER_PLOT")
-log_debug("Række:", 42, list(a = 1), .context = "DATA_PROC")
+log_debug("Raekke:", 42, list(a = 1), .context = "DATA_PROC")
 
 # Kontekst-filtrering
 options(spc.debug.context = c("state", "data", "ai"))

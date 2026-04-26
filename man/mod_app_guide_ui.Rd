@@ -16,3 +16,4 @@ Shiny UI element
 Detaljeret trin-for-trin vejledning i brug af biSPCharts-appen.
 Indholdet er statisk og kraever ingen server-logik.
 }
+\keyword{internal}

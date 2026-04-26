@@ -3,7 +3,7 @@
 #' @param input,output,session Internal parameters for \pkg{shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
-#' @export
+#' @keywords internal
 app_server <- function(input, output, session) {
   # Font/image assets injiceres nu via:
   # - bfh_export_pdf(inject_assets = inject_template_assets) for PDF-eksport

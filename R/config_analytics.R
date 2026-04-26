@@ -14,7 +14,7 @@
 #'   \item{pin_name}{Navn paa pin til Connect Cloud}
 #'   \item{enabled}{Feature flag for hele analytics-systemet}
 #' }
-#' @export
+#' @keywords internal
 ANALYTICS_CONFIG <- list(
   consent_version = 1L,
   consent_max_age_days = 365L,

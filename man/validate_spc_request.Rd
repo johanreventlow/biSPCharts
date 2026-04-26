@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_spc_validate.R
 \name{validate_spc_request}
 \alias{validate_spc_request}
-\title{Valider SPC-anmodning og returnér et spc_request-objekt}
+\title{Valider SPC-anmodning og returner et spc_request-objekt}
 \usage{
 validate_spc_request(
   data,
@@ -23,15 +23,15 @@ validate_spc_request(
 
 \item{x_var}{character. Kolonne-navn for x-aksen.}
 
-\item{y_var}{character. Kolonne-navn for måle-kolonnen.}
+\item{y_var}{character. Kolonne-navn for maale-kolonnen.}
 
 \item{chart_type}{character. SPC chart-type (fx "run", "p", "u").}
 
-\item{n_var}{character eller NULL. Kolonne-navn for nævner.}
+\item{n_var}{character eller NULL. Kolonne-navn for naevner.}
 
 \item{cl_var}{character eller NULL. Manuel centerlinje-kolonne.}
 
-\item{freeze_var}{character eller NULL. Freeze-grænse-kolonne.}
+\item{freeze_var}{character eller NULL. Freeze-graense-kolonne.}
 
 \item{part_var}{character eller NULL. Fase-opdeling-kolonne.}
 
@@ -48,6 +48,6 @@ validate_spc_request(
 \description{
 Tjekker alle obligatoriske parametre og data-egenskaber, og returnerer
 et \code{spc_request} S3-objekt hvis input er gyldigt. Kaster \code{spc_input_error}
-ved ugyldig input — fejl propagerer direkte til caller.
+ved ugyldig input -- fejl propagerer direkte til caller.
 }
 \keyword{internal}

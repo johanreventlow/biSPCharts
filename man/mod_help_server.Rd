@@ -17,3 +17,4 @@ mod_help_server(id, parent_session = NULL, previous_tab = NULL)
 Server logik for hjælpesiden. Håndterer tilbagenavigation
 til den tab brugeren kom fra.
 }
+\keyword{internal}

@@ -139,7 +139,6 @@
 #' @seealso
 #' \code{map_to_bfh_params} for parameter transformation logic
 #' \code{transform_bfh_output} for output standardization
-#' @keywords internal
 #' @export
 compute_spc_results_bfh <- function(
   data,

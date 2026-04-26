@@ -22,3 +22,4 @@ Invisible NULL
 Registrerer observer paa input$analytics_consent og initialiserer
 shinylogs KUN naar brugeren har accepteret.
 }
+\keyword{internal}

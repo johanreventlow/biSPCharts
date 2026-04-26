@@ -2,20 +2,20 @@
 % Please edit documentation in R/fct_anhoej_rules.R
 \name{format_anhoej_metadata}
 \alias{format_anhoej_metadata}
-\title{Format Anhøj Metadata for Display}
+\title{Format Anhoej Metadata for Display}
 \usage{
 format_anhoej_metadata(anhoej_meta)
 }
 \arguments{
-\item{anhoej_meta}{list. Anhøj metadata from \code{extract_anhoej_metadata()}.}
+\item{anhoej_meta}{list. Anhoej metadata from \code{extract_anhoej_metadata()}.}
 }
 \value{
-character. Formatted Danish text describing Anhøj rule violations.
+character. Formatted Danish text describing Anhoej rule violations.
 Example: "Runs: Ja (8 punkter), Crossings: Nej (9/13)"
-Returns "Ingen Anhøj violations" if no signals detected.
+Returns "Ingen Anhoej violations" if no signals detected.
 }
 \description{
-Formats Anhøj rules metadata into human-readable Danish text for logging
+Formats Anhoej rules metadata into human-readable Danish text for logging
 or UI display. Useful for debugging and user notifications.
 }
 \examples{

@@ -11,6 +11,6 @@ Named list med validation parameters
 EXPORT_VALIDATION_RULES
 }
 \description{
-Regler til validering af export inputs før generering.
+Regler til validering af export inputs foer generering.
 }
 \keyword{internal}

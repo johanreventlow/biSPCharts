@@ -11,15 +11,15 @@ Named list med size preset objekter
 EXPORT_SIZE_PRESETS
 }
 \description{
-Prædefinerede størrelser til eksport af SPC plots.
-Hver preset inkluderer bredde, højde, DPI og display label.
+Praedefinerede stoerrelser til eksport af SPC plots.
+Hver preset inkluderer bredde, hoejde, DPI og display label.
 }
 \details{
 Presets inkluderer:
 \itemize{
 \item small: 800x600px ved 96 DPI (lille web/email format)
-\item medium: 1200x900px ved 96 DPI (standard præsentation)
-\item large: 1920x1440px ved 96 DPI (høj opløsning)
+\item medium: 1200x900px ved 96 DPI (standard praesentation)
+\item large: 1920x1440px ved 96 DPI (hoej oploesning)
 }
 }
 \keyword{internal}

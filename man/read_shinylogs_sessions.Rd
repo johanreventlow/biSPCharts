@@ -15,3 +15,4 @@ data.frame med session-data (tom data.frame hvis ingen filer)
 \description{
 Delegerer til \code{read_shinylogs_all()} og returnerer kun sessions-elementet.
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_y_axis_scaling.R
 \name{to_internal_scale}
 \alias{to_internal_scale}
-\title{Convert from target unit to internal canonical unit (100×-mismatch safe)}
+\title{Convert from target unit to internal canonical unit (100x-mismatch safe)}
 \usage{
 to_internal_scale(value_in_target_unit, target_unit, internal_unit)
 }
@@ -17,7 +17,7 @@ to_internal_scale(value_in_target_unit, target_unit, internal_unit)
 Numeric value in internal unit
 }
 \description{
-Enhanced internal conversion that prevents 100×-mismatch with better logging
+Enhanced internal conversion that prevents 100x-mismatch with better logging
 and more explicit error handling for incompatible conversions.
 }
 \keyword{internal}

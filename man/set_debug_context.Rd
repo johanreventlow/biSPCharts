@@ -13,27 +13,27 @@ set_debug_context(contexts = NULL)
 \code{invisible(NULL)}. Setter \code{spc.debug.context} option som en side effect.
 }
 \description{
-Setter den \code{spc.debug.context} option til at filtrere logging baseret på context.
-Dette reducerer token-forbrug ved debugging ved kun at logge relevante områder.
+Setter den \code{spc.debug.context} option til at filtrere logging baseret paa context.
+Dette reducerer token-forbrug ved debugging ved kun at logge relevante omraader.
 }
 \details{
 \strong{Eksempler:}
 \itemize{
-\item \code{set_debug_context(c("state", "data"))} – log kun state og data contexts
-\item \code{set_debug_context(NULL)} – log alt (default behavior)
-\item \code{set_debug_context(character(0))} – log intet
+\item \code{set_debug_context(c("state", "data"))} - log kun state og data contexts
+\item \code{set_debug_context(NULL)} - log alt (default behavior)
+\item \code{set_debug_context(character(0))} - log intet
 }
 }
 \examples{
 \dontrun{
 # Log kun state og AI-relateret debugging
 set_debug_context(c("state", "ai"))
-log_debug("Dette logges", .context = "state") # ✓ Vises
-log_debug("Dette logges ikke", .context = "performance") # ✗ Skjult
+log_debug("Dette logges", .context = "state") # [U+2713] Vises
+log_debug("Dette logges ikke", .context = "performance") # [U+2717] Skjult
 
 # Genop alle logninger
 set_debug_context(NULL)
-log_debug("Alt logges nu", .context = "performance") # ✓ Vises
+log_debug("Alt logges nu", .context = "performance") # [U+2713] Vises
 }
 
 }

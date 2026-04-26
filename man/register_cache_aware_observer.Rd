@@ -27,6 +27,6 @@ NULL (side effect: registers observer)
 \description{
 Ensures anhoej_results are updated even when bindCache short-circuits
 spc_results reactive body (cache hit). Handles state synchronization
-and Anhøj signal computation.
+and Anhoej signal computation.
 }
 \keyword{internal}

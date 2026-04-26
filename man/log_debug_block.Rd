@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils_logging.R
 \name{log_debug_block}
 \alias{log_debug_block}
-\title{Log afgrænsede debug-blokke (start/stop)}
+\title{Log afgraensede debug-blokke (start/stop)}
 \usage{
 log_debug_block(context, action, type = "start")
 }
@@ -17,7 +17,7 @@ log_debug_block(context, action, type = "start")
 \code{invisible(NULL)}.
 }
 \description{
-Helper-funktion til logging af visuelt afgrænsede debug-blokke
+Helper-funktion til logging af visuelt afgraensede debug-blokke
 med separatorlinjer. Erstatter hardcodede separatorer i koden.
 }
 \examples{

@@ -9,7 +9,7 @@ validate_aspect_ratio(width, height, warn_only = TRUE)
 \arguments{
 \item{width}{Bredde i pixels eller inches}
 
-\item{height}{Højde i pixels eller inches}
+\item{height}{Hoejde i pixels eller inches}
 
 \item{warn_only}{Emit warning i stedet for error (default TRUE)}
 }
@@ -17,13 +17,13 @@ validate_aspect_ratio(width, height, warn_only = TRUE)
 TRUE hvis aspect ratio er acceptable eller warn_only = TRUE
 }
 \description{
-Validerer aspect ratio (bredde/højde) for export dimensioner.
-Advarer eller fejler ved ekstreme ratios udenfor acceptable grænser.
+Validerer aspect ratio (bredde/hoejde) for export dimensioner.
+Advarer eller fejler ved ekstreme ratios udenfor acceptable graenser.
 }
 \details{
 Acceptable aspect ratios: 0.5 - 2.0
 \itemize{
-\item < 0.5: For smalt (højt og snævert)
+\item < 0.5: For smalt (hoejt og snaevert)
 \item 2.0: For bredt (lavt og bredt)
 }
 }

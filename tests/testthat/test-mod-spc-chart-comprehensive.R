@@ -10,6 +10,38 @@ library(testthat)
 # SEKTION 1: LIFECYCLE OG PERFORMANCE (fra test-mod-spc-chart-comprehensive.R)
 # =============================================================================
 
+test_that("Chart module handles reactive updates correctly", {
+  set.seed(42)
+  # TEST: Verificer at reaktive data-opdateringer afspejles korrekt i app_state
+  # Adapteret fra original: create_module_data_manager() eksisterer ikke →
+  # tester set_current_data() + direkte state-adgang i stedet.
+
+  # Mock reaktivt miljø
+  app_state <- create_app_state()
+
+  # Test reactive data updates
+  test_data <- data.frame(
+    x = 1:10,
+    y = rnorm(10),
+    stringsAsFactors = FALSE
+  )
+
+  # Simuler data-opdatering via set_current_data
+  set_current_data(app_state, test_data)
+
+  # Verificér state-konsistens
+  retrieved_data <- isolate(app_state$data$current_data)
+  expect_false(is.null(retrieved_data),
+    label = "current_data skal være sat efter set_current_data"
+  )
+  expect_equal(nrow(retrieved_data), 10,
+    label = "Rækketal skal matche test_data"
+  )
+  expect_equal(ncol(retrieved_data), 2,
+    label = "Kolonnetal skal matche test_data"
+  )
+})
+
 test_that("Chart generation performance meets benchmarks", {
   set.seed(42)
   skip_if_not_installed("qicharts2")

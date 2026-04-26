@@ -3,7 +3,7 @@
 \docType{data}
 \name{SPC_ALPHA_VALUES}
 \alias{SPC_ALPHA_VALUES}
-\title{Alpha værdier for gennemsigtighed}
+\title{Alpha vaerdier for gennemsigtighed}
 \format{
 An object of class \code{list} of length 5.
 }
@@ -11,6 +11,6 @@ An object of class \code{list} of length 5.
 SPC_ALPHA_VALUES
 }
 \description{
-Alpha værdier for gennemsigtighed
+Alpha vaerdier for gennemsigtighed
 }
 \keyword{internal}

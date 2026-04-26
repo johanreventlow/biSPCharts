@@ -328,6 +328,67 @@ Rscript -e "source('global.R')"
 
 Access at: `http://localhost:3838`
 
+## Analytics-administration
+
+### Aktivér analytics i production
+
+Analytics-indsamling er **slået fra** som standard i alle miljøer.
+Administrator skal eksplicit vælge at aktivere det.
+
+**Trin 1:** Slå shinylogs til i `inst/golem-config.yml`:
+
+```yaml
+production:
+  analytics:
+    shinylogs_enabled: true   # Skift fra false til true
+```
+
+**Trin 2 (valgfrit):** Aktivér GitHub-sync af indsamlede data:
+
+```yaml
+production:
+  analytics:
+    shinylogs_enabled: true
+    github_sync_enabled: true  # Kræver env-vars nedenfor
+```
+
+Sæt miljøvariabler for GitHub-sync:
+
+```bash
+GITHUB_PAT=<fine-grained PAT med contents:write>
+PIN_REPO_URL=https://github.com/<org>/<data-repo>
+```
+
+Alle tre betingelser (`github_sync_enabled: true` + `GITHUB_PAT` + `PIN_REPO_URL`)
+skal opfyldes. Mangler én, springes upload over lydløst med WARN-log.
+
+### Deaktivér analytics (kill-switch)
+
+For øjeblikkelig global deaktivering uanset konfiguration:
+
+```bash
+BISPC_DISABLE_ANALYTICS=true
+```
+
+Kill-switchen vinder over `golem-config.yml` og `ENABLE_SHINYLOGS`.
+Appen skal genstartes for at ændringen træder i kraft.
+
+### Prioritetsrækkefølge
+
+1. `BISPC_DISABLE_ANALYTICS=true` — slår alt fra, ingen undtagelser
+2. `analytics.shinylogs_enabled` i `golem-config.yml`
+3. `ENABLE_SHINYLOGS` env-var (legacy, bevares for bagudkompatibilitet)
+
+### Detaljer om hvad der indsamles
+
+Se `docs/ANALYTICS_PRIVACY.md` for:
+- Præcis liste over indsamlede kolonner (allowlist)
+- Opt-in mekanisme og brugerconsent
+- Retentionspolitik og sletningsprocedure
+- DPIA-status
+
+---
+
 ## Security
 
 ### Authentication

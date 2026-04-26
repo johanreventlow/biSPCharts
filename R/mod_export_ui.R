@@ -48,7 +48,7 @@ export_format_button <- function(ns, suffix, icon_name, label_text) {
 #' @param id Character. Namespace ID for modulet
 #' @return Shiny UI element
 #' @family export_modules
-#' @export
+#' @keywords internal
 mod_export_ui <- function(id) {
   ns <- shiny::NS(id)
 

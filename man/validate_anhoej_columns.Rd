@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_anhoej_rules.R
 \name{validate_anhoej_columns}
 \alias{validate_anhoej_columns}
-\title{Validate Anhøj Columns in QIC Data}
+\title{Validate Anhoej Columns in QIC Data}
 \usage{
 validate_anhoej_columns(qic_data, require_signal = FALSE)
 }
@@ -16,13 +16,13 @@ logical. TRUE if all required columns present, FALSE otherwise.
 Also issues warnings for missing columns.
 }
 \description{
-Internal helper to validate that required Anhøj columns are present in
+Internal helper to validate that required Anhoej columns are present in
 qic_data from BFHchart. Used for defensive programming and early error detection.
 }
 \examples{
 \dontrun{
 if (!validate_anhoej_columns(qic_data)) {
-  stop("Invalid qic_data: missing Anhøj columns")
+  stop("Invalid qic_data: missing Anhoej columns")
 }
 }
 }

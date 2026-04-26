@@ -7,6 +7,7 @@
 create_ui_upload_page()
 }
 \description{
-Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (højre).
-Ingen cards — rent, fladt layout.
+Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (hoejre).
+Ingen cards -- rent, fladt layout.
 }
+\keyword{internal}

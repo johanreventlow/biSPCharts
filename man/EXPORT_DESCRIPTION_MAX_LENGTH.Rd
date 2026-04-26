@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 EXPORT_DESCRIPTION_MAX_LENGTH
 }
 \description{
-Begrænser beskrivelse længde til 2000 karakterer for PDF metadata.
+Begraenser beskrivelse laengde til 2000 karakterer for PDF metadata.
 }
 \keyword{internal}

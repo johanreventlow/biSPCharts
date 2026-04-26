@@ -7,7 +7,7 @@
 log_debug_kv(..., .context = NULL, .list_data = NULL)
 }
 \arguments{
-\item{...}{Navngivne argumenter der logges som key-value (\code{navn = værdi})}
+\item{...}{Navngivne argumenter der logges som key-value (\code{navn = vaerdi})}
 
 \item{.context}{Kontekst-tag (f.eks. \code{"DATA_PROC"}, \code{"AUTO_DETECT"})}
 
@@ -18,8 +18,8 @@ log_debug_kv(..., .context = NULL, .list_data = NULL)
 }
 \description{
 Helper-funktion til logging af strukturerede key-value data.
-Understøtter både navngivne \code{...}-argumenter og en liste via \code{.list_data}.
-Værdier formatteres robust (tåler komplekse objekter) uden at crashe i Shiny.
+Understoetter baade navngivne \code{...}-argumenter og en liste via \code{.list_data}.
+Vaerdier formatteres robust (taaler komplekse objekter) uden at crashe i Shiny.
 }
 \examples{
 \dontrun{

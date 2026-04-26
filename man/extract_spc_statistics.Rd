@@ -10,13 +10,13 @@ extract_spc_statistics(app_state)
 \item{app_state}{Reactive values. Global app state med visualization data.}
 }
 \value{
-List med SPC statistikker eller NULL hvis ikke tilgængelige.
+List med SPC statistikker eller NULL hvis ikke tilgaengelige.
 Liste indeholder: runs_expected, runs_actual, crossings_expected,
 crossings_actual, outliers_expected, outliers_actual
 }
 \description{
-Udtræk Anhøj rules statistikker fra app_state til brug i export funktioner.
-Returnerer named list med expected og actual værdier for runs, crossings, outliers.
+Udtraek Anhoej rules statistikker fra app_state til brug i export funktioner.
+Returnerer named list med expected og actual vaerdier for runs, crossings, outliers.
 }
 \examples{
 \dontrun{

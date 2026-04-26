@@ -68,19 +68,121 @@ Consent gemmes i browser `localStorage` så genbesøg ikke gentager dialogen.
 
 ---
 
+## Shinylogs-aktivering (administrator)
+
+Analytics-indsamling via shinylogs styres af `analytics.shinylogs_enabled`
+i `inst/golem-config.yml`. Standard er `false` i alle miljøer undtagen
+`development` og `testing`.
+
+### Aktivér shinylogs i production
+
+Sæt `analytics.shinylogs_enabled: true` i `production:`-sektionen i
+`inst/golem-config.yml`, **eller** sæt miljøvariablen:
+
+```bash
+# Aktivér — override af config-fil
+ENABLE_SHINYLOGS=TRUE
+```
+
+### Deaktivér permanent (kill-switch)
+
+Sæt miljøvariablen `BISPC_DISABLE_ANALYTICS=true` for at deaktivere al
+analytics-indsamling uanset øvrig konfiguration. Kill-switch vinder over
+både config-fil og `ENABLE_SHINYLOGS`.
+
+```bash
+# Deaktivér — vinder over alle andre indstillinger
+BISPC_DISABLE_ANALYTICS=true
+```
+
+Prioritetsrækkefølge (øverst vinder):
+
+1. `BISPC_DISABLE_ANALYTICS=true` — global kill-switch
+2. `analytics.shinylogs_enabled` i `golem-config.yml`
+3. `ENABLE_SHINYLOGS` env-var (legacy, bevares for bagudkompatibilitet)
+
+---
+
+## GitHub-sync af analytics-data
+
+Analytics-data kan uploades til et privat GitHub-repository ved
+session-afslutning. Dette er **opt-in** og kræver eksplicit konfiguration.
+
+### Aktivér GitHub-sync
+
+1. Sæt `analytics.github_sync_enabled: true` i `production:`-sektionen
+   i `inst/golem-config.yml`
+2. Sæt følgende miljøvariabler:
+   - `GITHUB_PAT` — fine-grained PAT med `contents:write`-tilladelse
+   - `PIN_REPO_URL` — HTTPS URL til det private data-repository
+
+Alle tre betingelser skal opfyldes. Hvis én mangler, springes synkronisering
+over lydløst med en `WARN`-logbesked.
+
+Standard er `false` i **alle** miljøer — der uploades aldrig data uden
+eksplicit administrator-beslutning.
+
+---
+
+## Opbevaring og sletning
+
+### Retentionspolitik
+
+| Periode | Handling |
+|---------|---------|
+| 0–90 dage | Data tilgængeligt som rå `.rds`-filer |
+| 90–365 dage | Data komprimeres (konfigureret via `log_compress_after_days`) |
+| Efter 365 dage | Data slettes (konfigureret via `log_retention_days`) |
+
+Politikken håndhæves manuelt af maintainer. Automatisk sletning er ikke
+implementeret.
+
+### Sletning på forespørgsel
+
+Individuelle sessions kan identificeres ved `session_hash` i de uploadede
+`.rds`-filer. Kontakt maintainer for at anmode om sletning. Rå session-tokens
+er ikke tilgængelige — hashen er ikke reversibel.
+
+---
+
 ## Hvor gemmes data
 
 Analytics-data uploades til et **privat** GitHub-repository
-(`biSPCharts-analytics-data`) ved session-afslutning.
+(`biSPCharts-analytics-data`) ved session-afslutning, **hvis** GitHub-sync
+er aktiveret (se ovenfor).
 
 - Format: `.rds`-fil per session i `sessions/`-mappe
-- Adgang: begrænset til maintainer 
+- Adgang: begrænset til maintainer
 - Filnavn: `YYYYMMDDTHHMMSSZ_<session_hash>.rds` — ingen PII i filnavn
 - Indhold: allowlist-filtreret subset (se tabeller ovenfor)
 
 Backend kræver:
 - `GITHUB_PAT` env var (fine-grained PAT med `contents:write`)
 - `PIN_REPO_URL` env var (HTTPS URL til data-repo)
+- `analytics.github_sync_enabled: true` i `golem-config.yml`
+
+---
+
+## Debug-snapshot redaktion
+
+Debug-snapshots (`debug_state_snapshot()`) kan indeholde kolonnenavne
+fra indlæste datasæt. Disse redakteres automatisk inden de logges eller
+hashes.
+
+### Redaktionspolitik
+
+Kolonnenavne der matcher følgende mønstre erstattes med `[redacted]`:
+
+- Navne der indeholder: `navn`, `name`, `patient`
+- CPR-mønstre: `\d{6}-?\d{4}`
+- Email-tegn: `@`, `mail`, `email`
+- Telefon/adresse: `phone`, `mobil`, `adresse`, `address`
+
+Matchning er case-insensitiv. Redaktionen sker i `redact_debug_snapshot()`
+i `R/utils_advanced_debug.R`.
+
+State-hashen (`state_hash` i snapshots) beregnes **efter** redaktion, så
+hashen aldrig afspejler PII-kolonnenavne.
 
 ---
 
@@ -93,6 +195,10 @@ Backend kræver:
   fejlbeskeder inden de logges eller returneres.
 - **Allowlist-filtering**: `filter_shinylogs_allowlist()` dropper alle
   kolonner der ikke er eksplicit tilladt i `SHINYLOGS_ALLOWLIST`.
+- **Debug-snapshot redaktion**: `redact_debug_snapshot()` fjerner
+  PII-kolonnenavne fra debug-output og state-hashes.
+- **Opt-in GitHub-sync**: Synkronisering kræver eksplicit
+  `analytics.github_sync_enabled: true` + miljøvariabler.
 
 ---
 
@@ -110,7 +216,7 @@ ny.
 
 | Felt | Værdi |
 |------|-------|
-| Sidst gennemgået | 2026-04-23 |
+| Sidst gennemgået | 2026-04-26 |
 | Ansvarlig | Johan Reventlow |
 | Status | Ikke formelt DPIA-vurderet — app bruges internt, ingen ekstern transmission af PII |
 | Næste review | Ved udvidelse af allowlist eller ændring af datamodtager |

@@ -9,3 +9,4 @@ create_chart_settings_card_compact()
 \description{
 Kompakt indstillings-card til hoejre side
 }
+\keyword{internal}

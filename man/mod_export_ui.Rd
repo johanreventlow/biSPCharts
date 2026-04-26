@@ -14,13 +14,13 @@ Shiny UI element
 }
 \description{
 Brugerinterface til eksport af SPC charts.
-Understøtter PDF og PNG formater med live preview.
+Understoetter PDF og PNG formater med live preview.
 }
 \details{
 Layout:
 \itemize{
 \item Venstre panel (40\%): Format selector, metadata input fields
-\item Højre panel (60\%): Live preview af chart
+\item Hoejre panel (60\%): Live preview af chart
 }
 }
 \seealso{
@@ -28,3 +28,4 @@ Other export_modules:
 \code{\link{mod_export_server}()}
 }
 \concept{export_modules}
+\keyword{internal}

@@ -21,4 +21,4 @@ ANALYTICS_CONFIG
 \description{
 Centraliserede konstanter for analytics, consent og log rotation.
 }
-\keyword{datasets}
+\keyword{internal}

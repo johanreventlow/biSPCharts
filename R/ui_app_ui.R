@@ -9,7 +9,7 @@
 # Opretter alle header komponenter inklusive scripts og styles
 #' Create UI header
 #' @return tagList with header components
-#' @export
+#' @keywords internal
 create_ui_header <- function() {
   # Get hospital colors using the proper package function
   hospital_colors <- get_hospital_colors()
@@ -306,7 +306,7 @@ create_ui_header <- function() {
 
 #' Create UI main content area
 #' @return tagList with main content components
-#' @export
+#' @keywords internal
 create_ui_main_content <- function() {
   shiny::div(
     style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
@@ -460,7 +460,7 @@ create_plot_only_card <- function() {
 }
 
 #' Kompakt indstillings-card til hoejre side
-#' @export
+#' @keywords internal
 create_chart_settings_card_compact <- function() {
   bslib::card(
     height = "100%",
@@ -638,7 +638,7 @@ create_status_value_boxes <- function() {
 #'
 #' Wizard trin 1: Fire kvadratiske knapper (venstre) + paste-felt (hoejre).
 #' Ingen cards -- rent, fladt layout.
-#' @export
+#' @keywords internal
 create_ui_upload_page <- function() {
   hospital_colors <- get_hospital_colors()
   # Hjaelpefunktion: kvadratisk knap med ikon og tekst

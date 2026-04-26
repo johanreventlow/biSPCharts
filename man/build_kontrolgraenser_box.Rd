@@ -2,11 +2,11 @@
 % Please edit documentation in R/utils_spc_chart_ui_helpers.R
 \name{build_kontrolgraenser_box}
 \alias{build_kontrolgraenser_box}
-\title{Build Kontrolgrænser Value Box}
+\title{Build Kontrolgraenser Value Box}
 \usage{
 build_kontrolgraenser_box(status_info, anhoej, chart_type)
 }
 \description{
-Helper to build the out-of-control points (kontrolgrænser) value box.
+Helper to build the out-of-control points (kontrolgraenser) value box.
 }
 \keyword{internal}

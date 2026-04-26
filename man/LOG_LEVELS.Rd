@@ -11,8 +11,8 @@ Liste med 4 elementer
 LOG_LEVELS
 }
 \description{
-Definerer numeriske værdier for forskellige log-niveauer til brug i det
-konfigurerede logging-system. \strong{Lavere tal betyder højere prioritet.}
+Definerer numeriske vaerdier for forskellige log-niveauer til brug i det
+konfigurerede logging-system. \strong{Lavere tal betyder hoejere prioritet.}
 }
 \details{
 Log levels:

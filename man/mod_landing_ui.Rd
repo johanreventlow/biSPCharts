@@ -17,3 +17,4 @@ Velkomstside der renderes dynamisk baseret på localStorage-peek.
 Når en gemt session er tilgængelig vises en restore-card; ellers
 vises standard-landingen med "Kom i gang"-knap.
 }
+\keyword{internal}

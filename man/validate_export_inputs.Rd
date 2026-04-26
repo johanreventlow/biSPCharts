@@ -25,13 +25,13 @@ validate_export_inputs(
 
 \item{width}{Custom bredde i pixels (kun PNG)}
 
-\item{height}{Custom højde i pixels (kun PNG)}
+\item{height}{Custom hoejde i pixels (kun PNG)}
 }
 \value{
 TRUE hvis alle validations passerer
 }
 \description{
-Validerer alle export inputs før generering af PDF/PNG.
+Validerer alle export inputs foer generering af PDF/PNG.
 Tjekker character limits, dimension ranges og aspect ratios.
 }
 \examples{

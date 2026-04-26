@@ -2,11 +2,11 @@
 % Please edit documentation in R/utils_spc_chart_ui_helpers.R
 \name{build_serielengde_box}
 \alias{build_serielengde_box}
-\title{Build Serielængde Value Box}
+\title{Build Serielaengde Value Box}
 \usage{
 build_serielengde_box(status_info, anhoej)
 }
 \description{
-Helper to build the longest run (serielængde) value box.
+Helper to build the longest run (serielaengde) value box.
 }
 \keyword{internal}

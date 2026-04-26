@@ -11,6 +11,6 @@ An object of class \code{numeric} of length 1.
 EXPORT_TITLE_MAX_LENGTH
 }
 \description{
-Begrænser titel længde til 200 karakterer for at undgå layout problemer.
+Begraenser titel laengde til 200 karakterer for at undgaa layout problemer.
 }
 \keyword{internal}

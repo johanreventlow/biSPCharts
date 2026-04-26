@@ -10,12 +10,12 @@ quarto_available()
 Logical. Altid TRUE da Quarto er inkluderet i RStudio.
 }
 \description{
-Tjekker om Quarto CLI er tilgængelig på systemet.
-Bruges til at vise/skjule PDF export option baseret på Quarto tilgængelighed.
+Tjekker om Quarto CLI er tilgaengelig paa systemet.
+Bruges til at vise/skjule PDF export option baseret paa Quarto tilgaengelighed.
 }
 \note{
 Denne funktion returnerer altid TRUE, da Quarto er bundled med RStudio.
-BFHcharts::bfh_export_pdf() håndterer Quarto errors internt.
+BFHcharts::bfh_export_pdf() haandterer Quarto errors internt.
 }
 \examples{
 \dontrun{

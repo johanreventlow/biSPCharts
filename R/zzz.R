@@ -219,11 +219,15 @@ reset_qic_performance_counters <- function() {
   bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   quarto_status <- if (nzchar(Sys.which("quarto"))) "tilg\u00e6ngelig" else "ikke fundet i PATH"
+
+  analytics_cfg <- resolve_analytics_config()
   packageStartupMessage(
     "biSPCharts optional features: ",
     "BFHllm=", bfhllm_status, ", ",
     "qicharts2=", qic_status, ", ",
-    "Quarto=", quarto_status
+    "Quarto=", quarto_status, "\n",
+    "Analytics: shinylogs=", if (analytics_cfg$enabled) "aktiv" else "inaktiv",
+    " (kilde: ", analytics_cfg$source, ")"
   )
 }
 

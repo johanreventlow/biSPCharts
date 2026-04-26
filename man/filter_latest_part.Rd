@@ -12,10 +12,10 @@ filter_latest_part(qic_data, show_phases = FALSE)
 \item{show_phases}{logical. TRUE hvis parts/skift er aktivt}
 }
 \value{
-data.frame. Filtreret til seneste part eller hele datasæt
+data.frame. Filtreret til seneste part eller hele datasaet
 }
 \description{
-Når brugeren har aktiveret "Skift" (parts/phases), skal beregninger
-kun baseres på den seneste part, ikke hele datasættet.
+Naar brugeren har aktiveret "Skift" (parts/phases), skal beregninger
+kun baseres paa den seneste part, ikke hele datasaettet.
 }
 \keyword{internal}

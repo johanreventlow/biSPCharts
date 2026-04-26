@@ -19,7 +19,7 @@ Tillader danske karakterer og standard kolonne navn patterns.
 \examples{
 \dontrun{
 sanitize_column_name("Dato & tid") # Returns "Dato  tid"
-sanitize_column_name("Y-værdi_1") # Returns "Y-værdi_1"
+sanitize_column_name("Y-vaerdi_1") # Returns "Y-vaerdi_1"
 }
 }
 \keyword{internal}

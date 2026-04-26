@@ -133,6 +133,36 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
   }
 }
 
+# PII-regex der matches mod kolonnenavne i debug-snapshots
+.PII_COLUMN_PATTERNS <- c(
+  "(?i)(navn|name|patient|cpr|\\d{6}-?\\d{4}|@|email|mail|phone|mobil|adresse|address)"
+)
+
+#' Redaktér PII-kolonnenavne i debug-snapshots
+#'
+#' Erstatter kolonne-navne i en debug-snapshot der matcher kendte PII-mønstre
+#' med en generisk pladsholder, og beregner en hash af det samlede objekt
+#' på en måde der ikke eksponerer PII.
+#'
+#' @param snapshot List fra `debug_state_snapshot()` (delvist konstrueret)
+#' @param col_names Character-vector med kolonnenavne der skal redigeres
+#' @return List: `redacted_col_names` (redigerede navne) og `safe_hash_input`
+#'   (redigeret objekt til brug med `digest::digest()`)
+#'
+#' @keywords internal
+redact_debug_snapshot <- function(snapshot, col_names = character(0)) {
+  redacted <- vapply(col_names, function(nm) {
+    if (grepl(.PII_COLUMN_PATTERNS, nm, perl = TRUE)) "[redacted]" else nm
+  }, character(1L), USE.NAMES = FALSE)
+
+  # Returnér snapshot med PII-navne fjernet, klar til hash
+  safe <- snapshot
+  if (!is.null(safe$data_summary$current_data$col_names)) {
+    safe$data_summary$current_data$col_names <- redacted
+  }
+  list(redacted_col_names = redacted, safe_hash_input = safe)
+}
+
 #' State Snapshot Utility
 #'
 #' Creates detailed snapshot af app_state for debugging og comparison
@@ -167,9 +197,10 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
     # Basic state information
     snapshot$state_available <- TRUE
 
-    # State hash for change detection
+    # State hash for change detection (redaktér snapshot inden hash for at undgå PII)
     if (include_hash) {
-      snapshot$state_hash <- digest::digest(app_state, algo = "xxhash64")
+      redacted_result <- redact_debug_snapshot(snapshot)
+      snapshot$state_hash <- digest::digest(redacted_result$safe_hash_input, algo = "xxhash64")
     }
 
     # Data summary - safe reactive access
@@ -191,10 +222,11 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
       )
 
       if (!is.null(current_data)) {
+        redacted_names <- redact_debug_snapshot(list(), names(current_data))$redacted_col_names
         data_summary$current_data <- list(
           rows = nrow(current_data),
           cols = ncol(current_data),
-          col_names = names(current_data)
+          col_names = redacted_names
         )
       }
 

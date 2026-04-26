@@ -143,28 +143,47 @@ autodetect_engine <- function(data = NULL,
     )
   }
 
-  # 3. SCENARIO ROUTING - if no cache hit, perform fresh analysis with benchmarking
+  # 3. SCENARIO ROUTING - brug run_autodetect() pure funktion
   if (!use_cached) {
     if (is.null(data) || nrow(data) == 0) {
-      # Session start / name-only scenario - benchmark name-based detection
+      # Session start / navn-baseret scenario
       col_names <- if (is.null(data)) character(0) else names(data)
 
-      # Benchmarking removed from production code - moved to tests
-      results <- detect_columns_name_based(col_names, app_state)
+      log_debug_kv(
+        column_names = paste(col_names, collapse = ", "),
+        cache_status = "computing_fresh_name_based",
+        .context = "UNIFIED_AUTODETECT"
+      )
+
+      # Kald pure run_autodetect med hints
+      autodetect_result <- run_autodetect(
+        data  = NULL,
+        hints = list(col_names = col_names, prefer_name_based = TRUE)
+      )
     } else {
-      # Full data analysis scenario - benchmark full analysis
+      # Fuld data-analyse scenario
       log_debug_kv(
         column_names = paste(names(data), collapse = ", "),
         cache_status = "computing_fresh",
         .context = "UNIFIED_AUTODETECT"
       )
 
-      # Benchmarking removed from production code - moved to tests
-      results <- detect_columns_full_analysis(data, app_state)
+      # Kald pure run_autodetect med data
+      autodetect_result <- run_autodetect(data = data)
     }
+
+    # Konvertér AutodetectResult til intern results-liste (bagudkompatibelt format)
+    results <- list(
+      x_col         = autodetect_result$x_col,
+      y_col         = autodetect_result$y_col,
+      n_col         = autodetect_result$n_col,
+      skift_col     = autodetect_result$skift_col,
+      frys_col      = autodetect_result$frys_col,
+      kommentar_col = autodetect_result$kommentar_col
+    )
   }
 
-  # 4. STATE UPDATE & FREEZE
+  # 4. STATE UPDATE & FREEZE via central applier
   log_debug_kv(
     autodetect_completed = TRUE,
     x_col = results$x_col %||% "NULL",
@@ -172,8 +191,18 @@ autodetect_engine <- function(data = NULL,
     n_col = results$n_col %||% "NULL",
     .context = "UNIFIED_AUTODETECT"
   )
-  # Update all column mappings in unified location - pass app_state for direct updates
-  app_state$columns <- update_all_column_mappings(results, app_state$columns, app_state)
+
+  # Konstruér AutodetectResult til transition (hvis vi brugte cache, wrap det)
+  if (use_cached) {
+    # cached results er allerede i results-format
+    autodetect_result <- structure(
+      c(results, list(timestamp = Sys.time())),
+      class = "AutodetectResult"
+    )
+  }
+
+  # Anvend state-transition atomisk
+  apply_state_transition(app_state, transition_autodetect_complete(autodetect_result))
 
   # Set frozen state to prevent re-running until next legitimate trigger
   shiny::isolate({
@@ -405,31 +434,29 @@ update_all_column_mappings <- function(results, existing_columns = NULL, app_sta
     log_warn("update_all_column_mappings kaldt uden app_state", .context = "UPDATE_MAPPINGS")
   }
 
-  # DIRECT APP_STATE UPDATE: If app_state is provided, update it directly
+  # DIRECT APP_STATE UPDATE: Brug apply_state_transition for atomiske opdateringer
+  # K4 FIX: Update individual column mappings - ALWAYS assign (including NULL)
+  # Previous code only updated when results$X_col was not NULL, causing old mappings
+  # to persist when autodetect couldn't find a column in new data.
+  # This caused ratio charts to reference non-existent columns -> "For faa gyldige datapunkter" errors
   if (!is.null(app_state)) {
-    # K4 FIX: Update individual column mappings - ALWAYS assign (including NULL)
-    # Previous code only updated when results$X_col was not NULL, causing old mappings
-    # to persist when autodetect couldn't find a column in new data.
-    # This caused ratio charts to reference non-existent columns -> "For faa gyldige datapunkter" errors
-    shiny::isolate({
-      # Always assign results - NULL explicitly clears old mappings
-      app_state$columns$mappings$x_column <- results$x_col
-      app_state$columns$mappings$y_column <- results$y_col
-      app_state$columns$mappings$n_column <- results$n_col
-      app_state$columns$mappings$skift_column <- results$skift_col
-      app_state$columns$mappings$frys_column <- results$frys_col
-      app_state$columns$mappings$kommentar_column <- results$kommentar_col
-
-      # Store complete results for backward compatibility
-      shiny::isolate({
-        app_state$columns$auto_detect$results <- results
-        # Note: results already stored above in auto_detect$results
-
-        # Mark as completed
-        app_state$columns$auto_detect$completed <- TRUE
-        app_state$columns$auto_detect$in_progress <- FALSE
-      })
-    })
+    autodetect_result_for_transition <- structure(
+      list(
+        x_col         = results$x_col,
+        y_col         = results$y_col,
+        n_col         = results$n_col,
+        skift_col     = results$skift_col,
+        frys_col      = results$frys_col,
+        kommentar_col = results$kommentar_col,
+        scores        = list(),
+        timestamp     = Sys.time()
+      ),
+      class = "AutodetectResult"
+    )
+    apply_state_transition(
+      app_state,
+      transition_autodetect_complete(autodetect_result_for_transition)
+    )
   }
 
   # LEGACY SUPPORT: Return updated list for backward compatibility

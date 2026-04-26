@@ -54,7 +54,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     } else if (field == "export_format") {
       # export_format er hidden input — bruger JS custom message for synkronisering
       # (se Issue #193: updateTextInput virker ikke for hidden inputs)
-      if (!is.null(value) && nzchar(value) && value %in% c("pdf", "png")) {
+      if (nzchar(value) && value %in% c("pdf", "png")) {
         session$sendCustomMessage("set-export-format", list(format = value))
       }
     } else if (field == "pdf_description") {

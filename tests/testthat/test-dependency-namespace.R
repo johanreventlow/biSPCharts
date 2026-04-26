@@ -49,6 +49,6 @@ testthat::test_that("library-kald for aftalte pakker er fjernet", {
     )
     testthat::fail(msg)
   } else {
-    testthat::expect_true(TRUE)
+    testthat::expect_length(offending_calls, 0L)
   }
 })

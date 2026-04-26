@@ -8,7 +8,7 @@
 #   - Test extract_spc_statistics() data extraction
 #   - Test generate_details_string() formatting
 #   - Test generate_pdf_preview() med BFHcharts integration
-#   - Test quarto_available() check
+#   - Test check_quarto_capability() check
 # ==============================================================================
 
 context("Export Utilities - BFHcharts Integration")
@@ -34,14 +34,13 @@ test_that("extract_spc_statistics() handles reactive context errors gracefully",
 
 # generate_details_string() fjernet — details genereres nu af BFHcharts
 
-# TEST: quarto_available() ===================================================
+# TEST: check_quarto_capability() ============================================
 
-test_that("quarto_available() delegates to BFHcharts", {
-  # This test just verifies function exists and returns logical
-  result <- quarto_available()
+test_that("check_quarto_capability() returns logical availability", {
+  result <- check_quarto_capability()
 
-  expect_type(result, "logical")
-  expect_length(result, 1)
+  expect_type(result$available, "logical")
+  expect_length(result$available, 1)
 })
 
 # TEST: generate_pdf_preview() ===============================================
@@ -56,7 +55,7 @@ test_that("generate_pdf_preview() returns NULL for invalid input", {
 })
 
 test_that("generate_pdf_preview() returns NULL when Quarto unavailable", {
-  skip_if(quarto_available(), "Quarto is available, skipping negative test")
+  skip_if(isTRUE(check_quarto_capability()$available), "Quarto is available, skipping negative test")
 
   # Create mock bfh_qic_result (minimal structure)
   mock_result <- structure(
@@ -78,7 +77,7 @@ test_that("generate_pdf_preview() returns NULL when Quarto unavailable", {
 })
 
 test_that("generate_pdf_preview() generates PNG when Quarto available", {
-  skip_if_not(quarto_available(), "Quarto not available")
+  skip_if_not(isTRUE(check_quarto_capability()$available), "Quarto not available")
   skip_if_not(requireNamespace("BFHcharts", quietly = TRUE), "BFHcharts not installed")
 
   # Create actual bfh_qic_result via BFHcharts
@@ -137,7 +136,7 @@ test_that("Export helpers integrate with safe_operation correctly", {
 # SUMMARY ====================================================================
 # Test coverage:
 # ✅ extract_spc_statistics() data extraction
-# ✅ quarto_available() delegation
+# ✅ check_quarto_capability() delegation
 # ✅ generate_pdf_preview() error handling
 # ⚠️  generate_pdf_preview() full integration (requires BFHcharts + Quarto)
 # ✅ get_hospital_name_for_export() fallback

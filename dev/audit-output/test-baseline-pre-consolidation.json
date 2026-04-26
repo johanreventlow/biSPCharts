@@ -1,0 +1,9 @@
+{
+  "generated_at": "2026-04-26",
+  "branch": "feat/consolidate-test-suite-gaps",
+  "total_test_files": 135,
+  "total_skips": 557,
+  "expect_true_TRUE_count": 13,
+  "expect_no_error_count": 121,
+  "notes": "Counts from grep before Phase 3+4 consolidation. total_test_files includes non-.R entries (README.md, fixtures/). Counted via: grep -rn skip|skip_on_ci|skip_if tests/testthat/ | wc -l"
+}

@@ -1,7 +1,11 @@
 # test-e2e-workflows.R
-# Salvage Fase 2: Opdateret mod nuværende E2E API
-# Fejl var: reaktive vaerdier laest udenfor reaktiv kontekst (manglende isolate())
-# og create_chart_validator() ikke i namespace.
+# Konsolideret E2E testfil (Phase 3, Issue #322)
+# Merget fra:
+#   - test-e2e-workflows.R      (5 tests: pure R state-based, kører i CI)
+#   - test-e2e-user-workflows.R (8 tests: shinytest2 UI-tests, skip_on_ci)
+#
+# SEKTION A: Pure R state-based workflow tests (kører altid)
+# SEKTION B: shinytest2 UI workflow tests (skip_on_ci + Chrome-krav)
 
 test_that("Complete user journey: upload til chart generation", {
   set.seed(42)
@@ -267,4 +271,250 @@ test_that("Performance workflow haandterer successive operationer", {
 
   expect_true(!is.null(shiny::isolate(app_state$data$current_data)))
   expect_equal(nrow(shiny::isolate(app_state$data$current_data)), 100)
+})
+
+# ===========================================================================
+# SEKTION B: shinytest2 UI workflow tests (fra test-e2e-user-workflows.R)
+# Alle tests kræver Chrome/Chromium og skip_on_ci()
+# ===========================================================================
+
+skip_if_no_shinytest2_runtime <- function() {
+  skip_if_not_installed("shinytest2")
+  skip_if_not_installed("chromote")
+
+  if (Sys.getenv("CI_SKIP_SHINYTEST2", "false") %in% c("true", "TRUE", "1")) {
+    skip("CI_SKIP_SHINYTEST2 env-flag sat")
+  }
+
+  chrome_path <- tryCatch(
+    chromote::find_chrome(),
+    error = function(e) ""
+  )
+  skip_if(
+    is.null(chrome_path) || !nzchar(chrome_path),
+    "Chrome/Chromium ikke fundet til shinytest2"
+  )
+}
+
+create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
+  shinytest2::AppDriver$new(
+    app_dir = "../../",
+    name = name,
+    width = width,
+    height = height,
+    variant = shinytest2::platform_variant(),
+    ...
+  )
+}
+
+test_that("E2E: App launches successfully", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  app <- create_e2e_driver(name = "app_launch", height = 800, width = 1200)
+  app$wait_for_idle()
+
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
+  app$expect_screenshot()
+  app$stop()
+})
+
+test_that("E2E: User can upload CSV file", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(
+    Dato = c("01-01-2023", "02-01-2023", "03-01-2023", "04-01-2023", "05-01-2023"),
+    Tæller = c(10, 15, 12, 18, 14),
+    Nævner = c(100, 120, 110, 130, 115),
+    Kommentar = c("", "Peak", "", "High", "")
+  )
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "file_upload", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 2000)
+  app$expect_screenshot()
+
+  values <- app$get_values()
+  expect_true(length(values) > 0)
+  app$stop()
+})
+
+test_that("E2E: Auto-detection runs after file upload", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(
+    Dato = as.Date(c("2023-01-01", "2023-01-02", "2023-01-03")),
+    Antal = c(5, 10, 15),
+    Total = c(100, 100, 100)
+  )
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "autodetect", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 3000)
+  app$expect_screenshot()
+
+  values <- app$get_values()
+  expect_true(!is.null(values$input))
+  app$stop()
+})
+
+test_that("E2E: User can generate SPC chart", {
+  set.seed(42)
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(
+    Dato = seq.Date(as.Date("2023-01-01"), by = "day", length.out = 20),
+    Værdi = rnorm(20, mean = 50, sd = 10),
+    Kommentar = c(rep("", 19), "Outlier")
+  )
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "chart_generation", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 2000)
+
+  tryCatch(
+    {
+      app$set_inputs(chart_type = "Run chart")
+      app$wait_for_idle(duration = 1000)
+    },
+    error = function(e) message("Could not set chart_type input: ", e$message)
+  )
+
+  app$wait_for_idle(duration = 2000)
+  app$expect_screenshot()
+
+  values <- app$get_values()
+  expect_true(!is.null(values$output))
+  app$stop()
+})
+
+test_that("E2E: User can manually select columns", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(ColA = 1:10, ColB = 11:20, ColC = 21:30)
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "column_selection", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 2000)
+
+  tryCatch(
+    {
+      app$set_inputs(x_column = "ColA", y_column = "ColB")
+      app$wait_for_idle(duration = 1000)
+    },
+    error = function(e) message("Could not set column inputs: ", e$message)
+  )
+
+  app$expect_screenshot()
+  values <- app$get_values()
+  expect_true(length(values) > 0)
+  app$stop()
+})
+
+test_that("E2E: User can edit data in table", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(X = 1:5, Y = c(10, 20, 30, 40, 50))
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "table_edit", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 2000)
+  app$expect_screenshot()
+
+  values <- app$get_values()
+  expect_true(!is.null(values))
+  app$stop()
+})
+
+test_that("E2E: App handles invalid data gracefully", {
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(
+    ColA = c("text", "more", "text"),
+    ColB = c("data", "here", "too")
+  )
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "error_handling", height = 800, width = 1200)
+  app$wait_for_idle()
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 2000)
+
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
+  app$expect_screenshot()
+  app$stop()
+})
+
+test_that("E2E: Complete user journey from upload to chart", {
+  set.seed(42)
+  skip_if_no_shinytest2_runtime()
+  skip_on_ci()
+
+  test_data <- data.frame(
+    Dato = seq.Date(as.Date("2023-01-01"), by = "week", length.out = 20),
+    Komplikationer = rpois(20, lambda = 5),
+    Operationer = rep(100, 20),
+    Kommentar = c(rep("", 15), "Note 1", "", "Note 2", "", "")
+  )
+  temp_file <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_file, row.names = FALSE)
+  on.exit(unlink(temp_file), add = TRUE)
+
+  app <- create_e2e_driver(name = "complete_journey", height = 800, width = 1200)
+
+  app$wait_for_idle()
+  app$expect_screenshot(name = "01_initial")
+
+  app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 3000)
+  app$expect_screenshot(name = "02_after_upload")
+
+  app$wait_for_idle(duration = 2000)
+  app$expect_screenshot(name = "03_autodetected")
+
+  tryCatch(
+    {
+      app$set_inputs(chart_type = "P-kort (Andele)")
+      app$wait_for_idle(duration = 1500)
+      app$expect_screenshot(name = "04_chart_selected")
+    },
+    error = function(e) message("Could not set chart type: ", e$message)
+  )
+
+  app$wait_for_idle(duration = 2000)
+  app$expect_screenshot(name = "05_final_chart")
+
+  expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
+
+  final_values <- app$get_values()
+  expect_true(!is.null(final_values))
+  app$stop()
 })

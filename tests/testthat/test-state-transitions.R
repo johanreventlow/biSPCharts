@@ -150,3 +150,35 @@ test_that("apply_nested bevarer uberørte sub-felter", {
   # updating_table bevaret
   expect_false(state$data$updating_table)
 })
+
+test_that("apply_state_transition bevarer nested reactiveValues-grene", {
+  app_state <- create_app_state()
+  df <- data.frame(Dato = as.Date("2024-01-01") + 0:2, Vaerdi = 1:3)
+  parsed <- new_parsed_file(df, format = "csv", encoding = "UTF-8")
+
+  expect_s3_class(app_state$columns, "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$auto_detect), "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$mappings), "reactivevalues")
+
+  apply_state_transition(app_state, transition_upload_to_ready(parsed))
+
+  expect_s3_class(app_state$columns, "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$auto_detect), "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$mappings), "reactivevalues")
+  expect_equal(shiny::isolate(app_state$data$current_data), df)
+  expect_false(shiny::isolate(app_state$columns$auto_detect$completed))
+
+  detected <- new_autodetect_result(list(
+    x_col = "Dato", y_col = "Vaerdi", n_col = NULL,
+    skift_col = NULL, frys_col = NULL, kommentar_col = NULL
+  ))
+
+  apply_state_transition(app_state, transition_autodetect_complete(detected))
+
+  expect_s3_class(app_state$columns, "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$auto_detect), "reactivevalues")
+  expect_s3_class(shiny::isolate(app_state$columns$mappings), "reactivevalues")
+  expect_true(shiny::isolate(app_state$columns$auto_detect$completed))
+  expect_equal(shiny::isolate(app_state$columns$mappings$x_column), "Dato")
+  expect_equal(shiny::isolate(app_state$columns$mappings$y_column), "Vaerdi")
+})

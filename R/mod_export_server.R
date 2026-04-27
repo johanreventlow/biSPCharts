@@ -55,15 +55,6 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       }
     })
 
-    # Tab-guard: tjek om brugeren er paa eksport-fanen
-    # Bruges af export reactives for at undgaa beregning paa trin 1/2
-    is_on_export_tab <- shiny::reactive({
-      # Tilgaa root session navbar input via parent session
-      root_input <- session$rootScope()$input
-      active_tab <- root_input$main_navbar
-      identical(active_tab, "eksporter")
-    })
-
     # PREVIEW GENERATION ======================================================
 
     # Export plot reactive - regenerates plot with export-specific dimensions
@@ -71,11 +62,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Issue #62: Cache isolated from analysis context
     # Debounced to prevent excessive re-rendering when user types metadata
     export_plot <- shiny::reactive({
-      # Guard: kun beregn naar brugeren er paa eksport-fanen
-      shiny::req(is_on_export_tab())
-
-      # chart_type can be NULL at startup - use default "run" as fallback
-      chart_type <- app_state$columns$mappings$chart_type %||% "run"
+      chart_type <- resolve_export_chart_type(app_state)
 
       # Single req() call for all required dependencies
       shiny::req(
@@ -130,9 +117,6 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Issue #65: Use shared helper to reduce code duplication
     # Issue #67: Helper is undebounced; reactive debounces for preview performance
     pdf_export_plot <- shiny::reactive({
-      # Guard: kun beregn naar brugeren er paa eksport-fanen
-      shiny::req(is_on_export_tab())
-
       shiny::req(
         app_state,
         app_state$data$current_data,

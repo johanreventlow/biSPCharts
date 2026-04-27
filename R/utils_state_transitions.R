@@ -138,10 +138,14 @@ transition_session_restore <- function(parsed_file) {
 #' @return app_state (usynligt, muteret in-place)
 #' @noRd
 apply_state_transition <- function(app_state, transition_result) {
+  is_state_branch <- function(value) {
+    is.environment(value) || inherits(value, "reactivevalues")
+  }
+
   apply_nested <- function(state, changes) {
     for (nm in names(changes)) {
       val <- changes[[nm]]
-      if (is.list(val) && !is.data.frame(val) && is.environment(state[[nm]])) {
+      if (is.list(val) && !is.data.frame(val) && is_state_branch(state[[nm]])) {
         # Sub-niveau er reactiveValues — rekursér
         apply_nested(state[[nm]], val)
       } else {

@@ -91,3 +91,53 @@ test_that("service-API eksponerer præcis 3 funktioner", {
     sort(c("update_column_choices", "update_all_columns", "update_all_columns_from_state"))
   )
 })
+
+test_that("update_column_choices bruger mappings fallback naar input er tomt", {
+  skip_if_not_installed("shiny")
+  skip_if_not_installed("mockery")
+
+  state <- .make_mock_col_state(data.frame(
+    Skift = TRUE,
+    Frys = FALSE,
+    Kommentar = "note",
+    Dato = Sys.Date()
+  ))
+  state$columns$mappings <- list(
+    x_column = "Dato",
+    skift_column = "Skift",
+    frys_column = "Frys",
+    kommentar_column = "Kommentar"
+  )
+
+  selected_by_input <- list()
+  mock_update <- function(session, inputId, choices = NULL, selected = NULL, ...) {
+    selected_by_input[[inputId]] <<- selected
+  }
+  mock_safe_update <- function(session, app_state, update_function, ...) {
+    update_function()
+  }
+
+  session <- list(input = list(
+    x_column = "",
+    skift_column = "",
+    frys_column = "",
+    kommentar_column = ""
+  ))
+  svc <- create_column_update_service(session, state)
+
+  mockery::stub(svc$update_column_choices, "safe_programmatic_ui_update", mock_safe_update)
+  mockery::stub(svc$update_column_choices, "shiny::updateSelectizeInput", mock_update)
+
+  svc$update_column_choices(
+    choices = setNames(
+      c("", names(state$data$current_data)),
+      c("Vælg kolonne...", names(state$data$current_data))
+    ),
+    columns = c("x_column", "skift_column", "frys_column", "kommentar_column")
+  )
+
+  expect_equal(selected_by_input$x_column, "Dato")
+  expect_equal(selected_by_input$skift_column, "Skift")
+  expect_equal(selected_by_input$frys_column, "Frys")
+  expect_equal(selected_by_input$kommentar_column, "Kommentar")
+})

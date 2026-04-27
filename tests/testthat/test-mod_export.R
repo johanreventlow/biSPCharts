@@ -46,7 +46,8 @@ create_mock_app_state <- function() {
     # Visualization state
     visualization = shiny::reactiveValues(
       plot_object = NULL,
-      plot_ready = FALSE
+      plot_ready = FALSE,
+      last_valid_config = list(chart_type = "p")
     )
   )
 
@@ -232,6 +233,21 @@ test_that("mod_export_server returns preview_ready reactive (§2.3.2)", {
       label = "preview_ready skal returnere logical eller NULL"
     )
   })
+})
+
+test_that("resolve_export_chart_type falls back to last valid visualization config", {
+  app_state <- create_mock_app_state()
+
+  expect_equal(resolve_export_chart_type(app_state), "p")
+
+  shiny::isolate(app_state$columns$mappings$chart_type <- "c")
+  expect_equal(resolve_export_chart_type(app_state), "c")
+
+  shiny::isolate({
+    app_state$columns$mappings$chart_type <- NULL
+    app_state$visualization$last_valid_config <- NULL
+  })
+  expect_equal(resolve_export_chart_type(app_state), "run")
 })
 
 # §2.3.2 (graceful degradation): download-handler fejl propagerer ikke

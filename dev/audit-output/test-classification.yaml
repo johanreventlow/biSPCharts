@@ -363,6 +363,13 @@ files:
     rationale: Green-partial med 2/128 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-excel-sheet-picker.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-27'
   - file: test-excelr-data-reconstruction.R
     audit_category: green
     type: unit

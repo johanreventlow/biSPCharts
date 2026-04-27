@@ -1,0 +1,69 @@
+schema: spec-driven
+
+# Project context injected into every OpenSpec artifact prompt (proposal/tasks/spec).
+# Keep terse — rule of thumb: "Would an LLM produce a worse artifact without this line?"
+# If no → move to docs/ and reference via pointer.
+context: |
+  # biSPCharts — OpenSpec Project Context
+
+  ## Purpose
+  Production Shiny app for SPC analysis (clinical quality, Bispebjerg/Frederiksberg Hospital).
+  Danish UI for clinicians; industrial-grade stability.
+
+  ## Tech Stack
+  - Shiny + Golem (R 4.x), centraliseret `app_state` (reactiveValues) som single source of truth
+  - BFHcharts (SPC rendering), BFHtheme (branding), qicharts2 (Anhøj rules only — IKKE plotting)
+  - Ragnar (RAG), BFHllm + Gemini API (AI suggestions)
+  - testthat, shinytest2, lintr/styler, renv
+
+  ## Naming & Language
+  - Code (functions, vars): English, `snake_case`
+  - Comments, UI text, error messages: Dansk
+  - Files: `mod_*` (Shiny modules), `fct_*` (factories), `utils_<domain>.R`, `config_<domain>.R`
+
+  ## Architecture (one-liners)
+  - **Event bus:** `app_state$events` (reactiveValues) + `emit$*()` API + `setup_event_listeners()` med eksplicitte `OBSERVER_PRIORITIES`. Ingen direkte cross-modul reaktive afhængigheder.
+  - **State:** Hierarkisk `app_state$data|columns|session|events`, administreret i `R/state_management.R`. Atomiske opdateringer via `safe_operation()`.
+  - **SPC pipeline:** `compute_spc_results_bfh()` facade → validate → prepare → execute (BFHcharts) → decorate (Anhøj metadata fra qicharts2). Typed errors arver fra `spc_error`.
+  - **AI:** `generate_improvement_suggestion()` thin wrapper → `BFHllm::bfhllm_spc_suggestion()`. Graceful degradation hvis BFHllm/RAG/API utilgængelig.
+
+  ## Critical Constraints
+
+  **External package ownership (NEVER implementer i biSPCharts):**
+  - BFHcharts → chart rendering, theming, target lines, freezing
+  - BFHtheme → branding, fonts, colors
+  - Ragnar → RAG store, embeddings, retrieval, chunking
+  - BFHllm → LLM calls, prompts, AI caching
+  Process: identificér → dokumentér → eskaler til maintainer → midlertidig workaround KUN hvis kritisk (markér tydeligt).
+
+  **Git (CRITICAL):**
+  - Aldrig merge til master/main uden eksplicit godkendelse
+  - Aldrig push uden bruger-anmodning
+  - Aldrig "🤖 Generated with Claude Code" / "Co-Authored-By: Claude" footers
+
+  **Immutable uden godkendelse:** `brand.yml`, `NAMESPACE` (brug `devtools::document()`), breaking changes uden major bump.
+
+  **Quality:** TDD obligatorisk for adfærdsændringer. Brug `safe_operation()` + struktureret logging (`log_debug/info/warn/error` med `component` + `details`). Aldrig rå `cat()`/`print()` i prod.
+
+  ## Domain Glossary (use Danish terms in user-facing artifacts)
+  - **Serieplot** = SPC chart (run/control)
+  - **Centrallinje** = center line (median/mean)
+  - **Kontrolgrænser** = control limits (3-sigma)
+  - **Anhøj rules** = special cause detection (serielængde, antal kryds)
+  - Chart types: I, MR, Xbar, S, P, P', U, U', C, G, T (DA→EN mapping i `config_chart_types.R`)
+
+  ## Performance Targets
+  Startup <100ms (prod via `library(biSPCharts)`); chart render <500ms (<10k points); RAG retrieval <100ms.
+
+  ## OpenSpec ↔ GitHub Issues
+  Hver `/opsx:propose` opretter GitHub issue med label `openspec-proposal`; `/opsx:apply` → `openspec-implementing`; `/opsx:archive` → `openspec-deployed` + close.
+  Reference issue i `proposal.md` under `## Related` og i commits (`fixes #N`).
+  Detaljer + manuelle fallbacks: `docs/OPENSPEC_GITHUB_INTEGRATION.md`.
+
+  ## Pointers (do not duplicate these in artifacts; reference instead)
+  - Test commands, publish-gate, coverage thresholds → `CLAUDE.md §5` + `openspec/specs/harden-test-suite-regression-gate/`
+  - Configuration files (branding, chart types, observer priorities, golem-config) → `docs/CONFIGURATION.md`
+  - Cross-repo coordination (BFHcharts/BFHtheme/Ragnar escalation) → `docs/CROSS_REPO_COORDINATION.md`
+  - GitHub label setup → `docs/GITHUB_LABELS_SETUP.md`
+  - Logging conventions + contexts → `docs/LOGGING_GUIDE.md`, `R/config_log_contexts.R`
+  - Architecture deep-dive (state schema, event flow, session persistence) → `CLAUDE.md §2`

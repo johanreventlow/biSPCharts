@@ -43,7 +43,7 @@ mock_bfhllm_spc_suggestion <- function(spc_result, context, min_chars = 300,
 #' Mock for BFHcharts::bfh_qic
 #'
 #' Returnerer minimal bfh_qic_result-struktur uden ggplot-rendering.
-#' formals() matcher BFHcharts::bfh_qic (version 0.8.2+).
+#' formals() matcher den installerede BFHcharts::bfh_qic-version.
 mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          y_axis_unit = NULL, chart_title = NULL,
                          target_value = NULL, target_text = NULL,
@@ -71,6 +71,18 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
     ),
     chart_type = chart_type
   )
+}
+
+if (requireNamespace("BFHcharts", quietly = TRUE)) {
+  real_bfh_qic_args <- names(formals(BFHcharts::bfh_qic))
+  mock_bfh_qic_formals <- formals(mock_bfh_qic)
+  real_has_language <- "language" %in% real_bfh_qic_args
+  mock_has_language <- "language" %in% names(mock_bfh_qic_formals)
+  if (!real_has_language && mock_has_language) {
+    mock_bfh_qic_formals$language <- NULL
+    formals(mock_bfh_qic) <- mock_bfh_qic_formals
+  }
+  rm(real_bfh_qic_args, mock_bfh_qic_formals, real_has_language, mock_has_language)
 }
 
 # ------------------------------------------------------------------------------

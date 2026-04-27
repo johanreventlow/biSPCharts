@@ -214,8 +214,7 @@ test_that("TODO Fase 3: detect_columns_full_analysis memory skalerer linjaert", 
   expect_lt(memory_ratio, 15)
 })
 
-test_that("generateSPCPlot reproducerbare resultater (variance < 15%)", {
-  skip("Manual performance benchmark: wall-clock variance is environment-dependent")
+test_that("generateSPCPlot benchmark variance er inden for bred tolerance", {
   skip_if_not_installed("bench")
   skip_on_ci()
   test_data <- create_benchmark_data(n_rows = 100)
@@ -230,5 +229,6 @@ test_that("generateSPCPlot reproducerbare resultater (variance < 15%)", {
   )
   variance_pct <- abs(as.numeric(run2$median) - as.numeric(run1$median)) /
     as.numeric(run1$median) * 100
-  expect_lt(variance_pct, 15)
+  expect_true(is.finite(variance_pct))
+  expect_lt(variance_pct, 100)
 })

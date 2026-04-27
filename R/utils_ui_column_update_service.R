@@ -62,7 +62,10 @@ create_column_update_service <- function(session, app_state) {
             if (nzchar(session_input_val)) {
               session_input_val
             } else {
-              state_val <- normalize_select_value(shiny::isolate(app_state$columns[[col]]), default = "")
+              state_val <- normalize_select_value(
+                shiny::isolate(app_state$columns$mappings[[col]]),
+                default = ""
+              )
               state_val
             }
           },

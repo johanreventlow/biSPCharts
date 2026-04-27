@@ -107,6 +107,14 @@ normalize_mapping <- function(value) {
   }
 }
 
+resolve_export_chart_type <- function(app_state) {
+  shiny::isolate({
+    normalize_mapping(app_state$columns$mappings$chart_type) %||%
+      normalize_mapping(app_state$visualization$last_valid_config$chart_type) %||%
+      "run"
+  })
+}
+
 #' Build Export Plot (Generic Helper)
 #'
 #' Genererer export plot for given context.
@@ -149,8 +157,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
     return(NULL)
   }
 
-  # chart_type can be NULL at startup - use default "run" as fallback
-  chart_type <- app_state$columns$mappings$chart_type %||% "run"
+  chart_type <- resolve_export_chart_type(app_state)
 
   # Normalize all mappings (Issue #68)
   mappings_target_value <- normalize_mapping(

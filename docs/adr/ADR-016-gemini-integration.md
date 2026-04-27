@@ -249,8 +249,6 @@ log_error("[AI_SUGGESTION]", "API timeout after 10s")
 - **Epic #69:** https://github.com/[repo]/issues/69
 - **Ellmer Package:** https://ellmer.tidyverse.org/
 - **Gemini API Docs:** https://ai.google.dev/gemini-api/docs
-- **Test Summary:** `tests/TEST_SUMMARY_AI.md`
-- **Manual Testing:** `tests/MANUAL_TESTING_AI.md`
 - **Integration Tests:** `tests/testthat/test-integration-ai-gemini.R`
 
 ## Related ADRs

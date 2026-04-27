@@ -7,9 +7,9 @@
 
 # CHECK QUARTO CAPABILITY ======================================================
 
-# Session-scoped cache: resultat gemmes første gang og genbruges derefter.
-# Quarto ændrer sig ikke i løbet af en R-session, så én opslag pr. session
-# er tilstrækkeligt.
+# Session-scoped cache: resultat gemmes foerste gang og genbruges derefter.
+# Quarto aendrer sig ikke i loebet af en R-session, saa et opslag pr. session
+# er tilstraekkeligt.
 .quarto_capability_cache <- local({
   cached <- NULL
   list(
@@ -69,7 +69,7 @@ check_quarto_capability <- function() {
     NA_character_
   }
 
-  # Tjek om version understøtter Typst (kræver >= 1.3.0)
+  # Tjek om version understoetter Typst (kraever >= 1.3.0)
   typst_supported <- tryCatch(
     {
       parts <- strsplit(version_str, "\\.")[[1]]
@@ -85,17 +85,27 @@ check_quarto_capability <- function() {
     quarto_version = version_str,
     typst_supported = typst_supported,
     message = if (typst_supported) {
-      paste0("Quarto ", version_str, " tilgængelig med Typst-understøttelse.")
+      paste0("Quarto ", version_str, " tilgaengelig med Typst-understoettelse.")
     } else {
       paste0(
         "Quarto ", version_str,
-        " fundet, men Typst kræver version 1.3+. Kontakt administrator."
+        " fundet, men Typst kraever version 1.3+. Kontakt administrator."
       )
     }
   )
 
   .quarto_capability_cache$set(result)
   result
+}
+
+#' Check if Quarto is Available
+#'
+#' Compatibility wrapper for older export helpers and Rd links.
+#'
+#' @return Logical. TRUE hvis Quarto CLI er fundet i PATH.
+#' @keywords internal
+quarto_available <- function() {
+  isTRUE(check_quarto_capability()$available)
 }
 
 normalize_mapping <- function(value) {
@@ -117,8 +127,8 @@ resolve_export_chart_type <- function(app_state) {
 #' Build Export Plot (Generic Helper)
 #'
 #' Genererer export plot for given context.
-#' Issue #65: Fælles helper for at reducere code duplication.
-#' Issue #67: Undebounced, så download handler får fresh plot.
+#' Issue #65: Faelles helper for at reducere code duplication.
+#' Issue #67: Undebounced, saa download handler faar fresh plot.
 #'
 #' @param app_state Reactive values. Global app state
 #' @param title_input Character. Export title input
@@ -184,13 +194,13 @@ build_export_plot <- function(app_state, title_input, dept_input,
     app_state$columns$mappings$n_column
   )
 
-  # Construct chart title (kun brugerens titel — hospital/afdeling tilføjes
-  # som subtitle direkte på plottet i PNG-specifikke kontekster)
+  # Construct chart title (kun brugerens titel - hospital/afdeling tilfoejes
+  # som subtitle direkte paa plottet i PNG-specifikke kontekster)
   is_png_context <- plot_context %in% c("export_png", "export_preview")
   export_title <- if (!is.null(title_input) && nchar(trimws(title_input)) > 0) {
     gsub("\n", "\\\n", title_input, fixed = TRUE)
   } else if (is_png_context) {
-    # PNG/preview: ingen default-titel — tom titel giver rent billede
+    # PNG/preview: ingen default-titel - tom titel giver rent billede
     NULL
   } else {
     # PDF: instruktiv default-titel

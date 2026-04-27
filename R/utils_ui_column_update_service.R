@@ -20,13 +20,13 @@ create_column_update_service <- function(session, app_state) {
     as.character(value[[1]])
   }
 
-  # Opdatér kolonne-choices (enkelt eller batch)
+  # Opdater kolonne-choices (enkelt eller batch)
   #
   # Unified funktion for opdatering af kolonne-selectize inputs.
   # Genererer choices fra current_data hvis ikke angivet.
   #
   # @param choices Named vector med choices. NULL = generer fra current_data
-  # @param selected Named list med valgte værdier per kolonne
+  # @param selected Named list med valgte vaerdier per kolonne
   # @param columns Vector af input IDs der skal opdateres
   # @param clear_selections TRUE = ryd alle valg
   #
@@ -43,10 +43,10 @@ create_column_update_service <- function(session, app_state) {
         all_cols <- names(current_data)
         choices <- setNames(
           c("", all_cols),
-          c("Vælg kolonne...", all_cols)
+          c("V\u00e6lg kolonne...", all_cols)
         )
       } else {
-        choices <- setNames("", "Vælg kolonne...")
+        choices <- setNames("", "V\u00e6lg kolonne...")
       }
     }
 
@@ -89,10 +89,10 @@ create_column_update_service <- function(session, app_state) {
     })
   }
 
-  # Batch-opdatér alle kolonne-inputs med samme choices
+  # Batch-opdater alle kolonne-inputs med samme choices
   #
   # @param choices Named vector med choices
-  # @param selected Named list med valgte værdier
+  # @param selected Named list med valgte vaerdier
   # @param columns Vector af input IDs (default: alle SPC-kolonner)
   #
   update_all_columns <- function(choices,
@@ -114,10 +114,10 @@ create_column_update_service <- function(session, app_state) {
     })
   }
 
-  # Opdatér alle kolonner fra app_state med isolate()
+  # Opdater alle kolonner fra app_state med isolate()
   #
-  # Avanceret variant der læser valgte værdier fra app_state med isolate().
-  # Bruges i event-listeners hvor reaktiv isolation er nødvendig.
+  # Avanceret variant der laeser valgte vaerdier fra app_state med isolate().
+  # Bruges i event-listeners hvor reaktiv isolation er noedvendig.
   #
   # @param choices Named vector med choices
   # @param columns_state reactiveValues med kolonne-mappings (app_state$columns$mappings)

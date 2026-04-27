@@ -1,36 +1,36 @@
 # fct_file_parse_pure.R
-# Pure domænelogik til fil-parsing — ingen Shiny-afhængigheder
-# Returnerer ParsedFile S3-struktur; side-effekter (notifikationer) håndteres af shim-laget.
+# Pure domain logic til fil-parsing - ingen Shiny-afhaengigheder
+# Returnerer ParsedFile S3-struktur; side-effekter (notifikationer) haandteres af shim-laget.
 
 #' Parser fil til data.frame (pure)
 #'
-#' Læser CSV eller Excel-fil og returnerer en `ParsedFile`-struktur.
-#' Ingen Shiny-afhængigheder — kan unit-testes uden aktiv session.
+#' Laeser CSV eller Excel-fil og returnerer en `ParsedFile`-struktur.
+#' Ingen Shiny-afhaengigheder - kan unit-testes uden aktiv session.
 #'
-#' CSV-strategier afprøves i rækkefølge:
+#' CSV-strategier afproeves i raekkefoelge:
 #' 1. Semikolon-separator (dansk standard, decimal=komma)
 #' 2. Auto-detect separator
 #' 3. Komma-separator (engelsk standard)
 #'
-#' Excel: Returnerer første ark (eller specificeret ark via `encoding_hints$sheet`).
+#' Excel: Returnerer foerste ark (eller specificeret ark via `encoding_hints$sheet`).
 #' biSPCharts gem-format (ark "Data" + "Indstillinger") detekteres og returneres
 #' med `meta$is_bispchart_format = TRUE`.
 #'
-#' @param path Character(1) — sti til fil (allerede valideret via `validate_safe_file_path`)
-#' @param format Character(1) — `"csv"` eller `"excel"`. Default: auto-detect via filendelse.
+#' @param path Character(1) - sti til fil (allerede valideret via `validate_safe_file_path`)
+#' @param format Character(1) - `"csv"` eller `"excel"`. Default: auto-detect via filendelse.
 #' @param encoding_hints Liste med valgfrie hints:
 #'   - `encoding`: foretrukket encoding (default `"UTF-8"`)
-#'   - `sheet`: Excel-ark-navn (default: første ark)
+#'   - `sheet`: Excel-ark-navn (default: foerste ark)
 #' @return `ParsedFile` S3-objekt med:
-#'   - `$data` — data.frame
-#'   - `$meta` — liste med rows, cols, encoding, format, is_bispchart_format
-#'   - `$warnings` — character vector med evt. advarsler
+#'   - `$data` - data.frame
+#'   - `$meta` - liste med rows, cols, encoding, format, is_bispchart_format
+#'   - `$warnings` - character vector med evt. advarsler
 #' @return NULL hvis parsing fejler for alle strategier (fejlbesked i `attr(., "error")`)
 #' @noRd
 parse_file <- function(path, format = NULL, encoding_hints = NULL) {
   # Input-validering
   if (!is.character(path) || length(path) != 1 || !nzchar(path)) {
-    stop("parse_file: path skal være character(1)")
+    stop("parse_file: path skal vaere character(1)")
   }
   if (!file.exists(path)) {
     stop(paste0("parse_file: fil ikke fundet: ", path))
@@ -56,7 +56,7 @@ parse_file <- function(path, format = NULL, encoding_hints = NULL) {
 parse_csv_file <- function(path, encoding = "UTF-8") {
   warnings <- character(0)
 
-  # Tre parsing-strategier — ingen af dem kalder Shiny
+  # Tre parsing-strategier - ingen af dem kalder Shiny
   data <- try_with_diagnostics(
     attempts = list(
       "semikolon-separator (dansk standard)" = function() {
@@ -98,14 +98,14 @@ parse_csv_file <- function(path, encoding = "UTF-8") {
       }
     ),
     on_all_fail = function(errors) {
-      # Log fejl — ingen showNotification her (shim-laget håndterer notifikationer)
+      # Log fejl - ingen showNotification her (shim-laget haandterer notifikationer)
       err_msg <- paste(names(errors), errors, sep = ": ", collapse = "; ")
       log_warn(
         "CSV-parsing fejlede for alle tre strategier",
         .context = "FILE_PARSE_PURE",
         details = list(errors = as.list(errors))
       )
-      # Returnér NULL — shim-laget tjekker for NULL og viser notifikation
+      # Returner NULL - shim-laget tjekker for NULL og viser notifikation
       NULL
     }
   )
@@ -117,7 +117,7 @@ parse_csv_file <- function(path, encoding = "UTF-8") {
     return(NULL)
   }
 
-  # Preprocessing (pure — ingen Shiny)
+  # Preprocessing (pure - ingen Shiny)
   file_info <- list(name = basename(path), size = file.info(path)$size)
   preprocessing_result <- preprocess_uploaded_data(data, file_info, session_id = NULL)
   data <- preprocessing_result$data
@@ -125,11 +125,11 @@ parse_csv_file <- function(path, encoding = "UTF-8") {
   if (!is.null(preprocessing_result$cleaning_log$empty_rows_removed)) {
     warnings <- c(
       warnings,
-      paste(preprocessing_result$cleaning_log$empty_rows_removed, "tomme rækker fjernet")
+      paste(preprocessing_result$cleaning_log$empty_rows_removed, "tomme raekker fjernet")
     )
   }
 
-  # Tilføj standard SPC kolonner
+  # Tilfoej standard SPC kolonner
   data <- ensure_standard_columns(data)
   data_frame <- as.data.frame(data)
 
@@ -149,7 +149,7 @@ parse_excel_file <- function(path, hints = list()) {
   excel_sheets <- tryCatch(
     readxl::excel_sheets(path),
     error = function(e) {
-      stop(paste0("Kan ikke læse Excel-fil: ", e$message))
+      stop(paste0("Kan ikke laese Excel-fil: ", e$message))
     }
   )
 
@@ -197,7 +197,7 @@ parse_excel_file <- function(path, hints = list()) {
   result
 }
 
-#' Konstruér ParsedFile S3-objekt
+#' Konstruer ParsedFile S3-objekt
 #' @noRd
 new_parsed_file <- function(data, format, encoding, warnings = character()) {
   structure(
@@ -219,7 +219,7 @@ new_parsed_file <- function(data, format, encoding, warnings = character()) {
 #' @export
 print.ParsedFile <- function(x, ...) {
   cat(sprintf(
-    "ParsedFile: %d rækker × %d kolonner [%s/%s]\n",
+    "ParsedFile: %d raekker x %d kolonner [%s/%s]\n",
     x$meta$rows, x$meta$cols, x$meta$format, x$meta$encoding
   ))
   if (length(x$warnings) > 0) {

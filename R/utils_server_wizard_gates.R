@@ -109,7 +109,45 @@ setup_wizard_gates <- function(input, output, app_state, session) {
       code = {
         data <- shiny::isolate(app_state$data$current_data)
         metadata <- collect_metadata(input, app_state)
-        temp_path <- build_spc_excel(data, metadata)
+
+        # Hent qic_data fra senest beregnede SPC-resultat. build_export_plot()
+        # genererer plot + qic_data via samme pipeline som UI-grafen.
+        # Hvis kaldet fejler eller returnerer NULL, springes SPC-analyse-arket
+        # over (build_spc_excel() haandterer NULL graciously).
+        qic_data <- NULL
+        analysis_options <- list(
+          pkg_versions = list(
+            biSPCharts = tryCatch(as.character(utils::packageVersion("biSPCharts")),
+              error = function(e) ""
+            ),
+            BFHcharts = tryCatch(as.character(utils::packageVersion("BFHcharts")),
+              error = function(e) ""
+            )
+          ),
+          computed_at = Sys.time()
+        )
+        spc_for_export <- tryCatch(
+          build_export_plot(
+            app_state = app_state,
+            title_input = metadata$indicator_title %||% "",
+            dept_input = metadata$export_department %||% "",
+            plot_context = "export_pdf"
+          ),
+          error = function(e) NULL
+        )
+        has_qic <- !is.null(spc_for_export) && is.list(spc_for_export) &&
+          !is.null(spc_for_export$qic_data)
+        if (has_qic) {
+          qic_data <- spc_for_export$qic_data
+        }
+
+        temp_path <- build_spc_excel(
+          data = data,
+          metadata = metadata,
+          qic_data = qic_data,
+          original_data = data,
+          analysis_options = analysis_options
+        )
         on.exit(unlink(temp_path), add = TRUE)
         file.copy(temp_path, file)
       },

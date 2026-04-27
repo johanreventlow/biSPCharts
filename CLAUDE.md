@@ -1,21 +1,3 @@
-<!-- OPENSPEC:START -->
-# OpenSpec Instructions
-
-These instructions are for AI assistants working in this project.
-
-Always open `@/openspec/AGENTS.md` when the request:
-- Mentions planning or proposals (words like proposal, spec, change, plan)
-- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
-- Sounds ambiguous and you need the authoritative spec before coding
-
-Use `@/openspec/AGENTS.md` to learn:
-- How to create and apply change proposals
-- Spec format and conventions
-- Project structure and guidelines
-
-Keep this managed block so 'openspec update' can refresh the instructions.
-
-<!-- OPENSPEC:END -->
 
 # Claude Instructions – biSPCharts
 
@@ -156,6 +138,25 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 - `inst/app/www/local-storage.js` — localStorage wrapper (IKKE `JSON.stringify`)
 - `inst/app/www/shiny-handlers.js` — custom message handlers + auto-restore trigger
 - `inst/golem-config.yml` — `session:` sektion
+
+### Excel Download (3-ark struktur)
+
+biSPCharts Excel-download (`spc_save_content` i `R/utils_server_wizard_gates.R`)
+producerer en `.xlsx`-fil med op til tre ark:
+
+- **Data** — rå rækker (round-trip-able ved upload)
+- **Indstillinger** — `collect_metadata()`-output som Felt/Værdi-tabel (round-trip-able)
+- **SPC-analyse** — informational ark med pre-beregnede SPC-statistikker
+  (CL/UCL/LCL per part, Anhøj-regler per part, special cause-punkter, dansk
+  tolkning). Parses **ikke** ved upload; round-trip-egenskaben er uændret.
+
+**Relevante filer:**
+- `R/fct_spc_file_save_load.R` — `build_spc_excel()` + `parse_spc_excel()` (orkestrator)
+- `R/fct_spc_excel_analysis.R` — pure sektion-builders (`build_overview_section`,
+  `build_per_part_section`, `build_anhoej_section`,
+  `build_special_cause_section`, `build_spc_analysis_sheet`)
+- `R/fct_spc_anhoej_derivation.R` — `derive_anhoej_per_part()`,
+  `interpret_anhoej_signal_da()`
 
 ---
 

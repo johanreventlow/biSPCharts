@@ -89,6 +89,33 @@ parse_time_to_minutes <- function(x, input_unit = "time_minutes") {
   coerced * scale
 }
 
+#' Konverter kanoniske minutter tilbage til target-enhed
+#'
+#' Modparten til `parse_time_to_minutes()`: tager værdier i kanoniske
+#' minutter og returnerer dem i den ønskede UI-enhed.
+#'
+#' @param minutes Numeric vektor. Værdier i kanoniske minutter (intern
+#'   repræsentation).
+#' @param target_unit Character. En af `'time_minutes'`, `'time_hours'`,
+#'   `'time_days'`. For ikke-tids-enheder (fx `'count'`) returneres
+#'   input uændret.
+#' @return Numeric vektor. Værdier i target-enhed.
+#' @keywords internal
+#' @noRd
+format_time_from_minutes <- function(minutes, target_unit = "time_minutes") {
+  if (length(minutes) == 0L) {
+    return(numeric(0))
+  }
+
+  # Ikke-tids-enheder: returnér uændret (fx count, percent)
+  if (is.null(target_unit) || !target_unit %in% names(TIME_INPUT_UNIT_SCALES)) {
+    return(minutes)
+  }
+
+  scale <- TIME_INPUT_UNIT_SCALES[[target_unit]]
+  minutes / scale
+}
+
 #' Parse HH:MM eller HH:MM:SS strenge til minutter
 #'
 #' Sekunder konverteres til broekdele af minutter (rundes ikke her --

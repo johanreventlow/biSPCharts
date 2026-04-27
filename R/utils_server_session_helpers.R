@@ -8,6 +8,13 @@
 ## Hovedfunktion for hjaelper
 # Opsaetter alle hjaelper observers og status funktioner
 setup_helper_observers <- function(input, output, session, obs_manager = NULL, app_state = NULL) {
+  state_flag <- function(value, default = FALSE) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    isTRUE(value[[1]])
+  }
+
   # Centralized state is now always available
   # UNIFIED STATE: Empty table initialization now handled through session management events
 
@@ -162,16 +169,16 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     shiny::reactive({
       # Guards for at forhindre auto-gem under tabel operationer
       # Use unified state management
-      updating_table_check <- app_state$data$updating_table
+      updating_table_check <- state_flag(app_state$data$updating_table)
 
       # Use unified state management
-      auto_save_enabled_check <- app_state$session$auto_save_enabled
+      auto_save_enabled_check <- state_flag(app_state$session$auto_save_enabled, default = TRUE)
 
       # Use unified state management
-      restoring_session_check <- app_state$session$restoring_session
+      restoring_session_check <- state_flag(app_state$session$restoring_session)
 
       # Use unified state management
-      table_operation_check <- app_state$data$table_operation_in_progress
+      table_operation_check <- state_flag(app_state$data$table_operation_in_progress)
 
       if (!auto_save_enabled_check ||
         updating_table_check ||
@@ -253,16 +260,16 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
       # Samme guards som data auto-gem
       # Use unified state management
-      updating_table_check <- app_state$data$updating_table
+      updating_table_check <- state_flag(app_state$data$updating_table)
 
       # Use unified state management
-      auto_save_enabled_check <- app_state$session$auto_save_enabled
+      auto_save_enabled_check <- state_flag(app_state$session$auto_save_enabled, default = TRUE)
 
       # Use unified state management
-      restoring_session_check <- app_state$session$restoring_session
+      restoring_session_check <- state_flag(app_state$session$restoring_session)
 
       # Use unified state management
-      table_operation_check_settings <- app_state$data$table_operation_in_progress
+      table_operation_check_settings <- state_flag(app_state$data$table_operation_in_progress)
 
       if (!auto_save_enabled_check ||
         updating_table_check ||

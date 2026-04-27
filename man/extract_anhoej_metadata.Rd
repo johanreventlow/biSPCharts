@@ -33,7 +33,7 @@ matching qicharts2 conventions.
 \details{
 \strong{BFHchart Anhoej Columns:}
 \itemize{
-\item \code{runs.signal}: Logical indicating if runs test triggered (\link{U+2265}8 consecutive points)
+\item \code{runs.signal}: Logical indicating if runs test triggered (>=8 consecutive points)
 \item \code{longest.run}: Length of longest run above or below center line
 \item \code{longest.run.max}: Maximum acceptable run length
 \item \code{n.crossings}: Actual number of median crossings observed

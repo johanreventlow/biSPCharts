@@ -107,9 +107,9 @@ extract_spc_statistics <- function(app_state) {
 #' @keywords internal
 validate_export_dpi <- function(dpi) {
   if (!is.numeric(dpi) || length(dpi) != 1L || is.na(dpi) || dpi < 72 || dpi > 600) {
-    spc_abort(
+    rlang::abort(
       paste0("dpi skal vaere numerisk mellem 72 og 600, fik: ", dpi),
-      class = "export_input_error"
+      class = c("export_input_error", "spc_error", "error")
     )
   }
   invisible(dpi)
@@ -230,7 +230,7 @@ get_hospital_name_for_export <- function() {
 #' @details
 #' Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF->PNG):
 #' 1. Genererer chart PNG via \code{ggplot2::ggsave()}
-#' 2. Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
+#' 2. Opretter Typst dokument via BFHcharts' interne Typst-helper
 #' 3. Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 #'
 #' PNG filen er midlertidig og vil blive slettet naar R session afsluttes.

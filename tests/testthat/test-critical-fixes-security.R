@@ -301,3 +301,71 @@ test_that("Input validation edge cases håndteres", {
     info = "Binary-like sequences should be cleaned predictably"
   )
 })
+
+test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
+  # TEST: Observer-execution order respekterer priority-niveauer
+  # Redesignet til shiny::testServer() + session$setInputs() (Niveau C migration fra #230)
+  # Tester at STATE_MANAGEMENT (2000) kører FØR UI_SYNC (750) FØR CLEANUP (200)
+  skip_if_not_installed("shiny")
+  expect_true(
+    exists("OBSERVER_PRIORITIES"),
+    label = "OBSERVER_PRIORITIES konstant skal være tilgængelig"
+  )
+
+  create_priority_test_server <- function() {
+    function(input, output, session) {
+      execution_order <- character(0)
+      session$userData$get_order <- function() execution_order
+
+      # Registrér observers med forskellige priorities
+      # ignoreInit = FALSE + req() bruges fordi testServer kræver dette mønster
+      shiny::observeEvent(input$trigger,
+        ignoreInit = FALSE,
+        priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+        {
+          shiny::req(input$trigger)
+          execution_order <<- c(execution_order, "STATE_MANAGEMENT")
+        }
+      )
+
+      shiny::observeEvent(input$trigger,
+        ignoreInit = FALSE,
+        priority = OBSERVER_PRIORITIES$UI_SYNC,
+        {
+          shiny::req(input$trigger)
+          execution_order <<- c(execution_order, "UI_SYNC")
+        }
+      )
+
+      shiny::observeEvent(input$trigger,
+        ignoreInit = FALSE,
+        priority = OBSERVER_PRIORITIES$CLEANUP,
+        {
+          shiny::req(input$trigger)
+          execution_order <<- c(execution_order, "CLEANUP")
+        }
+      )
+    }
+  }
+
+  shiny::testServer(create_priority_test_server(), {
+    get_order <- session$userData$get_order
+
+    # Trigger alle observers via setInputs
+    session$setInputs(trigger = 1L)
+
+    order <- get_order()
+    expect_equal(length(order), 3L,
+      label = "Alle 3 observers skal have kørt"
+    )
+    expect_equal(order[1], "STATE_MANAGEMENT",
+      label = "STATE_MANAGEMENT (priority=2000) skal køre først"
+    )
+    expect_equal(order[2], "UI_SYNC",
+      label = "UI_SYNC (priority=750) skal køre som nr. 2"
+    )
+    expect_equal(order[3], "CLEANUP",
+      label = "CLEANUP (priority=200) skal køre sidst"
+    )
+  })
+})

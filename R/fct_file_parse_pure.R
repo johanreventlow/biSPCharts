@@ -164,7 +164,10 @@ parse_excel_file <- function(path, hints = list()) {
     # Parser Indstillinger-ark
     metadata <- tryCatch(
       parse_spc_excel(path, sheets = excel_sheets),
-      error = function(e) NULL
+      error = function(e) {
+        log_debug(conditionMessage(e), .context = "FILE_PARSE_PURE")
+        NULL
+      }
     )
 
     result <- new_parsed_file(

@@ -60,6 +60,50 @@ test_that("autodetect_engine kortlægger alle kernekolonner ved filupload", {
   expect_equal(recorder$calls(), "auto_detection_completed")
 })
 
+test_that("update_column_choices_unified bruger autodetect mappings naar input er tomt", {
+  app_state <- create_test_app_state()
+  app_state$data$current_data <- data.frame(
+    Dato = as.Date("2025-01-01") + 0:2,
+    Infektioner = c(2, 4, 1),
+    Opererede.patienter = c(100, 120, 110),
+    Skift = c("", "A", "A"),
+    Frys = c(FALSE, FALSE, TRUE),
+    stringsAsFactors = FALSE
+  )
+  app_state$columns$mappings$x_column <- "Dato"
+  app_state$columns$mappings$y_column <- "Infektioner"
+  app_state$columns$mappings$n_column <- "Opererede.patienter"
+
+  selected_seen <- NULL
+  ui_service <- list(
+    update_column_choices = function(choices, selected) {
+      selected_seen <<- selected
+    }
+  )
+
+  input <- list(
+    x_column = "",
+    y_column = "",
+    n_column = "",
+    skift_column = "",
+    frys_column = "",
+    kommentar_column = ""
+  )
+
+  update_column_choices_unified(
+    app_state = app_state,
+    input = input,
+    output = list(),
+    session = list(),
+    ui_service = ui_service,
+    reason = "upload"
+  )
+
+  expect_equal(selected_seen$x_column, "Dato")
+  expect_equal(selected_seen$y_column, "Infektioner")
+  expect_equal(selected_seen$n_column, "Opererede.patienter")
+})
+
 test_that("autodetect_engine smart-unfreezer kører filupload trods frossen tilstand", {
   app_state <- create_test_app_state()
   recorder <- make_emit_recorder()

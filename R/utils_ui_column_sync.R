@@ -170,6 +170,10 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       candidate_chr
     }
 
+    non_empty_selection <- function(value) {
+      if (!is.null(value) && nzchar(value)) value else NULL
+    }
+
     for (col in columns_to_update) {
       if (identical(reason, "edit")) {
         tryCatch(
@@ -209,7 +213,11 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       candidates <- if (identical(reason, "edit")) {
         list(normalized_input, cache_val)
       } else {
-        list(normalized_input, cache_val, state_val)
+        list(
+          non_empty_selection(normalized_input),
+          non_empty_selection(cache_val),
+          state_val
+        )
       }
 
       selected_val <- NULL

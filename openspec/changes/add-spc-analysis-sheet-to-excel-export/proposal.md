@@ -51,4 +51,4 @@ Brugere har behov for indsigt i de faktiske SPC-beregninger bag deres charts —
 
 ## Related
 
-<!-- GitHub issue oprettes via `/opsx:propose`-skill efter artifact-creation; reference indsættes her. -->
+- GitHub issue: #343

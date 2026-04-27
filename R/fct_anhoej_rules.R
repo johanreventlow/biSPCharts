@@ -6,7 +6,7 @@
 # saa disse funktioner ekstraherer og standardiserer output fra BFHchart.
 #
 # Anhoej Rules:
-# 1. Runs test: [U+2265]8 consecutive points above or below center line
+# 1. Runs test: >=8 consecutive points above or below center line
 # 2. Crossings test: Too few median crossings (statistical threshold)
 #
 # Design princip: BFHchart er primary source, vi standardiserer kun output
@@ -20,7 +20,7 @@
 #'
 #' @details
 #' **BFHchart Anhoej Columns:**
-#' - `runs.signal`: Logical indicating if runs test triggered ([U+2265]8 consecutive points)
+#' - `runs.signal`: Logical indicating if runs test triggered (>=8 consecutive points)
 #' - `longest.run`: Length of longest run above or below center line
 #' - `longest.run.max`: Maximum acceptable run length
 #' - `n.crossings`: Actual number of median crossings observed

@@ -8,15 +8,14 @@
 
 <!-- DEFERRED: testServer-migration er høj-risiko, håndteres separat. Se issue #230 -->
 
-- [ ] 2.1 Identificér alle `skip("TODO: #230 testServer-migration")`-forekomster
-- [ ] 2.2 Prioritér top 5 vigtigste server-funktioner at migrere:
-  - `mod_spc_chart_server` (chart-rendering flow)
-  - `mod_export_server` (PNG/PDF flow)
-  - `mod_landing_server` (upload flow)
-  - `main_app_server` (session init/cleanup)
-  - `utils_server_events_*` (event-handlers)
-- [ ] 2.3 Implementér testServer-tests for hver, slet tilsvarende skip-stubs
-- [ ] 2.4 Dokumentér i issue #230 hvilke dele der ikke kan migreres + hvorfor
+- [x] 2.1 Identificér alle `skip("TODO: #230 testServer-migration")`-forekomster
+- [x] 2.2 Prioritér top 5 vigtigste server-funktioner at migrere (udvidet til 11 tests i Phase 2):
+  - `test-state-management-hierarchical.R` (6 tests)
+  - `test-critical-fixes-security.R` (1 test: OBSERVER_PRIORITIES)
+  - `test-mod-spc-chart-comprehensive.R` (1 test: reactive updates)
+  - `test-autodetect-unified-comprehensive.R` (3 tests)
+- [x] 2.3 Implementér testServer-tests for hver, slet tilsvarende skip-stubs (Phase 2 — se commit)
+- [x] 2.4 Dokumentér i `test-pending-issue-230.R` hvilke tests der er migreret (historisk reference)
 
 ## 3. Konsolidér duplicate test-filer
 
@@ -39,8 +38,7 @@
 - [x] 5.1 `test-state-management.R` SKIPPED — `test-state-management-hierarchical.R` dækker allerede event-counter, state-init, reset (7 tests verificeret)
 - [x] 5.2 Oprettet `tests/testthat/test-app-server-main.R` (32 tests): `hash_session_token()` pure-function, `app_server`/`run_app` eksistens+signatur, `create_emit_api()` struktur og counter-increment, context-sanitering
 - [x] 5.3 Oprettet `tests/testthat/test-utils-event-context-handlers.R` (43 tests): `classify_update_context()` alle 5 output-værdier + edge cases, `resolve_column_update_reason()` alle 4 branches
-- [ ] 5.4 Opret `tests/testthat/test-spc-chart-full-flow.R`
-  <!-- DEFERRED: kræver testServer-migration (Phase 2). Se issue #230 -->
+- [x] 5.4 Opret `tests/testthat/test-spc-chart-full-flow.R` (Phase 2b, #322 — 5 testServer-tests for SPC pipeline event orchestration)
 - [x] 5.5 Dependency-integritetstest — ALLEREDE DONE: `test-dependency-guards.R` eksisterer og dækker `require_qicharts2`, `require_optional_package`, triple-colon lint (fra fix-dependency-namespace-guards)
 - [ ] 5.6 Anhøj-regression-test `test-derive-anhoej-results.R`
   <!-- DEFERRED: blokeret af extract-anhoej-derivation-pure (ikke deployed). Se openspec/changes/extract-anhoej-derivation-pure -->

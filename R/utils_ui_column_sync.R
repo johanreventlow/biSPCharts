@@ -94,18 +94,25 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
 update_column_choices_unified <- function(app_state, input, output, session, ui_service = NULL, reason = "manual") {
   log_debug_block("COLUMN_CHOICES_UNIFIED", "Starting column choices update")
 
+  state_flag <- function(value, default = FALSE) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    isTRUE(value[[1]])
+  }
+
   # Check if we should skip during table operations
-  if (app_state$data$updating_table) {
+  if (state_flag(app_state$data$updating_table)) {
     return()
   }
 
   # Skip if auto-detect is in progress
-  if (app_state$columns$auto_detect$in_progress) {
+  if (state_flag(app_state$columns$auto_detect$in_progress)) {
     return()
   }
 
   # Skip if UI sync is needed (to avoid race conditions)
-  if (app_state$columns$ui_sync$needed) {
+  if (state_flag(app_state$columns$ui_sync$needed)) {
     return()
   }
 
@@ -163,6 +170,10 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       candidate_chr
     }
 
+    non_empty_selection <- function(value) {
+      if (!is.null(value) && nzchar(value)) value else NULL
+    }
+
     for (col in columns_to_update) {
       if (identical(reason, "edit")) {
         tryCatch(
@@ -202,7 +213,11 @@ update_column_choices_unified <- function(app_state, input, output, session, ui_
       candidates <- if (identical(reason, "edit")) {
         list(normalized_input, cache_val)
       } else {
-        list(normalized_input, cache_val, state_val)
+        list(
+          non_empty_selection(normalized_input),
+          non_empty_selection(cache_val),
+          state_val
+        )
       }
 
       selected_val <- NULL

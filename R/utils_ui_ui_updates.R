@@ -1,15 +1,19 @@
 # utils_ui_updates.R
-# Centralized UI update service for unified patterns
+# Backward-compat wrapper + delt UI-infrastruktur (queue, loop-protection)
+#
+# Selve opdateringslogikken er splittet i:
+#   R/utils_ui_column_update_service.R \u2014 kolonne-selectize ops
+#   R/utils_ui_form_update_service.R   \u2014 form-felter, reset, feedback
 
 #' Create UI Update Service
 #'
-#' Creates a centralized service for managing UI updates in a consistent way.
-#' This service provides unified patterns for column choice updates, form field updates,
-#' and other common UI operations.
+#' Backward-kompatibel wrapper der komponerer column- og form-services.
+#' Eksisterende kaldere forts\u00e6tter u\u00e6ndret; fremtidig kode b\u00f8r bruge
+#' `create_column_update_service()` og `create_form_update_service()` direkte.
 #'
 #' @param session Shiny session object
 #' @param app_state Centralized app state
-#' @return List of UI update functions
+#' @return List of UI update functions (merged column + form APIs)
 #'
 #' @examples
 #' \dontrun{
@@ -19,502 +23,9 @@
 #'
 #' @keywords internal
 create_ui_update_service <- function(session, app_state) {
-  # Update Column Choices
-  #
-  # Unified function for updating column choice inputs across the app.
-  # Handles both automatic choice generation from current data and manual choices.
-  #
-  # @param choices Named vector of choices. If NULL, generated from current_data
-  # @param selected Named list of selected values for each column
-  # @param columns Vector of column input IDs to update
-  # @param clear_selections If TRUE, clear all selections
-  #
-  update_column_choices <- function(choices = NULL, selected = NULL,
-                                    columns = c(
-                                      "x_column", "y_column", "n_column",
-                                      "skift_column", "frys_column", "kommentar_column"
-                                    ),
-                                    clear_selections = FALSE) {
-    # Generate choices from current data if not provided
-    if (is.null(choices)) {
-      current_data <- app_state$data$current_data
-      if (!is.null(current_data)) {
-        all_cols <- names(current_data)
-        choices <- setNames(
-          c("", all_cols),
-          c("V\u00e6lg kolonne...", all_cols)
-        )
-      } else {
-        choices <- setNames("", "V\u00e6lg kolonne...")
-      }
-    }
-
-    # Handle selections
-    if (clear_selections) {
-      selected <- setNames(rep("", length(columns)), columns)
-    } else if (is.null(selected)) {
-      # AUTO-READ FROM APP_STATE: When no selections provided, read current values from app_state
-      selected <- list()
-      for (col in columns) {
-        # Priority: session$input[[col]] > app_state$columns[[col]] > ""
-        current_val <- safe_operation(
-          paste("Read column value for", col),
-          code = {
-            # Use session$input instead of bare input for proper scope
-            session_input_val <- session$input[[col]]
-            if (!is.null(session_input_val) && session_input_val != "") {
-              session_input_val
-            } else if (!is.null(shiny::isolate(app_state$columns[[col]]))) {
-              shiny::isolate(app_state$columns[[col]])
-            } else {
-              ""
-            }
-          },
-          fallback = "",
-          session = session,
-          error_type = "general"
-        )
-        selected[[col]] <- current_val
-      }
-    }
-
-    # Update each column input using safe wrapper to prevent loops
-    safe_programmatic_ui_update(session, app_state, function() {
-      safe_operation(
-        "Update column choices UI",
-        code = {
-          for (col in columns) {
-            selected_value <- if (!is.null(selected) && col %in% names(selected)) selected[[col]] else ""
-            shiny::updateSelectizeInput(session, col, choices = choices, selected = selected_value)
-          }
-        },
-        fallback = NULL,
-        session = session,
-        error_type = "processing"
-      )
-    })
-  }
-
-  # SPRINT 2: Update All Column Selectize Inputs
-  #
-  # Batch update all column dropdowns with same choices and optionally selected values.
-  # This centralizes the pattern seen 56 times across the codebase.
-  #
-  # @param choices Named vector of choices for all dropdowns
-  # @param selected Named list of selected values (e.g., list(x_column="Dato", y_column="Vaerdi"))
-  # @param columns Vector of input IDs to update (defaults to all SPC columns)
-  #
-  update_all_columns <- function(choices, selected = list(),
-                                 columns = c(
-                                   "x_column", "y_column", "n_column",
-                                   "skift_column", "frys_column", "kommentar_column"
-                                 )) {
-    safe_programmatic_ui_update(session, app_state, function() {
-      for (col in columns) {
-        selected_value <- if (col %in% names(selected)) selected[[col]] else ""
-        shiny::updateSelectizeInput(
-          session = session,
-          inputId = col,
-          choices = choices,
-          selected = selected_value
-        )
-      }
-    })
-  }
-
-  # SPRINT 2: Update All Columns With State Isolate
-  #
-  # Advanced variant that reads selected values from app_state with isolate()
-  # Used in event listeners where reactive isolation is needed
-  #
-  # @param choices Named vector of choices for all dropdowns
-  # @param columns_state reactiveValues containing column mappings (app_state$columns$mappings)
-  # @param log_context Optional logging context string
-  #
-  update_all_columns_from_state <- function(choices, columns_state, log_context = "UI_SYNC_UNIFIED") {
-    columns_map <- list(
-      x_column = "x_column",
-      y_column = "y_column",
-      n_column = "n_column",
-      skift_column = "skift_column",
-      frys_column = "frys_column",
-      kommentar_column = "kommentar_column"
-    )
-
-    safe_programmatic_ui_update(session, app_state, function() {
-      for (col_id in names(columns_map)) {
-        col_val <- shiny::isolate(columns_state[[col_id]])
-        if (!is.null(col_val)) {
-          shiny::updateSelectizeInput(
-            session = session,
-            inputId = col_id,
-            choices = choices,
-            selected = col_val
-          )
-          log_debug_kv_args <- list(.context = log_context)
-          log_debug_kv_args[[paste0("updated_", col_id, "_ui")]] <- col_val
-          do.call(log_debug_kv, log_debug_kv_args)
-        }
-      }
-    })
-  }
-
-  # Update Form Fields
-  #
-  # Unified function for updating form field inputs from metadata.
-  # Used for session restore and metadata loading operations.
-  #
-  # @param metadata List containing field values to update
-  # @param fields Vector of field names to update. If NULL, updates all available fields
-  #
-  update_form_fields <- function(metadata, fields = NULL) {
-    if (is.null(fields)) {
-      # Default fields to update -- includes advanced column mappings
-      # (skift/frys/kommentar) og eksport-modul felter for complete
-      # session restore (Issue #193).
-      fields <- c(
-        # Trin 2 (Analyser)
-        "indicator_title", "unit_select", "unit_custom", "indicator_description",
-        "chart_type",
-        "x_column", "y_column", "n_column",
-        "skift_column", "frys_column", "kommentar_column",
-        "target_value", "centerline_value", "y_axis_unit",
-        # Trin 3 (Eksporter) -- namespaced med "export-" prefix
-        "export_title", "export_hospital", "export_department", "export_footnote", "export_format",
-        "pdf_description", "pdf_improvement",
-        "png_width", "png_height"
-      )
-    }
-
-    # Review fund #1 (HIGH): Wrap programmatic updates i
-    # safe_programmatic_ui_update() saa observers ser
-    # app_state$ui$updating_programmatically = TRUE og skipper deres
-    # logik under restore. Ellers fyrer y_axis_unit/n_column observers
-    # paa halv state og logger fx "N-kolonne kraeves for valgt Y-akse-type"
-    # selvom mappingen faktisk findes i metadata.
-    safe_programmatic_ui_update(session, app_state, function() {
-      safe_operation(
-        "Update form fields from metadata",
-        code = {
-          for (field in fields) {
-            if (!is.null(metadata[[field]])) {
-              if (field == "indicator_title") {
-                shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field == "unit_custom") {
-                shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field == "indicator_description") {
-                updateTextAreaInput(session, field, value = metadata[[field]])
-              } else if (field == "target_value") {
-                shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field == "centerline_value") {
-                shiny::updateTextInput(session, field, value = metadata[[field]])
-              } else if (field %in% c(
-                "unit_select", "chart_type",
-                "x_column", "y_column", "n_column",
-                "skift_column", "frys_column", "kommentar_column",
-                "y_axis_unit"
-              )) {
-                shiny::updateSelectizeInput(session, field, selected = metadata[[field]])
-              } else if (field == "export_title") {
-                shiny::updateTextAreaInput(session, "export-export_title", value = metadata[[field]])
-              } else if (field == "export_hospital") {
-                shiny::updateTextInput(session, "export-export_hospital", value = metadata[[field]])
-              } else if (field == "export_department") {
-                shiny::updateTextInput(session, "export-export_department", value = metadata[[field]])
-              } else if (field == "export_footnote") {
-                shiny::updateTextInput(session, "export-export_footnote", value = metadata[[field]])
-              } else if (field == "export_format") {
-                # Issue #193 fund #3: export_format er en hidden input uden
-                # Shiny input binding. updateTextInput virker ikke -- vi skal
-                # gaa via JS setActiveExportBtn() saa knap-state, hidden input
-                # og Shiny.setInputValue() alle synkroniseres.
-                fmt <- metadata[[field]]
-                if (!is.null(fmt) && nzchar(fmt) && fmt %in% c("pdf", "png")) {
-                  session$sendCustomMessage(
-                    "set-export-format",
-                    list(format = fmt)
-                  )
-                }
-              } else if (field == "pdf_description") {
-                shiny::updateTextAreaInput(session, "export-pdf_description", value = metadata[[field]])
-              } else if (field == "pdf_improvement") {
-                shiny::updateTextAreaInput(session, "export-pdf_improvement", value = metadata[[field]])
-              } else if (field == "png_width") {
-                shiny::updateNumericInput(session, "export-png_width", value = as.numeric(metadata[[field]]))
-              } else if (field == "png_height") {
-                shiny::updateNumericInput(session, "export-png_height", value = as.numeric(metadata[[field]]))
-              }
-            }
-          }
-        },
-        fallback = function(e) {
-          log_error(paste("Error updating form fields:", e$message), "UI_SERVICE")
-        },
-        error_type = "processing"
-      )
-    })
-  }
-
-  # Reset Form Fields
-  #
-  # Unified function for resetting form fields to default values.
-  # Used for "Start ny session" and similar reset operations.
-  #
-  reset_form_fields <- function() {
-    shiny::isolate({
-      safe_operation(
-        "Reset form fields to defaults",
-        code = {
-          # Reset text inputs
-          shiny::updateTextInput(session, "indicator_title", value = "")
-          shiny::updateTextAreaInput(session, "indicator_description", value = "")
-          shiny::updateTextInput(session, "unit_custom", value = "")
-          shiny::updateTextInput(session, "target_value", value = "")
-          shiny::updateTextInput(session, "centerline_value", value = "")
-
-          # Reset select inputs
-          shiny::updateSelectizeInput(session, "unit_select", selected = "")
-          shiny::updateSelectizeInput(session, "chart_type", selected = "run")
-          shiny::updateSelectizeInput(session, "y_axis_unit", selected = "count")
-
-          # Reset column choices (will be empty until data is loaded)
-          update_column_choices(clear_selections = TRUE)
-
-          # Form fields reset
-        },
-        fallback = function(e) {
-          log_error(paste("Error resetting form fields:", e$message), "UI_SERVICE")
-        },
-        error_type = "processing"
-      )
-    })
-  }
-
-  # Show/Hide UI Elements
-  #
-  # Unified function for showing/hiding UI elements conditionally.
-  #
-  # @param element_id Character string of element ID
-  # @param show Logical, whether to show (TRUE) or hide (FALSE) the element
-  #
-  toggle_ui_element <- function(element_id, show = TRUE) {
-    safe_operation(
-      paste("Toggle UI element", element_id),
-      code = {
-        if (show) {
-          shinyjs::show(element_id)
-          # Element shown
-        } else {
-          shinyjs::hide(element_id)
-          # UI operation completed
-        }
-      },
-      fallback = function(e) {
-        log_error(paste("Error toggling element", element_id, ":", e$message), "UI_SERVICE")
-      },
-      error_type = "processing"
-    )
-  }
-
-  # Validate Form Fields
-  #
-  # Enhanced function for validating form field values with feedback.
-  #
-  # @param field_rules List of validation rules for each field
-  # @param show_feedback Whether to show validation feedback to the user
-  #
-  validate_form_fields <- function(field_rules, show_feedback = TRUE) {
-    # UI operation completed
-
-    validation_results <- list(valid = TRUE, errors = list())
-
-    safe_operation(
-      "Validate form fields",
-      code = {
-        for (field_name in names(field_rules)) {
-          rule <- field_rules[[field_name]]
-          field_value <- session$input[[field_name]]
-
-          # Required field validation
-          if (isTRUE(rule$required) && (is.null(field_value) || field_value == "")) {
-            validation_results$valid <- FALSE
-            validation_results$errors[[field_name]] <- "Dette felt er p\u00e5kr\u00e6vet"
-
-            if (show_feedback) {
-              shinyjs::addClass(field_name, "has-error")
-            }
-          }
-
-          # Numeric validation
-          if (!is.null(rule$type) && rule$type == "numeric" && !is.null(field_value) && field_value != "") {
-            if (is.na(as.numeric(field_value))) {
-              validation_results$valid <- FALSE
-              validation_results$errors[[field_name]] <- "Skal v\u00e6re et tal"
-
-              if (show_feedback) {
-                shinyjs::addClass(field_name, "has-error")
-              }
-            }
-          }
-
-          # Custom validation function
-          if (!is.null(rule$validator) && is.function(rule$validator)) {
-            custom_result <- rule$validator(field_value)
-            if (!isTRUE(custom_result)) {
-              validation_results$valid <- FALSE
-              validation_results$errors[[field_name]] <- custom_result
-
-              if (show_feedback) {
-                shinyjs::addClass(field_name, "has-error")
-              }
-            }
-          }
-
-          # Remove error styling if field is valid
-          if (show_feedback && !field_name %in% names(validation_results$errors)) {
-            shinyjs::removeClass(field_name, "has-error")
-          }
-        }
-      },
-      fallback = function(e) {
-        log_error(paste("Error during form validation:", e$message), "UI_SERVICE")
-        validation_results$valid <- FALSE
-        validation_results$errors[["general"]] <- "Validationsfejl"
-      },
-      error_type = "processing"
-    )
-
-    validation_results
-  }
-
-  # Show User Feedback
-  #
-  # Unified function for showing user feedback (notifications, modals, etc.).
-  #
-  # @param message Character string with the message to show
-  # @param type Type of feedback: "success", "info", "warning", "error"
-  # @param duration Duration in seconds (NULL for persistent)
-  # @param modal Whether to show as modal dialog instead of notification
-  #
-  show_user_feedback <- function(message, type = "info", duration = 3, modal = FALSE) {
-    # UI operation completed
-
-    safe_operation(
-      "Show user feedback",
-      code = {
-        if (modal) {
-          # Show as modal dialog
-          shiny::showModal(shiny::modalDialog(
-            title = switch(type,
-              "success" = "Succes",
-              "info" = "Information",
-              "warning" = "Advarsel",
-              "error" = "Fejl",
-              "Information"
-            ),
-            message,
-            easyClose = TRUE,
-            footer = shiny::modalButton("OK")
-          ))
-        } else {
-          # Show as notification
-          shiny_type <- switch(type,
-            "success" = "message",
-            "info" = "default",
-            "warning" = "warning",
-            "error" = "error",
-            "default"
-          )
-
-          shiny::showNotification(message, type = shiny_type, duration = duration)
-        }
-
-        # UI operation completed
-      },
-      fallback = function(e) {
-        log_error(paste("Error showing user feedback:", e$message), "UI_SERVICE")
-      },
-      error_type = "processing"
-    )
-  }
-
-  # Update UI State Conditionally
-  #
-  # Enhanced function for updating UI state based on conditions.
-  #
-  # @param conditions Named list of conditions and corresponding UI updates
-  #
-  update_ui_conditionally <- function(conditions) {
-    # UI operation completed
-
-    safe_operation(
-      "Update UI conditionally",
-      code = {
-        for (condition_name in names(conditions)) {
-          condition_spec <- conditions[[condition_name]]
-
-          # Evaluate condition
-          condition_met <- if (is.function(condition_spec$condition)) {
-            condition_spec$condition()
-          } else {
-            condition_spec$condition
-          }
-
-          # UI operation completed
-
-          if (condition_met) {
-            # Execute actions for true condition
-            if (!is.null(condition_spec$actions$show)) {
-              for (element in condition_spec$actions$show) {
-                shinyjs::show(element)
-              }
-            }
-
-            if (!is.null(condition_spec$actions$hide)) {
-              for (element in condition_spec$actions$hide) {
-                shinyjs::hide(element)
-              }
-            }
-
-            if (!is.null(condition_spec$actions$enable)) {
-              for (element in condition_spec$actions$enable) {
-                shinyjs::enable(element)
-              }
-            }
-
-            if (!is.null(condition_spec$actions$disable)) {
-              for (element in condition_spec$actions$disable) {
-                shinyjs::disable(element)
-              }
-            }
-
-            if (!is.null(condition_spec$actions$update)) {
-              for (update_spec in condition_spec$actions$update) {
-                do.call(update_spec$func, update_spec$args)
-              }
-            }
-          }
-        }
-      },
-      fallback = function(e) {
-        log_error(paste("Error in conditional UI updates:", e$message), "UI_SERVICE")
-      },
-      error_type = "processing"
-    )
-  }
-
-  # Return enhanced service interface
-  list(
-    update_column_choices = update_column_choices,
-    update_all_columns = update_all_columns, # SPRINT 2: Batch column update helper
-    update_all_columns_from_state = update_all_columns_from_state, # SPRINT 2: State-driven update with isolate
-    update_form_fields = update_form_fields,
-    reset_form_fields = reset_form_fields,
-    toggle_ui_element = toggle_ui_element,
-    validate_form_fields = validate_form_fields,
-    show_user_feedback = show_user_feedback,
-    update_ui_conditionally = update_ui_conditionally
-  )
+  col_svc <- create_column_update_service(session, app_state)
+  form_svc <- create_form_update_service(session, app_state, column_service = col_svc)
+  c(col_svc, form_svc)
 }
 
 #' Safe Programmatic UI Update Wrapper (Enhanced with Intelligent Flag Clearing)
@@ -558,6 +69,27 @@ create_ui_update_service <- function(session, app_state) {
 #'
 #' @keywords internal
 safe_programmatic_ui_update <- function(session, app_state, update_function, delay_ms = NULL) {
+  scalar_logical <- function(value, default = FALSE) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    isTRUE(value[[1]])
+  }
+
+  scalar_integer <- function(value, default = 0L) {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.integer(value[[1]])
+  }
+
+  safe_list <- function(value) {
+    if (is.null(value) || !is.list(value)) {
+      return(list())
+    }
+    value
+  }
+
   if (is.null(delay_ms)) {
     delay_ms <- LOOP_PROTECTION_DELAYS$default
   }
@@ -574,8 +106,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
       {
         shiny::isolate(app_state$ui$updating_programmatically <- FALSE)
 
-        pending_queue <- length(shiny::isolate(app_state$ui$queued_updates))
-        queue_idle <- !isTRUE(shiny::isolate(app_state$ui$queue_processing))
+        pending_queue <- length(safe_list(shiny::isolate(app_state$ui$queued_updates)))
+        queue_idle <- !scalar_logical(shiny::isolate(app_state$ui$queue_processing))
 
         if (pending_queue > 0 && queue_idle) {
           if (requireNamespace("later", quietly = TRUE)) {
@@ -615,10 +147,11 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
     update_duration_ms <- as.numeric(difftime(performance_end, performance_start, units = "secs")) * 1000
 
     shiny::isolate({
-      app_state$ui$performance_metrics$total_updates <- app_state$ui$performance_metrics$total_updates + 1L
+      app_state$ui$performance_metrics$total_updates <-
+        scalar_integer(app_state$ui$performance_metrics$total_updates) + 1L
 
-      current_avg <- app_state$ui$performance_metrics$avg_update_duration_ms
-      total_updates <- app_state$ui$performance_metrics$total_updates
+      current_avg <- as.numeric(app_state$ui$performance_metrics$avg_update_duration_ms %||% 0)
+      total_updates <- scalar_integer(app_state$ui$performance_metrics$total_updates)
 
       if (total_updates == 1) {
         app_state$ui$performance_metrics$avg_update_duration_ms <- update_duration_ms
@@ -634,8 +167,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
   safe_operation(
     "Execute programmatic UI update",
     code = {
-      busy <- isTRUE(shiny::isolate(app_state$ui$queue_processing)) ||
-        isTRUE(shiny::isolate(app_state$ui$updating_programmatically))
+      busy <- scalar_logical(shiny::isolate(app_state$ui$queue_processing)) ||
+        scalar_logical(shiny::isolate(app_state$ui$updating_programmatically))
 
       if (busy) {
         queue_entry <- list(
@@ -646,8 +179,8 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
           queue_id = paste0("queue_", format(Sys.time(), "%Y%m%d%H%M%S"), "_", sample(1000:9999, 1))
         )
 
-        current_queue <- shiny::isolate(app_state$ui$queued_updates)
-        max_queue_size <- shiny::isolate(app_state$ui$memory_limits$max_queue_size)
+        current_queue <- safe_list(shiny::isolate(app_state$ui$queued_updates))
+        max_queue_size <- scalar_integer(shiny::isolate(app_state$ui$memory_limits$max_queue_size), default = 50L)
 
         if (length(current_queue) >= max_queue_size) {
           # Queue operation completed
@@ -658,16 +191,18 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
         app_state$ui$queued_updates <- new_queue
 
         shiny::isolate({
-          app_state$ui$performance_metrics$queued_updates <- app_state$ui$performance_metrics$queued_updates + 1L
-          queue_size <- length(app_state$ui$queued_updates)
-          if (queue_size > app_state$ui$performance_metrics$queue_max_size) {
+          app_state$ui$performance_metrics$queued_updates <-
+            scalar_integer(app_state$ui$performance_metrics$queued_updates) + 1L
+          queue_size <- length(safe_list(app_state$ui$queued_updates))
+          queue_max_size <- scalar_integer(app_state$ui$performance_metrics$queue_max_size)
+          if (queue_size > queue_max_size) {
             app_state$ui$performance_metrics$queue_max_size <- queue_size
           }
         })
 
         # Operation completed
 
-        if (isTRUE(shiny::isolate(app_state$ui$queue_processing))) {
+        if (scalar_logical(shiny::isolate(app_state$ui$queue_processing))) {
           enqueue_ui_update(app_state, queue_entry)
         }
 

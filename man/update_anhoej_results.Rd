@@ -7,21 +7,16 @@
 update_anhoej_results(
   previous,
   qic_results,
-  centerline_changed = FALSE,
-  qic_data = NULL,
-  show_phases = FALSE
+  centerline_changed = FALSE
 )
 }
 \arguments{
 \item{previous}{list. Forrige \code{anhoej_results} (kan vaere NULL ved foerste koersel)}
 
-\item{qic_results}{list. Nye beregnede metrics fra QIC-kald (kan indeholde NA)}
+\item{qic_results}{list. Nye beregnede metrics (fra \code{derive_anhoej_results()})}
 
 \item{centerline_changed}{logical. TRUE hvis centerline/baseline er aendret (inkl. ryddet)}
 
-\item{qic_data}{data.frame. QIC data (bruges til part filtrering)}
-
-\item{show_phases}{logical. TRUE hvis parts/skift er aktivt}
 }
 \value{
 list. Opdateret \code{anhoej_results}

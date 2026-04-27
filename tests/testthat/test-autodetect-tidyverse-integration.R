@@ -169,7 +169,13 @@ test_that("update_all_column_mappings with hierarchical state", {
     # Verify auto_detect state
     expect_true(shiny::isolate(app_state$columns$auto_detect$completed))
     expect_false(shiny::isolate(app_state$columns$auto_detect$in_progress))
-    expect_equal(shiny::isolate(app_state$columns$auto_detect$results), mock_results)
+    stored_result <- shiny::isolate(app_state$columns$auto_detect$results)
+    expect_s3_class(stored_result, "AutodetectResult")
+    expect_equal(
+      stored_result[c("x_col", "y_col", "n_col", "skift_col", "frys_col", "kommentar_col")],
+      mock_results
+    )
+    expect_s3_class(stored_result$timestamp, "POSIXct")
 
     # Test legacy compatibility (return value)
     expect_true(is.list(updated_columns))

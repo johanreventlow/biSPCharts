@@ -82,27 +82,24 @@ test_that("Reactive expressions handle character(0) inputs without crashing", {
 
 test_that("Column selection UI updates handle empty states", {
   skip_if_not_installed("shiny")
-
-  test_data <- data.frame(
-    Dato = c("2024-01-01", "2024-02-01"),
-    Tæller = c(10, 15),
-    Nævner = c(100, 120)
+  skip_if(
+    !exists("create_app_state", mode = "function") ||
+      !exists("update_column_choices_unified", mode = "function"),
+    "Column choice update helpers not available"
   )
 
-  # Test UI update functions with edge cases
-  if (exists("update_column_choices_unified")) {
-    # Should not crash with empty data
-    empty_data <- data.frame()
-    result <- tryCatch(
-      {
-        update_column_choices_unified(empty_data, session = list())
-      },
-      error = function(e) {
-        "error_handled"
-      }
+  app_state <- create_app_state()
+  session <- shiny::MockShinySession$new()
+  input <- shiny::reactiveValues()
+  output <- list()
+
+  shiny::isolate(app_state$data$current_data <- data.frame())
+
+  expect_no_error(
+    shiny::isolate(
+      update_column_choices_unified(app_state, input, output, session)
     )
-    expect_true(is.list(result) || result == "error_handled")
-  }
+  )
 })
 
 test_that("Performance ikke påvirkes af character(0) handling", {

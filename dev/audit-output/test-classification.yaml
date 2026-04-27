@@ -1036,4 +1036,32 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-derive_anhoej_per_part.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-27'
+  - file: test-interpret_anhoej_signal_da.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-27'
+  - file: test-fct_spc_excel_analysis.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-27'
+  - file: test-spc_excel_round_trip.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: yes
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-27'
 

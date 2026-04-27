@@ -24,7 +24,7 @@ Bruges af export module til at vise PDF layout preview i browseren.
 Funktionen bruger Typst's direkte PNG output (mere effektivt end PDF->PNG):
 \enumerate{
 \item Genererer chart PNG via \code{ggplot2::ggsave()}
-\item Opretter Typst dokument via \code{BFHcharts::bfh_create_typst_document()}
+\item Opretter Typst dokument via BFHcharts' interne Typst-helper
 \item Kompilerer direkte til PNG via \code{quarto typst compile -f png}
 }
 
@@ -54,8 +54,7 @@ if (!is.null(preview_path)) {
 \seealso{
 Other export_helpers: 
 \code{\link{extract_spc_statistics}()},
-\code{\link{get_hospital_name_for_export}()},
-\code{\link{quarto_available}()}
+\code{\link{get_hospital_name_for_export}()}
 }
 \concept{export_helpers}
 \keyword{internal}

@@ -12,12 +12,12 @@ create_ui_update_service(session, app_state)
 \item{app_state}{Centralized app state}
 }
 \value{
-List of UI update functions
+List of UI update functions (merged column + form APIs)
 }
 \description{
-Creates a centralized service for managing UI updates in a consistent way.
-This service provides unified patterns for column choice updates, form field updates,
-and other common UI operations.
+Backward-kompatibel wrapper der komponerer column- og form-services.
+Eksisterende kaldere forts\u00e6tter u\u00e6ndret; fremtidig kode b\u00f8r bruge
+\code{create_column_update_service()} og \code{create_form_update_service()} direkte.
 }
 \examples{
 \dontrun{

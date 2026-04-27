@@ -39,8 +39,7 @@
 #'
 #' @keywords internal
 check_quarto_capability <- function() {
-  # Quarto-installationen ændrer sig ikke i løbet af en R-session;
-  # process-levetid er korrekt TTL for dette opslag.
+  # Returnerer cachet resultat hvis allerede tjekket i denne session
   if (.quarto_capability_cache$has()) {
     return(.quarto_capability_cache$get())
   }

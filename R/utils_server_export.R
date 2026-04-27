@@ -107,9 +107,9 @@ extract_spc_statistics <- function(app_state) {
 #' @keywords internal
 validate_export_dpi <- function(dpi) {
   if (!is.numeric(dpi) || length(dpi) != 1L || is.na(dpi) || dpi < 72 || dpi > 600) {
-    spc_abort(
+    rlang::abort(
       paste0("dpi skal vaere numerisk mellem 72 og 600, fik: ", dpi),
-      class = "export_input_error"
+      class = c("export_input_error", "spc_error", "error")
     )
   }
   invisible(dpi)
@@ -332,12 +332,7 @@ generate_pdf_preview <- function(bfh_qic_result,
 
           # 4. Create Typst document
           typst_file <- file.path(temp_dir, "document.typ")
-          bfh_create_typst_document <- utils::getFromNamespace(
-            "bfh_create_typst_document",
-            "BFHcharts"
-          )
-
-          bfh_create_typst_document(
+          BFHcharts::bfh_create_typst_document(
             chart_image = chart_png,
             output = typst_file,
             metadata = metadata_full,

@@ -26,7 +26,7 @@ Imports:
     ggplot2 (>= 3.4.0),
     htmltools (>= 0.5.0),
     rlang (>= 1.0.0),
-    BFHcharts (>= 0.8.2),
+    BFHcharts (>= 0.9.0),
     readr (>= 2.0.0),
     readxl (>= 1.4.0),
     scales (>= 1.2.0),
@@ -69,6 +69,6 @@ Suggests:
 Config/testthat/edition: 3
 Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace().
 Remotes:
-    johanreventlow/BFHcharts@v0.8.2,
+    johanreventlow/BFHcharts@v0.9.0,
     johanreventlow/BFHtheme@v0.5.0,
     johanreventlow/BFHllm@v0.1.1

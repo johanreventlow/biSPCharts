@@ -1,5 +1,12 @@
 # biSPCharts 0.3.0
 
+## Interne ændringer
+
+* **BFHcharts 0.9.0 dependency bump:** `target_value` valideres nu mod
+  percent-skala-kontrakten i `bfh_qic()`. biSPCharts er upåvirket —
+  `normalize_scale_for_bfh()` og run-chart-enhedsoverridet sikrer allerede
+  at compliant værdier sendes (#337, BFHcharts#203).
+
 ## Breaking changes
 
 * **Minimalt public API** (#324): 20 exports er fjernet fra NAMESPACE og gjort

@@ -54,7 +54,8 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          dpi = 96, plot_margin = NULL,
                          ylab = NULL, xlab = NULL,
                          subtitle = NULL, caption = NULL,
-                         return.data = FALSE, print.summary = FALSE) {
+                         return.data = FALSE, print.summary = FALSE,
+                         language = "da") {
   # Minimal struktur matchende real bfh_qic_result
   list(
     plot = ggplot2::ggplot(data.frame(x = 1:3, y = 1:3)) +

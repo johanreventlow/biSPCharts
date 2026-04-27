@@ -133,7 +133,16 @@ setup_wizard_gates <- function(input, output, app_state, session) {
             dept_input = metadata$export_department %||% "",
             plot_context = "export_pdf"
           ),
-          error = function(e) NULL
+          error = function(e) {
+            log_warn(
+              .context = "EXCEL_EXPORT",
+              message = paste(
+                "build_export_plot fejlede ved Excel-download;",
+                "SPC-analyse-ark springes over:", conditionMessage(e)
+              )
+            )
+            NULL
+          }
         )
         has_qic <- !is.null(spc_for_export) && is.list(spc_for_export) &&
           !is.null(spc_for_export$qic_data)

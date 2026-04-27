@@ -292,7 +292,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
       data[[col]] <- ifelse(
         is.na(data[[col]]),
         NA_character_,
-        format(data[[col]], decimal.mark = ",", big.mark = ".")
+        format(data[[col]], decimal.mark = ",", big.mark = "")
       )
     }
 

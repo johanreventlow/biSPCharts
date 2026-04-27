@@ -307,9 +307,9 @@ test_that("OBSERVER_PRIORITIES runtime integration fungerer", {
   # Redesignet til shiny::testServer() + session$setInputs() (Niveau C migration fra #230)
   # Tester at STATE_MANAGEMENT (2000) kører FØR UI_SYNC (750) FØR CLEANUP (200)
   skip_if_not_installed("shiny")
-  skip_if_not(
+  expect_true(
     exists("OBSERVER_PRIORITIES"),
-    "OBSERVER_PRIORITIES konstant ikke tilgængelig"
+    label = "OBSERVER_PRIORITIES konstant skal være tilgængelig"
   )
 
   create_priority_test_server <- function() {

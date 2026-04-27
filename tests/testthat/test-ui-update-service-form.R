@@ -55,7 +55,6 @@ test_that("form_service oprettes uden column_service (column_service = NULL)", {
   )
 })
 
-# Kræver aktiv Shiny session — tryCatch+skip ved manglende session-context
 .run_validate <- function(svc, rules) {
   skip_if_not_installed("shiny")
   skip_if_not_installed("shinyjs")
@@ -63,7 +62,12 @@ test_that("form_service oprettes uden column_service (column_service = NULL)", {
     svc$validate_form_fields(rules, show_feedback = FALSE),
     error = function(e) NULL
   )
-  if (is.null(result)) skip("validate_form_fields kræver aktiv Shiny session")
+  if (is.null(result)) {
+    fail(paste(
+      "validate_form_fields skal kunne testes uden aktiv Shiny session",
+      "når show_feedback = FALSE"
+    ))
+  }
   result
 }
 

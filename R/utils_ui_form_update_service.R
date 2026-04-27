@@ -42,7 +42,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     "png_width", "png_height"
   )
 
-  # Intern helper: opdatér ét form-felt ud fra felttype (fanger session fra closure)
+  # Intern helper: opdater et form-felt ud fra felttype (fanger session fra closure)
   .update_single_field <- function(field, value) {
     value <- normalize_form_value(value, default = "")
 
@@ -70,7 +70,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     } else if (field == "export_footnote") {
       shiny::updateTextInput(session, "export-export_footnote", value = value)
     } else if (field == "export_format") {
-      # export_format er hidden input — bruger JS custom message for synkronisering
+      # export_format er hidden input - bruger JS custom message for synkronisering
       # (se Issue #193: updateTextInput virker ikke for hidden inputs)
       if (nzchar(value) && value %in% c("pdf", "png")) {
         session$sendCustomMessage("set-export-format", list(format = value))
@@ -86,13 +86,13 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     }
   }
 
-  # Opdatér form-felter fra metadata
+  # Opdater form-felter fra metadata
   #
-  # Bruges til session restore og metadata-indlæsning.
-  # Wrappet i safe_programmatic_ui_update for at undgå race conditions
-  # (se Issue #193: observers fyrer på halv state under restore).
+  # Bruges til session restore og metadata-indlaesning.
+  # Wrappet i safe_programmatic_ui_update for at undgaa race conditions
+  # (se Issue #193: observers fyrer paa halv state under restore).
   #
-  # @param metadata Liste med feltværdier der skal opdateres
+  # @param metadata Liste med feltvaerdier der skal opdateres
   # @param fields Vector af feltnavne. NULL = alle standard-felter
   #
   update_form_fields <- function(metadata, fields = NULL) {
@@ -116,7 +116,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     })
   }
 
-  # Nulstil form-felter til standard-værdier
+  # Nulstil form-felter til standard-vaerdier
   #
   # Bruges ved "Start ny session" og lignende reset-operationer.
   # Kolonne-choices ryddes via column_service (hvis angivet).
@@ -170,7 +170,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     )
   }
 
-  # Validér form-felter med feedback
+  # Valider form-felter med feedback
   #
   # @param field_rules Named list med valideringsregler per felt
   # @param show_feedback Vis fejl-styling i UI
@@ -188,7 +188,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
 
           if (isTRUE(rule$required) && (is.null(field_value) || field_value == "")) {
             validation_results$valid <- FALSE
-            validation_results$errors[[field_name]] <- "Dette felt er påkrævet"
+            validation_results$errors[[field_name]] <- "Dette felt er p\u00e5kr\u00e6vet"
             if (show_feedback) shinyjs::addClass(field_name, "has-error")
           }
 
@@ -196,7 +196,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
             !is.null(field_value) && field_value != "") {
             if (is.na(suppressWarnings(as.numeric(field_value)))) {
               validation_results$valid <- FALSE
-              validation_results$errors[[field_name]] <- "Skal være et tal"
+              validation_results$errors[[field_name]] <- "Skal v\u00e6re et tal"
               if (show_feedback) shinyjs::addClass(field_name, "has-error")
             }
           }
@@ -268,7 +268,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     )
   }
 
-  # Opdatér UI betinget baseret på conditions-liste
+  # Opdater UI betinget baseret paa conditions-liste
   #
   # @param conditions Named list med condition-specs (condition, actions)
   #

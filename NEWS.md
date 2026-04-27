@@ -1,5 +1,17 @@
 # biSPCharts 0.3.0
 
+## Nye features
+
+* **Tredje ark "SPC-analyse" i Excel-download:** Nye Excel-eksporter
+  indeholder nu et informationsark med pre-beregnede SPC-statistikker.
+  Arket har fire sektioner: oversigt (charttype, antal parts, target,
+  ooc-rækker, dansk Anhøj-tolkning), per-part statistik
+  (CL/UCL/LCL/Mean/Median/Δ til CL), Anhøj-regler per part (serielængde,
+  kryds, signaler), og special cause-punkter med dato, kommentarer og
+  nævner. Y-værdier vises i UI-valgt enhed (fx timer i stedet for
+  kanoniske minutter). Arket parses ikke ved upload — round-trip-egenskaben
+  for "Data" + "Indstillinger" er uændret.
+
 ## Interne ændringer
 
 * **BFHcharts 0.9.0 dependency bump:** `target_value` valideres nu mod

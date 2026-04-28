@@ -63,14 +63,15 @@ build_spc_excel <- function(data,
 
   meta_df <- data.frame(
     Felt = names(metadata),
-    Vaerdi = vapply(metadata, function(x) {
+    Værdi = vapply(metadata, function(x) {
       if (is.null(x) || (length(x) == 0)) {
         return("")
       }
       x_clean <- x[!is.na(x)]
       if (length(x_clean) == 0) "" else paste(x_clean, collapse = ", ")
     }, character(1)),
-    stringsAsFactors = FALSE
+    stringsAsFactors = FALSE,
+    check.names = FALSE
   )
   openxlsx::writeData(wb,
     sheet = "Indstillinger",
@@ -125,8 +126,8 @@ build_spc_excel <- function(data,
   temp_path
 }
 
-# Skriv sektioner til "SPC-analyse"-ark med blank-raekker imellem.
-# Hver sektion faar sin egen header-raekke med sektionsnavn.
+# Skriv sektioner til "SPC-analyse"-ark med blank-rækker imellem.
+# Hver sektion får sin egen header-række med sektionsnavn.
 .write_spc_analysis_sheet <- function(wb, sections) {
   sheet_name <- SPC_ANALYSIS_SHEET_NAME
   openxlsx::addWorksheet(wb, sheet_name)
@@ -152,13 +153,13 @@ build_spc_excel <- function(data,
       )
       current_row <<- current_row + 1L
     }
-    # Blank-raekke mellem sektioner
+    # Blank-række mellem sektioner
     current_row <<- current_row + 1L
   }
 
   write_section("A. Oversigt", sections$overview)
   write_section("B. Per-part statistik", sections$per_part)
-  write_section("C. Anhoej-regler per part", sections$anhoej)
+  write_section("C. Anhøj-regler per part", sections$anhoej)
 
   # Sektion D: special-case for tom = vis besked i stedet for "Ingen data".
   openxlsx::writeData(wb,

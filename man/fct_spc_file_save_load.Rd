@@ -9,3 +9,10 @@ Filen har to ark: "Data" (de rå rækker) og "Indstillinger" (alle
 UI-indstillinger som Felt/Værdi-tabel), svarende til hvad
 collect_metadata() returnerer.
 }
+\details{
+Hvis \code{qic_data} leveres, tilføjes desuden et tredje ark "SPC-analyse"
+med pre-beregnede SPC-statistikker (centrallinje, kontrolgrænser,
+Anhøj-regler per part, special cause-punkter). Arket er informational
+og parses ikke af \code{parse_spc_excel()} — round-trip-egenskaben påvirkes
+ikke.
+}

@@ -9,10 +9,10 @@ derive_anhoej_per_part(qic_data)
 \arguments{
 \item{qic_data}{data.frame. QIC-data som returneret af \code{qicharts2::qic()}
 eller BFHcharts. Hvis kolonnen \code{part} mangler eller kun indeholder NA,
-behandles hele datasættet som én "part 1".}
+behandles hele datasaettet som en "part 1".}
 }
 \value{
-list. Én element per unik part. Hvert element er en named list
+list. En element per unik part. Hvert element er en named list
 med felter fra \code{derive_anhoej_results()} udvidet med:
 \describe{
 \item{part}{integer. Part-identifier (eller \code{1L} hvis kolonnen mangler).}
@@ -20,13 +20,13 @@ med felter fra \code{derive_anhoej_results()} udvidet med:
 Returnerer \code{list()} (tom) hvis \code{qic_data} er tom.
 }
 \description{
-Itererer over unikke part-værdier i \code{qic_data} og kalder
-\code{derive_anhoej_results()} på hvert subset. Returnerer én record per part
+Itererer over unikke part-vaerdier i \code{qic_data} og kalder
+\code{derive_anhoej_results()} paa hvert subset. Returnerer en record per part
 med samme felter som \code{derive_anhoej_results()} plus en \verb{$part}-identifier.
 }
 \details{
-Funktionen er ren: ingen Shiny-afhængighed, ingen \code{app_state}-reads,
-ingen side-effekter. Bevarer rækkefølgen som parts optræder i input-data.
+Funktionen er ren: ingen Shiny-afhaengighed, ingen \code{app_state}-reads,
+ingen side-effekter. Bevarer raekkefoelgen som parts optraeder i input-data.
 }
 \examples{
 \dontrun{
@@ -36,7 +36,7 @@ qic_result <- qicharts2::qic(month, infections,
 )
 per_part <- derive_anhoej_per_part(qic_result)
 length(per_part) # antal parts
-per_part[[1]]$runs_signal # part 1's serielængde-signal
+per_part[[1]]$runs_signal # part 1's serielaengde-signal
 }
 
 }

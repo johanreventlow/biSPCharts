@@ -24,7 +24,7 @@ TIME_INPUT_UNIT_SCALES <- c(
 
 #' Konverter tids-input til kanoniske minutter
 #'
-#' @param x Input-vektor. Kan vaere numeric, character (HH:MM[:SS]),
+#' @param x Input-vektor. Kan vaere numeric, character (HH:MM eller HH:MM:SS),
 #'   hms/difftime objekt, eller NA.
 #' @param input_unit Character. En af 'time_minutes', 'time_hours', 'time_days'.
 #'   Ignoreres hvis x er hms/difftime eller HH:MM-streng. Default: 'time_minutes'.

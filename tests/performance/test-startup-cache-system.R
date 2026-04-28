@@ -5,6 +5,12 @@
 library(testthat)
 context("Startup Cache System Comprehensive Tests")
 
+memory_used_mb <- function() {
+  gc_info <- gc()
+  cell_sizes <- c(Ncells = 56, Vcells = 8)
+  sum(gc_info[, "used"] * cell_sizes[rownames(gc_info)], na.rm = TRUE) / 1024^2
+}
+
 # Test Information Output
 test_that("test context information", {
   message("Testing startup optimization features implemented 2025-09-26")
@@ -198,25 +204,19 @@ test_that("cache system manages memory efficiently", {
   skip_if_not(exists("load_cached_startup_data", mode = "function"))
 
   # Measure memory before cache operations
-  if (requireNamespace("pryr", quietly = TRUE)) {
-    mem_before <- pryr::mem_used()
+  mem_before <- memory_used_mb()
 
-    # Perform cache operations
-    cached_artifacts <- suppressMessages(cache_startup_data())
-    cached_data <- suppressMessages(load_cached_startup_data())
+  # Perform cache operations
+  cached_artifacts <- suppressMessages(cache_startup_data())
+  cached_data <- suppressMessages(load_cached_startup_data())
 
-    # Force garbage collection
-    gc()
-    mem_after <- pryr::mem_used()
+  mem_after <- memory_used_mb()
 
-    # Memory increase should be reasonable (< 50MB)
-    mem_increase <- as.numeric(mem_after - mem_before) / 1024^2
-    expect_lt(abs(mem_increase), 50)
+  # Memory increase should be reasonable (< 50MB)
+  mem_increase <- mem_after - mem_before
+  expect_lt(abs(mem_increase), 50)
 
-    message(sprintf("Memory usage change: %.2f MB", mem_increase))
-  } else {
-    skip("pryr package not available for memory testing")
-  }
+  message(sprintf("Memory usage change: %.2f MB", mem_increase))
 })
 
 # Regression test for the critical bug fix

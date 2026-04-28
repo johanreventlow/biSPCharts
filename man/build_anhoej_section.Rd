@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_spc_excel_analysis.R
 \name{build_anhoej_section}
 \alias{build_anhoej_section}
-\title{Byg sektion C (Anhøj-regler per part) til SPC-analyse-arket}
+\title{Byg sektion C (Anhoej-regler per part) til SPC-analyse-arket}
 \usage{
 build_anhoej_section(anhoej_per_part)
 }
@@ -10,9 +10,9 @@ build_anhoej_section(anhoej_per_part)
 \item{anhoej_per_part}{list. Output fra \code{derive_anhoej_per_part()}.}
 }
 \value{
-data.frame med én række per part.
+data.frame med en raekke per part.
 }
 \description{
-Byg sektion C (Anhøj-regler per part) til SPC-analyse-arket
+Byg sektion C (Anhoej-regler per part) til SPC-analyse-arket
 }
 \keyword{internal}

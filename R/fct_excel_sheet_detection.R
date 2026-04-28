@@ -1,8 +1,8 @@
 # ==============================================================================
 # FCT_EXCEL_SHEET_DETECTION.R
 # ==============================================================================
-# FORMÅL: Pure helpers til detektion af Excel-ark og biSPCharts gem-format.
-#         Anvendes af upload-observer til at afgøre om sheet-picker skal vises.
+# FORMAAL: Pure helpers til detektion af Excel-ark og biSPCharts gem-format.
+#         Anvendes af upload-observer til at afgoere om sheet-picker skal vises.
 #
 # ANVENDES AF:
 #   - utils_server_paste_data.R (direct_file_upload observer)
@@ -13,8 +13,8 @@
 
 #' List ark i Excel-fil
 #'
-#' Wrapper omkring `readxl::excel_sheets()` med fejl-håndtering.
-#' Returnerer NULL hvis filen er korrupt eller ikke kan læses.
+#' Wrapper omkring `readxl::excel_sheets()` med fejl-haandtering.
+#' Returnerer NULL hvis filen er korrupt eller ikke kan laeses.
 #'
 #' @param path Sti til Excel-fil (.xlsx eller .xls)
 #'
@@ -32,7 +32,7 @@ list_excel_sheets <- function(path) {
     readxl::excel_sheets(path),
     error = function(e) {
       log_debug(
-        paste("Kunne ikke læse Excel-ark:", conditionMessage(e)),
+        paste("Kunne ikke l\u00e6se Excel-ark:", conditionMessage(e)),
         .context = "EXCEL_SHEET_DETECTION"
       )
       NULL
@@ -42,13 +42,13 @@ list_excel_sheets <- function(path) {
 
 #' Detekter tomme ark i Excel-fil
 #'
-#' Per ark: læser første række (n_max=1) og returnerer TRUE hvis ingen
-#' data-rækker findes. Effektivt selv for store filer.
+#' Per ark: laeser foerste raekke (n_max=1) og returnerer TRUE hvis ingen
+#' data-raekker findes. Effektivt selv for store filer.
 #'
 #' @param path Sti til Excel-fil
 #' @param sheets Character vector af ark-navne (typisk fra `list_excel_sheets()`)
 #'
-#' @return Logical vector samme længde som `sheets`. TRUE = tomt ark.
+#' @return Logical vector samme laengde som `sheets`. TRUE = tomt ark.
 #'         Ved fejl per ark: TRUE (konservativt, signaleres som tomt).
 #'
 #' @noRd
@@ -84,7 +84,7 @@ detect_empty_sheets <- function(path, sheets) {
 
 #' Genkend biSPCharts gem-format
 #'
-#' biSPCharts gem-format kræver tilstedeværelse af både `Data`- og
+#' biSPCharts gem-format kraever tilstedevaerelse af baade `Data`- og
 #' `Indstillinger`-ark. Tredje ark (fx `SPC-analyse`) er valgfrit.
 #'
 #' @param sheets Character vector af ark-navne

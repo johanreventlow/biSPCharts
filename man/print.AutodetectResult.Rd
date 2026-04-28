@@ -6,6 +6,11 @@
 \usage{
 \method{print}{AutodetectResult}(x, ...)
 }
+\arguments{
+\item{x}{AutodetectResult-objekt.}
+
+\item{...}{Ignoreres.}
+}
 \description{
 Print-metode for AutodetectResult
 }

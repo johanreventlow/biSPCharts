@@ -489,7 +489,7 @@ Audit-rapport re-genereret.
   `--skip-tests`-flaget lokalt (se commit 20b4724 for reference) og revert
   efter deployment.
 
-# biSPCharts (development version)
+# biSPCharts 0.3.0.9000
 
 ## Bug fixes
 

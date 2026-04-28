@@ -17,7 +17,7 @@ Filnavn som tegnstreng
 \description{
 Format: \verb{<YYYYMMDDTHHMMSSZ>_<session-hash>.rds}. Lexikografisk
 sortering svarer til kronologisk sortering. Session-delen er
-SHA-256-hash (8 tegn) af session_id — raa token optræder aldrig
+SHA-256-hash (8 tegn) af session_id - raa token optraeder aldrig
 i filnavnet. Fallback ved NULL: hash af timestamp + entropi.
 }
 \keyword{internal}

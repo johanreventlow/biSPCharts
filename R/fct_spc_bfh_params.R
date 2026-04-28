@@ -4,14 +4,14 @@
 # Mapper biSPCharts parametre til BFHcharts API-format.
 # Haandterer:
 # - Kolonne-navnemapping (sanitisering af danske karakterer for BFHcharts)
-# - Skalering og normalisering (procent [U+2194] decimal)
+# - Skalering og normalisering (procent til decimal)
 # - Freeze/part position-beregning
 # - Notes/comment-integrering
 
 #' Map biSPCharts Parameters to BFHchart API
 #'
 #' Transforms biSPCharts-style parameters to BFHchart API conventions. Handles
-#' parameter name mapping, scale normalization (percentage [U+2194] decimal), and
+#' parameter name mapping, scale normalization (percentage to decimal), and
 #' data structure preparation. Isolates biSPCharts from BFHchart API changes.
 #'
 #' @details

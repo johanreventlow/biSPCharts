@@ -18,7 +18,10 @@
 ^DEPENDENCY_AUDIT\.md$
 ^\.lintr$
 ^CHANGELOG\.md$
+^check_output$
 ^\.Renviron\.example$
+^app\.R$
+^manifest\.json$
 ^\.DS_Store$
 ^\.\.Rcheck$
 ^Rplots\.pdf$

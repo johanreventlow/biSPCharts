@@ -28,7 +28,11 @@ Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.deb
 \examples{
 \dontrun{
 log_warn("Manglende data i kolonne", .context = "DATA_VALIDATION")
-log_warn(message = "Input sanitized", component = "[INPUT_SANITIZATION]", details = list(original_length = 100))
+log_warn(
+  message = "Input sanitized",
+  component = "[INPUT_SANITIZATION]",
+  details = list(original_length = 100)
+)
 }
 }
 \keyword{internal}

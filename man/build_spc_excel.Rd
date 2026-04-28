@@ -18,12 +18,12 @@ build_spc_excel(
 \item{metadata}{Named list svarende til collect_metadata()-output}
 
 \item{qic_data}{data.frame eller NULL. Hvis ikke-NULL og indeholder
-gyldige rækker, tilføjes "SPC-analyse"-ark med pre-beregnede
+gyldige raekker, tilfoejes "SPC-analyse"-ark med pre-beregnede
 statistikker.}
 
-\item{original_data}{data.frame eller NULL. Brugerens rå data; bruges
+\item{original_data}{data.frame eller NULL. Brugerens raa data; bruges
 til opslag af dato og notes i sektion D af SPC-analyse-arket. Kan
-være identisk med \code{data}-argumentet.}
+vaere identisk med \code{data}-argumentet.}
 
 \item{analysis_options}{Named list. Valgfrie inputs til
 \code{build_spc_analysis_sheet()} (fx \code{freeze_position}, \code{phase_names},

@@ -18,11 +18,11 @@ build_per_part_section(
 
 \item{target_value}{Numeric eller NULL. Target i UI-enhed (eller character).}
 
-\item{phase_names}{Character vektor eller NULL. Hvis sat skal længden matche
+\item{phase_names}{Character vektor eller NULL. Hvis sat skal laengden matche
 antal parts.}
 }
 \value{
-data.frame med én række per part.
+data.frame med en raekke per part.
 }
 \description{
 Byg sektion B (Per-part statistik) til SPC-analyse-arket

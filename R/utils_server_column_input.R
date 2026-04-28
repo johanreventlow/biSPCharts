@@ -23,7 +23,7 @@ NULL
 #' state updates, and cache invalidation.
 #'
 #' @param col_name Character. Name of the column input (e.g., "x_column", "y_column")
-#' @param new_value The new value from input[[col_name]]
+#' @param new_value The new value from the matching Shiny input.
 #' @param app_state Centralized app state containing UI tokens and column mappings
 #' @param emit Event emission API for triggering column_choices_changed event
 #'
@@ -41,11 +41,11 @@ NULL
 #'    - Returns normalized string or ""
 #'
 #' 3. **State Update**: Update app_state with normalized value
-#'    - Updates app_state$columns[[col_name]]
+#'    - Updates the matching app_state column mapping.
 #'    - Maintains synchronization between UI and state
 #'
 #' 4. **Cache Invalidation**: Clear cached column input if cache exists
-#'    - Updates app_state$ui_cache[[cache_key]]
+#'    - Updates the matching app_state UI cache entry.
 #'    - Ensures fresh data on next access
 #'
 #' 5. **Event Emission**: Emit column_choices_changed event for user changes

@@ -6,6 +6,11 @@
 \usage{
 \method{print}{ParsedFile}(x, ...)
 }
+\arguments{
+\item{x}{ParsedFile-objekt.}
+
+\item{...}{Ignoreres.}
+}
 \description{
 Print-metode for ParsedFile
 }

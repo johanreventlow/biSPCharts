@@ -6,7 +6,6 @@
 #' @param libname Library name (not used)
 #' @param pkgname Package name (should be "biSPCharts")
 #'
-#' @importFrom utils packageVersion
 #' @noRd
 
 # Package-level environment for storing configuration and variables
@@ -203,6 +202,19 @@ reset_qic_performance_counters <- function() {
 
   # Registrer Mari font FOeR Roboto -- BFHtheme cacher foerste match,
   # og Mari har hoejeste prioritet i get_bfh_font()
+  old_startup_log_level <- Sys.getenv("SPC_LOG_LEVEL", unset = NA_character_)
+  Sys.setenv(SPC_LOG_LEVEL = "ERROR")
+  on.exit(
+    {
+      if (is.na(old_startup_log_level)) {
+        Sys.unsetenv("SPC_LOG_LEVEL")
+      } else {
+        Sys.setenv(SPC_LOG_LEVEL = old_startup_log_level)
+      }
+    },
+    add = TRUE
+  )
+
   if (exists("register_mari_font", mode = "function")) {
     register_mari_font()
   }

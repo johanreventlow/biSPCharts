@@ -16,20 +16,20 @@ build_special_cause_section(
 \arguments{
 \item{qic_data}{data.frame.}
 
-\item{original_data}{data.frame eller NULL. Bruges til at slå dato og notes
-op via række-indeks.}
+\item{original_data}{data.frame eller NULL. Bruges til at slaa dato og notes
+op via raekke-indeks.}
 
 \item{y_axis_unit}{Character.}
 
 \item{x_column, kommentar_column, n_column}{Character eller NULL. Kolonner i
-\code{original_data} der skal slås op.}
+\code{original_data} der skal slaas op.}
 }
 \value{
 data.frame; tom hvis ingen punkter (caller fortolker via \code{nrow()}).
 }
 \description{
-Returnerer en data.frame med rækker hvor enten \code{runs.signal == TRUE}
-eller punktet er uden for kontrolgrænser. Returnerer en attribut
-\code{empty_message} hvis ingen punkter findes — caller kan vise besked.
+Returnerer en data.frame med raekker hvor enten \code{runs.signal == TRUE}
+eller punktet er uden for kontrolgraenser. Returnerer en attribut
+\code{empty_message} hvis ingen punkter findes - caller kan vise besked.
 }
 \keyword{internal}

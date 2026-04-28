@@ -3,7 +3,6 @@
 **Status:** Accepted
 **Date:** 2025-10-26
 **Decision makers:** Johan Reventlow
-**Context:** PRD ai-improvement-suggestions (.claude/prds/ai-improvement-suggestions.md)
 **Epic:** #69 - AI-Assisteret Forbedringsmål via Gemini
 
 ## Context
@@ -247,12 +246,9 @@ log_error("[AI_SUGGESTION]", "API timeout after 10s")
 
 ## References
 
-- **PRD:** `.claude/prds/ai-improvement-suggestions.md`
 - **Epic #69:** https://github.com/[repo]/issues/69
 - **Ellmer Package:** https://ellmer.tidyverse.org/
 - **Gemini API Docs:** https://ai.google.dev/gemini-api/docs
-- **Test Summary:** `tests/TEST_SUMMARY_AI.md`
-- **Manual Testing:** `tests/MANUAL_TESTING_AI.md`
 - **Integration Tests:** `tests/testthat/test-integration-ai-gemini.R`
 
 ## Related ADRs

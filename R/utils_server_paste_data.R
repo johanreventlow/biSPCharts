@@ -167,35 +167,49 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       ext <- tolower(tools::file_ext(file_info$name))
 
       if (ext %in% c("xlsx", "xls")) {
-        excel_sheets <- readxl::excel_sheets(file_info$datapath)
-        if ("Data" %in% excel_sheets && "Indstillinger" %in% excel_sheets) {
+        excel_sheets <- list_excel_sheets(file_info$datapath)
+        if (is.null(excel_sheets) || length(excel_sheets) == 0) {
+          shiny::showNotification(
+            "Excel-filen kunne ikke l\u00e6ses (ingen ark fundet)",
+            type = "error", duration = 5
+          )
+          return()
+        }
+        if (is_bispchart_excel_format(excel_sheets)) {
           # biSPCharts gem-format: gendannelse direkte uden paste-felt
           handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
-        } else {
-          # Standard Excel: kolonne-aware formatering med komma-decimal
-          # Bevarer type-information (i modsaetning til apply som koercerer til matrix)
-          data <- readxl::read_excel(file_info$datapath, col_names = TRUE)
-          header <- paste(names(data), collapse = "\t")
-          rows <- vapply(seq_len(nrow(data)), function(i) {
-            vals <- vapply(names(data), function(col) {
-              v <- data[[col]][[i]]
-              if (is.na(v)) {
-                ""
-              } else if (is.numeric(v)) {
-                format(v, decimal.mark = ",", scientific = FALSE)
-              } else if (inherits(v, c("Date", "POSIXct"))) {
-                format(v, "%Y-%m-%d")
-              } else {
-                as.character(v)
-              }
-            }, character(1))
-            paste(vals, collapse = "\t")
-          }, character(1))
-          text_content <- paste(c(header, rows), collapse = "\n")
-          shiny::updateTextAreaInput(session, "paste_data_input", value = text_content)
+        } else if (length(excel_sheets) == 1) {
+          # Standard single-sheet: laes direkte
+          data <- readxl::read_excel(
+            file_info$datapath,
+            sheet = excel_sheets[1],
+            col_names = TRUE
+          )
+          shiny::updateTextAreaInput(
+            session, "paste_data_input",
+            value = excel_data_to_paste_text(data)
+          )
           shiny::showNotification(
             paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
             type = "message", duration = 3
+          )
+        } else {
+          # Standard multi-sheet: vis sheet-picker, vent paa eksplicit valg
+          empty_flags <- detect_empty_sheets(file_info$datapath, excel_sheets)
+          app_state$session$pending_excel_upload <- list(
+            datapath = file_info$datapath,
+            name = file_info$name,
+            sheets = excel_sheets,
+            empty_flags = empty_flags
+          )
+          shinyjs::show("excel_sheet_dropdown")
+          shiny::showNotification(
+            paste0(
+              "\"", file_info$name, "\" indeholder ",
+              length(excel_sheets),
+              " faneblade \u2014 v\u00e6lg det \u00f8nskede ark fra menuen"
+            ),
+            type = "message", duration = 5
           )
         }
       } else if (ext %in% c("csv", "txt")) {
@@ -214,4 +228,143 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       }
     })
   })
+
+  # Render: Excel sheet-picker dropdown items (vises ved multi-sheet upload)
+  output$excel_sheet_dropdown_items <- shiny::renderUI({
+    pending <- app_state$session$pending_excel_upload
+    if (is.null(pending) || is.null(pending$sheets) || length(pending$sheets) == 0) {
+      return(NULL)
+    }
+    build_excel_sheet_dropdown_items(pending$sheets, pending$empty_flags)
+  })
+
+  # Observer: Bruger vaelger ark fra sheet-picker dropdown
+  shiny::observeEvent(input$selected_excel_sheet, {
+    sheet_name <- input$selected_excel_sheet
+    pending <- app_state$session$pending_excel_upload
+
+    if (is.null(pending) || is.null(sheet_name) || !nzchar(sheet_name)) {
+      shinyjs::hide("excel_sheet_dropdown")
+      return()
+    }
+    if (!sheet_name %in% pending$sheets) {
+      shiny::showNotification(
+        paste0("Ukendt ark: ", sheet_name),
+        type = "error", duration = 3
+      )
+      shinyjs::hide("excel_sheet_dropdown")
+      return()
+    }
+
+    safe_operation("Indlaes valgt Excel-ark", {
+      data <- readxl::read_excel(
+        path = pending$datapath,
+        sheet = sheet_name,
+        col_names = TRUE
+      )
+      shiny::updateTextAreaInput(
+        session, "paste_data_input",
+        value = excel_data_to_paste_text(data)
+      )
+      shiny::showNotification(
+        paste0(
+          "Ark \"", sheet_name, "\" indl\u00e6st - tryk Forts\u00e6t for at analysere"
+        ),
+        type = "message", duration = 4
+      )
+      app_state$session$pending_excel_upload <- NULL
+      shinyjs::hide("excel_sheet_dropdown")
+    })
+  })
+}
+
+# ---- Internal helpers --------------------------------------------------------
+
+#' Konverter data.frame fra Excel til tab-separeret paste-text
+#'
+#' Bevarer type-information: numeriske formatteres med komma-decimal, datoer
+#' i ISO 8601, NA -> tom streng. Headers indlejres som foerste linje.
+#'
+#' @param data data.frame fra `readxl::read_excel()`
+#' @return Single character med "\\n"-separerede raekker
+#' @noRd
+excel_data_to_paste_text <- function(data) {
+  if (is.null(data) || ncol(data) == 0) {
+    return("")
+  }
+  header <- paste(names(data), collapse = "\t")
+  if (nrow(data) == 0) {
+    return(header)
+  }
+  rows <- vapply(seq_len(nrow(data)), function(i) {
+    vals <- vapply(names(data), function(col) {
+      v <- data[[col]][[i]]
+      if (is.na(v)) {
+        ""
+      } else if (is.numeric(v)) {
+        format(v, decimal.mark = ",", scientific = FALSE)
+      } else if (inherits(v, c("Date", "POSIXct"))) {
+        format(v, "%Y-%m-%d")
+      } else {
+        as.character(v)
+      }
+    }, character(1))
+    paste(vals, collapse = "\t")
+  }, character(1))
+  paste(c(header, rows), collapse = "\n")
+}
+
+#' Byg sheet-picker dropdown items (HTML-buttons)
+#'
+#' En button per ark, med JSON-escaped onclick som saetter `selected_excel_sheet`
+#' input. Tomme ark faar dempet styling via `excel-sheet-item--empty`-klassen.
+#'
+#' @param sheets Character vector af ark-navne
+#' @param empty_flags Logical vector samme laengde - TRUE for tomme ark
+#' @return `tagList()` af `<button>`-elementer
+#' @noRd
+build_excel_sheet_dropdown_items <- function(sheets, empty_flags = NULL) {
+  if (is.null(sheets) || length(sheets) == 0) {
+    return(NULL)
+  }
+  if (is.null(empty_flags) || length(empty_flags) != length(sheets)) {
+    empty_flags <- rep(FALSE, length(sheets))
+  }
+
+  items <- lapply(seq_along(sheets), function(i) {
+    sheet_name <- sheets[i]
+    is_empty <- isTRUE(empty_flags[i])
+
+    # JSON-escape sheet-navn for sikker JS-injection
+    name_json <- jsonlite::toJSON(sheet_name, auto_unbox = TRUE)
+    onclick <- sprintf(
+      paste0(
+        "Shiny.setInputValue('selected_excel_sheet', %s, {priority: 'event'});",
+        " document.getElementById('excel_sheet_dropdown').style.display='none';"
+      ),
+      name_json
+    )
+
+    css_class <- if (is_empty) "excel-sheet-item excel-sheet-item--empty" else "excel-sheet-item"
+    label <- if (is_empty) {
+      paste0(sheet_name, " (tomt ark)")
+    } else {
+      sheet_name
+    }
+
+    shiny::tags$button(
+      type = "button",
+      class = css_class,
+      onclick = onclick,
+      htmltools::htmlEscape(label)
+    )
+  })
+
+  shiny::tagList(
+    shiny::tags$div(
+      class = "excel-sheet-header",
+      "V\u00e6lg faneblad"
+    ),
+    items
+  )
 }

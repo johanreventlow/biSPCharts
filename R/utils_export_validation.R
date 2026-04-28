@@ -32,8 +32,10 @@
 #' @param width Custom bredde i pixels (kun PNG)
 #' @param height Custom hoejde i pixels (kun PNG)
 #'
-#' @return TRUE hvis alle validations passerer
-#' @throws Error hvis validation fejler med beskrivende fejlbesked
+#' @return TRUE hvis alle validations passerer.
+#'
+#' @section Errors:
+#' Kaster en fejl hvis validation fejler med beskrivende fejlbesked.
 #'
 #' @examples
 #' \dontrun{
@@ -253,14 +255,18 @@ sanitize_user_input <- function(input_value,
 #' @param height Hoejde i pixels eller inches
 #' @param warn_only Emit warning i stedet for error (default TRUE)
 #'
-#' @return TRUE hvis aspect ratio er acceptable eller warn_only = TRUE
-#' @throws Warning hvis aspect ratio er ekstrem og warn_only = TRUE
-#' @throws Error hvis aspect ratio er ekstrem og warn_only = FALSE
+#' @return TRUE hvis aspect ratio er acceptable eller warn_only = TRUE.
+#'
+#' @section Errors:
+#' Advarer hvis aspect ratio er ekstrem og `warn_only = TRUE`; kaster fejl hvis
+#' aspect ratio er ekstrem og `warn_only = FALSE`.
 #'
 #' @details
 #' Acceptable aspect ratios: 0.5 - 2.0
-#' - < 0.5: For smalt (hoejt og snaevert)
-#' - > 2.0: For bredt (lavt og bredt)
+#' \itemize{
+#'   \item Under 0.5: For smalt (hoejt og snaevert)
+#'   \item Over 2.0: For bredt (lavt og bredt)
+#' }
 #'
 #' @examples
 #' \dontrun{

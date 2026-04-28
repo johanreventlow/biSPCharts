@@ -598,8 +598,7 @@ For teams using biSPCharts with pure BFHcharts implementation:
 If you encounter limitations not listed here:
 
 1. **Check this document** - Most limitations documented with workarounds
-2. **Review MANUAL_TEST_GUIDE.md** - Specific test procedures
-3. **Check BFHCHARTS_MIGRATION_GUIDE.md** - Architecture overview
+2. **Check BFHCHARTS_MIGRATION_GUIDE.md** - Architecture overview
 4. **Review GitHub issues** - Known issues and discussions
 5. **Create new issue** - If not found above
 

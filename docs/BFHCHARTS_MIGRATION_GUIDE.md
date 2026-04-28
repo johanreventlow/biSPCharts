@@ -461,7 +461,7 @@ For questions about the BFHcharts migration:
 
 1. **Architecture questions:** See `CLAUDE.md` section 3.4
 2. **Limitations & workarounds:** See `docs/BFHCHARTS_LIMITATIONS.md`
-3. **Manual testing:** See `MANUAL_TEST_GUIDE.md`
+3. **Manual testing:** Se `tests/manual/` + `tests/README.md`
 4. **Development:** See `docs/BFHCHARTS_COORDINATION.md`
 5. **Issues:** Create GitHub issue with logs and reproduction steps
 

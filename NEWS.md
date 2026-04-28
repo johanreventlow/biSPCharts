@@ -1,5 +1,24 @@
 # biSPCharts 0.3.0
 
+## Nye features
+
+* **Sheet-picker for multi-sheet Excel-upload:** Når brugeren uploader en
+  Excel-fil med flere ark (og som ikke er biSPCharts gem-format), åbnes en
+  dropdown ankret under "Indlæs XLS/CSV"-knappen, hvor det ønskede ark kan
+  vælges. Tomme ark vises grå-ud. Single-sheet Excel og biSPCharts
+  gem-format (Data + Indstillinger + SPC-analyse) bibeholder eksisterende
+  auto-indlæsning.
+
+* **Tredje ark "SPC-analyse" i Excel-download:** Nye Excel-eksporter
+  indeholder nu et informationsark med pre-beregnede SPC-statistikker.
+  Arket har fire sektioner: oversigt (charttype, antal parts, target,
+  ooc-rækker, dansk Anhøj-tolkning), per-part statistik
+  (CL/UCL/LCL/Mean/Median/Δ til CL), Anhøj-regler per part (serielængde,
+  kryds, signaler), og special cause-punkter med dato, kommentarer og
+  nævner. Y-værdier vises i UI-valgt enhed (fx timer i stedet for
+  kanoniske minutter). Arket parses ikke ved upload — round-trip-egenskaben
+  for "Data" + "Indstillinger" er uændret.
+
 ## Interne ændringer
 
 * **BFHcharts 0.9.0 dependency bump:** `target_value` valideres nu mod
@@ -470,7 +489,7 @@ Audit-rapport re-genereret.
   `--skip-tests`-flaget lokalt (se commit 20b4724 for reference) og revert
   efter deployment.
 
-# biSPCharts (development version)
+# biSPCharts 0.3.0.9000
 
 ## Bug fixes
 

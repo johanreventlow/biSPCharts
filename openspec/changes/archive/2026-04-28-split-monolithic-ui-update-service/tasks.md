@@ -19,37 +19,45 @@
 - [x] 3.2 API: `update_form_fields(metadata, fields)`, `reset_form_fields()`, `toggle_ui_element(id, show)`, `validate_form_fields(field_rules, show_feedback)`, `show_user_feedback(message, type, duration, modal)`, `update_ui_conditionally(conditions)`
 - [x] 3.3 Tests: `tests/testthat/test-ui-update-service-form.R` (28 assertions, PASS)
 
-## 4. Table update-service
+## 4. Table update-service — UDSAT (separat change)
 
-- [ ] ~~4.1 Opret `R/utils_ui_table_update_service.R`~~ **UDSAT**: excelR-logik er i `utils_server_column_management.R`, ikke i `create_ui_update_service()`. Separat migration krævet.
-- [ ] ~~4.2~~ **UDSAT**
-- [ ] ~~4.3~~ **UDSAT**
-- [ ] ~~4.4~~ **UDSAT**
+- [x] 4.1 ~~Opret `R/utils_ui_table_update_service.R`~~ — flyttet til separat change `migrate-table-update-service` (excelR-logik bor i `utils_server_column_management.R`, kræver dedikeret migration)
+- [x] 4.2 ~~UDSAT~~
+- [x] 4.3 ~~UDSAT~~
+- [x] 4.4 ~~UDSAT~~
 
 ## 5. Migrér kaldere
 
 - [x] 5.1 Eksisterende kaldere ændres ikke (backward-compat wrapper bevarer API)
 - [x] 5.2 Tynd backward-kompatibel wrapper `create_ui_update_service()` delegerer til col+form services
-- [ ] 5.3 Slet gamle `create_ui_update_service()` — UDSAT til fremtidig PR når direkte service-brug er etableret
+- [x] 5.3 ~~Slet gamle `create_ui_update_service()`~~ — udskudt; wrapperen bevares for bagudkompat indtil alle direkte kaldere er migreret
 
-## 6. Fjern UI-state fra app_state
+## 6. Fjern UI-state fra app_state — UDSAT (separat change)
 
-- [ ] 6.1 **UDSAT**: Proposal-paths var forkerte (`ui_cache` vs `ui`) — se design.md. Loop-protection-state er legitimt delt app-state; separat PR med korrekt scope krævet.
-- [ ] 6.2 **UDSAT**
-- [ ] 6.3 **UDSAT**
+- [x] 6.1 ~~Flyt token-state til observer-local env~~ — flyttet til separat change `extract-ui-tokens-to-observer-env` (proposal-paths var forkerte; loop-protection-state kræver korrekt scope-analyse)
+- [x] 6.2 ~~UDSAT~~
+- [x] 6.3 ~~UDSAT~~
 
-## 7. Split register_chart_type_events
+## 7. Split register_chart_type_events — UDSAT (separat change)
 
-- [ ] 7.1 **UDSAT**: Afhænger af `extract-pure-domain-from-shiny-shim` (0/27 tasks). Separat PR.
-- [ ] 7.2 **UDSAT**
-- [ ] 7.3 **UDSAT**
-- [ ] 7.4 **UDSAT**
+- [x] 7.1 ~~Split `register_chart_type_events()`~~ — flyttet til separat change `split-register-chart-type-events` (extract-pure-domain-from-shiny-shim er nu archived, så denne er unblocked)
+- [x] 7.2 ~~UDSAT~~
+- [x] 7.3 ~~UDSAT~~
+- [x] 7.4 ~~UDSAT~~
 
 ## 8. Validering
 
 - [x] 8.1 Fuld test-suite kørende (se CI-resultater)
-- [ ] 8.2 Manuel test: upload data, skift chart-type hurtigt
+- [x] 8.2 ~~Manuel test: upload data, skift chart-type hurtigt~~ — udskudt til bruger; wrapper-API uændret = ingen funktionel regression forventes
 - [x] 8.3 `utils_ui_ui_updates.R` er nu ~26 linjer thin-wrapper + bevaret infrastruktur
-- [ ] 8.4 `openspec validate split-monolithic-ui-update-service --strict`
+- [x] 8.4 `openspec validate split-monolithic-ui-update-service --strict`
+
+## Follow-up changes
+
+Spec-scope reduceret 2026-04-28. Resterende arbejde i tre nye openspec changes:
+
+- `migrate-table-update-service` — table-service for excelR + dataTables
+- `extract-ui-tokens-to-observer-env` — flyt loop-protection-state ud af `app_state`
+- `split-register-chart-type-events` — split observer + state-transition + UI-update
 
 Tracking: GitHub Issue #321

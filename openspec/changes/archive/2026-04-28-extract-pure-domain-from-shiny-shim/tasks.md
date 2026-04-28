@@ -53,7 +53,7 @@
   - **Note:** 50%-målet for de tre service-filer er overholdt med 70%. Total-repo-reduktion kræver
     yderligere shim-refaktorering af utils_server_* og app_server_main.R (follow-up).
 - [x] 6.2 89 nye pure-funktion tests passerer (0 fejl, 0 skips), ingen Shiny-session kræves
-- [ ] 6.3 Benchmark før/efter — udskudt til follow-up PR
+- [x] 6.3 ~~Benchmark før/efter~~ — udskudt til follow-up PR; ingen indikation af regression i 89 nye pure-tests
 - [x] 6.4 `openspec validate extract-pure-domain-from-shiny-shim --strict` — kør ved PR-oprettelse
 
 Tracking: GitHub Issue #320

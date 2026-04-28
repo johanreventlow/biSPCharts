@@ -48,7 +48,7 @@
 
 - [x] 7.1 Kør fuld test-suite — 30 nye tests, 0 fejl; regression 0 fejl på analytics-suite
 - [x] 7.2 Manuel test i dev-miljø: .onAttach viser korrekt analytics-status
-- [ ] 7.3 Review `docs/ANALYTICS_PRIVACY.md` med DPIA-team hvis relevant (out-of-scope for impl.)
+- [x] 7.3 ~~Review `docs/ANALYTICS_PRIVACY.md` med DPIA-team~~ — out-of-scope for implementation; ekstern proces, dokument er klar til review
 - [x] 7.4 Kør `openspec validate audit-analytics-logging-privacy --strict`
 
 Tracking: GitHub Issue #323

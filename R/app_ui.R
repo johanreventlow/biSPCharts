@@ -183,7 +183,7 @@ golem_add_external_resources <- function() {
 #' @noRd
 app_sys <- function(...) {
   # Try package installation first
-  result <- system.file(..., package = "biSPCharts")
+  result <- bisp_system_file(...)
 
   # If package not found, try development paths
   if (result == "") {

@@ -130,10 +130,7 @@ inject_template_assets <- function(template_dir) {
   safe_operation(
     operation_name = "Inject template assets",
     code = {
-      src_base <- system.file(
-        "templates/typst/bfh-template",
-        package = "biSPCharts"
-      )
+      src_base <- bisp_system_file("templates/typst/bfh-template")
 
       if (!nzchar(src_base) || !dir.exists(src_base)) {
         log_info("biSPCharts template directory not found - skipping asset injection")

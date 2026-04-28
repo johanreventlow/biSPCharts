@@ -10,25 +10,6 @@ quarto_available()
 Logical. TRUE hvis Quarto CLI er fundet i PATH.
 }
 \description{
-Tjekker om Quarto CLI er tilgaengelig paa systemet.
-Bruges til at vise/skjule PDF export option baseret paa Quarto tilgaengelighed.
+Compatibility wrapper for older export helpers and Rd links.
 }
-\note{
-Compatibility wrapper omkring \code{check_quarto_capability()}.
-}
-\examples{
-\dontrun{
-if (quarto_available()) {
-  # Enable PDF export (altid TRUE)
-}
-}
-
-}
-\seealso{
-Other export_helpers: 
-\code{\link{extract_spc_statistics}()},
-\code{\link{generate_pdf_preview}()},
-\code{\link{get_hospital_name_for_export}()}
-}
-\concept{export_helpers}
 \keyword{internal}

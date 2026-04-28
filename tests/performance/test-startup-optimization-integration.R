@@ -5,6 +5,12 @@
 library(testthat)
 context("Startup Optimization Integration Tests")
 
+memory_used_mb <- function() {
+  gc_info <- gc()
+  cell_sizes <- c(Ncells = 56, Vcells = 8)
+  sum(gc_info[, "used"] * cell_sizes[rownames(gc_info)], na.rm = TRUE) / 1024^2
+}
+
 # Test Information Output
 test_that("startup optimization integration test context information", {
   message("Testing complete startup optimization integration implemented 2025-09-26")
@@ -184,49 +190,41 @@ test_that("error handling works consistently across all optimization components"
 
 # Test memory efficiency of combined optimizations
 test_that("combined startup optimizations are memory efficient", {
-  if (requireNamespace("pryr", quietly = TRUE)) {
-    # Measure memory before optimizations
-    gc()
-    mem_before <- pryr::mem_used()
+  mem_before <- memory_used_mb()
 
-    # Run all optimization components
-    expect_no_error({
-      # Cache operations
-      if (exists("cache_startup_data", mode = "function")) {
-        suppressMessages(cache_startup_data())
-      }
-      if (exists("load_cached_startup_data", mode = "function")) {
-        suppressMessages(load_cached_startup_data())
-      }
+  # Run all optimization components
+  expect_no_error({
+    # Cache operations
+    if (exists("cache_startup_data", mode = "function")) {
+      suppressMessages(cache_startup_data())
+    }
+    if (exists("load_cached_startup_data", mode = "function")) {
+      suppressMessages(load_cached_startup_data())
+    }
 
-      # Lazy loading operations
-      if (exists("lazy_load_modules", mode = "function")) {
-        lazy_load_modules()
-      }
+    # Lazy loading operations
+    if (exists("lazy_load_modules", mode = "function")) {
+      lazy_load_modules()
+    }
 
-      # Security operations
-      for (i in 1:10) {
-        hash_session_token(paste0("test_token_", i))
-      }
+    # Security operations
+    for (i in 1:10) {
+      hash_session_token(paste0("test_token_", i))
+    }
 
-      # Logging operations
-      for (i in 1:20) {
-        log_info(paste("Memory test message", i), component = "MEMORY_TEST")
-      }
-    })
+    # Logging operations
+    for (i in 1:20) {
+      log_info(paste("Memory test message", i), component = "MEMORY_TEST")
+    }
+  })
 
-    # Measure memory after optimizations
-    gc()
-    mem_after <- pryr::mem_used()
+  mem_after <- memory_used_mb()
 
-    # Memory increase should be reasonable
-    mem_increase <- as.numeric(mem_after - mem_before) / 1024^2
-    expect_lt(mem_increase, 100) # Should not increase by more than 100MB
+  # Memory increase should be reasonable
+  mem_increase <- mem_after - mem_before
+  expect_lt(mem_increase, 100) # Should not increase by more than 100MB
 
-    message(sprintf("Combined optimizations memory usage: %.2f MB", mem_increase))
-  } else {
-    skip("pryr package not available for memory testing")
-  }
+  message(sprintf("Combined optimizations memory usage: %.2f MB", mem_increase))
 })
 
 # Test startup optimization system resilience

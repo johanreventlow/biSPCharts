@@ -6,16 +6,17 @@
 
 #' Valid unit types for Y-axis scaling
 #' @keywords internal
-VALID_UNITS <- c("proportion", "percent", "permille", "absolute")
+VALID_UNITS <- c("proportion", "percent", "permille", "absolute", "time_minutes", "time_hours", "time_days")
 
 #' Internal canonical units by plot type
 #' @keywords internal
 INTERNAL_UNITS_BY_PLOTTYPE <- list(
-  proportions = "proportion", # p-charts, run charts for rates [0,1]
-  absolute = "absolute" # c/u-charts, count run charts
+  proportions = "proportion", # p-charts, run charts for rates 0-1
+  absolute = "absolute", # c/u-charts, count run charts
+  time = "time_minutes" # internal canonical is always minutes
 )
 
-#' Chart types that use proportion internal unit [0,1]
+#' Chart types that use proportion internal unit 0-1
 #' @keywords internal
 #' @noRd
 PROPORTION_CHART_TYPES <- c("p", "pp", "run")
@@ -86,7 +87,7 @@ parse_number_da <- function(x) {
 #' Determine internal unit based on chart type (eliminates 100x mismatch)
 #'
 #' @param chart_type Character. QIC chart type (e.g., "p", "run", "c", "u")
-#' @return Character. Internal unit: "proportion" for [0,1] charts, "absolute" for count charts
+#' @return Character. Internal unit: "proportion" for 0-1 charts, "absolute" for count charts
 #' @keywords internal
 #' @noRd
 determine_internal_unit_by_chart_type <- function(chart_type) {
@@ -292,15 +293,16 @@ coerce_to_target_unit <- function(parsed, target_unit) {
       log_debug("No symbol to permille: treating", value, "as already in permille scale", .context = "Y_AXIS_SCALING")
       return(value) # 80 -> 80 (NOT 0.08)
     }
-  } else if (target_unit == "absolute") {
-    # For absolute units, remove symbols but keep numeric value
-    log_debug("Converting to absolute: removing symbols, keeping value", value, .context = "Y_AXIS_SCALING")
-    return(value) # 80% -> 80, 80%% -> 80, 80 -> 80
+  } else if (target_unit == "absolute" || is_time_unit(target_unit)) {
+    # For absolute or time units, remove symbols but keep numeric value
+    # No implicit scaling occurs for these units.
+    log_debug("Converting to", target_unit, ": removing symbols, keeping value", value, .context = "Y_AXIS_SCALING")
+    return(value) # 80% -> 80, 80 -> 80
   } else {
     # Unknown target unit - this should be caught earlier
-    log_error(
+    log_warn(
       paste("Unknown target unit in coerce_to_target_unit:", target_unit, "symbol:", symbol, "value:", value),
-      "Y_AXIS_SCALING"
+      .context = "Y_AXIS_SCALING"
     )
     return(NA_real_)
   }
@@ -344,9 +346,9 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
       return(result)
     } else if (target_unit == "absolute") {
       # This is problematic - absolute values can't be converted to proportions without context
-      log_error(
+      log_warn(
         paste("Cannot convert absolute to proportion without context - target:", target_unit, "internal:", internal_unit),
-        "Y_AXIS_SCALING"
+        .context = "Y_AXIS_SCALING"
       )
       return(NA_real_)
     } else if (target_unit == "proportion") {
@@ -357,19 +359,32 @@ to_internal_scale <- function(value_in_target_unit, target_unit, internal_unit) 
     # Absolute internal unit - values pass through without scaling
     log_debug("Internal unit is absolute - no scaling applied", .context = "Y_AXIS_SCALING")
     return(value_in_target_unit)
+  } else if (internal_unit == "time_minutes") {
+    # Convert from other time units to internal minutes
+    if (target_unit == "time_hours") {
+      return(value_in_target_unit * 60)
+    } else if (target_unit == "time_days") {
+      return(value_in_target_unit * 1440)
+    } else if (target_unit == "time_minutes") {
+      return(value_in_target_unit)
+    } else {
+      # Fallback for non-time units to time_minutes: treat as absolute (no scaling)
+      log_warn(paste("Non-time target unit", target_unit, "to time_minutes internal: no scaling applied"), .context = "Y_AXIS_SCALING")
+      return(value_in_target_unit)
+    }
   } else {
     # Unknown internal unit
-    log_error(
+    log_warn(
       paste("Unknown internal unit in to_internal_scale - target:", target_unit, "internal:", internal_unit),
-      "Y_AXIS_SCALING"
+      .context = "Y_AXIS_SCALING"
     )
     return(NA_real_)
   }
 
   # Should never reach here, but include for safety
-  log_error(
+  log_warn(
     paste("Unexpected code path in to_internal_scale - target:", target_unit, "internal:", internal_unit, "value:", value_in_target_unit),
-    "Y_AXIS_SCALING"
+    .context = "Y_AXIS_SCALING"
   )
   return(NA_real_)
 }

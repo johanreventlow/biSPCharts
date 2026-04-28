@@ -4,11 +4,7 @@
 \alias{update_anhoej_results}
 \title{Opdater Anhoej resultater ud fra nye QIC-beregninger}
 \usage{
-update_anhoej_results(
-  previous,
-  qic_results,
-  centerline_changed = FALSE
-)
+update_anhoej_results(previous, qic_results, centerline_changed = FALSE)
 }
 \arguments{
 \item{previous}{list. Forrige \code{anhoej_results} (kan vaere NULL ved foerste koersel)}
@@ -16,7 +12,6 @@ update_anhoej_results(
 \item{qic_results}{list. Nye beregnede metrics (fra \code{derive_anhoej_results()})}
 
 \item{centerline_changed}{logical. TRUE hvis centerline/baseline er aendret (inkl. ryddet)}
-
 }
 \value{
 list. Opdateret \code{anhoej_results}
@@ -31,5 +26,9 @@ saa opdateres resultaterne altid og markeres som gyldige
 \item Hvis metrics er NA og centerline ikke er aendret, og der fandtes gyldige vaerdier foer,
 bevares de gamle vaerdier (for at undgaa midlertidig flimmer under beregning)
 }
+}
+\details{
+Fase-filtrering og Anhoej-udledning haandteres af \code{derive_anhoej_results()}
+foer dette kald. Denne funktion bevaarer udelukkende preserve-politikken.
 }
 \keyword{internal}

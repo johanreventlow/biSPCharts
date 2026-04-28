@@ -2,10 +2,17 @@
 % Please edit documentation in R/fct_spc_file_save_load.R
 \name{fct_spc_file_save_load}
 \alias{fct_spc_file_save_load}
-\title{Fil-baseret gem og indlæs}
+\title{Fil-baseret gem og indlaes}
 \description{
-To rene funktioner til at skrive og læse biSPCharts Excel-filer.
-Filen har to ark: "Data" (de rå rækker) og "Indstillinger" (alle
-UI-indstillinger som Felt/Værdi-tabel), svarende til hvad
+To rene funktioner til at skrive og laese biSPCharts Excel-filer.
+Filen har to ark: "Data" (de raa raekker) og "Indstillinger" (alle
+UI-indstillinger som Felt/Vaerdi-tabel), svarende til hvad
 collect_metadata() returnerer.
+}
+\details{
+Hvis \code{qic_data} leveres, tilfoejes desuden et tredje ark "SPC-analyse"
+med pre-beregnede SPC-statistikker (centrallinje, kontrolgraenser,
+Anhoej-regler per part, special cause-punkter). Arket er informational
+og parses ikke af \code{parse_spc_excel()} - round-trip-egenskaben paavirkes
+ikke.
 }

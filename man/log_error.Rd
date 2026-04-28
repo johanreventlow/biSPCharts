@@ -29,7 +29,11 @@ Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.deb
 \examples{
 \dontrun{
 log_error("Kunne ikke laese fil", .context = "FILE_UPLOAD")
-log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))
+log_error(
+  message = "File validation failed",
+  component = "[FILE_VALIDATION]",
+  details = list(filename = "test.txt")
+)
 tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 }
 }

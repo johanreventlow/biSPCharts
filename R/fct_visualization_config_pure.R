@@ -104,6 +104,9 @@ new_visualization_config <- function(x_col, y_col, n_col, chart_type, source) {
 }
 
 #' Print-metode for VisualizationConfig
+#'
+#' @param x VisualizationConfig-objekt.
+#' @param ... Ignoreres.
 #' @export
 print.VisualizationConfig <- function(x, ...) {
   cat(sprintf(

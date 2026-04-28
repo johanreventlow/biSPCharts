@@ -749,6 +749,59 @@ create_ui_upload_page <- function() {
         display: block;
       }
 
+      /* Excel sheet picker dropdown (multi-sheet upload) */
+      .excel-sheet-dropdown {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        z-index: 1000;
+        min-width: 320px;
+        max-height: 400px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        padding: 4px 0;
+        margin-bottom: 4px;
+        display: none;
+      }
+      .excel-sheet-item {
+        display: block;
+        padding: 8px 16px;
+        cursor: pointer;
+        text-decoration: none;
+        color: ", hospital_colors$dark, ";
+        font-size: 0.82rem;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        line-height: 1.4;
+      }
+      .excel-sheet-item:hover {
+        background-color: ", hospital_colors$light, ";
+        text-decoration: none;
+        color: ", hospital_colors$dark, ";
+      }
+      .excel-sheet-item--empty {
+        color: ", hospital_colors$ui_grey_dark, ";
+        font-style: italic;
+      }
+      .excel-sheet-item--empty:hover {
+        color: ", hospital_colors$ui_grey_dark, ";
+      }
+      .excel-sheet-header {
+        padding: 6px 16px;
+        font-size: 0.75rem;
+        color: ", hospital_colors$ui_grey_dark, ";
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #f0f0f0;
+        margin-bottom: 4px;
+      }
+
       /* Download skabelon link */
       .download-template-link {
         font-size: 0.8rem;
@@ -774,6 +827,14 @@ create_ui_upload_page <- function() {
             !toggleBtn.contains(e.target)) {
           dropdown.style.display = 'none';
         }
+
+        var sheetDropdown = document.getElementById('excel_sheet_dropdown');
+        var uploadBtn = document.getElementById('trigger_file_upload');
+        if (sheetDropdown && uploadBtn &&
+            !sheetDropdown.contains(e.target) &&
+            !uploadBtn.contains(e.target)) {
+          sheetDropdown.style.display = 'none';
+        }
       });
     ")),
     shiny::div(
@@ -795,9 +856,9 @@ create_ui_upload_page <- function() {
             )
           ),
 
-          # Knap 2: Indlaes XLS/CSV
+          # Knap 2: Indlaes XLS/CSV (med sheet-picker dropdown for multi-sheet Excel)
           shiny::div(
-            style = "flex: 0 0 120px;",
+            style = "flex: 0 0 120px; position: relative;",
             # Skjult fileInput
             shiny::div(
               style = "display: none;",
@@ -811,6 +872,12 @@ create_ui_upload_page <- function() {
             square_button(
               "trigger_file_upload", "Indl\u00e6s\nXLS/CSV", "table",
               "V\u00e6lg Excel/CSV eller en tidligere gemt biSPCharts-fil"
+            ),
+            # Sheet-picker dropdown (vises kun ved multi-sheet Excel-upload)
+            shiny::div(
+              id = "excel_sheet_dropdown",
+              class = "excel-sheet-dropdown",
+              shiny::uiOutput("excel_sheet_dropdown_items")
             )
           ),
 

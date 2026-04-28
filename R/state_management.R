@@ -184,7 +184,11 @@ create_app_state <- function() {
 
     # Brugerstyret session restore (Issue #193)
     # NULL = endnu ikke afklaret (JS peek ikke ankommet), list(has_payload = FALSE/TRUE, ...)
-    peek_result = NULL
+    peek_result = NULL,
+
+    # Excel multi-sheet sheet-picker (add-excel-sheet-picker)
+    # NULL = ingen pending upload; ellers list(datapath, name, sheets, empty_flags)
+    pending_excel_upload = NULL
   )
 
   # Test Mode Management with Startup Optimization

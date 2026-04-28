@@ -122,7 +122,6 @@ generate_pdf_export <- function(input, app_state, file) {
     title = input$export_title,
     analysis = input$pdf_improvement,
     data_definition = input$pdf_description,
-    author = Sys.getenv("USER"),
     date = Sys.Date()
   )
 

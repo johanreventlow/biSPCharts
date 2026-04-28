@@ -499,12 +499,20 @@ test_that("generateSPCPlot error handling works correctly", {
     check.names = FALSE
   )
 
-  # character(0) normaliseres til NULL (x_col → row-index), men rendering kan fejle.
-  # Typed error propagerer nu korrekt — caller (mod_spc_chart_compute) fanger den.
-  expect_error(
-    generateSPCPlot(valid_data, bad_config, "i", chart_title_reactive = reactive("Bad Config Test")),
-    class = "spc_render_error"
+  # character(0) for x_col normaliseres til NULL og en fallback-kolonne
+  # ("spc_row_index") injiceres i data, saa BFHcharts faar et gyldigt
+  # x_var. Tidligere afviste BFHcharts-validatoren ".spc_row_index"
+  # (leading dot bryder regex ^[a-zA-Z][a-zA-Z0-9._]*$), saa testen
+  # forventede en spc_render_error. Efter rename af kolonnen til
+  # "spc_row_index" (uden dot) propagerer rendering korrekt og
+  # returnerer en gyldig plot-result.
+  result <- generateSPCPlot(
+    valid_data,
+    bad_config,
+    "i",
+    chart_title_reactive = reactive("Bad Config Test")
   )
+  expect_false(is.null(result))
 })
 
 test_that("generateSPCPlot performance and caching works", {

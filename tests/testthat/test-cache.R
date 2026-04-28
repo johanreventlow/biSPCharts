@@ -106,7 +106,7 @@ test_that("create_data_signature is stable for identical data", {
   expect_identical(sig1, sig2)
 })
 
-# Bug #2: Data content cache uses only first row ----
+# Data content cache must inspect more than the first row ----
 
 test_that("evaluate_data_content_cached detects changes beyond first row", {
   skip_if_not(

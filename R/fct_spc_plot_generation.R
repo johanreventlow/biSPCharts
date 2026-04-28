@@ -573,10 +573,12 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   n_col_val <- normalize_config_val(config$n_col)
 
   # Fallback: hvis x_col er NULL (fx character(0) fra UI), inj\u00e9r r\u00e6kkenummer som x-akse
-  # S\u00e5 backend ikke fejler p\u00e5 manglende x_var -- standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret
+  # S\u00e5 backend ikke fejler p\u00e5 manglende x_var -- standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret.
+  # Navnet bruger ikke leading dot fordi BFHcharts' column-name-validator afviser
+  # navne der ikke starter med bogstav (regex ^[a-zA-Z][a-zA-Z0-9._]*$).
   if (is.null(x_col_val) && is.data.frame(data) && nrow(data) > 0) {
-    data[[".spc_row_index"]] <- seq_len(nrow(data))
-    x_col_val <- ".spc_row_index"
+    data[["spc_row_index"]] <- seq_len(nrow(data))
+    x_col_val <- "spc_row_index"
   }
 
   # Call BFHchart backend (compute_spc_results_bfh from Task #31)

@@ -1,10 +1,8 @@
 Package: biSPCharts
-Title: biSPCharts - Kvalitetsudvikling på Bispebjerg og Frederiksberg Hospital
+Title: Statistical Process Control for Clinical Quality Improvement
 Version: 0.3.0
 Authors@R:
     person("Johan", "Reventlow", , "johan@reventlow.dk", role = c("aut", "cre"))
-Author: Johan Reventlow <johan@reventlow.dk>
-Maintainer: Johan Reventlow <johan@reventlow.dk>
 Description:
     En Shiny applikation til Statistical Process Control (SPC) analyse
     specifikt designet til brug i sundhedsvæsenet. Appen giver mulighed for
@@ -49,11 +47,17 @@ Imports:
     config (>= 0.3.0),
     systemfonts (>= 1.0.0)
 Suggests:
+    bench,
+    chromote,
+    ggrepel,
+    hms,
+    httr2,
     testthat (>= 3.0.0),
     shinytest2,
     here,
     knitr,
     rmarkdown,
+    rprojroot,
     writexl (>= 1.4.0),
     openxlsx (>= 4.2.0),
     microbenchmark (>= 1.4.0),
@@ -65,7 +69,8 @@ Suggests:
     pins (>= 1.2.0),
     gert (>= 1.9.0),
     shinylogs (>= 0.2.0),
-    mockery
+    mockery,
+    withr
 Config/testthat/edition: 3
 Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace().
 Remotes:

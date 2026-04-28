@@ -12,20 +12,20 @@ derive_anhoej_results(qic_data, show_phases = FALSE)
 \code{longest.run}, \code{longest.run.max}, \code{part}, \code{y}.}
 
 \item{show_phases}{logical. Hvis \code{TRUE} filtreres til seneste \code{part}
-før beregning (jf. \code{filter_latest_part()}). Default \code{FALSE}.}
+foer beregning (jf. \code{filter_latest_part()}). Default \code{FALSE}.}
 }
 \value{
 list med ni felter:
 \describe{
-\item{runs_signal}{logical. \code{TRUE} hvis serielængde-testen er udløst
-(mindst ét punkt i \code{runs.signal} er \code{TRUE}).}
-\item{crossings_signal}{logical. \code{TRUE} hvis krydstesten er udløst
+\item{runs_signal}{logical. \code{TRUE} hvis serielaengde-testen er udloest
+(mindst et punkt i \code{runs.signal} er \code{TRUE}).}
+\item{crossings_signal}{logical. \code{TRUE} hvis krydstesten er udloest
 (\code{n.crossings < n.crossings.min}).}
 \item{anhoej_signal}{logical. \code{TRUE} hvis enten \code{runs_signal} eller
 \code{crossings_signal} er \code{TRUE}.}
-\item{longest_run}{numeric. Maksimal serielængde (\code{longest.run}),
+\item{longest_run}{numeric. Maksimal serielaengde (\code{longest.run}),
 eller \code{NA_real_} hvis kolonnen mangler.}
-\item{longest_run_max}{numeric. Maksimalt acceptabel serielængde
+\item{longest_run_max}{numeric. Maksimalt acceptabel serielaengde
 (\code{longest.run.max}), eller \code{NA_real_} hvis kolonnen mangler.}
 \item{n_crossings}{numeric. Antal mediankryds observeret
 (\code{n.crossings}), eller \code{NA_real_} hvis kolonnen mangler.}
@@ -34,17 +34,17 @@ eller \code{NA_real_} hvis kolonnen mangler.}
 \item{special_cause_points}{logical vector. Per-punkt signal fra
 \code{runs.signal}-kolonnen (efter evt. fase-filtrering), eller
 \code{logical(0)} hvis kolonnen mangler.}
-\item{data_points_used}{integer. Antal rækker i det (evt. filtrerede)
-datasæt.}
+\item{data_points_used}{integer. Antal raekker i det (evt. filtrerede)
+datasaet.}
 }
 }
 \description{
-Udtrækker og beregner Anhøj serielængde- og kryds-metrics fra et
+Udtraekker og beregner Anhoej serielaengde- og kryds-metrics fra et
 \code{qic_data}-objekt returneret af \code{qicharts2::qic()} eller BFHcharts.
-Håndterer fase-filtrering internt når \code{show_phases = TRUE}.
+Haandterer fase-filtrering internt naar \code{show_phases = TRUE}.
 }
 \details{
-Funktionen er ren: ingen Shiny-afhængighed, ingen \code{app_state}-reads,
+Funktionen er ren: ingen Shiny-afhaengighed, ingen \code{app_state}-reads,
 ingen side-effekter, ingen caching.
 }
 \examples{

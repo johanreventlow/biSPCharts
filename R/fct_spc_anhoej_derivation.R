@@ -3,30 +3,30 @@
 
 #' Udled Anhoej-resultater fra QIC-data
 #'
-#' Udtrækker og beregner Anhøj serielængde- og kryds-metrics fra et
+#' Udtraekker og beregner Anhoej serielaengde- og kryds-metrics fra et
 #' `qic_data`-objekt returneret af `qicharts2::qic()` eller BFHcharts.
-#' Håndterer fase-filtrering internt når `show_phases = TRUE`.
+#' Haandterer fase-filtrering internt naar `show_phases = TRUE`.
 #'
-#' Funktionen er ren: ingen Shiny-afhængighed, ingen `app_state`-reads,
+#' Funktionen er ren: ingen Shiny-afhaengighed, ingen `app_state`-reads,
 #' ingen side-effekter, ingen caching.
 #'
 #' @param qic_data data.frame. QIC-data med mindst kolonnerne
 #'   `runs.signal`, `n.crossings`, `n.crossings.min`. Valgfrit:
 #'   `longest.run`, `longest.run.max`, `part`, `y`.
 #' @param show_phases logical. Hvis `TRUE` filtreres til seneste `part`
-#'   før beregning (jf. `filter_latest_part()`). Default `FALSE`.
+#'   foer beregning (jf. `filter_latest_part()`). Default `FALSE`.
 #'
 #' @return list med ni felter:
 #'   \describe{
-#'     \item{runs_signal}{logical. `TRUE` hvis serielængde-testen er udløst
-#'       (mindst ét punkt i `runs.signal` er `TRUE`).}
-#'     \item{crossings_signal}{logical. `TRUE` hvis krydstesten er udløst
+#'     \item{runs_signal}{logical. `TRUE` hvis serielaengde-testen er udloest
+#'       (mindst et punkt i `runs.signal` er `TRUE`).}
+#'     \item{crossings_signal}{logical. `TRUE` hvis krydstesten er udloest
 #'       (`n.crossings < n.crossings.min`).}
 #'     \item{anhoej_signal}{logical. `TRUE` hvis enten `runs_signal` eller
 #'       `crossings_signal` er `TRUE`.}
-#'     \item{longest_run}{numeric. Maksimal serielængde (`longest.run`),
+#'     \item{longest_run}{numeric. Maksimal serielaengde (`longest.run`),
 #'       eller `NA_real_` hvis kolonnen mangler.}
-#'     \item{longest_run_max}{numeric. Maksimalt acceptabel serielængde
+#'     \item{longest_run_max}{numeric. Maksimalt acceptabel serielaengde
 #'       (`longest.run.max`), eller `NA_real_` hvis kolonnen mangler.}
 #'     \item{n_crossings}{numeric. Antal mediankryds observeret
 #'       (`n.crossings`), eller `NA_real_` hvis kolonnen mangler.}
@@ -35,8 +35,8 @@
 #'     \item{special_cause_points}{logical vector. Per-punkt signal fra
 #'       `runs.signal`-kolonnen (efter evt. fase-filtrering), eller
 #'       `logical(0)` hvis kolonnen mangler.}
-#'     \item{data_points_used}{integer. Antal rækker i det (evt. filtrerede)
-#'       datasæt.}
+#'     \item{data_points_used}{integer. Antal raekker i det (evt. filtrerede)
+#'       datasaet.}
 #'   }
 #'
 #' @examples
@@ -110,18 +110,18 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
 
 #' Udled Anhoej-resultater per part fra QIC-data
 #'
-#' Itererer over unikke part-værdier i `qic_data` og kalder
-#' `derive_anhoej_results()` på hvert subset. Returnerer én record per part
+#' Itererer over unikke part-vaerdier i `qic_data` og kalder
+#' `derive_anhoej_results()` paa hvert subset. Returnerer en record per part
 #' med samme felter som `derive_anhoej_results()` plus en `$part`-identifier.
 #'
-#' Funktionen er ren: ingen Shiny-afhængighed, ingen `app_state`-reads,
-#' ingen side-effekter. Bevarer rækkefølgen som parts optræder i input-data.
+#' Funktionen er ren: ingen Shiny-afhaengighed, ingen `app_state`-reads,
+#' ingen side-effekter. Bevarer raekkefoelgen som parts optraeder i input-data.
 #'
 #' @param qic_data data.frame. QIC-data som returneret af `qicharts2::qic()`
 #'   eller BFHcharts. Hvis kolonnen `part` mangler eller kun indeholder NA,
-#'   behandles hele datasættet som én "part 1".
+#'   behandles hele datasaettet som en "part 1".
 #'
-#' @return list. Én element per unik part. Hvert element er en named list
+#' @return list. En element per unik part. Hvert element er en named list
 #'   med felter fra `derive_anhoej_results()` udvidet med:
 #'   \describe{
 #'     \item{part}{integer. Part-identifier (eller `1L` hvis kolonnen mangler).}
@@ -136,7 +136,7 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
 #' )
 #' per_part <- derive_anhoej_per_part(qic_result)
 #' length(per_part) # antal parts
-#' per_part[[1]]$runs_signal # part 1's serielængde-signal
+#' per_part[[1]]$runs_signal # part 1's serielaengde-signal
 #' }
 #'
 #' @keywords internal
@@ -153,11 +153,11 @@ derive_anhoej_per_part <- function(qic_data) {
   if (!has_part_col) {
     result <- derive_anhoej_results(qic_data, show_phases = FALSE)
     result$part <- 1L
-    # Sortér felter så $part står først (bevarer øvrig kontrakt)
+    # Sorter felter saa $part staar foerst (bevarer oevrig kontrakt)
     return(list(result[c("part", setdiff(names(result), "part"))]))
   }
 
-  # Bevar rækkefølge som parts optræder i input-data (ikke numerisk sort).
+  # Bevar raekkefoelge som parts optraeder i input-data (ikke numerisk sort).
   part_order <- unique(qic_data$part[!is.na(qic_data$part)])
 
   lapply(part_order, function(p) {
@@ -175,22 +175,22 @@ derive_anhoej_per_part <- function(qic_data) {
 #' rapport-generering.
 #'
 #' @param anhoej_result named list. Forventer felterne `runs_signal` og
-#'   `crossings_signal` (logical). Manglende eller `NA`-værdier behandles
+#'   `crossings_signal` (logical). Manglende eller `NA`-vaerdier behandles
 #'   som `FALSE`.
 #'
 #' @return character. En af fire mulige strenge:
 #'   \itemize{
-#'     \item `"Stabil proces (ingen særskilt årsag)"` — ingen signaler
-#'     \item `"Særskilt årsag: lang serie"` — kun `runs_signal`
-#'     \item `"Særskilt årsag: for få mediankryds"` — kun `crossings_signal`
-#'     \item `"Særskilt årsag: lang serie + få kryds"` — begge signaler
+#'     \item `"Stabil proces (ingen saerskilt aarsag)"` - ingen signaler
+#'     \item `"Saerskilt aarsag: lang serie"` - kun `runs_signal`
+#'     \item `"Saerskilt aarsag: for faa mediankryds"` - kun `crossings_signal`
+#'     \item `"Saerskilt aarsag: lang serie + faa kryds"` - begge signaler
 #'   }
 #'
 #' @examples
 #' \dontrun{
 #' anhoej <- derive_anhoej_results(qic_result, show_phases = FALSE)
 #' interpret_anhoej_signal_da(anhoej)
-#' # "Stabil proces (ingen særskilt årsag)"
+#' # "Stabil proces (ingen saerskilt aarsag)"
 #' }
 #'
 #' @keywords internal
@@ -202,12 +202,12 @@ interpret_anhoej_signal_da <- function(anhoej_result) {
   crossings <- to_logical(anhoej_result$crossings_signal)
 
   if (runs && crossings) {
-    "Særskilt årsag: lang serie + få kryds"
+    "S\u00e6rskilt \u00e5rsag: lang serie + f\u00e5 kryds"
   } else if (runs) {
-    "Særskilt årsag: lang serie"
+    "S\u00e6rskilt \u00e5rsag: lang serie"
   } else if (crossings) {
-    "Særskilt årsag: for få mediankryds"
+    "S\u00e6rskilt \u00e5rsag: for f\u00e5 mediankryds"
   } else {
-    "Stabil proces (ingen særskilt årsag)"
+    "Stabil proces (ingen s\u00e6rskilt \u00e5rsag)"
   }
 }

@@ -268,7 +268,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       )
       shiny::showNotification(
         paste0(
-          "Ark \"", sheet_name, "\" indlæst — tryk Fortsæt for at analysere"
+          "Ark \"", sheet_name, "\" indl\u00e6st - tryk Forts\u00e6t for at analysere"
         ),
         type = "message", duration = 4
       )
@@ -283,7 +283,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
 #' Konverter data.frame fra Excel til tab-separeret paste-text
 #'
 #' Bevarer type-information: numeriske formatteres med komma-decimal, datoer
-#' i ISO 8601, NA → tom streng. Headers indlejres som foerste linje.
+#' i ISO 8601, NA -> tom streng. Headers indlejres som foerste linje.
 #'
 #' @param data data.frame fra `readxl::read_excel()`
 #' @return Single character med "\\n"-separerede raekker
@@ -320,7 +320,7 @@ excel_data_to_paste_text <- function(data) {
 #' input. Tomme ark faar dempet styling via `excel-sheet-item--empty`-klassen.
 #'
 #' @param sheets Character vector af ark-navne
-#' @param empty_flags Logical vector samme laengde — TRUE for tomme ark
+#' @param empty_flags Logical vector samme laengde - TRUE for tomme ark
 #' @return `tagList()` af `<button>`-elementer
 #' @noRd
 build_excel_sheet_dropdown_items <- function(sheets, empty_flags = NULL) {
@@ -363,7 +363,7 @@ build_excel_sheet_dropdown_items <- function(sheets, empty_flags = NULL) {
   shiny::tagList(
     shiny::tags$div(
       class = "excel-sheet-header",
-      "Vælg faneblad"
+      "V\u00e6lg faneblad"
     ),
     items
   )

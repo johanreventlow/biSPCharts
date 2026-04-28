@@ -16,7 +16,7 @@ build_spc_analysis_sheet(
 
 \item{metadata}{Named list (collect_metadata-output).}
 
-\item{original_data}{data.frame eller NULL. Brugerens rå data (til
+\item{original_data}{data.frame eller NULL. Brugerens raa data (til
 dato- og notes-opslag i sektion D).}
 
 \item{options}{Named list med valgfrie inputs:
@@ -35,6 +35,6 @@ named list med fire data.frames (\code{overview}, \code{per_part}, \code{anhoej}
 \description{
 Orkestrerer de fire sektion-builders og returnerer en named list som
 \code{build_spc_excel()} kan iterere over og skrive til workbook'en med
-blank-rækker mellem sektioner.
+blank-raekker mellem sektioner.
 }
 \keyword{internal}

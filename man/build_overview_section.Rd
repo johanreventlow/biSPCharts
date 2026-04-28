@@ -23,14 +23,14 @@ build_overview_section(
 
 \item{y_axis_unit}{Character. UI-valgt y-akse-enhed (fx "time_hours").}
 
-\item{freeze_position}{Integer eller NULL. Række-indeks for freeze-punkt.}
+\item{freeze_position}{Integer eller NULL. Raekke-indeks for freeze-punkt.}
 
 \item{computed_at}{POSIXct. Beregningsdato.}
 
 \item{pkg_versions}{named list. Pakke-versioner (fx \code{list(biSPCharts = "0.x")}).}
 }
 \value{
-data.frame med kolonner \code{Felt} og \code{Værdi}.
+data.frame med kolonner \code{Felt} og \code{Vaerdi}.
 }
 \description{
 Byg sektion A (Oversigt) til SPC-analyse-arket

@@ -8,16 +8,16 @@ interpret_anhoej_signal_da(anhoej_result)
 }
 \arguments{
 \item{anhoej_result}{named list. Forventer felterne \code{runs_signal} og
-\code{crossings_signal} (logical). Manglende eller \code{NA}-værdier behandles
+\code{crossings_signal} (logical). Manglende eller \code{NA}-vaerdier behandles
 som \code{FALSE}.}
 }
 \value{
 character. En af fire mulige strenge:
 \itemize{
-\item \code{"Stabil proces (ingen særskilt årsag)"} — ingen signaler
-\item \code{"Særskilt årsag: lang serie"} — kun \code{runs_signal}
-\item \code{"Særskilt årsag: for få mediankryds"} — kun \code{crossings_signal}
-\item \code{"Særskilt årsag: lang serie + få kryds"} — begge signaler
+\item \code{"Stabil proces (ingen saerskilt aarsag)"} - ingen signaler
+\item \code{"Saerskilt aarsag: lang serie"} - kun \code{runs_signal}
+\item \code{"Saerskilt aarsag: for faa mediankryds"} - kun \code{crossings_signal}
+\item \code{"Saerskilt aarsag: lang serie + faa kryds"} - begge signaler
 }
 }
 \description{
@@ -29,7 +29,7 @@ rapport-generering.
 \dontrun{
 anhoej <- derive_anhoej_results(qic_result, show_phases = FALSE)
 interpret_anhoej_signal_da(anhoej)
-# "Stabil proces (ingen særskilt årsag)"
+# "Stabil proces (ingen saerskilt aarsag)"
 }
 
 }

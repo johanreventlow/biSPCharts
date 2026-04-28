@@ -31,8 +31,9 @@
 register_roboto_font <- function() {
   # Guard: Only register once per session
   # Check if already registered to prevent duplicate registrations
-  if (exists(".roboto_registered", envir = .GlobalEnv) &&
-    isTRUE(get(".roboto_registered", envir = .GlobalEnv))) {
+  claudespc_env <- get_claudespc_environment()
+  if (exists(".roboto_registered", envir = claudespc_env) &&
+    isTRUE(get(".roboto_registered", envir = claudespc_env))) {
     return(invisible(NULL))
   }
 
@@ -134,7 +135,7 @@ register_roboto_font <- function() {
       }
 
       # Mark as registered to prevent duplicate registrations
-      assign(".roboto_registered", TRUE, envir = .GlobalEnv)
+      assign(".roboto_registered", TRUE, envir = claudespc_env)
     },
     fallback = function(e) {
       log_warn(
@@ -169,8 +170,9 @@ register_roboto_font <- function() {
 #' @family font_registration
 #' @keywords internal
 register_mari_font <- function() {
-  if (exists(".mari_registered", envir = .GlobalEnv) &&
-    isTRUE(get(".mari_registered", envir = .GlobalEnv))) {
+  claudespc_env <- get_claudespc_environment()
+  if (exists(".mari_registered", envir = claudespc_env) &&
+    isTRUE(get(".mari_registered", envir = claudespc_env))) {
     return(invisible(NULL))
   }
 
@@ -189,7 +191,7 @@ register_mari_font <- function() {
       message = "Mari allerede tilg\u00e6ngelig som system-font \u2014 registrering sprunget over",
       details = list(variants = sum(sys_fonts$family == "Mari"))
     )
-    assign(".mari_registered", TRUE, envir = .GlobalEnv)
+    assign(".mari_registered", TRUE, envir = claudespc_env)
     return(invisible(NULL))
   }
 
@@ -234,7 +236,7 @@ register_mari_font <- function() {
         )
       )
 
-      assign(".mari_registered", TRUE, envir = .GlobalEnv)
+      assign(".mari_registered", TRUE, envir = claudespc_env)
     },
     fallback = function(e) {
       log_warn(

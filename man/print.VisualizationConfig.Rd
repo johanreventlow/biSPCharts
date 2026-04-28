@@ -6,6 +6,11 @@
 \usage{
 \method{print}{VisualizationConfig}(x, ...)
 }
+\arguments{
+\item{x}{VisualizationConfig-objekt.}
+
+\item{...}{Ignoreres.}
+}
 \description{
 Print-metode for VisualizationConfig
 }

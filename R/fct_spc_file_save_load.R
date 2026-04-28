@@ -1,20 +1,20 @@
-#' Fil-baseret gem og indlæs
+#' Fil-baseret gem og indlaes
 #'
-#' To rene funktioner til at skrive og læse biSPCharts Excel-filer.
-#' Filen har to ark: "Data" (de rå rækker) og "Indstillinger" (alle
-#' UI-indstillinger som Felt/Værdi-tabel), svarende til hvad
+#' To rene funktioner til at skrive og laese biSPCharts Excel-filer.
+#' Filen har to ark: "Data" (de raa raekker) og "Indstillinger" (alle
+#' UI-indstillinger som Felt/Vaerdi-tabel), svarende til hvad
 #' collect_metadata() returnerer.
 #'
-#' Hvis `qic_data` leveres, tilføjes desuden et tredje ark "SPC-analyse"
-#' med pre-beregnede SPC-statistikker (centrallinje, kontrolgrænser,
-#' Anhøj-regler per part, special cause-punkter). Arket er informational
-#' og parses ikke af `parse_spc_excel()` — round-trip-egenskaben påvirkes
+#' Hvis `qic_data` leveres, tilfoejes desuden et tredje ark "SPC-analyse"
+#' med pre-beregnede SPC-statistikker (centrallinje, kontrolgraenser,
+#' Anhoej-regler per part, special cause-punkter). Arket er informational
+#' og parses ikke af `parse_spc_excel()` - round-trip-egenskaben paavirkes
 #' ikke.
 #'
 #' @name fct_spc_file_save_load
 NULL
 
-# Antal header-rækker i Indstillinger-arket (kommentar + tom linje).
+# Antal header-raekker i Indstillinger-arket (kommentar + tom linje).
 # build_spc_excel() skriver metadata fra startRow = INDSTILLINGER_HEADER_ROWS + 1L.
 # parse_spc_excel() bruger skip = INDSTILLINGER_HEADER_ROWS.
 INDSTILLINGER_HEADER_ROWS <- 2L
@@ -27,11 +27,11 @@ SPC_ANALYSIS_SHEET_NAME <- "SPC-analyse"
 #' @param data data.frame med brugerens data
 #' @param metadata Named list svarende til collect_metadata()-output
 #' @param qic_data data.frame eller NULL. Hvis ikke-NULL og indeholder
-#'   gyldige rækker, tilføjes "SPC-analyse"-ark med pre-beregnede
+#'   gyldige raekker, tilfoejes "SPC-analyse"-ark med pre-beregnede
 #'   statistikker.
-#' @param original_data data.frame eller NULL. Brugerens rå data; bruges
+#' @param original_data data.frame eller NULL. Brugerens raa data; bruges
 #'   til opslag af dato og notes i sektion D af SPC-analyse-arket. Kan
-#'   være identisk med `data`-argumentet.
+#'   vaere identisk med `data`-argumentet.
 #' @param analysis_options Named list. Valgfrie inputs til
 #'   `build_spc_analysis_sheet()` (fx `freeze_position`, `phase_names`,
 #'   `pkg_versions`).
@@ -54,25 +54,36 @@ build_spc_excel <- function(data,
   # Forklarende kommentar i celle A1
   kommentar <- paste0(
     "Dette ark bruges af biSPCharts til at gendanne dine indstillinger. ",
-    "Du kan redigere værdierne, men undgå at slette arket."
+    "Du kan redigere v\u00e6rdierne, men undg\u00e5 at slette arket."
   )
   openxlsx::writeData(wb,
     sheet = "Indstillinger",
     x = data.frame(Besked = kommentar), startRow = 1, colNames = FALSE
   )
 
-  meta_df <- data.frame(
-    Felt = names(metadata),
-    Værdi = vapply(metadata, function(x) {
-      if (is.null(x) || (length(x) == 0)) {
-        return("")
-      }
-      x_clean <- x[!is.na(x)]
-      if (length(x_clean) == 0) "" else paste(x_clean, collapse = ", ")
-    }, character(1)),
-    stringsAsFactors = FALSE,
-    check.names = FALSE
-  )
+  meta_values <- vapply(metadata, function(x) {
+    if (is.null(x) || (length(x) == 0)) {
+      return("")
+    }
+    x_clean <- x[!is.na(x)]
+    if (length(x_clean) == 0) "" else paste(x_clean, collapse = ", ")
+  }, character(1))
+  if (length(metadata) == 0) {
+    meta_df <- data.frame(
+      Felt = character(0),
+      Vaerdi = character(0),
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  } else {
+    meta_df <- data.frame(
+      Felt = names(metadata),
+      Vaerdi = unname(meta_values),
+      stringsAsFactors = FALSE,
+      check.names = FALSE
+    )
+  }
+  names(meta_df)[2] <- "V\u00e6rdi"
   openxlsx::writeData(wb,
     sheet = "Indstillinger",
     x = meta_df, startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE
@@ -126,8 +137,8 @@ build_spc_excel <- function(data,
   temp_path
 }
 
-# Skriv sektioner til "SPC-analyse"-ark med blank-rækker imellem.
-# Hver sektion får sin egen header-række med sektionsnavn.
+# Skriv sektioner til "SPC-analyse"-ark med blank-raekker imellem.
+# Hver sektion faar sin egen header-raekke med sektionsnavn.
 .write_spc_analysis_sheet <- function(wb, sections) {
   sheet_name <- SPC_ANALYSIS_SHEET_NAME
   openxlsx::addWorksheet(wb, sheet_name)
@@ -153,13 +164,13 @@ build_spc_excel <- function(data,
       )
       current_row <<- current_row + 1L
     }
-    # Blank-række mellem sektioner
+    # Blank-raekke mellem sektioner
     current_row <<- current_row + 1L
   }
 
   write_section("A. Oversigt", sections$overview)
   write_section("B. Per-part statistik", sections$per_part)
-  write_section("C. Anhøj-regler per part", sections$anhoej)
+  write_section("C. Anh\u00f8j-regler per part", sections$anhoej)
 
   # Sektion D: special-case for tom = vis besked i stedet for "Ingen data".
   openxlsx::writeData(wb,
@@ -183,7 +194,7 @@ build_spc_excel <- function(data,
   invisible(NULL)
 }
 
-#' Læs Indstillinger-ark fra biSPCharts Excel-fil
+#' Laes Indstillinger-ark fra biSPCharts Excel-fil
 #'
 #' @param file_path Sti til Excel-filen
 #' @return Named list svarende til collect_metadata()-output, eller NULL

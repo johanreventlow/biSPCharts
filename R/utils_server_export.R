@@ -98,7 +98,7 @@ extract_spc_statistics <- function(app_state) {
 
 #' Validér DPI-argument til eksport
 #'
-#' Tjekker at dpi er numerisk og inden for acceptabelt interval [72, 600].
+#' Tjekker at dpi er numerisk og inden for intervallet 72-600.
 #' Kaster en typed \code{export_input_error} ved ugyldig vaerdi.
 #'
 #' @param dpi Numerisk. DPI-vaerdi til validering.
@@ -170,6 +170,10 @@ inject_template_assets <- function(template_dir) {
     },
     fallback = FALSE
   )
+}
+
+bfhcharts_internal <- function(name) {
+  getFromNamespace(name, "BFHcharts")
 }
 
 # GET HOSPITAL NAME ===========================================================
@@ -325,14 +329,14 @@ generate_pdf_preview <- function(bfh_qic_result,
           #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
           #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
           #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
-          spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
+          spc_stats <- bfhcharts_internal("bfh_extract_spc_stats")(bfh_qic_result)
 
           # 3. Merge metadata with chart title
-          metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
+          metadata_full <- bfhcharts_internal("bfh_merge_metadata")(metadata, chart_title)
 
           # 4. Create Typst document
           typst_file <- file.path(temp_dir, "document.typ")
-          BFHcharts::bfh_create_typst_document(
+          bfhcharts_internal("bfh_create_typst_document")(
             chart_image = chart_png,
             output = typst_file,
             metadata = metadata_full,

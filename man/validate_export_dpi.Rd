@@ -13,7 +13,7 @@ validate_export_dpi(dpi)
 invisible(dpi) ved succes.
 }
 \description{
-Tjekker at dpi er numerisk og inden for acceptabelt interval \link{72, 600}.
+Tjekker at dpi er numerisk og inden for intervallet 72-600.
 Kaster en typed \code{export_input_error} ved ugyldig vaerdi.
 }
 \keyword{internal}

@@ -4,12 +4,12 @@
 # Arket er informational (ikke round-trip-able) og indeholder fire sektioner:
 #   A. Oversigt: charttype, N obs, parts, freeze, target, ooc, dansk tolkning
 #   B. Per-part statistik: CL/UCL/LCL/Mean/Median per part
-#   C. Anhøj-regler per part: serielængde, kryds, signaler, dansk tolkning
-#   D. Special cause-punkter: ooc-rækker + runs.signal-rækker
+#   C. Anhoej-regler per part: serielaengde, kryds, signaler, dansk tolkning
+#   D. Special cause-punkter: ooc-raekker + runs.signal-raekker
 #
-# Alle builders er rene: ingen Shiny-afhængighed, ingen app_state-reads,
+# Alle builders er rene: ingen Shiny-afhaengighed, ingen app_state-reads,
 # ingen side-effekter. Output er data.frames (orkestratoren returnerer
-# named list); skrivning til workbook håndteres af build_spc_excel().
+# named list); skrivning til workbook haandteres af build_spc_excel().
 
 #' Builders til SPC-analyse-arket i Excel-export
 #'
@@ -17,9 +17,9 @@
 #' @keywords internal
 NULL
 
-# Hjælpere ====================================================================
+# Hjaelpere ====================================================================
 
-# Sikker scalar-extract: returner enkeltværdi eller default hvis NULL/tom.
+# Sikker scalar-extract: returner enkeltvaerdi eller default hvis NULL/tom.
 .excel_scalar <- function(x, default = NA) {
   if (is.null(x) || length(x) == 0L) {
     return(default)
@@ -27,8 +27,8 @@ NULL
   x[[1]]
 }
 
-# Konverter numerisk værdi i kanoniske minutter til UI-enhed.
-# Hvis y_axis_unit ikke er en tids-enhed, returneres input uændret.
+# Konverter numerisk vaerdi i kanoniske minutter til UI-enhed.
+# Hvis y_axis_unit ikke er en tids-enhed, returneres input uaendret.
 .excel_to_ui_unit <- function(value, y_axis_unit) {
   if (is.null(value) || length(value) == 0L || all(is.na(value))) {
     return(value)
@@ -73,7 +73,7 @@ NULL
   )
 }
 
-# Returner hvilke række-indekser der har out-of-limits-signal.
+# Returner hvilke raekke-indekser der har out-of-limits-signal.
 .excel_ooc_rows <- function(qic_data) {
   if (nrow(qic_data) == 0L) {
     return(integer(0))
@@ -90,17 +90,17 @@ NULL
   which(above | below)
 }
 
-# Saml dansk tolkning på tværs af parts.
+# Saml dansk tolkning paa tvaers af parts.
 .excel_overall_anhoej_da <- function(anhoej_per_part) {
   if (length(anhoej_per_part) == 0L) {
-    return("Ingen Anhøj-beregning tilgængelig")
+    return("Ingen Anh\u00f8j-beregning tilg\u00e6ngelig")
   }
   any_runs <- any(vapply(anhoej_per_part, function(p) isTRUE(p$runs_signal), logical(1)))
   any_cross <- any(vapply(anhoej_per_part, function(p) isTRUE(p$crossings_signal), logical(1)))
   interpret_anhoej_signal_da(list(runs_signal = any_runs, crossings_signal = any_cross))
 }
 
-# Hent dato for en given række fra original_data (hvis tilgængelig).
+# Hent dato for en given raekke fra original_data (hvis tilgaengelig).
 .excel_date_for_row <- function(original_data, row_idx, x_column = NULL) {
   if (is.null(original_data) || row_idx > nrow(original_data) || row_idx < 1L) {
     return(NA_character_)
@@ -123,10 +123,10 @@ NULL
 #' @param metadata named list. Output fra `collect_metadata()`.
 #' @param anhoej_per_part list. Output fra `derive_anhoej_per_part()`.
 #' @param y_axis_unit Character. UI-valgt y-akse-enhed (fx "time_hours").
-#' @param freeze_position Integer eller NULL. Række-indeks for freeze-punkt.
+#' @param freeze_position Integer eller NULL. Raekke-indeks for freeze-punkt.
 #' @param computed_at POSIXct. Beregningsdato.
 #' @param pkg_versions named list. Pakke-versioner (fx `list(biSPCharts = "0.x")`).
-#' @return data.frame med kolonner `Felt` og `Værdi`.
+#' @return data.frame med kolonner `Felt` og `Vaerdi`.
 #' @keywords internal
 build_overview_section <- function(qic_data,
                                    metadata,
@@ -151,7 +151,7 @@ build_overview_section <- function(qic_data,
   }
   target_ui <- if (!is.na(target_canonical)) .excel_to_ui_unit(target_canonical, y_axis_unit) else NA_real_
 
-  # Delta til CL: brug CL fra første part som reference (eller hver part i sektion B).
+  # Delta til CL: brug CL fra foerste part som reference (eller hver part i sektion B).
   first_cl <- if ("cl" %in% names(qic_data) && nrow(qic_data) > 0L) {
     .excel_to_ui_unit(qic_data$cl[1], y_axis_unit)
   } else {
@@ -192,13 +192,13 @@ build_overview_section <- function(qic_data,
     "Charttype",
     "Antal observationer",
     "Antal parts",
-    "Frozen til række",
+    "Frozen til r\u00e6kke",
     "Y-akse-enhed",
     "Target",
     "Delta til CL (target - CL part 1)",
-    "Out-of-control rækker",
+    "Out-of-control r\u00e6kker",
     "Freeze-baseline (CL/UCL/LCL ved freeze)",
-    "Samlet Anhøj-tolkning",
+    "Samlet Anh\u00f8j-tolkning",
     "Beregningsdato",
     "biSPCharts-version",
     "BFHcharts-version"
@@ -219,7 +219,9 @@ build_overview_section <- function(qic_data,
     bfhc_ver
   )
 
-  data.frame(Felt = fields, Værdi = values, stringsAsFactors = FALSE, check.names = FALSE)
+  df <- data.frame(Felt = fields, Vaerdi = values, stringsAsFactors = FALSE, check.names = FALSE)
+  names(df)[2] <- "V\u00e6rdi"
+  df
 }
 
 # SECTION B: PER-PART STATISTIK ================================================
@@ -229,9 +231,9 @@ build_overview_section <- function(qic_data,
 #' @param qic_data data.frame.
 #' @param y_axis_unit Character.
 #' @param target_value Numeric eller NULL. Target i UI-enhed (eller character).
-#' @param phase_names Character vektor eller NULL. Hvis sat skal længden matche
+#' @param phase_names Character vektor eller NULL. Hvis sat skal laengden matche
 #'   antal parts.
-#' @return data.frame med én række per part.
+#' @return data.frame med en raekke per part.
 #' @keywords internal
 build_per_part_section <- function(qic_data,
                                    y_axis_unit = "count",
@@ -250,12 +252,12 @@ build_per_part_section <- function(qic_data,
   empty_df <- data.frame(
     Part = integer(0),
     `Phase-navn` = character(0),
-    `Fra (række)` = integer(0),
-    `Til (række)` = integer(0),
+    Fra_raekke = integer(0),
+    Til_raekke = integer(0),
     N = integer(0),
     Centrallinje = numeric(0),
-    `Øvre grænse` = numeric(0),
-    `Nedre grænse` = numeric(0),
+    Oevre_graense = numeric(0),
+    Nedre_graense = numeric(0),
     Mean = numeric(0),
     Median = numeric(0),
     Target = numeric(0),
@@ -264,10 +266,10 @@ build_per_part_section <- function(qic_data,
     stringsAsFactors = FALSE
   )
   names(empty_df) <- c(
-    "Part", "Phase-navn", "Fra (række)", "Til (række)", "N",
+    "Part", "Phase-navn", "Fra (r\u00e6kke)", "Til (r\u00e6kke)", "N",
     paste("Centrallinje", unit_suffix_cl),
-    paste("Øvre grænse", unit_suffix_ucl),
-    paste("Nedre grænse", unit_suffix_lcl),
+    paste("\u00d8vre gr\u00e6nse", unit_suffix_ucl),
+    paste("Nedre gr\u00e6nse", unit_suffix_lcl),
     mean_label, median_label, target_label, delta_label
   )
 
@@ -320,12 +322,12 @@ build_per_part_section <- function(qic_data,
     list(
       Part = as.integer(p),
       `Phase-navn` = phase_name,
-      `Fra (række)` = as.integer(min(idx)),
-      `Til (række)` = as.integer(max(idx)),
+      Fra_raekke = as.integer(min(idx)),
+      Til_raekke = as.integer(max(idx)),
       N = as.integer(length(idx)),
       Centrallinje = cl_value,
-      `Øvre grænse` = ucl_value,
-      `Nedre grænse` = lcl_value,
+      Oevre_graense = ucl_value,
+      Nedre_graense = lcl_value,
       Mean = mean_value,
       Median = median_value,
       Target = if (is.na(target_ui)) NA_real_ else target_ui,
@@ -335,31 +337,31 @@ build_per_part_section <- function(qic_data,
 
   df <- do.call(rbind.data.frame, c(rows, list(stringsAsFactors = FALSE, make.row.names = FALSE)))
   names(df) <- c(
-    "Part", "Phase-navn", "Fra (række)", "Til (række)", "N",
+    "Part", "Phase-navn", "Fra (r\u00e6kke)", "Til (r\u00e6kke)", "N",
     paste("Centrallinje", unit_suffix_cl),
-    paste("Øvre grænse", unit_suffix_ucl),
-    paste("Nedre grænse", unit_suffix_lcl),
+    paste("\u00d8vre gr\u00e6nse", unit_suffix_ucl),
+    paste("Nedre gr\u00e6nse", unit_suffix_lcl),
     mean_label, median_label, target_label, delta_label
   )
   df
 }
 
-# SECTION C: ANHØJ-REGLER PER PART =============================================
+# SECTION C: ANHOEJ-REGLER PER PART =============================================
 
-#' Byg sektion C (Anhøj-regler per part) til SPC-analyse-arket
+#' Byg sektion C (Anhoej-regler per part) til SPC-analyse-arket
 #'
 #' @param anhoej_per_part list. Output fra `derive_anhoej_per_part()`.
-#' @return data.frame med én række per part.
+#' @return data.frame med en raekke per part.
 #' @keywords internal
 build_anhoej_section <- function(anhoej_per_part) {
   stopifnot(is.list(anhoej_per_part))
 
   cols <- c(
     "Part",
-    "Længste serie (longest_run)",
+    "L\u00e6ngste serie (longest_run)",
     "Maks tilladt (longest_run_max)",
     "Antal kryds (n_crossings)",
-    "Min krævet (n_crossings_min)",
+    "Min kr\u00e6vet (n_crossings_min)",
     "Runs-signal",
     "Crossings-signal",
     "Samlet signal",
@@ -379,10 +381,10 @@ build_anhoej_section <- function(anhoej_per_part) {
   rows <- lapply(anhoej_per_part, function(p) {
     list(
       Part = as.integer(p$part %||% 1L),
-      `Længste serie (longest_run)` = if (is.na(p$longest_run)) NA_real_ else as.numeric(p$longest_run),
+      Laengste_serie = if (is.na(p$longest_run)) NA_real_ else as.numeric(p$longest_run),
       `Maks tilladt (longest_run_max)` = if (is.na(p$longest_run_max)) NA_real_ else as.numeric(p$longest_run_max),
       `Antal kryds (n_crossings)` = if (is.na(p$n_crossings)) NA_real_ else as.numeric(p$n_crossings),
-      `Min krævet (n_crossings_min)` = if (is.na(p$n_crossings_min)) NA_real_ else as.numeric(p$n_crossings_min),
+      Min_kraevet = if (is.na(p$n_crossings_min)) NA_real_ else as.numeric(p$n_crossings_min),
       `Runs-signal` = to_ja_nej(p$runs_signal),
       `Crossings-signal` = to_ja_nej(p$crossings_signal),
       `Samlet signal` = to_ja_nej(p$anhoej_signal),
@@ -399,16 +401,16 @@ build_anhoej_section <- function(anhoej_per_part) {
 
 #' Byg sektion D (Special cause-punkter) til SPC-analyse-arket
 #'
-#' Returnerer en data.frame med rækker hvor enten `runs.signal == TRUE`
-#' eller punktet er uden for kontrolgrænser. Returnerer en attribut
-#' `empty_message` hvis ingen punkter findes — caller kan vise besked.
+#' Returnerer en data.frame med raekker hvor enten `runs.signal == TRUE`
+#' eller punktet er uden for kontrolgraenser. Returnerer en attribut
+#' `empty_message` hvis ingen punkter findes - caller kan vise besked.
 #'
 #' @param qic_data data.frame.
-#' @param original_data data.frame eller NULL. Bruges til at slå dato og notes
-#'   op via række-indeks.
+#' @param original_data data.frame eller NULL. Bruges til at slaa dato og notes
+#'   op via raekke-indeks.
 #' @param y_axis_unit Character.
 #' @param x_column,kommentar_column,n_column Character eller NULL. Kolonner i
-#'   `original_data` der skal slås op.
+#'   `original_data` der skal slaas op.
 #' @return data.frame; tom hvis ingen punkter (caller fortolker via `nrow()`).
 #' @keywords internal
 build_special_cause_section <- function(qic_data,
@@ -422,14 +424,14 @@ build_special_cause_section <- function(qic_data,
   unit_suffix_ucl <- .excel_unit_suffix("ucl", y_axis_unit)
   unit_suffix_lcl <- .excel_unit_suffix("lcl", y_axis_unit)
   unit_label <- .excel_unit_label(y_axis_unit)
-  value_label <- if (nzchar(unit_label)) sprintf("Værdi (%s)", unit_label) else "Værdi"
+  value_label <- if (nzchar(unit_label)) sprintf("V\u00e6rdi (%s)", unit_label) else "V\u00e6rdi"
 
   cols <- c(
-    "Række", "Dato", value_label,
+    "R\u00e6kke", "Dato", value_label,
     paste("Centrallinje", unit_suffix_cl),
-    paste("Øvre grænse", unit_suffix_ucl),
-    paste("Nedre grænse", unit_suffix_lcl),
-    "Out-of-limits", "Runs-signal", "Notes", "Nævner (n)"
+    paste("\u00d8vre gr\u00e6nse", unit_suffix_ucl),
+    paste("Nedre gr\u00e6nse", unit_suffix_lcl),
+    "Out-of-limits", "Runs-signal", "Notes", "N\u00e6vner (n)"
   )
 
   if (nrow(qic_data) == 0L) {
@@ -481,16 +483,16 @@ build_special_cause_section <- function(qic_data,
     }
 
     list(
-      Række = as.integer(i),
+      Raekke = as.integer(i),
       Dato = .excel_date_for_row(original_data, i, x_column = x_column),
-      Værdi = y_val,
+      Vaerdi = y_val,
       Centrallinje = cl_val,
-      `Øvre grænse` = ucl_val,
-      `Nedre grænse` = lcl_val,
+      Oevre_graense = ucl_val,
+      Nedre_graense = lcl_val,
       `Out-of-limits` = to_ja_nej(is_ooc),
       `Runs-signal` = to_ja_nej(is_runs),
       Notes = note_val,
-      `Nævner (n)` = n_val
+      Naevner = n_val
     )
   })
 
@@ -505,11 +507,11 @@ build_special_cause_section <- function(qic_data,
 #'
 #' Orkestrerer de fire sektion-builders og returnerer en named list som
 #' `build_spc_excel()` kan iterere over og skrive til workbook'en med
-#' blank-rækker mellem sektioner.
+#' blank-raekker mellem sektioner.
 #'
 #' @param qic_data data.frame fra SPC-pipeline.
 #' @param metadata Named list (collect_metadata-output).
-#' @param original_data data.frame eller NULL. Brugerens rå data (til
+#' @param original_data data.frame eller NULL. Brugerens raa data (til
 #'   dato- og notes-opslag i sektion D).
 #' @param options Named list med valgfrie inputs:
 #'   \describe{

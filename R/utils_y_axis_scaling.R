@@ -11,12 +11,12 @@ VALID_UNITS <- c("proportion", "percent", "permille", "absolute", "time_minutes"
 #' Internal canonical units by plot type
 #' @keywords internal
 INTERNAL_UNITS_BY_PLOTTYPE <- list(
-  proportions = "proportion", # p-charts, run charts for rates [0,1]
+  proportions = "proportion", # p-charts, run charts for rates 0-1
   absolute = "absolute", # c/u-charts, count run charts
   time = "time_minutes" # internal canonical is always minutes
 )
 
-#' Chart types that use proportion internal unit [0,1]
+#' Chart types that use proportion internal unit 0-1
 #' @keywords internal
 #' @noRd
 PROPORTION_CHART_TYPES <- c("p", "pp", "run")
@@ -87,7 +87,7 @@ parse_number_da <- function(x) {
 #' Determine internal unit based on chart type (eliminates 100x mismatch)
 #'
 #' @param chart_type Character. QIC chart type (e.g., "p", "run", "c", "u")
-#' @return Character. Internal unit: "proportion" for [0,1] charts, "absolute" for count charts
+#' @return Character. Internal unit: "proportion" for 0-1 charts, "absolute" for count charts
 #' @keywords internal
 #' @noRd
 determine_internal_unit_by_chart_type <- function(chart_type) {

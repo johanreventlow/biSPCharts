@@ -297,8 +297,16 @@ skip_if_no_shinytest2_runtime <- function() {
 }
 
 create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
+  app_factory <- function() {
+    library(biSPCharts)
+    shiny::shinyApp(
+      ui = getFromNamespace("app_ui", "biSPCharts"),
+      server = getFromNamespace("app_server", "biSPCharts")
+    )
+  }
+
   shinytest2::AppDriver$new(
-    app_dir = "../../",
+    app_dir = app_factory,
     name = name,
     width = width,
     height = height,

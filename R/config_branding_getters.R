@@ -31,7 +31,7 @@ claudespc_branding <- new.env(parent = emptyenv())
 #' @noRd
 get_brand_config_path <- function() {
   # Try package installation first
-  brand_path <- system.file("config", "brand.yml", package = "biSPCharts")
+  brand_path <- bisp_system_file("config", "brand.yml")
 
   if (brand_path == "" || !file.exists(brand_path)) {
     # Fallback for development (package not installed)

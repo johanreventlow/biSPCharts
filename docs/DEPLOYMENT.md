@@ -78,6 +78,33 @@ Core dependencies (automatisk installeret):
 
 Se `DESCRIPTION` fil for fuld liste.
 
+## Posit Connect Cloud
+
+Connect Cloud publicerer fra `develop` ved nye commits. `manifest.json` skal
+derfor altid matche de GitHub-tags og lower-bounds, der står i `DESCRIPTION`.
+
+Kør dette efter opdatering af `BFHcharts`, `BFHtheme` eller `BFHllm`:
+
+```bash
+R_LIBS_USER=/tmp/bispcharts-r-lib Rscript dev/publish_prepare.R install
+R_LIBS_USER=/tmp/bispcharts-r-lib Rscript dev/publish_prepare.R manifest
+Rscript dev/validate_connect_manifest.R manifest.json
+```
+
+`install` henter seneste semver-tags fra GitHub, installerer sibling-pakkerne
+og synkroniserer både `Imports`/`Suggests` lower-bounds og `Remotes`.
+`manifest` kører publish-gaten og skriver en Connect-manifest baseret på appens
+runtime-filer (`app.R`, `DESCRIPTION`, `NAMESPACE`, `R/`, `inst/`), så docs,
+tests og udviklingsscripts ikke lækker falske deploy-afhængigheder ind.
+
+Hvis den fulde publish-gate allerede er kørt i samme arbejdstræ, og du kun skal
+genskrive manifestet efter dependency-sync, kan manifest-fasen køres kort:
+
+```bash
+R_LIBS_USER=/tmp/bispcharts-r-lib SKIP_PUBLISH_GATE=1 Rscript dev/publish_prepare.R manifest
+Rscript dev/validate_connect_manifest.R manifest.json
+```
+
 ## Environment Setup
 
 ### 1. Clone Repository

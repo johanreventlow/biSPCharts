@@ -13,7 +13,7 @@ biSPCharts bruger fire lags CI/CD gates.
 | `skip-inventory` | PRs mod master+develop | Nej (kun TODO-stigning) | Tæller skip()-kategorier; fejler ved uberettiget TODO-stigning |
 | `shinytest2` | Nightly 02:00 UTC + on-demand | Nej | Visuel regression (miljøfølsom, opt-in) |
 | `lint` | Pushes/PRs | Ja | lintr-linting |
-| `validate-manifest` | Pushes/PRs | Ja | Test-classification manifest |
+| `validate-manifest` | Pushes/PRs | Ja | Test-classification manifest + Posit Connect manifest-sync |
 
 ## Gate-aktivering: afhængigheder
 
@@ -37,8 +37,27 @@ CI: `gh workflow run shinytest2.yaml`
 ## Skip-inventory gate
 
 Workflow fejler hvis `todo`-skip-antal øges på en PR uden label `allow-skip-increase`.
+PR-kommentaren viser nu de nye TODO-skips som konkrete fil/linje-poster, ikke
+kun total-deltaet.
 
 Tilføj label hvis stigningen er intentionel:
 ```bash
 gh pr edit <PR-nummer> --add-label "allow-skip-increase"
+```
+
+## Connect manifest gate
+
+`validate-manifest` kører også:
+
+```bash
+Rscript dev/validate_connect_manifest.R manifest.json
+```
+
+Gate fejler hvis en GitHub-afhængighed i `DESCRIPTION`/`Remotes` mangler i
+`manifest.json`, peger på et andet tag, eller har lavere version end
+DESCRIPTION kræver. Standard-fix:
+
+```bash
+R_LIBS_USER=/tmp/bispcharts-r-lib Rscript dev/publish_prepare.R install
+R_LIBS_USER=/tmp/bispcharts-r-lib Rscript dev/publish_prepare.R manifest
 ```

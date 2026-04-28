@@ -581,6 +581,27 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     x_col_val <- "spc_row_index"
   }
 
+  # Denominator pre-filter: fjern rækker med ugyldige n-værdier
+  # BFHcharts 0.9.0+ kaster hard error ved n <= 0, Inf, NA, eller y > n (P/PP)
+  n_dropped_denom <- 0L
+  if (!is.null(n_col_val) && n_col_val %in% names(data) &&
+    chart_type %in% c("p", "pp", "u", "up")) {
+    n_vals <- suppressWarnings(as.numeric(data[[n_col_val]]))
+    bad_rows <- is.na(n_vals) | n_vals <= 0 | is.infinite(n_vals)
+    if (chart_type %in% c("p", "pp") && !is.null(y_col_val) && y_col_val %in% names(data)) {
+      y_vals <- suppressWarnings(as.numeric(data[[y_col_val]]))
+      bad_rows <- bad_rows | (!is.na(y_vals) & !is.na(n_vals) & y_vals > n_vals)
+    }
+    n_dropped_denom <- sum(bad_rows)
+    if (n_dropped_denom > 0) {
+      data <- data[!bad_rows, ]
+      log_warn(
+        sprintf("Denominator pre-filter: %d rækker fjernet (n<=0, Inf, NA, eller y>n)", n_dropped_denom),
+        .context = "BFH_SERVICE"
+      )
+    }
+  }
+
   # Call BFHchart backend (compute_spc_results_bfh from Task #31)
   # Adapter: Map config object to individual parameters
   result <- tryCatch(
@@ -623,6 +644,10 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
       stop(e) # Re-throw the error - no fallback available
     }
   )
+
+  if (n_dropped_denom > 0) {
+    result$metadata$dropped_denominator_rows <- n_dropped_denom
+  }
 
   return(result)
 }

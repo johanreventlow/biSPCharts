@@ -173,6 +173,19 @@ create_spc_results_reactive <- function(
           plot_context = "analysis" # M11: Analyse-side uses "analysis" context
         )
 
+        # Vis advarsel hvis denominator-rækker blev filtreret
+        n_dropped <- spc_result$metadata$dropped_denominator_rows %||% 0L
+        if (n_dropped > 0) {
+          shiny::showNotification(
+            sprintf(
+              "Droppet %d rækker med ugyldig nævner (n ≤ 0, uendelig eller y > n). Chartet viser resterende %d rækker.",
+              n_dropped, nrow(spc_result$qic_data)
+            ),
+            type = "warning",
+            duration = 8
+          )
+        }
+
         # CRITICAL: Skip applyHospitalTheme() for BFHcharts plots
         # BFHcharts applies its own theme and label layers which are incompatible
         # with our theme system. Check metadata$backend flag to determine if plot

@@ -2,6 +2,13 @@
 
 ## Nye features
 
+* **Sheet-picker for multi-sheet Excel-upload:** Når brugeren uploader en
+  Excel-fil med flere ark (og som ikke er biSPCharts gem-format), åbnes en
+  dropdown ankret under "Indlæs XLS/CSV"-knappen, hvor det ønskede ark kan
+  vælges. Tomme ark vises grå-ud. Single-sheet Excel og biSPCharts
+  gem-format (Data + Indstillinger + SPC-analyse) bibeholder eksisterende
+  auto-indlæsning.
+
 * **Tredje ark "SPC-analyse" i Excel-download:** Nye Excel-eksporter
   indeholder nu et informationsark med pre-beregnede SPC-statistikker.
   Arket har fire sektioner: oversigt (charttype, antal parts, target,

@@ -88,7 +88,7 @@ kolonne. Detaljer i `R/utils_local_storage.R`,
 
 3-ark download (`Data` round-trip + `Indstillinger` round-trip + `SPC-analyse`
 informational), multi-sheet upload med picker. Specifikationer i
-`openspec/changes/add-excel-sheet-picker/` og
+`openspec/specs/excel-import/` og
 `openspec/changes/archive/2026-04-26-harden-export-quarto-capability/`.
 Implementation: `R/fct_spc_file_save_load.R`, `R/fct_excel_sheet_detection.R`,
 `R/utils_server_paste_data.R`.

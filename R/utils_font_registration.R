@@ -51,7 +51,7 @@ register_roboto_font <- function() {
   font_path_medium <- tryCatch(
     {
       # Forsoeg at finde font i installeret pakke
-      system.file("fonts", "Roboto-Medium.ttf", package = "biSPCharts")
+      bisp_system_file("fonts", "Roboto-Medium.ttf")
     },
     error = function(e) {
       # Fallback til relativ sti i udvikling
@@ -61,7 +61,7 @@ register_roboto_font <- function() {
 
   font_path_bold <- tryCatch(
     {
-      system.file("fonts", "Roboto-Bold.ttf", package = "biSPCharts")
+      bisp_system_file("fonts", "Roboto-Bold.ttf")
     },
     error = function(e) {
       file.path("inst", "fonts", "Roboto-Bold.ttf")
@@ -195,10 +195,7 @@ register_mari_font <- function() {
     return(invisible(NULL))
   }
 
-  font_dir <- system.file(
-    "templates/typst/bfh-template/fonts",
-    package = "biSPCharts"
-  )
+  font_dir <- bisp_system_file("templates/typst/bfh-template/fonts")
   if (!nzchar(font_dir) || !dir.exists(font_dir)) {
     font_dir <- file.path("inst", "templates", "typst", "bfh-template", "fonts")
   }

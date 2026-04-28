@@ -61,9 +61,8 @@ suppressPackageStartupMessages({
 
 SIBLINGS <- list(
   BFHcharts = "johanreventlow/BFHcharts",
-  BFHtheme  = "johanreventlow/BFHtheme"
-  # BFHllm midlertidigt fjernet — reaktivér når AI-suggestions genindføres.
-  # BFHllm    = "johanreventlow/BFHllm"
+  BFHtheme  = "johanreventlow/BFHtheme",
+  BFHllm    = "johanreventlow/BFHllm"
 )
 
 gate_log_step <- function(n, total, msg) {
@@ -161,6 +160,51 @@ bump_description <- function(pkg, new_version, dep_type) {
   d$write()
 }
 
+parse_description_remotes <- function() {
+  d <- desc::desc(file = "DESCRIPTION")
+  remotes <- d$get("Remotes")
+  if (is.na(remotes) || !nzchar(remotes)) character(0) else trimws(
+    unlist(strsplit(gsub("\n", " ", remotes), ",", fixed = FALSE))
+  )
+}
+
+remote_package_name <- function(remote) {
+  sub("@.*$", "", basename(remote))
+}
+
+set_remote_tag <- function(pkg, repo, tag) {
+  d <- desc::desc(file = "DESCRIPTION")
+  remotes <- parse_description_remotes()
+  wanted <- sprintf("%s@%s", repo, tag)
+  matched <- remote_package_name(remotes) == pkg
+
+  if (any(matched)) {
+    remotes[matched] <- wanted
+  } else {
+    remotes <- c(remotes, wanted)
+  }
+
+  d$set("Remotes", paste(remotes, collapse = ",\n    "))
+  d$write()
+}
+
+connect_manifest_files <- function() {
+  roots <- c("app.R", "DESCRIPTION", "NAMESPACE", "R", "inst")
+  files <- character(0)
+
+  for (root in roots) {
+    if (file.exists(root) && !dir.exists(root)) {
+      files <- c(files, root)
+    } else if (dir.exists(root)) {
+      files <- c(files, list.files(root, recursive = TRUE, all.files = TRUE,
+                                   no.. = TRUE, full.names = TRUE))
+    }
+  }
+
+  files <- unique(gsub("^\\./", "", files))
+  files[file.exists(files)]
+}
+
 phase_install <- function() {
   total <- 4
 
@@ -217,9 +261,11 @@ phase_install <- function() {
     gate_log_ok(sprintf("%s@%s installeret", info$pkg, info$tag))
   }
 
-  gate_log_step(4, total, "Auto-bump DESCRIPTION lower-bounds")
+  gate_log_step(4, total, "Auto-bump DESCRIPTION lower-bounds og Remotes")
   bumps <- character(0)
   for (info in tag_info) {
+    set_remote_tag(info$pkg, info$repo, info$tag)
+
     if (is.na(info$current_lower)) {
       gate_log_info(sprintf("%s: ingen lower-bound i DESCRIPTION — skipper", info$pkg))
       next
@@ -236,6 +282,8 @@ phase_install <- function() {
       gate_log_info(sprintf("%s: ingen bump nødvendig (DESCRIPTION har %s)",
                        info$pkg, info$current_lower))
     }
+    gate_log_info(sprintf("%s: Remotes sat til %s@%s",
+                     info$pkg, info$repo, info$tag))
   }
 
   cat("\n---BUMP-SUMMARY---\n")
@@ -385,8 +433,14 @@ phase_manifest <- function() {
 
   # Trin 5: writeManifest (kun hvis trin 1-4 grønne ELLER skip_gate)
   gate_log_step(total, total, "Regenerér manifest.json (§4.3.1 trin 5)")
+  if ("biSPCharts" %in% loadedNamespaces() &&
+      requireNamespace("pkgload", quietly = TRUE)) {
+    try(pkgload::unload("biSPCharts"), silent = TRUE)
+  }
+  app_files <- connect_manifest_files()
+  gate_log_info(sprintf("Scanner %d runtime-filer til Connect manifest", length(app_files)))
   res <- tryCatch(
-    rsconnect::writeManifest(appDir = "."),
+    rsconnect::writeManifest(appDir = ".", appFiles = app_files),
     error = function(e) e
   )
   if (inherits(res, "error")) {

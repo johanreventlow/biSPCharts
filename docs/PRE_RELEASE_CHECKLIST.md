@@ -47,7 +47,7 @@ Følgende NOTEs er kendte og accepterede:
 |------|-------------|
 | Non-portable file names (`Mari Bold.otf`, `Mari Book.otf`) | BFHtheme font-filer med mellemrum i navn — extern pakke, kan ikke ændres |
 | Non-ASCII characters (`app_initialization.R`, `app_server_main.R`) | Dansk UI-tekst i R-kode — intentionelt |
-| `'::' import not declared from: 'BFHllm'` | BFHllm fjernet midlertidigt fra DESCRIPTION (Python/reticulate-dep) — reaktivér ved `BFHllm` i Imports |
+| `'::' import not declared from: 'BFHllm'` | BFHllm er optional i `Suggests` og deployes via `Remotes`; `manifest.json` skal valideres mod `DESCRIPTION` |
 | Namespace not imported from: `grDevices` | `grDevices` bruges implicit via andre pakker — behold i Imports for klarhed |
 
 **Opdatér tabellen** hvis nye NOTEs tilføjes — en ukommenteret NOTE er et signal om at undersøge.
@@ -63,6 +63,7 @@ Følgende NOTEs er kendte og accepterede:
 - [ ] `release-gate` (tarball + --as-cran) — grøn på PR mod master
 - [ ] `testthat` — grøn
 - [ ] `skip-inventory` — grøn (ingen uventede TODO-stigninger)
+- [ ] `validate-manifest` — grøn (test-classification + Connect manifest-sync)
 - [ ] `shinytest2` nightly — se seneste nightly run for visuel regression
 
 ---

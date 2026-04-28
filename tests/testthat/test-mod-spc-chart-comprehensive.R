@@ -394,20 +394,40 @@ describe("Error Handling", {
     })
   })
 
-  # TODO(#262): Refaktorér til at verificere modulets write-path —
-  # test skal trigge modulet til at skrive plot_warnings via reactive,
-  # ikke pre-populere app_state direkte og verificere samme strenge.
   it("sets appropriate warnings on validation failure", {
+    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+
     app_state <- create_mock_app_state()
+    # Reelle data (≥3 rækker) passerer req()- og create_chart_config_reactive-guards.
+    # p-chart med n_col=NULL fejler validateDataForChart ("kræver en nævner-kolonne"),
+    # og modulet skriver warnings til app_state$visualization$plot_warnings.
+    app_state$data$current_data <- create_test_data_for_module()
 
-    # Simulate validation failure
-    app_state$visualization$plot_warnings <- c("Validering fejlede", "For få datapunkter")
-    app_state$visualization$plot_ready <- FALSE
+    testServer(
+      visualizationModuleServer,
+      args = list(
+        column_config_reactive = reactive(list(
+          x_col = "Dato", y_col = "Tæller", n_col = NULL
+        )),
+        chart_type_reactive = reactive("p"),
+        target_value_reactive = reactive(NULL),
+        target_text_reactive = reactive(NULL),
+        centerline_value_reactive = reactive(NULL),
+        skift_config_reactive = reactive(list(show_phases = FALSE, skift_column = NULL)),
+        frys_config_reactive = reactive(NULL),
+        app_state = app_state
+      ),
+      {
+        # session$elapse driver debounce-timers (input_change 150ms + file_select 500ms)
+        session$flushReact()
+        session$elapse(millis = 1500)
+        session$flushReact()
 
-    warnings <- isolate(app_state$visualization$plot_warnings)
-
-    expect_length(warnings, 2)
-    expect_true(grepl("Validering", warnings[1]))
+        warnings <- shiny::isolate(app_state$visualization$plot_warnings)
+        expect_type(warnings, "character")
+        expect_gte(length(warnings), 1)
+      }
+    )
   })
 })
 

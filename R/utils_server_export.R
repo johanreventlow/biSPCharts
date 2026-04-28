@@ -154,10 +154,28 @@ inject_template_assets <- function(template_dir) {
       dst_fonts <- file.path(template_dir, "fonts")
       if (dir.exists(src_fonts)) {
         if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
-        allowed <- c("Mari_Book.otf", "Mari_Bold.otf")
+
+        # Whitelist tilladte font-filnavne (begge konventioner --
+        # underscore fra biSPCharts-bundle, bindestreg fra BFHcharts-bundle).
+        allowed_mari <- c(
+          "Mari_Book.otf", "Mari_Bold.otf",
+          "Mari-Book.otf", "Mari-Bold.otf"
+        )
+
+        # 1) Slet uoenskede Mari/MariOffice-varianter som BFHcharts maatte
+        #    have lagt i dst_fonts (fx Mari-Heavy.otf, MariOffice-Heavy.ttf).
+        #    Typst's font-resolution af "Mari"-familien matcher disse for
+        #    regular weight pga. metadata-flag og giver fed body-tekst.
+        existing <- list.files(dst_fonts, full.names = TRUE)
+        is_mari <- grepl("^Mari", basename(existing), ignore.case = TRUE)
+        is_unwanted <- is_mari & !(basename(existing) %in% allowed_mari)
+        if (any(is_unwanted)) {
+          file.remove(existing[is_unwanted])
+        }
+
+        # 2) Kopier biSPCharts' egne Mari Book + Bold + Arial.
         font_files <- list.files(src_fonts, full.names = TRUE)
-        # Inkluder: allowed Mari-varianter + alle Arial-filer
-        is_allowed <- basename(font_files) %in% allowed |
+        is_allowed <- basename(font_files) %in% allowed_mari |
           grepl("^ARI", basename(font_files), ignore.case = TRUE)
         file.copy(font_files[is_allowed], dst_fonts, overwrite = FALSE)
       }

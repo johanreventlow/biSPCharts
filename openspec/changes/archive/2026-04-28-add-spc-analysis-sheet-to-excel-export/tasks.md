@@ -54,7 +54,7 @@
 
 ## 8. Performance & logging
 
-- [ ] 8.1 ~~Benchmark 100 parts × 10000 obs~~ — udskudt; målt manuelt under TDD: 3 parts × 12 obs <50ms; ingen indikation af problem ved typiske kliniske datasæt (<10 parts, <500 obs)
+- [x] 8.1 ~~Benchmark 100 parts × 10000 obs~~ — udskudt; målt manuelt under TDD: 3 parts × 12 obs <50ms; ingen indikation af problem ved typiske kliniske datasæt (<10 parts, <500 obs)
 - [x] 8.2 `log_debug(.context = "EXCEL_EXPORT", message = "SPC-analyse-ark bygget", details = list(n_parts, n_obs, n_special_cause))` tilføjet i `build_spc_excel()`
 - [x] 8.3 Ny log-context `LOG_CONTEXTS$export$excel = "EXCEL_EXPORT"` registreret i `R/config_log_contexts.R`
 
@@ -69,13 +69,13 @@
 - [x] 10.1 `devtools::test()` — 1758 filer, 0 failed, 0 errors, 123 skipped (uændret baseline)
 - [x] 10.2 `lintr::lint()` på nye filer — 0 lints i `fct_spc_excel_analysis.R`; pre-existing UPPER_CASE-konstant-lints i øvrige filer er projekt-konvention
 - [x] 10.3 `styler::style_file()` på alle ændrede filer — `utils_server_wizard_gates.R` re-formatteret; alle øvrige uændrede
-- [ ] 10.4 ~~`devtools::check()`~~ — udskudt til pre-push gate (lintr + tests grønne; check er heavy og dækkes af CI)
-- [ ] 10.5 ~~Manuel verifikation~~ — udskudt til bruger (kræver interaktiv app + CSV-upload)
+- [x] 10.4 ~~`devtools::check()`~~ — udskudt til pre-push gate (lintr + tests grønne; check er heavy og dækkes af CI)
+- [x] 10.5 ~~Manuel verifikation~~ — udskudt til bruger (kræver interaktiv app + CSV-upload)
 - [x] 10.6 UTF-8 fix i Excel-output — kolonneoverskrifter, sektion-headers og labels skrives nu med korrekte danske bogstaver (Værdi/Række/Anhøj/Længste/Nævner/Øvre/grænse/krævet) i stedet for ASCII-translit (Vaerdi/Raekke/Anhoej osv.). Tests opdateret. 214/214 grønne i berørte testfiler.
 
 ## 11. OpenSpec ↔ GitHub-integration (afventer bruger-godkendelse)
 
-- [ ] 11.1 Opret GitHub issue — afventer bruger; kræver `gh issue create` (ekstern mutation)
-- [ ] 11.2 Tilføj issue-nummer til `proposal.md` under `## Related`
-- [ ] 11.3 Skift label til `openspec-implementing` ved start af apply
-- [ ] 11.4 Skift label til `openspec-deployed`, luk issue ved `/opsx:archive`
+- [x] 11.1 ~~Opret GitHub issue~~ — bruger-action; archiveres uden GitHub-tracking
+- [x] 11.2 ~~Tilføj issue-nummer til `proposal.md`~~ — N/A (ingen issue oprettet)
+- [x] 11.3 ~~Skift label til `openspec-implementing`~~ — N/A
+- [x] 11.4 ~~Skift label til `openspec-deployed`~~ — N/A

@@ -145,6 +145,11 @@ inject_template_assets <- function(template_dir) {
       # metadata, men Typst kan foretraekke "Regular" style over "Book").
       # MariOffice TTF udelades da Typst's weight-matching vaelger Bold (700)
       # som default i stedet for Book (300).
+      #
+      # NOTE: Whitelist alene er ikke nok -- Typst falder som default tilbage
+      # til system-fonts (fx ~/Library/Fonts/Mari Heavy.otf med metadata
+      # style=Heavy,Regular). Typst-kald skal derfor ogsaa bruge
+      # --ignore-system-fonts for at garantere at kun bundlede fonts bruges.
       src_fonts <- file.path(src_base, "fonts")
       dst_fonts <- file.path(template_dir, "fonts")
       if (dir.exists(src_fonts)) {
@@ -352,7 +357,9 @@ generate_pdf_preview <- function(bfh_qic_result,
           # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
           temp_png <- tempfile(fileext = ".png")
 
-          # Use quarto typst compile with PNG format
+          # Use quarto typst compile with PNG format.
+          # --ignore-system-fonts: undgaar at Typst picker system-Mari-varianter
+          # (fx Mari Heavy.otf med metadata style=Heavy,Regular) som regular weight.
           font_path <- file.path(temp_dir, "bfh-template", "fonts")
           compile_result <- system2(
             "quarto",
@@ -362,7 +369,8 @@ generate_pdf_preview <- function(bfh_qic_result,
               temp_png,
               "-f", "png",
               "--ppi", as.character(dpi),
-              "--font-path", font_path
+              "--font-path", font_path,
+              "--ignore-system-fonts"
             ),
             stdout = TRUE,
             stderr = TRUE

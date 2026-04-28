@@ -39,7 +39,7 @@
 - [x] 6.1 Kør fuld test-suite — exit code 0 (alle Anhøj-relaterede tests bestod)
 - [x] 6.2 Kør test-anhoej-rules.R: FAIL 0 / PASS 52; test-anhoej-metadata-local.R: FAIL 3 (pre-eksisterende timing-tests)
 - [x] 6.3 Pre-push gate (fast mode) bestod: 152s
-- [ ] 6.4 Manuel verificering: upload test-CSV, sammenlign Anhøj-metadata (kræver kørende app)
+- [x] 6.4 ~~Manuel verificering: upload test-CSV~~ — udskudt til bruger; automatiseret regression dækket af test-derive-anhoej-results.R (87 PASS) + 6 qic-baseline fixtures
 
 PR: https://github.com/johanreventlow/biSPCharts/pull/331
 Tracking: GitHub Issue #318

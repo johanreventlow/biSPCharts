@@ -127,6 +127,13 @@ extract_column_names <- function(baseline) {
   )
 }
 
+make_valid_p_chart_data <- function(baseline) {
+  cols <- extract_column_names(baseline)
+  data <- baseline$input_data
+  data[[cols$n_var]] <- pmax(data[[cols$n_var]], data[[cols$y_var]])
+  data
+}
+
 
 # ============================================================================
 # Run Chart Tests (3 scenarios)
@@ -382,10 +389,11 @@ test_that("P chart: Anhøj rules applied", {
   # Arrange
   baseline <- load_baseline("p", "anhoej")
   cols <- extract_column_names(baseline)
+  valid_data <- make_valid_p_chart_data(baseline)
 
   # Act
   bfh_result <- compute_spc_results_bfh(
-    data = baseline$input_data,
+    data = valid_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
     n_var = cols$n_var,
@@ -400,10 +408,11 @@ test_that("P chart: Freeze period handling", {
   # Arrange
   baseline <- load_baseline("p", "freeze")
   cols <- extract_column_names(baseline)
+  valid_data <- make_valid_p_chart_data(baseline)
 
   # Act
   bfh_result <- compute_spc_results_bfh(
-    data = baseline$input_data,
+    data = valid_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
     n_var = cols$n_var,
@@ -414,7 +423,7 @@ test_that("P chart: Freeze period handling", {
   # Assert: All points present
   expect_equal(
     nrow(bfh_result$qic_data),
-    nrow(baseline$input_data),
+    nrow(valid_data),
     info = "P chart freeze: all points present"
   )
 })

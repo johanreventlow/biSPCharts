@@ -314,7 +314,6 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           error_type = "processing"
         ),
         data_definition = data_def_input,
-        author = Sys.getenv("USER"),
         date = Sys.Date()
       )
 

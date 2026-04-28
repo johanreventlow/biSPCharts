@@ -35,3 +35,8 @@ jobs:
         run: |
           Rscript dev/classify_tests.R --validate
         shell: bash
+
+      - name: Validate Posit Connect manifest
+        run: |
+          Rscript dev/validate_connect_manifest.R manifest.json
+        shell: bash

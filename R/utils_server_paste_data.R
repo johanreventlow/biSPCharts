@@ -92,7 +92,7 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
     }
 
     # Laes CSV-fil fra inst/extdata/
-    sample_path <- system.file("extdata", dataset$file, package = "biSPCharts")
+    sample_path <- bisp_system_file("extdata", dataset$file)
     if (sample_path == "" || !file.exists(sample_path)) {
       sample_path <- file.path("inst", "extdata", dataset$file)
     }

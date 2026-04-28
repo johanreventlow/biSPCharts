@@ -83,6 +83,16 @@ jobs:
           fi
         shell: bash
 
+      - name: Report new TODO skips
+        if: steps.delta.outputs.delta_todo > 0
+        run: |
+          Rscript dev/compare_skip_inventory.R \
+            /tmp/skip-inventory-base.json \
+            /tmp/skip-inventory-head.json \
+            > /tmp/skip-inventory-new-todo.md
+          cat /tmp/skip-inventory-new-todo.md
+        shell: bash
+
       - name: Comment skip delta on PR
         if: github.event_name == 'pull_request'
         env:
@@ -99,6 +109,11 @@ jobs:
           else
             STATUS="✅ Skip-inventory OK"
           fi
+          if [ -f /tmp/skip-inventory-new-todo.md ]; then
+            NEW_TODO="$(cat /tmp/skip-inventory-new-todo.md)"
+          else
+            NEW_TODO="Ingen nye TODO-skips."
+          fi
 
           {
             echo "## Skip Inventory"
@@ -108,6 +123,11 @@ jobs:
             echo "|----------|-------|-------|"
             echo "| todo | ${HEAD_TODO} | ${DELTA_TODO:+\+}${DELTA_TODO} |"
             echo "| total | ${HEAD_TOTAL} | ${DELTA_TOTAL:+\+}${DELTA_TOTAL} |"
+            echo ""
+            echo "### Nye TODO-skips"
+            echo '```'
+            echo "${NEW_TODO}"
+            echo '```'
             echo ""
             echo "Se \`dev/audit-output/skip-inventory.md\` for detaljer."
           } > /tmp/skip-inventory-comment.md

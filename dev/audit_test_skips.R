@@ -25,9 +25,10 @@ categorise_skip <- function(call_text, context_lines) {
   }
   # Plain skip() — look at the message string for signals
   msg <- gsub("(?s)skip\\s*\\((.*)\\)", "\\1", call_text, perl = TRUE)
-  # Check message text AND the surrounding comment lines for TODO signals
-  context_text <- paste(c(context_lines, msg), collapse = " ")
-  if (grepl("TODO|FIXME|#[0-9]+", context_text, ignore.case = FALSE)) {
+  context_text <- paste(context_lines, collapse = " ")
+  has_todo_word <- grepl("TODO|FIXME", paste(context_text, msg), ignore.case = FALSE)
+  has_issue_ref <- grepl("(^|[^A-Za-z])#[0-9]+", msg, ignore.case = FALSE)
+  if (has_todo_word || has_issue_ref) {
     return("todo")
   }
   return("permanent")

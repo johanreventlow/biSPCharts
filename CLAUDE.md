@@ -1,9 +1,17 @@
 # Claude Instructions – biSPCharts
 
-**Bootstrap workflow:**
+**Project-type rules (Tier 2 — Shiny):**
 
-- Mac: `@~/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md`
-- Windows: `@C:/Users/jrev0004/.claude/rules/CLAUDE_BOOTSTRAP_WORKFLOW.md`
+@~/.claude/rules-profiles/shiny/SHINY_STANDARDS.md
+@~/.claude/rules-profiles/shiny/SHINY_ADVANCED_PATTERNS.md
+@~/.claude/rules-profiles/shiny/ARCHITECTURE_PATTERNS.md
+
+**On-demand (Tier 3 — uncomment ved aktiv brug):**
+
+<!-- @~/.claude/rules-ondemand/OBSERVABILITY_STANDARDS.md -->
+<!-- @~/.claude/rules-ondemand/DEPLOYMENT_GUIDE.md -->
+<!-- @~/.claude/rules-ondemand/TROUBLESHOOTING_GUIDE.md -->
+<!-- @~/.claude/rules-ondemand/CI_CD_WORKFLOW.md -->
 
 ---
 
@@ -20,9 +28,9 @@
 ## 1) Project Overview
 
 - **Project Type:** Shiny Application (Golem framework)
-- **Purpose:** Statistical Process Control (SPC) til klinisk kvalitetsarbejde
-  ved Bispebjerg og Frederiksberg Hospital. Krav om stabilitet, forståelighed
-  og dansk sprog.
+- **Purpose:** Statistical Process Control (SPC) klinisk kvalitetsarbejde
+  Bispebjerg + Frederiksberg Hospital. Krav: stabilitet, forståelighed,
+  dansk sprog.
 - **Status:** Production
 
 **Technology Stack:**
@@ -74,21 +82,21 @@ app_state$session    # Session state
 - **Boot:** Production `library(biSPCharts)` (~50-100ms); debug
   `source('global.R')` med `options(spc.debug.source_loading = TRUE)` (~400ms+)
 - **Lazy loading:** file_operations, advanced_debug, performance_monitoring
-  loaded on demand
+  on demand
 - **Target:** Startup < 100ms (achieved 55-57ms)
 
 ### Session Persistence (Issue #193)
 
 Auto-save (debounce 2s data / 1s settings) + auto-restore via localStorage.
 Schema-version-gate (`LOCAL_STORAGE_SCHEMA_VERSION`). Class-preservation per
-kolonne. Detaljer i `R/utils_local_storage.R`,
+kolonne. Detaljer: `R/utils_local_storage.R`,
 `R/utils_server_server_management.R`, `inst/app/www/local-storage.js`.
 
 ### Excel I/O
 
 3-ark download (`Data` round-trip + `Indstillinger` round-trip + `SPC-analyse`
-informational), multi-sheet upload med picker. Specifikationer i
-`openspec/specs/excel-import/` og
+informational), multi-sheet upload med picker. Specs:
+`openspec/specs/excel-import/`,
 `openspec/changes/archive/2026-04-26-harden-export-quarto-capability/`.
 Implementation: `R/fct_spc_file_save_load.R`, `R/fct_excel_sheet_detection.R`,
 `R/utils_server_paste_data.R`.
@@ -107,15 +115,15 @@ pakke (eks: target lines, font fallback, hospital colors, embeddings, BM25,
 chunking).
 
 ✅ **I STEDET:** Identificér gap → opret issue/feature-request i ekstern pakke
-→ implementér midlertidig workaround **kun hvis kritisk** (markér som
-temporary) → fjern når ekstern pakke leverer.
+→ implementér midlertidig workaround **kun hvis kritisk** (markér temporary)
+→ fjern når ekstern pakke leverer.
 
 ### Integration Pattern
 
 biSPCharts = **integration layer + business logic + knowledge curation**.
 Ekstern pakke = engine.
 
-biSPCharts's RAG-ansvar: knowledge content (`inst/spc_knowledge/`),
+biSPCharts RAG-ansvar: knowledge content (`inst/spc_knowledge/`),
 integration (`R/utils_bfhllm_integration.R`), application-specific queries.
 
 ### Do NOT Modify
@@ -197,8 +205,8 @@ R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
 ```
 
-**Manual tests** (`tests/manual/`): kun for external API-integrationer
-(Gemini), interaktiv debug og cost-sensitive flows. **Køres ikke i CI/CD**.
+**Manual tests** (`tests/manual/`): kun external API-integrationer
+(Gemini), interaktiv debug + cost-sensitive flows. **Køres ej i CI/CD**.
 
 **Coverage targets:** 100% kritiske paths, ≥90% samlet, edge cases (null,
 tomme, fejl, store filer).
@@ -214,7 +222,7 @@ lintr + manifest-validering + små regressionstests. Modes:
 `PREPUSH_MODE=fast|full`, `RUN_SHINYTEST2=1` (opt-in), `SKIP_PREPUSH=1`
 (bypass).
 
-⚠️ shinytest2 visual-tests er miljøfølsomme — opt-in, ikke push-blokering.
+⚠️ shinytest2 visual-tests miljøfølsomme — opt-in, ej push-blokering.
 Stabil browser-regression hører i nightly `shinytest2.yaml` CI-job.
 
 CI-gate-hierarki: se `.github/workflows/README.md`.
@@ -222,8 +230,8 @@ CI-gate-hierarki: se `.github/workflows/README.md`.
 ### Analytics Privacy
 
 Payload-kontrakt + opt-in + DPIA: `docs/ANALYTICS_PRIVACY.md`. Opdatér
-`ANALYTICS_PRIVACY.md` og `SHINYLOGS_ALLOWLIST` synkront ved enhver ændring
-af hvad der indsamles.
+`ANALYTICS_PRIVACY.md` + `SHINYLOGS_ALLOWLIST` synkront ved enhver ændring
+af hvad indsamles.
 
 ### Issue Tracking
 
@@ -233,63 +241,31 @@ Alle fejl/forbedringer dokumenteres som GitHub Issues. Reference i commits:
 
 ### AI/LLM Integration (BFHllm)
 
-biSPCharts er **thin wrapper** omkring BFHllm-pakken (v0.1.1, `Suggests +
-Remotes`, ikke krævet for minimal-install).
+biSPCharts = thin wrapper omkring BFHllm-pakken (`Suggests + Remotes`,
+graceful degradation: NULL + log warning ved fejl).
 
-**Lag:**
-- `R/fct_ai_improvement_suggestions.R` — facade + input validering
-- `R/utils_bfhllm_integration.R` — biSPCharts-config for BFHllm
-- `BFHllm` package — RAG, LLM-calls, caching, prompts, knowledge base
-
-**Public API (uændret for brugere):**
-
-```r
-suggestion <- generate_improvement_suggestion(
-  spc_result = spc_result,
-  context = list(data_definition = "...", chart_title = "...",
-                 y_axis_unit = "dage", target_value = 30),
-  session = session,  # required for caching
-  max_chars = 350
-)
-```
-
-**Graceful degradation:** BFHllm unavailable → NULL + log warning. RAG-fejl
-→ fortsæt uden RAG. API-fejl → NULL via `safe_operation`.
-
-**Konfiguration:** `inst/golem-config.yml` `ai:` + `rag:` sektion. Init via
-`initialize_bfhllm(get_ai_config(), get_rag_config())` i `run_app.R`.
-
-**Knowledge base:** Live i BFHllm-repo (`inst/spc_knowledge/`). Update-flow:
-edit i BFHllm → rebuild ragnar store → bump biSPCharts DESCRIPTION
-`BFHllm (>= ...)`.
-
-**Reference:** BFHllm package docs (https://github.com/johanreventlow/BFHllm),
-ADR-016, Issue #100.
+**Detaljer:** `docs/AI_INTEGRATION.md` (lag, API, config, knowledge
+base, references). On-demand: `@~/R/biSPCharts/docs/AI_INTEGRATION.md`
+ved aktivt arbejde med AI-features.
 
 ### Danish Language
 
 - **UI / fejlbeskeder / kommentarer:** dansk
-- **Funktions- og variabelnavne:** engelsk
+- **Funktions- + variabelnavne:** engelsk
 
 **Termer:** Serieplot = SPC chart · Centrallinje = Center line ·
 Kontrolgrænser = Control limits.
 
 ---
 
-## 📚 Global Standards Reference
+## 📚 References
 
-**Følger:**
-- R: `~/.claude/rules/R_STANDARDS.md`
-- Shiny: `~/.claude/rules/SHINY_STANDARDS.md` +
-  `~/.claude/rules/SHINY_ADVANCED_PATTERNS.md`
-- Git: `~/.claude/rules/GIT_WORKFLOW.md`
-- Philosophy: `~/.claude/rules/DEVELOPMENT_PHILOSOPHY.md`
-- Architecture: `~/.claude/rules/ARCHITECTURE_PATTERNS.md`
-- Troubleshooting: `~/.claude/rules/TROUBLESHOOTING_GUIDE.md`
+**Globale rules:** Tier 1 auto-loaded fra `~/.claude/rules/`. Tier 2
+Shiny-rules @-imported øverst i denne fil. Tier 3 on-demand via
+auskommenterede @-imports øverst.
 
 **Globale agents:** tidyverse-code-reviewer, performance-optimizer,
 security-reviewer, test-coverage-analyzer, refactoring-advisor,
 legacy-code-detector, shiny-code-reviewer, architecture-validator.
 
-**biSPCharts-specifik bidrag-guide:** `docs/CONTRIBUTING.md` (roxygen2-konvention,
-brugervendt fejlbesked-pattern).
+**biSPCharts-specifik bidrag-guide:** `docs/CONTRIBUTING.md`.

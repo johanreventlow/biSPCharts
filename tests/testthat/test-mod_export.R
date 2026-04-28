@@ -167,45 +167,27 @@ test_that("mod_export_server requires app_state parameter", {
 
 # §2.3.2 (plot-available reactive): reagerer på app_state plot-data
 # Leveret i §2.3.2 (#230)
-#
-# TODO(#261): Refaktorér til at verificere output$plot_available-binding
-# direkte via testServer i stedet for at evaluere logikken via shiny::isolate().
-# Kræver at output-id'et eksponeres og at testServer understøtter det korrekt.
+# Refaktoreret i #261: verificerer output$plot_available direkte via testServer.
 test_that("mod_export_server plot_available reflects app_state (§2.3.2)", {
   # TEST: output$plot_available er TRUE når data + y_column er sat.
-  # Verificérer reactive-kontrakten: output opdateres når app_state ændrer sig.
+  # Verificérer output-bindingen direkte (ikke logikken via shiny::isolate).
+  # outputOptions(suspendWhenHidden = FALSE) sikrer at output evalueres
+  # selvom der ingen klient-observer er i testServer-kontekst.
   app_state <- create_mock_app_state()
 
   shiny::testServer(mod_export_server, args = list(app_state = app_state), {
     session$flushReact()
 
-    # Initial: data + y_column sat → plot_available skal være TRUE.
-    # testServer output-access via getCurrentOutputInfo/session$getOutput —
-    # fallback til shiny::isolate() omkring den underliggende reactive
-    # hvis output-mock returnerer NULL (testServer begrænsning).
-    available_initial <- tryCatch(
-      shiny::isolate(
-        !is.null(app_state$data$current_data) &&
-          !is.null(app_state$columns$mappings$y_column)
-      ),
-      error = function(e) NA
-    )
-    expect_true(isTRUE(available_initial),
-      label = "plot_available-logik skal være TRUE når data + y_column er sat"
+    # Initial: data + y_column sat → output$plot_available skal være TRUE.
+    expect_true(output$plot_available,
+      label = "output$plot_available skal være TRUE når data + y_column er sat"
     )
 
-    # Ryd y_column → plot_available-logik skal blive FALSE
+    # Ryd y_column → output$plot_available skal blive FALSE
     app_state$columns$mappings$y_column <- NULL
     session$flushReact()
-    available_no_y <- tryCatch(
-      shiny::isolate(
-        !is.null(app_state$data$current_data) &&
-          !is.null(app_state$columns$mappings$y_column)
-      ),
-      error = function(e) NA
-    )
-    expect_false(isTRUE(available_no_y),
-      label = "plot_available-logik skal være FALSE når y_column er NULL"
+    expect_false(output$plot_available,
+      label = "output$plot_available skal være FALSE når y_column er NULL"
     )
   })
 })

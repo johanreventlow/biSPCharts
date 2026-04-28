@@ -2,19 +2,37 @@
 % Please edit documentation in R/fct_spc_file_save_load.R
 \name{build_spc_excel}
 \alias{build_spc_excel}
-\title{Byg biSPCharts Excel-fil med Data- og Indstillinger-ark}
+\title{Byg biSPCharts Excel-fil med Data-, Indstillinger- og evt. SPC-analyse-ark}
 \usage{
-build_spc_excel(data, metadata)
+build_spc_excel(
+  data,
+  metadata,
+  qic_data = NULL,
+  original_data = NULL,
+  analysis_options = list()
+)
 }
 \arguments{
 \item{data}{data.frame med brugerens data}
 
 \item{metadata}{Named list svarende til collect_metadata()-output}
+
+\item{qic_data}{data.frame eller NULL. Hvis ikke-NULL og indeholder
+gyldige raekker, tilfoejes "SPC-analyse"-ark med pre-beregnede
+statistikker.}
+
+\item{original_data}{data.frame eller NULL. Brugerens raa data; bruges
+til opslag af dato og notes i sektion D af SPC-analyse-arket. Kan
+vaere identisk med \code{data}-argumentet.}
+
+\item{analysis_options}{Named list. Valgfrie inputs til
+\code{build_spc_analysis_sheet()} (fx \code{freeze_position}, \code{phase_names},
+\code{pkg_versions}).}
 }
 \value{
 Karakter-streng: sti til midlertidig .xlsx-fil
 }
 \description{
-Byg biSPCharts Excel-fil med Data- og Indstillinger-ark
+Byg biSPCharts Excel-fil med Data-, Indstillinger- og evt. SPC-analyse-ark
 }
 \keyword{internal}

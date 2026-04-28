@@ -257,13 +257,18 @@ clearDataLocally <- function(session) {
   )
 }
 
-## Auto-save funktion med eksplicit app_state dependency injection
+#' Auto-save Application State
+#'
+#' Auto-save funktion med eksplicit app_state dependency injection.
+#'
 #' @param session Shiny session objekt
 #' @param current_data data.frame der skal gemmes
 #' @param metadata Named list med UI-state (kolonne-mapping, chart_type, etc.)
-#' @param app_state Centraliseret app_state (reactiveValues) — påkrævet for at
+#' @param app_state Centraliseret app_state (reactiveValues) - paakraevet for at
 #'   kunne deaktivere auto-save ved persistent fejl. Hvis NULL, springes
 #'   graceful disable-logik over.
+#' @return NULL, invisibly.
+#' @keywords internal
 autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) {
   # Guard: Respektér auto_save_enabled flag
   if (!is.null(app_state)) {

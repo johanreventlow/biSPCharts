@@ -81,7 +81,8 @@ LOG_CONTEXTS <- list(
 
   # === Export Module ===
   export = list(
-    module = "EXPORT_MODULE"
+    module = "EXPORT_MODULE",
+    excel = "EXCEL_EXPORT" # SPC-analyse-ark og Excel-orkestrering
   ),
 
   # === Performance Monitoring ===

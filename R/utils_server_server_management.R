@@ -550,6 +550,7 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
   clearDataLocally(session)
   # Unified state assignment only
   app_state$session$last_save_time <- NULL
+  app_state$session$pending_excel_upload <- NULL
 
   # Unified state only
   app_state$data$updating_table <- TRUE

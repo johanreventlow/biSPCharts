@@ -28,7 +28,7 @@ test_that("build_spc_excel Data-ark indeholder korrekte rækker og kolonner", {
   expect_true("vaerdi" %in% names(result))
 })
 
-test_that("build_spc_excel Indstillinger-ark indeholder metadata som Felt/Vaerdi", {
+test_that("build_spc_excel Indstillinger-ark indeholder metadata som Felt/Værdi", {
   data <- data.frame(x = 1:3, y = 4:6)
   metadata <- list(
     x_column = "x", y_column = "y", chart_type = "p",
@@ -39,14 +39,14 @@ test_that("build_spc_excel Indstillinger-ark indeholder metadata som Felt/Vaerdi
   settings <- readxl::read_excel(path, sheet = "Indstillinger", skip = 2)
 
   expect_true("Felt" %in% names(settings))
-  expect_true("Vaerdi" %in% names(settings))
+  expect_true("Værdi" %in% names(settings))
 
   felt_values <- settings$Felt
   expect_true("x_column" %in% felt_values)
   expect_true("indicator_title" %in% felt_values)
 
   title_row <- settings[settings$Felt == "indicator_title", ]
-  expect_equal(title_row$Vaerdi, "Min titel")
+  expect_equal(title_row$"Værdi", "Min titel")
 })
 
 test_that("build_spc_excel returnerer sti til eksisterende fil", {

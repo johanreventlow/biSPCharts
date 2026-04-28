@@ -7,10 +7,10 @@
 #' Rediger PAT-del af GitHub auth-URL i fejlbeskeder
 #'
 #' Matcher \code{x-access-token:<TOKEN>@} i fejlbeskeder og erstatter
-#' tokenet med \code{[REDACTED]}. Prevents PAT-lækage via conditionMessage().
+#' tokenet med \code{REDACTED}. Prevents PAT-laekage via conditionMessage().
 #'
 #' @param msg Fejlbesked (tegnstreng)
-#' @return Besked med PAT erstattet af [REDACTED]
+#' @return Besked med PAT erstattet af \code{REDACTED}
 #' @keywords internal
 #' @noRd
 redact_pat_in_url <- function(msg) {
@@ -38,7 +38,7 @@ inject_pat_into_url <- function(url, pat) {
 #'
 #' Format: `<YYYYMMDDTHHMMSSZ>_<session-hash>.rds`. Lexikografisk
 #' sortering svarer til kronologisk sortering. Session-delen er
-#' SHA-256-hash (8 tegn) af session_id — raa token optræder aldrig
+#' SHA-256-hash (8 tegn) af session_id - raa token optraeder aldrig
 #' i filnavnet. Fallback ved NULL: hash af timestamp + entropi.
 #'
 #' @param session_id Shiny session token (eller NULL)

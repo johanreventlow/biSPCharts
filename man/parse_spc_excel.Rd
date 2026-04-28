@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_spc_file_save_load.R
 \name{parse_spc_excel}
 \alias{parse_spc_excel}
-\title{Læs Indstillinger-ark fra biSPCharts Excel-fil}
+\title{Laes Indstillinger-ark fra biSPCharts Excel-fil}
 \usage{
 parse_spc_excel(file_path, sheets = NULL)
 }
@@ -14,6 +14,6 @@ Named list svarende til collect_metadata()-output, eller NULL
 hvis arket mangler eller er korrupt
 }
 \description{
-Læs Indstillinger-ark fra biSPCharts Excel-fil
+Laes Indstillinger-ark fra biSPCharts Excel-fil
 }
 \keyword{internal}

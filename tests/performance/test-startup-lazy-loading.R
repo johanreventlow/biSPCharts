@@ -5,6 +5,12 @@
 library(testthat)
 context("Startup Lazy Loading System Tests")
 
+memory_used_mb <- function() {
+  gc_info <- gc()
+  cell_sizes <- c(Ncells = 56, Vcells = 8)
+  sum(gc_info[, "used"] * cell_sizes[rownames(gc_info)], na.rm = TRUE) / 1024^2
+}
+
 # Test Information Output
 test_that("lazy loading test context information", {
   message("Testing lazy loading system implemented 2025-09-26")
@@ -245,29 +251,23 @@ test_that("lazy loading handles missing files gracefully", {
 test_that("lazy loading manages memory efficiently", {
   skip_if_not(exists("lazy_load_modules", mode = "function"))
 
-  if (requireNamespace("pryr", quietly = TRUE)) {
-    # Measure memory before lazy loading
-    gc() # Clean up first
-    mem_before <- pryr::mem_used()
+  # Measure memory before lazy loading
+  mem_before <- memory_used_mb()
 
-    # Load modules
-    loaded_modules <- lazy_load_modules()
+  # Load modules
+  loaded_modules <- lazy_load_modules()
 
-    # Measure memory after
-    gc()
-    mem_after <- pryr::mem_used()
+  # Measure memory after
+  mem_after <- memory_used_mb()
 
-    # Memory increase should be reasonable
-    mem_increase <- as.numeric(mem_after - mem_before) / 1024^2
-    expect_lt(mem_increase, 100) # Should not increase by more than 100MB
+  # Memory increase should be reasonable
+  mem_increase <- mem_after - mem_before
+  expect_lt(mem_increase, 100) # Should not increase by more than 100MB
 
-    message(sprintf(
-      "Lazy loading memory usage: %.2f MB for %d modules",
-      mem_increase, length(loaded_modules)
-    ))
-  } else {
-    skip("pryr package not available for memory testing")
-  }
+  message(sprintf(
+    "Lazy loading memory usage: %.2f MB for %d modules",
+    mem_increase, length(loaded_modules)
+  ))
 })
 
 # Edge cases and error handling

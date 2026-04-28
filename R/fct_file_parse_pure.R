@@ -216,6 +216,9 @@ new_parsed_file <- function(data, format, encoding, warnings = character()) {
 }
 
 #' Print-metode for ParsedFile
+#'
+#' @param x ParsedFile-objekt.
+#' @param ... Ignoreres.
 #' @export
 print.ParsedFile <- function(x, ...) {
   cat(sprintf(

@@ -34,7 +34,7 @@ Plot object eller NULL ved fejl
 }
 \description{
 Genererer export plot for given context.
-Issue #65: Fælles helper for at reducere code duplication.
-Issue #67: Undebounced, så download handler får fresh plot.
+Issue #65: Faelles helper for at reducere code duplication.
+Issue #67: Undebounced, saa download handler faar fresh plot.
 }
 \keyword{internal}

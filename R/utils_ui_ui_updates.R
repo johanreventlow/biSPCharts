@@ -2,13 +2,13 @@
 # Backward-compat wrapper + delt UI-infrastruktur (queue, loop-protection)
 #
 # Selve opdateringslogikken er splittet i:
-#   R/utils_ui_column_update_service.R \u2014 kolonne-selectize ops
-#   R/utils_ui_form_update_service.R   \u2014 form-felter, reset, feedback
+#   R/utils_ui_column_update_service.R - kolonne-selectize ops
+#   R/utils_ui_form_update_service.R   - form-felter, reset, feedback
 
 #' Create UI Update Service
 #'
 #' Backward-kompatibel wrapper der komponerer column- og form-services.
-#' Eksisterende kaldere forts\u00e6tter u\u00e6ndret; fremtidig kode b\u00f8r bruge
+#' Eksisterende kaldere fortsaetter uaendret; fremtidig kode boer bruge
 #' `create_column_update_service()` og `create_form_update_service()` direkte.
 #'
 #' @param session Shiny session object

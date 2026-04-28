@@ -14,7 +14,7 @@ validate_aspect_ratio(width, height, warn_only = TRUE)
 \item{warn_only}{Emit warning i stedet for error (default TRUE)}
 }
 \value{
-TRUE hvis aspect ratio er acceptable eller warn_only = TRUE
+TRUE hvis aspect ratio er acceptable eller warn_only = TRUE.
 }
 \description{
 Validerer aspect ratio (bredde/hoejde) for export dimensioner.
@@ -23,10 +23,16 @@ Advarer eller fejler ved ekstreme ratios udenfor acceptable graenser.
 \details{
 Acceptable aspect ratios: 0.5 - 2.0
 \itemize{
-\item < 0.5: For smalt (hoejt og snaevert)
-\item 2.0: For bredt (lavt og bredt)
+\item Under 0.5: For smalt (hoejt og snaevert)
+\item Over 2.0: For bredt (lavt og bredt)
 }
 }
+\section{Errors}{
+
+Advarer hvis aspect ratio er ekstrem og \code{warn_only = TRUE}; kaster fejl hvis
+aspect ratio er ekstrem og \code{warn_only = FALSE}.
+}
+
 \examples{
 \dontrun{
 validate_aspect_ratio(1200, 900) # OK (1.33)

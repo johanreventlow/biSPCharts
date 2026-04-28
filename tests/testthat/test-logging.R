@@ -376,22 +376,22 @@ test_that("safe_operation integrates correctly with logging system", {
 test_that("logging system manages memory efficiently", {
   skip_if_not(exists("log_info", mode = "function"))
 
-  if (requireNamespace("pryr", quietly = TRUE)) {
-    gc()
-    mem_before <- pryr::mem_used()
-
-    for (i in 1:1000) {
-      log_info(paste("Memory test message", i), component = "MEMORY_TEST")
-    }
-
-    gc()
-    mem_after <- pryr::mem_used()
-
-    mem_increase <- as.numeric(mem_after - mem_before) / 1024^2
-    expect_lt(mem_increase, 10)
-  } else {
-    skip("pryr package not available for memory testing")
+  memory_used_mb <- function() {
+    gc_info <- gc()
+    cell_sizes <- c(Ncells = 56, Vcells = 8)
+    sum(gc_info[, "used"] * cell_sizes[rownames(gc_info)], na.rm = TRUE) / 1024^2
   }
+
+  mem_before <- memory_used_mb()
+
+  for (i in 1:1000) {
+    log_info(paste("Memory test message", i), component = "MEMORY_TEST")
+  }
+
+  mem_after <- memory_used_mb()
+
+  mem_increase <- mem_after - mem_before
+  expect_lt(mem_increase, 10)
 })
 
 test_that("logging output follows consistent format", {

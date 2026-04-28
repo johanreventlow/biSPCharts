@@ -44,7 +44,7 @@ is_dev_mode <- function() {
 
   # Fall back to environment detection
   if (exists("detect_development_environment", mode = "function")) {
-    return(detect_development_environment())
+    return(get("detect_development_environment", mode = "function")())
   }
 
   # Ultimate fallback
@@ -66,7 +66,7 @@ is_prod_mode <- function() {
 
   # Fall back to environment detection
   if (exists("detect_production_environment", mode = "function")) {
-    return(detect_production_environment())
+    return(get("detect_production_environment", mode = "function")())
   }
 
   # Ultimate fallback - if not interactive, assume production

@@ -404,7 +404,11 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #' @examples
 #' \dontrun{
 #' log_warn("Manglende data i kolonne", .context = "DATA_VALIDATION")
-#' log_warn(message = "Input sanitized", component = "[INPUT_SANITIZATION]", details = list(original_length = 100))
+#' log_warn(
+#'   message = "Input sanitized",
+#'   component = "[INPUT_SANITIZATION]",
+#'   details = list(original_length = 100)
+#' )
 #' }
 #' @keywords internal
 log_warn <- function(message = NULL, component = NULL, .context = NULL, details = NULL) {
@@ -451,7 +455,11 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #' @examples
 #' \dontrun{
 #' log_error("Kunne ikke laese fil", .context = "FILE_UPLOAD")
-#' log_error(message = "File validation failed", component = "[FILE_VALIDATION]", details = list(filename = "test.txt"))
+#' log_error(
+#'   message = "File validation failed",
+#'   component = "[FILE_VALIDATION]",
+#'   details = list(filename = "test.txt")
+#' )
 #' tryCatch(stop("Boom"), error = function(e) log_error(e, .context = "PIPELINE"))
 #' }
 #' @keywords internal

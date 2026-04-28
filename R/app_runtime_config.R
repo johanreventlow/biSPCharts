@@ -23,10 +23,12 @@ initialize_runtime_config <- function(override_options = list(), use_environment
     # log_debug( paste("Detected environment type:", environment_type), .context = "RUNTIME_CONFIG")
 
     # Get environment-specific profile
-    profile <- get_environment_profile(environment_type, override_options)
+    get_environment_profile_fn <- get("get_environment_profile", mode = "function")
+    profile <- get_environment_profile_fn(environment_type, override_options)
 
     # Apply profile to runtime and environment variables
-    apply_environment_profile(profile)
+    apply_environment_profile_fn <- get("apply_environment_profile", mode = "function")
+    apply_environment_profile_fn(profile)
 
     # Convert profile to legacy format for backward compatibility
     config <- convert_profile_to_legacy_config(profile)
@@ -109,7 +111,8 @@ setup_environment_features <- function(override_options = list()) {
 
   # Use new environment detection system
   if (exists("detect_environment_from_context", mode = "function")) {
-    environment_type <- detect_environment_from_context()
+    detect_environment_from_context_fn <- get("detect_environment_from_context", mode = "function")
+    environment_type <- detect_environment_from_context_fn()
 
     env_config$is_development <- (environment_type == "development")
     env_config$is_production <- (environment_type == "production")
@@ -117,9 +120,9 @@ setup_environment_features <- function(override_options = list()) {
   } else {
     # Fallback to legacy detection
     if (exists("detect_development_environment", mode = "function")) {
-      env_config$is_development <- detect_development_environment()
-      env_config$is_production <- detect_production_environment()
-      env_config$is_testing <- detect_testing_environment()
+      env_config$is_development <- get("detect_development_environment", mode = "function")()
+      env_config$is_production <- get("detect_production_environment", mode = "function")()
+      env_config$is_testing <- get("detect_testing_environment", mode = "function")()
     } else {
       # Ultimate fallback
       env_config$is_development <- interactive()
@@ -347,7 +350,7 @@ determine_test_mode_setting <- function(override_options) {
 
   # Use existing detect_environment() function if available
   if (exists("detect_environment", mode = "function")) {
-    return(detect_environment())
+    return(get("detect_environment", mode = "function")())
   }
 
   # Fallback to environment-based logic
@@ -447,8 +450,9 @@ determine_environment_type_from_context <- function(override_options = list()) {
   }
 
   # Check existing environment configuration if available
-  if (exists("runtime_config") && !is.null(runtime_config$environment)) {
-    return(runtime_config$environment$environment_type)
+  runtime_config_current <- get_runtime_config()
+  if (!is.null(runtime_config_current$environment)) {
+    return(runtime_config_current$environment$environment_type)
   }
 
   # Use existing detection logic

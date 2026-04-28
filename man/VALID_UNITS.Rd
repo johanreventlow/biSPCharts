@@ -5,7 +5,7 @@
 \alias{VALID_UNITS}
 \title{Valid unit types for Y-axis scaling}
 \format{
-An object of class \code{character} of length 4.
+An object of class \code{character} of length 7.
 }
 \usage{
 VALID_UNITS

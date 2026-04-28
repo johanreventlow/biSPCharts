@@ -1,22 +1,3 @@
-<!-- OPENSPEC:START -->
-# OpenSpec Instructions
-
-These instructions are for AI assistants working in this project.
-
-Always open `@/openspec/AGENTS.md` when the request:
-- Mentions planning or proposals (words like proposal, spec, change, plan)
-- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
-- Sounds ambiguous and you need the authoritative spec before coding
-
-Use `@/openspec/AGENTS.md` to learn:
-- How to create and apply change proposals
-- Spec format and conventions
-- Project structure and guidelines
-
-Keep this managed block so 'openspec update' can refresh the instructions.
-
-<!-- OPENSPEC:END -->
-
 # Claude Instructions – biSPCharts
 
 **Bootstrap workflow:**
@@ -31,25 +12,24 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ❌ **ALDRIG:**
 1. Merge til master/main uden eksplicit godkendelse
 2. Push til remote uden anmodning
-3. Tilføj Claude attribution footers:
-   - ❌ "🤖 Generated with [Claude Code]"
-   - ❌ "Co-Authored-By: Claude <noreply@anthropic.com>"
+3. Tilføj Claude attribution footers (`🤖 Generated with [Claude Code]` /
+   `Co-Authored-By: Claude <noreply@anthropic.com>`)
 
 ---
 
 ## 1) Project Overview
 
-- **Project Type:** Shiny Application
-- **Purpose:** Statistical Process Control (SPC) applikation til klinisk kvalitetsarbejde ved Bispebjerg og Frederiksberg Hospital. Krav om stabilitet, forståelighed og dansk sprog.
-- **Status:** Production (Industristandard mønstre med TDD, centraliseret state management, robust error handling)
+- **Project Type:** Shiny Application (Golem framework)
+- **Purpose:** Statistical Process Control (SPC) til klinisk kvalitetsarbejde
+  ved Bispebjerg og Frederiksberg Hospital. Krav om stabilitet, forståelighed
+  og dansk sprog.
+- **Status:** Production
 
 **Technology Stack:**
-- Shiny (Golem framework)
-- BFHcharts (SPC visualization engine)
-- BFHtheme (Hospital branding)
-- qicharts2 (Anhøj rules beregning)
-- Ragnar (RAG knowledge store for AI context enhancement)
-- Gemini API (LLM provider for AI improvement suggestions)
+- Shiny + Golem
+- BFHcharts (SPC visualization), BFHtheme (branding), BFHllm (AI/LLM)
+- qicharts2 (Anhøj rules)
+- Ragnar (RAG knowledge store, via BFHllm)
 
 ---
 
@@ -57,105 +37,61 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ### Unified Event Architecture
 
-**biSPCharts bruger centraliseret event-bus:**
+Centraliseret event-bus, ingen ad-hoc reactiveVal-triggers:
 
 ```r
-# Events defineres i global.R
-app_state$events <- reactiveValues(
-  data_updated = 0L,
-  auto_detection_completed = 0L,
-  ui_sync_requested = 0L,
-  ...
-)
-
-# Emit API
+# Emit
 emit$data_updated(context = "upload")
-emit$auto_detection_completed()
 
-# Lyttere med prioritet
+# Listen (priority + ignoreInit)
 observeEvent(app_state$events$data_updated,
-  ignoreInit = TRUE,
-  priority = OBSERVER_PRIORITIES$HIGH, {
+  ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$HIGH, {
   handle_data_update()
 })
 ```
 
-**Event Infrastructure:**
-- Events: `global.R` (`app_state$events`)
-- Emit functions: `create_emit_api()`
-- Listeners: `R/utils_event_system.R` via `setup_event_listeners()`
+**Filer:** `global.R` (events), `R/utils_event_system.R` (`setup_event_listeners()`),
+emit API via `create_emit_api()`.
 
 ### App State Structure
 
-**Hierarchisk state (se `R/state_management.R`):**
+Hierarkisk `reactiveValues` i `R/state_management.R`:
 
 ```r
-app_state$events         # Event triggers
-app_state$data           # current_data, original_data, file_info
-app_state$columns        # Hierarkisk: auto_detect, mappings, ui_sync
-app_state$session        # Session state
+app_state$events     # Event triggers
+app_state$data       # current_data, original_data, file_info
+app_state$columns    # auto_detect, mappings, ui_sync
+app_state$session    # Session state
 ```
-
-**Detaljeret schema:** Se Appendix i original CLAUDE.md.backup
 
 ### Golem Configuration
 
-**Environment-specific settings:**
+`inst/golem-config.yml` styrer dev/test/prod. Læs via
+`golem::get_golem_options(name, default)`.
 
-```r
-# Læsning
-config_value <- golem::get_golem_options("test_mode_auto_load", default = FALSE)
+### Performance
 
-# Initialisering
-Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
-```
-
-**Standard environments:**
-- **DEV:** `test_mode_auto_load = TRUE`, `logging.level = "debug"`
-- **TEST:** `test_mode_auto_load = TRUE`, `logging.level = "info"`
-- **PROD:** `test_mode_auto_load = FALSE`, `logging.level = "warn"`
-
-### Performance Architecture
-
-**Boot strategy:**
-- Production: `library(biSPCharts)` (~50-100ms)
-- Debug: `source('global.R')` med `options(spc.debug.source_loading = TRUE)` (~400ms+)
-
-**Lazy loading:** Tunge moduler (file_operations, advanced_debug, performance_monitoring) loaded on demand
-
-**Target:** Startup < 100ms (achieved: 55-57ms)
+- **Boot:** Production `library(biSPCharts)` (~50-100ms); debug
+  `source('global.R')` med `options(spc.debug.source_loading = TRUE)` (~400ms+)
+- **Lazy loading:** file_operations, advanced_debug, performance_monitoring
+  loaded on demand
+- **Target:** Startup < 100ms (achieved 55-57ms)
 
 ### Session Persistence (Issue #193)
 
-**Auto-save flow:**
-- Data ændringer debounced 2s → `autoSaveAppState()` → `saveDataLocally()` → `session$sendCustomMessage("saveAppState", …)` → JS handler → `localStorage`
-- Settings ændringer debounced 1s via `bindEvent()` på form-felter
-- Feature flag: `get_auto_save_enabled()` (default TRUE)
+Auto-save (debounce 2s data / 1s settings) + auto-restore via localStorage.
+Schema-version-gate (`LOCAL_STORAGE_SCHEMA_VERSION`). Class-preservation per
+kolonne. Detaljer i `R/utils_local_storage.R`,
+`R/utils_server_server_management.R`, `inst/app/www/local-storage.js`.
 
-**Auto-restore flow:**
-- JS `$(document).on('shiny:sessioninitialized', ...)` → `Shiny.setInputValue('auto_restore_data', …)` → `observeEvent(input$auto_restore_data, …, once = TRUE)`
-- Rækkefølge: version-check → guards → `restore_metadata()` → reconstruct data.frame med class preservation → emit `data_updated(context = "session_restore")`
-- Feature flag: `get_auto_restore_enabled()` (prod=TRUE, dev/test=FALSE)
+### Excel I/O
 
-**Class preservation:**
-- `extract_class_info()` gemmer per-kolonne metadata (primary, is_date, is_posixct, is_factor, levels, tz)
-- `restore_column_class()` rekonstruerer præcis R-type
-- Understøtter: `numeric`, `integer`, `character`, `logical`, `Date`, `POSIXct` med tz, `factor` med levels
-
-**Fejl-håndtering:**
-- JS rapporterer success/failure tilbage via `input$local_storage_save_result`
-- R observer deaktiverer auto-save ved quota-fejl og viser dansk notifikation
-- `last_save_time` opdateres KUN ved bekræftet success
-
-**Schema version:** `LOCAL_STORAGE_SCHEMA_VERSION = "2.0"` — ved mismatch ryddes localStorage lydløst.
-
-**Relevante filer:**
-- `R/utils_local_storage.R` — `saveDataLocally`, `autoSaveAppState`, class helpers
-- `R/utils_server_server_management.R` — auto-restore observer + `clear_saved`
-- `R/utils_server_session_helpers.R` — auto-save triggers + save-status display
-- `inst/app/www/local-storage.js` — localStorage wrapper (IKKE `JSON.stringify`)
-- `inst/app/www/shiny-handlers.js` — custom message handlers + auto-restore trigger
-- `inst/golem-config.yml` — `session:` sektion
+3-ark download (`Data` round-trip + `Indstillinger` round-trip + `SPC-analyse`
+informational), multi-sheet upload med picker. Specifikationer i
+`openspec/specs/excel-import/` og
+`openspec/changes/archive/2026-04-26-harden-export-quarto-capability/`.
+Implementation: `R/fct_spc_file_save_load.R`, `R/fct_excel_sheet_detection.R`,
+`R/utils_server_paste_data.R`.
 
 ---
 
@@ -163,59 +99,37 @@ Sys.setenv(GOLEM_CONFIG_ACTIVE = "dev")  # dev/test/prod
 
 ### External Package Ownership
 
-✅ **KRITISK:** Maintainer har fuld kontrol over:
+✅ **Maintainer kontrollerer fuldt:** BFHcharts (rendering), BFHtheme (branding),
+BFHllm (LLM/RAG/caching), Ragnar (knowledge store).
 
-- **BFHcharts** – SPC chart rendering og visualisering
-- **BFHtheme** – Hospital branding, themes og fonts
-- **Ragnar** – RAG knowledge store, embedding, retrieval algorithms
+❌ **ALDRIG implementér** funktionalitet i biSPCharts som hører hjemme i ekstern
+pakke (eks: target lines, font fallback, hospital colors, embeddings, BM25,
+chunking).
 
-❌ **ALDRIG implementer funktionalitet i biSPCharts som hører hjemme i BFHcharts, BFHtheme eller Ragnar**
-
-✅ **I STEDET:**
-1. Identificer manglende funktionalitet i ekstern pakke
-2. Dokumentér behovet (issue, ADR, eller docs/)
-3. Informér maintainer om feature request
-4. Implementér midlertidig workaround i biSPCharts HVIS kritisk (marker tydeligt som temporary)
-5. Fjern workaround når funktionalitet er tilgængelig i ekstern pakke
-
-**Eksempler:**
-- Target line rendering → BFHcharts ansvar
-- Font fallback logic → BFHtheme ansvar
-- Hospital branding colors → BFHtheme ansvar
-- Chart styling defaults → BFHcharts ansvar
-- Embedding generation → Ragnar ansvar
-- BM25 search algorithms → Ragnar ansvar
-- Vector store operations → Ragnar ansvar
-- Chunking strategies → Ragnar ansvar
+✅ **I STEDET:** Identificér gap → opret issue/feature-request i ekstern pakke
+→ implementér midlertidig workaround **kun hvis kritisk** (markér som
+temporary) → fjern når ekstern pakke leverer.
 
 ### Integration Pattern
 
-- biSPCharts: **Integration layer + business logic + knowledge curation**
-- BFHcharts: **Visualization engine**
-- BFHtheme: **Styling framework**
-- Ragnar: **RAG knowledge store engine**
+biSPCharts = **integration layer + business logic + knowledge curation**.
+Ekstern pakke = engine.
 
-**biSPCharts's RAG responsibilities:**
-- Knowledge content curation (`inst/spc_knowledge/`)
-- Integration layer (`R/utils_ragnar_integration.R`)
-- Application-specific query formulation
-- Store build scripts (`data-raw/build_ragnar_store.R`)
+biSPCharts's RAG-ansvar: knowledge content (`inst/spc_knowledge/`),
+integration (`R/utils_bfhllm_integration.R`), application-specific queries.
 
 ### Do NOT Modify
 
 - `brand.yml` uden godkendelse
-- **NAMESPACE** uden explicit godkendelse (brug `devtools::document()`)
+- **NAMESPACE** uden eksplicit godkendelse (brug `devtools::document()`)
 - Breaking changes uden major version bump
 
 ### Versioning
 
-biSPCharts og sibling-pakker (BFHcharts, BFHllm, BFHtheme) følger
-`~/.claude/rules/VERSIONING_POLICY.md`:
-- Strict semver (`vX.Y.Z`-tags), pre-1.0 tillader breaking i MINOR
-- NEWS.md på dansk efter standard template
-- Lower-bound deps (`BFHcharts (>= X.Y.Z)`), ingen øvre grænse
-- Pre-release checklist (9 trin) køres før hver tag/push
-- Cross-repo bump: separat `chore(deps):`-PR efter sibling-release
+biSPCharts + sibling-pakker følger `~/.claude/rules/VERSIONING_POLICY.md`:
+strict semver (`vX.Y.Z`-tags), pre-1.0 tillader breaking i MINOR, NEWS.md
+dansk, lower-bound deps, 9-trins pre-release checklist, separat
+`chore(deps):`-PR ved sibling-bump.
 
 ---
 
@@ -223,102 +137,55 @@ biSPCharts og sibling-pakker (BFHcharts, BFHllm, BFHtheme) følger
 
 ### BFHcharts + qicharts2 Hybrid Architecture
 
-✅ **KRITISK:** biSPCharts bruger **permanent hybrid arkitektur**:
+✅ **Permanent hybrid:**
 
-| Komponent | Ansvar | Package | Rationale |
-|-----------|--------|---------|-----------|
-| **SPC Plotting** | Chart rendering, visual theming | BFHcharts | Modern ggplot2 med BFH branding |
-| **Anhøj Rules** | Serielængde, antal kryds, special cause detection | qicharts2 | Valideret, klinisk accepteret |
+| Komponent | Ansvar | Package |
+|-----------|--------|---------|
+| **SPC Plotting** | Chart rendering, theming | BFHcharts |
+| **Anhøj Rules** | Serielængde, kryds, special cause | qicharts2 |
 
-**Implementation:**
+❌ **qicharts2 KUN til** Anhøj rules + metadata extraction
+✅ **BFHcharts til** alt plot-relateret
 
-```r
-# BFHcharts: Primary plotting
-plot <- BFHcharts::create_spc_chart(data, x, y, chart_type, notes_column, ...)
+### SPC Pipeline (facade-arkitektur)
 
-# qicharts2: Anhøj rules metadata (UI value boxes)
-qic_result <- qicharts2::qic(x, y, chart = chart_type, return.data = TRUE)
-anhoej_metadata <- extract_anhoej_metadata(qic_result)
-```
+`compute_spc_results_bfh()` orkestrerer: validate → prepare → resolve_axes →
+build_args → execute → decorate. S3-typed errors arver fra `spc_error`
+(`spc_input_error`, `spc_prepare_error`, `spc_render_error`).
 
-**Constraints:**
-
-❌ **qicharts2 KUN til:** Anhøj rules, metadata extraction
-✅ **BFHcharts til:** Plot rendering, chart types, theming, notes, target lines, freezing
-
-**SPC Pipeline (facade-refaktorering):**
-```
-compute_spc_results_bfh()  ← offentlig API (uændret)
-  └─ validate_spc_request()  → spc_request S3 (fct_spc_validate.R)
-  └─ prepare_spc_data()      → spc_prepared S3 (fct_spc_prepare.R)
-  └─ resolve_axis_units()    → spc_axes S3 (fct_spc_prepare.R)
-  └─ build_bfh_args()        → BFHcharts parameter-list (fct_spc_execute.R)
-  └─ execute_bfh_request()   → standardized result (fct_spc_execute.R)
-  └─ decorate_plot_for_display() → + Anhøj metadata (fct_spc_decorate.R)
-```
-
-**Typed errors (alle arver fra `spc_error`):**
-- `spc_input_error` — ugyldig input (manglende kolonner, forkert chart_type)
-- `spc_prepare_error` — data-fejl (for få punkter, parsing-fejl)
-- `spc_render_error` — BFHcharts rendering fejlede
-
-**Files involved:**
-- `R/fct_spc_bfh_facade.R` - Orkestrator + cache helpers
-- `R/fct_spc_validate.R` - Input validering med S3 `spc_request`
-- `R/fct_spc_prepare.R` - Data-preparation + axis-resolution
-- `R/fct_spc_execute.R` - BFHcharts invocation
-- `R/fct_spc_decorate.R` - Anhøj metadata + backend-flag
-- `R/utils_qic_preparation.R` - qicharts2 input prep
-- `R/utils_qic_caching.R` - Anhøj rules caching
-- `R/utils_qic_debug_logging.R` - qicharts2 debug logging
+**Filer:** `R/fct_spc_{bfh_facade,validate,prepare,execute,decorate}.R`.
+ADR: `docs/adr/ADR-015-bfhchart-migrering.md`.
 
 ### Coordination Workflow
 
-**Primær guide:** `docs/CROSS_REPO_COORDINATION.md`
+**Primær guide:** `docs/CROSS_REPO_COORDINATION.md`. Quick references:
+`.claude/ISSUE_ESCALATION_DECISION_TREE.md`,
+`.github/ISSUE_TEMPLATE/bfhchart-feature-request.md`.
 
-**Quick references:**
-- `.claude/ISSUE_ESCALATION_DECISION_TREE.md` - Beslutningsdiagram
-- `.github/ISSUE_TEMPLATE/bfhchart-feature-request.md` - Issue template
-
-**Eskalér til BFHcharts hvis:**
-- Core chart rendering bugs
-- Statistiske beregningsfejl
-- Manglende chart types eller features
-- BFHcharts API design limitations
-- Performance issues i BFHcharts algoritmer
-
-**Fix i biSPCharts hvis:**
-- Parameter mapping (qicharts2 → BFHcharts)
-- UI integration og Shiny reaktivitet
-- Data preprocessing og validering
-- Fejlbeskeder og dansk lokalisering
-- biSPCharts-specifik caching
+**Eskalér til BFHcharts:** core rendering bugs, statistik-fejl, manglende
+chart types, API-limitations.
+**Fix i biSPCharts:** parameter-mapping, Shiny-reaktivitet, data-preprocessing,
+dansk lokalisering, app-specifik caching.
 
 ---
 
 ## 5) Project-Specific Configuration
 
-### Configuration Files Overview
+### Configuration Files
 
 | Fil | Ansvar |
 |-----|--------|
-| `config_branding_getters.R` | Hospital branding (navn, logo, theme, farver) |
-| `config_chart_types.R` | SPC chart type definitions (DA→EN mappings) |
-| `config_observer_priorities.R` | Observer priorities (race condition prevention) |
-| `config_spc_config.R` | SPC-specifikke konstanter (validation, colors) |
-| `config_log_contexts.R` | Centraliserede log context strings (inkl. RAG contexts) |
-| `config_system_config.R` | System constants (performance, timeouts, cache) |
-| `config_ui.R` | UI layout (widths, heights, font scaling) |
-| `inst/golem-config.yml` | Environment-based config (dev/prod/test, RAG settings) |
-| `.Renviron` | API keys og environment variables (GOOGLE_API_KEY, GEMINI_API_KEY) |
+| `config_branding_getters.R` | Hospital branding |
+| `config_chart_types.R` | SPC chart types (DA→EN) |
+| `config_observer_priorities.R` | Race-prevention priorities |
+| `config_spc_config.R` | SPC-konstanter |
+| `config_log_contexts.R` | Centrale log-contexts |
+| `config_system_config.R` | Performance, timeouts, cache |
+| `config_ui.R` | UI layout |
+| `inst/golem-config.yml` | Environment-config (dev/prod/test, RAG) |
+| `.Renviron` | API keys (`GOOGLE_API_KEY` / `GEMINI_API_KEY`) |
 
-**Detaljeret guide:** `docs/CONFIGURATION.md`
-
-**RAG Configuration:**
-- `inst/golem-config.yml` indeholder `rag:` section med RAG-specifikke settings
-- `.Renviron` skal indeholde `GOOGLE_API_KEY` (bruges automatisk som fallback til `GEMINI_API_KEY`)
-- Development mode: RAG store loading fra project root
-- Production mode: RAG store loading fra installed package
+**Detaljeret guide:** `docs/CONFIGURATION.md`.
 
 ### Test Commands
 
@@ -328,356 +195,101 @@ R -e "library(biSPCharts); testthat::test_dir('tests/testthat')"
 
 # Specifik test
 R -e "source('global.R'); testthat::test_file('tests/testthat/test-*.R')"
-
-# Performance benchmark
-R -e "microbenchmark::microbenchmark(package = library(biSPCharts), source = source('global.R'), times = 5)"
-
-# Manual verification scripts (for external integrations)
-Rscript tests/manual/verify_rag.R
 ```
 
-**Manual Tests:**
-Manual tests bruges til scenarios hvor automatiseret testing ikke er praktisk:
-- **External API integrations** (Gemini API) - Kræver API keys og internet
-- **Development-only verification** - Interactive debugging og RAG store validation
-- **Cost-sensitive operations** - Undgå API costs i CI/CD pipeline
+**Manual tests** (`tests/manual/`): kun for external API-integrationer
+(Gemini), interaktiv debug og cost-sensitive flows. **Køres ikke i CI/CD**.
 
-Manual tests køres IKKE automatisk i CI/CD. De bruges under development og før production deployment.
-
-**Coverage targets:**
-- 100% kritiske paths (data load, plot generation, state sync)
-- ≥90% samlet coverage
-- Edge cases (null, tomme datasæt, fejl, store filer)
+**Coverage targets:** 100% kritiske paths, ≥90% samlet, edge cases (null,
+tomme, fejl, store filer).
 
 ---
 
 ## 6) Domain-Specific Guidance
 
-### Git Hooks (pre-push gate)
+### Pre-push gate
 
-**Installation:** `Rscript dev/install_git_hooks.R` — installerer symlink `.git/hooks/pre-push → dev/git-hooks/pre-push`.
+Installation: `Rscript dev/install_git_hooks.R`. Default-mode (fast) =
+lintr + manifest-validering + små regressionstests. Modes:
+`PREPUSH_MODE=fast|full`, `RUN_SHINYTEST2=1` (opt-in), `SKIP_PREPUSH=1`
+(bypass).
 
-**Formål:** Blokér push til remote hvis lintr fejler, test-classification manifestet er invalidt, eller de hurtige regressionstests er røde (§3.1 af `harden-test-suite-regression-gate` openspec change). Tunge browser-/visual-tests er opt-in og køres ikke som normal lokal pre-push.
+⚠️ shinytest2 visual-tests er miljøfølsomme — opt-in, ikke push-blokering.
+Stabil browser-regression hører i nightly `shinytest2.yaml` CI-job.
 
-**Anvendelse:**
-```bash
-# Normal push (fast default: lintr + manifest-validering + små regressionstests)
-git push
-
-# Eksplicit hurtig pre-push
-PREPUSH_MODE=fast git push
-
-# Fuld testthat-suite uden opt-in shinytest2 screenshots
-PREPUSH_MODE=full git push
-
-# Kør BFH shinytest2 visual tests eksplicit
-RUN_SHINYTEST2=1 Rscript -e 'testthat::test_file("tests/testthat/test-bfh-module-integration.R")'
-
-# Bypass (brug sparsomt)
-SKIP_PREPUSH=1 git push
-git push --no-verify        # Git-native alternativ
-```
-
-⚠️ **VIGTIG:** BFHcharts/shinytest2 screenshot-tests er miljøfølsomme og opt-in via `RUN_SHINYTEST2=1`. De må ikke være en normal lokal push-blokering; stabil browser/visual regression hører hjemme i den separate `shinytest2.yaml` CI-job (nightly, kontrolleret Chrome/Chromium-miljø).
-
-**CI-gates (se `.github/workflows/README.md` for hierarki):**
-- `R-CMD-check` (smoke) — kører på alle pushes; kun ERRORs blokerer
-- `R-CMD-check-gate` + `release-gate` — kører kun på PRs mod master og tags; WARNINGs blokerer
-- `testthat` — kører på master + develop; fuld suite med `stop_on_failure = TRUE`
-- `skip-inventory` — kommenterer TODO-skip-delta på PRs; fejler ved uberettiget stigning
-- `shinytest2` — nightly opt-in, IKKE per-PR-gate
-
-**Rprofile-advarsel:** Interaktive R-sessioner i dette repo logger advarsel hvis pre-push ikke er installeret. Ignoreres i Rscript/CI.
+CI-gate-hierarki: se `.github/workflows/README.md`.
 
 ### Analytics Privacy
 
-**Payload-kontrakt, opt-in mekanisme og DPIA-status:** `docs/ANALYTICS_PRIVACY.md`
+Payload-kontrakt + opt-in + DPIA: `docs/ANALYTICS_PRIVACY.md`. Opdatér
+`ANALYTICS_PRIVACY.md` og `SHINYLOGS_ALLOWLIST` synkront ved enhver ændring
+af hvad der indsamles.
 
-Opdatér `ANALYTICS_PRIVACY.md` og `SHINYLOGS_ALLOWLIST` i `R/utils_analytics_pins.R` synkront ved enhver ændring af hvad der indsamles.
+### Issue Tracking
 
-### Issue Tracking (GitHub Issues)
+Alle fejl/forbedringer dokumenteres som GitHub Issues. Reference i commits:
+`fix: beskrivelse (fixes #123)`. Labels: `bug`, `enhancement`,
+`documentation`, `technical-debt`, `performance`, `testing`.
 
-✅ **OBLIGATORISK:** Alle fejl, rettelser, todo-emner og forbedringsforslag dokumenteres som GitHub Issues.
+### AI/LLM Integration (BFHllm)
 
-```bash
-gh issue create --title "Beskrivelse" --body "Details"
-git commit -m "fix: beskrivelse (fixes #123)"
-```
+biSPCharts er **thin wrapper** omkring BFHllm-pakken (v0.1.1, `Suggests +
+Remotes`, ikke krævet for minimal-install).
 
-**Labels:** `bug`, `enhancement`, `documentation`, `technical-debt`, `performance`, `testing`
+**Lag:**
+- `R/fct_ai_improvement_suggestions.R` — facade + input validering
+- `R/utils_bfhllm_integration.R` — biSPCharts-config for BFHllm
+- `BFHllm` package — RAG, LLM-calls, caching, prompts, knowledge base
 
-### Gemini CLI for Large Codebase Analysis
-
-**Brug `gemini -p` når:**
-- Analysere hele Shiny-kodebase på tværs af mange filer
-- Forstå sammenhæng mellem moduler, reaktive kæder
-- Finde duplikerede mønstre eller anti-patterns
-- Verificere arkitektur på tværs af hele projektet
-
-**Eksempler:**
-
-```bash
-# Arkitektur verification
-gemini -p "@R/ Analyze current state management patterns and identify areas for centralization"
-
-# Test coverage check
-gemini -p "@tests/ @R/ Are all critical paths covered by tests?"
-```
-
-**Integration med biSPCharts workflow:**
-1. Arkitektur verification før større refaktorering
-2. Code review på tværs af moduler
-3. Pattern detection for inconsistencies
-4. Dependency analysis før nye features
-5. Test coverage gaps identifikation
-
-### AI/LLM Integration Patterns (BFHllm Package)
-
-**Architecture (efter BFHllm migration):**
-- **biSPCharts facade:** `R/fct_ai_improvement_suggestions.R` - Thin wrapper
-- **Integration layer:** `R/utils_bfhllm_integration.R` - biSPCharts-specific config
-- **Core AI logic:** Delegeret til `BFHllm` package (v0.1.1, Suggests + Remotes)
-
-**Dependency-status:** BFHllm er i `Suggests:` + `Remotes:` (pinned `@v0.1.1`). Ikke krævet for
-minimal-install. AI-features degraderer gracefully via `requireNamespace()`-guards i
-`utils_bfhllm_integration.R`. Installer med: `remotes::install_github("johanreventlow/BFHllm@v0.1.1")`.
-
-**biSPCharts API (unchanged for users):**
+**Public API (uændret for brugere):**
 
 ```r
-# Generate AI improvement suggestion
 suggestion <- generate_improvement_suggestion(
-  spc_result = spc_result,  # BFHcharts result object
-  context = list(
-    data_definition = "Ventetid til operation",
-    chart_title = "Ventetid 2024",
-    y_axis_unit = "dage",
-    target_value = 30
-  ),
-  session = session,        # Shiny session (required for caching)
+  spc_result = spc_result,
+  context = list(data_definition = "...", chart_title = "...",
+                 y_axis_unit = "dage", target_value = 30),
+  session = session,  # required for caching
   max_chars = 350
 )
 ```
 
-**BFHllm Integration:**
+**Graceful degradation:** BFHllm unavailable → NULL + log warning. RAG-fejl
+→ fortsæt uden RAG. API-fejl → NULL via `safe_operation`.
 
-```r
-# biSPCharts initialization (global.R eller run_app.R)
-initialize_bfhllm(
-  ai_config = get_ai_config(),
-  rag_config = get_rag_config()
-)
+**Konfiguration:** `inst/golem-config.yml` `ai:` + `rag:` sektion. Init via
+`initialize_bfhllm(get_ai_config(), get_rag_config())` i `run_app.R`.
 
-# Check availability
-if (is_bfhllm_available()) {
-  # BFHllm is configured and ready
-}
+**Knowledge base:** Live i BFHllm-repo (`inst/spc_knowledge/`). Update-flow:
+edit i BFHllm → rebuild ragnar store → bump biSPCharts DESCRIPTION
+`BFHllm (>= ...)`.
 
-# Direct BFHllm usage (advanced)
-library(BFHllm)
-BFHllm::bfhllm_spc_suggestion(
-  spc_result = spc_result,
-  context = context,
-  max_chars = 350,
-  use_rag = TRUE,
-  cache = BFHllm::bfhllm_cache_shiny(session)
-)
-```
-
-**Graceful Degradation:**
-
-1. **BFHllm unavailable** → Suggestion returns NULL, log warning
-2. **RAG query fejl** → BFHllm fortsætter uden RAG context
-3. **API fejl** → Return NULL, log error via `safe_operation`
-4. **Cache miss** → Normal API call via BFHllm
-
-**API Key Management:**
-
-- **Development:** `.Renviron` med `GOOGLE_API_KEY` eller `GEMINI_API_KEY`
-- **Production:** Environment variables (container deployment)
-- **Fallback:** BFHllm handles `GOOGLE_API_KEY` → `GEMINI_API_KEY` fallback
-
-**Configuration:**
-
-```yaml
-# inst/golem-config.yml
-default:
-  ai:
-    model: "gemini-2.0-flash-exp"
-    timeout_seconds: 10
-    max_response_chars: 350
-  rag:
-    enabled: TRUE
-    top_k: 5
-    min_similarity: 0.3
-```
-
-**Files involved:**
-- `R/fct_ai_improvement_suggestions.R` - biSPCharts facade (thin wrapper)
-- `R/utils_bfhllm_integration.R` - Integration layer
-- `inst/golem-config.yml` - AI/RAG configuration
-- **BFHllm package:** Core AI logic, RAG, caching, prompts, knowledge base
-
-**See Also:** BFHllm package documentation for advanced usage, RAG configuration, and knowledge base management
+**Reference:** BFHllm package docs (https://github.com/johanreventlow/BFHllm),
+ADR-016, Issue #100.
 
 ### Danish Language
 
-- **UI text:** Dansk
-- **Error messages:** Dansk, brugervenlige
-- **Code:** Engelsk (funktionsnavne, variabler)
-- **Comments:** Dansk
+- **UI / fejlbeskeder / kommentarer:** dansk
+- **Funktions- og variabelnavne:** engelsk
 
-**Key terms:**
-- Serieplot = SPC chart
-- Centrallinje = Center line
-- Kontrolgrænser = Control limits
-
----
-
-## 7) AI/LLM Integration via BFHllm Package
-
-### Overview (Post-Migration)
-
-**VIGTIGT:** Efter Issue #100 (Phase 2) er al AI/LLM funktionalitet migreret til **BFHllm** package (v0.1.0+). biSPCharts delegerer nu til BFHllm for RAG, LLM calls, caching, og prompt building.
-
-**System Flow:**
-1. User anmoder om AI suggestion via biSPCharts UI
-2. biSPCharts kalder `generate_improvement_suggestion()` (thin wrapper)
-3. Wrapper delegerer til `BFHllm::bfhllm_spc_suggestion()`
-4. BFHllm performer RAG query, prompt building, LLM call, caching
-5. AI suggestion returneres til biSPCharts og vises i UI
-
-### biSPCharts Integration Layer
-
-**Files i biSPCharts:**
-- `R/fct_ai_improvement_suggestions.R` - Thin facade, input validation
-- `R/utils_bfhllm_integration.R` - biSPCharts-specific BFHllm configuration
-- `inst/golem-config.yml` - AI/RAG configuration settings
-
-**BFHllm Package Responsibilities:**
-- RAG knowledge store management (`inst/spc_knowledge/`, `inst/ragnar_store/`)
-- Ragnar integration (`bfhllm_query_knowledge`, `bfhllm_load_knowledge_store`)
-- LLM provider abstraction (`bfhllm_chat`, `bfhllm_configure`)
-- Prompt templates og building (`bfhllm_build_prompt`, `bfhllm_create_structured_prompt`)
-- Session-scoped caching (`bfhllm_cache_shiny`)
-- SPC-specific suggestion logic (`bfhllm_spc_suggestion`, `bfhllm_extract_spc_metadata`)
-
-### Configuration
-
-**biSPCharts Configuration (`inst/golem-config.yml`):**
-
-```yaml
-default:
-  ai:
-    model: "gemini-2.0-flash-exp"
-    timeout_seconds: 10
-    max_response_chars: 350
-  rag:
-    enabled: TRUE
-    top_k: 5
-    min_similarity: 0.3
-```
-
-**Initialization (global.R eller run_app.R):**
-
-```r
-# Configure BFHllm with biSPCharts settings
-initialize_bfhllm(
-  ai_config = get_ai_config(),
-  rag_config = get_rag_config()
-)
-```
-
-### API Key Management
-
-- **Development:** `.Renviron` med `GOOGLE_API_KEY` eller `GEMINI_API_KEY`
-- **Production:** Environment variables via deployment config
-- **Fallback:** BFHllm automatically uses `GOOGLE_API_KEY` → `GEMINI_API_KEY`
-
-### Knowledge Base Management
-
-**Location:** Knowledge base er nu i **BFHllm package**
-
-**Update Process:**
-1. Clone BFHllm repository: `git clone https://github.com/johanreventlow/BFHllm`
-2. Edit markdown files: `inst/spc_knowledge/*.md`
-3. Rebuild Ragnar store: `source("data-raw/build_ragnar_store.R")`
-4. Test locally: `devtools::install("path/to/BFHllm")`
-5. Commit og push til BFHllm repo
-6. Update biSPCharts DESCRIPTION: `BFHllm (>= new_version)`
-
-**Benefits of Extraction:**
-- Single source of truth for SPC knowledge
-- Independent versioning og updates
-- Reusable across multiple R packages
-- Reduced biSPCharts maintenance burden
-
-### Testing
-
-**biSPCharts Tests:**
-- `tests/testthat/test-fct_ai_improvement_suggestions.R` - Facade behavior (delegation, validation)
-- Mocked BFHllm calls (no API dependency)
-
-**BFHllm Tests:**
-- Se BFHllm package documentation for RAG, caching, og LLM integration tests
-
-**Manual Verification:**
-1. Install BFHllm: `devtools::install_github("johanreventlow/BFHllm")`
-2. Verify biSPCharts integration: `devtools::load_all()` i biSPCharts project
-3. Test AI suggestions via Shiny app
-
-### Troubleshooting
-
-**Common Issues:**
-
-1. **"BFHllm package not found"**
-   - Install BFHllm: `devtools::install_github("johanreventlow/BFHllm")`
-   - Check DESCRIPTION: `BFHllm (>= 0.1.0)` listed in Imports
-
-2. **"AI suggestions return NULL"**
-   - Check `is_bfhllm_available()` returns TRUE
-   - Verify API key: `Sys.getenv("GOOGLE_API_KEY")` or `Sys.getenv("GEMINI_API_KEY")`
-   - Check logs for BFHllm errors
-
-3. **"RAG not working"**
-   - Verify BFHllm ragnar store built: Check BFHllm package installation
-   - Check RAG enabled: `get_rag_config()$enabled == TRUE`
-   - See BFHllm troubleshooting documentation
-
-**Debug Logging:**
-
-```r
-# Enable debug logs
-options(spc.log.level = "debug")
-
-# Check for AI_SUGGESTION context logs
-# [AI_SUGGESTION] - biSPCharts wrapper behavior
-# [BFHllm] - See BFHllm package logs (if enabled)
-```
-
-### Related Documentation
-
-- **BFHllm Package:** `https://github.com/johanreventlow/BFHllm` - Full RAG/LLM documentation
-- **NEWS.md:** Migration notes for Issue #100 (Phase 2)
-- **Issues:** #100 - BFHllm extraction tracking issue
+**Termer:** Serieplot = SPC chart · Centrallinje = Center line ·
+Kontrolgrænser = Control limits.
 
 ---
 
 ## 📚 Global Standards Reference
 
-**Dette projekt følger:**
-- **R Development:** `~/.claude/rules/R_STANDARDS.md`
-- **Shiny Development:** `~/.claude/rules/SHINY_STANDARDS.md`
-- **Shiny Advanced Patterns:** `~/.claude/rules/SHINY_ADVANCED_PATTERNS.md`
-- **Git Workflow:** `~/.claude/rules/GIT_WORKFLOW.md`
-- **Development Philosophy:** `~/.claude/rules/DEVELOPMENT_PHILOSOPHY.md`
-- **Architecture Patterns:** `~/.claude/rules/ARCHITECTURE_PATTERNS.md`
-- **Troubleshooting:** `~/.claude/rules/TROUBLESHOOTING_GUIDE.md`
+**Følger:**
+- R: `~/.claude/rules/R_STANDARDS.md`
+- Shiny: `~/.claude/rules/SHINY_STANDARDS.md` +
+  `~/.claude/rules/SHINY_ADVANCED_PATTERNS.md`
+- Git: `~/.claude/rules/GIT_WORKFLOW.md`
+- Philosophy: `~/.claude/rules/DEVELOPMENT_PHILOSOPHY.md`
+- Architecture: `~/.claude/rules/ARCHITECTURE_PATTERNS.md`
+- Troubleshooting: `~/.claude/rules/TROUBLESHOOTING_GUIDE.md`
 
-**Globale agents:** tidyverse-code-reviewer, performance-optimizer, security-reviewer, test-coverage-analyzer, refactoring-advisor, legacy-code-detector, shiny-code-reviewer, architecture-validator
+**Globale agents:** tidyverse-code-reviewer, performance-optimizer,
+security-reviewer, test-coverage-analyzer, refactoring-advisor,
+legacy-code-detector, shiny-code-reviewer, architecture-validator.
 
-**Globale commands:** /boost, /code-review-recent, /double-check, /debugger
-
----
-
-**Original documentation:** Se `CLAUDE.md.backup` for fuld dokumentation af alle patterns, appendices og detaljeret arkitektur.
+**biSPCharts-specifik bidrag-guide:** `docs/CONTRIBUTING.md` (roxygen2-konvention,
+brugervendt fejlbesked-pattern).

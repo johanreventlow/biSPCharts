@@ -161,6 +161,11 @@ test_that("to_internal_scale converts deterministically", {
   expect_equal(to_internal_scale(80, "absolute", "absolute"), 80) # Identity
   expect_equal(to_internal_scale(80, "percent", "absolute"), 80)
 
+  # TO TIME_MINUTES (internal canonical for time-based plots)
+  expect_equal(to_internal_scale(1.5, "time_hours", "time_minutes"), 90)
+  expect_equal(to_internal_scale(1, "time_days", "time_minutes"), 1440)
+  expect_equal(to_internal_scale(90, "time_minutes", "time_minutes"), 90)
+
   # Error cases
   expect_true(is.na(to_internal_scale(80, "absolute", "proportion")))
 })

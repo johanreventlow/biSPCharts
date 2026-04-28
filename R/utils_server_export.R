@@ -334,7 +334,9 @@ generate_pdf_preview <- function(bfh_qic_result,
           # 3. Merge metadata with chart title
           metadata_full <- bfhcharts_internal("bfh_merge_metadata")(metadata, chart_title)
 
-          # 4. Create Typst document
+          # 4. Create Typst document.
+          # bfh_create_typst_document() er internal i BFHcharts (ikke i public
+          # NAMESPACE) -- tilgaaes via bfhcharts_internal()-helper.
           typst_file <- file.path(temp_dir, "document.typ")
           bfhcharts_internal("bfh_create_typst_document")(
             chart_image = chart_png,

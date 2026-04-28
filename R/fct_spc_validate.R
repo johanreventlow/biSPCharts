@@ -162,7 +162,7 @@ validate_spc_request <- function(
     }
   }
 
-  # 12. n_var maa ikke indeholde nul-vaerdier for rate-baserede kort
+  # 12. n_var maa ikke indeholde ugyldige vaerdier for rate-baserede kort (BFHcharts 0.9.0+)
   if (!is.null(n_var) && n_var %in% names(data) &&
     ct_normalized %in% c("p", "pp", "u", "up")) {
     n_vals <- data[[n_var]]
@@ -170,11 +170,12 @@ validate_spc_request <- function(
     if (all(is.na(n_numeric)) && is.character(n_vals)) {
       n_numeric <- suppressWarnings(as.numeric(gsub(",", ".", n_vals)))
     }
-    if (any(!is.na(n_numeric) & n_numeric == 0)) {
+    invalid_n <- !is.na(n_numeric) & (n_numeric <= 0 | is.infinite(n_numeric))
+    if (any(invalid_n)) {
       spc_abort(
         paste0(
-          "N\u00e6vner-kolonnen '", n_var, "' indeholder nul-v\u00e6rdier. ",
-          "N\u00e6vner m\u00e5 ikke v\u00e6re nul for ", toupper(ct_normalized), "-kort."
+          "N\u00e6vner-kolonnen '", n_var, "' indeholder ugyldige v\u00e6rdier (\u2264 0 eller uendelig). ",
+          "N\u00e6vner skal v\u00e6re positiv for ", toupper(ct_normalized), "-kort."
         ),
         class = "spc_input_error"
       )

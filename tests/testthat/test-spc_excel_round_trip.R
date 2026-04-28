@@ -1,5 +1,5 @@
 # Round-trip tests for build_spc_excel + parse_spc_excel.
-# Verificér at "SPC-analyse"-arket ikke laekker ind i parse_spc_excel-output
+# Verificér at "SPC-analyse"-arket ikke lækker ind i parse_spc_excel-output
 # og at bagudkompatibilitet med 2-ark filer bevares.
 
 test_that("parse_spc_excel ignorerer SPC-analyse-arket", {
@@ -31,10 +31,10 @@ test_that("parse_spc_excel ignorerer SPC-analyse-arket", {
   expect_equal(parsed$chart_type, metadata$chart_type)
   expect_equal(parsed$target_value, metadata$target_value)
   expect_equal(parsed$indicator_title, metadata$indicator_title)
-  # Ingen felter fra SPC-analyse-arket SHALL laekke
+  # Ingen felter fra SPC-analyse-arket SHALL lække
   expect_false("Charttype" %in% names(parsed)) # Dansk overview-felt
   expect_false("Antal observationer" %in% names(parsed))
-  expect_false("Samlet Anhoej-tolkning" %in% names(parsed))
+  expect_false("Samlet Anhøj-tolkning" %in% names(parsed))
 })
 
 test_that("Bagudkompatibilitet: 2-ark Excel uden SPC-analyse parses uden fejl", {
@@ -94,11 +94,11 @@ test_that("SPC-analyse-ark indeholder forventede sektion-headers", {
   raw <- suppressMessages(
     readxl::read_excel(temp_path, sheet = "SPC-analyse", col_names = FALSE)
   )
-  # Forste kolonne SHALL indeholde de fire sektions-headers
+  # Første kolonne SHALL indeholde de fire sektions-headers
   first_col <- as.character(raw[[1]])
   expect_true(any(first_col == "A. Oversigt"))
   expect_true(any(first_col == "B. Per-part statistik"))
-  expect_true(any(first_col == "C. Anhoej-regler per part"))
+  expect_true(any(first_col == "C. Anhøj-regler per part"))
   expect_true(any(first_col == "D. Special cause-punkter"))
 })
 

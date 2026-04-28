@@ -1,5 +1,5 @@
 # Tests for sektion-builders i fct_spc_excel_analysis.R
-# Daekker scenarios fra openspec/changes/.../specs/excel-spc-analysis-sheet/spec.md.
+# Dækker scenarios fra openspec/changes/.../specs/excel-spc-analysis-sheet/spec.md.
 #
 # Fixture-helpers er defineret i tests/testthat/helper-spc-excel-analysis-fixtures.R
 # (loades automatisk af testthat).
@@ -21,58 +21,58 @@ test_that("build_overview_section returnerer 2-kolonne data.frame med faste felt
     pkg_versions = list(biSPCharts = "0.2.0", BFHcharts = "0.9.0")
   )
   expect_s3_class(result, "data.frame")
-  expect_equal(names(result), c("Felt", "Vaerdi"))
+  expect_equal(names(result), c("Felt", "Værdi"))
   expect_true("Charttype" %in% result$Felt)
   expect_true("Antal observationer" %in% result$Felt)
   expect_true("Antal parts" %in% result$Felt)
-  expect_true("Out-of-control raekker" %in% result$Felt)
-  expect_true("Samlet Anhoej-tolkning" %in% result$Felt)
+  expect_true("Out-of-control rækker" %in% result$Felt)
+  expect_true("Samlet Anhøj-tolkning" %in% result$Felt)
 })
 
-test_that("build_overview_section angiver charttype paa dansk", {
+test_that("build_overview_section angiver charttype på dansk", {
   qic <- fixture_qic_data_3_parts()
   meta <- fixture_metadata_3_parts()
   result <- build_overview_section(qic, meta, derive_anhoej_per_part(qic))
-  ct <- result$Vaerdi[result$Felt == "Charttype"]
+  ct <- result[["Værdi"]][result$Felt == "Charttype"]
   expect_equal(ct, "P-kort")
 })
 
-test_that("build_overview_section samler ooc-raekker som komma-separeret tekst", {
+test_that("build_overview_section samler ooc-rækker som komma-separeret tekst", {
   qic <- fixture_qic_data_3_parts()
-  # Forvent ooc-rakker i part 3: y[11] = 0.15 > ucl[11] = 0.10 -> raekke 11
+  # Forvent ooc-rækker i part 3: y[11] = 0.15 > ucl[11] = 0.10 -> række 11
   meta <- fixture_metadata_3_parts()
   result <- build_overview_section(qic, meta, derive_anhoej_per_part(qic))
-  ooc <- result$Vaerdi[result$Felt == "Out-of-control raekker"]
+  ooc <- result[["Værdi"]][result$Felt == "Out-of-control rækker"]
   expect_match(ooc, "11")
 })
 
-test_that("build_overview_section haandterer freeze-position med baseline-summary", {
+test_that("build_overview_section håndterer freeze-position med baseline-summary", {
   qic <- fixture_qic_data_3_parts()
   meta <- fixture_metadata_3_parts()
   result <- build_overview_section(
     qic, meta, derive_anhoej_per_part(qic),
     freeze_position = 4L
   )
-  freeze <- result$Vaerdi[result$Felt == "Freeze-baseline (CL/UCL/LCL ved freeze)"]
+  freeze <- result[["Værdi"]][result$Felt == "Freeze-baseline (CL/UCL/LCL ved freeze)"]
   expect_match(freeze, "CL=")
   expect_match(freeze, "UCL=")
 
-  frozen_row <- result$Vaerdi[result$Felt == "Frozen til raekke"]
+  frozen_row <- result[["Værdi"]][result$Felt == "Frozen til række"]
   expect_equal(frozen_row, "4")
 })
 
-test_that("build_overview_section angiver dansk Anhoej-tolkning baseret paa parts", {
+test_that("build_overview_section angiver dansk Anhøj-tolkning baseret på parts", {
   qic <- fixture_qic_data_3_parts()
   meta <- fixture_metadata_3_parts()
   result <- build_overview_section(qic, meta, derive_anhoej_per_part(qic))
-  tolkning <- result$Vaerdi[result$Felt == "Samlet Anhoej-tolkning"]
+  tolkning <- result[["Værdi"]][result$Felt == "Samlet Anhøj-tolkning"]
   # Mindst part 1 har runs_signal = TRUE
   expect_match(tolkning, "Særskilt")
 })
 
 # build_per_part_section -------------------------------------------------------
 
-test_that("build_per_part_section har en raekke per part", {
+test_that("build_per_part_section har en række per part", {
   qic <- fixture_qic_data_3_parts()
   result <- build_per_part_section(qic, y_axis_unit = "count")
   expect_equal(nrow(result), 3L)
@@ -84,8 +84,8 @@ test_that("build_per_part_section har CL/UCL/LCL-kolonner med qic-konvention i p
   result <- build_per_part_section(qic, y_axis_unit = "count")
   cols <- names(result)
   expect_true(any(grepl("^Centrallinje \\(cl", cols)))
-  expect_true(any(grepl("^Oevre graense \\(ucl", cols)))
-  expect_true(any(grepl("^Nedre graense \\(lcl", cols)))
+  expect_true(any(grepl("^Øvre grænse \\(ucl", cols)))
+  expect_true(any(grepl("^Nedre grænse \\(lcl", cols)))
 })
 
 test_that("build_per_part_section konverterer tids-y-akse til UI-enhed", {
@@ -118,9 +118,9 @@ test_that("build_per_part_section udfylder phase-navn hvis givet", {
   result <- build_per_part_section(
     qic,
     y_axis_unit = "count",
-    phase_names = c("Baseline", "Intervention", "Opfoelgning")
+    phase_names = c("Baseline", "Intervention", "Opfølgning")
   )
-  expect_equal(result$`Phase-navn`, c("Baseline", "Intervention", "Opfoelgning"))
+  expect_equal(result$`Phase-navn`, c("Baseline", "Intervention", "Opfølgning"))
 })
 
 test_that("build_per_part_section beregner Mean og Median per part", {
@@ -146,17 +146,17 @@ test_that("build_per_part_section beregner target-Delta hvis target sat", {
 
 # build_anhoej_section ---------------------------------------------------------
 
-test_that("build_anhoej_section har korrekte kolonner og en raekke per part", {
+test_that("build_anhoej_section har korrekte kolonner og en række per part", {
   qic <- fixture_qic_data_3_parts()
   anhoej <- derive_anhoej_per_part(qic)
   result <- build_anhoej_section(anhoej)
   expect_equal(nrow(result), 3L)
   expected_cols <- c(
     "Part",
-    "Laengste serie (longest_run)",
+    "Længste serie (longest_run)",
     "Maks tilladt (longest_run_max)",
     "Antal kryds (n_crossings)",
-    "Min kraevet (n_crossings_min)",
+    "Min krævet (n_crossings_min)",
     "Runs-signal", "Crossings-signal", "Samlet signal", "Dansk tolkning"
   )
   expect_equal(names(result), expected_cols)
@@ -173,7 +173,7 @@ test_that("build_anhoej_section reflekterer per-part signaler", {
   expect_equal(result$`Crossings-signal`[2], "NEJ")
 })
 
-test_that("build_anhoej_section haandterer tomt input", {
+test_that("build_anhoej_section håndterer tomt input", {
   result <- build_anhoej_section(list())
   expect_equal(nrow(result), 0L)
   expect_true("Part" %in% names(result))
@@ -181,7 +181,7 @@ test_that("build_anhoej_section haandterer tomt input", {
 
 # build_special_cause_section --------------------------------------------------
 
-test_that("build_special_cause_section inkluderer ooc og runs.signal-raekker", {
+test_that("build_special_cause_section inkluderer ooc og runs.signal-rækker", {
   qic <- fixture_qic_data_3_parts()
   orig <- fixture_original_data_3_parts()
   result <- build_special_cause_section(
@@ -192,8 +192,8 @@ test_that("build_special_cause_section inkluderer ooc og runs.signal-raekker", {
     kommentar_column = "Kommentar",
     n_column = "Patienter"
   )
-  # Part 1 raekke 1-4 har runs.signal = TRUE; raekke 11 har ooc.
-  expect_true(all(c(1L, 2L, 3L, 4L, 11L) %in% result$Raekke))
+  # Part 1 række 1-4 har runs.signal = TRUE; række 11 har ooc.
+  expect_true(all(c(1L, 2L, 3L, 4L, 11L) %in% result$Række))
 })
 
 test_that("build_special_cause_section returnerer tom data.frame uden ooc/runs", {
@@ -202,28 +202,28 @@ test_that("build_special_cause_section returnerer tom data.frame uden ooc/runs",
   expect_equal(nrow(result), 0L)
 })
 
-test_that("build_special_cause_section udfylder Notes og Naevner fra original_data", {
+test_that("build_special_cause_section udfylder Notes og Nævner fra original_data", {
   qic <- fixture_qic_data_3_parts()
   orig <- fixture_original_data_3_parts()
   result <- build_special_cause_section(
     qic_data = qic, original_data = orig,
     kommentar_column = "Kommentar", n_column = "Patienter"
   )
-  # Raekke 3 i part 1 har "Personalemangel"
-  row3 <- result[result$Raekke == 3L, ]
+  # Række 3 i part 1 har "Personalemangel"
+  row3 <- result[result$Række == 3L, ]
   expect_equal(row3$Notes, "Personalemangel")
-  expect_equal(row3$`Naevner (n)`, 100)
+  expect_equal(row3$`Nævner (n)`, 100)
 })
 
 test_that("build_special_cause_section markerer Out-of-limits og Runs-signal korrekt", {
   qic <- fixture_qic_data_3_parts()
   result <- build_special_cause_section(qic, y_axis_unit = "count")
-  # Raekke 1-4 (part 1): runs.signal = TRUE, ikke ooc
-  row1 <- result[result$Raekke == 1L, ]
+  # Række 1-4 (part 1): runs.signal = TRUE, ikke ooc
+  row1 <- result[result$Række == 1L, ]
   expect_equal(row1$`Runs-signal`, "JA")
   expect_equal(row1$`Out-of-limits`, "NEJ")
-  # Raekke 11 (part 3): ooc
-  row11 <- result[result$Raekke == 11L, ]
+  # Række 11 (part 3): ooc
+  row11 <- result[result$Række == 11L, ]
   expect_equal(row11$`Out-of-limits`, "JA")
 })
 
@@ -271,7 +271,7 @@ test_that("build_spc_analysis_sheet honors options-overrides", {
   )
   expect_equal(result$per_part$`Phase-navn`, c("A", "B", "C"))
   expect_match(
-    result$overview$Vaerdi[result$overview$Felt == "biSPCharts-version"],
+    result$overview[["Værdi"]][result$overview$Felt == "biSPCharts-version"],
     "9.9.9"
   )
 })
@@ -281,15 +281,15 @@ test_that("build_spc_analysis_sheet honors options-overrides", {
 test_that("Run-chart: UCL/LCL-celler i sektion B er NA (tomme)", {
   qic <- fixture_qic_data_run_chart()
   result <- build_per_part_section(qic, y_axis_unit = "count")
-  ucl_col <- grep("^Oevre graense", names(result), value = TRUE)[1]
-  lcl_col <- grep("^Nedre graense", names(result), value = TRUE)[1]
+  ucl_col <- grep("^Øvre grænse", names(result), value = TRUE)[1]
+  lcl_col <- grep("^Nedre grænse", names(result), value = TRUE)[1]
   expect_true(is.na(result[[ucl_col]][1]))
   expect_true(is.na(result[[lcl_col]][1]))
 })
 
 # Pure: ingen Shiny / app_state ----------------------------------------------
 
-test_that("alle builders koerer uden Shiny-runtime", {
+test_that("alle builders kører uden Shiny-runtime", {
   # Fixture-input + ingen reactive context
   qic <- fixture_qic_data_3_parts()
   meta <- fixture_metadata_3_parts()

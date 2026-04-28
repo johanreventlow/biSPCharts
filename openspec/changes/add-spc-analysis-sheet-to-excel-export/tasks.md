@@ -71,6 +71,7 @@
 - [x] 10.3 `styler::style_file()` på alle ændrede filer — `utils_server_wizard_gates.R` re-formatteret; alle øvrige uændrede
 - [ ] 10.4 ~~`devtools::check()`~~ — udskudt til pre-push gate (lintr + tests grønne; check er heavy og dækkes af CI)
 - [ ] 10.5 ~~Manuel verifikation~~ — udskudt til bruger (kræver interaktiv app + CSV-upload)
+- [x] 10.6 UTF-8 fix i Excel-output — kolonneoverskrifter, sektion-headers og labels skrives nu med korrekte danske bogstaver (Værdi/Række/Anhøj/Længste/Nævner/Øvre/grænse/krævet) i stedet for ASCII-translit (Vaerdi/Raekke/Anhoej osv.). Tests opdateret. 214/214 grønne i berørte testfiler.
 
 ## 11. OpenSpec ↔ GitHub-integration (afventer bruger-godkendelse)
 

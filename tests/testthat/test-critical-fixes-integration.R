@@ -227,15 +227,12 @@ test_that("Input sanitization integration med UI components", {
 
 test_that("Cross-component reactive chain med priorities", {
   set.seed(42)
-  # Test komplet reactive chain på tværs af komponenter
+  # Test komplet reactive chain på tværs af komponenter via shiny::testServer().
+  # Observers udløses kun i Shiny flush-cyklus; testServer() leverer den nødvendige
+  # reaktive kontekst og session$flushReact() driver chain'en til completion.
+  # Erstatter den tidligere isolate()-baserede implementering der aldrig virkede
+  # (issue #239). Rewritet som en del af issue #278.
 
-  skip_if_not(exists("reactiveVal"), message = "Shiny reactive functions not available")
-  # observeEvent-handlers udløses kun i Shiny-reaktiv flush-cyklus, ikke inden for isolate().
-  # Fuld verifikation kræver shiny::testServer() eller integration-testsuite.
-  # Se issue #239 for opfølgning.
-  skip("Reaktive observers udløses ikke i isolate()-kontekst uden Shiny flush-cyklus (#239)")
-
-  # Setup test data chain
   test_data <- data.frame(
     Dato = as.Date("2024-01-01") + 0:9,
     Tæller = sample(1:10, 10),
@@ -243,70 +240,94 @@ test_that("Cross-component reactive chain med priorities", {
     stringsAsFactors = FALSE
   )
 
-  # Mock data loading chain
-  data_reactive <- reactiveVal(NULL)
-  columns_detected <- reactiveVal(NULL)
-  ui_updated <- reactiveVal(FALSE)
+  # Modul der indkapsler den 3-ledede reactive chain.
+  # testServer() eksponerer alle reaktive objekter i modulet direkte i
+  # test-body'en, så vi kan trigge chain'en via data_reactive(test_data)
+  # og læse columns_detected() / ui_updated() bagefter.
+  chain_module <- function(id) {
+    shiny::moduleServer(id, function(input, output, session) {
+      data_reactive <- shiny::reactiveVal(NULL)
+      columns_detected <- shiny::reactiveVal(NULL)
+      ui_updated <- shiny::reactiveVal(FALSE)
 
-  # Chain 1: Data loading (HIGH priority)
-  observeEvent(data_reactive(), priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    if (!is.null(data_reactive())) {
-      log_info(
-        message = "Data loaded in reactive chain",
-        component = "[CHAIN_TEST]",
-        details = list(
-          rows = nrow(data_reactive()),
-          cols = ncol(data_reactive())
-        )
+      # Chain 1: Data loaded → detectér kolonner (STATE_MANAGEMENT priority)
+      shiny::observeEvent(
+        data_reactive(),
+        priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+        ignoreNULL = TRUE,
+        ignoreInit = TRUE,
+        {
+          log_info(
+            message = "Data loaded in reactive chain",
+            component = "[CHAIN_TEST]",
+            details = list(
+              rows = nrow(data_reactive()),
+              cols = ncol(data_reactive())
+            )
+          )
+          columns_detected(names(data_reactive()))
+        }
       )
 
-      # Trigger auto-detection
-      columns_detected(names(data_reactive()))
-    }
-  })
-
-  # Chain 2: Column detection (MEDIUM priority)
-  observeEvent(columns_detected(), priority = OBSERVER_PRIORITIES$AUTO_DETECT, {
-    if (!is.null(columns_detected())) {
-      log_info(
-        message = "Columns detected in reactive chain",
-        component = "[CHAIN_TEST]",
-        details = list(
-          detected_columns = columns_detected()
-        )
+      # Chain 2: Kolonner detekteret → opdatér UI (AUTO_DETECT priority)
+      shiny::observeEvent(
+        columns_detected(),
+        priority = OBSERVER_PRIORITIES$AUTO_DETECT,
+        ignoreNULL = TRUE,
+        ignoreInit = TRUE,
+        {
+          log_info(
+            message   = "Columns detected in reactive chain",
+            component = "[CHAIN_TEST]",
+            details   = list(detected_columns = columns_detected())
+          )
+          ui_updated(TRUE)
+        }
       )
 
-      # Trigger UI update
-      ui_updated(TRUE)
-    }
-  })
-
-  # Chain 3: UI update (LOW priority)
-  observeEvent(ui_updated(), priority = OBSERVER_PRIORITIES$UI_SYNC, {
-    if (isTRUE(ui_updated())) {
-      log_info(
-        message = "UI updated in reactive chain",
-        component = "[CHAIN_TEST]",
-        details = list(
-          update_completed = TRUE
-        )
+      # Chain 3: UI opdateret → log completion (UI_SYNC priority)
+      shiny::observeEvent(
+        ui_updated(),
+        priority = OBSERVER_PRIORITIES$UI_SYNC,
+        ignoreInit = TRUE,
+        {
+          if (isTRUE(ui_updated())) {
+            log_info(
+              message   = "UI updated in reactive chain",
+              component = "[CHAIN_TEST]",
+              details   = list(update_completed = TRUE)
+            )
+          }
+        }
       )
-    }
-  })
+    })
+  }
 
-  # Execute complete chain
-  isolate({
+  shiny::testServer(chain_module, {
+    # Init-flush: alle tre observers har ignoreInit=TRUE, dvs. de noterer
+    # deres init-observation og ignorerer den. Første flushReact() driver
+    # den interne init-cyklus igennem, så efterfølgende ændringer triggers korrekt.
+    session$flushReact()
+
+    # Trigger chain: sæt data direkte via det reaktive objekt i modulets miljø.
+    # testServer() eksponerer alle lokale variabler fra moduleServer-kroppen.
     data_reactive(test_data)
 
-    # Allow chain to complete
-    Sys.sleep(0.2)
+    # Flush 1: driver chain 1 (data_reactive → columns_detected)
+    # Flush 2: driver chain 2 (columns_detected → ui_updated)
+    # Flush 3: driver chain 3 (ui_updated → log)
+    session$flushReact()
+    session$flushReact()
+    session$flushReact()
 
-    # Verify chain completion
-    expect_equal(columns_detected(), names(test_data),
-      info = "Column detection should complete"
+    # Verificer at hele chain'en er gennemløbet
+    expect_equal(
+      columns_detected(), names(test_data),
+      info = "Column detection should complete after reactive chain flush"
     )
-    expect_true(ui_updated(),
-      info = "UI update should complete"
+    expect_true(
+      ui_updated(),
+      info = "UI update should complete after reactive chain flush"
     )
   })
 })

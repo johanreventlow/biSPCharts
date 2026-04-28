@@ -28,12 +28,17 @@ validate_export_inputs(
 \item{height}{Custom hoejde i pixels (kun PNG)}
 }
 \value{
-TRUE hvis alle validations passerer
+TRUE hvis alle validations passerer.
 }
 \description{
 Validerer alle export inputs foer generering af PDF/PNG.
 Tjekker character limits, dimension ranges og aspect ratios.
 }
+\section{Errors}{
+
+Kaster en fejl hvis validation fejler med beskrivende fejlbesked.
+}
+
 \examples{
 \dontrun{
 validate_export_inputs(

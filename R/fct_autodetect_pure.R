@@ -53,6 +53,9 @@ new_autodetect_result <- function(raw) {
 }
 
 #' Print-metode for AutodetectResult
+#'
+#' @param x AutodetectResult-objekt.
+#' @param ... Ignoreres.
 #' @export
 print.AutodetectResult <- function(x, ...) {
   cat(sprintf(

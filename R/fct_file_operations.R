@@ -165,18 +165,6 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
       }
     }
 
-    # Enhanced debug tracking for comprehensive testing
-    # SPRINT 1 SECURITY FIX: Sanitize session token before logging
-    debug_user_interaction(
-      "file_upload_initiated",
-      list(
-        filename = input$data_file$name,
-        size = input$data_file$size,
-        type = input$data_file$type
-      ),
-      sanitize_session_token(session$token)
-    )
-
     shiny::req(input$data_file)
 
     # Luk upload-modal automatisk naar fil er valgt (#167)

@@ -1,12 +1,6 @@
 # test-cross-component-reactive.R
 # Tests for cross-component reactive dependencies og data flow
 
-# Source required functions
-if (!file.exists("../../R/state_management.R")) {
-  skip("Source file not available in R CMD check environment")
-}
-source("../../R/state_management.R")
-
 # Cross-Component Reactive Dependencies Tests
 
 test_that("Reactive values initialization og structure", {

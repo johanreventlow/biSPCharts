@@ -202,12 +202,6 @@ development:
       n_results: 3                  # Standard retrieval count
       method: "hybrid"              # Hybrid search (vector + keyword)
 
-  # Migration and experimental features (inherited from default, can override)
-  features:
-    use_bfhchart: true                     # BFHchart backend (enabled for development testing)
-    bfhchart_version_required: "0.1.0"
-    bfhchart_supported_types: ["run", "i", "p", "c", "u"]  # Validated chart types
-
 # PRODUCTION CONFIGURATION ===================================================
 # Optimized for security, stability and performance
 

@@ -5,14 +5,8 @@
 library(testthat)
 context("Security: Session Token Hashing Tests")
 
-# Test Information Output
-test_that("session token security test context information", {
-  message("Testing session token hashing security improvements implemented 2025-09-26")
-  message("Security fix: Session tokens are now hashed before logging")
-  message("Prevents: Session token exposure in logs and potential session hijacking")
-
-  skip("Context information only - not a real test")
-})
+# Implementeret 2025-09-26: Session tokens hashes nu (SHA256) foer logging
+# for at undgaa session token-exposure i logs.
 
 test_that("hash_session_token function exists and works correctly", {
   skip_if_not(exists("hash_session_token", mode = "function"))

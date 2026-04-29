@@ -134,5 +134,5 @@ make_ai_extended_task <- function(
         }
       )
     })
-  }) |> shiny::bindToSession(session)
+  })
 }

@@ -33,8 +33,10 @@ main_app_server <- function(input, output, session) {
     .context = "APP_SERVER"
   )
 
-  # Initialize advanced debug system
-  initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
+  # Initialize advanced debug system (kun i debug_mode_enabled)
+  if (isTRUE(golem::get_golem_options("debug_mode_enabled", default = FALSE))) {
+    initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
+  }
 
   # Start session lifecycle debugging (using hashed token)
   session_debugger <- debug_session_lifecycle(hashed_token, session)

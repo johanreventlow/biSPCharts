@@ -602,7 +602,7 @@ describe("Edge Cases", {
         chart_type = "p",
         chart_title_reactive = reactive("All NA Test")
       ),
-      "Ingen.*komplette"
+      class = "spc_input_error"
     )
   })
 
@@ -647,14 +647,17 @@ describe("Edge Cases", {
 
     config <- list(x_col = "Obs", y_col = "Tæller", n_col = "Nævner")
 
-    expect_error(
-      generateSPCPlot(
-        data = zero_data,
-        config = config,
-        chart_type = "p",
-        chart_title_reactive = reactive("Zero Denominator Test")
-      ),
-      "Nævner.*nul"
+    # Rækker med n=0 filtreres nu stille af denominator pre-filteret (PR #351).
+    # Ingen fejl kastes — data reduceres fra 8 til 7 rækker.
+    result <- generateSPCPlot(
+      data = zero_data,
+      config = config,
+      chart_type = "p",
+      chart_title_reactive = reactive("Zero Denominator Test")
+    )
+    expect_true(is.list(result), label = "Resultat er en liste (ingen fejl kastet)")
+    expect_lt(nrow(result$qic_data), nrow(zero_data),
+      label = "qic_data har færre rækker end input (n=0 rækker fjernet)"
     )
   })
 })

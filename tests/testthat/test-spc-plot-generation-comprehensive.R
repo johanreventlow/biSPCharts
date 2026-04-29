@@ -453,7 +453,7 @@ test_that("generateSPCPlot error handling works correctly", {
 
   expect_error(
     generateSPCPlot(na_data, empty_config, "p", chart_title_reactive = reactive("NA Test")),
-    "Ingen.*komplette"
+    class = "spc_input_error"
   )
 
   # TEST: Zero denominators
@@ -465,9 +465,15 @@ test_that("generateSPCPlot error handling works correctly", {
     check.names = FALSE
   )
 
-  expect_error(
-    generateSPCPlot(zero_data, empty_config, "p", chart_title_reactive = reactive("Zero Test")),
-    "Nævner.*nul"
+  # Rækker med n=0 filtreres nu stille af denominator pre-filteret (PR #351).
+  # Ingen fejl kastes — data reduceres fra 5 til 4 rækker.
+  result_zero <- generateSPCPlot(
+    zero_data, empty_config, "p",
+    chart_title_reactive = reactive("Zero Test")
+  )
+  expect_true(is.list(result_zero), label = "Resultat er en liste (ingen fejl kastet)")
+  expect_lt(nrow(result_zero$qic_data), nrow(zero_data),
+    label = "qic_data har færre rækker end input (n=0 rækker fjernet)"
   )
 
   # TEST: Too few data points

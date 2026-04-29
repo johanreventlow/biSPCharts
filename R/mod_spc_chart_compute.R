@@ -170,6 +170,7 @@ create_spc_results_reactive <- function(
           viewport_width = vp_dims$width,
           viewport_height = vp_dims$height,
           qic_cache = qic_cache,
+          app_state = app_state,
           plot_context = "analysis" # M11: Analyse-side uses "analysis" context
         )
 

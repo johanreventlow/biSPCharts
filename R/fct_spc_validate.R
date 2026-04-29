@@ -170,13 +170,23 @@ validate_spc_request <- function(
     if (all(is.na(n_numeric)) && is.character(n_vals)) {
       n_numeric <- suppressWarnings(as.numeric(gsub(",", ".", n_vals)))
     }
-    invalid_n <- !is.na(n_numeric) & (n_numeric <= 0 | is.infinite(n_numeric))
+    # n=0 er gyldig klinisk observation ("ingen patienter denne m\u00e5ned") og
+    # konverteres til NA i prepare-steget (ikke en fejl her). Kun n<0 er ugyldig.
+    invalid_n <- !is.na(n_numeric) & (n_numeric < 0 | is.infinite(n_numeric))
     if (any(invalid_n)) {
       spc_abort(
         paste0(
-          "N\u00e6vner-kolonnen '", n_var, "' indeholder ugyldige v\u00e6rdier (\u2264 0 eller uendelig). ",
-          "N\u00e6vner skal v\u00e6re positiv for ", toupper(ct_normalized), "-kort."
+          "N\u00e6vner-kolonnen '", n_var, "' indeholder ugyldige v\u00e6rdier (< 0 eller uendelig). ",
+          "N\u00e6vner skal v\u00e6re ikke-negativ for ", toupper(ct_normalized), "-kort."
         ),
+        class = "spc_input_error"
+      )
+    }
+    # Alle n\u00e6vnere er 0: ingen brugbare data
+    all_zero_n <- !is.na(n_numeric) & n_numeric == 0
+    if (all(all_zero_n | is.na(n_numeric))) {
+      spc_abort(
+        "Alle n\u00e6vnerv\u00e6rdier er nul eller NA. Ingen brugbare data til SPC-analyse.",
         class = "spc_input_error"
       )
     }

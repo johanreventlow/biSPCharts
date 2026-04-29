@@ -380,8 +380,10 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
     operation_name = "Scale normalization",
     code = {
       # Chart types that use percentage scale (0-100) in biSPCharts
-      # but may expect decimal scale (0-1) in BFHchart
-      percentage_charts <- c("p", "pp", "u", "up")
+      # but may expect decimal scale (0-1) in BFHchart.
+      # U/U'-charts er rate-charts (hændelser pr. nævnerenhed), ikke proportioner --
+      # deres target-/centerlinje-værdier må IKKE divideres med 100.
+      percentage_charts <- c("p", "pp")
 
       # Only normalize if chart type uses percentages AND value > 1
       if (chart_type %in% percentage_charts && value > 1) {

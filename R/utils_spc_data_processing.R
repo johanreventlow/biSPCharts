@@ -139,9 +139,16 @@ parse_and_validate_spc_data <- function(y_data, n_data = NULL, y_col = "Y", n_co
           stop(paste("Kunne ikke konvertere", invalid_count, "v\u00e6rdier i", n_col, "til numeriske v\u00e6rdier"))
         }
 
-        # Check for zero denominators
-        if (any(parsed_n == 0)) {
-          stop("N\u00e6vner kan ikke v\u00e6re nul (division by zero)")
+        # n=0 er gyldig klinisk observation ("ingen patienter denne m\u00e5ned").
+        # Konvert\u00e9r til NA inden filter_complete_spc_data() filtrerer r\u00e6kken bort.
+        zero_rows <- !is.na(parsed_n) & parsed_n == 0
+        if (any(zero_rows)) {
+          n_zero <- sum(zero_rows)
+          log_info(
+            paste0(n_zero, " r\u00e6kke(r) fjernet pga. n=0 (nul-n\u00e6vner konverteret til NA)"),
+            .context = "DATA_PROCESSING"
+          )
+          parsed_n[zero_rows] <- NA_real_
         }
 
         result$n_data <- parsed_n

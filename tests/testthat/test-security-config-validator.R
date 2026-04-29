@@ -128,15 +128,8 @@ production:
 })
 
 test_that("golem-config.yml production-blok indeholder ingen ukendte security-flag", {
-  config_path <- file.path(
-    system.file("", package = "biSPCharts"),
-    "..", "..", "..", "inst", "golem-config.yml"
-  )
-
-  # Fallback til relativt sti (i testthat-kontekst)
-  if (!file.exists(config_path)) {
-    config_path <- "inst/golem-config.yml"
-  }
+  # testthat::test_path() returnerer absolut sti relativt til tests/testthat/
+  config_path <- testthat::test_path("..", "..", "inst", "golem-config.yml")
 
   skip_if_not(file.exists(config_path), "golem-config.yml ikke fundet")
 
@@ -160,8 +153,8 @@ test_that("golem-config.yml production-blok indeholder ingen ukendte security-fl
   flags <- extract_security_flags(prod_yaml)
   unknown <- setdiff(flags, IMPLEMENTED_FLAGS)
 
-  expect_length(
-    unknown, 0,
+  expect_equal(
+    length(unknown), 0L,
     label = paste(
       "Uimplementerede security-flag i production-blok:",
       paste(unknown, collapse = ", "),

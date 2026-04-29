@@ -108,19 +108,12 @@ setup_session_timeout <- function(session, minutes,
 #' @keywords internal
 activate_session_timeout_from_config <- function(input, session,
                                                  .scheduler = later::later) {
-  # Hent timeout fra golem-config (production: 60 min, dev: 480 min)
+  # Hent timeout fra security-blok i golem-config (production: 60 min, dev: 480 min)
+  # Kilde: inst/golem-config.yml → <env>:security:session_timeout_minutes
   timeout_minutes <- tryCatch(
-    golem::get_golem_config("session")$timeout_minutes,
+    golem::get_golem_config("security")$session_timeout_minutes,
     error = function(e) NULL
   )
-
-  # Fald tilbage til security.session_timeout_minutes (baglaedskompatibilitet)
-  if (is.null(timeout_minutes)) {
-    timeout_minutes <- tryCatch(
-      golem::get_golem_config("security")$session_timeout_minutes,
-      error = function(e) NULL
-    )
-  }
 
   # Ingen konfigureret timeout: deaktivér stiltiende
   if (is.null(timeout_minutes) || !is.numeric(timeout_minutes) || timeout_minutes <= 0) {

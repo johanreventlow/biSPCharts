@@ -439,8 +439,11 @@ phase_manifest <- function() {
   }
   app_files <- connect_manifest_files()
   gate_log_info(sprintf("Scanner %d runtime-filer til Connect manifest", length(app_files)))
+  # python = NULL: deaktivér python-env detection (rsconnect 1.8.0+ forsøger
+  # auto-detect "managed" python venv som fejler uden RETICULATE_PYTHON sat).
+  # biSPCharts har ingen python-deps; manifest skal være rent R-only.
   res <- tryCatch(
-    rsconnect::writeManifest(appDir = ".", appFiles = app_files),
+    rsconnect::writeManifest(appDir = ".", appFiles = app_files, python = NULL),
     error = function(e) e
   )
   if (inherits(res, "error")) {

@@ -1,3 +1,15 @@
+# biSPCharts 0.3.2
+
+## Bug fixes
+
+* **Fix Connect Cloud deployment-fejl:** `app.R` brugte `library(biSPCharts)`
+  efter ADR-019 (Beslutning B), men Connect Cloud installerer ikke selve
+  repo'et som pakke — kun dependencies fra `manifest.json::packages`.
+  Resultat: `library(biSPCharts) : der er ingen pakke med navn 'biSPCharts'`
+  ved app-start. Fix: rul tilbage til `pkgload::load_all()` og flyt `pkgload`
+  fra `Suggests` til `Imports` (>= 1.3.0). ADR-019 revideret med
+  pilot-deploy post-mortem.
+
 # biSPCharts 0.3.1
 
 ## Interne ændringer

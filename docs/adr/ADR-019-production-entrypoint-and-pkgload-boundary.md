@@ -1,73 +1,103 @@
 # ADR-019: Production-entrypoint og pkgload-boundary
 
-**Status:** Accepted
+**Status:** Superseded — revideret 2026-04-29 efter pilot-deploy-fejl
 
-**Dato:** 2026-04-29
+**Dato (oprindelig):** 2026-04-29
+**Dato (revision):** 2026-04-29
 
 ## Kontekst
 
-`app.R` (production-entrypoint på Posit Connect) brugte `pkgload::load_all()` til at loade pakken:
+`app.R` (production-entrypoint på Posit Connect Cloud) brugte oprindeligt
+`pkgload::load_all()` til at loade pakken:
 
 ```r
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 ```
 
-`pkgload` er listet i `DESCRIPTION`'s `Suggests` (development-only). Connect Cloud
-installerer ikke garanteret `Suggests`-pakker — `R CMD check --no-suggests`-flow
-springer dem over. Hvis Connect bygger miljøet uden Suggests, fejler app-start med
-"der er ingen pakke med navn 'pkgload'".
+Første ADR-revision (Beslutning B) skiftede til `library(biSPCharts)` med
+antagelse om at "Connect deployer source-bundle og installerer pakken selv".
 
-Dertil er `pkgload::load_all()` designet til *source-loading* under udvikling
-(loader R/-filer direkte fra disk). På Connect er pakken installeret som binary;
-`load_all()` i production er semantisk forkert og potentielt skrøbelig.
+**Pilot-deploy verificerede antagelsen som forkert.** Posit Connect Cloud
+installerer dependencies fra `manifest.json::packages` men installerer IKKE
+selve repo'et som pakke. App-start fejlede med:
 
-## Beslutning
+```
+Fejl i library(biSPCharts) : der er ingen pakke med navn 'biSPCharts'
+```
 
-**Beslutning B: Fjern `pkgload::load_all()` fra `app.R`; brug `library(biSPCharts)`.**
+## Beslutning (revideret)
 
-`app.R` er nu:
+**Beslutning A: Brug `pkgload::load_all()` i `app.R`; flyt `pkgload` til
+`Imports`.**
+
+`app.R` er:
 
 ```r
 options(shiny.autoload.r = FALSE)
-library(biSPCharts)
+pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 options("golem.app.prod" = TRUE)
 shiny::shinyApp(ui = app_ui, server = app_server)
 ```
 
-`pkgload` forbliver i `Suggests` — det bruges fortsat i development-flow
-(`dev/run_dev.R` via `devtools::load_all()`).
+`pkgload` flyttet fra `Suggests` til `Imports` (med `>= 1.3.0` lower-bound).
+Det sikrer at Connect Cloud installerer pkgload som dependency, og at
+`pkgload::load_all()` kan loade pakken fra source-bundlet uden self-install.
 
-## Alternativer overvejet
+## Alternativer (revideret)
 
-**Beslutning A: Flyt `pkgload` til `Imports`.**
-Eksplicit runtime-dependency. Strider mod Golem best-practice (pkgload er
-development-tooling, ej runtime). Ville forurene production-bundle med dev-deps.
-Fravalgt.
+**Beslutning B (oprindelig, fravalgt efter pilot-deploy):**
+`library(biSPCharts)`. Antog at Connect installerer self-package fra
+source-bundle. Connect Cloud gør dette IKKE — kun Connect on-prem (med
+`rsconnect::deployApp()` + tarball) understøtter self-install.
+
+**Beslutning C (overvejet, fravalgt):**
+Drop pkgload, lad shiny auto-source `R/`. Kolliderer med Golem-pakke-struktur
+(DESCRIPTION + NAMESPACE). Connect Cloud advarsel om R/-dir + pakke. Skrøbelig
+og strider mod golem-konvention.
+
+**Beslutning D (overvejet, fravalgt):**
+Inkluder biSPCharts som GitHub-remote i manifest med self-reference. Connect
+Cloud cirkulær-dependency-håndtering ej dokumenteret; usikkert om understøttet.
 
 ## Konsekvenser
 
 **Positive:**
-- Production-entrypoint er nu korrekt: installeret pakke loades via `library()`
-- `pkgload` behøves ikke i production-bundle; kan fjernes fra manifest ved
-  næste `rsconnect::writeManifest()` kald
-- Semantisk klar separation: `app.R` = production; `dev/run_dev.R` = development
+- Production-entrypoint virker på Connect Cloud (verificeret)
+- `pkgload` eksplicit runtime-dependency — ingen "magisk" Suggests-håndtering
+- Source-bundle-loading semantisk korrekt på Connect Cloud (ingen self-install)
+
+**Negative:**
+- `pkgload` (development-tooling) i production-bundle. Strider mod Golem
+  best-practice for on-prem Connect, men nødvendigt på Connect Cloud
+- Lidt øget bundle-size (pkgload + dependencies)
 
 **Risici:**
-- `library(biSPCharts)` kræver at pakken er installeret som del af Connect-bundlet.
-  Connect's model: app deployes som source-bundle; Connect installerer pakken.
-  Dette er standardadfærden — men **kræver pilot-deploy-verifikation** (tasks 2.8).
-- Hvis Connect-miljø af ukendte årsager ikke installerer biSPCharts korrekt,
-  fejler app-start. Mitigering: pilot-deploy på dev-environment inden production.
+- pkgload's `load_all()` semantik ændrer sig i breaking releases. Lower-bound
+  `>= 1.3.0` afgrænser API-stabilitet; review ved pkgload major-bumps.
 
 ## Enforcement
 
-Lintr-check (eller manuel review): `pkgload::` i filer uden `requireNamespace()`-guard
-i production-stier (`app.R`, `R/app_server_main.R`) → flag som fejl.
+`pkgload::load_all()` tilladt i `app.R` (production-entrypoint på Connect Cloud).
+`pkgload::` i øvrige R/-filer kræver `requireNamespace()`-guard.
 
-`dev/run_dev.R` er undtaget — det er et development-script.
+`dev/run_dev.R` bruger `devtools::load_all()` (development-flow, ej Connect).
+
+## Pilot-deploy post-mortem
+
+**Hvad fejlede:** Antagelse om Connect Cloud-source-bundle-self-install (uden
+pilot-deploy-verifikation før merge til master).
+
+**Hvorfor:** Tasks 2.8 (pilot-deploy til Connect dev-environment) blev sprunget
+over i Phase 2-implementering. ADR-019 første revision blev accepted uden
+empirisk validering.
+
+**Læring:**
+- Connect Cloud != Connect on-prem mht. self-install-model
+- ADR'er der ændrer production-entrypoint-adfærd kræver pilot-deploy før merge
+- "Source-bundle" er flertydigt term; verificér konkret platform-adfærd
 
 ## Related
 
 - OpenSpec: `align-csv-validator-and-pkgload-runtime`
 - Codex-finding #1 (pkgload runtime hygiene)
-- Tasks 2.8: pilot-deploy til Connect dev-environment (pending)
+- Pilot-deploy-fejl 2026-04-29: error_id=5be1e4f7-7628-48d2-9310-3ffc8c0bb3aa

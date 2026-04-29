@@ -17,12 +17,45 @@
 metadata:
   total_files: 132
   audit_run: 2026-04-26T20:55:41+0200
+  last_updated: 2026-04-29
   manifest_schema_version: '1.0'
   review_status:
     reviewed: 115
     unreviewed: 17
     needs_triage: 0
 files:
+  - file: test-async-export-task.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for utils_async_helpers (wrap_blocking_call, validate_ai_prerequisites). Synkrone helpers testable uden AppDriver.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-key-no-viewport.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for generate_spc_cache_key() - deterministisk adfærd og parameter-differentiering.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-session-scope.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for session-isolation af qic-cache, keys() og clear_prefix()-metoder.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-data-signature-collision.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for hash-kollision-prevention i generate_shared_data_signature() (middle-row fix).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-100x-mismatch-prevention.R
     audit_category: green-partial
     type: unit
@@ -302,14 +335,6 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-denominator-prefilter.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Tests for denominator pre-filter (PR #351). 13 pass, 0 fail.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-29'
   - file: test-dependency-guards.R
     audit_category: green
     type: unit
@@ -742,6 +767,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-security-config-validator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer golem-config security-flag whitelist.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-security-session-tokens.R
     audit_category: green
     type: unit
@@ -757,6 +790,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-session-timeout.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer setup_session_timeout() helper.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-shinylogs-paste-exclude.R
     audit_category: green
     type: unit
@@ -1032,74 +1073,130 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+
   - file: test-audit-analytics-logging-privacy.R
     audit_category: green
-    type: unit
+    type: policy-guard
     handling: keep
     reviewed: no
+    rationale: Privacy-policy-guard. Auto-tilfoejet ved manifest-update.
   - file: test-denominator-prefilter.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive_anhoej_per_part.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive-anhoej-results.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-excel-sheet-picker.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_autodetect_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_file_parse_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_spc_excel_analysis.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_visualization_config_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
+  - file: test-fix-state-paths-and-restore-guards.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: Wave 1 - state-paths regression-tests.
   - file: test-interpret_anhoej_signal_da.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-spc_excel_round_trip.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-state-transitions.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-column.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-form.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
-
+    rationale: Auto-tilfoejet.
+  - file: test-csv-validator-parser-parity.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P6 - CSV validator/parser delimiter-paritet regression-tests.
+  - file: test-anhoej-thresholds.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - Anhoej n<12 threshold regression-tests.
+  - file: test-run-chart-taxonomy.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - run-chart taxonomy regression-tests.
+  - file: test-spc-scaling-bfh.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - U/U' scaling regression-tests.
+  - file: test-spc-validate-p-chart.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - P-chart numerator<=denominator validering.
+  - file: test-spc-zero-denominator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - n=0 row drop konsistens.

@@ -432,7 +432,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               y_sample <- NULL
               if (is.null(y_unit) || y_unit == "") {
                 data <- shiny::isolate(app_state$data$current_data)
-                y_col <- shiny::isolate(app_state$columns$y_column)
+                y_col <- shiny::isolate(app_state$columns$mappings$y_column)
                 if (!is.null(data) && !is.null(y_col) && y_col %in% names(data)) {
                   y_data <- data[[y_col]]
                   y_sample <- parse_danish_number(y_data)

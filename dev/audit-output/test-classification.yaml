@@ -15,14 +15,47 @@
 
 
 metadata:
-  total_files: 128
+  total_files: 132
   audit_run: 2026-04-26T20:55:41+0200
+  last_updated: 2026-04-29
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 111
+    reviewed: 115
     unreviewed: 17
     needs_triage: 0
 files:
+  - file: test-async-export-task.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for utils_async_helpers (wrap_blocking_call, validate_ai_prerequisites). Synkrone helpers testable uden AppDriver.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-key-no-viewport.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for generate_spc_cache_key() - deterministisk adfærd og parameter-differentiering.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-session-scope.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for session-isolation af qic-cache, keys() og clear_prefix()-metoder.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-data-signature-collision.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for hash-kollision-prevention i generate_shared_data_signature() (middle-row fix).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-100x-mismatch-prevention.R
     audit_category: green-partial
     type: unit

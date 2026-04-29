@@ -54,14 +54,19 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
   }
 
   # Content-based lookup key (stabil på tværs af GC og sessions)
-  # Bruger struktur + sample af data for hurtig identifikation
+  # Bruger struktur + sample af data for hurtig identifikation.
+  # Inkluderer middle-row for at opdage ændringer midt i datasættet
+  # (fase 2b hash-collision fix: kun first+last er ikke tilstrækkeligt).
+  n <- nrow(data)
+  mid_idx <- if (n > 2) ceiling(n / 2) else NULL
   data_ptr <- digest::digest(list(
-    nrow = nrow(data),
+    nrow = n,
     ncol = ncol(data),
     names = names(data),
     col_types = vapply(data, function(x) class(x)[1], character(1)),
-    first_row = if (nrow(data) > 0) as.list(data[1, , drop = FALSE]) else list(),
-    last_row = if (nrow(data) > 1) as.list(data[nrow(data), , drop = FALSE]) else list()
+    first_row = as.list(data[1, , drop = FALSE]),
+    middle_row = if (!is.null(mid_idx)) as.list(data[mid_idx, , drop = FALSE]) else list(),
+    last_row = if (n > 1) as.list(data[n, , drop = FALSE]) else list()
   ), algo = "xxhash64")
 
   # Check if signature already cached

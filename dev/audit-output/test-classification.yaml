@@ -1071,3 +1071,33 @@ files:
     handling: keep
     reviewed: no
 
+  - file: test-anhoej-thresholds.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - Anhoej n<12 threshold regression-tests.
+  - file: test-run-chart-taxonomy.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - run-chart taxonomy regression-tests.
+  - file: test-spc-scaling-bfh.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - U/U' scaling regression-tests.
+  - file: test-spc-validate-p-chart.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - P-chart numerator<=denominator validering.
+  - file: test-spc-zero-denominator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - n=0 row drop konsistens.

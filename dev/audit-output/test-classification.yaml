@@ -286,14 +286,6 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-denominator-prefilter.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Tests for denominator pre-filter (PR #351). 13 pass, 0 fail.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-29'
   - file: test-dependency-guards.R
     audit_category: green
     type: unit
@@ -1000,74 +992,94 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+
   - file: test-audit-analytics-logging-privacy.R
     audit_category: green
-    type: unit
+    type: policy-guard
     handling: keep
     reviewed: no
+    rationale: Privacy-policy-guard. Auto-tilfoejet ved manifest-update.
   - file: test-denominator-prefilter.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive_anhoej_per_part.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive-anhoej-results.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-excel-sheet-picker.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_autodetect_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_file_parse_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_spc_excel_analysis.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_visualization_config_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
+  - file: test-fix-state-paths-and-restore-guards.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: Wave 1 - state-paths regression-tests.
   - file: test-interpret_anhoej_signal_da.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-spc_excel_round_trip.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-state-transitions.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-column.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-form.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
-
+    rationale: Auto-tilfoejet.

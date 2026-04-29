@@ -72,6 +72,13 @@ register_chart_type_events <- function(app_state, emit, input, session, register
         safe_operation(
           "Toggle n_column enabled state by chart type and y-axis unit",
           code = {
+            # Guard: Ignorer chart_type-ændringer under session-restore
+            # (forhindrer race condition hvor restore-indsat chart_type
+            #  trigger UI-ændringer før kolonner og y-akse er gendannet)
+            if (isTRUE(is_restoring_session(app_state))) {
+              return(invisible(NULL))
+            }
+
             ct <- input_scalar(input$chart_type, default = "run")
             enabled <- chart_type_requires_denominator(ct)
 
@@ -130,11 +137,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                   .context = "[Y_AXIS_UI]"
                 )
               } else {
-                columns_state <- shiny::isolate(app_state$columns)
-                n_val <- tryCatch(shiny::isolate(columns_state$n_column), error = function(...) NULL)
-                if (is.null(n_val)) {
-                  n_val <- tryCatch(shiny::isolate(columns_state$mappings$n_column), error = function(...) NULL)
-                }
+                n_val <- get_n_column(app_state)
                 n_present <- has_input_value(n_val)
                 if (n_present) {
                   current_ui <- input_scalar(input$y_axis_unit, default = "count")
@@ -215,8 +218,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # Export-side reads from mappings, not from reactive
             app_state$columns$mappings$y_axis_unit <- ui_type
 
-            y_col <- shiny::isolate(app_state$columns$mappings$y_column)
-            data <- shiny::isolate(app_state$data$current_data)
+            y_col <- get_y_column(app_state)
+            data <- get_current_data(app_state)
             n_points <- if (!is.null(data)) nrow(data) else NA_integer_
 
             # Review fund #2: Laes n_column fra mappings-state som fallback
@@ -227,11 +230,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             if (n_from_input) {
               n_present <- TRUE
             } else {
-              n_from_state <- tryCatch(
-                shiny::isolate(app_state$columns$mappings$n_column),
-                error = function(...) NULL
-              )
-              n_present <- has_input_value(n_from_state)
+              n_present <- has_input_value(get_n_column(app_state))
             }
 
             y_vals <- if (!is.null(y_col) && !is.null(data) && y_col %in% names(data)) data[[y_col]] else NULL
@@ -370,8 +369,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 # Get Y sample data for heuristics (if no explicit user unit)
                 y_sample <- NULL
                 if (is.null(y_unit) || y_unit == "") {
-                  data <- shiny::isolate(app_state$data$current_data)
-                  y_col <- shiny::isolate(app_state$columns$mappings$y_column)
+                  data <- get_current_data(app_state)
+                  y_col <- get_y_column(app_state)
                   if (!is.null(data) && !is.null(y_col) && y_col %in% names(data)) {
                     y_data <- data[[y_col]]
                     y_sample <- parse_danish_number(y_data)
@@ -431,8 +430,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               # Get Y sample data for heuristics (if no explicit user unit)
               y_sample <- NULL
               if (is.null(y_unit) || y_unit == "") {
-                data <- shiny::isolate(app_state$data$current_data)
-                y_col <- shiny::isolate(app_state$columns$y_column)
+                data <- get_current_data(app_state)
+                y_col <- get_y_column(app_state)
                 if (!is.null(data) && !is.null(y_col) && y_col %in% names(data)) {
                   y_data <- data[[y_col]]
                   y_sample <- parse_danish_number(y_data)

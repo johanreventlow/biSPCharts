@@ -646,7 +646,8 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     }
   )
 
-  if (n_dropped_denom > 0) {
+  if (n_dropped_denom > 0 && is.list(result)) {
+    if (is.null(result$metadata)) result$metadata <- list()
     result$metadata$dropped_denominator_rows <- n_dropped_denom
   }
 

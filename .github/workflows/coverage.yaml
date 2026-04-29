@@ -1,0 +1,59 @@
+# Ugentlig test-dækning via covr::package_coverage().
+# Kører mandage kl. 06:00 UTC + kan trigges manuelt.
+# Ikke blokerende for PRs — informationel rapport.
+name: coverage
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      CI_SKIP_SHINYTEST2: "true"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::covr, any::testthat, any::mockery
+          needs: check
+
+      - name: Install local package
+        run: R CMD INSTALL .
+        shell: bash
+
+      - name: Beregn test-daekning
+        run: |
+          coverage <- covr::package_coverage(
+            path = ".",
+            type = "tests",
+            quiet = FALSE
+          )
+          cat("\n=== Test Coverage Report ===\n")
+          print(coverage)
+          cat("\n=== Coverage by File ===\n")
+          print(covr::coverage_to_list(coverage)$filecoverage)
+          total <- covr::percent_coverage(coverage)
+          cat(sprintf("\n=== Total coverage: %.1f%% ===\n", total))
+          if (total < 70) {
+            warning(sprintf("Coverage %.1f%% er under 70%% minimumsgransen", total))
+          }
+        shell: Rscript {0}

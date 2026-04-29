@@ -14,15 +14,15 @@
 #' og LLM call til BFHllm::bfhllm_spc_suggestion().
 #'
 #' Funktionen bruger safe_operation() pattern og structured logging.
-#' Ved fejl returneres NULL så UI kan håndtere gracefully.
+#' Ved fejl returneres NULL saa UI kan haandtere gracefully.
 #'
 #' @param spc_result List returned by compute_spc_results_bfh()
 #'   Skal indeholde metadata og qic_data components
 #' @param context Named list with user context:
 #'   - data_definition: Character string beskrivelse af indikator
 #'   - chart_title: Character string graf titel
-#'   - y_axis_unit: Character string måleenhed (e.g. "dage", "antal", "procent")
-#'   - target_value: Numeric target værdi (optional, can be NULL)
+#'   - y_axis_unit: Character string maaleenhed (e.g. "dage", "antal", "procent")
+#'   - target_value: Numeric target vaerdi (optional, can be NULL)
 #' @param session Shiny session object for cache access. Required.
 #' @param max_chars Maximum characters in response (default from config)
 #'
@@ -41,7 +41,7 @@
 #' spc_result <- compute_spc_results_bfh(data, "date", "value", "run")
 #' context <- list(
 #'   data_definition = "Ventetid til operation i dage",
-#'   chart_title = "Ventetid ortopædkirurgi 2024",
+#'   chart_title = "Ventetid ortopaedkirurgi 2024",
 #'   y_axis_unit = "dage",
 #'   target_value = 30
 #' )
@@ -68,6 +68,38 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
 
       if (is.null(session)) {
         log_error("session is NULL - cache cannot work", .context = "AI_SUGGESTION")
+        return(NULL)
+      }
+
+      # PHI-check: CPR-moenstre i data_definition -> modal advarsel foer afsendelse.
+      # Pattern matcher dansk CPR-format: 6 cifre + valgfri bindestreg + 4 cifre.
+      data_def_text <- context$data_definition %||% ""
+      if (nchar(data_def_text) > 0 &&
+        grepl("\\d{6}-?\\d{4}", data_def_text, perl = TRUE)) {
+        log_warn(
+          "CPR-m\u00f8nster fundet i data_definition \u2014 viser advarsel, afbryder AI-kald",
+          .context = "AI_SUGGESTION"
+        )
+        tryCatch(
+          shiny::showModal(shiny::modalDialog(
+            title = "Mulig patientdata opdaget",
+            shiny::p(
+              "Beskrivelsesfeltet ser ud til at indeholde et CPR-nummer eller ",
+              "lignende personidentifikation. Patientdata m\u00e5 ikke sendes til AI."
+            ),
+            shiny::p(
+              "Fjern venligst persondataene fra indikatorbeskrivelsen og pr\u00f8v igen."
+            ),
+            footer = shiny::modalButton("Luk"),
+            easyClose = TRUE
+          )),
+          error = function(e) {
+            log_debug(
+              paste("showModal fejlede (sandsynligvis uden for Shiny-kontekst):", e$message),
+              .context = "AI_SUGGESTION"
+            )
+          }
+        )
         return(NULL)
       }
 

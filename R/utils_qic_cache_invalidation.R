@@ -101,7 +101,9 @@ invalidate_qic_cache_smart <- function(app_state, update_context = NULL) {
     safe_operation(
       "Selective QIC cache invalidation (value change)",
       code = {
-        # Get current chart type to invalidate only relevant entries
+        # Selektiv invalidation via prefix-matching på chart_type.
+        # Forudsætter at cache-nøgler bruger format "spc_{chart_type}_..."
+        # (genereret af generate_spc_cache_key() i utils_spc_cache.R).
         chart_type <- tryCatch(
           {
             app_state$columns$mappings$chart_type %||% "run"
@@ -109,14 +111,30 @@ invalidate_qic_cache_smart <- function(app_state, update_context = NULL) {
           error = function(e) "run"
         )
 
-        # Full cache clear ved data value changes
-        # (selektiv invalidation kræver cache key pattern matching som ikke er implementeret)
-        app_state$cache$qic$clear()
+        qic_cache <- app_state$cache$qic
 
-        log_info(
-          paste("QIC cache cleared (value change):", context, "chart_type:", chart_type),
-          .context = "QIC_CACHE"
-        )
+        # Brug prefix-baseret invalidation hvis metoden er tilgængelig.
+        # Fallback: fuld clear (bevar eksisterende adfærd).
+        if (is.function(qic_cache$clear_prefix)) {
+          prefix <- paste0("spc_", chart_type, "_")
+          qic_cache$clear_prefix(prefix)
+          log_info(
+            paste(
+              "QIC cache prefix-invalidated (value change):",
+              context, "prefix:", prefix
+            ),
+            .context = "QIC_CACHE"
+          )
+        } else {
+          qic_cache$clear()
+          log_info(
+            paste(
+              "QIC cache cleared (value change, fallback):",
+              context, "chart_type:", chart_type
+            ),
+            .context = "QIC_CACHE"
+          )
+        }
       },
       fallback = function(e) {
         log_warn(

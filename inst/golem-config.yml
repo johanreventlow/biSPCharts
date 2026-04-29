@@ -25,12 +25,11 @@ default:
     is_testing: false
 
   # Security configuration
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: false
     session_timeout_minutes: 30
-    csrf_protection: true
-    content_security_policy: "strict"
     hide_error_details: true
 
   # Performance settings
@@ -79,6 +78,7 @@ default:
     save_session_on_exit: false
     enable_session_debugging: false
     cleanup_on_disconnect: true
+    localstorage_ttl_minutes: 480       # TTL for localStorage (8 timer = klinisk arbejdsdag)
 
   # Analytics og cookie consent
   analytics:
@@ -127,12 +127,11 @@ development:
     is_testing: false
 
   # Security settings (relaxed for development)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: true
     session_timeout_minutes: 480  # 8 hours for long development sessions
-    csrf_protection: false
-    content_security_policy: "permissive"
     hide_error_details: false
 
   # Performance settings (optimized for fast feedback)
@@ -203,12 +202,6 @@ development:
       n_results: 3                  # Standard retrieval count
       method: "hybrid"              # Hybrid search (vector + keyword)
 
-  # Migration and experimental features (inherited from default, can override)
-  features:
-    use_bfhchart: true                     # BFHchart backend (enabled for development testing)
-    bfhchart_version_required: "0.1.0"
-    bfhchart_supported_types: ["run", "i", "p", "c", "u"]  # Validated chart types
-
 # PRODUCTION CONFIGURATION ===================================================
 # Optimized for security, stability and performance
 
@@ -225,12 +218,11 @@ production:
     is_testing: false
 
   # Security settings (strict for production)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: true
     allow_debug_endpoints: false
     session_timeout_minutes: 60    # 1 hour for security
-    csrf_protection: true
-    content_security_policy: "strict"
     hide_error_details: true
 
   # Performance settings (optimized for stability)
@@ -279,6 +271,7 @@ production:
     save_session_on_exit: true
     enable_session_debugging: false
     cleanup_on_disconnect: false      # Preserve user work
+    localstorage_ttl_minutes: 480     # TTL for localStorage (8 timer = klinisk arbejdsdag)
 
   # Analytics (aktiv i production)
   analytics:
@@ -311,12 +304,11 @@ testing:
     is_testing: true
 
   # Security settings (moderate for testing)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: true
     session_timeout_minutes: 120   # 2 hours for test sessions
-    csrf_protection: false         # Simplified for testing
-    content_security_policy: "moderate"
     hide_error_details: false
 
   # Performance settings (optimized for test reliability)

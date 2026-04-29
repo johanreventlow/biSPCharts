@@ -192,6 +192,11 @@ inject_template_assets <- function(template_dir) {
   )
 }
 
+# TEMPORARY: Fjern når BFHcharts eksporterer bfh_create_typst_document,
+# bfh_extract_spc_stats og bfh_merge_metadata. Opret issue i BFHcharts-repo:
+# getFromNamespace() bryder CRAN-konventioner og CLAUDE.md-regel om aldrig at
+# implementere ekstern pakke-funktionalitet internt. Eskalering dokumenteret i
+# commit chore: marker bfhcharts_internal som TEMPORARY (Phase 3).
 bfhcharts_internal <- function(name) {
   getFromNamespace(name, "BFHcharts")
 }

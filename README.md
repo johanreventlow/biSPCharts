@@ -83,8 +83,12 @@ biSPCharts kan generere kontekst-bevidste forbedringsmål automatisk ved hjælp 
 
 **Privacy:**
 
-- Kun aggregerede SPC-statistikker sendes til Gemini (ingen rådata)
-- Ingen patient-identifikation sendes
+- SPC-metadata sendes til Gemini: kontrolgrænser, centrallinje, antal datapunkter,
+  signalflags og start/slut-dato. Ingen rå datapunkter sendes.
+- `data_definition`-feltet (brugerens beskrivelse) sendes som del af prompten.
+  CPR-mønster (`\d{6}-?\d{4}`) detekteres automatisk og blokerer afsendelse
+  med en modal advarsel til brugeren.
+- Ingen patient-identifikation sendes (se CPR-gate ovenfor)
 - Data bruges ikke til model-træning (per Google Gemini API policy)
 - Se `docs/adr/ADR-016-gemini-integration.md` for detaljer
 

@@ -195,6 +195,11 @@ hashen aldrig afspejler PII-kolonnenavne.
   fejlbeskeder inden de logges eller returneres.
 - **Allowlist-filtering**: `filter_shinylogs_allowlist()` dropper alle
   kolonner der ikke er eksplicit tilladt i `SHINYLOGS_ALLOWLIST`.
+  Filteret anvendes nu **på begge** sync-stier: GitHub-stien og
+  Posit Connect pin_write-stien.
+- **paste_data_input eksklusion**: Indsæt-data-feltet (`paste_data_input`)
+  er ekskluderet fra shinylogs-capture via `exclude_input_id`. Feltet
+  kan indeholde CPR-numre, patientnavne og anden PHI.
 - **Debug-snapshot redaktion**: `redact_debug_snapshot()` fjerner
   PII-kolonnenavne fra debug-output og state-hashes.
 - **Opt-in GitHub-sync**: Synkronisering kræver eksplicit
@@ -216,7 +221,7 @@ ny.
 
 | Felt | Værdi |
 |------|-------|
-| Sidst gennemgået | 2026-04-26 |
+| Sidst gennemgået | 2026-04-29 |
 | Ansvarlig | Johan Reventlow |
 | Status | Ikke formelt DPIA-vurderet — app bruges internt, ingen ekstern transmission af PII |
 | Næste review | Ved udvidelse af allowlist eller ændring af datamodtager |

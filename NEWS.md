@@ -1,3 +1,24 @@
+# biSPCharts 0.3.2
+
+## Bug fixes
+
+* **Fix Connect Cloud deployment-fejl:** `app.R` brugte `library(biSPCharts)`
+  efter ADR-019 (Beslutning B), men Connect Cloud installerer ikke selve
+  repo'et som pakke — kun dependencies fra `manifest.json::packages`.
+  Resultat: `library(biSPCharts) : der er ingen pakke med navn 'biSPCharts'`
+  ved app-start. Fix: rul tilbage til `pkgload::load_all()` og flyt `pkgload`
+  fra `Suggests` til `Imports` (>= 1.3.0). ADR-019 revideret med
+  pilot-deploy post-mortem.
+
+* **CSV-validator accepterer nu alle delimiter-formater som parseren kan
+  håndtere:** Validator (`R/fct_file_validation.R`) brugte tidligere kun
+  `read_csv2` (semikolon/komma-decimal) og afviste komma- og tab-separerede
+  filer før parser fik chance. Ny shared helper
+  `R/utils_csv_delimiter_detection.R::detect_csv_delimiter()` bruges nu af
+  begge sider, så validator-parser-paritet er garanteret. Edge cases dækket:
+  BOM, mixed CRLF/LF, dansk komma-decimal med tab-delimiter. OpenSpec:
+  `align-csv-validator-and-pkgload-runtime` Phase 1.
+
 # biSPCharts 0.3.1
 
 ## Interne ændringer

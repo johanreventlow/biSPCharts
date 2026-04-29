@@ -110,19 +110,10 @@ test_that("100pct cleanup success rate for standard observere", {
   expect_equal(destroyed, initial_count)
 })
 
-test_that("TODO Fase 3: setup_event_listeners observers cleanup via testServer", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — testServer(app = function(...)) pattern virker ikke ",
-    "i nuvaerende shiny-version (#203-followup)\n",
-    "Error: 'object \"\" not found' — testServer kræver moduleServer-pattern"
-  ))
-  app_state <- create_app_state()
-  emit <- create_emit_api(app_state)
-  observer_count <- 0
-
-  shiny::testServer(
-    app = function(input, output, session) {
-      obs_reg <- setup_event_listeners(
+test_that("setup_event_listeners registrerer observers via moduleServer", {
+  setup_module <- function(id, app_state, emit) {
+    shiny::moduleServer(id, function(input, output, session) {
+      obs_reg <<- setup_event_listeners(
         app_state = app_state,
         emit = emit,
         input = input,
@@ -130,16 +121,14 @@ test_that("TODO Fase 3: setup_event_listeners observers cleanup via testServer",
         session = session,
         ui_service = NULL
       )
-      observer_count <<- length(obs_reg)
-    },
-    args = list()
-  )
+    })
+  }
 
-  expect_gt(observer_count, 0)
-})
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  obs_reg <- NULL
 
-test_that("TODO Fase 3: observer counts konsistente over sessions", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — testServer(app = function(...)) pattern virker ikke (#203-followup)"
-  ))
+  shiny::testServer(setup_module, args = list(app_state = app_state, emit = emit), {})
+
+  expect_gt(length(obs_reg), 0)
 })

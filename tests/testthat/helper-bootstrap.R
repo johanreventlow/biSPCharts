@@ -4,9 +4,8 @@
 # §2.4.2 — Package loading, shiny aliases, conditional setup.
 #
 # Sourced automatisk af testthat (filename-prefix "helper-" + load_all helpers).
-# Denne fil håndterer ENTEN:
-#   - Load biSPCharts package via pkgload::load_all()
-#   - Fallback source() af essentielle R/-filer ved fejl
+# Denne fil håndterer:
+#   - Load biSPCharts package via pkgload::load_all() (fejl = eksplicit stop())
 #   - Shiny-aliasing så tests kan bruge `reactive` i stedet for `shiny::reactive`
 #
 # Sibling-helpers:
@@ -55,27 +54,17 @@ package_already_loaded <- function() {
 if (!package_already_loaded()) {
   if (requireNamespace("pkgload", quietly = TRUE)) {
     tryCatch(
-      {
-        pkgload::load_all(project_root, quiet = TRUE, helpers = FALSE)
-      },
+      pkgload::load_all(project_root, quiet = TRUE, helpers = FALSE),
       error = function(e) {
-        message("pkgload failed, falling back to source-based loading: ", e$message)
-        # Lightweight fallback — source kun essentielle filer
-        essential_files <- c(
-          "R/state_management.R",
-          "R/utils_error_handling.R",
-          "R/utils_server_performance.R",
-          "R/fct_autodetect_helpers.R",
-          "R/fct_autodetect_unified.R"
+        stop(
+          "pkgload::load_all() fejlede: ", conditionMessage(e), "\n",
+          "Mulige årsager:\n",
+          "  - Outdated dependencies (kør: remotes::install_deps())\n",
+          "  - Manglende sibling-pakker (BFHcharts/BFHtheme/BFHllm/Ragnar)\n",
+          "  - DESCRIPTION-bump siden sidste install\n",
+          "Bypass: SKIP_PREPUSH=1 git push (ikke anbefalet)",
+          call. = FALSE
         )
-        for (file_path in essential_files) {
-          full_path <- file.path(project_root, file_path)
-          if (file.exists(full_path)) {
-            tryCatch(source(full_path, local = FALSE), error = function(e) {
-              message("Failed to source ", file_path, ": ", e$message)
-            })
-          }
-        }
       }
     )
   }

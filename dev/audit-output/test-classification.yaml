@@ -58,13 +58,6 @@ files:
     type: unit
     handling: keep
     reviewed: no
-  - file: test-audit-analytics-logging-privacy.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-26'
   - file: test-audit-classifier.R
     audit_category: green
     type: unit
@@ -293,6 +286,14 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-denominator-prefilter.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Tests for denominator pre-filter (PR #351). 13 pass, 0 fail.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-dependency-guards.R
     audit_category: green
     type: unit
@@ -309,13 +310,6 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-derive-anhoej-results.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-26'
   - file: test-e2e-workflows.R
     audit_category: green
     type: integration
@@ -363,13 +357,6 @@ files:
     rationale: Green-partial med 2/128 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-excel-sheet-picker.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-27'
   - file: test-excelr-data-reconstruction.R
     audit_category: green
     type: unit
@@ -397,11 +384,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-fct_autodetect_pure.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-fct_export_png.R
     audit_category: green
     type: unit
@@ -441,17 +423,7 @@ files:
     type: unit
     handling: keep
     reviewed: no
-  - file: test-fct_file_parse_pure.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-fct_spc_validate.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
-  - file: test-fct_visualization_config_pure.R
     audit_category: green
     type: unit
     handling: keep
@@ -838,11 +810,6 @@ files:
       fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-state-transitions.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-tidyverse-purrr-operations.R
     audit_category: green
     type: unit
@@ -889,16 +856,6 @@ files:
     rationale: Unit-test på token counter-logik (2 blokke). Misklassificeret som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-ui-update-service-column.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
-  - file: test-ui-update-service-form.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: no
   - file: test-utils_analytics_consent.R
     audit_category: green
     type: unit
@@ -1043,32 +1000,74 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-audit-analytics-logging-privacy.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-denominator-prefilter.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-derive_anhoej_per_part.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-27'
-  - file: test-interpret_anhoej_signal_da.R
+    reviewed: no
+  - file: test-derive-anhoej-results.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-27'
+    reviewed: no
+  - file: test-excel-sheet-picker.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_autodetect_pure.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-fct_file_parse_pure.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-fct_spc_excel_analysis.R
     audit_category: green
     type: unit
     handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-27'
+    reviewed: no
+  - file: test-fct_visualization_config_pure.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-interpret_anhoej_signal_da.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
   - file: test-spc_excel_round_trip.R
     audit_category: green
-    type: integration
+    type: unit
     handling: keep
-    reviewed: yes
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-27'
+    reviewed: no
+  - file: test-state-transitions.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-ui-update-service-column.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+  - file: test-ui-update-service-form.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
 

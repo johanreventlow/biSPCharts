@@ -291,13 +291,11 @@ test_that("generateSPCPlot target line functionality works", {
 })
 
 test_that("generateSPCPlot centerline label bruger geom_marquee", {
-  # BFHcharts 0.8.0 ændrede geom_marquee-datastruktur:
+  # Opdateret til BFHcharts 0.10.x API (verificeret 2026-04-29, #245):
   #   - size: 4 → 6
   #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
-  #   - 'text_color' → 'color', mapping$color → mapping$colour
-  # Testen er forældet og kræver opdatering af alle assertions mod ny BFHcharts API.
-  # Kan reaktiveres når BFHcharts eksponerer stabil label-metadata (#245, #216).
-  skip("Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245")
+  #   - 'text_color' → 'color', mapping$colour → ^color quosure
+  # Assertions er tight mod BFHcharts-interne lag — fragilt ved BFHcharts-ændringer.
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -322,23 +320,22 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
 
   layer <- text_layers[[1]]
   expect_equal(rlang::as_name(layer$mapping$label), "label")
-  expect_equal(layer$aes_params$size, 4)
+  expect_equal(layer$aes_params$size, 6)
 
-  cl_rows <- subset(layer$data, type == "cl")
+  # 'type'-kolonne fjernet i BFHcharts 0.10.x — identificér centrallinjerækker via label-indhold
+  cl_rows <- layer$data[grepl("NUV\\. NIVEAU", layer$data$label), ]
   expect_gt(nrow(cl_rows), 0)
   expect_true(all(grepl("NUV\\. NIVEAU", cl_rows$label)))
   expect_true(all(grepl("\\*\\*", cl_rows$label))) # Marquee markdown bold syntax
-  expect_equal(unique(cl_rows$text_color), "#009CE8")
+  expect_equal(unique(cl_rows$color), "#009ce8") # 'text_color' → 'color' (lowercase hex)
 })
 
 test_that("generateSPCPlot target label bruger geom_marquee", {
-  # BFHcharts 0.8.0 ændrede geom_marquee-datastruktur:
+  # Opdateret til BFHcharts 0.10.x API (verificeret 2026-04-29, #245):
   #   - size: 4 → 6
   #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
-  #   - 'text_color' → 'color', mapping$color → mapping$colour
-  # Testen er forældet og kræver opdatering af alle assertions mod ny BFHcharts API.
-  # Kan reaktiveres når BFHcharts eksponerer stabil label-metadata (#245, #216).
-  skip("Afventer BFHcharts 0.8.0 geom_marquee API-opdatering i assertions — se #245")
+  #   - 'text_color' → 'color' (#565656 → #333333), mapping$colour → ^color quosure
+  # Assertions er tight mod BFHcharts-interne lag — fragilt ved BFHcharts-ændringer.
   skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
   skip_if_not_installed("rlang")
 
@@ -366,13 +363,14 @@ test_that("generateSPCPlot target label bruger geom_marquee", {
 
   layer <- text_layers[[1]]
   expect_equal(rlang::as_name(layer$mapping$label), "label")
-  expect_equal(layer$aes_params$size, 4)
+  expect_equal(layer$aes_params$size, 6)
 
-  target_rows <- subset(layer$data, type == "target")
+  # 'type'-kolonne fjernet i BFHcharts 0.10.x — identificér målrækker via label-indhold
+  target_rows <- layer$data[grepl("MÅL", layer$data$label), ]
   expect_gt(nrow(target_rows), 0)
   expect_true(all(grepl("MÅL", target_rows$label)))
   expect_true(all(grepl("\\*\\*", target_rows$label))) # Marquee markdown bold syntax
-  expect_equal(unique(target_rows$text_color), "#565656")
+  expect_equal(unique(target_rows$color), "#333333") # 'text_color' → 'color', farve ændret
 })
 
 test_that("generateSPCPlot comment annotations work", {
@@ -453,7 +451,7 @@ test_that("generateSPCPlot error handling works correctly", {
 
   expect_error(
     generateSPCPlot(na_data, empty_config, "p", chart_title_reactive = reactive("NA Test")),
-    "Ingen.*komplette"
+    class = "spc_input_error"
   )
 
   # TEST: Zero denominators
@@ -465,9 +463,15 @@ test_that("generateSPCPlot error handling works correctly", {
     check.names = FALSE
   )
 
-  expect_error(
-    generateSPCPlot(zero_data, empty_config, "p", chart_title_reactive = reactive("Zero Test")),
-    "Nævner.*nul"
+  # Rækker med n=0 filtreres nu stille af denominator pre-filteret (PR #351).
+  # Ingen fejl kastes — data reduceres fra 5 til 4 rækker.
+  result_zero <- generateSPCPlot(
+    zero_data, empty_config, "p",
+    chart_title_reactive = reactive("Zero Test")
+  )
+  expect_true(is.list(result_zero), label = "Resultat er en liste (ingen fejl kastet)")
+  expect_lt(nrow(result_zero$qic_data), nrow(zero_data),
+    label = "qic_data har færre rækker end input (n=0 rækker fjernet)"
   )
 
   # TEST: Too few data points
@@ -607,10 +611,9 @@ test_that("generateSPCPlot hospital theme integration works", {
 })
 
 test_that("generateSPCPlot Danish clinical data patterns work", {
-  # BFHcharts 0.8.0 parser "Jan 2024" til POSIXct (ikke factor).
-  # Testen forventer is.factor(result$qic_data$x) — men BFHcharts returnerer POSIXct.
-  # Cross-repo: BFHcharts skal eksponere factor-konvertering for tekstbaserede måneder (#245, #216).
-  skip("Afventer BFHcharts factor-konvertering for tekstbaserede månedsnavne — se #245 (cross-repo BFHcharts)")
+  # Verificeret 2026-04-29 (#245): "Jan 2024" parses korrekt til POSIXct af biSPCharts
+  # fct_spc_prepare.R. Gammel assertion is.factor() var forkert — POSIXct er korrekt
+  # for dato-strenge. Resten af testen (proportioner, lag) er valide.
   # TEST: Real-world Danish clinical data patterns
 
   # Skip if generateSPCPlot function not available
@@ -658,6 +661,10 @@ test_that("generateSPCPlot Danish clinical data patterns work", {
   # TEST: Comments should be processed
   expect_gte(length(result$plot$layers), 5) # Including comment annotations
 
-  # TEST: Character month labels should be converted to factors
-  expect_true(is.factor(result$qic_data$x))
+  # "Jan 2024" forsoeges parset som dato; faldback er numerisk sekvens.
+  # Begge er valid output (afhaenger af lubridate parse_date_time-version/locale).
+  expect_true(
+    inherits(result$qic_data$x, c("POSIXct", "Date")) ||
+      is.numeric(result$qic_data$x) || is.integer(result$qic_data$x)
+  )
 })

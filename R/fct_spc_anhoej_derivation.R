@@ -84,7 +84,16 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
   crossings_signal <- if ("n.crossings" %in% names(data) && "n.crossings.min" %in% names(data)) {
     n_cross <- safe_max(data$n.crossings)
     n_cross_min <- safe_max(data$n.crossings.min)
-    !is.na(n_cross) && !is.na(n_cross_min) && n_cross < n_cross_min
+    if (is.na(n_cross_min)) {
+      # n.crossings.min = NA: qicharts2 kan ikke beregne kryds-tærsklen (typisk n < 12).
+      # Returner NA -- "Utilstrækkelige data", ikke FALSE (falsk "Stabil proces").
+      NA
+    } else if (is.na(n_cross)) {
+      # Tærsklen kendes men observeret antal kryds mangler -- kan ikke afgøre signal.
+      FALSE
+    } else {
+      n_cross < n_cross_min
+    }
   } else {
     FALSE
   }
@@ -199,7 +208,22 @@ interpret_anhoej_signal_da <- function(anhoej_result) {
     isTRUE(!is.null(x) && !is.na(x) && as.logical(x))
   }
   runs <- to_logical(anhoej_result$runs_signal)
-  crossings <- to_logical(anhoej_result$crossings_signal)
+
+  # Utilstr\u00e6kkelige data: n_crossings_min er NA betyder qicharts2 ikke kan beregne
+  # kryds-t\u00e6rsklen (typisk n < 12). Returner eksplicit besked for at undg\u00e5 falsk
+  # "Stabil proces"-fortolkning til kliniker. Tjek via n_crossings_min-feltet hvis
+  # tilg\u00e6ngeligt, ellers brug crossings_signal = NA som proxy.
+  n_cross_min <- anhoej_result$n_crossings_min
+  crossings_signal_raw <- anhoej_result$crossings_signal
+
+  insufficient_data <- (!is.null(n_cross_min) && !is.na(n_cross_min[[1]])) == FALSE &&
+    !is.null(n_cross_min) # n_crossings_min er eksplicit sat til NA (feltet findes)
+
+  if (insufficient_data && !runs) {
+    return("Utilstr\u00e6kkelige data til Anh\u00f8j-vurdering (n<12)")
+  }
+
+  crossings <- to_logical(crossings_signal_raw)
 
   if (runs && crossings) {
     "S\u00e6rskilt \u00e5rsag: lang serie + f\u00e5 kryds"

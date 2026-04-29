@@ -1,6 +1,17 @@
 # Tasks: align-csv-validator-and-pkgload-runtime
 
-**Status:** in-progress
+**Status:** superseded — klar til arkivering efter PR #382 merge
+
+> **2026-04-30 statusupdate:**
+> - **Phase 1** (CSV-paritet): leveret. Kode + tests landed i commits
+>   `86db922` + `45f3dd10`. NEWS-entry tilføjet i 0.3.2 via #382.
+>   Manuelle tasks 1.8/1.9 droppes — coverage sikret af parity-tests
+>   `tests/testthat/test-csv-validator-parser-parity.R`.
+> - **Phase 2** (pkgload runtime): SUPERSEDED af PR #382. Beslutning B
+>   blev pilot-deploy-fejlet (Connect Cloud installerer ikke selve repo'et
+>   som pakke). Rullet tilbage til Beslutning A (pkgload til Imports +
+>   pkgload::load_all() i app.R). Se ADR-019 v2 for post-mortem.
+> - **Phase 3** cross-cut: dækket af #382 CI + validate-manifest.
 
 ## Phase 1: CSV-paritet
 

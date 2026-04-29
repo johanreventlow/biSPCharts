@@ -51,7 +51,8 @@
 - [x] 2.7 Verificér `DESCRIPTION` `Suggests` — pkgload forbliver, ingen ændring krævet — bekræftet
 - [ ] 2.8 Pilot-deploy til Connect dev-environment; verificér app starter og kører
   **⚠️ KRÆVER PILOT-DEPLOY-VERIFIKATION** — kan ikke verificeres lokalt uden faktisk Connect-deploy
-- [ ] 2.9 NEWS.md `## Internal changes` entry — production entrypoint hardening
+- [x] 2.9 ADR oprettet: `docs/adr/ADR-019-production-entrypoint-and-pkgload-boundary.md`
+- [ ] 2.10 NEWS.md `## Internal changes` entry — production entrypoint hardening (efter pilot-deploy)
 
 ## Phase 3: Cross-cut
 

@@ -317,7 +317,8 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
       } else if (requireNamespace("pins", quietly = TRUE) &&
         nchar(Sys.getenv("CONNECT_SERVER")) > 0) {
         board <- pins::board_connect()
-        pins::pin_write(board, all_data, config$pin_name,
+        safe_pin_data <- filter_shinylogs_allowlist(all_data)
+        pins::pin_write(board, safe_pin_data, config$pin_name,
           type = "rds",
           description = paste(
             "biSPCharts analytics:",

@@ -586,10 +586,11 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   n_dropped_denom <- 0L
   if (!is.null(n_col_val) && n_col_val %in% names(data) &&
     chart_type %in% c("p", "pp", "u", "up")) {
-    n_vals <- suppressWarnings(as.numeric(data[[n_col_val]]))
+    # parse_danish_number håndterer "50,0" → 50 korrekt (as.numeric ville give NA)
+    n_vals <- suppressWarnings(parse_danish_number(data[[n_col_val]]))
     bad_rows <- is.na(n_vals) | n_vals <= 0 | is.infinite(n_vals)
     if (chart_type %in% c("p", "pp") && !is.null(y_col_val) && y_col_val %in% names(data)) {
-      y_vals <- suppressWarnings(as.numeric(data[[y_col_val]]))
+      y_vals <- suppressWarnings(parse_danish_number(data[[y_col_val]]))
       bad_rows <- bad_rows | (!is.na(y_vals) & !is.na(n_vals) & y_vals > n_vals)
     }
     n_dropped_denom <- sum(bad_rows)

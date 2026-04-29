@@ -700,14 +700,17 @@ files:
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
   - file: test-reactive-batching.R
-    audit_category: green
+    audit_category: deleted
     type: unit
-    handling: keep
+    handling: delete
     reviewed: yes
-    rationale: 'API-drift: refererede funktioner fjernet (7/17 fejl). Fix-in-phase-3
-      efter API-stabilisering. [Fase 3: salvage-fixed]'
+    rationale: >
+      Slettet i cleanup-legacy-and-restore-test-coverage (Phase 2 completion).
+      R/utils_reactive_batching.R slettet (0 kalders, exists()-guarded caller
+      i utils_server_column_input.R har fallback). Test-filen testede kun
+      schedule_batched_update() fra den slettede fil — ingen testværdi bevaret.
     reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed_date: '2026-04-29'
   - file: test-recent-functionality.R
     audit_category: green
     type: unit

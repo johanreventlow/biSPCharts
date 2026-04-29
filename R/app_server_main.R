@@ -192,6 +192,9 @@ main_app_server <- function(input, output, session) {
   ## Session management logik
   setup_session_management(input, output, session, app_state, emit, ui_service)
 
+  ## Idle session timeout (laest fra security.session_timeout_minutes i golem-config)
+  activate_session_timeout_from_config(input, session)
+
   ## Fil upload logik
   setup_file_upload(input, output, session, app_state, emit, ui_service)
 

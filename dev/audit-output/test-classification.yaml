@@ -743,6 +743,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-security-config-validator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer golem-config security-flag whitelist.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-security-session-tokens.R
     audit_category: green
     type: unit
@@ -758,6 +766,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-session-timeout.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer setup_session_timeout() helper.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-session-token-sanitization.R
     audit_category: green
     type: unit

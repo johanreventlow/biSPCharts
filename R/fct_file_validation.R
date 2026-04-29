@@ -383,11 +383,17 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
     session_id = session_id
   )
 
+  # Gate tekniske fejldetaljer bag hide_error_details (default TRUE i produktion)
+  hide_details <- tryCatch(
+    isTRUE(golem::get_golem_options("hide_error_details", default = TRUE)),
+    error = function(e) TRUE # nolint: swallowed_error_linter
+  )
+
   # Create comprehensive user notification
   notification_html <- shiny::tags$div(
     shiny::tags$strong(user_message),
     shiny::tags$br(),
-    shiny::tags$em(paste("Tekniske detaljer:", error_message)),
+    if (!hide_details) shiny::tags$em(paste("Tekniske detaljer:", error_message)),
     if (length(suggestions) > 0) {
       shiny::tags$div(
         shiny::tags$br(),

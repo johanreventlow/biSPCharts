@@ -79,6 +79,7 @@ default:
     save_session_on_exit: false
     enable_session_debugging: false
     cleanup_on_disconnect: true
+    localstorage_ttl_minutes: 480       # TTL for localStorage (8 timer = klinisk arbejdsdag)
 
   # Analytics og cookie consent
   analytics:
@@ -279,6 +280,7 @@ production:
     save_session_on_exit: true
     enable_session_debugging: false
     cleanup_on_disconnect: false      # Preserve user work
+    localstorage_ttl_minutes: 480     # TTL for localStorage (8 timer = klinisk arbejdsdag)
 
   # Analytics (aktiv i production)
   analytics:

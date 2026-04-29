@@ -150,45 +150,25 @@ test_that("Run chart vs P-chart: run er data-drevet, p er proportion-intern", {
   expect_equal(run_decimal, 0.8, info = "Run-chart 0.8 -> 0.8 (decimal without symbol)")
 })
 
-test_that("normalize_axis_value: run-chart '80%' og '80' (percent) giver 0.8 (intern proportion)", {
-  # BFHcharts 0.8.0 fjernede display_scaler fra return-struktur.
-  # Vi verificerer at normalize_axis_value returnerer korrekt intern
-  # proportionsværdi (0.8) for run-chart — dette er hvad BFHcharts modtager.
+test_that("normalize_axis_value: p-chart '80%' → 0.8 (proportion)", {
+  # P-chart er proportion (0-1) — '80%' skal normaliseres til 0.8.
+  # Run-chart er ABSOLUTE efter fix-spc-domain-correctness Phase 2 — ej proportion.
   # NOTE: Denne test dækker kun normalize_axis_value-laget, ikke BFHcharts-plottet.
-  # Re-aktiveret BFHcharts 0.10.5+ (se #238 + #216).
-
-  result <- normalize_axis_value("80%", chart_type = "run")
-  expect_equal(result, 0.8,
-    info = "Run chart: '80%' skal normaliseres til 0.8 (intern proportion) — ikke 80"
-  )
-
-  # Denominator-scenarie: 80% med n_col er stadig intern 0.8
-  # (BFHcharts håndterer display-skalering internt)
-  result_pct <- normalize_axis_value("80", user_unit = "percent", chart_type = "run")
-  expect_equal(result_pct, 0.8,
-    info = "Run chart: '80' med user_unit='percent' skal give 0.8 — ikke 80"
-  )
-})
-
-test_that("normalize_axis_value: p-chart og run-chart '80%' → 0.8, ingen dobbelt-skalering", {
-  # BFHcharts 0.8.0 internaliserede target-rendering.
-  # Vi verificerer at normalize_axis_value-pipeline ikke dobbelt-skalerer:
-  # input '80%' → intern 0.8 → BFHcharts modtager 0.8 (korrekt).
-  # Hvis normalize_axis_value returnerede 80, ville target vises 100× for højt.
-  # NOTE: Denne test dækker kun normalize_axis_value-laget, ikke BFHcharts-plottet.
-  # Re-aktiveret BFHcharts 0.10.5+ (se #238 + #216).
 
   p_target <- normalize_axis_value("80%", chart_type = "p")
-  run_target <- normalize_axis_value("80%", chart_type = "run")
-
   expect_equal(p_target, 0.8,
-    info = "P-chart: '80%' → 0.8 (intern), ikke 80"
+    info = "P-chart: '80%' → 0.8 (intern proportion)"
   )
-  expect_equal(run_target, 0.8,
-    info = "Run-chart: '80%' → 0.8 (intern), ikke 80"
+
+  # Run-chart er nu absolute — '80%' returnerer 80 (% er informationelt only)
+  run_target <- normalize_axis_value("80%", chart_type = "run")
+  expect_equal(run_target, 80,
+    info = "Run-chart: '80%' → 80 (absolute) efter run-chart-taxonomi-fix"
   )
-  expect_equal(p_target, run_target,
-    info = "P-chart og run-chart skal normalisere '80%' til samme interne værdi"
+
+  # P og run divergerer bevidst — proportion vs absolute er forskellige domæner
+  expect_false(isTRUE(all.equal(p_target, run_target)),
+    info = "P-chart (proportion) og run-chart (absolute) skal IKKE producere samme værdi"
   )
 })
 

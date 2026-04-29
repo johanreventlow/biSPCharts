@@ -33,8 +33,14 @@ main_app_server <- function(input, output, session) {
     .context = "APP_SERVER"
   )
 
-  # Initialize advanced debug system (kun i debug_mode_enabled)
-  if (isTRUE(golem::get_golem_options("debug_mode_enabled", default = FALSE))) {
+  # Initialize advanced debug system (kun i debug_mode_enabled).
+  # get_golem_config() læser inst/golem-config.yml; tryCatch→FALSE hvis nøgle mangler.
+  # Matcher mønster i utils_lazy_loading.R (advanced_debug condition).
+  debug_mode_on <- isTRUE(tryCatch(
+    golem::get_golem_config("debug_mode_enabled"),
+    error = function(e) FALSE
+  )) || Sys.getenv("SPC_DEBUG_MODE", "FALSE") == "TRUE"
+  if (debug_mode_on) {
     initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
   }
 

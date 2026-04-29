@@ -25,7 +25,9 @@ test_that("Chart type determines internal unit correctly", {
   # Proportion charts should use [0,1] internal unit
   expect_equal(determine_internal_unit_by_chart_type("p"), "proportion")
   expect_equal(determine_internal_unit_by_chart_type("pp"), "proportion")
-  expect_equal(determine_internal_unit_by_chart_type("run"), "proportion")
+
+  # Run-chart er type-agnostisk: absolute pass-through (fix-spc-domain-correctness Phase 2)
+  expect_equal(determine_internal_unit_by_chart_type("run"), "absolute")
 
   # Absolute charts should use absolute internal unit
   expect_equal(determine_internal_unit_by_chart_type("c"), "absolute")
@@ -131,20 +133,21 @@ test_that("QIC input preparation prevents double-scaling", {
   expect_equal(target_normalized, 0.8, info = "Target should normalize to 0.8 for qicharts2")
 })
 
-test_that("Run chart vs P-chart consistency for same data", {
-  # Same proportion data should work consistently across chart types
+test_that("Run chart vs P-chart: run er data-drevet, p er proportion-intern", {
+  # Run-chart er type-agnostisk mht. y-skala (fix-spc-domain-correctness Phase 2).
+  # P-chart er altid proportion-intern [0,1].
 
-  proportion_data <- c(0.1, 0.3, 0.6, 0.8)
-
-  # Test with run chart (proportion internal)
-  run_target <- normalize_axis_value("80%", chart_type = "run")
-
-  # Test with p-chart (also proportion internal)
+  # P-chart: "80%" normaliseres til 0.8 (proportion-intern)
   p_target <- normalize_axis_value("80%", chart_type = "p")
+  expect_equal(p_target, 0.8, info = "P-chart 80% -> 0.8 (proportion-intern)")
 
-  # Should be identical since both use proportion internal unit
-  expect_equal(run_target, p_target, info = "Run chart and P-chart should handle proportions identically")
-  expect_equal(run_target, 0.8, info = "Both should normalize to 0.8")
+  # Run-chart: "80%" passes through som 80 (absolute pass-through, data-drevet)
+  run_target <- normalize_axis_value("80%", chart_type = "run")
+  expect_equal(run_target, 80, info = "Run-chart 80% -> 80 (absolute pass-through, ikke proportion-normalisering)")
+
+  # Run-chart med decimal target (0.8) passes ligeledes igennem
+  run_decimal <- normalize_axis_value("0.8", chart_type = "run")
+  expect_equal(run_decimal, 0.8, info = "Run-chart 0.8 -> 0.8 (decimal without symbol)")
 })
 
 test_that("normalize_axis_value: run-chart '80%' og '80' (percent) giver 0.8 (intern proportion)", {

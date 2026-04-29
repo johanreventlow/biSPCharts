@@ -89,7 +89,8 @@ initialize_shinylogs_tracking <- function(session,
       "auto_restore_data", # Session restore payload (kan vaere stor)
       "loaded_app_state", # localStorage payload
       "session_peek", # Session metadata peek
-      "local_storage_save_result" # Save result callback
+      "local_storage_save_result", # Save result callback
+      "paste_data_input" # Indsæt-data felt: kan indeholde CPR, navne, PHI
     ),
     exclude_input_regex = paste0(
       "^(\\.clientdata|", # Shiny interne clientdata inputs

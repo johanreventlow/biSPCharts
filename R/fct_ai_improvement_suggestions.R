@@ -71,6 +71,38 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
         return(NULL)
       }
 
+      # PHI-check: CPR-mønstre i data_definition → modal advarsel før afsendelse.
+      # Pattern matcher dansk CPR-format: 6 cifre + valgfri bindestreg + 4 cifre.
+      data_def_text <- context$data_definition %||% ""
+      if (nchar(data_def_text) > 0 &&
+        grepl("\\d{6}-?\\d{4}", data_def_text, perl = TRUE)) {
+        log_warn(
+          "CPR-mønster fundet i data_definition — viser advarsel, afbryder AI-kald",
+          .context = "AI_SUGGESTION"
+        )
+        tryCatch(
+          shiny::showModal(shiny::modalDialog(
+            title = "Mulig patientdata opdaget",
+            shiny::p(
+              "Beskrivelsesfeltet ser ud til at indeholde et CPR-nummer eller ",
+              "lignende personidentifikation. Patientdata må ikke sendes til AI."
+            ),
+            shiny::p(
+              "Fjern venligst persondataene fra indikatorbeskrivelsen og prøv igen."
+            ),
+            footer = shiny::modalButton("Luk"),
+            easyClose = TRUE
+          )),
+          error = function(e) {
+            log_debug(
+              paste("showModal fejlede (sandsynligvis uden for Shiny-kontekst):", e$message),
+              .context = "AI_SUGGESTION"
+            )
+          }
+        )
+        return(NULL)
+      }
+
       log_info("Starting AI suggestion generation (via BFHllm)",
         details = list(
           chart_type = spc_result$metadata$chart_type %||% "unknown",

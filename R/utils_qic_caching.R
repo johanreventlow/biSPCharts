@@ -136,6 +136,20 @@ create_qic_cache <- function(max_size = 50) {
       metrics$misses <<- 0
       metrics$evictions <<- 0
     },
+    # Returnér alle nøgler i cachen (brug til prefix-baseret invalidation)
+    keys = function() {
+      ls(envir = cache)
+    },
+    # Fjern alle nøgler der starter med det givne præfiks.
+    # Undgår fuld cache-clear ved selektiv invalidation.
+    clear_prefix = function(prefix) {
+      all_keys <- ls(envir = cache)
+      matching <- all_keys[startsWith(all_keys, prefix)]
+      if (length(matching) > 0) {
+        rm(list = matching, envir = cache)
+      }
+      invisible(NULL)
+    },
     size = function() {
       length(ls(envir = cache))
     },

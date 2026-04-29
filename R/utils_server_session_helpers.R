@@ -1,6 +1,161 @@
 # server_helpers.R
 # Server hjaelpefunktioner og utility observers
 
+# SESSION TIMEOUT ==============================================================
+
+#' Dansk besked vist til bruger ved session-timeout
+#'
+#' @return Character string med dansk timeout-besked
+#' @keywords internal
+session_timeout_message <- function() {
+  paste0(
+    "Session udløbet pga. inaktivitet. ",
+    "Genindlæs siden for at fortsætte."
+  )
+}
+
+#' Opsaet idle session timeout
+#'
+#' Disconnecter Shiny-sessionen efter \code{minutes} minutters inaktivitet.
+#' Timeren nulstilles automatisk via \code{result$reset()}.
+#'
+#' Adfaerd:
+#' \itemize{
+#'   \item Kaller \code{session$close()} naar timeren udloeber.
+#'   \item Dansk notifikation vises til bruger foer disconnect.
+#'   \item Testbar via \code{.scheduler}-parameter (dependency injection).
+#' }
+#'
+#' @param session Shiny session-objekt (skal have \code{$close()}-metode)
+#' @param minutes Antal minutter til timeout (numerisk, positiv)
+#' @param .scheduler Funktion med signatur \code{function(callback, delay_secs)}.
+#'   Default: \code{later::later}. Override i tests for synkron eksekvering.
+#' @return List med:
+#'   \describe{
+#'     \item{cancel}{Funktion der annullerer planlagt callback (no-op hvis allerede udlobet)}
+#'     \item{reset}{Funktion der nulstiller timer fra dette tidspunkt}
+#'   }
+#' @keywords internal
+setup_session_timeout <- function(session, minutes,
+                                  .scheduler = later::later) {
+  stopifnot(is.numeric(minutes), length(minutes) == 1L, minutes > 0)
+  delay_secs <- as.numeric(minutes) * 60
+
+  # Intern liste af annullerede handles
+  cancelled <- FALSE
+  handle <- NULL
+
+  schedule_disconnect <- function() {
+    cancelled <<- FALSE
+    handle <<- .scheduler(
+      callback = function() {
+        if (cancelled) {
+          return(invisible(NULL))
+        }
+        # Vis dansk notifikation hvis session-context understøtter det
+        tryCatch(
+          shiny::showNotification(
+            session_timeout_message(),
+            type     = "error",
+            duration = 5,
+            session  = session
+          ),
+          error = function(e) invisible(NULL)
+        )
+        # Disconnect sessionen
+        tryCatch(
+          session$close(),
+          error = function(e) {
+            log_warn(
+              paste("setup_session_timeout: session$close() fejlede:", e$message),
+              .context = "SESSION_TIMEOUT"
+            )
+          }
+        )
+      },
+      delay = delay_secs
+    )
+    invisible(NULL)
+  }
+
+  # Plan initial timeout
+  schedule_disconnect()
+
+  list(
+    cancel = function() {
+      cancelled <<- TRUE
+      invisible(NULL)
+    },
+    reset = function() {
+      cancelled <<- TRUE # Annuller igangvaerende timer
+      schedule_disconnect() # Planlaeg ny timer fra nu
+      invisible(NULL)
+    }
+  )
+}
+
+#' Aktiver session timeout baseret paa golem-config
+#'
+#' Laeses \code{session_timeout_minutes} fra golem-config og opsaetter
+#' \code{setup_session_timeout()} for sessionen. Nulstiller timer ved
+#' enhver input-aendring.
+#'
+#' Skal kaldes fra \code{app_server_main.R} efter infrastruktur-init.
+#'
+#' @param input,session Shiny input og session-objekter
+#' @param .scheduler Scheduler-funktion (default: \code{later::later}).
+#'   Override i tests.
+#' @keywords internal
+activate_session_timeout_from_config <- function(input, session,
+                                                 .scheduler = later::later) {
+  # Hent timeout fra security-blok i golem-config (production: 60 min, dev: 480 min)
+  # Kilde: inst/golem-config.yml → <env>:security:session_timeout_minutes
+  timeout_minutes <- tryCatch(
+    golem::get_golem_config("security")$session_timeout_minutes,
+    error = function(e) {
+      log_debug(
+        paste("get_golem_config('security') fejlede:", conditionMessage(e)),
+        .context = "SESSION_TIMEOUT"
+      )
+      NULL
+    }
+  )
+
+  # Ingen konfigureret timeout: deaktivér stiltiende
+  if (is.null(timeout_minutes) || !is.numeric(timeout_minutes) || timeout_minutes <= 0) {
+    log_debug(
+      "Ingen session timeout konfigureret — deaktiveret",
+      .context = "SESSION_TIMEOUT"
+    )
+    return(invisible(NULL))
+  }
+
+  log_info(
+    sprintf("Session timeout aktiveret: %d minutter", as.integer(timeout_minutes)),
+    .context = "SESSION_TIMEOUT"
+  )
+
+  timeout_handle <- setup_session_timeout(
+    session    = session,
+    minutes    = timeout_minutes,
+    .scheduler = .scheduler
+  )
+
+  # Nulstil timer ved enhver input-aendring
+  shiny::observe({
+    # Touch alle inputs for at oprette reaktiv afhaengighed
+    shiny::reactiveValuesToList(input)
+    timeout_handle$reset()
+  })
+
+  # Annuller timer naar session lukker
+  session$onSessionEnded(function() {
+    timeout_handle$cancel()
+  })
+
+  invisible(timeout_handle)
+}
+
 # Dependencies ----------------------------------------------------------------
 
 # HJAeLPEFUNKTIONER SETUP ====================================================

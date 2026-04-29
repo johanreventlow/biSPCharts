@@ -19,7 +19,7 @@ INTERNAL_UNITS_BY_PLOTTYPE <- list(
 #' Chart types that use proportion internal unit 0-1
 #' @keywords internal
 #' @noRd
-PROPORTION_CHART_TYPES <- c("p", "pp", "run")
+PROPORTION_CHART_TYPES <- c("p", "pp")
 
 #' Chart types that use absolute internal unit (no scaling)
 #' @keywords internal
@@ -101,6 +101,11 @@ determine_internal_unit_by_chart_type <- function(chart_type) {
     return("proportion")
   } else if (chart_type %in% ABSOLUTE_CHART_TYPES) {
     log_debug("Chart type", chart_type, "uses absolute internal unit (no scaling)", .context = "Y_AXIS_SCALING")
+    return("absolute")
+  } else if (chart_type == "run") {
+    # Run-chart er chart-type-agnostisk mht. y-skala -- brug data-drevet detektion
+    # (absolute pass-through er sikkert: proportion-værdier <= 1 skaleres ikke)
+    log_debug("Chart type run uses data-driven y-axis (absolute pass-through)", .context = "Y_AXIS_SCALING")
     return("absolute")
   } else {
     log_debug("Unknown chart type", chart_type, "defaulting to proportion internal unit", .context = "Y_AXIS_SCALING")

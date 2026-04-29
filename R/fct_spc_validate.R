@@ -182,7 +182,21 @@ validate_spc_request <- function(
     }
   }
 
-  # 13. P/P'-kort: tæller <= nævner (proportion kan ikke overstige 1)
+  # 13. cl_var understøttes ikke: BFHcharts' cl-parameter accepterer kun skalær (len=1),
+  # ikke per-række centerline. Tavs ignorering er farligere end fejl -- klinikere
+  # tror at appen respekterer cl_var-konfigurationen. Fail-fast til bruger ved sæt.
+  if (!is.null(cl_var) && nzchar(trimws(cl_var))) {
+    spc_abort(
+      paste0(
+        "cl_var-parameteret ('", cl_var, "') understøttes ikke i nuværende version. ",
+        "BFHcharts understøtter kun skalær centerline (cl), ikke per-række værdier. ",
+        "Brug 'part_var' til fase-opdeling med automatisk centerline per fase."
+      ),
+      class = "spc_input_error"
+    )
+  }
+
+  # 15. P/P'-kort: tæller <= nævner (proportion kan ikke overstige 1)
   if (!is.null(n_var) && n_var %in% names(data) && ct_normalized %in% c("p", "pp")) {
     y_num <- suppressWarnings(as.numeric(data[[y_var]]))
     if (all(is.na(y_num)) && is.character(data[[y_var]])) {

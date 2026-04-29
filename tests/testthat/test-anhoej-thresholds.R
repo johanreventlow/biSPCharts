@@ -91,3 +91,63 @@ test_that("interpret_anhoej_signal_da: runs_signal trigger ved lang serie", {
   result <- interpret_anhoej_signal_da(anhoej_runs)
   expect_equal(result, "Særskilt årsag: lang serie")
 })
+
+# --- Multi-fase: extract_anhoej_metadata aggregerer korrekt ---
+
+make_multiphase_qic <- function(n_cross1, n_cross_min1, n_cross2, n_cross_min2) {
+  n_per_phase <- 10
+  n_total <- n_per_phase * 2
+  data.frame(
+    x = seq_len(n_total),
+    y = runif(n_total),
+    runs.signal = rep(FALSE, n_total),
+    n.crossings = c(rep(n_cross1, n_per_phase), rep(n_cross2, n_per_phase)),
+    n.crossings.min = c(rep(n_cross_min1, n_per_phase), rep(n_cross_min2, n_per_phase)),
+    longest.run = rep(2, n_total),
+    longest.run.max = rep(8, n_total),
+    part = c(rep(1L, n_per_phase), rep(2L, n_per_phase))
+  )
+}
+
+test_that("extract_anhoej_metadata: single-fase returnerer skalær n_crossings (regression)", {
+  qic <- data.frame(
+    x = 1:15,
+    y = runif(15),
+    runs.signal = rep(FALSE, 15),
+    n.crossings = rep(5, 15),
+    n.crossings.min = rep(4, 15),
+    longest.run = rep(2, 15),
+    longest.run.max = rep(8, 15),
+    part = rep(1L, 15)
+  )
+  meta <- extract_anhoej_metadata(qic)
+  expect_false(meta$crossings_signal)
+  expect_equal(meta$n_crossings, 5)
+  expect_equal(meta$n_crossings_min, 4)
+})
+
+test_that("extract_anhoej_metadata: 2-fase returnerer NA for skalær n_crossings", {
+  qic <- make_multiphase_qic(n_cross1 = 5, n_cross_min1 = 4, n_cross2 = 2, n_cross_min2 = 4)
+  meta <- extract_anhoej_metadata(qic)
+  expect_true(is.na(meta$n_crossings),
+    info = "Skalær n_crossings skal være NA for multi-fase (ingen enkelt overall)"
+  )
+  expect_true(is.na(meta$n_crossings_min),
+    info = "Skalær n_crossings_min skal være NA for multi-fase"
+  )
+})
+
+test_that("extract_anhoej_metadata: 2-fase crossings_signal = TRUE hvis part 2 fejler", {
+  # Part 1: OK (5 >= 4). Part 2: fejler (2 < 4).
+  qic <- make_multiphase_qic(n_cross1 = 5, n_cross_min1 = 4, n_cross2 = 2, n_cross_min2 = 4)
+  meta <- extract_anhoej_metadata(qic)
+  expect_true(meta$crossings_signal,
+    info = "crossings_signal skal være TRUE når part 2 fejler -- skjult signal afsløret"
+  )
+})
+
+test_that("extract_anhoej_metadata: 2-fase begge OK -- crossings_signal = FALSE", {
+  qic <- make_multiphase_qic(n_cross1 = 5, n_cross_min1 = 4, n_cross2 = 5, n_cross_min2 = 4)
+  meta <- extract_anhoej_metadata(qic)
+  expect_false(meta$crossings_signal)
+})

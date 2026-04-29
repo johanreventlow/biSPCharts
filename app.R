@@ -2,14 +2,16 @@
 # Production entry point for Posit Connect Cloud
 # For lokal udvikling: brug source("dev/run_dev.R")
 #
-# Pakken er installeret som del af Connect-manifestet (source-bundle).
-# pkgload bruges KUN i development-flow (dev/run_dev.R) og er i Suggests.
+# Connect Cloud installerer dependencies fra manifest.json::packages, men IKKE
+# selve repo'et som pakke. pkgload::load_all() loader pakken fra source-bundlet
+# uden installation. pkgload skal være i Imports (ikke Suggests) for at være
+# installeret på Connect. Se docs/adr/ADR-019-production-entrypoint-pkgload.md.
 
-# Forhindre Shiny fra at auto-source R/ filer (pakken haandterer dette)
+# Forhindre Shiny fra at auto-source R/ filer (pkgload haandterer dette)
 options(shiny.autoload.r = FALSE)
 
-# Load installeret pakke — ingen pkgload::load_all() i production
-library(biSPCharts)
+# Load pakken fra source-bundlet
+pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 
 # Production mode
 options("golem.app.prod" = TRUE)

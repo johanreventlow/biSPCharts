@@ -35,7 +35,16 @@
 #' )
 #' }
 #' @keywords internal
-wrap_blocking_call <- function(expr, on_error = function(e) NULL) {
+wrap_blocking_call <- function(expr, on_error = NULL) {
+  if (is.null(on_error)) {
+    on_error <- function(e) {
+      log_debug(
+        paste("wrap_blocking_call default error handler:", conditionMessage(e)),
+        .context = "ASYNC_HELPER"
+      )
+      NULL
+    }
+  }
   tryCatch(
     expr,
     error = on_error

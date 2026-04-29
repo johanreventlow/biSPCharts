@@ -72,7 +72,13 @@ detect_csv_delimiter <- function(path, encoding = "UTF-8", n_max = 5L) {
   for (s in strategies) {
     result <- tryCatch(
       suppressWarnings(s$fn()),
-      error = function(e) NULL
+      error = function(e) {
+        log_debug(
+          paste("CSV delimiter strategy failed:", s$delimiter, "-", conditionMessage(e)),
+          .context = "CSV_DETECT"
+        )
+        NULL
+      }
     )
     if (!is.null(result) && ncol(result) >= 2 && nrow(result) >= 1) {
       # Forsøg at aflæse faktisk delimiter fra auto-detect

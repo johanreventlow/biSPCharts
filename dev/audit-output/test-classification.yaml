@@ -1071,3 +1071,9 @@ files:
     handling: keep
     reviewed: no
 
+  - file: test-csv-validator-parser-parity.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P6 - CSV validator/parser delimiter-paritet regression-tests.

@@ -1,12 +1,15 @@
 # app.R
 # Production entry point for Posit Connect Cloud
 # For lokal udvikling: brug source("dev/run_dev.R")
+#
+# Pakken er installeret som del af Connect-manifestet (source-bundle).
+# pkgload bruges KUN i development-flow (dev/run_dev.R) og er i Suggests.
 
-# Forhindre dobbelt-loading af R/ filer (pkgload haandterer dette)
+# Forhindre Shiny fra at auto-source R/ filer (pakken haandterer dette)
 options(shiny.autoload.r = FALSE)
 
-# Load pakken fra source
-pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
+# Load installeret pakke — ingen pkgload::load_all() i production
+library(biSPCharts)
 
 # Production mode
 options("golem.app.prod" = TRUE)

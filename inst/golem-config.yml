@@ -25,12 +25,11 @@ default:
     is_testing: false
 
   # Security configuration
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: false
     session_timeout_minutes: 30
-    csrf_protection: true
-    content_security_policy: "strict"
     hide_error_details: true
 
   # Performance settings
@@ -128,12 +127,11 @@ development:
     is_testing: false
 
   # Security settings (relaxed for development)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: true
     session_timeout_minutes: 480  # 8 hours for long development sessions
-    csrf_protection: false
-    content_security_policy: "permissive"
     hide_error_details: false
 
   # Performance settings (optimized for fast feedback)
@@ -226,12 +224,11 @@ production:
     is_testing: false
 
   # Security settings (strict for production)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: true
     allow_debug_endpoints: false
     session_timeout_minutes: 60    # 1 hour for security
-    csrf_protection: true
-    content_security_policy: "strict"
     hide_error_details: true
 
   # Performance settings (optimized for stability)
@@ -313,12 +310,11 @@ testing:
     is_testing: true
 
   # Security settings (moderate for testing)
+  # HTTPS, CSP og CSRF haandteres af reverse-proxy/Posit Connect, ej app-niveau.
+  # Se docs/DEPLOYMENT.md "Infrastructure-Level Security Requirements".
   security:
-    require_https: false
     allow_debug_endpoints: true
     session_timeout_minutes: 120   # 2 hours for test sessions
-    csrf_protection: false         # Simplified for testing
-    content_security_policy: "moderate"
     hide_error_details: false
 
   # Performance settings (optimized for test reliability)

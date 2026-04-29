@@ -439,6 +439,134 @@ Se `docs/ANALYTICS_PRIVACY.md` for:
 
 ---
 
+## Infrastructure-Level Security Requirements {#infrastructure-level-security-requirements}
+
+Visse sikkerhedskrav kan **ikke** haandteres af Shiny-applikationen og skal
+hjaandhæves paa infrastruktur-niveau (reverse-proxy, Posit Connect, netvaerk).
+
+Applikationen haandterer **ikke** foelgende i app-kode — Operations-team er
+ansvarlig:
+
+### HTTPS / TLS
+
+**Ansvar:** Reverse-proxy eller Posit Connect.
+
+Shiny-apps maa aldrig selv haandtere TLS-terminering eller omdirigere
+HTTP → HTTPS. Det er ukorrekt at haandtere det i app-koden og kan skabe
+sikkerhedshuller.
+
+**nginx-eksempel (HTTPS-redirect + proxy):**
+
+```nginx
+server {
+  listen 80;
+  server_name spc.hospital.dk;
+  return 301 https://$server_name$request_uri;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name spc.hospital.dk;
+
+  ssl_certificate     /etc/ssl/certs/hospital.crt;
+  ssl_certificate_key /etc/ssl/private/hospital.key;
+
+  # HSTS (minimum 1 aar for produktion)
+  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+  location / {
+    proxy_pass http://localhost:3838;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_read_timeout 300s;
+    proxy_connect_timeout 75s;
+  }
+}
+```
+
+**Posit Connect:** Aktiver HTTPS i Connect-serveren eller bag load-balancer.
+Se [Posit Connect Admin Guide — TLS/SSL](https://docs.posit.co/connect/admin/ssl/).
+
+### Content Security Policy (CSP)
+
+**Ansvar:** Reverse-proxy (nginx/Apache) eller Posit Connect custom-headers.
+
+CSP blokerer XSS-angreb ved at begraense hvilke ressourcer browseren maa
+indlaese. Shiny bruger inline-scripts og WebSocket, saa CSP-haeadern kraever
+noje tilpasning.
+
+**nginx-eksempel (CSP-header med Shiny-support):**
+
+```nginx
+add_header Content-Security-Policy
+  "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss:; img-src 'self' data:;"
+  always;
+```
+
+Verificer via browser Developer Tools → Network → Response Headers.
+
+### CSRF-beskyttelse
+
+**Ansvar:** Reverse-proxy eller netvaerkslag (WAF).
+
+Shiny 1.13.0 har ingen native CSRF-middleware. CSRF-beskyttelse maa
+implementeres paa reverse-proxy-niveau (fx via `nginx` `limit_req_zone` eller
+en Web Application Firewall).
+
+**Alternativ:** Posit Connect haandterer autentificering og begrenser
+eksponering til godkendte brugere.
+
+### Session-timeout
+
+**Ansvar (primær):** Posit Connect idle-timeout-indstilling.
+**Ansvar (app-niveau):** `session_timeout_minutes` i `inst/golem-config.yml`.
+
+App-niveau timeout er implementeret via `setup_session_timeout()` i
+`R/utils_server_session_helpers.R`. Naar sessionen er idel i
+`session_timeout_minutes` minutter, disconnecter appen med dansk besked:
+*"Session udlobet pga. inaktivitet. Genindlaes siden for at fortsaette."*
+
+**Posit Connect idle-timeout** (anbefalet som primær timeout-mekanisme):
+
+```
+# I Connect dashboard: Content → Runtime → Idle Timeout
+# Eller via Connect API:
+# PUT /v1/content/{guid}/environment
+# { "idle_timeout": 3600 }
+```
+
+### Rate Limiting
+
+**Ansvar:** Reverse-proxy eller netvaerkslag.
+
+```nginx
+# nginx rate-limiting eksempel
+limit_req_zone $binary_remote_addr zone=spc_limit:10m rate=10r/s;
+
+server {
+  location / {
+    limit_req zone=spc_limit burst=20 nodelay;
+    proxy_pass http://localhost:3838;
+  }
+}
+```
+
+### Pre-deploy-check
+
+Koer foelgende script foer deploy for at verificere at golem-config.yml ikke
+indeholder security-flag uden app-implementering:
+
+```bash
+Rscript dev/check_security_config.R
+```
+
+Exit 0 = OK. Exit 1 = ukendte flag fundet (se fejlbesked for detaljer).
+
+---
+
 ## Security
 
 ### Authentication

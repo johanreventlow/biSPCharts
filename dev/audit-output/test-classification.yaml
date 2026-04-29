@@ -91,6 +91,14 @@ files:
     type: unit
     handling: keep
     reviewed: no
+  - file: test-analytics-pins-filtering.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 1 (pin_write allowlist-filter). Verificerer filter_shinylogs_allowlist().
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-audit-classifier.R
     audit_category: green
     type: unit
@@ -273,6 +281,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-csv-formula-injection.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 3 (sanitize_csv_output formula injection). Alle 6 injection-prefixes testet.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-csv-parsing.R
     audit_category: green
     type: unit
@@ -493,6 +509,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-gemini-payload-stripping.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 4 (CPR-gate i generate_improvement_suggestion). Tester NULL-retur ved CPR-mønster og korrekt pattern-matching.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-generateSPCPlot-comprehensive.R
     audit_category: green
     type: snapshot
@@ -772,6 +796,14 @@ files:
     handling: keep
     reviewed: yes
     rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer setup_session_timeout() helper.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-shinylogs-paste-exclude.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 2 (paste_data_input ekskluderet fra shinylogs). Verificerer kildekode statisk.
     reviewer: johanreventlow
     reviewed_date: '2026-04-29'
   - file: test-session-token-sanitization.R

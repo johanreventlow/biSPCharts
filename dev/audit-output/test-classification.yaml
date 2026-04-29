@@ -15,22 +15,64 @@
 
 
 metadata:
-  total_files: 128
+  total_files: 132
   audit_run: 2026-04-26T20:55:41+0200
+  last_updated: 2026-04-29
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 111
+    reviewed: 115
     unreviewed: 17
     needs_triage: 0
 files:
+  - file: test-async-export-task.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for utils_async_helpers (wrap_blocking_call, validate_ai_prerequisites). Synkrone helpers testable uden AppDriver.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-key-no-viewport.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for generate_spc_cache_key() - deterministisk adfærd og parameter-differentiering.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-cache-session-scope.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for session-isolation af qic-cache, keys() og clear_prefix()-metoder.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-data-signature-collision.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for hash-kollision-prevention i generate_shared_data_signature() (middle-row fix).
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-100x-mismatch-prevention.R
     audit_category: green-partial
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 5/52 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: >
+      Re-aktiveret i cleanup-legacy-and-restore-test-coverage (Phase 5).
+      2 skip-blokke erstattet med BFHcharts 0.10.5+ kompatible assertions
+      (display_scaler fjernet i 0.8.0 — verificerer nu intern normalisering
+      via normalize_axis_value-laget, IKKE BFHcharts-plot-laget direkte).
+      Testnavne opdateret til korrekt scope-angivelse.
+      GAP: Denominator-skaleringsregression (100x dobbelt-skalering via
+      BFHcharts-plottet) ikke dækket — kræver BFHcharts-integration-test
+      eller visuel shinytest2. Se follow-up issue for dette.
+      51/51 PASS, 0 failures.
     reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed_date: '2026-04-29'
   - file: test-anhoej-metadata-local.R
     audit_category: green
     type: unit
@@ -58,6 +100,14 @@ files:
     type: unit
     handling: keep
     reviewed: no
+  - file: test-analytics-pins-filtering.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 1 (pin_write allowlist-filter). Verificerer filter_shinylogs_allowlist().
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-audit-classifier.R
     audit_category: green
     type: unit
@@ -238,8 +288,19 @@ files:
     type: unit
     handling: keep
     reviewed: yes
+    rationale: >
+      Phase 6 (cleanup-legacy): file.exists()-guard + source() fjernet.
+      Funktioner tilgaengelige via package-load. 67/67 PASS i CI.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-csv-formula-injection.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 3 (sanitize_csv_output formula injection). Alle 6 injection-prefixes testet.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-csv-parsing.R
     audit_category: green
     type: unit
@@ -286,14 +347,6 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-denominator-prefilter.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Tests for denominator pre-filter (PR #351). 13 pass, 0 fail.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-29'
   - file: test-dependency-guards.R
     audit_category: green
     type: unit
@@ -468,6 +521,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-gemini-payload-stripping.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 4 (CPR-gate i generate_improvement_suggestion). Tester NULL-retur ved CPR-mønster og korrekt pattern-matching.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-generateSPCPlot-comprehensive.R
     audit_category: green
     type: snapshot
@@ -540,16 +601,33 @@ files:
   - file: test-mod_export.R
     audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 3/44 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: >
+      Phase 8 (cleanup-legacy): 9 skip-blokke erstattet med 6 testServer-tests
+      + 3 klassificerede skips (debounce-timing, visuel match, hospital-tema
+      kræver shinytest2 — nightly CI). 62/62 PASS, 3 klassificerede skips.
     reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed_date: '2026-04-29'
   - file: test-mod-landing-server.R
     audit_category: green
     type: integration
     handling: keep
     reviewed: no
+  - file: test-mod-spc-chart-compute.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: >
+      NY i cleanup-legacy-and-restore-test-coverage (Phase 8).
+      18 tests: funktions-signatur (create_spc_results_reactive,
+      create_spc_plot_reactive, register_cache_aware_observer),
+      NULL-propagation, validerings-fejl, cache-key-invalidation
+      ved chart_type-skift. Bruger shiny::testServer() + reactive mocks.
+      18/18 PASS.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-mod-spc-chart-comprehensive.R
     audit_category: green
     type: integration
@@ -670,15 +748,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-reactive-batching.R
-    audit_category: green
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: 'API-drift: refererede funktioner fjernet (7/17 fejl). Fix-in-phase-3
-      efter API-stabilisering. [Fase 3: salvage-fixed]'
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-recent-functionality.R
     audit_category: green
     type: unit
@@ -718,14 +787,24 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-security-config-validator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer golem-config security-flag whitelist.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-security-session-tokens.R
     audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 1/55 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: >
+      Phase 7 (cleanup-legacy): skip-misuse fjernet (skip() inde i test_that()
+      efter message()-kald). Kontekstinfo bevaret som kommentar. 55/55 PASS.
     reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed_date: '2026-04-29'
   - file: test-session-persistence.R
     audit_category: green
     type: unit
@@ -733,14 +812,33 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-session-timeout.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer setup_session_timeout() helper.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-shinylogs-paste-exclude.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Security-test for Phase 2 (paste_data_input ekskluderet fra shinylogs). Verificerer kildekode statisk.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-session-token-sanitization.R
     audit_category: green
     type: unit
-    handling: fix-in-phase-3
+    handling: keep
     reviewed: yes
-    rationale: Green-partial med 1/22 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
+    rationale: >
+      Phase 6 (cleanup-legacy): 2x file.exists+source guards erstattet med
+      skip_if_not(exists("hash_session_token", mode="function")).
+      22/22 PASS i CI.
     reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
+    reviewed_date: '2026-04-29'
   - file: test-shared-data-signatures.R
     audit_category: green
     type: unit
@@ -949,7 +1047,13 @@ files:
     audit_category: green
     type: unit
     handling: keep
-    reviewed: no
+    reviewed: yes
+    rationale: >
+      Phase 6 (cleanup-legacy): file.exists+2x source guards erstattet med
+      exists("build_export_analysis_metadata", mode="function")-guard.
+      15/15 PASS i CI.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-utils-state-accessors.R
     audit_category: green
     type: unit
@@ -960,6 +1064,32 @@ files:
       17 SKIP+TODO (30 accessor-funktioner mangler). Klar til CI.'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-utils-bfhllm-integration.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: >
+      NY i cleanup-legacy-and-restore-test-coverage (Phase 8).
+      21 tests med mockery-stubs: initialize_bfhllm graceful degradation,
+      is_bfhllm_available (3 scenarier), bfhllm_configure-kald verificeret,
+      get_ai_config + get_rag_config defaults, signatur-tjek.
+      21/21 PASS.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
+  - file: test-utils-server-paste-data.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: >
+      NY i cleanup-legacy-and-restore-test-coverage (Phase 8).
+      22 edge-case tests: excel_data_to_paste_text (NULL, tom, 0-rækker,
+      numerisk komma-decimal, ISO 8601 datoer, NA→tom, tab-separator),
+      build_excel_sheet_dropdown_items (NULL, tom, laengde-mismatch,
+      empty-flag-markering). 22/22 PASS.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-visualization-dimensions.R
     audit_category: green
     type: unit
@@ -1000,74 +1130,130 @@ files:
     rationale: Green-partial med 1/8 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+
   - file: test-audit-analytics-logging-privacy.R
     audit_category: green
-    type: unit
+    type: policy-guard
     handling: keep
     reviewed: no
+    rationale: Privacy-policy-guard. Auto-tilfoejet ved manifest-update.
   - file: test-denominator-prefilter.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive_anhoej_per_part.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-derive-anhoej-results.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-excel-sheet-picker.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_autodetect_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_file_parse_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_spc_excel_analysis.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-fct_visualization_config_pure.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
+  - file: test-fix-state-paths-and-restore-guards.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: Wave 1 - state-paths regression-tests.
   - file: test-interpret_anhoej_signal_da.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-spc_excel_round_trip.R
     audit_category: green
-    type: unit
+    type: integration
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-state-transitions.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-column.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-ui-update-service-form.R
     audit_category: green
     type: unit
     handling: keep
     reviewed: no
-
+    rationale: Auto-tilfoejet.
+  - file: test-csv-validator-parser-parity.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P6 - CSV validator/parser delimiter-paritet regression-tests.
+  - file: test-anhoej-thresholds.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - Anhoej n<12 threshold regression-tests.
+  - file: test-run-chart-taxonomy.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - run-chart taxonomy regression-tests.
+  - file: test-spc-scaling-bfh.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - U/U' scaling regression-tests.
+  - file: test-spc-validate-p-chart.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - P-chart numerator<=denominator validering.
+  - file: test-spc-zero-denominator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: P1 - n=0 row drop konsistens.

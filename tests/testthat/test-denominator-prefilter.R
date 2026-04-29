@@ -130,19 +130,23 @@ test_that("validate_spc_request kaster spc_input_error ved n = Inf", {
   )
 })
 
-test_that("validate_spc_request kaster spc_input_error ved n == 0 (eksisterende adfærd bevaret)", {
-  df <- data.frame(dato = 1:10, taeller = 1:10, naevner = c(0L, rep(100L, 9)))
-  expect_error(
-    validate_spc_request(df, "dato", "taeller", "p", n_var = "naevner"),
-    class = "spc_input_error"
+test_that("validate_spc_request tillader n == 0 (konverteres til NA i prepare-steget, ikke fejl)", {
+  # Phase 7 fix: n=0 er gyldig klinisk observation ("ingen patienter denne måned").
+  # Validate-steget kaster IKKE fejl -- rækken fjernes i data-processing-steget.
+  # NB: tæller=0 for n=0-rækken så proportions-check (y <= n) ikke fejler separat.
+  df <- data.frame(dato = 1:10, taeller = c(0L, 1:9), naevner = c(0L, rep(100L, 9)))
+  # Kun én n=0 ud af 10 -- resterende 9 er brugbare, ingen fejl
+  expect_no_error(
+    validate_spc_request(df, "dato", "taeller", "p", n_var = "naevner")
   )
 })
 
-test_that("validate_spc_request fejlbesked nævner ≤ 0 eller uendelig", {
+test_that("validate_spc_request fejlbesked nævner < 0 eller uendelig", {
+  # Negative nævnere og Inf er stadig ugyldige -- n=0 er dog tilladt (behandles som NA)
   df <- data.frame(dato = 1:10, taeller = 1:10, naevner = c(Inf, rep(100, 9)))
   expect_error(
     validate_spc_request(df, "dato", "taeller", "p", n_var = "naevner"),
-    regexp = "≤ 0 eller uendelig"
+    regexp = "< 0 eller uendelig"
   )
 })
 

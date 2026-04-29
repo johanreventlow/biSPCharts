@@ -42,36 +42,6 @@
 #' @noRd
 setup_column_management <- function(input, output, session, app_state, emit) {
   log_debug_block("COLUMN_MGMT", "Setting up column management")
-  # log_debug("Received app_state environment address:", capture.output(print(app_state)), .context = "COLUMN_MGMT")
-
-  # log_debug("Centralized state available for column management", .context = "COLUMN_MGMT")
-
-  # LEGACY: Column choices update observer moved to unified event system
-  # Now handled by emit$data_changed() -> update_column_choices_unified()
-  # CONVERTED: Direct reactive observation removed in favor of event-driven pattern
-
-  # LEGACY: Auto-detection trigger observer removed - now handled by unified event system
-  # Manual auto-detection is triggered via emit$auto_detection_started() in the event system
-  # The shiny::observeEvent(app_state$events$data_loaded) -> emit$auto_detection_started() chain
-  # handles all auto-detection triggering automatically through the unified event architecture
-
-  # TEST MODE: Now handled by unified event system in utils_event_system.R
-  # Legacy test mode observer removed - replaced by emit$test_mode_ready() pattern
-
-  # UNIFIED EVENT SYSTEM: File upload auto-detection triggers are now handled by data_loaded events
-  # The emit$data_loaded() -> shiny::observeEvent(app_state$events$data_loaded) -> emit$auto_detection_started()
-  # chain handles all auto-detection triggering automatically
-
-  # UNIFIED EVENT SYSTEM: File upload triggers are now handled by data_loaded events
-  # The event system automatically handles auto-detection when data is loaded
-
-  # UNIFIED EVENT SYSTEM: Auto-detection is now handled by event listeners in utils_event_system.R
-  # The shiny::observeEvent(app_state$events$auto_detection_started) handles all auto-detection logic
-
-  # UNIFIED EVENT SYSTEM: Auto-detection and UI sync are now handled through events
-  # emit$auto_detection_started() triggers auto-detection -> emit$ui_sync_needed() -> sync_ui_with_columns_unified()
-  # The complete UI sync logic is implemented in utils_event_system.R
-  # log_debug("Auto-detection and UI sync handled by unified event system", .context = "AUTODETECT_SETUP")
 
   # Auto-detekterings knap handler - koerer altid naar bruger trykker
   shiny::observeEvent(input$auto_detect_columns, {

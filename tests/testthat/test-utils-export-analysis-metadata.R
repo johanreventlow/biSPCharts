@@ -4,11 +4,9 @@ library(testthat)
   if (is.null(x)) y else x
 }
 
-if (!file.exists(file.path("..", "..", "R", "utils_export_analysis_metadata.R"))) {
-  skip("Source files not available in R CMD check environment")
+if (!exists("build_export_analysis_metadata", mode = "function")) {
+  skip("build_export_analysis_metadata ikke tilgaengelig — skip i R CMD check miljo")
 }
-source(file.path("..", "..", "R", "utils_export_helpers.R"), local = environment())
-source(file.path("..", "..", "R", "utils_export_analysis_metadata.R"), local = environment())
 
 make_mock_bfh_qic_result <- function(centerline = 50,
                                      y_axis_unit = "count",

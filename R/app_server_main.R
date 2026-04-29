@@ -33,8 +33,16 @@ main_app_server <- function(input, output, session) {
     .context = "APP_SERVER"
   )
 
-  # Initialize advanced debug system
-  initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
+  # Initialize advanced debug system (kun i debug_mode_enabled).
+  # get_golem_config() læser inst/golem-config.yml; tryCatch→FALSE hvis nøgle mangler.
+  # Matcher mønster i utils_lazy_loading.R (advanced_debug condition).
+  debug_mode_on <- isTRUE(tryCatch(
+    golem::get_golem_options("debug_mode_enabled"),
+    error = function(e) FALSE
+  )) || Sys.getenv("SPC_DEBUG_MODE", "FALSE") == "TRUE"
+  if (debug_mode_on) {
+    initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
+  }
 
   # Start session lifecycle debugging (using hashed token)
   session_debugger <- debug_session_lifecycle(hashed_token, session)
@@ -191,6 +199,9 @@ main_app_server <- function(input, output, session) {
 
   ## Session management logik
   setup_session_management(input, output, session, app_state, emit, ui_service)
+
+  ## Idle session timeout (laest fra security.session_timeout_minutes i golem-config)
+  activate_session_timeout_from_config(input, session)
 
   ## Fil upload logik
   setup_file_upload(input, output, session, app_state, emit, ui_service)

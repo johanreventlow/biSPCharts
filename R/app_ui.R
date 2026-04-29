@@ -148,6 +148,16 @@ golem_add_external_resources <- function() {
     "www", app_sys("app/www")
   )
 
+  # Læs TTL fra session-konfiguration (golem-config.yml). Fallback 480 min.
+  ttl_minutes <- tryCatch(
+    {
+      cfg <- get_session_config()
+      ttl_val <- cfg$localstorage_ttl_minutes %||% 480L
+      max(1L, as.integer(ttl_val))
+    },
+    error = function(e) 480L # nolint: swallowed_error_linter
+  )
+
   shiny::tagList(
     shiny::tags$head(
       golem::favicon(),
@@ -155,6 +165,11 @@ golem_add_external_resources <- function() {
         path = app_sys("app/www"),
         app_title = "biSPCharts"
       ),
+      # Injicer localStorage TTL som JS-global FØR local-storage.js TTL-check.
+      # JS læser window.SPC_LOCALSTORAGE_TTL_MINUTES i spc_expire_stale_sessions().
+      shiny::tags$script(htmltools::HTML(
+        sprintf("window.SPC_LOCALSTORAGE_TTL_MINUTES = %d;", ttl_minutes)
+      )),
       # Accessibility: aria-live paa Shinys notification-panel
       shiny::tags$script(htmltools::HTML(
         "$(function(){

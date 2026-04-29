@@ -119,73 +119,34 @@ validate_export_dpi <- function(dpi) {
 
 #' Inject biSPCharts Template Assets into Export Temp Directory
 #'
-#' Kopierer fonts og images fra biSPCharts' template til en temp-mappe
-#' hvor BFHcharts har oprettet Typst-template strukturen.
-#' Bruges fordi BFHcharts' GitHub repo ikke inkluderer fonts/images.
+#' Delegerer asset-injection til den private companion-pakke `BFHchartsAssets`.
+#' biSPCharts bundler ikke længere proprietære fonts (Mari, Arial) eller
+#' hospital-logoer i sit eget repo — disse leveres af `BFHchartsAssets` via
+#' privat distribution.
+#'
+#' Funktionssignatur bevares for bagudkompatibilitet med eksisterende
+#' kald-sites (`mod_export_download.R`, samt fallback-pathen i
+#' `utils_server_export.R:370`). Kontrakt matcher
+#' `BFHcharts::bfh_export_pdf()`'s `inject_assets`-callback parameter.
 #'
 #' @param template_dir Sti til bfh-template mappen i temp directory
-#' @return invisible(TRUE) ved succes, invisible(FALSE) ved fejl
+#' @return invisible(TRUE) hvis BFHchartsAssets var tilgængelig og injection
+#'   lykkedes; invisible(FALSE) hvis BFHchartsAssets ikke er installeret
+#'   eller injection fejlede. Funktionen kaster ikke errors.
 #' @keywords internal
 inject_template_assets <- function(template_dir) {
+  if (!requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    log_warn(
+      "BFHchartsAssets ikke tilgaengelig - PDF eksporteres uden hospital-branding. ",
+      "Installer BFHchartsAssets for fuld branding (kraever GITHUB_PAT med privat repo-adgang)."
+    )
+    return(invisible(FALSE))
+  }
+
   safe_operation(
-    operation_name = "Inject template assets",
+    operation_name = "Inject template assets via BFHchartsAssets",
     code = {
-      src_base <- bisp_system_file("templates/typst/bfh-template")
-
-      if (!nzchar(src_base) || !dir.exists(src_base)) {
-        log_info("biSPCharts template directory not found - skipping asset injection")
-        return(invisible(FALSE))
-      }
-
-      # Kopier fonts -- kun Mari Book + Bold (OTF) og Arial.
-      # Ekskluderer Mari Regular (visuelt identisk med Book pga. weight 400
-      # metadata, men Typst kan foretraekke "Regular" style over "Book").
-      # MariOffice TTF udelades da Typst's weight-matching vaelger Bold (700)
-      # som default i stedet for Book (300).
-      #
-      # NOTE: Whitelist alene er ikke nok -- Typst falder som default tilbage
-      # til system-fonts (fx ~/Library/Fonts/Mari Heavy.otf med metadata
-      # style=Heavy,Regular). Typst-kald skal derfor ogsaa bruge
-      # --ignore-system-fonts for at garantere at kun bundlede fonts bruges.
-      src_fonts <- file.path(src_base, "fonts")
-      dst_fonts <- file.path(template_dir, "fonts")
-      if (dir.exists(src_fonts)) {
-        if (!dir.exists(dst_fonts)) dir.create(dst_fonts, recursive = TRUE)
-
-        # Whitelist tilladte font-filnavne (begge konventioner --
-        # underscore fra biSPCharts-bundle, bindestreg fra BFHcharts-bundle).
-        allowed_mari <- c(
-          "Mari_Book.otf", "Mari_Bold.otf",
-          "Mari-Book.otf", "Mari-Bold.otf"
-        )
-
-        # 1) Slet uoenskede Mari/MariOffice-varianter som BFHcharts maatte
-        #    have lagt i dst_fonts (fx Mari-Heavy.otf, MariOffice-Heavy.ttf).
-        #    Typst's font-resolution af "Mari"-familien matcher disse for
-        #    regular weight pga. metadata-flag og giver fed body-tekst.
-        existing <- list.files(dst_fonts, full.names = TRUE)
-        is_mari <- grepl("^Mari", basename(existing), ignore.case = TRUE)
-        is_unwanted <- is_mari & !(basename(existing) %in% allowed_mari)
-        if (any(is_unwanted)) {
-          file.remove(existing[is_unwanted])
-        }
-
-        # 2) Kopier biSPCharts' egne Mari Book + Bold + Arial.
-        font_files <- list.files(src_fonts, full.names = TRUE)
-        is_allowed <- basename(font_files) %in% allowed_mari |
-          grepl("^ARI", basename(font_files), ignore.case = TRUE)
-        file.copy(font_files[is_allowed], dst_fonts, overwrite = FALSE)
-      }
-
-      # Kopier images
-      src_images <- file.path(src_base, "images")
-      dst_images <- file.path(template_dir, "images")
-      if (dir.exists(src_images)) {
-        if (!dir.exists(dst_images)) dir.create(dst_images, recursive = TRUE)
-        image_files <- list.files(src_images, full.names = TRUE)
-        file.copy(image_files, dst_images, overwrite = FALSE)
-      }
-
+      BFHchartsAssets::inject_bfh_assets(template_dir)
       invisible(TRUE)
     },
     fallback = FALSE

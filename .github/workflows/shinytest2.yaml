@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       CI_SKIP_SHINYTEST2: "false"
       RUN_SHINYTEST2: "1"

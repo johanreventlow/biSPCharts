@@ -118,6 +118,13 @@ register_autodetect_events <- function(app_state, emit, session, register_observ
         safe_operation(
           "Auto-detection processing",
           code = {
+            # Guard: Spring auto-detektion over under session-restore.
+            # Under restore sættes kolonnemappings direkte fra gemt state;
+            # auto-detektion ville overskrive disse mappings.
+            if (isTRUE(is_restoring_session(app_state))) {
+              return(invisible(NULL))
+            }
+
             if (!is.null(app_state$data$current_data)) {
               # Use unified autodetect engine - data available, so full analysis
               autodetect_engine(

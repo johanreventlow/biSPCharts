@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.11.0",
+        "Version": "0.11.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -41,17 +41,52 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.11.0",
-        "RemoteSha": "fae44da6d1e4b4ebf3e1c9643ba9fde4c4ebacdd",
+        "RemotePkgRef": "johanreventlow/BFHcharts@v0.11.1",
+        "RemoteRef": "v0.11.1",
+        "RemoteSha": "0a6ff86e849141a70b352eaeeb9538cff4a3a94c",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.11.0",
-        "GithubSHA1": "fae44da6d1e4b4ebf3e1c9643ba9fde4c4ebacdd",
+        "GithubRef": "v0.11.1",
+        "GithubSHA1": "0a6ff86e849141a70b352eaeeb9538cff4a3a94c",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-29 15:42:59 UTC; johanreventlow",
+        "Packaged": "2026-04-29 20:14:57 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-29 15:43:01 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-29 20:14:58 UTC; unix"
+      }
+    },
+    "BFHchartsAssets": {
+      "Source": "github",
+      "Repository": null,
+      "description": {
+        "Package": "BFHchartsAssets",
+        "Title": "BFH Branding Assets for BFHcharts",
+        "Version": "0.1.0",
+        "Authors@R": "person(\"Johan\", \"Reventlow\", email = \"johan.reventlow@regionh.dk\", role = c(\"aut\", \"cre\"))",
+        "Description": "Private companion package providing proprietary fonts and\n    hospital branding images for BFHcharts PDF export. Distributed via\n    private GitHub repository; not for public release.",
+        "License": "file LICENSE",
+        "Encoding": "UTF-8",
+        "Roxygen": "list(markdown = TRUE)",
+        "RoxygenNote": "7.3.3",
+        "Suggests": "BFHcharts (>= 0.11.1), testthat (>= 3.0.0)",
+        "Remotes": "johanreventlow/BFHcharts",
+        "Config/testthat/edition": "3",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "BFHchartsAssets",
+        "RemoteUsername": "johanreventlow",
+        "RemotePkgRef": "johanreventlow/BFHchartsAssets@v0.1.0",
+        "RemoteRef": "v0.1.0",
+        "RemoteSha": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
+        "GithubRepo": "BFHchartsAssets",
+        "GithubUsername": "johanreventlow",
+        "GithubRef": "v0.1.0",
+        "GithubSHA1": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-04-29 20:15:12 UTC; johanreventlow",
+        "Author": "Johan Reventlow [aut, cre]",
+        "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
+        "Built": "R 4.5.2; ; 2026-04-29 20:15:13 UTC; unix"
       }
     },
     "BFHllm": {
@@ -732,35 +767,6 @@
         "Archs": "cachem.so.dSYM"
       }
     },
-    "callr": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "callr",
-        "Title": "Call R from R",
-        "Version": "3.7.6",
-        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\", \"cph\"),\n           comment = c(ORCID = \"0000-0001-7098-9676\")),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"Ascent Digital Services\", role = c(\"cph\", \"fnd\"))\n  )",
-        "Description": "It is sometimes useful to perform a computation in a separate\n    R process, without affecting the current R process at all.  This\n    packages does exactly that.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://callr.r-lib.org, https://github.com/r-lib/callr",
-        "BugReports": "https://github.com/r-lib/callr/issues",
-        "Depends": "R (>= 3.4)",
-        "Imports": "processx (>= 3.6.1), R6, utils",
-        "Suggests": "asciicast (>= 2.3.1), cli (>= 1.1.0), mockery, ps, rprojroot,\nspelling, testthat (>= 3.2.0), withr (>= 2.3.0)",
-        "Config/Needs/website": "r-lib/asciicast, glue, htmlwidgets, igraph,\ntibble, tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Encoding": "UTF-8",
-        "Language": "en-US",
-        "RoxygenNote": "7.3.1.9000",
-        "NeedsCompilation": "no",
-        "Packaged": "2024-03-25 12:10:25 UTC; gaborcsardi",
-        "Author": "Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>),\n  Winston Chang [aut],\n  Posit Software, PBC [cph, fnd],\n  Ascent Digital Services [cph, fnd]",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2024-03-25 13:30:06 UTC",
-        "Built": "R 4.5.0; ; 2025-04-01 11:57:59 UTC; unix"
-      }
-    },
     "cellranger": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -1140,36 +1146,6 @@
         "RemoteRepos": "https://cran.rstudio.com/",
         "RemotePkgPlatform": "aarch64-apple-darwin20",
         "RemoteSha": "2.5.2"
-      }
-    },
-    "desc": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "desc",
-        "Title": "Manipulate DESCRIPTION Files",
-        "Version": "1.4.3",
-        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Kirill\", \"Müller\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", , \"james.f.hester@gmail.com\", role = \"aut\"),\n    person(\"Maëlle\", \"Salmon\", role = \"ctb\",\n           comment = c(ORCID = \"0000-0002-2815-0399\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
-        "Description": "Tools to read, write, create, and manipulate DESCRIPTION\n    files.  It is intended for packages that create or manipulate other\n    packages.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://desc.r-lib.org/, https://github.com/r-lib/desc",
-        "BugReports": "https://github.com/r-lib/desc/issues",
-        "Depends": "R (>= 3.4)",
-        "Imports": "cli, R6, utils",
-        "Suggests": "callr, covr, gh, spelling, testthat, whoami, withr",
-        "Config/Needs/website": "tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Encoding": "UTF-8",
-        "Language": "en-US",
-        "RoxygenNote": "7.2.3",
-        "Collate": "'assertions.R' 'authors-at-r.R' 'built.R' 'classes.R'\n'collate.R' 'constants.R' 'deps.R' 'desc-package.R'\n'description.R' 'encoding.R' 'find-package-root.R' 'latex.R'\n'non-oo-api.R' 'package-archives.R' 'read.R' 'remotes.R'\n'str.R' 'syntax_checks.R' 'urls.R' 'utils.R' 'validate.R'\n'version.R'",
-        "NeedsCompilation": "no",
-        "Packaged": "2023-12-10 11:07:50 UTC; gaborcsardi",
-        "Author": "Gábor Csárdi [aut, cre],\n  Kirill Müller [aut],\n  Jim Hester [aut],\n  Maëlle Salmon [ctb] (<https://orcid.org/0000-0002-2815-0399>),\n  Posit Software, PBC [cph, fnd]",
-        "Repository": "CRAN",
-        "Date/Publication": "2023-12-10 11:40:08 UTC",
-        "Built": "R 4.5.0; ; 2025-03-31 21:55:26 UTC; unix"
       }
     },
     "digest": {
@@ -2892,35 +2868,6 @@
         "RemoteSha": "1.4.2"
       }
     },
-    "pkgbuild": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "pkgbuild",
-        "Title": "Find Tools Needed to Build R Packages",
-        "Version": "1.4.8",
-        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
-        "Description": "Provides functions used to build R packages. Locates\n    compilers needed to build R packages on various platforms and ensures\n    the PATH is configured appropriately so R can use them.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://github.com/r-lib/pkgbuild, https://pkgbuild.r-lib.org",
-        "BugReports": "https://github.com/r-lib/pkgbuild/issues",
-        "Depends": "R (>= 3.5)",
-        "Imports": "callr (>= 3.2.0), cli (>= 3.4.0), desc, processx, R6",
-        "Suggests": "covr, cpp11, knitr, Rcpp, rmarkdown, testthat (>= 3.2.0),\nwithr (>= 2.3.0)",
-        "Config/Needs/website": "tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Config/usethis/last-upkeep": "2025-04-30",
-        "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.2",
-        "NeedsCompilation": "no",
-        "Packaged": "2025-05-26 10:36:48 UTC; gaborcsardi",
-        "Author": "Hadley Wickham [aut],\n  Jim Hester [aut],\n  Gábor Csárdi [aut, cre],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2025-05-26 14:10:06 UTC",
-        "Built": "R 4.5.0; ; 2025-05-26 15:14:03 UTC; unix"
-      }
-    },
     "pkgconfig": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -2949,41 +2896,6 @@
         "RemoteRepos": "https://cran.rstudio.com/",
         "RemotePkgPlatform": "aarch64-apple-darwin20",
         "RemoteSha": "2.0.3"
-      }
-    },
-    "pkgload": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "pkgload",
-        "Title": "Simulate Package Installation and Attach",
-        "Version": "1.5.2",
-        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"R Core team\", role = \"ctb\",\n           comment = \"Some namespace and vignette code extracted from base R\")\n  )",
-        "Description": "Simulates the process of installing a package and then\n    attaching it. This is a key part of the 'devtools' package as it\n    allows you to rapidly iterate while developing a package.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://github.com/r-lib/pkgload, https://pkgload.r-lib.org",
-        "BugReports": "https://github.com/r-lib/pkgload/issues",
-        "Depends": "R (>= 3.4.0)",
-        "Imports": "cli (>= 3.3.0), desc, fs, glue, lifecycle, methods, pkgbuild,\nprocessx, rlang (>= 1.1.1), rprojroot, utils",
-        "Suggests": "bitops, jsonlite, mathjaxr, pak, Rcpp, remotes, rstudioapi,\ntestthat (>= 3.2.1.1), usethis, withr",
-        "Config/Needs/website": "tidyverse/tidytemplate, ggplot2",
-        "Config/testthat/edition": "3",
-        "Config/testthat/parallel": "TRUE",
-        "Config/testthat/start-first": "dll",
-        "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.2",
-        "NeedsCompilation": "no",
-        "Packaged": "2026-04-21 17:18:59 UTC; lionel",
-        "Author": "Hadley Wickham [aut],\n  Winston Chang [aut],\n  Jim Hester [aut],\n  Lionel Henry [aut, cre],\n  Posit Software, PBC [cph, fnd],\n  R Core team [ctb] (Some namespace and vignette code extracted from base\n    R)",
-        "Maintainer": "Lionel Henry <lionel@posit.co>",
-        "Repository": "CRAN",
-        "Date/Publication": "2026-04-22 06:00:02 UTC",
-        "Built": "R 4.5.2; ; 2026-04-22 09:40:56 UTC; unix",
-        "RemoteType": "standard",
-        "RemotePkgRef": "pkgload",
-        "RemoteRef": "pkgload",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "1.5.2"
       }
     },
     "plyr": {
@@ -3076,40 +2988,6 @@
         "Built": "R 4.5.0; ; 2025-03-31 21:44:35 UTC; unix"
       }
     },
-    "processx": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "processx",
-        "Title": "Execute and Control System Processes",
-        "Version": "3.9.0",
-        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\", \"cph\"),\n           comment = c(ORCID = \"0000-0001-7098-9676\")),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\")),\n    person(\"Ascent Digital Services\", role = c(\"cph\", \"fnd\"))\n  )",
-        "Description": "Tools to run system processes in the background.  It can\n    check if a background process is running; wait on a background process\n    to finish; get the exit status of finished processes; kill background\n    processes. It can read the standard output and error of the processes,\n    using non-blocking connections. 'processx' can poll a process for\n    standard output or error, with a timeout. It can also poll several\n    processes at once.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://processx.r-lib.org, https://github.com/r-lib/processx",
-        "BugReports": "https://github.com/r-lib/processx/issues",
-        "Depends": "R (>= 3.4.0)",
-        "Imports": "ps (>= 1.9.3), R6, utils",
-        "Suggests": "callr (>= 3.7.3), cli (>= 3.3.0), codetools, covr, curl,\ndebugme, parallel, rlang (>= 1.0.2), testthat (>= 3.0.0),\nwebfakes, withr",
-        "Config/Needs/website": "tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Config/usethis/last-upkeep": "2025-04-25",
-        "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
-        "NeedsCompilation": "yes",
-        "Packaged": "2026-04-22 10:56:15 UTC; gaborcsardi",
-        "Author": "Gábor Csárdi [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0001-7098-9676>),\n  Winston Chang [aut],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),\n  Ascent Digital Services [cph, fnd]",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2026-04-22 12:00:02 UTC",
-        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-04-22 14:39:01 UTC; unix",
-        "RemoteType": "standard",
-        "RemotePkgRef": "processx",
-        "RemoteRef": "processx",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "3.9.0"
-      }
-    },
     "progress": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -3174,41 +3052,6 @@
         "RemoteRepos": "https://cran.rstudio.com/",
         "RemotePkgPlatform": "aarch64-apple-darwin20",
         "RemoteSha": "1.5.0"
-      }
-    },
-    "ps": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "ps",
-        "Title": "List, Query, Manipulate System Processes",
-        "Version": "1.9.3",
-        "Authors@R": "c(\n    person(\"Jay\", \"Loden\", role = \"aut\"),\n    person(\"Dave\", \"Daeschler\", role = \"aut\"),\n    person(\"Giampaolo\", \"Rodola'\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
-        "Description": "List, query and manipulate all system processes, on\n    'Windows', 'Linux' and 'macOS'.",
-        "License": "MIT + file LICENSE",
-        "URL": "https://github.com/r-lib/ps, https://ps.r-lib.org/",
-        "BugReports": "https://github.com/r-lib/ps/issues",
-        "Depends": "R (>= 3.4)",
-        "Imports": "utils",
-        "Suggests": "callr, covr, curl, pillar, pingr, processx (>= 3.1.0), R6,\nrlang, testthat (>= 3.0.0), webfakes, withr",
-        "Biarch": "true",
-        "Config/Needs/website": "tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Config/usethis/last-upkeep": "2025-04-28",
-        "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
-        "NeedsCompilation": "yes",
-        "Packaged": "2026-04-20 12:53:07 UTC; gaborcsardi",
-        "Author": "Jay Loden [aut],\n  Dave Daeschler [aut],\n  Giampaolo Rodola' [aut],\n  Gábor Csárdi [aut, cre],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2026-04-20 13:40:03 UTC",
-        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-04-20 23:19:23 UTC; unix",
-        "RemoteType": "standard",
-        "RemotePkgRef": "ps",
-        "RemoteRef": "ps",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "1.9.3"
       }
     },
     "purrr": {
@@ -4693,10 +4536,10 @@
       "checksum": "87f9d4ec0ffedff42d9aa1a7e04c6c96"
     },
     "app.R": {
-      "checksum": "f7fa710eba8d9f6076c63a9f6f1f5f09"
+      "checksum": "326ca12829e940cf45f3513eb2a2dd63"
     },
     "DESCRIPTION": {
-      "checksum": "d71ca401e49de6f92ff934400d9787f4"
+      "checksum": "bf5439c489bb6cbcb4af0304c64928cf"
     },
     "inst/.DS_Store": {
       "checksum": "4cc330613d67dba9392c83fee5b5fa20"
@@ -4753,7 +4596,7 @@
       "checksum": "c652ae32097799977cbbd103e8cb3a2c"
     },
     "inst/app/www/local-storage.js": {
-      "checksum": "b1fc92ef9616601997588581088d5809"
+      "checksum": "8bc08e297f8df5c90226b034bd8a8955"
     },
     "inst/app/www/shiny-handlers.js": {
       "checksum": "86073d9b15511549d496b74c2e3c372e"
@@ -4828,10 +4671,7 @@
       "checksum": "c9436ead5ef4f265e585d9e4c27db08f"
     },
     "inst/golem-config.yml": {
-      "checksum": "f11fc9d1c51bdf312fe13b691daa88ae"
-    },
-    "inst/powerpointskabelon.pptx": {
-      "checksum": "b5542f0b880d47cfa0d3b81e6e127d5b"
+      "checksum": "5d4302d372d3d2df970c22b18882a1ba"
     },
     "inst/templates/.DS_Store": {
       "checksum": "4fd0a82841a8750324465dd66a524f76"
@@ -4848,95 +4688,11 @@
     "inst/templates/typst/bfh-template/bfh-template.typ": {
       "checksum": "af93dfd64ff188b192ce388eb77d482b"
     },
-    "inst/templates/typst/bfh-template/fonts/ARIAL.TTF": {
-      "checksum": "fa3228aadde0db988e1822c2f736c131"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALBD.TTF": {
-      "checksum": "858f5a50a4c3e5e6559a0c9b128eee60"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALBI.TTF": {
-      "checksum": "b04eb00031bf4d82265b30855d7a314f"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALI.TTF": {
-      "checksum": "97f1aa85e8ce271cd2a65759cb230397"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALN.TTF": {
-      "checksum": "d20ba4eaaf26b7033da05fd59ed020ab"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALNB.TTF": {
-      "checksum": "6debd7b47fbf196d9aea1dc4235439bb"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALNBI.TTF": {
-      "checksum": "56e394b38fbf81afb437bc00884544f8"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIALNI.TTF": {
-      "checksum": "989670c4c82248bb6a8cec3558212374"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARIBLK.TTF": {
-      "checksum": "ec8b4d9c0e68604dfbeda73d0213c82e"
-    },
-    "inst/templates/typst/bfh-template/fonts/ARLRDBD.TTF": {
-      "checksum": "2d1068a7f51e1fc2c63d81165bf52422"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari_Bold.otf": {
-      "checksum": "8603a8b95d29b030b66d1d4f68ab2b72"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari_Book.otf": {
-      "checksum": "d891294df978554740a1996b1040468f"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari_Heavy.otf": {
-      "checksum": "a8911c6c90f788e17831fc9075a821f0"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari_Light.otf": {
-      "checksum": "bbbf1fe0cb1ff169970a39ac9a069ce6"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari_Poster.otf": {
-      "checksum": "5a058c77c06cfec678030c353cbcc3e8"
-    },
-    "inst/templates/typst/bfh-template/fonts/Mari.otf": {
-      "checksum": "2e9b3d0385a8462bea22f3b2b80422e7"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice-Bold.ttf": {
-      "checksum": "a6df7b27d2a6ccfbd4690f7a0cff0e20"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice-Book.ttf": {
-      "checksum": "b22b59ab0cb85a0cba92ad076a56d30a"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice-Heavy.ttf": {
-      "checksum": "d81d6f49c135ae3bd22a76acf20ee6e1"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice-Light.ttf": {
-      "checksum": "8cca5b564b57d0a084569f273fcf5a2d"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice-Poster.ttf": {
-      "checksum": "79fd2077ce69faf565d6406810b698b4"
-    },
-    "inst/templates/typst/bfh-template/fonts/MariOffice.ttf": {
-      "checksum": "5668b54b76c9999c826f3e20f2aa261d"
-    },
-    "inst/templates/typst/bfh-template/images/BFH_medicin.png": {
-      "checksum": "f5219f8241215cba6cf24c0ee94d9cca"
-    },
-    "inst/templates/typst/bfh-template/images/Hospital_Maerke_RGB_A1_str.png": {
-      "checksum": "13e95f724e48fa4349e5b2e4c350dea1"
-    },
-    "inst/templates/typst/bfh-template/images/Logo_Bispebjerg_neg_png.png": {
-      "checksum": "c6394765a629c4560911aa16f72a1e05"
-    },
-    "inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og_Frederiksberg_RGB_neg.png": {
-      "checksum": "6f298bb47a8b404b66351ef4c9d5448c"
-    },
-    "inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og_Frederiksberg_RGB.png": {
-      "checksum": "bc22fbe491384f9e5c8585111a2d95a9"
-    },
-    "inst/templates/typst/bfh-template/images/Logo_Bispebjerg_og-Frederiksberg_web.png": {
-      "checksum": "e36727d1a97fe247bd0e8f60c19e859a"
-    },
-    "inst/templates/typst/bfh-template/images/Logo_Bispebjerg_png.png": {
-      "checksum": "8ad39ee39a8a8c61fd76ecc6fb72e689"
-    },
     "inst/templates/typst/README.md": {
       "checksum": "aea794434a74d42d6eaf071df163c2cb"
+    },
+    "manifest.json": {
+      "checksum": "f03ab09321f881ad7f0685abff920e1f"
     },
     "NAMESPACE": {
       "checksum": "8afe62130454a324644b4a2142a88231"
@@ -4951,13 +4707,13 @@
       "checksum": "d85bbd8c1967f0d78e01081616a4e723"
     },
     "R/app_server_main.R": {
-      "checksum": "967daad2d86911d4ad5ebb2f26954934"
+      "checksum": "f6b4a7608f4e96e4ccc1aa97d406c225"
     },
     "R/app_server.R": {
       "checksum": "c97a964c3c2b954be459b38cc6fef0e4"
     },
     "R/app_ui.R": {
-      "checksum": "908caeaaed24061968d10bf602af6248"
+      "checksum": "a2f0a3fd6069d23542b0eb7074348074"
     },
     "R/config_analytics.R": {
       "checksum": "a463306e499f933b364ad04781b04209"
@@ -4999,10 +4755,10 @@
       "checksum": "e974a3102e445a41cca2b39c7d3080e8"
     },
     "R/fct_ai_improvement_suggestions.R": {
-      "checksum": "da34d2661e2978b1e8a4038ce2f9e518"
+      "checksum": "3ad8f4a93154b636c1aae2a1c53e5d99"
     },
     "R/fct_anhoej_rules.R": {
-      "checksum": "7d650ad1e006fa79fe298a7e086a7441"
+      "checksum": "1c32bb2347ee5561019a1ed96007d6d4"
     },
     "R/fct_autodetect_helpers.R": {
       "checksum": "c81d970c7c4aa2f8fc014415f643a2c4"
@@ -5017,19 +4773,19 @@
       "checksum": "d4d7e0569dc318ba62f75738d391238b"
     },
     "R/fct_file_operations.R": {
-      "checksum": "7b9d2b320d021f55f0e6631e71e5c0e8"
+      "checksum": "dfe478f3051afaaaf01262991b6a122e"
     },
     "R/fct_file_parse_pure.R": {
       "checksum": "b98847063dec7998fc0fa31e0e1a0fc8"
     },
     "R/fct_file_validation.R": {
-      "checksum": "34fd94b81c1cf649307530a840a69750"
+      "checksum": "3a2479eadf5771c6297ec01ad3845eff"
     },
     "R/fct_spc_anhoej_derivation.R": {
-      "checksum": "3ed37d3dbefec64e6a8ca82d86677761"
+      "checksum": "a6f9da127661ef7fd616a6712cfb882c"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "e5c2dfb3c42c5530dbdd4f01346b20c4"
+      "checksum": "34f909c5f0f2077b1063ffc207bb9074"
     },
     "R/fct_spc_bfh_invocation.R": {
       "checksum": "da553931f038abd881e1e18bf63e9eb7"
@@ -5038,7 +4794,7 @@
       "checksum": "47be1525fe9ef1091929b9981e69ba5b"
     },
     "R/fct_spc_bfh_params.R": {
-      "checksum": "73f4d89f5094e41ebcdb603f8234c435"
+      "checksum": "5d44866e9dbe12a0aa41aabd04656e26"
     },
     "R/fct_spc_bfh_signals.R": {
       "checksum": "8b4d3ad2da3ecd752dff1853d8513f98"
@@ -5056,7 +4812,7 @@
       "checksum": "c8081a3f4af1fbfaea02ad3dbb428a1c"
     },
     "R/fct_spc_file_save_load.R": {
-      "checksum": "f31b6bff126329213d725f5ce020d35a"
+      "checksum": "e37e8c8a396770966e33b4485f92592e"
     },
     "R/fct_spc_helpers.R": {
       "checksum": "dc1e87f6bc7a62a2fd5f7d910b37bfc0"
@@ -5068,7 +4824,7 @@
       "checksum": "84bfbb3343794873b24534b7c2a57fc3"
     },
     "R/fct_spc_validate.R": {
-      "checksum": "847664ec9a3335dc9ca0e822acc18095"
+      "checksum": "2b8a5ab05c5cd27fc3aa3067e90cf0b3"
     },
     "R/fct_visualization_config_pure.R": {
       "checksum": "fcc9a60b45027ee58c6c420bea6ca465"
@@ -5086,7 +4842,7 @@
       "checksum": "7ec50160555333284a2e4a183a4c728a"
     },
     "R/mod_export_ai.R": {
-      "checksum": "45dfd6e2a9904ccd0546a8b07dd7d7cd"
+      "checksum": "38dc8b00352ced5c5a412dfbca3d9d98"
     },
     "R/mod_export_analysis.R": {
       "checksum": "583b7ec66da0c669b7cfb0cb1b8bce0a"
@@ -5152,10 +4908,13 @@
       "checksum": "eefeba774480c13a353f5f56477efcb5"
     },
     "R/utils_analytics_pins.R": {
-      "checksum": "c18c8f541d3e5a66dbe13c3d44e6f13c"
+      "checksum": "b54451f9d83f3054101760037bb03fad"
     },
     "R/utils_anhoej_results.R": {
       "checksum": "0da716b6a4b805c42d3477ad8f582127"
+    },
+    "R/utils_async_helpers.R": {
+      "checksum": "f0a13b7b66b221cbade87b5addefc027"
     },
     "R/utils_bfhllm_integration.R": {
       "checksum": "f5db433c83429ca83a8c50a2e6b74509"
@@ -5163,14 +4922,14 @@
     "R/utils_cache_generators.R": {
       "checksum": "3be4dc92b5ed6ec2ac50ee24d0359b20"
     },
+    "R/utils_csv_delimiter_detection.R": {
+      "checksum": "5af2350d79d65066beba530682cfc8bb"
+    },
     "R/utils_danish_locale.R": {
       "checksum": "4218c995e85e0b7b93c3159834d06d18"
     },
     "R/utils_data_signatures.R": {
-      "checksum": "8586b7cabf57872afb18ecc67c540f43"
-    },
-    "R/utils_end_to_end_debug.R": {
-      "checksum": "cb131c06a8f3d5db9240f44782fc4dc5"
+      "checksum": "5856391ccdf847eabcf0f9baae2c4c82"
     },
     "R/utils_error_handling.R": {
       "checksum": "1ec34acbdce034bed3641c48b83f9d52"
@@ -5221,13 +4980,13 @@
       "checksum": "9c9594288167cd3f9de0cd55ca6e8dbd"
     },
     "R/utils_performance.R": {
-      "checksum": "f4cb3b83e1efa63413a5c40e2b47e20e"
+      "checksum": "e4b3ad47bb5da12262c85f6e9d06b510"
     },
     "R/utils_qic_cache_invalidation.R": {
-      "checksum": "602e01296fb4c2f496a6700d558a431c"
+      "checksum": "929edf87f85733250f962a4405b90958"
     },
     "R/utils_qic_caching.R": {
-      "checksum": "a4410cceb9e78c7f8a7a8ba9a1a72b09"
+      "checksum": "e9c3e51f2edaf8f81a4fa1d2f13b4c1c"
     },
     "R/utils_qic_debug_logging.R": {
       "checksum": "a1d79bd8c8f121bbbabe81c2df68f6a2"
@@ -5235,23 +4994,20 @@
     "R/utils_qic_preparation.R": {
       "checksum": "10ed2df4fbde65daaef38bc44da5da7b"
     },
-    "R/utils_reactive_batching.R": {
-      "checksum": "27f6f4e44bddc8065d79ead288028383"
-    },
     "R/utils_server_column_input.R": {
       "checksum": "8679a3abb66fd317094b6d9c579bc78d"
     },
     "R/utils_server_column_management.R": {
-      "checksum": "648010f58d4c5fc05f4c6f38015702cf"
+      "checksum": "1bbf70a815cc4485684538032d699b49"
     },
     "R/utils_server_event_listeners.R": {
       "checksum": "f9674de20701804d8f526c76da72e743"
     },
     "R/utils_server_events_autodetect.R": {
-      "checksum": "e504a3273934d8218a0c10eb7ee11eb8"
+      "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "f85f41392b68612f329aa1bceaad7068"
+      "checksum": "c07696660b1ce400d68955352331af99"
     },
     "R/utils_server_events_data.R": {
       "checksum": "1e2c569e53b43875953f363475111961"
@@ -5263,7 +5019,7 @@
       "checksum": "af9e37a623e61ce3043091ea00d7548a"
     },
     "R/utils_server_export.R": {
-      "checksum": "6b835a80a25d2253ce820656452852b8"
+      "checksum": "062790482deab04487ff555b00f75bf8"
     },
     "R/utils_server_initialization.R": {
       "checksum": "f36ed9b3e41c2cd32ae3c5599a9ae004"
@@ -5274,20 +5030,17 @@
     "R/utils_server_paste_data.R": {
       "checksum": "c5a18f874fc4a7d10bce2786c0aa0957"
     },
-    "R/utils_server_performance.R": {
-      "checksum": "4d6eed05424abd405b259b4c89e55eed"
-    },
     "R/utils_server_server_management.R": {
       "checksum": "26c2e7a73bffaf75e4cb6e6477de6094"
     },
     "R/utils_server_session_helpers.R": {
-      "checksum": "0e253cccb468b1baa7c3ab1a509d7441"
+      "checksum": "799e88ad267ef1c84f23dfa46602025a"
     },
     "R/utils_server_wizard_gates.R": {
       "checksum": "c8b52f79efbb48d9638105c283cab7fc"
     },
     "R/utils_shinylogs_config.R": {
-      "checksum": "b986b4aef79d8569fe8f359c4ce42af9"
+      "checksum": "940286ff4ba147eacac92a422824cff6"
     },
     "R/utils_spc_cache.R": {
       "checksum": "b0d9c99a13f244524e72c985a489d0c3"
@@ -5296,13 +5049,13 @@
       "checksum": "46833df33256e6f5fa298292a1087afc"
     },
     "R/utils_spc_data_processing.R": {
-      "checksum": "4c44000d4afe2e6cc002c8f52d217b82"
+      "checksum": "3e36c077af10e045051ae3e81e656a63"
     },
     "R/utils_startup_cache.R": {
       "checksum": "dc34f9a3705ea40924010753ec6dc4a2"
     },
     "R/utils_state_accessors.R": {
-      "checksum": "f8aaba60e31001856a989f6aab0fbcab"
+      "checksum": "b099b83f7a4378989ddc80ddcad420fc"
     },
     "R/utils_state_transitions.R": {
       "checksum": "20f09211f31cfbafbba0445a3c647c96"
@@ -5338,7 +5091,7 @@
       "checksum": "f9adfab733f4fff7fa7ba1fe478e7a30"
     },
     "R/utils_y_axis_scaling.R": {
-      "checksum": "940c39ff18dcbe5c06ae04e927593d85"
+      "checksum": "922d95160f269b5bf675707480cfc1d3"
     },
     "R/zzz.R": {
       "checksum": "8faafda09737e2bea87e4e47316d773d"

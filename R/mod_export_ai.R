@@ -92,30 +92,69 @@ register_ai_button_state <- function(session, input, output, app_state) {
   )
 }
 
-#' Register AI Suggestion Handler
+#' Register AI Suggestion Handler (Async)
 #'
 #' Sets up event listener for AI suggestion button click.
-#' Generates SPC plot, calls BFHcharts analysis with AI enabled, updates UI.
+#' Generates SPC plot, calls bfh_generate_analysis() via ExtendedTask
+#' (asynkront) for at undg\u00e5 at blokere andre Shiny-sessions p\u00e5 Connect.
+#'
+#' Fallback til synkron eksekvering hvis ExtendedTask ikke er tilg\u00e6ngeligt
+#' (shiny < 1.8.0 eller promises mangler).
 #'
 #' @param session Shiny session object
 #' @param input Input object containing UI inputs
 #' @param output Output object for rendering
 #' @param app_state Global app state containing data and column mappings
 #'
-#' @return NULL (side effect: registers observer with Shiny)
+#' @return NULL (side effect: registers observer and ExtendedTask with Shiny)
 #'
 #' @keywords internal
 register_ai_suggestion_handler <- function(session, input, output, app_state) {
+  # ---- Asynkron AI-task -------------------------------------------------------
+  # ExtendedTask kr\u00e6ver at blive oprettet \u00c9N gang per session (ikke inde i
+  # observeEvent), og invoked ved hvert klik. Se shiny::ExtendedTask docs.
+  ai_task <- make_ai_extended_task(
+    session = session,
+    get_spc_result = function() {
+      build_export_plot(
+        app_state = app_state,
+        title_input = shiny::isolate(input$export_title %||% ""),
+        dept_input = shiny::isolate(input$export_department %||% ""),
+        plot_context = "export_pdf"
+      )
+    },
+    get_analysis_metadata = function() {
+      spc_result <- shiny::isolate(build_export_plot(
+        app_state = app_state,
+        title_input = input$export_title %||% "",
+        dept_input = input$export_department %||% "",
+        plot_context = "export_pdf"
+      ))
+      if (is.null(spc_result)) {
+        return(NULL)
+      }
+      build_export_analysis_metadata(
+        bfh_qic_result  = spc_result$bfh_qic_result,
+        target_value    = normalize_mapping(shiny::isolate(app_state$columns$mappings$target_value)),
+        target_text     = normalize_mapping(shiny::isolate(app_state$columns$mappings$target_text)),
+        data_definition = shiny::isolate(input$pdf_description %||% ""),
+        chart_title     = shiny::isolate(input$export_title %||% ""),
+        department      = shiny::isolate(input$export_department %||% "")
+      )
+    }
+  )
+
+  # ---- Klik-handler -----------------------------------------------------------
   shiny::observeEvent(input$ai_generate_suggestion,
     {
-      # Require SPC data
+      # Valider foruds\u00e6tninger
       shiny::req(
         app_state$data$current_data,
         app_state$columns$mappings$x_column,
         app_state$columns$mappings$y_column
       )
 
-      # Disable button and show loading
+      # Disable button og vis spinner
       shinyjs::disable("ai_generate_suggestion")
       output$ai_loading_feedback <- shiny::renderUI({
         shiny::div(
@@ -128,101 +167,143 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
 
       log_info(
         .context = "EXPORT_MODULE",
-        message = "AI suggestion requested by user"
+        message  = "AI suggestion requested by user"
       )
 
-      # Generer SPC result via faelles helper (deler cache med PDF context)
-      spc_result <- build_export_plot(
-        app_state = app_state,
-        title_input = input$export_title %||% "",
-        dept_input = input$export_department %||% "",
-        plot_context = "export_pdf"
-      )
-
-      # Check if SPC generation succeeded
-      if (is.null(spc_result)) {
-        log_error(
-          .context = "EXPORT_MODULE",
-          message = "SPC result generation failed - returning NULL"
+      if (!is.null(ai_task)) {
+        # ---- Asynkron sti: ExtendedTask ----------------------------------------
+        # SPC-result bygges synkront (cache), AI-kaldet k\u00f8rer i baggrunden.
+        spc_result <- build_export_plot(
+          app_state = app_state,
+          title_input = input$export_title %||% "",
+          dept_input = input$export_department %||% "",
+          plot_context = "export_pdf"
         )
 
-        shiny::showNotification(
-          "Kunne ikke analysere SPC-data. Pr\u00f8v igen.",
-          type = "error",
-          duration = 5
+        if (is.null(spc_result) || is.null(spc_result$bfh_qic_result)) {
+          log_error(
+            .context = "EXPORT_MODULE",
+            message = "SPC result generation failed (async path)"
+          )
+          shiny::showNotification(
+            "Kunne ikke analysere SPC-data. Pr\u00f8v igen.",
+            type = "error", duration = 5
+          )
+          shinyjs::enable("ai_generate_suggestion")
+          output$ai_loading_feedback <- shiny::renderUI(NULL)
+          return()
+        }
+
+        ai_task$invoke()
+      } else {
+        # ---- Synkron fallback (shiny < 1.8.0 eller promises mangler) ----------
+        spc_result <- build_export_plot(
+          app_state = app_state,
+          title_input = input$export_title %||% "",
+          dept_input = input$export_department %||% "",
+          plot_context = "export_pdf"
         )
 
-        # Re-enable button and clear loading
+        if (is.null(spc_result) || is.null(spc_result$bfh_qic_result)) {
+          log_error(
+            .context = "EXPORT_MODULE",
+            message = "SPC result generation failed (sync fallback)"
+          )
+          shiny::showNotification(
+            "Kunne ikke analysere SPC-data. Pr\u00f8v igen.",
+            type = "error", duration = 5
+          )
+          shinyjs::enable("ai_generate_suggestion")
+          output$ai_loading_feedback <- shiny::renderUI(NULL)
+          return()
+        }
+
+        analysis_metadata <- build_export_analysis_metadata(
+          bfh_qic_result  = spc_result$bfh_qic_result,
+          target_value    = normalize_mapping(app_state$columns$mappings$target_value),
+          target_text     = normalize_mapping(app_state$columns$mappings$target_text),
+          data_definition = input$pdf_description %||% "",
+          chart_title     = input$export_title %||% "",
+          department      = input$export_department %||% ""
+        )
+
+        suggestion <- safe_operation(
+          operation_name = "AI analysis generation (sync fallback)",
+          code = {
+            BFHcharts::bfh_generate_analysis(
+              spc_result$bfh_qic_result,
+              metadata  = analysis_metadata,
+              use_ai    = TRUE,
+              max_chars = 375L
+            )
+          },
+          fallback = NULL,
+          error_type = "processing"
+        )
+
+        handle_ai_suggestion_result(suggestion, session, output)
         shinyjs::enable("ai_generate_suggestion")
         output$ai_loading_feedback <- shiny::renderUI(NULL)
-
-        return()
       }
-
-      # Gather context from inputs
-      context <- list(
-        data_definition = input$pdf_description %||% "",
-        chart_title = input$export_title %||% "",
-        target_value = normalize_mapping(app_state$columns$mappings$target_value),
-        target_text = normalize_mapping(app_state$columns$mappings$target_text),
-        department = input$export_department %||% ""
-      )
-
-      analysis_metadata <- build_export_analysis_metadata(
-        bfh_qic_result = spc_result$bfh_qic_result,
-        target_value = context$target_value,
-        target_text = context$target_text,
-        data_definition = context$data_definition,
-        chart_title = context$chart_title,
-        department = context$department
-      )
-
-      suggestion <- safe_operation(
-        operation_name = "AI analysis generation",
-        code = {
-          shiny::req(spc_result$bfh_qic_result)
-          BFHcharts::bfh_generate_analysis(
-            spc_result$bfh_qic_result,
-            metadata = analysis_metadata,
-            use_ai = TRUE,
-            max_chars = 375
-          )
-        },
-        fallback = NULL,
-        error_type = "processing"
-      )
-
-      # Update UI based on result
-      if (!is.null(suggestion)) {
-        shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
-        shiny::showNotification(
-          "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
-          type = "message",
-          duration = 3
-        )
-        log_info(
-          .context = "EXPORT_MODULE",
-          message = "AI suggestion inserted",
-          details = list(length = nchar(suggestion))
-        )
-      } else {
-        # Failure: Show error
-        shiny::showNotification(
-          "Kunne ikke generere AI-analyse. Tjek internetforbindelse og pr\u00f8v igen, eller skriv analysen manuelt.",
-          type = "error",
-          duration = 8
-        )
-
-        log_warn(
-          .context = "EXPORT_MODULE",
-          message = "AI suggestion generation failed"
-        )
-      }
-
-      # Re-enable button and clear loading
-      shinyjs::enable("ai_generate_suggestion")
-      output$ai_loading_feedback <- shiny::renderUI(NULL)
     },
     priority = OBSERVER_PRIORITIES$HIGH
   )
+
+  # ---- Observer for ExtendedTask-resultat -------------------------------------
+  # Aktiveres n\u00e5r ai_task fuldf\u00f8res (succes eller fejl)
+  if (!is.null(ai_task)) {
+    shiny::observeEvent(
+      ai_task$result(),
+      ignoreInit = TRUE,
+      {
+        suggestion <- ai_task$result()
+
+        # Tjek for fejlstruktur returneret af wrap_blocking_call
+        if (inherits(suggestion, "ai_task_error")) {
+          log_warn(
+            .context = "EXPORT_MODULE",
+            message  = paste("AI task fejlede:", suggestion$error)
+          )
+          suggestion <- NULL
+        }
+
+        handle_ai_suggestion_result(suggestion, session, output)
+        shinyjs::enable("ai_generate_suggestion")
+        output$ai_loading_feedback <- shiny::renderUI(NULL)
+      }
+    )
+  }
+}
+
+#' H\u00e5ndter AI Suggestion Resultat (intern hj\u00e6lper)
+#'
+#' Opdaterer UI baseret p\u00e5 AI-suggestion-resultatet.
+#' Adskilt fra handler for testbarhed og genbrug (async + sync sti).
+#'
+#' @param suggestion Character string med suggestion, eller NULL ved fejl
+#' @param session Shiny session object
+#' @param output Shiny output object
+#' @keywords internal
+handle_ai_suggestion_result <- function(suggestion, session, output) {
+  if (!is.null(suggestion)) {
+    shiny::updateTextAreaInput(session, "pdf_improvement", value = suggestion)
+    shiny::showNotification(
+      "\u2713 Analyse genereret. Du kan nu redigere teksten efter behov.",
+      type = "message", duration = 3
+    )
+    log_info(
+      .context = "EXPORT_MODULE",
+      message  = "AI suggestion inserted",
+      details  = list(length = nchar(suggestion))
+    )
+  } else {
+    shiny::showNotification(
+      "Kunne ikke generere AI-analyse. Tjek internetforbindelse og pr\u00f8v igen, eller skriv analysen manuelt.",
+      type = "error", duration = 8
+    )
+    log_warn(
+      .context = "EXPORT_MODULE",
+      message  = "AI suggestion generation failed"
+    )
+  }
 }

@@ -98,24 +98,38 @@ extract_anhoej_metadata <- function(qic_data) {
   runs_signal <- any(qic_data$runs.signal, na.rm = TRUE)
 
   # 4. Extract crossings information
-  # Note: BFHchart returns per-phase crossings, we take first value as overall
-  # (consistent with qicharts2 baseline structure)
-  n_crossings <- qic_data$n.crossings[1]
-  n_crossings_min <- qic_data$n.crossings.min[1]
+  # Ved multi-fase charts returnerer BFHchart per-fase værdier (en unik værdi pr. fase
+  # gentaget for alle rækker i fasen). Vi samler korrekt på tværs af faser.
+  has_parts <- "part" %in% names(qic_data) && length(unique(qic_data$part)) > 1
 
-  # Crossings signal: TRUE if n.crossings < n.crossings.min
-  crossings_signal <- !is.na(n_crossings) && !is.na(n_crossings_min) &&
-    n_crossings < n_crossings_min
+  if (has_parts) {
+    # Multi-fase: tag unikke per-fase-værdier og aggreger
+    phase_cross <- tapply(qic_data$n.crossings, qic_data$part, function(x) x[1])
+    phase_cross_min <- tapply(qic_data$n.crossings.min, qic_data$part, function(x) x[1])
+    # Crossings signal: TRUE hvis nogen fase har for få kryds
+    crossings_signal_per_phase <- !is.na(phase_cross) & !is.na(phase_cross_min) &
+      phase_cross < phase_cross_min
+    crossings_signal <- any(crossings_signal_per_phase)
+    # Skalær scalar-felter: NA for multi-fase (ingen enkelt "overall" giver mening)
+    n_crossings <- NA_real_
+    n_crossings_min <- NA_real_
+  } else {
+    n_crossings <- qic_data$n.crossings[1]
+    n_crossings_min <- qic_data$n.crossings.min[1]
+    # Crossings signal: TRUE if n.crossings < n.crossings.min
+    crossings_signal <- !is.na(n_crossings) && !is.na(n_crossings_min) &&
+      n_crossings < n_crossings_min
+  }
 
   # 5. Extract longest run information (if available)
   longest_run <- if ("longest.run" %in% names(qic_data)) {
-    qic_data$longest.run[1]
+    if (has_parts) max(qic_data$longest.run, na.rm = TRUE) else qic_data$longest.run[1]
   } else {
     NA_integer_
   }
 
   longest_run_max <- if ("longest.run.max" %in% names(qic_data)) {
-    qic_data$longest.run.max[1]
+    if (has_parts) max(qic_data$longest.run.max, na.rm = TRUE) else qic_data$longest.run.max[1]
   } else {
     NA_real_
   }

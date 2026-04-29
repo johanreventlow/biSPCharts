@@ -279,6 +279,108 @@ update_column_mapping <- function(app_state, key, value) {
 }
 
 # ============================================================================
+# KOLONNE-SPECIFIKKE ACCESSORS — FASE 4 (fix-state-paths-and-restore-guards)
+# ============================================================================
+
+#' Hent X-kolonne mapping
+#'
+#' Returnerer den aktuelle x_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_x_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$x_column)
+}
+
+#' Hent Y-kolonne mapping
+#'
+#' Returnerer den aktuelle y_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_y_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$y_column)
+}
+
+#' Hent N-kolonne (nævner) mapping
+#'
+#' Returnerer den aktuelle n_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_n_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$n_column)
+}
+
+#' Hent skift-kolonne mapping
+#'
+#' Returnerer den aktuelle skift_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_skift_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$skift_column)
+}
+
+#' Hent frys-kolonne mapping
+#'
+#' Returnerer den aktuelle frys_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_frys_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$frys_column)
+}
+
+#' Hent kommentar-kolonne mapping
+#'
+#' Returnerer den aktuelle kommentar_column-mapping fra app_state.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Character eller NULL
+#'
+#' @keywords internal
+get_kommentar_column <- function(app_state) {
+  shiny::isolate(app_state$columns$mappings$kommentar_column)
+}
+
+# ============================================================================
+# SESSION-RESTORE ACCESSOR — FASE 4 (fix-state-paths-and-restore-guards)
+# ============================================================================
+
+#' Check om session er under genopretning
+#'
+#' Returnerer TRUE hvis app_state$session$restoring_session er sat,
+#' dvs. at appen er i gang med at gendanne en gemt session fra localStorage.
+#' Bruges som guard i observers der ikke må reagere på UI-ændringer
+#' foretaget af restore-logikken.
+#'
+#' @param app_state Centraliseret app state
+#'
+#' @return Logical
+#'
+#' @keywords internal
+is_restoring_session <- function(app_state) {
+  shiny::isolate(app_state$session$restoring_session %||% FALSE)
+}
+
+# ============================================================================
 # VISUALIZATION ACCESSORS — FASE 3 ADDITIONS
 # ============================================================================
 

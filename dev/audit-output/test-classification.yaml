@@ -31,7 +31,12 @@ files:
     rationale: >
       Re-aktiveret i cleanup-legacy-and-restore-test-coverage (Phase 5).
       2 skip-blokke erstattet med BFHcharts 0.10.5+ kompatible assertions
-      (display_scaler fjernet i 0.8.0 — verificerer nu intern normalisering).
+      (display_scaler fjernet i 0.8.0 — verificerer nu intern normalisering
+      via normalize_axis_value-laget, IKKE BFHcharts-plot-laget direkte).
+      Testnavne opdateret til korrekt scope-angivelse.
+      GAP: Denominator-skaleringsregression (100x dobbelt-skalering via
+      BFHcharts-plottet) ikke dækket — kræver BFHcharts-integration-test
+      eller visuel shinytest2. Se follow-up issue for dette.
       51/51 PASS, 0 failures.
     reviewer: johanreventlow
     reviewed_date: '2026-04-29'

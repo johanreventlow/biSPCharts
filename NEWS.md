@@ -1,3 +1,17 @@
+# biSPCharts 0.3.1
+
+## Interne ændringer
+
+* **Bump BFHcharts dependency til >= 0.11.0** (`Imports:` og
+  `Remotes: johanreventlow/BFHcharts@v0.11.0`). BFHcharts v0.11.0
+  inkluderer breaking removal af `print.summary = TRUE` (ingen brug i
+  biSPCharts), nye warnings for kort baseline / cl-override Anhøj
+  (håndteres allerede via `na.rm = TRUE`), NA-bevarelse i
+  `anhoej.signal` (håndteres allerede client-side i
+  `R/fct_anhoej_rules.R` med eksplicit NA-coercion), samt diverse
+  security/test-coverage forbedringer. Ingen kald-site ændringer
+  påkrævet i biSPCharts.
+
 # biSPCharts 0.3.0
 
 ## Nye features

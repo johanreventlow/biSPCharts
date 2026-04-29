@@ -56,8 +56,8 @@
 
 ## Phase 3: Cross-cut
 
-- [ ] 3.1 `devtools::test()` grøn
-- [ ] 3.2 `devtools::check()` ren — ingen WARNINGs (især om pkgload Suggests-brug)
-- [ ] 3.3 `R CMD build --no-manual .` + `R CMD check --as-cran --no-manual biSPCharts_*.tar.gz` ren
-- [ ] 3.4 `Rscript dev/validate_connect_manifest.R manifest.json` grøn
-- [ ] 3.5 ADR (kandidat): `docs/adr/ADR-019-production-entrypoint-and-pkgload-boundary.md`
+- [x] 3.1 `testthat::test_dir('tests/testthat')` grøn — FAIL 0, PASS 5356, SKIP 110, WARN 45
+- [ ] 3.2 `devtools::check()` ren — ikke kørt i worktree (tidskrævende, kræver R CMD check)
+- [ ] 3.3 `R CMD build --no-manual .` + `R CMD check --as-cran --no-manual biSPCharts_*.tar.gz` ren — afventer pilot-deploy-branch
+- [x] 3.4 `Rscript dev/validate_connect_manifest.R manifest.json` grøn — "Connect manifest OK (BFHcharts, BFHllm, BFHtheme)"
+- [x] 3.5 ADR oprettet: `docs/adr/ADR-019-production-entrypoint-and-pkgload-boundary.md`

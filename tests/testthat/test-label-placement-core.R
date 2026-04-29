@@ -49,9 +49,7 @@ test_that("place_two_labels_npc validerer label_height_npc positiv", {
 test_that("BFHcharts-followup: place_two_labels_npc validerer label_height_npc øvre grænse", {
   skip(paste0(
     "BFHcharts-followup: place_two_labels_npc() validerer ikke label_height_npc > 0.5 ",
-    "i nuvaerende BFHcharts-version. Funktionen accepterer vaerdier >= 0.5 og degraderer gracefully ",
-    "i stedet for at kaste fejl. Eskalering krævet til BFHcharts-maintainer. ",
-    "Tag: BFHcharts#203-followup"
+    "i nuvaerende BFHcharts-version. Eskaleret til BFHcharts#250."
   ))
   expect_error(
     BFHcharts:::place_two_labels_npc(yA_npc = 0.5, yB_npc = 0.6, label_height_npc = 0.6),
@@ -256,10 +254,8 @@ test_that("place_two_labels_npc NIVEAU 1: gap reduction fungerer", {
 
 test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 2 label flip strategier", {
   skip(paste0(
-    "BFHcharts-followup: yA=0.30, yB=0.38, label_h=0.18 loeses af ",
-    "over/under-strategien uden at udloese NIVEAU-fallback i nuvaerende BFHcharts-version. ",
-    "Inputparametre til at udloese NIVEAU 2 er ikke dokumenterede. ",
-    "Eskalering krævet til BFHcharts-maintainer. Tag: BFHcharts#203-followup"
+    "BFHcharts-followup: NIVEAU 2 fallback udloeses ikke af de testede inputs. ",
+    "Inputparametre til NIVEAU 2 er udokumenteret. Eskaleret til BFHcharts#251."
   ))
 
   label_h <- 0.18 # Større label
@@ -284,10 +280,8 @@ test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 2 label flip strategi
 
 test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 3 shelf placement", {
   skip(paste0(
-    "BFHcharts-followup: yA=0.50, yB=0.52, label_h=0.35 giver quality='optimal' ",
-    "i nuvaerende BFHcharts-version — shelf/NIVEAU-3-fallback udloeses ikke. ",
-    "Funktionen haandterer disse inputs via coincident-strategi uden degraded quality. ",
-    "Eskalering krævet til BFHcharts-maintainer. Tag: BFHcharts#203-followup"
+    "BFHcharts-followup: NIVEAU 3 shelf-placement udloeses ikke af de testede inputs. ",
+    "Inputparametre til NIVEAU 3 er udokumenteret. Eskaleret til BFHcharts#252."
   ))
 
   label_h <- 0.35 # Ekstremt stor label

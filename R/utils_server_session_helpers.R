@@ -112,7 +112,13 @@ activate_session_timeout_from_config <- function(input, session,
   # Kilde: inst/golem-config.yml → <env>:security:session_timeout_minutes
   timeout_minutes <- tryCatch(
     golem::get_golem_config("security")$session_timeout_minutes,
-    error = function(e) NULL
+    error = function(e) {
+      log_debug(
+        paste("get_golem_config('security') fejlede:", conditionMessage(e)),
+        .context = "SESSION_TIMEOUT"
+      )
+      NULL
+    }
   )
 
   # Ingen konfigureret timeout: deaktivér stiltiende

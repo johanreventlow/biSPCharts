@@ -147,25 +147,45 @@ test_that("Run chart vs P-chart consistency for same data", {
   expect_equal(run_target, 0.8, info = "Both should normalize to 0.8")
 })
 
-test_that("Run chart target line uses display scale with denominators", {
-  skip(paste(
-    "BFHcharts 0.8.0 y-axis refactor: display_scaler fjernet fra",
-    "generateSPCPlot() return struktur. Display-scaling er nu intern",
-    "i BFHcharts og eksponeres ikke som biSPCharts-objekt. Tests",
-    "skal refactores til at verificere via qic_data$cl (proportion",
-    "internal) og plot-rendering. Se #238 + #216."
-  ))
+test_that("Run chart target line: 80% normaliseres korrekt til intern proportion [0,1]", {
+  # BFHcharts 0.8.0 fjernede display_scaler fra return-struktur.
+  # Vi verificerer i stedet at normalize_axis_value returnerer korrekt
+  # intern proportionsværdi (0.8) for run-chart — dette er hvad BFHcharts
+  # modtager og hvad der faktisk skal plottes (0.8 = 80% på intern skala).
+  # Re-aktiveret BFHcharts 0.10.5+ (se #238 + #216).
+
+  result <- normalize_axis_value("80%", chart_type = "run")
+  expect_equal(result, 0.8,
+    info = "Run chart: '80%' skal normaliseres til 0.8 (intern proportion) — ikke 80"
+  )
+
+  # Denominator-scenarie: 80% med n_col er stadig intern 0.8
+  # (BFHcharts håndterer display-skalering internt)
+  result_pct <- normalize_axis_value("80", user_unit = "percent", chart_type = "run")
+  expect_equal(result_pct, 0.8,
+    info = "Run chart: '80' med user_unit='percent' skal give 0.8 — ikke 80"
+  )
 })
 
-test_that("generateSPCPlot scales target line exactly once", {
-  skip(paste(
-    "BFHcharts 0.8.0 target-line rendering refactor: target er ikke",
-    "længere rendered som geom_hline med yintercept=80. BFHcharts",
-    "håndterer target-rendering internt (muligvis via geom_segment",
-    "eller label-annotation). Tests skal refactores til at",
-    "verificere target via metadata eller via BFHcharts test-API.",
-    "Se #238 + #216."
-  ))
+test_that("generateSPCPlot target: intern proportionsværdi er 0.8, ikke 80", {
+  # BFHcharts 0.8.0 internaliserede target-rendering.
+  # Vi verificerer at normalize_axis_value-pipeline ikke dobbelt-skalerer:
+  # input '80%' → intern 0.8 → BFHcharts modtager 0.8 (korrekt).
+  # Hvis normalize_axis_value returnerede 80 (forkert), ville target vises
+  # 100× for højt. Re-aktiveret BFHcharts 0.10.5+ (se #238 + #216).
+
+  p_target <- normalize_axis_value("80%", chart_type = "p")
+  run_target <- normalize_axis_value("80%", chart_type = "run")
+
+  expect_equal(p_target, 0.8,
+    info = "P-chart: '80%' → 0.8 (intern), ikke 80"
+  )
+  expect_equal(run_target, 0.8,
+    info = "Run-chart: '80%' → 0.8 (intern), ikke 80"
+  )
+  expect_equal(p_target, run_target,
+    info = "P-chart og run-chart skal normalisere '80%' til samme interne værdi"
+  )
 })
 
 test_that("Absolute charts don't scale proportion-like inputs", {

@@ -70,6 +70,12 @@ tests/testthat/testthat-problems.rds
 # Typst test-artefakter
 inst/templates/typst/test_output.*
 
+# Proprietære assets — leveres af BFHchartsAssets companion-pakke ved runtime
+# Disse må ALDRIG commits til public repo (Mari = RegionH custom font;
+# Arial = Microsoft/Monotype EULA; logos = Region Hovedstaden brand)
+inst/templates/typst/bfh-template/fonts/
+inst/templates/typst/bfh-template/images/
+
 # Test audit output (rapporter genereres on-demand)
 dev/audit-output/*.json
 dev/audit-output/*.rds

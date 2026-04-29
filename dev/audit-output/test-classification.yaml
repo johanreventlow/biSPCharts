@@ -286,6 +286,14 @@ files:
       som stub.
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-denominator-prefilter.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Tests for denominator pre-filter (PR #351). 13 pass, 0 fail.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-dependency-guards.R
     audit_category: green
     type: unit

@@ -21,6 +21,7 @@ generateSPCPlot(
   viewport_height = NULL,
   target_text = NULL,
   qic_cache = NULL,
+  app_state = NULL,
   plot_context = "analysis",
   override_dpi = NULL
 )

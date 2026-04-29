@@ -72,6 +72,13 @@ register_chart_type_events <- function(app_state, emit, input, session, register
         safe_operation(
           "Toggle n_column enabled state by chart type and y-axis unit",
           code = {
+            # Guard: Ignorer chart_type-ændringer under session-restore
+            # (forhindrer race condition hvor restore-indsat chart_type
+            #  trigger UI-ændringer før kolonner og y-akse er gendannet)
+            if (isTRUE(shiny::isolate(app_state$session$restoring_session))) {
+              return(invisible(NULL))
+            }
+
             ct <- input_scalar(input$chart_type, default = "run")
             enabled <- chart_type_requires_denominator(ct)
 

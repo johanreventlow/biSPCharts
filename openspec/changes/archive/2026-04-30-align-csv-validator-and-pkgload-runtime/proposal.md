@@ -1,3 +1,11 @@
+> **STATUS (2026-04-30):** Phase 1 (CSV-paritet) leveret i commit `86db922`
+> + `45f3dd10` (release 0.3.2). Phase 2 (pkgload-runtime) **SUPERSEDED** af
+> PR #382 / ADR-019 v2: Beslutning B (`library(biSPCharts)`) blev rullet
+> tilbage til Beslutning A (`pkgload::load_all()` + pkgload i Imports)
+> efter pilot-deploy fejlede på Connect Cloud (error_id
+> 5be1e4f7-7628-48d2-9310-3ffc8c0bb3aa). Klar til arkivering efter #382 merge.
+> Detaljer: `docs/adr/ADR-019-production-entrypoint-and-pkgload-boundary.md`.
+
 ## Why
 
 To Codex-fund med medium-til-high severity adresseres her som de er distinkte men begge handler om "kontrakt der ikke matcher implementering":

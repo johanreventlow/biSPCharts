@@ -49,8 +49,9 @@
 #'   "u", "up", "c", "g". Required. Use qicharts2-style codes (lowercase).
 #' @param n_var character. Name of denominator variable for rate-based charts
 #'   (P, P', U, U' charts). Default NULL. Required for charts with denominators.
-#' @param cl_var character. Name of control limit override variable. Allows custom
-#'   centerline per data point. Default NULL (auto-calculate).
+#' @param cl_var character. Ikke understøttet: BFHcharts accepterer kun skalær centerline,
+#'   ikke per-række værdier. Sættes cl_var kaster validate_spc_request() spc_input_error.
+#'   Brug 'part_var' til fase-opdeling med automatisk centerline per fase. Default NULL.
 #' @param freeze_var character. Name of freeze period indicator variable. Marks
 #'   baseline period for control limit calculation. Default NULL (no freeze).
 #' @param part_var character. Name of part/subgroup/phase variable. Enables

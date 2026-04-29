@@ -491,6 +491,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
                                          viewport_height = NULL,
                                          target_text = NULL,
                                          qic_cache = NULL,
+                                         app_state = NULL,
                                          plot_context = "analysis",
                                          override_dpi = NULL) {
   # Supported chart types (fra config_chart_types.R)
@@ -630,7 +631,10 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         # via smart_convert_to_inches (som fejlagtigt antager cm for 10-100 range)
         width = viewport_width_inches,
         height = viewport_height_inches,
-        units = "in"
+        units = "in",
+        # Issue #284: app_state required for cache layer (read_spc_cache/write_spc_cache).
+        # Uden app_state er cache no-op og hver kald rekomputerer fra bunden.
+        app_state = app_state
       )
     },
     error = function(e) {

@@ -45,8 +45,9 @@ build_spc_excel <- function(data,
   wb <- openxlsx::createWorkbook()
 
   # --- Ark 1: Data ---
+  # Sanitér string-kolonner mod Excel formula injection (=, +, -, @, \t, \r)
   openxlsx::addWorksheet(wb, "Data")
-  openxlsx::writeData(wb, sheet = "Data", x = data, rowNames = FALSE)
+  openxlsx::writeData(wb, sheet = "Data", x = sanitize_csv_output(data), rowNames = FALSE)
 
   # --- Ark 2: Indstillinger ---
   openxlsx::addWorksheet(wb, "Indstillinger")
@@ -84,9 +85,10 @@ build_spc_excel <- function(data,
     )
   }
   names(meta_df)[2] <- "V\u00e6rdi"
+  # Sanit\u00e9r bruger-meta (titel, afdeling, beskrivelse) mod formula injection
   openxlsx::writeData(wb,
     sheet = "Indstillinger",
-    x = meta_df, startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE
+    x = sanitize_csv_output(meta_df), startRow = INDSTILLINGER_HEADER_ROWS + 1L, rowNames = FALSE
   )
 
   # --- Ark 3: SPC-analyse (kun hvis qic_data er gyldig) ---

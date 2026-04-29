@@ -254,41 +254,21 @@ validate_csv_file <- function(file_path) {
   safe_operation(
     "Validate CSV file structure",
     code = {
-      # Try to read first few lines to validate structure
-      sample_data <- readr::read_csv2(
-        file_path,
-        locale = readr::locale(
-          decimal_mark = ",",
-          grouping_mark = ".",
-          encoding = UTF8_ENCODING
-        ),
-        n_max = 5,
-        show_col_types = FALSE
-      )
+      # Brug shared delimiter-detektion (spejler parser-kaskaden i
+      # fct_file_parse_pure.R) saa validator accepterer ALT som parser kan haandtere.
+      detection <- detect_csv_delimiter(file_path, encoding = UTF8_ENCODING)
 
-      if (ncol(sample_data) == 0) {
+      if (!detection$parseable) {
         errors <- c(errors, paste0(
-          "Filen ser ud til at v\u00e6re tom eller har ingen kolonner. ",
-          "Kontroll\u00e9r at filen indeholder data med overskrifter."
+          "Filen kunne ikke l\u00e6ses som CSV. ",
+          "Pr\u00f8v at eksportere filen fra Excel som 'CSV (semikolon-separeret)' ",
+          "eller 'CSV (kommasepareret)'."
         ))
-      }
-
-      if (nrow(sample_data) == 0) {
-        errors <- c(errors, paste0(
-          "Filen indeholder kun overskrifter men ingen data. ",
-          "Kontroll\u00e9r at der er r\u00e6kker med data under overskriftsr\u00e6kken."
-        ))
-      }
-
-      # Tjek om data bruger forkert kolonneadskiller
-      if (ncol(sample_data) == 1 && nrow(sample_data) > 0) {
-        first_value <- as.character(sample_data[1, 1])
-        if (grepl("[,;\\t]", first_value)) {
+      } else {
+        if (detection$nrow == 0) {
           errors <- c(errors, paste0(
-            "Din CSV-fil bruger muligvis komma eller tabulator som ",
-            "kolonneadskiller. biSPCharts forventer semikolon (;), som ",
-            "er standarden i dansk Excel. Pr\u00f8v at eksportere ",
-            "filen igen som 'CSV (semikolon-separeret)' fra Excel."
+            "Filen indeholder kun overskrifter men ingen data. ",
+            "Kontroll\u00e9r at der er r\u00e6kker med data under overskriftsr\u00e6kken."
           ))
         }
       }

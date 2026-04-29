@@ -9,8 +9,8 @@
 #' @keywords internal
 session_timeout_message <- function() {
   paste0(
-    "Session udløbet pga. inaktivitet. ",
-    "Genindlæs siden for at fortsætte."
+    "Session udl\u00f8bet pga. inaktivitet. ",
+    "Genindl\u00e6s siden for at forts\u00e6tte."
   )
 }
 
@@ -52,7 +52,7 @@ setup_session_timeout <- function(session, minutes,
         if (cancelled) {
           return(invisible(NULL))
         }
-        # Vis dansk notifikation hvis session-context understøtter det
+        # Vis dansk notifikation hvis session-context understoetter det
         tryCatch(
           shiny::showNotification(
             session_timeout_message(),
@@ -109,9 +109,9 @@ setup_session_timeout <- function(session, minutes,
 activate_session_timeout_from_config <- function(input, session,
                                                  .scheduler = later::later) {
   # Hent timeout fra security-blok i golem-config (production: 60 min, dev: 480 min)
-  # Kilde: inst/golem-config.yml → <env>:security:session_timeout_minutes
+  # Kilde: inst/golem-config.yml -> <env>:security:session_timeout_minutes
   timeout_minutes <- tryCatch(
-    golem::get_golem_config("security")$session_timeout_minutes,
+    golem::get_golem_options("security")$session_timeout_minutes,
     error = function(e) {
       log_debug(
         paste("get_golem_config('security') fejlede:", conditionMessage(e)),
@@ -121,10 +121,10 @@ activate_session_timeout_from_config <- function(input, session,
     }
   )
 
-  # Ingen konfigureret timeout: deaktivér stiltiende
+  # Ingen konfigureret timeout: deaktiver stiltiende
   if (is.null(timeout_minutes) || !is.numeric(timeout_minutes) || timeout_minutes <= 0) {
     log_debug(
-      "Ingen session timeout konfigureret — deaktiveret",
+      "Ingen session timeout konfigureret \u2014 deaktiveret",
       .context = "SESSION_TIMEOUT"
     )
     return(invisible(NULL))

@@ -137,11 +137,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                   .context = "[Y_AXIS_UI]"
                 )
               } else {
-                columns_state <- shiny::isolate(app_state$columns)
-                n_val <- tryCatch(shiny::isolate(columns_state$n_column), error = function(...) NULL)
-                if (is.null(n_val)) {
-                  n_val <- tryCatch(shiny::isolate(columns_state$mappings$n_column), error = function(...) NULL)
-                }
+                n_val <- shiny::isolate(app_state$columns$mappings$n_column)
                 n_present <- has_input_value(n_val)
                 if (n_present) {
                   current_ui <- input_scalar(input$y_axis_unit, default = "count")

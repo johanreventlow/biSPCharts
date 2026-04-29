@@ -18,7 +18,7 @@ BugReports: https://github.com/johanreventlow/biSPCharts/issues
 Depends:
     R (>= 4.1.0)
 Imports:
-    shiny (>= 1.7.0),
+    shiny (>= 1.8.0),
     bslib (>= 0.4.0),
     shinyjs (>= 2.1.0),
     ggplot2 (>= 3.4.0),

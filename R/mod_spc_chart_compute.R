@@ -173,12 +173,12 @@ create_spc_results_reactive <- function(
           plot_context = "analysis" # M11: Analyse-side uses "analysis" context
         )
 
-        # Vis advarsel hvis denominator-rækker blev filtreret
+        # Vis advarsel hvis denominator-raekker blev filtreret
         n_dropped <- spc_result$metadata$dropped_denominator_rows %||% 0L
         if (n_dropped > 0) {
           shiny::showNotification(
             sprintf(
-              "Droppet %d rækker med ugyldig nævner (n ≤ 0, uendelig eller y > n). Chartet viser resterende %d rækker.",
+              "Droppet %d r\u00e6kker med ugyldig n\u00e6vner (n \u2264 0, uendelig eller y > n). Chartet viser resterende %d r\u00e6kker.",
               n_dropped, nrow(spc_result$qic_data)
             ),
             type = "warning",

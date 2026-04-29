@@ -581,12 +581,12 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     x_col_val <- "spc_row_index"
   }
 
-  # Denominator pre-filter: fjern rækker med ugyldige n-værdier
+  # Denominator pre-filter: fjern raekker med ugyldige n-vaerdier
   # BFHcharts 0.9.0+ kaster hard error ved n <= 0, Inf, NA, eller y > n (P/PP)
   n_dropped_denom <- 0L
   if (!is.null(n_col_val) && n_col_val %in% names(data) &&
     chart_type %in% c("p", "pp", "u", "up")) {
-    # parse_danish_number håndterer "50,0" → 50 korrekt (as.numeric ville give NA)
+    # parse_danish_number haandterer "50,0" -> 50 korrekt (as.numeric ville give NA)
     n_vals <- suppressWarnings(parse_danish_number(data[[n_col_val]]))
     bad_rows <- is.na(n_vals) | n_vals <= 0 | is.infinite(n_vals)
     if (chart_type %in% c("p", "pp") && !is.null(y_col_val) && y_col_val %in% names(data)) {
@@ -597,7 +597,7 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     if (n_dropped_denom > 0) {
       data <- data[!bad_rows, ]
       log_warn(
-        sprintf("Denominator pre-filter: %d rækker fjernet (n<=0, Inf, NA, eller y>n)", n_dropped_denom),
+        sprintf("Denominator pre-filter: %d r\u00e6kker fjernet (n<=0, Inf, NA, eller y>n)", n_dropped_denom),
         .context = "BFH_SERVICE"
       )
     }

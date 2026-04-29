@@ -192,21 +192,21 @@ validate_spc_request <- function(
     }
   }
 
-  # 13. cl_var understøttes ikke: BFHcharts' cl-parameter accepterer kun skalær (len=1),
-  # ikke per-række centerline. Tavs ignorering er farligere end fejl -- klinikere
-  # tror at appen respekterer cl_var-konfigurationen. Fail-fast til bruger ved sæt.
+  # 13. cl_var understoettes ikke: BFHcharts' cl-parameter accepterer kun skalaer (len=1),
+  # ikke per-raekke centerline. Tavs ignorering er farligere end fejl -- klinikere
+  # tror at appen respekterer cl_var-konfigurationen. Fail-fast til bruger ved saet.
   if (!is.null(cl_var) && nzchar(trimws(cl_var))) {
     spc_abort(
       paste0(
-        "cl_var-parameteret ('", cl_var, "') understøttes ikke i nuværende version. ",
-        "BFHcharts understøtter kun skalær centerline (cl), ikke per-række værdier. ",
+        "cl_var-parameteret ('", cl_var, "') underst\u00f8ttes ikke i nuv\u00e6rende version. ",
+        "BFHcharts underst\u00f8tter kun skal\u00e6r centerline (cl), ikke per-r\u00e6kke v\u00e6rdier. ",
         "Brug 'part_var' til fase-opdeling med automatisk centerline per fase."
       ),
       class = "spc_input_error"
     )
   }
 
-  # 15. P/P'-kort: tæller <= nævner (proportion kan ikke overstige 1)
+  # 15. P/P'-kort: taeller <= naevner (proportion kan ikke overstige 1)
   if (!is.null(n_var) && n_var %in% names(data) && ct_normalized %in% c("p", "pp")) {
     y_num <- suppressWarnings(as.numeric(data[[y_var]]))
     if (all(is.na(y_num)) && is.character(data[[y_var]])) {
@@ -221,9 +221,9 @@ validate_spc_request <- function(
       first_invalid <- which(invalid_prop)[1]
       spc_abort(
         paste0(
-          "Tæller-kolonne '", y_var, "' overstiger nævner-kolonne '", n_var, "' ",
-          "i række ", first_invalid, " (", y_num[first_invalid], " > ", n_vals2[first_invalid], "). ",
-          "P-kort kræver at tæller ≤ nævner (proportioner kan ikke overskride 100%)."
+          "T\u00e6ller-kolonne '", y_var, "' overstiger n\u00e6vner-kolonne '", n_var, "' ",
+          "i r\u00e6kke ", first_invalid, " (", y_num[first_invalid], " > ", n_vals2[first_invalid], "). ",
+          "P-kort kr\u00e6ver at t\u00e6ller \u2264 n\u00e6vner (proportioner kan ikke overskride 100%)."
         ),
         class = "spc_input_error"
       )

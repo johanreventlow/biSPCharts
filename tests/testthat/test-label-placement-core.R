@@ -46,14 +46,11 @@ test_that("place_two_labels_npc validerer label_height_npc positiv", {
   )
 })
 
-test_that("BFHcharts-followup: place_two_labels_npc validerer label_height_npc øvre grænse", {
-  skip(paste0(
-    "BFHcharts-followup: place_two_labels_npc() validerer ikke label_height_npc > 0.5 ",
-    "i nuvaerende BFHcharts-version. Eskaleret til BFHcharts#250."
-  ))
-  expect_error(
+test_that("place_two_labels_npc advarer ved label_height_npc > 0.5", {
+  # BFHcharts 0.10.5 (#250): graceful degradation med warning i stedet for hard error
+  expect_warning(
     BFHcharts:::place_two_labels_npc(yA_npc = 0.5, yB_npc = 0.6, label_height_npc = 0.6),
-    "label_height_npc må ikke overstige 0.5"
+    "degraded placement"
   )
 })
 
@@ -252,52 +249,44 @@ test_that("place_two_labels_npc NIVEAU 1: gap reduction fungerer", {
   expect_gte(abs(result$yA - result$yB), label_h * 0.95)
 })
 
-test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 2 label flip strategier", {
-  skip(paste0(
-    "BFHcharts-followup: NIVEAU 2 fallback udloeses ikke af de testede inputs. ",
-    "Inputparametre til NIVEAU 2 er udokumenteret. Eskaleret til BFHcharts#251."
-  ))
-
-  label_h <- 0.18 # Større label
+test_that("place_two_labels_npc NIVEAU 2 label flip strategi", {
+  # BFHcharts 0.10.5 (#251): dokumenterede NIVEAU 2b-trigger-inputs
+  label_h <- 0.20
 
   result <- BFHcharts:::place_two_labels_npc(
     yA_npc = 0.30,
-    yB_npc = 0.38, # Meget tætte linjer
+    yB_npc = 0.48,
     label_height_npc = label_h,
     pref_pos = c("under", "under"),
     priority = "A"
   )
 
-  # Skal bruge et niveau af collision avoidance
-  expect_true(any(grepl("NIVEAU", result$warnings)))
+  # NIVEAU 2 collision avoidance skal triggere
+  expect_true(any(grepl("NIVEAU 2", result$warnings)))
 
-  # Quality skal være acceptable eller suboptimal
-  expect_true(result$placement_quality %in% c("optimal", "acceptable", "suboptimal", "degraded"))
+  # Quality skal være acceptable jf. dokumentation
+  expect_equal(result$placement_quality, "acceptable")
 
   # Labels må ikke overlappe
   expect_gte(abs(result$yA - result$yB), label_h * 0.95)
 })
 
-test_that("BFHcharts-followup: place_two_labels_npc NIVEAU 3 shelf placement", {
-  skip(paste0(
-    "BFHcharts-followup: NIVEAU 3 shelf-placement udloeses ikke af de testede inputs. ",
-    "Inputparametre til NIVEAU 3 er udokumenteret. Eskaleret til BFHcharts#252."
-  ))
-
-  label_h <- 0.35 # Ekstremt stor label
+test_that("place_two_labels_npc NIVEAU 3 shelf placement", {
+  # BFHcharts 0.10.5 (#252): dokumenterede NIVEAU 3-trigger-inputs
+  label_h <- 0.40
 
   result <- BFHcharts:::place_two_labels_npc(
-    yA_npc = 0.50,
-    yB_npc = 0.52, # Meget tætte linjer med stor label
+    yA_npc = 0.20,
+    yB_npc = 0.50,
     label_height_npc = label_h,
     pref_pos = c("under", "under"),
     priority = "A"
   )
 
-  # Skal nå NIVEAU 3
+  # NIVEAU 3 shelf placement skal triggere
   expect_true(any(grepl("NIVEAU 3|shelf placement", result$warnings)))
 
-  # Quality skal være degraded
+  # Quality skal være degraded jf. dokumentation
   expect_equal(result$placement_quality, "degraded")
 
   # Labels skal være placeret (selv om det ikke er optimalt)

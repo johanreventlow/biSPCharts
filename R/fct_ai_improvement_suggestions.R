@@ -80,18 +80,26 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
           "CPR-mønster fundet i data_definition — viser advarsel, afbryder AI-kald",
           .context = "AI_SUGGESTION"
         )
-        shiny::showModal(shiny::modalDialog(
-          title = "Mulig patientdata opdaget",
-          shiny::p(
-            "Beskrivelsesfeltet ser ud til at indeholde et CPR-nummer eller ",
-            "lignende personidentifikation. Patientdata må ikke sendes til AI."
-          ),
-          shiny::p(
-            "Fjern venligst persondataene fra indikatorbeskrivelsen og prøv igen."
-          ),
-          footer = shiny::modalButton("Luk"),
-          easyClose = TRUE
-        ))
+        tryCatch(
+          shiny::showModal(shiny::modalDialog(
+            title = "Mulig patientdata opdaget",
+            shiny::p(
+              "Beskrivelsesfeltet ser ud til at indeholde et CPR-nummer eller ",
+              "lignende personidentifikation. Patientdata må ikke sendes til AI."
+            ),
+            shiny::p(
+              "Fjern venligst persondataene fra indikatorbeskrivelsen og prøv igen."
+            ),
+            footer = shiny::modalButton("Luk"),
+            easyClose = TRUE
+          )),
+          error = function(e) {
+            log_debug(
+              paste("showModal fejlede (sandsynligvis uden for Shiny-kontekst):", e$message),
+              .context = "AI_SUGGESTION"
+            )
+          }
+        )
         return(NULL)
       }
 

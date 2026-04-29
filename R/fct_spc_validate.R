@@ -182,6 +182,30 @@ validate_spc_request <- function(
     }
   }
 
+  # 13. P/P'-kort: tæller <= nævner (proportion kan ikke overstige 1)
+  if (!is.null(n_var) && n_var %in% names(data) && ct_normalized %in% c("p", "pp")) {
+    y_num <- suppressWarnings(as.numeric(data[[y_var]]))
+    if (all(is.na(y_num)) && is.character(data[[y_var]])) {
+      y_num <- suppressWarnings(as.numeric(gsub(",", ".", data[[y_var]])))
+    }
+    n_vals2 <- suppressWarnings(as.numeric(data[[n_var]]))
+    if (all(is.na(n_vals2)) && is.character(data[[n_var]])) {
+      n_vals2 <- suppressWarnings(as.numeric(gsub(",", ".", data[[n_var]])))
+    }
+    invalid_prop <- !is.na(y_num) & !is.na(n_vals2) & y_num > n_vals2
+    if (any(invalid_prop)) {
+      first_invalid <- which(invalid_prop)[1]
+      spc_abort(
+        paste0(
+          "Tæller-kolonne '", y_var, "' overstiger nævner-kolonne '", n_var, "' ",
+          "i række ", first_invalid, " (", y_num[first_invalid], " > ", n_vals2[first_invalid], "). ",
+          "P-kort kræver at tæller ≤ nævner (proportioner kan ikke overskride 100%)."
+        ),
+        class = "spc_input_error"
+      )
+    }
+  }
+
   new_spc_request(
     data = data,
     x_var = x_var,

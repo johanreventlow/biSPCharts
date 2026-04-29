@@ -138,7 +138,7 @@ register_autodetect_events <- function(app_state, emit, session, register_observ
           },
           fallback = {
             # Only reset in_progress if autodetect_engine didn't handle it
-            if (shiny::isolate(app_state$columns$auto_detect$in_progress)) {
+            if (get_autodetect_status(app_state)$in_progress) {
               app_state$columns$auto_detect$in_progress <- FALSE
             }
           },
@@ -162,7 +162,7 @@ register_autodetect_events <- function(app_state, emit, session, register_observ
         app_state$columns$auto_detect$completed <- TRUE
 
         # Trigger UI sync if columns were detected
-        auto_detect_results <- shiny::isolate(app_state$columns$auto_detect$results)
+        auto_detect_results <- get_autodetect_status(app_state)$results
 
         if (!is.null(auto_detect_results)) {
           # Vis notifikation med detekterede kolonner

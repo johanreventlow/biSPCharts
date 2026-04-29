@@ -15,11 +15,11 @@
 
 
 metadata:
-  total_files: 128
+  total_files: 130
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 111
+    reviewed: 113
     unreviewed: 17
     needs_triage: 0
 files:
@@ -718,6 +718,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-security-config-validator.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer golem-config security-flag whitelist.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-security-session-tokens.R
     audit_category: green
     type: unit
@@ -733,6 +741,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-session-timeout.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test fra enforce-or-remove-security-config PR. Verificerer setup_session_timeout() helper.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-29'
   - file: test-session-token-sanitization.R
     audit_category: green
     type: unit

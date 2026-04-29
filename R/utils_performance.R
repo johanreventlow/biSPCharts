@@ -213,3 +213,49 @@ get_session_cache <- function(session = NULL) {
     return(.performance_cache)
   }
 }
+
+# STANDARD COLUMN HELPERS =====================================================
+# Moved from utils_server_performance.R (which had no other functions)
+
+#' Ensure Standard Columns
+#'
+#' Sikrer at data-frame har standard kolonnestruktur med Skift og Frys kolonner.
+#'
+#' @param data Data frame der skal standardiseres
+#' @return Standardiseret data frame
+#' @keywords internal
+ensure_standard_columns <- function(data) {
+  if (is.null(data) || nrow(data) == 0) {
+    return(data)
+  }
+
+  # Tilføj Skift som kolonne 1 hvis den mangler
+  if (!"Skift" %in% names(data)) {
+    data <- dplyr::bind_cols(
+      tibble::tibble(Skift = rep(FALSE, nrow(data))),
+      data
+    )
+  }
+
+  # Tilføj Frys som kolonne 2 (efter Skift) hvis den mangler
+  if (!"Frys" %in% names(data)) {
+    skift_pos <- which(names(data) == "Skift")
+    if (skift_pos < ncol(data)) {
+      data <- dplyr::bind_cols(
+        data[, 1:skift_pos, drop = FALSE],
+        tibble::tibble(Frys = rep(FALSE, nrow(data))),
+        data[, (skift_pos + 1):ncol(data), drop = FALSE]
+      )
+    } else {
+      data <- dplyr::bind_cols(
+        data,
+        tibble::tibble(Frys = rep(FALSE, nrow(data)))
+      )
+    }
+  }
+
+  # Sikre gyldige kolonnenavne
+  names(data) <- make.names(names(data), unique = TRUE)
+
+  data
+}

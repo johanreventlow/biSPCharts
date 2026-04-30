@@ -44,8 +44,8 @@
 
 ## 7. NEWS + dokumentation
 
-- [ ] 7.1 NEWS.md / CHANGELOG.md entry under `## Sikkerhed`
-- [ ] 7.2 Opdatér `CLAUDE.md` med BFHchartsAssets-dependency reference
+- [x] 7.1 NEWS.md `## Sikkerhed`-sektion under 0.3.2 (committed via PR #398)
+- [x] 7.2 CLAUDE.md BFHchartsAssets-reference (Technology Stack + External Package Ownership, committed via PR #398)
 
 ## 8. License-history follow-up
 

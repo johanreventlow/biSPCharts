@@ -559,6 +559,18 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-inject-template-assets.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: >
+      NY i adopt-bfhcharts-assets-companion (Phase 5). 4 tests med
+      mockery-stubs: missing companion (FALSE + no error), delegation-success,
+      companion-fejl-fallback. Daekker spec-scenarier fra
+      openspec/specs/export-preview. 7/7 PASS.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-30'
   - file: test-integration-workflows.R
     audit_category: green
     type: integration

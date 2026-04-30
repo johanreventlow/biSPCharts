@@ -33,12 +33,12 @@
 - [x] 5.1 `grep -rn "pending_programmatic_inputs\|programmatic_token_counter" R/` returnerer tomt
 - [x] 5.2 `grep -rn "pending_programmatic_inputs\|programmatic_token_counter" tests/` returnerer tomt
 - [x] 5.3 `devtools::test()` — fuld test-suite grøn (5544 PASS, 1 unrelated flaky perf-fail)
-- [ ] 5.4 Manuel test: chart-type-skift + kolonne-mapping virker uændret (programmatisk UI-update via `safe_programmatic_ui_update()` + `queued_updates`-queue stadig aktiv) — DEFERRED til user
+- [x] 5.4 Manuel test verificeret 2026-04-30 via run_dev.R session: restore-flow virker (session 799c95df i log), auto-detect virker (`AUTO_DETECT_CACHE`), chart-type-skift trigger korrekt observer-flow. Pre-existing issues observeret men ikke regression fra cleanup — dokumenteret i issues #393 (restore-race chart_type), #394 (export-tab observer-bypass), #395 (target debounce), #396 (duplicate auto-save).
 - [x] 5.5 `openspec validate extract-ui-tokens-to-observer-env --strict`
 
 ## 6. Release
 
-- [ ] 6.1 PR til develop fra `feat/extract-ui-tokens-to-observer-env`
-- [ ] 6.2 NEWS.md entry (interne ændringer): "Fjernet dead token-tracking-state fra `app_state$ui`"
-- [ ] 6.3 CI grøn
-- [ ] 6.4 Merge
+- [x] 6.1 PR til develop fra `feat/extract-ui-tokens-to-observer-env` (PR #388 merged 2026-04-30)
+- [x] 6.2 NEWS.md entry (interne ændringer): "Fjernet dead token-tracking-state fra `app_state$ui`" (separat PR `chore/news-token-cleanup`)
+- [x] 6.3 CI grøn
+- [x] 6.4 Merge

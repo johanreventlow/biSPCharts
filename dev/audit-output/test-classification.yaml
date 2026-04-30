@@ -131,6 +131,14 @@ files:
       fail-ratio. [Fase 3: salvage-fixed]'
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-autogen-suspend.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Ny test for autogen_active flag-mekanisme der suspenderer settings_save under pdf_improvement-autogen. Følger op på #396.
+    reviewer: johanreventlow
+    reviewed_date: '2026-04-30'
   - file: test-bfh-error-handling.R
     audit_category: green
     type: unit

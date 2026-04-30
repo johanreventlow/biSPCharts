@@ -4,6 +4,17 @@
 # CHART TYPE AND COLUMN SELECTION EVENT HANDLERS
 #
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
+#
+# Arkitektur (efter split-register-chart-type-events):
+#   register_chart_type_events() -- composition (<=150 linjer)
+#   observe_chart_type_input()   -- etablerer chart_type-observer
+#   update_ui_for_chart_type()   -- UI-kald via shinyjs + updateSelectizeInput
+#   observe_y_axis_unit_input()  -- etablerer y_axis_unit-observer
+#   observe_n_column_change()    -- etablerer n_column-observer
+#   observe_target_value()       -- etablerer target_value-observer
+#   observe_centerline_value()   -- etablerer centerline_value-observer
+#
+# Pure transition: sync_chart_type_to_state() i R/fct_chart_type_transition.R
 # ==============================================================================
 
 #' Register Chart Type Events
@@ -27,17 +38,6 @@
 register_chart_type_events <- function(app_state, emit, input, session, register_observer) {
   observers <- list()
 
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
-  has_input_value <- function(value) {
-    nzchar(input_scalar(value, default = ""))
-  }
-
   # ============================================================================
   # COLUMN SELECTION OBSERVERS (CONSOLIDATED - PERFORMANCE OPTIMIZATION)
   # ============================================================================
@@ -55,8 +55,8 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 
   columns_to_observe <- c("x_column", "y_column", "n_column", "skift_column", "frys_column", "kommentar_column")
 
-  # Use purrr::walk to create observers without returning list
-  # (observers are registered via register_observer closure)
+  # Brug purrr::walk til observer-oprettelse uden at returnere en liste
+  # (observers registreres via register_observer-closure)
   purrr::walk(columns_to_observe, function(col) {
     observers[[paste0("input_", col)]] <- register_observer(
       paste0("input_", col),
@@ -64,90 +64,118 @@ register_chart_type_events <- function(app_state, emit, input, session, register
     )
   })
 
-  # Chart type observer
-  observers$chart_type <- register_observer(
+  # Chart type observer -- via udskilt helper
+  observers$chart_type <- observe_chart_type_input(
+    input, session, app_state, register_observer
+  )
+
+  # Y-axis unit observer -- via udskilt helper
+  observers$y_axis_unit <- observe_y_axis_unit_input(
+    input, session, app_state, register_observer
+  )
+
+  # N-column change observer -- via udskilt helper
+  observers$n_column_change <- observe_n_column_change(
+    input, session, app_state, register_observer
+  )
+
+  # Target value observer -- via udskilt helper
+  observers$target_value <- observe_target_value(
+    input, session, app_state, register_observer
+  )
+
+  # Centerline value observer -- via udskilt helper
+  observers$centerline_value <- observe_centerline_value(
+    input, session, app_state, register_observer
+  )
+
+  # Passiv timing-monitor
+  if (!is.null(app_state$ui)) {
+    observers$timing_monitor <- register_observer(
+      "timing_monitor",
+      shiny::observeEvent(app_state$ui$last_programmatic_update,
+        ignoreInit = TRUE,
+        priority = OBSERVER_PRIORITIES$LOWEST,
+        {
+          current_time <- Sys.time()
+          last_update <- shiny::isolate(app_state$ui$last_programmatic_update)
+
+          if (!is.null(last_update)) {
+            freeze_state <- shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger) %||% FALSE
+
+            autodetect_in_progress <- if (!is.null(app_state$columns)) {
+              shiny::isolate(app_state$columns$auto_detect$in_progress) %||% FALSE
+            } else {
+              FALSE
+            }
+          }
+        }
+      )
+    )
+  }
+
+  observers
+}
+
+# ==============================================================================
+# OBSERVE_CHART_TYPE_INPUT
+# Etablerer observer paa input$chart_type.
+# Kalder sync_chart_type_to_state() (pure) + update_ui_for_chart_type() (UI).
+# ==============================================================================
+
+#' Etabler observer for chart_type-input
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Observer-objekt
+#' @keywords internal
+#' @noRd
+observe_chart_type_input <- function(input, session, app_state, register_observer) {
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  has_input_value <- function(value) {
+    nzchar(input_scalar(value, default = ""))
+  }
+
+  register_observer(
     "chart_type",
     shiny::observeEvent(input$chart_type,
       {
         safe_operation(
           "Toggle n_column enabled state by chart type and y-axis unit",
           code = {
-            # Guard: Ignorer chart_type-ændringer under session-restore
+            # Guard: Ignorer chart_type-aendringer under session-restore
             # (forhindrer race condition hvor restore-indsat chart_type
-            #  trigger UI-ændringer før kolonner og y-akse er gendannet)
+            #  trigger UI-aendringer foer kolonner og y-akse er gendannet)
             if (isTRUE(is_restoring_session(app_state))) {
               return(invisible(NULL))
             }
 
             ct <- input_scalar(input$chart_type, default = "run")
-            enabled <- chart_type_requires_denominator(ct)
 
-            # FIX: Special handling for run charts - check y-axis unit too
-            # Run charts don't REQUIRE denominator, but support it with percent y-axis
-            qic_ct <- get_qic_chart_type(ct)
-            if (identical(qic_ct, "run")) {
-              # For run charts, n_column state depends on y-axis unit
-              current_ui <- input_scalar(input$y_axis_unit, default = "count")
-              enabled <- identical(current_ui, "percent") # Enable only for percent, disable for count
-            }
+            # Pure state-transition: beregn ny chart-type state
+            transition <- sync_chart_type_to_state(app_state, ct)
 
-            if (enabled) {
-              shinyjs::enable("n_column")
-              shinyjs::hide("n_column_hint")
-              shinyjs::hide("n_column_ignore_tt")
-            } else {
-              shinyjs::disable("n_column")
-              shinyjs::show("n_column_hint")
-              shinyjs::show("n_column_ignore_tt")
-            }
+            # CRITICAL: Gem chart_type i mappings -- export-modul laeser herfra
+            app_state$columns$mappings$chart_type <- transition$chart_type
 
-            log_debug_kv(
-              message = "Updated n_column enabled state",
-              chart_type = ct,
-              n_enabled = enabled,
-              .context = "[UI_SYNC]"
+            # UI-opdatering via udskilt helper
+            update_ui_for_chart_type(
+              transition = transition,
+              ct = ct,
+              input = input,
+              session = session,
+              app_state = app_state,
+              has_input_value = has_input_value,
+              input_scalar = input_scalar
             )
-
-            # CRITICAL: Save chart_type to mappings for export module
-            # Export-side reads from mappings, not from reactive
-            qic_chart_type <- get_qic_chart_type(ct)
-            app_state$columns$mappings$chart_type <- qic_chart_type
-
-            qic_ct <- get_qic_chart_type(ct)
-            if (!identical(qic_ct, "run")) {
-              # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
-              # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
-              # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
-              desired_ui <- chart_type_to_ui_type(ct)
-              current_ui <- input_scalar(input$y_axis_unit, default = "count")
-              if (!identical(current_ui, desired_ui)) {
-                safe_programmatic_ui_update(session, app_state, function() {
-                  shiny::updateSelectizeInput(session, "y_axis_unit", selected = desired_ui)
-                })
-              }
-              log_debug_kv(
-                message = "Chart type changed; updated y-axis UI type",
-                chart_type = qic_ct,
-                y_axis_unit = desired_ui,
-                .context = "[Y_AXIS_UI]"
-              )
-            } else {
-              n_val <- get_n_column(app_state)
-              n_present <- has_input_value(n_val)
-              if (n_present) {
-                current_ui <- input_scalar(input$y_axis_unit, default = "count")
-                if (!identical(current_ui, "percent")) {
-                  safe_programmatic_ui_update(session, app_state, function() {
-                    shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
-                  })
-                }
-                log_debug_kv(
-                  message = "Chart type changed to run; updated y-axis UI to percent due to denominator",
-                  n_present = TRUE,
-                  .context = "[Y_AXIS_UI]"
-                )
-              }
-            }
           },
           fallback = NULL,
           session = session,
@@ -158,9 +186,129 @@ register_chart_type_events <- function(app_state, emit, input, session, register
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )
   )
+}
 
-  # Y-axis unit observer
-  observers$y_axis_unit <- register_observer(
+# ==============================================================================
+# UPDATE_UI_FOR_CHART_TYPE
+# UI-kald baseret paa beregnet transition.
+# Kalder shinyjs + updateSelectizeInput -- ingen state-mutation her.
+# ==============================================================================
+
+#' Opdater UI ved chart-type-skift
+#'
+#' Haandterer n_column enable/disable samt y_axis_unit sync baseret paa
+#' beregnet transition fra sync_chart_type_to_state().
+#'
+#' @param transition Liste fra sync_chart_type_to_state()
+#' @param ct Raw chart-type input-streng (ubehandlet)
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param has_input_value Helper-funktion
+#' @param input_scalar Helper-funktion
+#' @return NULL (side-effekter kun)
+#' @keywords internal
+#' @noRd
+update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
+                                     has_input_value, input_scalar) {
+  qic_ct <- transition$chart_type
+  enabled <- transition$requires_denominator
+
+  # FIX: For run-kort afhaenger n_column-tilstand af y-akse-enhed
+  # Run + "Tal" (count) -> disabled, Run + "Procent" (percent) -> enabled
+  if (identical(qic_ct, "run")) {
+    current_ui <- input_scalar(input$y_axis_unit, default = "count")
+    enabled <- identical(current_ui, "percent")
+  }
+
+  if (enabled) {
+    shinyjs::enable("n_column")
+    shinyjs::hide("n_column_hint")
+    shinyjs::hide("n_column_ignore_tt")
+  } else {
+    shinyjs::disable("n_column")
+    shinyjs::show("n_column_hint")
+    shinyjs::show("n_column_ignore_tt")
+  }
+
+  log_debug_kv(
+    message = "Updated n_column enabled state",
+    chart_type = ct,
+    n_enabled = enabled,
+    .context = "[UI_SYNC]"
+  )
+
+  # Haandter programmatic token -- spring y_axis_unit-opdatering over
+  pending_token <- app_state$ui$pending_programmatic_inputs[["chart_type"]]
+  if (!is.null(pending_token) && identical(pending_token$value, input$chart_type)) {
+    app_state$ui$pending_programmatic_inputs[["chart_type"]] <- NULL
+  } else {
+    if (!identical(qic_ct, "run")) {
+      # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
+      # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
+      # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
+      desired_ui <- chart_type_to_ui_type(ct)
+      current_ui <- input_scalar(input$y_axis_unit, default = "count")
+      if (!identical(current_ui, desired_ui)) {
+        safe_programmatic_ui_update(session, app_state, function() {
+          shiny::updateSelectizeInput(session, "y_axis_unit", selected = desired_ui)
+        })
+      }
+      log_debug_kv(
+        message = "Chart type changed; updated y-axis UI type",
+        chart_type = qic_ct,
+        y_axis_unit = desired_ui,
+        .context = "[Y_AXIS_UI]"
+      )
+    } else {
+      n_val <- get_n_column(app_state)
+      n_present <- has_input_value(n_val)
+      if (n_present) {
+        current_ui <- input_scalar(input$y_axis_unit, default = "count")
+        if (!identical(current_ui, "percent")) {
+          safe_programmatic_ui_update(session, app_state, function() {
+            shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
+          })
+        }
+        log_debug_kv(
+          message = "Chart type changed to run; updated y-axis UI to percent due to denominator",
+          n_present = TRUE,
+          .context = "[Y_AXIS_UI]"
+        )
+      }
+    }
+  }
+
+  invisible(NULL)
+}
+
+# ==============================================================================
+# OBSERVE_Y_AXIS_UNIT_INPUT
+# Etablerer observer paa input$y_axis_unit.
+# ==============================================================================
+
+#' Etabler observer for y_axis_unit-input
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Observer-objekt
+#' @keywords internal
+#' @noRd
+observe_y_axis_unit_input <- function(input, session, app_state, register_observer) {
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  has_input_value <- function(value) {
+    nzchar(input_scalar(value, default = ""))
+  }
+
+  register_observer(
     "y_axis_unit",
     shiny::observeEvent(input$y_axis_unit,
       {
@@ -202,8 +350,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
               }
             }
 
-            # CRITICAL: Save y_axis_unit to mappings for export module
-            # Export-side reads from mappings, not from reactive
+            # CRITICAL: Gem y_axis_unit i mappings -- export-modul laeser herfra
             app_state$columns$mappings$y_axis_unit <- ui_type
 
             y_col <- get_y_column(app_state)
@@ -236,7 +383,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             )
 
             if (ui_type %in% c("percent", "rate") && !n_present) {
-              log_warn("N-kolonne kr\u00e6ves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
+              log_warn("N-kolonne kraeves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
             }
           },
           fallback = NULL,
@@ -248,9 +395,35 @@ register_chart_type_events <- function(app_state, emit, input, session, register
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )
   )
+}
 
-  # N column change observer
-  observers$n_column_change <- register_observer(
+# ==============================================================================
+# OBSERVE_N_COLUMN_CHANGE
+# Etablerer observer paa input$n_column.
+# ==============================================================================
+
+#' Etabler observer for n_column-input
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Observer-objekt
+#' @keywords internal
+#' @noRd
+observe_n_column_change <- function(input, session, app_state, register_observer) {
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  has_input_value <- function(value) {
+    nzchar(input_scalar(value, default = ""))
+  }
+
+  register_observer(
     "n_column_change",
     shiny::observeEvent(input$n_column,
       {
@@ -260,7 +433,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # PHASE 1: MODAL PAUSE GUARD - Prevent observer firing during modal operations
             # This prevents plot regeneration when modal populates fields programmatically
             if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
-              # Modal is open - skip all observer logic
+              # Modal er aaben -- spring al observer-logik over
               return(invisible(NULL))
             }
 
@@ -309,43 +482,73 @@ register_chart_type_events <- function(app_state, emit, input, session, register
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )
   )
+}
 
-  # Target value observer - sync to mappings for export module
-  observers$target_value <- register_observer(
+# ==============================================================================
+# OBSERVE_TARGET_VALUE
+# Etablerer observer paa input$target_value.
+# ==============================================================================
+
+#' Etabler observer for target_value-input
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Observer-objekt
+#' @keywords internal
+#' @noRd
+observe_target_value <- function(input, session, app_state, register_observer) {
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  # Debounce target-input for at undgaa re-render + mappings-sync per tastetryk.
+  # Matcher chart_update-debounce (500ms) i fct_visualization_server.R.
+  # Fixes #395: hvert tegn trigrede settings_save + 3 plot-contexts + Typst PDF.
+  debounced_target_value <- shiny::debounce(
+    shiny::reactive(input$target_value %||% ""),
+    millis = DEBOUNCE_DELAYS$chart_update
+  )
+
+  register_observer(
     "target_value",
-    shiny::observeEvent(input$target_value,
+    shiny::observeEvent(debounced_target_value(),
       {
         safe_operation(
           "Sync target value to mappings",
           code = {
-            # CRITICAL: Save both target_value and target_text to mappings
-            # Export module reads from mappings, not from reactives
+            # CRITICAL: Gem baade target_value og target_text i mappings
+            # Export-modul laeser fra mappings, ikke fra reactives
 
             # Parse target_value (same logic as in fct_visualization_server.R)
-            target_input <- input_scalar(input$target_value, default = "")
+            target_input <- input_scalar(debounced_target_value(), default = "")
             if (!nzchar(target_input)) {
               app_state$columns$mappings$target_value <- NULL
               app_state$columns$mappings$target_text <- NULL
             } else {
               trimmed_input <- trimws(target_input)
 
-              # Store raw text for operator parsing
+              # Gem raa tekst til operator-parsing
               app_state$columns$mappings$target_text <- trimmed_input
 
               # Check if input is ONLY operators (for arrow symbols)
               if (grepl("^[<>=]+$", trimmed_input)) {
-                # Only operators - store dummy numeric value (text is what matters)
+                # Kun operatorer -- gem dummy numerisk vaerdi (tekst er det vigtige)
                 app_state$columns$mappings$target_value <- 0
               } else {
                 # CRITICAL FIX: Use chart-type aware normalization (same as analysis side)
                 # Strip leading operators before parsing
                 numeric_part <- sub("^[<>=]+", "", trimmed_input)
 
-                # Get chart type and y_axis_unit for normalization context
+                # Hent chart type og y_axis_unit til normaliseringskontext
                 chart_type <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
                 y_unit <- input_scalar(input$y_axis_unit, default = "count")
 
-                # Get Y sample data for heuristics (if no explicit user unit)
+                # Hent Y sample-data til heuristik (hvis ingen eksplicit brugerenhed)
                 y_sample <- NULL
                 if (is.null(y_unit) || y_unit == "") {
                   data <- get_current_data(app_state)
@@ -356,7 +559,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                   }
                 }
 
-                # Use chart-type aware normalization (eliminates 100x-mismatch)
+                # Brug chart-type aware normalisering (eliminerer 100x-mismatch)
                 normalized_value <- normalize_axis_value(
                   x = numeric_part,
                   user_unit = y_unit,
@@ -385,28 +588,50 @@ register_chart_type_events <- function(app_state, emit, input, session, register
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )
   )
+}
 
-  # Centerline value observer - sync to mappings for export module
-  observers$centerline_value <- register_observer(
+# ==============================================================================
+# OBSERVE_CENTERLINE_VALUE
+# Etablerer observer paa input$centerline_value.
+# ==============================================================================
+
+#' Etabler observer for centerline_value-input
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Observer-objekt
+#' @keywords internal
+#' @noRd
+observe_centerline_value <- function(input, session, app_state, register_observer) {
+  input_scalar <- function(value, default = "") {
+    if (is.null(value) || length(value) == 0 || anyNA(value)) {
+      return(default)
+    }
+    as.character(value[[1]])
+  }
+
+  register_observer(
     "centerline_value",
     shiny::observeEvent(input$centerline_value,
       {
         safe_operation(
           "Sync centerline value to mappings",
           code = {
-            # CRITICAL: Save centerline_value to mappings
-            # Export module reads from mappings, not from reactives
+            # CRITICAL: Gem centerline_value i mappings
+            # Export-modul laeser fra mappings, ikke fra reactives
 
             centerline_input <- input_scalar(input$centerline_value, default = "")
             if (!nzchar(centerline_input)) {
               app_state$columns$mappings$centerline_value <- NULL
             } else {
               # CRITICAL FIX: Use chart-type aware normalization (same as target_value)
-              # Get chart type and y_axis_unit for normalization context
+              # Hent chart type og y_axis_unit til normaliseringskontext
               chart_type <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
               y_unit <- input_scalar(input$y_axis_unit, default = "count")
 
-              # Get Y sample data for heuristics (if no explicit user unit)
+              # Hent Y sample-data til heuristik (hvis ingen eksplicit brugerenhed)
               y_sample <- NULL
               if (is.null(y_unit) || y_unit == "") {
                 data <- get_current_data(app_state)
@@ -417,7 +642,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
                 }
               }
 
-              # Use chart-type aware normalization (eliminates 100x-mismatch)
+              # Brug chart-type aware normalisering (eliminerer 100x-mismatch)
               normalized_value <- normalize_axis_value(
                 x = centerline_input,
                 user_unit = y_unit,
@@ -444,33 +669,6 @@ register_chart_type_events <- function(app_state, emit, input, session, register
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )
   )
-
-  # Passive timing monitor
-  if (!is.null(app_state$ui)) {
-    observers$timing_monitor <- register_observer(
-      "timing_monitor",
-      shiny::observeEvent(app_state$ui$last_programmatic_update,
-        ignoreInit = TRUE,
-        priority = OBSERVER_PRIORITIES$LOWEST,
-        {
-          current_time <- Sys.time()
-          last_update <- shiny::isolate(app_state$ui$last_programmatic_update)
-
-          if (!is.null(last_update)) {
-            freeze_state <- shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger) %||% FALSE
-
-            autodetect_in_progress <- if (!is.null(app_state$columns)) {
-              shiny::isolate(app_state$columns$auto_detect$in_progress) %||% FALSE
-            } else {
-              FALSE
-            }
-          }
-        }
-      )
-    )
-  }
-
-  observers
 }
 
 #' Setup Event Listeners

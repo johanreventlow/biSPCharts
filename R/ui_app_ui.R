@@ -14,6 +14,33 @@ create_ui_header <- function() {
   # Get hospital colors using the proper package function
   hospital_colors <- get_hospital_colors()
 
+  # Byg betinget @font-face CSS til Mari-font.
+  # Mari-fonts leveres af BFHchartsAssets companion-pakken (privat) via
+  # resource-prefix 'bfh_assets' registreret i golem_add_external_resources().
+  # Fallback: ingen @font-face injiceres -- browser bruger naesteoverladte
+  # system-font fra CSS font-family-stack (Arial, Helvetica, sans-serif).
+  mari_fontface_css <- if (requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    "
+      /* Mari hospital font via BFHchartsAssets companion-pakke (@font-face) */
+      @font-face {
+        font-family: 'Mari';
+        src: url('bfh_assets/MariOffice-Book.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Mari';
+        src: url('bfh_assets/MariOffice-Bold.ttf') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+      }
+    "
+  } else {
+    # BFHchartsAssets ikke tilgaengelig -- browser falder tilbage til
+    # Arial/Helvetica/sans-serif fra CSS-stakken i config_branding_getters.R.
+    ""
+  }
+
   shiny::tagList(
     # Aktiver shinyjs
     shinyjs::useShinyjs(),
@@ -25,21 +52,7 @@ create_ui_header <- function() {
       # inst/app/www/ automatisk.
 
       # Inline CSS styles
-      shiny::tags$style(htmltools::HTML(paste0("
-
-      /* Mari hospital font via @font-face */
-      @font-face {
-        font-family: 'Mari';
-        src: url('fonts/MariOffice-Book.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: 'Mari';
-        src: url('fonts/MariOffice-Bold.ttf') format('truetype');
-        font-weight: bold;
-        font-style: normal;
-      }
+      shiny::tags$style(htmltools::HTML(paste0(mari_fontface_css, "
 
       /* Navigation and Tab Styling */
     .nav-link {

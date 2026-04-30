@@ -4,28 +4,32 @@
 # Selve opdateringslogikken er splittet i:
 #   R/utils_ui_column_update_service.R - kolonne-selectize ops
 #   R/utils_ui_form_update_service.R   - form-felter, reset, feedback
+#   R/utils_ui_table_update_service.R  - excelR + datatable ops
 
 #' Create UI Update Service
 #'
-#' Backward-kompatibel wrapper der komponerer column- og form-services.
+#' Backward-kompatibel wrapper der komponerer column-, form- og table-services.
 #' Eksisterende kaldere fortsaetter uaendret; fremtidig kode boer bruge
-#' `create_column_update_service()` og `create_form_update_service()` direkte.
+#' `create_column_update_service()`, `create_form_update_service()` og
+#' `create_table_update_service()` direkte.
 #'
 #' @param session Shiny session object
 #' @param app_state Centralized app state
-#' @return List of UI update functions (merged column + form APIs)
+#' @return List of UI update functions (merged column + form + table APIs)
 #'
 #' @examples
 #' \dontrun{
 #' ui_service <- create_ui_update_service(session, app_state)
 #' ui_service$update_column_choices()
+#' ui_service$update_excelr_data("main_data_table", data)
 #' }
 #'
 #' @keywords internal
 create_ui_update_service <- function(session, app_state) {
   col_svc <- create_column_update_service(session, app_state)
   form_svc <- create_form_update_service(session, app_state, column_service = col_svc)
-  c(col_svc, form_svc)
+  table_svc <- create_table_update_service(session, app_state)
+  c(col_svc, form_svc, table_svc)
 }
 
 #' Safe Programmatic UI Update Wrapper (Enhanced with Intelligent Flag Clearing)

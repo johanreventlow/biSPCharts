@@ -249,22 +249,11 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     # log_debug("Rendering table with data dimensions:", paste(dim(current_data_check), collapse = "x"), .context = "DATA_TABLE")
 
     # Inkluder table_version for at tvinge re-render efter gendannelse
-    # Use unified state management
-    version_trigger <- app_state$session$table_version
+    # (rettet fra app_state$session til app_state$data — korrekt sti)
+    version_trigger <- app_state$data$table_version
 
-    data <- current_data_check
-
-    # Formater numeriske kolonner til dansk format (komma-decimal) for visning
-    numeric_cols <- names(data)[vapply(data, is.numeric, logical(1))]
-    # Ekskluder Skift/Frys (logiske kolonner)
-    numeric_cols <- setdiff(numeric_cols, c("Skift", "Frys"))
-    for (col in numeric_cols) {
-      data[[col]] <- ifelse(
-        is.na(data[[col]]),
-        NA_character_,
-        format(data[[col]], decimal.mark = ",", big.mark = "")
-      )
-    }
+    # Formater data til visning (konverter numeriske til dansk format)
+    data <- format_data_for_excelr(current_data_check)
 
     excelR::excelTable(
       data = data,

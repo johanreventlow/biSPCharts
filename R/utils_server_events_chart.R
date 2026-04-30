@@ -6,13 +6,13 @@
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
 #
 # Arkitektur (efter split-register-chart-type-events):
-#   register_chart_type_events() — composition (≤150 linjer)
-#   observe_chart_type_input()   — etablerer chart_type-observer
-#   update_ui_for_chart_type()   — UI-kald via shinyjs + updateSelectizeInput
-#   observe_y_axis_unit_input()  — etablerer y_axis_unit-observer
-#   observe_n_column_change()    — etablerer n_column-observer
-#   observe_target_value()       — etablerer target_value-observer
-#   observe_centerline_value()   — etablerer centerline_value-observer
+#   register_chart_type_events() -- composition (<=150 linjer)
+#   observe_chart_type_input()   -- etablerer chart_type-observer
+#   update_ui_for_chart_type()   -- UI-kald via shinyjs + updateSelectizeInput
+#   observe_y_axis_unit_input()  -- etablerer y_axis_unit-observer
+#   observe_n_column_change()    -- etablerer n_column-observer
+#   observe_target_value()       -- etablerer target_value-observer
+#   observe_centerline_value()   -- etablerer centerline_value-observer
 #
 # Pure transition: sync_chart_type_to_state() i R/fct_chart_type_transition.R
 # ==============================================================================
@@ -64,27 +64,27 @@ register_chart_type_events <- function(app_state, emit, input, session, register
     )
   })
 
-  # Chart type observer — via udskilt helper
+  # Chart type observer -- via udskilt helper
   observers$chart_type <- observe_chart_type_input(
     input, session, app_state, register_observer
   )
 
-  # Y-axis unit observer — via udskilt helper
+  # Y-axis unit observer -- via udskilt helper
   observers$y_axis_unit <- observe_y_axis_unit_input(
     input, session, app_state, register_observer
   )
 
-  # N-column change observer — via udskilt helper
+  # N-column change observer -- via udskilt helper
   observers$n_column_change <- observe_n_column_change(
     input, session, app_state, register_observer
   )
 
-  # Target value observer — via udskilt helper
+  # Target value observer -- via udskilt helper
   observers$target_value <- observe_target_value(
     input, session, app_state, register_observer
   )
 
-  # Centerline value observer — via udskilt helper
+  # Centerline value observer -- via udskilt helper
   observers$centerline_value <- observe_centerline_value(
     input, session, app_state, register_observer
   )
@@ -119,7 +119,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 
 # ==============================================================================
 # OBSERVE_CHART_TYPE_INPUT
-# Etablerer observer på input$chart_type.
+# Etablerer observer paa input$chart_type.
 # Kalder sync_chart_type_to_state() (pure) + update_ui_for_chart_type() (UI).
 # ==============================================================================
 
@@ -151,9 +151,9 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
         safe_operation(
           "Toggle n_column enabled state by chart type and y-axis unit",
           code = {
-            # Guard: Ignorer chart_type-ændringer under session-restore
+            # Guard: Ignorer chart_type-aendringer under session-restore
             # (forhindrer race condition hvor restore-indsat chart_type
-            #  trigger UI-ændringer før kolonner og y-akse er gendannet)
+            #  trigger UI-aendringer foer kolonner og y-akse er gendannet)
             if (isTRUE(is_restoring_session(app_state))) {
               return(invisible(NULL))
             }
@@ -163,7 +163,7 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
             # Pure state-transition: beregn ny chart-type state
             transition <- sync_chart_type_to_state(app_state, ct)
 
-            # CRITICAL: Gem chart_type i mappings — export-modul læser herfra
+            # CRITICAL: Gem chart_type i mappings -- export-modul laeser herfra
             app_state$columns$mappings$chart_type <- transition$chart_type
 
             # UI-opdatering via udskilt helper
@@ -190,13 +190,13 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
 
 # ==============================================================================
 # UPDATE_UI_FOR_CHART_TYPE
-# UI-kald baseret på beregnet transition.
-# Kalder shinyjs + updateSelectizeInput — ingen state-mutation her.
+# UI-kald baseret paa beregnet transition.
+# Kalder shinyjs + updateSelectizeInput -- ingen state-mutation her.
 # ==============================================================================
 
 #' Opdater UI ved chart-type-skift
 #'
-#' Håndterer n_column enable/disable samt y_axis_unit sync baseret på
+#' Haandterer n_column enable/disable samt y_axis_unit sync baseret paa
 #' beregnet transition fra sync_chart_type_to_state().
 #'
 #' @param transition Liste fra sync_chart_type_to_state()
@@ -214,8 +214,8 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
   qic_ct <- transition$chart_type
   enabled <- transition$requires_denominator
 
-  # FIX: For run-kort afhænger n_column-tilstand af y-akse-enhed
-  # Run + "Tal" (count) → disabled, Run + "Procent" (percent) → enabled
+  # FIX: For run-kort afhaenger n_column-tilstand af y-akse-enhed
+  # Run + "Tal" (count) -> disabled, Run + "Procent" (percent) -> enabled
   if (identical(qic_ct, "run")) {
     current_ui <- input_scalar(input$y_axis_unit, default = "count")
     enabled <- identical(current_ui, "percent")
@@ -238,14 +238,14 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
     .context = "[UI_SYNC]"
   )
 
-  # Håndter programmatic token — spring y_axis_unit-opdatering over
+  # Haandter programmatic token -- spring y_axis_unit-opdatering over
   pending_token <- app_state$ui$pending_programmatic_inputs[["chart_type"]]
   if (!is.null(pending_token) && identical(pending_token$value, input$chart_type)) {
     app_state$ui$pending_programmatic_inputs[["chart_type"]] <- NULL
   } else {
     if (!identical(qic_ct, "run")) {
-      # Brug ct (original) ikke qic_ct, så "t" matches direkte i
-      # chart_type_to_ui_type() — get_qic_chart_type("t") fallbacker
+      # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
+      # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
       # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
       desired_ui <- chart_type_to_ui_type(ct)
       current_ui <- input_scalar(input$y_axis_unit, default = "count")
@@ -284,7 +284,7 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
 
 # ==============================================================================
 # OBSERVE_Y_AXIS_UNIT_INPUT
-# Etablerer observer på input$y_axis_unit.
+# Etablerer observer paa input$y_axis_unit.
 # ==============================================================================
 
 #' Etabler observer for y_axis_unit-input
@@ -350,17 +350,17 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
               }
             }
 
-            # CRITICAL: Gem y_axis_unit i mappings — export-modul læser herfra
+            # CRITICAL: Gem y_axis_unit i mappings -- export-modul laeser herfra
             app_state$columns$mappings$y_axis_unit <- ui_type
 
             y_col <- get_y_column(app_state)
             data <- get_current_data(app_state)
             n_points <- if (!is.null(data)) nrow(data) else NA_integer_
 
-            # Review fund #2: Læs n_column fra mappings-state som fallback
-            # når input$n_column endnu ikke er landet (typisk under session
+            # Review fund #2: Laes n_column fra mappings-state som fallback
+            # naar input$n_column endnu ikke er landet (typisk under session
             # restore hvor updateSelectizeInput beskeder ikke har roundtrippet).
-            # Uden fallback logger observeren falsk "N-kolonne kræves" warning.
+            # Uden fallback logger observeren falsk "N-kolonne kraeves" warning.
             n_from_input <- has_input_value(input$n_column)
             if (n_from_input) {
               n_present <- TRUE
@@ -383,7 +383,7 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
             )
 
             if (ui_type %in% c("percent", "rate") && !n_present) {
-              log_warn("N-kolonne kræves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
+              log_warn("N-kolonne kraeves for valgt Y-akse-type", .context = "[Y_AXIS_UI]")
             }
           },
           fallback = NULL,
@@ -399,7 +399,7 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
 
 # ==============================================================================
 # OBSERVE_N_COLUMN_CHANGE
-# Etablerer observer på input$n_column.
+# Etablerer observer paa input$n_column.
 # ==============================================================================
 
 #' Etabler observer for n_column-input
@@ -433,7 +433,7 @@ observe_n_column_change <- function(input, session, app_state, register_observer
             # PHASE 1: MODAL PAUSE GUARD - Prevent observer firing during modal operations
             # This prevents plot regeneration when modal populates fields programmatically
             if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
-              # Modal er åben — spring al observer-logik over
+              # Modal er aaben -- spring al observer-logik over
               return(invisible(NULL))
             }
 
@@ -486,7 +486,7 @@ observe_n_column_change <- function(input, session, app_state, register_observer
 
 # ==============================================================================
 # OBSERVE_TARGET_VALUE
-# Etablerer observer på input$target_value.
+# Etablerer observer paa input$target_value.
 # ==============================================================================
 
 #' Etabler observer for target_value-input
@@ -521,8 +521,8 @@ observe_target_value <- function(input, session, app_state, register_observer) {
         safe_operation(
           "Sync target value to mappings",
           code = {
-            # CRITICAL: Gem både target_value og target_text i mappings
-            # Export-modul læser fra mappings, ikke fra reactives
+            # CRITICAL: Gem baade target_value og target_text i mappings
+            # Export-modul laeser fra mappings, ikke fra reactives
 
             # Parse target_value (same logic as in fct_visualization_server.R)
             target_input <- input_scalar(debounced_target_value(), default = "")
@@ -532,12 +532,12 @@ observe_target_value <- function(input, session, app_state, register_observer) {
             } else {
               trimmed_input <- trimws(target_input)
 
-              # Gem rå tekst til operator-parsing
+              # Gem raa tekst til operator-parsing
               app_state$columns$mappings$target_text <- trimmed_input
 
               # Check if input is ONLY operators (for arrow symbols)
               if (grepl("^[<>=]+$", trimmed_input)) {
-                # Kun operatorer — gem dummy numerisk værdi (tekst er det vigtige)
+                # Kun operatorer -- gem dummy numerisk vaerdi (tekst er det vigtige)
                 app_state$columns$mappings$target_value <- 0
               } else {
                 # CRITICAL FIX: Use chart-type aware normalization (same as analysis side)
@@ -592,7 +592,7 @@ observe_target_value <- function(input, session, app_state, register_observer) {
 
 # ==============================================================================
 # OBSERVE_CENTERLINE_VALUE
-# Etablerer observer på input$centerline_value.
+# Etablerer observer paa input$centerline_value.
 # ==============================================================================
 
 #' Etabler observer for centerline_value-input
@@ -620,7 +620,7 @@ observe_centerline_value <- function(input, session, app_state, register_observe
           "Sync centerline value to mappings",
           code = {
             # CRITICAL: Gem centerline_value i mappings
-            # Export-modul læser fra mappings, ikke fra reactives
+            # Export-modul laeser fra mappings, ikke fra reactives
 
             centerline_input <- input_scalar(input$centerline_value, default = "")
             if (!nzchar(centerline_input)) {

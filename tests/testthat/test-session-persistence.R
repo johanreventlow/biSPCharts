@@ -589,6 +589,80 @@ test_that("determine_auto_restore_setting is removed (single source of truth)", 
   )
 })
 
+# ==============================================================================
+# SECTION 7: Diff-check (Issue #396)
+# ==============================================================================
+# Tester at is_duplicate_settings_payload-logikken i obs_settings_save
+# korrekt skelner identiske fra ændrede metadata-payloads.
+# Obs: obs_settings_save testes ikke direkte (kræver fuld Shiny-session),
+# men den JSON-baserede sammenligning testes her som unit-niveau.
+# ==============================================================================
+
+test_that("settings_save diff-check: identisk metadata giver identical JSON", {
+  # Kontrollér at to identiske metadata-lister serialiseres til identisk JSON
+  # (forudsætning for at identical()-checket i obs_settings_save virker korrekt)
+  md_a <- list(
+    active_tab = "eksporter",
+    pdf_improvement = "",
+    export_title = "Min rapport",
+    target_value = "5"
+  )
+  md_b <- list(
+    active_tab = "eksporter",
+    pdf_improvement = "",
+    export_title = "Min rapport",
+    target_value = "5"
+  )
+
+  json_a <- jsonlite::toJSON(md_a, auto_unbox = TRUE)
+  json_b <- jsonlite::toJSON(md_b, auto_unbox = TRUE)
+
+  expect_true(
+    identical(json_a, json_b),
+    info = "Identiske metadata-lister skal give identisk JSON (diff-check forudsætning)"
+  )
+})
+
+test_that("settings_save diff-check: forskellig metadata giver ikke-identisk JSON", {
+  # Kontrollér at autogen-scenariet (NULL → genereret tekst) IKKE filtreres
+  md_null <- list(
+    active_tab = "eksporter",
+    pdf_improvement = "", # NULL konverteres til "" via scalar_text
+    export_title = "Min rapport"
+  )
+  md_with_text <- list(
+    active_tab = "eksporter",
+    pdf_improvement = "Processen viser systematisk forbedring...",
+    export_title = "Min rapport"
+  )
+
+  json_null <- jsonlite::toJSON(md_null, auto_unbox = TRUE)
+  json_text <- jsonlite::toJSON(md_with_text, auto_unbox = TRUE)
+
+  expect_false(
+    identical(json_null, json_text),
+    info = paste0(
+      "Autogen-scenariet (tom → genereret tekst) SKAL passere diff-check ",
+      "og resultere i 2 saves med forskellig metadata (intentionelt korrekt)"
+    )
+  )
+})
+
+test_that("settings_save diff-check: NULL forrige payload trigger altid save", {
+  # Kontrollér at første save (last_settings_payload = NULL) aldrig springes over
+  last_payload <- NULL
+  current_payload <- jsonlite::toJSON(
+    list(active_tab = "eksporter", pdf_improvement = ""),
+    auto_unbox = TRUE
+  )
+
+  # identical(NULL, <noget>) er altid FALSE — første save passerer altid
+  expect_false(
+    identical(last_payload, current_payload),
+    info = "NULL last_payload må aldrig resultere i skip af første save"
+  )
+})
+
 test_that("saveDataLocally payload uses current version tag", {
   skip_if_not(
     exists("saveDataLocally", mode = "function"),

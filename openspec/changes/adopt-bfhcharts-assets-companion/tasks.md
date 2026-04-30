@@ -57,6 +57,6 @@
 
 ## 9. Release
 
-- [ ] 9.1 PR til develop fra `feat/adopt-bfhcharts-assets-companion`
-- [ ] 9.2 CI grøn
-- [ ] 9.3 Merge + bump biSPCharts version
+- [x] 9.1 PR til develop — implementation via #379/#381/#387; finalize-PR #398 (`feat/adopt-bfhcharts-finalize`)
+- [ ] 9.2 CI grøn (afventer PR #398)
+- [ ] 9.3 Merge + bump biSPCharts version (afventer CI grøn)

@@ -684,6 +684,35 @@
         "Archs": "cachem.so.dSYM"
       }
     },
+    "callr": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "callr",
+        "Title": "Call R from R",
+        "Version": "3.7.6",
+        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\", \"cph\"),\n           comment = c(ORCID = \"0000-0001-7098-9676\")),\n    person(\"Winston\", \"Chang\", role = \"aut\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"Ascent Digital Services\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "It is sometimes useful to perform a computation in a separate\n    R process, without affecting the current R process at all.  This\n    packages does exactly that.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://callr.r-lib.org, https://github.com/r-lib/callr",
+        "BugReports": "https://github.com/r-lib/callr/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "processx (>= 3.6.1), R6, utils",
+        "Suggests": "asciicast (>= 2.3.1), cli (>= 1.1.0), mockery, ps, rprojroot,\nspelling, testthat (>= 3.2.0), withr (>= 2.3.0)",
+        "Config/Needs/website": "r-lib/asciicast, glue, htmlwidgets, igraph,\ntibble, tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "RoxygenNote": "7.3.1.9000",
+        "NeedsCompilation": "no",
+        "Packaged": "2024-03-25 12:10:25 UTC; gaborcsardi",
+        "Author": "Gábor Csárdi [aut, cre, cph] (<https://orcid.org/0000-0001-7098-9676>),\n  Winston Chang [aut],\n  Posit Software, PBC [cph, fnd],\n  Ascent Digital Services [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2024-03-25 13:30:06 UTC",
+        "Built": "R 4.5.0; ; 2025-04-01 11:57:59 UTC; unix"
+      }
+    },
     "cellranger": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -1045,6 +1074,36 @@
         "Repository": "CRAN",
         "Date/Publication": "2026-02-13 07:01:08 UTC",
         "Built": "R 4.5.2; ; 2026-02-13 08:21:59 UTC; unix"
+      }
+    },
+    "desc": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "desc",
+        "Title": "Manipulate DESCRIPTION Files",
+        "Version": "1.4.3",
+        "Authors@R": "c(\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Kirill\", \"Müller\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", , \"james.f.hester@gmail.com\", role = \"aut\"),\n    person(\"Maëlle\", \"Salmon\", role = \"ctb\",\n           comment = c(ORCID = \"0000-0002-2815-0399\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Description": "Tools to read, write, create, and manipulate DESCRIPTION\n    files.  It is intended for packages that create or manipulate other\n    packages.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://desc.r-lib.org/, https://github.com/r-lib/desc",
+        "BugReports": "https://github.com/r-lib/desc/issues",
+        "Depends": "R (>= 3.4)",
+        "Imports": "cli, R6, utils",
+        "Suggests": "callr, covr, gh, spelling, testthat, whoami, withr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "RoxygenNote": "7.2.3",
+        "Collate": "'assertions.R' 'authors-at-r.R' 'built.R' 'classes.R'\n'collate.R' 'constants.R' 'deps.R' 'desc-package.R'\n'description.R' 'encoding.R' 'find-package-root.R' 'latex.R'\n'non-oo-api.R' 'package-archives.R' 'read.R' 'remotes.R'\n'str.R' 'syntax_checks.R' 'urls.R' 'utils.R' 'validate.R'\n'version.R'",
+        "NeedsCompilation": "no",
+        "Packaged": "2023-12-10 11:07:50 UTC; gaborcsardi",
+        "Author": "Gábor Csárdi [aut, cre],\n  Kirill Müller [aut],\n  Jim Hester [aut],\n  Maëlle Salmon [ctb] (<https://orcid.org/0000-0002-2815-0399>),\n  Posit Software, PBC [cph, fnd]",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-12-10 11:40:08 UTC",
+        "Built": "R 4.5.0; ; 2025-03-31 21:55:26 UTC; unix"
       }
     },
     "digest": {
@@ -2669,6 +2728,35 @@
         "RemoteReposName": "CRAN",
         "RemotePkgPlatform": "aarch64-apple-darwin20",
         "RemoteSha": "1.4.2"
+      }
+    },
+    "pkgbuild": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "pkgbuild",
+        "Title": "Find Tools Needed to Build R Packages",
+        "Version": "1.4.8",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", role = \"aut\"),\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
+        "Description": "Provides functions used to build R packages. Locates\n    compilers needed to build R packages on various platforms and ensures\n    the PATH is configured appropriately so R can use them.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/r-lib/pkgbuild, https://pkgbuild.r-lib.org",
+        "BugReports": "https://github.com/r-lib/pkgbuild/issues",
+        "Depends": "R (>= 3.5)",
+        "Imports": "callr (>= 3.2.0), cli (>= 3.4.0), desc, processx, R6",
+        "Suggests": "covr, cpp11, knitr, Rcpp, rmarkdown, testthat (>= 3.2.0),\nwithr (>= 2.3.0)",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Config/usethis/last-upkeep": "2025-04-30",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-05-26 10:36:48 UTC; gaborcsardi",
+        "Author": "Hadley Wickham [aut],\n  Jim Hester [aut],\n  Gábor Csárdi [aut, cre],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-05-26 14:10:06 UTC",
+        "Built": "R 4.5.0; ; 2025-05-26 15:14:03 UTC; unix"
       }
     },
     "pkgconfig": {
@@ -4508,9 +4596,6 @@
     },
     "inst/templates/typst/README.md": {
       "checksum": "aea794434a74d42d6eaf071df163c2cb"
-    },
-    "manifest.json": {
-      "checksum": "f03ab09321f881ad7f0685abff920e1f"
     },
     "NAMESPACE": {
       "checksum": "8afe62130454a324644b4a2142a88231"

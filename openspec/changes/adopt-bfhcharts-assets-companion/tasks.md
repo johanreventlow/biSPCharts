@@ -47,16 +47,22 @@
 - [ ] 7.1 NEWS.md / CHANGELOG.md entry under `## Sikkerhed`
 - [ ] 7.2 Opdatér `CLAUDE.md` med BFHchartsAssets-dependency reference
 
-## 8. License-history follow-up (BLOCKED)
+## 8. License-history follow-up
 
-⚠️ **OPEN:** proprietære fonts forbliver i biSPCharts git history selv efter denne change.
+- [x] 8.1 **[BESLUTNING]** Skal git history purges via `git filter-repo`? — JA, eksekveret 2026-04-30
+- [x] 8.2 Backup mirror (`~/R/biSPCharts-backup-20260430.git/`, 61MB), `git filter-repo --invert-paths` på 2 paths (fonts + images), force-push develop+master+hotfixes+tags
+- [x] 8.3 N/A — beslutning JA
 
-- [ ] 8.1 **[BESLUTNING]** Skal git history purges via `git filter-repo`?
-- [ ] 8.2 Hvis ja: backup repo, kør filter-repo, force-push
-- [ ] 8.3 Hvis nej: dokumentér beslutning + risiko
+**Resultat:**
+- 22 fonts (Mari + Arial) + 7 logos fjernet fra hele history (alle commits)
+- .git: 61MB → 29MB
+- Pre-purge tag: `pre-history-purge-20260430` (lokalt + remote)
+- Stale feat-branch slettet
+
+**OPEN follow-up (out of scope):** UI-side Mari-fonts i `inst/app/www/fonts/` (MariOffice-Bold/Book.ttf) er stadig public — sporet i issue #399.
 
 ## 9. Release
 
-- [x] 9.1 PR til develop — implementation via #379/#381/#387; finalize-PR #398 (`feat/adopt-bfhcharts-finalize`)
-- [ ] 9.2 CI grøn (afventer PR #398)
-- [ ] 9.3 Merge + bump biSPCharts version (afventer CI grøn)
+- [x] 9.1 PR til develop — implementation via #379/#381/#387; finalize-PR #398 merged
+- [x] 9.2 CI grøn (PR #398 testthat re-run passed efter transient 504-fejl)
+- [ ] 9.3 Merge + bump biSPCharts version (PR #398 merged; version-bump deferred til efter Connect Cloud-redeploy verificeret)

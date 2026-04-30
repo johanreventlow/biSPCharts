@@ -53,47 +53,10 @@ test_that("normalize_column_input handles vector with multiple elements", {
 # UNIT TESTS: handle_column_input()
 # ============================================================================
 
-test_that("handle_column_input consumes programmatic token", {
-  # Setup mock app_state
-  app_state <- new.env()
-  app_state$ui <- list(
-    pending_programmatic_inputs = list(),
-    performance_metrics = reactiveValues(tokens_consumed = 0L)
-  )
-  app_state$columns <- reactiveValues(mappings = reactiveValues())
-  app_state$ui_cache <- list()
-
-  # Set programmatic token
-  app_state$ui$pending_programmatic_inputs$x_column <- list(value = "dato")
-
-  # Mock emit API
-  emit <- new.env()
-  emit_called <- FALSE
-  emit$column_choices_changed <- function() {
-    emit_called <<- TRUE
-  }
-
-  # Call handler with matching value
-  isolate(handle_column_input("x_column", "dato", app_state, emit))
-
-  # Verify token consumed
-  expect_null(app_state$ui$pending_programmatic_inputs$x_column)
-
-  # Verify state updated
-  expect_identical(isolate(app_state$columns$mappings$x_column), "dato")
-
-  # Verify metrics incremented
-  expect_identical(isolate(app_state$ui$performance_metrics$tokens_consumed), 1L)
-
-  # Verify NO event emission for programmatic update
-  expect_false(emit_called)
-})
-
 test_that("handle_column_input emits event for user input", {
   # Setup mock app_state
   app_state <- new.env()
   app_state$ui <- list(
-    pending_programmatic_inputs = list(),
     performance_metrics = reactiveValues(tokens_consumed = 0L)
   )
   app_state$columns <- reactiveValues(mappings = reactiveValues())
@@ -133,7 +96,6 @@ test_that("handle_column_input normalizes input value", {
   # Setup mock app_state
   app_state <- new.env()
   app_state$ui <- list(
-    pending_programmatic_inputs = list(),
     performance_metrics = reactiveValues(tokens_consumed = 0L)
   )
   app_state$columns <- reactiveValues(mappings = reactiveValues())
@@ -160,7 +122,6 @@ test_that("handle_column_input handles missing emit function gracefully", {
   # Setup mock app_state
   app_state <- new.env()
   app_state$ui <- list(
-    pending_programmatic_inputs = list(),
     performance_metrics = reactiveValues(tokens_consumed = 0L)
   )
   app_state$columns <- reactiveValues(mappings = reactiveValues())

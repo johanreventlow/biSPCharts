@@ -30,10 +30,10 @@
 
 ## 5. Tests
 
-- [ ] 5.1 Opdatér tests for `inject_template_assets()` (hvis findes)
-- [ ] 5.2 Tilføj test der mocker `BFHchartsAssets`-fravær
-- [ ] 5.3 Kør `devtools::test()`
-- [ ] 5.4 Kør `devtools::check()`
+- [x] 5.1 Opdatér tests for `inject_template_assets()` (hvis findes) — N/A, ingen eksisterende tests; nyt `tests/testthat/test-inject-template-assets.R` oprettet
+- [x] 5.2 Tilføj test der mocker `BFHchartsAssets`-fravær (4 tests: missing+no-error + delegation + companion-fail)
+- [x] 5.3 Kør `devtools::test()` — 5552 PASS, 0 FAIL, 101 SKIP, 50 WARN (alle pre-existing, ej introducerede regressions)
+- [ ] 5.4 Kør `devtools::check()` — DEFERRED til PR CI-gate (`gate (tests + warnings)` job)
 
 ## 6. Connect Cloud setup (MANUELT)
 
@@ -57,6 +57,6 @@
 
 ## 9. Release
 
-- [ ] 9.1 PR til develop fra `feat/adopt-bfhcharts-assets-companion`
-- [ ] 9.2 CI grøn
-- [ ] 9.3 Merge + bump biSPCharts version
+- [x] 9.1 PR til develop — implementation via #379/#381/#387; finalize-PR #398 (`feat/adopt-bfhcharts-finalize`)
+- [ ] 9.2 CI grøn (afventer PR #398)
+- [ ] 9.3 Merge + bump biSPCharts version (afventer CI grøn)

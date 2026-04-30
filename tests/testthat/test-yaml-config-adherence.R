@@ -162,7 +162,7 @@ test_that("Configuration precedence order is respected", {
   configure_logging_from_yaml(log_level = "ERROR")
   expect_equal(
     Sys.getenv("SPC_LOG_LEVEL"), "ERROR",
-    "Explicit log level should have highest precedence"
+    info = "Explicit log level should have highest precedence"
   )
 
   # 2. When no explicit parameter, should use YAML or fallback

@@ -315,12 +315,6 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
         safe_operation(
           "Auto-select chart type from y-axis UI type and toggle n_column state",
           code = {
-            # Forbryd programmatic token hvis sat via updateSelectizeInput
-            pending_token <- app_state$ui$pending_programmatic_inputs[["y_axis_unit"]]
-            if (!is.null(pending_token) && identical(pending_token$value, input$y_axis_unit)) {
-              app_state$ui$pending_programmatic_inputs[["y_axis_unit"]] <- NULL
-              return(invisible(NULL))
-            }
             ui_type <- input_scalar(input$y_axis_unit, default = "count")
 
             # FIX: Toggle n_column enabled state for run charts based on y-axis unit
@@ -444,16 +438,7 @@ observe_n_column_change <- function(input, session, app_state, register_observer
             }
 
             # CRITICAL: Skip ALL logic during programmatic UI updates
-            # Token-based check alone is insufficient because updateSelectizeInput
-            # may trigger intermediate states (e.g., cleared then set)
             if (isTRUE(shiny::isolate(app_state$ui$updating_programmatically))) {
-              return(invisible(NULL))
-            }
-
-            # Legacy token consumption for backwards compatibility
-            pending_token <- app_state$ui$pending_programmatic_inputs[["n_column"]]
-            if (!is.null(pending_token) && identical(pending_token$value, input$n_column)) {
-              app_state$ui$pending_programmatic_inputs[["n_column"]] <- NULL
               return(invisible(NULL))
             }
 
@@ -521,9 +506,17 @@ observe_target_value <- function(input, session, app_state, register_observer) {
     as.character(value[[1]])
   }
 
+  # Debounce target-input for at undgaa re-render + mappings-sync per tastetryk.
+  # Matcher chart_update-debounce (500ms) i fct_visualization_server.R.
+  # Fixes #395: hvert tegn trigrede settings_save + 3 plot-contexts + Typst PDF.
+  debounced_target_value <- shiny::debounce(
+    shiny::reactive(input$target_value %||% ""),
+    millis = DEBOUNCE_DELAYS$chart_update
+  )
+
   register_observer(
     "target_value",
-    shiny::observeEvent(input$target_value,
+    shiny::observeEvent(debounced_target_value(),
       {
         safe_operation(
           "Sync target value to mappings",
@@ -532,7 +525,7 @@ observe_target_value <- function(input, session, app_state, register_observer) {
             # Export-modul læser fra mappings, ikke fra reactives
 
             # Parse target_value (same logic as in fct_visualization_server.R)
-            target_input <- input_scalar(input$target_value, default = "")
+            target_input <- input_scalar(debounced_target_value(), default = "")
             if (!nzchar(target_input)) {
               app_state$columns$mappings$target_value <- NULL
               app_state$columns$mappings$target_text <- NULL

@@ -31,15 +31,22 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
   # pga. Shiny flush-timing issues.
   last_auto_analysis <- shiny::reactiveVal("")
 
-  # Auto-generer analysetekst når SPC-resultat er tilgængeligt
-  shiny::observeEvent(export_plot(),
+  # Auto-generer analysetekst når SPC-resultat er tilgængeligt.
+  # Bruger observe() (ikke observeEvent) saa tab-guard evalueres FØR
+  # export_plot() -- observeEvent evaluerer altid trigger-udtrykket
+  # hvilket kalder generateSPCPlot() som side-effekt (Issue #394).
+  shiny::observe(
     {
-      # Review fund #3: Auto-genereret analysetekst bruges KUN i PDF-eksport
-      # (pdf_improvement-feltet). Når formatet er png er analysen
+      # TAB-GUARD (Issue #394): Afbryd straks hvis brugeren IKKE er paa
+      # eksporter-tab. req() forhindrer at export_plot() evalueres paa
+      # andre tabs og sparer CPU + Typst PDF-render i baggrunden.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
+      # FORMAT-GUARD: Auto-genereret analysetekst bruges KUN i PDF-eksport
+      # (pdf_improvement-feltet). Naar formatet er png er analysen
       # irrelevant, og den resulterende updateTextAreaInput trigger en ny
-      # preview-render uden reel brugerændring. Guard på format sparer
-      # unødig reactive chain (preview → autosave → debounce → preview).
-      fmt <- shiny::isolate(input$export_format) %||% "pdf"
+      # preview-render uden reel brugeraendring.
+      fmt <- input$export_format %||% "pdf"
       if (!identical(fmt, "pdf")) {
         return()
       }

@@ -188,7 +188,11 @@ create_app_state <- function() {
 
     # Excel multi-sheet sheet-picker (add-excel-sheet-picker)
     # NULL = ingen pending upload; ellers list(datapath, name, sheets, empty_flags)
-    pending_excel_upload = NULL
+    pending_excel_upload = NULL,
+
+    # Aktiv navbar-tab (Issue #394): opdateres fra app_server_main.R observeEvent(input$main_navbar).
+    # Bruges til at gate eksport-observere saa de kun korer paa eksporter-tab.
+    active_tab = "upload"
   )
 
   # Test Mode Management with Startup Optimization
@@ -217,9 +221,10 @@ create_app_state <- function() {
     last_programmatic_update = NULL, # LOOP PROTECTION: Timestamp of last programmatic update
     flag_reset_scheduled = FALSE, # LOOP PROTECTION: Single-reset guarantee flag
 
-    # TOKEN-BASED TRACKING: Advanced loop protection infrastructure
-    pending_programmatic_inputs = list(), # TOKEN TRACKING: Map of inputId -> {token, value, timestamp}
-    programmatic_token_counter = 0L, # TOKEN GENERATION: Counter for unique token generation
+    # SESSION-GLOBAL UI UPDATE QUEUE: serialiserer concurrent UI-opdateringer
+    # paa tvaers af observers via safe_programmatic_ui_update() +
+    # process_ui_update_queue(). Bibeholdes paa app_state$ui fordi koen er
+    # delt session-state, ikke per-observer-state.
     queued_updates = list(), # QUEUE SYSTEM: Queued UI updates for overlapping calls
     queue_processing = FALSE, # QUEUE SYSTEM: Flag to prevent multiple processors
 

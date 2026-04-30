@@ -78,40 +78,14 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   }
 
   # ============================================================================
-  # STEP 1: TOKEN CONSUMPTION - Primary loop protection mechanism
-  # ============================================================================
-  # Check if this input change was triggered by programmatic updateSelectizeInput
-  # rather than user interaction. If so, consume the token and skip event emission.
-
-  pending_token <- app_state$ui$pending_programmatic_inputs[[col_name]]
-
-  if (!is.null(pending_token) && pending_token$value == new_value) {
-    # CONSUME TOKEN: This is a programmatic input, don't emit event
-    app_state$ui$pending_programmatic_inputs[[col_name]] <- NULL
-
-    # Normalize and update state (still needed for consistency)
-    # CRITICAL FIX: Write to hierarchical mappings structure (app_state$columns$mappings)
-    app_state$columns$mappings[[col_name]] <- normalize_column_input(new_value)
-
-    # Track metrics (optional performance monitoring)
-    shiny::isolate({
-      app_state$ui$performance_metrics$tokens_consumed <-
-        app_state$ui$performance_metrics$tokens_consumed + 1L
-    })
-
-    # Early return - no event emission for programmatic updates
-    return(invisible(NULL))
-  }
-
-  # ============================================================================
-  # STEP 2: NORMALIZATION
+  # STEP 1: NORMALIZATION
   # ============================================================================
   # Convert input value to consistent string format for storage and comparison
 
   normalized_value <- normalize_column_input(new_value)
 
   # ============================================================================
-  # STEP 3: STATE UPDATE
+  # STEP 2: STATE UPDATE
   # ============================================================================
   # Update app_state to keep it synchronized with UI
   # This ensures app_state always reflects current UI state
@@ -120,7 +94,7 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   app_state$columns$mappings[[col_name]] <- normalized_value
 
   # ============================================================================
-  # STEP 4: CACHE INVALIDATION
+  # STEP 3: CACHE INVALIDATION
   # ============================================================================
   # Clear cached column input to ensure fresh data on next access
 
@@ -130,10 +104,9 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   }
 
   # ============================================================================
-  # STEP 5: EVENT EMISSION (BATCHED)
+  # STEP 4: EVENT EMISSION (BATCHED)
   # ============================================================================
-  # Only emit events for user-driven changes (not programmatic updates)
-  # This triggers downstream reactive observers to update UI, plots, etc.
+  # Trigger downstream reactive observers to update UI, plots, etc.
   #
   # PERFORMANCE: Use batching to reduce reactive storm overhead
   # Multiple rapid column changes → single batched event after 50ms delay

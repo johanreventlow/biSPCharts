@@ -1,5 +1,26 @@
 # biSPCharts 0.3.2
 
+## Sikkerhed
+
+* **Adopt BFHchartsAssets companion-pakke for proprietære fonts og
+  hospital-logoer:** biSPCharts bundler ikke længere Mari-fonts (Region
+  Hovedstadens custom font, proprietær), Arial TTF-kopier (Microsoft/
+  Monotype EULA) eller hospital-logoer (Region Hovedstadens brand-
+  ejendom) i det public repo. Assets leveres nu fra privat
+  `BFHchartsAssets` companion-pakke (>= 0.1.0) der staages ved runtime
+  via `inject_template_assets()` → `BFHchartsAssets::inject_bfh_assets()`.
+  Fjernet 30 filer fra git tracking (~22 fonts + 7 logoer) i
+  `inst/templates/typst/bfh-template/{fonts,images}/`. `.gitignore`
+  opdateret med defensive patterns. Connect Cloud-deployment kræver
+  `GITHUB_PAT`-env-var med privat repo-adgang. Graceful fallback ved
+  manglende companion: PDF eksporteres uden hospital-branding +
+  log_warn, ingen error. OpenSpec:
+  `adopt-bfhcharts-assets-companion`. PRs: #379, #381, #387.
+
+  ⚠️ **Open follow-up:** proprietære assets forbliver i biSPCharts git
+  history indtil eventuel `git filter-repo`-operation. Denne change
+  adresserer kun fremtidig tracking.
+
 ## Bug fixes
 
 * **Fix Connect Cloud deployment-fejl:** `app.R` brugte `library(biSPCharts)`
@@ -18,6 +39,19 @@
   begge sider, så validator-parser-paritet er garanteret. Edge cases dækket:
   BOM, mixed CRLF/LF, dansk komma-decimal med tab-delimiter. OpenSpec:
   `align-csv-validator-and-pkgload-runtime` Phase 1.
+
+## Interne ændringer
+
+* **Fjernet dead token-tracking-state fra `app_state$ui`:** Felterne
+  `pending_programmatic_inputs` og `programmatic_token_counter` var
+  defineret i `R/state_management.R`, men ingen produktionskode populerede
+  dem længere (producent fjernet i tidligere refaktor `a4c1c399` uden
+  consumer-cleanup). Fire observer-bodies læste/ryddede defensivt felter
+  der aldrig blev sat. Cleanup sletter dead state, fjerner ~17 linjer
+  observer-defensiv-kode og sletter `test-ui-token-management.R`
+  (kun plumbing-tests af dead state). `queued_updates`-feltet bibeholdes
+  som legitim session-global UI-update-queue. OpenSpec:
+  `extract-ui-tokens-to-observer-env`.
 
 # biSPCharts 0.3.1
 

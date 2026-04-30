@@ -36,6 +36,7 @@
 **Technology Stack:**
 - Shiny + Golem
 - BFHcharts (SPC visualization), BFHtheme (branding), BFHllm (AI/LLM)
+- BFHchartsAssets (privat companion-pkg med proprietære fonts/logoer; staages via `inject_template_assets()` ved runtime; kræver `GITHUB_PAT` for Connect Cloud)
 - qicharts2 (Anhøj rules)
 - Ragnar (RAG knowledge store, via BFHllm)
 
@@ -108,7 +109,8 @@ Implementation: `R/fct_spc_file_save_load.R`, `R/fct_excel_sheet_detection.R`,
 ### External Package Ownership
 
 ✅ **Maintainer kontrollerer fuldt:** BFHcharts (rendering), BFHtheme (branding),
-BFHllm (LLM/RAG/caching), Ragnar (knowledge store).
+BFHllm (LLM/RAG/caching), Ragnar (knowledge store), BFHchartsAssets (proprietære
+fonts/logoer; privat repo, kræver `GITHUB_PAT`).
 
 ❌ **ALDRIG implementér** funktionalitet i biSPCharts som hører hjemme i ekstern
 pakke (eks: target lines, font fallback, hospital colors, embeddings, BM25,

@@ -228,6 +228,17 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
                 }
               }
 
+              # FIX #393: Skriv chart_type til mappings FoER emit$data_updated()
+              # saa column_config-reaktiven kan bruge den korrekte chart_type under
+              # session-restore. chart_type-observeren springer over under
+              # restoring_session (guard i utils_server_events_chart.R), saa
+              # vi maa skrive til mappings eksplicit her.
+              # get_qic_chart_type() konverterer baade danske labels og
+              # engelske koder til kanonisk qic-kode (fx "run", "p", "i").
+              if (!is.null(saved_meta$chart_type) && nzchar(saved_meta$chart_type)) {
+                app_state$columns$mappings$chart_type <- get_qic_chart_type(saved_meta$chart_type)
+              }
+
               # CRITICAL: Metadata restore skal ske EFTER selectize choices
               # er populeret (sker i observer paa data_updated). Vi bruger
               # session$onFlushed(once = TRUE) saa update-kaldene koerer efter

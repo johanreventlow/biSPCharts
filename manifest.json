@@ -75,18 +75,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHchartsAssets",
         "RemoteUsername": "johanreventlow",
-        "RemotePkgRef": "johanreventlow/BFHchartsAssets@v0.1.0",
-        "RemoteRef": "v0.1.0",
-        "RemoteSha": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
+        "RemotePkgRef": "johanreventlow/BFHchartsAssets",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "25e7a2ce261bb01838092f3d1970ecc07912900a",
         "GithubRepo": "BFHchartsAssets",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.1.0",
-        "GithubSHA1": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "25e7a2ce261bb01838092f3d1970ecc07912900a",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-29 20:15:12 UTC; johanreventlow",
+        "Packaged": "2026-04-30 06:47:15 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-29 20:15:13 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-30 06:47:16 UTC; unix"
       }
     },
     "BFHllm": {
@@ -3996,6 +3996,46 @@
         "RemoteSha": "1.6.0"
       }
     },
+    "svglite": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "svglite",
+        "Title": "An 'SVG' Graphics Device",
+        "Version": "2.2.2",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"),\n    person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = \"aut\"),\n    person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"cre\", \"aut\"),\n           comment = c(ORCID = \"0000-0002-5147-4711\")),\n    person(\"T Jake\", \"Luciani\", , \"jake@apache.org\", role = \"aut\"),\n    person(\"Matthieu\", \"Decorde\", , \"matthieu.decorde@ens-lyon.fr\", role = \"aut\"),\n    person(\"Vaudor\", \"Lise\", , \"lise.vaudor@ens-lyon.fr\", role = \"aut\"),\n    person(\"Tony\", \"Plate\", role = \"ctb\",\n           comment = \"Early line dashing code\"),\n    person(\"David\", \"Gohel\", role = \"ctb\",\n           comment = \"Line dashing code and early raster code\"),\n    person(\"Yixuan\", \"Qiu\", role = \"ctb\",\n           comment = \"Improved styles; polypath implementation\"),\n    person(\"Håkon\", \"Malmedal\", role = \"ctb\",\n           comment = \"Opacity code\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
+        "Description": "A graphics device for R that produces 'Scalable Vector\n    Graphics'. 'svglite' is a fork of the older 'RSvgDevice' package.",
+        "License": "GPL (>= 2)",
+        "URL": "https://svglite.r-lib.org, https://github.com/r-lib/svglite",
+        "BugReports": "https://github.com/r-lib/svglite/issues",
+        "Depends": "R (>= 4.1)",
+        "Imports": "base64enc, cli, lifecycle, rlang (>= 1.1.0), systemfonts (>=\n1.3.0), textshaping (>= 0.3.0)",
+        "Suggests": "covr, fontquiver (>= 0.2.0), htmltools, knitr, rmarkdown,\ntestthat (>= 3.0.0), xml2 (>= 1.0.0)",
+        "LinkingTo": "cpp11, systemfonts, textshaping",
+        "VignetteBuilder": "knitr",
+        "Config/build/compilation-database": "true",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Config/usethis/last-upkeep": "2025-04-25",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "SystemRequirements": "libpng",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-10-20 15:57:25 UTC; thomas",
+        "Author": "Hadley Wickham [aut],\n  Lionel Henry [aut],\n  Thomas Lin Pedersen [cre, aut] (ORCID:\n    <https://orcid.org/0000-0002-5147-4711>),\n  T Jake Luciani [aut],\n  Matthieu Decorde [aut],\n  Vaudor Lise [aut],\n  Tony Plate [ctb] (Early line dashing code),\n  David Gohel [ctb] (Line dashing code and early raster code),\n  Yixuan Qiu [ctb] (Improved styles; polypath implementation),\n  Håkon Malmedal [ctb] (Opacity code),\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+        "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-10-21 16:10:02 UTC",
+        "Built": "R 4.5.0; aarch64-apple-darwin20; 2025-10-21 18:14:11 UTC; unix",
+        "Archs": "svglite.so.dSYM",
+        "RemoteType": "standard",
+        "RemotePkgRef": "svglite",
+        "RemoteRef": "svglite",
+        "RemoteRepos": "https://cran.rstudio.com/",
+        "RemotePkgPlatform": "aarch64-apple-darwin20",
+        "RemoteSha": "2.2.2"
+      }
+    },
     "sys": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -4731,7 +4771,7 @@
       "checksum": "f8804f8d3f807a850d6ffa423d679f24"
     },
     "DESCRIPTION": {
-      "checksum": "aef345a2c179a6ac3ce62b6c7a299dbd"
+      "checksum": "751bff5b09459b545ef22cd4dd56d052"
     },
     "inst/.DS_Store": {
       "checksum": "4cc330613d67dba9392c83fee5b5fa20"
@@ -4884,7 +4924,7 @@
       "checksum": "aea794434a74d42d6eaf071df163c2cb"
     },
     "manifest.json": {
-      "checksum": "9c00cf4a7cfaf61fe372cf79b881777d"
+      "checksum": "fbbf1d27f8b9cbdc7fd8f205137dfcab"
     },
     "NAMESPACE": {
       "checksum": "8afe62130454a324644b4a2142a88231"
@@ -5085,7 +5125,7 @@
       "checksum": "e54616889780b50090d414a5008e7270"
     },
     "R/state_management.R": {
-      "checksum": "eebf273204c7c92f39672863b8e130ac"
+      "checksum": "c793993bb9b77d7806aae7178ede0811"
     },
     "R/ui_app_ui.R": {
       "checksum": "be504129a8e5db826b5322b05dd6e6f0"
@@ -5187,7 +5227,7 @@
       "checksum": "10ed2df4fbde65daaef38bc44da5da7b"
     },
     "R/utils_server_column_input.R": {
-      "checksum": "8679a3abb66fd317094b6d9c579bc78d"
+      "checksum": "c83b0b59a025a32315041e3e6ecc67d8"
     },
     "R/utils_server_column_management.R": {
       "checksum": "1bbf70a815cc4485684538032d699b49"
@@ -5199,7 +5239,7 @@
       "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "c07696660b1ce400d68955352331af99"
+      "checksum": "24ce6e0e577dd5f39adb16547e9a3856"
     },
     "R/utils_server_events_data.R": {
       "checksum": "1e2c569e53b43875953f363475111961"

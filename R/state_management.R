@@ -188,7 +188,11 @@ create_app_state <- function() {
 
     # Excel multi-sheet sheet-picker (add-excel-sheet-picker)
     # NULL = ingen pending upload; ellers list(datapath, name, sheets, empty_flags)
-    pending_excel_upload = NULL
+    pending_excel_upload = NULL,
+
+    # Aktiv navbar-tab (Issue #394): opdateres fra app_server_main.R observeEvent(input$main_navbar).
+    # Bruges til at gate eksport-observere saa de kun korer paa eksporter-tab.
+    active_tab = "upload"
   )
 
   # Test Mode Management with Startup Optimization

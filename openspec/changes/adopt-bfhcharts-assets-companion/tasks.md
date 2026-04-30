@@ -30,8 +30,8 @@
 
 ## 5. Tests
 
-- [ ] 5.1 Opdatér tests for `inject_template_assets()` (hvis findes)
-- [ ] 5.2 Tilføj test der mocker `BFHchartsAssets`-fravær
+- [x] 5.1 Opdatér tests for `inject_template_assets()` (hvis findes) — N/A, ingen eksisterende tests; nyt `tests/testthat/test-inject-template-assets.R` oprettet
+- [x] 5.2 Tilføj test der mocker `BFHchartsAssets`-fravær (4 tests: missing+no-error + delegation + companion-fail)
 - [ ] 5.3 Kør `devtools::test()`
 - [ ] 5.4 Kør `devtools::check()`
 

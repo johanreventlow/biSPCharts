@@ -37,10 +37,10 @@
 
 ## 6. Connect Cloud setup (MANUELT)
 
-- [ ] 6.1 **[MANUELT]** Generér GitHub PAT med scope `repo`
-- [ ] 6.2 **[MANUELT]** Connect Cloud → biSPCharts app → Settings → Environment Variables: `GITHUB_PAT=<token>`
-- [ ] 6.3 **[MANUELT]** Re-deploy biSPCharts via `rsconnect::deployApp()`
-- [ ] 6.4 **[MANUELT]** Verifikation: download genereret PDF, bekræft Mari + logos rendres
+- [x] 6.1 **[MANUELT]** Generér GitHub PAT med scope `repo` (bekræftet udført 2026-04-30)
+- [x] 6.2 **[MANUELT]** Connect Cloud → biSPCharts app → Settings → Environment Variables: `GITHUB_PAT=<token>` (bekræftet udført 2026-04-30)
+- [x] 6.3 **[MANUELT]** Re-deploy biSPCharts via `rsconnect::deployApp()` (bekræftet udført 2026-04-30)
+- [x] 6.4 **[MANUELT]** Verifikation: download genereret PDF, bekræft Mari + logos rendres (bekræftet udført 2026-04-30)
 
 ## 7. NEWS + dokumentation
 

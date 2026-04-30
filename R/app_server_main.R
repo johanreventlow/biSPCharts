@@ -234,6 +234,8 @@ main_app_server <- function(input, output, session) {
       previous_tab(old_tab)
     }
     current_tab(new_tab)
+    # Opdater app_state saa eksport-observere kan gate paa aktiv tab (Issue #394)
+    app_state$session$active_tab <- new_tab
   })
 
   ## App-vejledning modul (tilbagenavigation til forrige tab)

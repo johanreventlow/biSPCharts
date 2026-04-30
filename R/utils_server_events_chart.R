@@ -310,10 +310,18 @@ register_chart_type_events <- function(app_state, emit, input, session, register
     )
   )
 
+  # Debounce target-input for at undgaa re-render + mappings-sync per tastetryk.
+  # Matcher chart_update-debounce (500ms) i fct_visualization_server.R.
+  # Fixes #395: hvert tegn trigrede settings_save + 3 plot-contexts + Typst PDF.
+  debounced_target_value <- shiny::debounce(
+    shiny::reactive(input$target_value %||% ""),
+    millis = DEBOUNCE_DELAYS$chart_update
+  )
+
   # Target value observer - sync to mappings for export module
   observers$target_value <- register_observer(
     "target_value",
-    shiny::observeEvent(input$target_value,
+    shiny::observeEvent(debounced_target_value(),
       {
         safe_operation(
           "Sync target value to mappings",
@@ -322,7 +330,7 @@ register_chart_type_events <- function(app_state, emit, input, session, register
             # Export module reads from mappings, not from reactives
 
             # Parse target_value (same logic as in fct_visualization_server.R)
-            target_input <- input_scalar(input$target_value, default = "")
+            target_input <- input_scalar(debounced_target_value(), default = "")
             if (!nzchar(target_input)) {
               app_state$columns$mappings$target_value <- NULL
               app_state$columns$mappings$target_text <- NULL

@@ -47,7 +47,8 @@ Imports:
     forcats (>= 1.0.0),
     config (>= 0.3.0),
     systemfonts (>= 1.0.0),
-    pkgload (>= 1.3.0)
+    pkgload (>= 1.3.0),
+    svglite (>= 2.1.0)
 Suggests:
     chromote,
     httr2,
@@ -71,7 +72,7 @@ Suggests:
     mockery,
     withr
 Config/testthat/edition: 3
-Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace().
+Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace(). TEMPORARY: svglite i Imports som workaround — BFHcharts::bfh_export_pdf() kalder svglite::svglite() men erklærer kun svglite i Suggests. Fjern når BFHcharts promoter svglite til Imports (BFHcharts issue TODO).
 Remotes: johanreventlow/BFHcharts@v0.11.1,
     johanreventlow/BFHtheme@v0.5.0,
     johanreventlow/BFHllm@v0.1.1,

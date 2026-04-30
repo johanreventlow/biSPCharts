@@ -81,12 +81,10 @@ create_test_app_state <- function() {
   state$ui$flag_reset_scheduled <- FALSE
   state$ui$queued_updates <- list()
   state$ui$queue_processing <- FALSE
-  state$ui$pending_programmatic_inputs <- list()
   state$ui$memory_limits <- list(
     max_queue_size = 5L,
     max_pending_tokens = 100L
   )
-  state$ui$programmatic_token_counter <- 0L
   state$ui$performance_metrics <- list(
     queued_updates = 0L,
     queue_max_size = 0L,

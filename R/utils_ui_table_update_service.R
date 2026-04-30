@@ -1,9 +1,9 @@
 # utils_ui_table_update_service.R
 # Tabel-relaterede UI-opdateringer (excelR + eventuel DT)
 
-#' Formatér data til excelR-visning
+#' Formater data til excelR-visning
 #'
-#' Ren hjælpefunktion der konverterer numeriske kolonner til dansk
+#' Ren hjaelpefunktion der konverterer numeriske kolonner til dansk
 #' format (komma-decimal) for visning i excelR-tabel.
 #' Logiske kolonner (Skift/Frys) ekskluderes fra numerisk formatering.
 #'
@@ -32,10 +32,10 @@ format_data_for_excelr <- function(data) {
 #'
 #' Tynd closure der centraliserer tabel-opdateringer for excelR og
 #' fremtidige dataTable-widgets. Deler token-protection med
-#' `safe_programmatic_ui_update()` (samme mønster som column/form services).
+#' `safe_programmatic_ui_update()` (samme moenster som column/form services).
 #'
-#' Tabel-opdatering i denne app sker via state-ændring (set_current_data +
-#' table_version bump) — excelR's renderExcel re-renderer reaktivt.
+#' Tabel-opdatering i denne app sker via state-aendring (set_current_data +
+#' table_version bump) -- excelR's renderExcel re-renderer reaktivt.
 #' Der er ingen proxy-baseret updateExcelR i packagets API.
 #'
 #' @param session Shiny session-objekt
@@ -44,7 +44,7 @@ format_data_for_excelr <- function(data) {
 #'
 #' @keywords internal
 create_table_update_service <- function(session, app_state) {
-  # Hjælper: forøg table_version for at tvinge excelR re-render
+  # Hjaelper: foroeg table_version for at tvinge excelR re-render
   .bump_table_version <- function() {
     current <- shiny::isolate(app_state$data$table_version) %||% 0L
     shiny::isolate({
@@ -52,22 +52,22 @@ create_table_update_service <- function(session, app_state) {
     })
   }
 
-  # Opdatér excelR-tabel med nye data
+  # Opdater excelR-tabel med nye data
   #
   # Opdatering sker via set_current_data() + table_version bump:
-  # excelR's renderExcel() re-renderer reaktivt når state ændres.
+  # excelR's renderExcel() re-renderer reaktivt naar state aendres.
   # Wrappet i safe_programmatic_ui_update for token-protection
-  # (forhindrer cirkulære event-loops under programmatisk opdatering).
+  # (forhindrer cirkulaere event-loops under programmatisk opdatering).
   #
   # @param table_id Tabelens output ID (bruges som log-kontekst; renderExcel
-  #   reagerer på app_state$data$current_data uanset ID)
+  #   reagerer paa app_state$data$current_data uanset ID)
   # @param data Data frame der skal vises i tabellen
   # @param options Liste med valgfrie indstillinger (reserveret, bruges ikke endnu)
   #
   update_excelr_data <- function(table_id, data, options = list()) {
     safe_programmatic_ui_update(session, app_state, function() {
       safe_operation(
-        paste("Opdatér excelR tabel:", table_id),
+        paste("Opdater excelR tabel:", table_id),
         code = {
           set_current_data(app_state, data)
           .bump_table_version()
@@ -89,11 +89,11 @@ create_table_update_service <- function(session, app_state) {
     })
   }
 
-  # Opdatér DT::datatable-widget (stub — DT bruges ikke i denne app endnu)
+  # Opdater DT::datatable-widget (stub -- DT bruges ikke i denne app endnu)
   #
   # Denne funktion er reserveret til fremtidig brug hvis DT::datatable
-  # introduceres som supplement til excelR. I nuværende implementation
-  # er DT ikke aktivt — kald logger en advarsel og returnerer usynligt NULL.
+  # introduceres som supplement til excelR. I nuvaerende implementation
+  # er DT ikke aktivt -- kald logger en advarsel og returnerer usynligt NULL.
   #
   # @param table_id DT proxy ID
   # @param data Data frame der skal vises
@@ -110,7 +110,7 @@ create_table_update_service <- function(session, app_state) {
 
   # Ryd tabel-indhold og nulstil table_version
   #
-  # Sætter current_data til NULL og bumper table_version så
+  # Saetter current_data til NULL og bumper table_version saa
   # excelR's renderExcel() reagerer korrekt via req()-guard.
   #
   # @param table_id Tabelens output ID (bruges som log-kontekst)

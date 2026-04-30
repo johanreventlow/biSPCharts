@@ -1,5 +1,26 @@
 # biSPCharts 0.3.2
 
+## Sikkerhed
+
+* **Adopt BFHchartsAssets companion-pakke for proprietære fonts og
+  hospital-logoer:** biSPCharts bundler ikke længere Mari-fonts (Region
+  Hovedstadens custom font, proprietær), Arial TTF-kopier (Microsoft/
+  Monotype EULA) eller hospital-logoer (Region Hovedstadens brand-
+  ejendom) i det public repo. Assets leveres nu fra privat
+  `BFHchartsAssets` companion-pakke (>= 0.1.0) der staages ved runtime
+  via `inject_template_assets()` → `BFHchartsAssets::inject_bfh_assets()`.
+  Fjernet 30 filer fra git tracking (~22 fonts + 7 logoer) i
+  `inst/templates/typst/bfh-template/{fonts,images}/`. `.gitignore`
+  opdateret med defensive patterns. Connect Cloud-deployment kræver
+  `GITHUB_PAT`-env-var med privat repo-adgang. Graceful fallback ved
+  manglende companion: PDF eksporteres uden hospital-branding +
+  log_warn, ingen error. OpenSpec:
+  `adopt-bfhcharts-assets-companion`. PRs: #379, #381, #387.
+
+  ⚠️ **Open follow-up:** proprietære assets forbliver i biSPCharts git
+  history indtil eventuel `git filter-repo`-operation. Denne change
+  adresserer kun fremtidig tracking.
+
 ## Bug fixes
 
 * **Fix Connect Cloud deployment-fejl:** `app.R` brugte `library(biSPCharts)`

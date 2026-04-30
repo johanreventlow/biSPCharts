@@ -72,7 +72,7 @@ Suggests:
     mockery,
     withr
 Config/testthat/edition: 3
-Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace(). TEMPORARY: svglite i Imports som workaround — BFHcharts::bfh_export_pdf() kalder svglite::svglite() men erklærer kun svglite i Suggests. Fjern når BFHcharts promoter svglite til Imports (BFHcharts issue TODO).
+Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace(). DO NOT REMOVE svglite fra Imports — workaround for BFHcharts svglite-Suggests-bug. Tidligere fjernet i #293 ("0 direkte brug i grep R/") og #382 (manifest regen) → produktions-PDF-eksport fejler med "package svglite is required to save as SVG". svglite kaldes indirekte via BFHcharts::bfh_export_pdf() i export_chart_svg(). Fjern KUN når BFHcharts promoter svglite til Imports (track via cross-repo issue).
 Remotes: johanreventlow/BFHcharts@v0.11.1,
     johanreventlow/BFHtheme@v0.5.0,
     johanreventlow/BFHllm@v0.1.1,

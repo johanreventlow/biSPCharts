@@ -19,6 +19,19 @@
   BOM, mixed CRLF/LF, dansk komma-decimal med tab-delimiter. OpenSpec:
   `align-csv-validator-and-pkgload-runtime` Phase 1.
 
+## Interne ændringer
+
+* **Fjernet dead token-tracking-state fra `app_state$ui`:** Felterne
+  `pending_programmatic_inputs` og `programmatic_token_counter` var
+  defineret i `R/state_management.R`, men ingen produktionskode populerede
+  dem længere (producent fjernet i tidligere refaktor `a4c1c399` uden
+  consumer-cleanup). Fire observer-bodies læste/ryddede defensivt felter
+  der aldrig blev sat. Cleanup sletter dead state, fjerner ~17 linjer
+  observer-defensiv-kode og sletter `test-ui-token-management.R`
+  (kun plumbing-tests af dead state). `queued_updates`-feltet bibeholdes
+  som legitim session-global UI-update-queue. OpenSpec:
+  `extract-ui-tokens-to-observer-env`.
+
 # biSPCharts 0.3.1
 
 ## Interne ændringer

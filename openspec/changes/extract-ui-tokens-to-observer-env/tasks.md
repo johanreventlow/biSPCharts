@@ -38,7 +38,7 @@
 
 ## 6. Release
 
-- [ ] 6.1 PR til develop fra `feat/extract-ui-tokens-to-observer-env`
-- [ ] 6.2 NEWS.md entry (interne ændringer): "Fjernet dead token-tracking-state fra `app_state$ui`"
-- [ ] 6.3 CI grøn
-- [ ] 6.4 Merge
+- [x] 6.1 PR til develop fra `feat/extract-ui-tokens-to-observer-env` (PR #388 merged 2026-04-30)
+- [x] 6.2 NEWS.md entry (interne ændringer): "Fjernet dead token-tracking-state fra `app_state$ui`" (separat PR `chore/news-token-cleanup`)
+- [x] 6.3 CI grøn
+- [x] 6.4 Merge

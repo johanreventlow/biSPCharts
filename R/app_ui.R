@@ -148,6 +148,17 @@ golem_add_external_resources <- function() {
     "www", app_sys("app/www")
   )
 
+  # Registrér BFHchartsAssets-fonts som browser-tilgængeligt resource-prefix
+  # hvis companion-pakken er tilgængelig. Giver browser adgang til Mari-fonts
+  # via url('bfh_assets/MariOffice-*.ttf') i CSS @font-face (se ui_app_ui.R).
+  # Graceful skip: intet prefix registreres, CSS emitter ikke @font-face.
+  if (requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    bfh_fonts_dir <- system.file("assets/fonts", package = "BFHchartsAssets")
+    if (nzchar(bfh_fonts_dir) && dir.exists(bfh_fonts_dir)) {
+      shiny::addResourcePath("bfh_assets", bfh_fonts_dir)
+    }
+  }
+
   # Læs TTL fra session-konfiguration (golem-config.yml). Fallback 480 min.
   ttl_minutes <- tryCatch(
     {

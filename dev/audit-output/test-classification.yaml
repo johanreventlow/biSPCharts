@@ -946,14 +946,6 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
-  - file: test-ui-token-management.R
-    audit_category: stub
-    type: unit
-    handling: keep
-    reviewed: yes
-    rationale: Unit-test på token counter-logik (2 blokke). Misklassificeret som stub.
-    reviewer: johanreventlow
-    reviewed_date: '2026-04-17'
   - file: test-utils_analytics_consent.R
     audit_category: green
     type: unit

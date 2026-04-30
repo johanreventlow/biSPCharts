@@ -686,8 +686,6 @@ test_that("safe_programmatic_ui_update bruger token-baseret beskyttelse og opdat
   expect_equal(executed, 1L)
   expect_equal(app_state$ui$performance_metrics$total_updates, 1L)
   expect_gte(app_state$ui$performance_metrics$avg_update_duration_ms, 0)
-  # Token-systemet blev fjernet i refactor (fixes #197) — counter forbliver 0
-  expect_equal(app_state$ui$programmatic_token_counter, 0L)
   expect_false(isTRUE(app_state$ui$updating_programmatically))
   expect_equal(length(app_state$ui$queued_updates), 0L)
   expect_equal(app_state$ui$performance_metrics$queued_updates, 0L)
@@ -712,7 +710,7 @@ test_that("safe_programmatic_ui_update køer opdateringer når en kører", {
   expect_equal(app_state$ui$performance_metrics$queued_updates, 1L)
 })
 
-test_that("safe_programmatic_ui_update registrerer tokens for programatiske input", {
+test_that("safe_programmatic_ui_update kører update_function og registrerer Shiny-kald", {
   app_state <- create_test_app_state()
   recorder <- create_recorder()
 
@@ -729,15 +727,12 @@ test_that("safe_programmatic_ui_update registrerer tokens for programatiske inpu
     delay_ms = 0
   )
 
-  # Token-systemet blev fjernet i refactor (fixes #197) — counter forbliver 0
-  expect_equal(app_state$ui$programmatic_token_counter, 0L)
-
   recorded <- recorder$data()
   if (length(recorded) >= 2L) {
     expect_equal(recorded[[1]]$selected, "Dato")
     expect_equal(recorded[[2]]$selected, "Tæller")
   } else {
-    testthat::skip("Stub recording kræver fuld Shiny session; tokens verificeret uden entries")
+    testthat::skip("Stub recording kræver fuld Shiny session")
   }
   expect_equal(length(app_state$ui$queued_updates), 0L)
 })

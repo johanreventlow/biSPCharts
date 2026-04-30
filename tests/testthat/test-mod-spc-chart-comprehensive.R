@@ -195,8 +195,7 @@ create_mock_app_state <- function() {
   )
 
   app_state$ui <- reactiveValues(
-    hide_anhoej_rules = FALSE,
-    pending_programmatic_inputs = list()
+    hide_anhoej_rules = FALSE
   )
 
   return(app_state)

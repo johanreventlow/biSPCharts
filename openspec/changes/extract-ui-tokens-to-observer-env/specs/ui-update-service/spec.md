@@ -1,33 +1,59 @@
 ## ADDED Requirements
 
-### Requirement: UI-opdaterings-tokens SHALL holdes i observer-local env
+### Requirement: app_state$ui SHALL NOT indeholde dead token-tracking-felter
 
-Token-baseret loop-protection (`pending_programmatic_inputs`, `programmatic_token_counter`, `queued_updates`) SHALL opholde i lokalt environment oprettet i hvert observer-scope, IKKE på `app_state`. `app_state` SHALL ikke indeholde UI-opdaterings-infrastruktur-state.
+`app_state$ui` SHALL ikke indeholde token-tracking-felter (`pending_programmatic_inputs`, `programmatic_token_counter`) der ikke har nogen producent i produktionskode. Dead state forvirrer kode-reading + bærer test-overhead uden adfærdsdækning.
 
-#### Scenario: Observer-init opretter lokalt env
+`queued_updates` BIBEHOLDES som legitim session-global queue-infrastruktur — flyttes IKKE — fordi den serialiserer concurrent UI-opdateringer på tværs af observere via `safe_programmatic_ui_update()` + `process_ui_update_queue()`.
 
-- **GIVEN** observer-setup-funktion (fx `setup_column_observers(session, app_state)`) kaldes
-- **WHEN** funktionen initialiseres
-- **THEN** et lokalt `ui_update_tokens <- new.env(parent = emptyenv())` oprettes i closure
-- **AND** dette env er tilgængeligt kun inden for observers skopet
-- **AND** `app_state$ui` indeholder ikke længere `pending_programmatic_inputs`, `programmatic_token_counter` eller `queued_updates`
+#### Scenario: Dead token-felter fjernet fra state_management
 
-#### Scenario: safe_programmatic_ui_update modtager env
+- **GIVEN** `R/state_management.R`'s `app_state$ui <- shiny::reactiveValues(...)` definition
+- **WHEN** filen inspiceres efter cleanup
+- **THEN** `pending_programmatic_inputs` SHALL ikke være defineret
+- **AND** `programmatic_token_counter` SHALL ikke være defineret
+- **AND** `queued_updates` SHALL stadig være defineret med kommentar der dokumenterer den som session-global queue
 
-- **GIVEN** `safe_programmatic_ui_update()` kaldes fra observer-scope
-- **WHEN** funktionen kaldes
-- **THEN** `token_env` SHALL være eksplicit parameter (ikke implicit hentet fra `app_state`)
-- **AND** funktionen muterer kun `token_env`, aldrig `app_state`
+#### Scenario: Audit-grep returnerer tomt
 
-#### Scenario: Audit bekræfter fravær
+- **WHEN** `grep -rn "pending_programmatic_inputs\|programmatic_token_counter" R/` kører
+- **THEN** resultatet SHALL være tomt
+- **AND** ingen produktionskode i `R/` SHALL referere disse felter
 
-- **WHEN** `grep -rn "app_state\\\$ui\\\$pending_programmatic\|programmatic_token_counter\|queued_updates" R/` kører
-- **THEN** resultatet er tomt
-- **AND** token-logik findes kun i observer-scoped helpers
+#### Scenario: Observer-bodies ryddet for dead read-and-clear-blocks
 
-#### Scenario: Isolation mellem sessions
+- **GIVEN** `R/utils_server_events_chart.R` (chart_type, y_axis_unit, n_column observers)
+- **AND** `R/utils_server_column_input.R` (col_name handler)
+- **WHEN** observer-bodies inspiceres
+- **THEN** ingen `pending_token <- app_state$ui$pending_programmatic_inputs[[...]]`-blocks SHALL eksistere
+- **AND** ingen `app_state$ui$pending_programmatic_inputs[[...]] <- NULL`-blocks SHALL eksistere
+- **AND** observer-logic der tidligere var defensivt gated på pending_token SHALL køre uconditional eller med eksplicit dokumenteret guard (fx `app_state$ui$updating_programmatically`-check)
 
-- **GIVEN** to samtidige Shiny-sessions
-- **WHEN** begge udfører programmatiske UI-opdateringer
-- **THEN** token-env i session A påvirker ikke session B
-- **AND** garbage collection af session A frigør session A's token-env
+#### Scenario: queued_updates bibeholdes på app_state$ui
+
+- **GIVEN** `R/state_management.R`'s `app_state$ui` definition
+- **WHEN** filen inspiceres efter cleanup
+- **THEN** `queued_updates = list()` SHALL stadig være defineret
+- **AND** der SHALL være kommentar der dokumenterer feltet som legitim session-global queue
+- **AND** `safe_programmatic_ui_update()` + `process_ui_update_queue()` + `enqueue_ui_update()` SHALL fortsætte med at læse/skrive feltet uændret
+
+#### Scenario: test-ui-token-management.R fjernet
+
+- **GIVEN** `tests/testthat/test-ui-token-management.R`
+- **WHEN** test-suite køres efter cleanup
+- **THEN** filen SHALL ikke længere eksistere
+- **AND** ingen test SHALL mutere `app_state$ui$pending_programmatic_inputs` eller `app_state$ui$programmatic_token_counter`
+
+#### Scenario: Test-fixtures ryddet
+
+- **WHEN** `tests/testthat/helper-fixtures.R` og test-filer inspiceres
+- **THEN** initialisering af `pending_programmatic_inputs` SHALL være fjernet
+- **AND** initialisering af `programmatic_token_counter` SHALL være fjernet
+- **AND** `queued_updates`-initialisering SHALL bibeholdes (felt eksisterer stadig)
+
+#### Scenario: Fuld test-suite forbliver grøn
+
+- **GIVEN** alle ovenstående cleanup-skridt
+- **WHEN** `devtools::test()` køres
+- **THEN** alle eksisterende tests SHALL passere
+- **AND** ingen ny test SHALL fejle pga. fjernet dead state

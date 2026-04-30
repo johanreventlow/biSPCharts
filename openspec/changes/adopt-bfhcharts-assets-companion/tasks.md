@@ -18,15 +18,15 @@
 - [x] 3.2 `git rm -r inst/templates/typst/bfh-template/images/`
 - [x] 3.3 Behold `inst/templates/typst/bfh-template/bfh-template.typ`
 - [x] 3.4 `.gitignore`: tilføj defensive patterns for `fonts/` + `images/` subdirs
-- [ ] 3.5 Verificér at `bisp_system_file()` stadig fungerer for `bfh-template.typ` (eneste resterende fil)
+- [x] 3.5 Verificér at `bisp_system_file()` stadig fungerer for `bfh-template.typ` (eneste resterende fil)
 
 ## 4. manifest.json regen
 
 - [x] 4.1 Installer `BFHchartsAssets` lokalt fra GitHub@v0.1.0 via pak
 - [x] 4.2 Reinstaller `BFHcharts` fra GitHub@v0.11.1 (renv-source-tracking)
-- [ ] 4.3 Kør `Rscript dev/_regen_manifest.R` (kuratet appFiles-liste — undgår 10000-fil-limit)
-- [ ] 4.4 Verificér at `manifest.json` har komplet `Remote*`-felter for: `BFHchartsAssets`, `BFHcharts`, `BFHtheme`, `BFHllm`
-- [ ] 4.5 Diff manifest mod tidligere version
+- [x] 4.3 Kør `Rscript dev/_regen_manifest.R` (kuratet appFiles-liste — undgår 10000-fil-limit)
+- [x] 4.4 Verificér at `manifest.json` har komplet `Remote*`-felter for: `BFHchartsAssets`, `BFHcharts`, `BFHtheme`, `BFHllm`
+- [x] 4.5 Diff manifest mod tidligere version
 
 ## 5. Tests
 

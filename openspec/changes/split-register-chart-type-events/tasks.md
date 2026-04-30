@@ -28,4 +28,4 @@
 - [x] 5.1 `register_chart_type_events()` reduceret til ≤150 linjer (composition only)
 - [x] 5.2 `sync_chart_type_to_state()` 100% test-dækket uden Shiny
 - [ ] 5.3 Manuel test: skift chart-type i UI → ingen regression
-- [ ] 5.4 `openspec validate split-register-chart-type-events --strict`
+- [x] 5.4 `openspec validate split-register-chart-type-events --strict`

@@ -92,6 +92,14 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
 
       if (!user_has_edited) {
         last_auto_analysis(auto_text)
+        # Sæt suspend-flag FØR updateTextAreaInput så settings_save ikke
+        # gemmer den programmatiske input-ændring som en bruger-ændring.
+        # onFlushed(once=TRUE) rydder flaget efter Shiny har flushet
+        # updateTextAreaInput-beskeden til klienten.
+        app_state$session$autogen_active <- TRUE
+        session$onFlushed(function() {
+          app_state$session$autogen_active <- FALSE
+        }, once = TRUE)
         shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
       }
     },

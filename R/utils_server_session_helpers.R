@@ -497,6 +497,12 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     # metadata (tidligere fejl: bindEvent fyrede observer foer debounce kunne
     # re-computere reactiven -> stale cached value blev gemt).
     shiny::observe({
+      # Guard: spring over mens autogen overskriver pdf_improvement
+      # programmatisk — undgår dobbeltsave (NULL + auto-tekst) ved tab-skift.
+      if (isTRUE(app_state$session$autogen_active)) {
+        return(invisible(NULL))
+      }
+
       save_data <- settings_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
 

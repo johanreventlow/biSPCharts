@@ -1221,6 +1221,12 @@ files:
     handling: keep
     reviewed: no
     rationale: Auto-tilfoejet.
+  - file: test-ui-update-service-table.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: no
+    rationale: Auto-tilfoejet.
   - file: test-csv-validator-parser-parity.R
     audit_category: green
     type: unit

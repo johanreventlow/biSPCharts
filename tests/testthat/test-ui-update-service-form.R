@@ -95,7 +95,7 @@ test_that("validate_form_fields: gyldigt felt passerer validering", {
   expect_equal(length(result$errors), 0)
 })
 
-test_that("create_ui_update_service backward-compat wrapper merger begge APIs", {
+test_that("create_ui_update_service backward-compat wrapper merger alle tre APIs", {
   skip_if_not_installed("shiny")
 
   mock_session <- list(input = list())
@@ -116,5 +116,11 @@ test_that("create_ui_update_service backward-compat wrapper merger begge APIs", 
   expect_true("show_user_feedback" %in% names(svc))
   expect_true("update_ui_conditionally" %in% names(svc))
 
-  expect_equal(length(svc), 9)
+  # Tabel-API (ny — table_update_service)
+  expect_true("update_excelr_data" %in% names(svc))
+  expect_true("update_datatable" %in% names(svc))
+  expect_true("clear_table" %in% names(svc))
+
+  # Total: 3 (col) + 6 (form) + 3 (table) = 12
+  expect_equal(length(svc), 12)
 })

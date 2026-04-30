@@ -166,8 +166,7 @@ test_that("create_ui_update_service backward-compat wrapper inkluderer table-API
   expect_true("update_datatable" %in% names(svc))
   expect_true("clear_table" %in% names(svc))
 
-  # Total: 3 (col) + 6 (form) + 3 (table) = 12
-  expect_equal(length(svc), 12)
+  expect_equal(length(svc), 12) # 3 (col) + 6 (form) + 3 (table)
 })
 
 # TOKEN-PROTECTION INTEGRATION TEST ===========================================

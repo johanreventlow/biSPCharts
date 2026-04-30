@@ -32,8 +32,8 @@
 
 - [x] 5.1 Opdatér tests for `inject_template_assets()` (hvis findes) — N/A, ingen eksisterende tests; nyt `tests/testthat/test-inject-template-assets.R` oprettet
 - [x] 5.2 Tilføj test der mocker `BFHchartsAssets`-fravær (4 tests: missing+no-error + delegation + companion-fail)
-- [ ] 5.3 Kør `devtools::test()`
-- [ ] 5.4 Kør `devtools::check()`
+- [x] 5.3 Kør `devtools::test()` — 5552 PASS, 0 FAIL, 101 SKIP, 50 WARN (alle pre-existing, ej introducerede regressions)
+- [ ] 5.4 Kør `devtools::check()` — DEFERRED til PR CI-gate (`gate (tests + warnings)` job)
 
 ## 6. Connect Cloud setup (MANUELT)
 

@@ -163,9 +163,10 @@ register_roboto_font <- function() {
 #' @return NULL (invisible). Registrerer fonts som sideeffekt.
 #'
 #' @details
-#' Mari fonts er bundlet i inst/templates/typst/bfh-template/fonts/ mappen.
-#' Fonten er proprietaer (Bispebjerg og Frederiksberg Hospital) og maa ikke
-#' distribueres i public packages -- derfor ligger den i biSPCharts (private).
+#' Mari fonts leveres nu af den private BFHchartsAssets companion-pakke
+#' (system.file("assets/fonts", package = "BFHchartsAssets")).
+#' Fonten er proprietaer (Region Hovedstaden) og distribueres ikke i
+#' public packages -- BFHchartsAssets er privat (kræver GITHUB_PAT).
 #'
 #' @family font_registration
 #' @keywords internal
@@ -195,9 +196,28 @@ register_mari_font <- function() {
     return(invisible(NULL))
   }
 
-  font_dir <- bisp_system_file("templates/typst/bfh-template/fonts")
+  # Mari-fonts leveres nu af BFHchartsAssets companion-pakken.
+  # Den originale sti (templates/typst/bfh-template/fonts/) er fjernet i #399.
+  if (!requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    log_warn(
+      component = "[FONT_REGISTRATION]",
+      message = "BFHchartsAssets ikke tilg\u00e6ngelig \u2014 Mari font-registrering sprunget over",
+      details = list(
+        fallback = "BFHtheme bruger n\u00e6ste font i stakken (Roboto/sans-serif)",
+        install_hint = "Installer BFHchartsAssets for Mari-branding (kr\u00e6ver GITHUB_PAT)"
+      )
+    )
+    return(invisible(NULL))
+  }
+
+  font_dir <- system.file("assets/fonts", package = "BFHchartsAssets")
   if (!nzchar(font_dir) || !dir.exists(font_dir)) {
-    font_dir <- file.path("inst", "templates", "typst", "bfh-template", "fonts")
+    log_warn(
+      component = "[FONT_REGISTRATION]",
+      message = "BFHchartsAssets assets/fonts mappe ikke fundet \u2014 Mari font-registrering sprunget over",
+      details = list(package_dir = system.file(package = "BFHchartsAssets"))
+    )
+    return(invisible(NULL))
   }
 
   # Book-varianten matcher Mac system-default for "Mari" (lettere end Regular)
@@ -207,7 +227,7 @@ register_mari_font <- function() {
   if (!file.exists(font_plain)) {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "MariOffice-Book.ttf ikke fundet \u2014 Mari font-registrering sprunget over",
+      message = "MariOffice-Book.ttf ikke fundet i BFHchartsAssets \u2014 Mari font-registrering sprunget over",
       details = list(expected_path = font_plain)
     )
     return(invisible(NULL))

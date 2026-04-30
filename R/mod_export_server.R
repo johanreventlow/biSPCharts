@@ -138,6 +138,13 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Note: BFHcharts already applies hospital theme automatically via BFHtheme::theme_bfh()
     output$export_preview <- shiny::renderPlot(
       {
+        # Guard: kun render paa eksporter-tab. suspendWhenHidden=TRUE (linje 224)
+        # hjælper, men bs4Dash-navbar registrerer ej output som hidden i Shiny core.
+        # Eksplicit req() via app_state$session$active_tab sikrer korrekt gating
+        # og skaber reaktiv dependency saa render genoptages naar brugeren navigerer
+        # til eksporter-tab (Issue #407).
+        shiny::req(app_state$session$active_tab == "eksporter")
+
         log_debug(
           .context = "EXPORT_MODULE",
           message = "renderPlot for export_preview starting"
@@ -363,6 +370,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # PDF preview renderImage - displays PNG preview of Typst PDF layout
     output$pdf_preview <- shiny::renderImage(
       {
+        # Guard: kun render paa eksporter-tab. Samme begrundelse som export_preview
+        # -- bs4Dash registrerer ej output som hidden i Shiny core (Issue #407).
+        shiny::req(app_state$session$active_tab == "eksporter")
+
         preview_path <- pdf_preview_image()
 
         if (is.null(preview_path) || !file.exists(preview_path)) {

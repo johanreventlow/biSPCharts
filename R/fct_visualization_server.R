@@ -62,9 +62,23 @@ setup_visualization <- function(input, output, session, app_state) {
   column_config <- shiny::reactive({
     manual_cfg <- manual_config()
     auto_columns <- app_state$columns$auto_detect$results
-    chart_type_str <- get_qic_chart_type(
-      if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type
-    )
+
+    # Fix #393: Under session-restore er input$chart_type stadig "run" (default)
+    # fordi updateSelectizeInput() i restore_metadata endnu ikke har koert
+    # (det sker i onFlushed EFTER dette reaktive laeses). Vi laeser i stedet
+    # fra app_state$columns$mappings$chart_type, som skrives eksplicit i
+    # session-restore-flowet foer emit$data_updated() fyrer.
+    chart_type_str <- if (
+      isTRUE(is_restoring_session(app_state)) &&
+        !is.null(shiny::isolate(app_state$columns$mappings$chart_type)) &&
+        nzchar(shiny::isolate(app_state$columns$mappings$chart_type))
+    ) {
+      shiny::isolate(app_state$columns$mappings$chart_type)
+    } else {
+      get_qic_chart_type(
+        if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type
+      )
+    }
 
     # Byg AutodetectResult-lignende objekt fra state (kan være NULL)
     autodetect_for_config <- if (!is.null(auto_columns)) {

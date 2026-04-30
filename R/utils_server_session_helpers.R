@@ -378,6 +378,15 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     }
   }
 
+  # Debounced target-input til settings-save: forhindrer settings_save per
+  # tastetryk i target-feltet. Spejler debounced_target_value i
+  # register_chart_type_events() men er en separat reaktiv for at bevare
+  # isolation fra plot-render-flowet (fixes #396 target-symptom).
+  target_value_save_debounced <- shiny::debounce(
+    shiny::reactive(input$target_value %||% ""),
+    millis = DEBOUNCE_DELAYS$chart_update # 500ms — matcher #395
+  )
+
   # PERFORMANCE OPTIMIZED: Reaktiv debounced settings save med performance monitoring
   settings_save_trigger <- shiny::debounce(
     shiny::reactive({
@@ -400,7 +409,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       force(input$frys_column)
       force(input$kommentar_column)
       force(input$chart_type)
-      force(input$target_value)
+      force(target_value_save_debounced()) # debounced — undgaar save per tastetryk
       force(input$centerline_value)
       force(input$y_axis_unit)
       force(input[["export-export_title"]])
@@ -474,6 +483,13 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     millis = get_settings_save_interval_ms() # Faster debounce for settings
   )
 
+  # Diff-check: undgaar duplicate localStorage-writes naar payload er identisk.
+  # Eksempel: tab-revisit uden aendringer fyrer settings_save_trigger to gange
+  # med identisk metadata. last_settings_payload fanges i closure (per session).
+  # NB: sammenligner kun metadata, IKKE data + timestamp — timestamp aendres
+  # hver gang og ville goere diff-checket virkningslost.
+  last_settings_payload <- NULL
+
   obs_settings_save <- if (auto_save_feature_enabled) {
     # Ingen bindEvent her: settings_save_trigger har nu selv eksplicitte
     # input-deps, saa den fyrer via sin egen debounce naar inputs aendres.
@@ -483,6 +499,20 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     shiny::observe({
       save_data <- settings_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
+
+      # Diff-check: spring over hvis metadata er identisk med sidst gemte.
+      # Fanger duplikater ved tab-revisit, identisk input-reaafiring o.l.
+      # NB: de to events i #396-loggen (NULL → genereret tekst) har FORSKELLIG
+      # metadata og passerer begge igennem — det er intentionelt korrekt adfaerd.
+      current_payload <- jsonlite::toJSON(save_data$metadata, auto_unbox = TRUE)
+      if (identical(last_settings_payload, current_payload)) {
+        log_debug(
+          "settings_save sprunget over: payload uaendret",
+          .context = "AUTO_SAVE"
+        )
+        return(invisible(NULL))
+      }
+      last_settings_payload <<- current_payload
 
       # NB: last_save_time opdateres af local_storage_save_result observer
       # naar JS-siden bekraefter success -- ikke her.

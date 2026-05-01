@@ -127,6 +127,36 @@ if [ -n "$SWALLOWED" ]; then
 fi
 echo "✓ Swallowed error check OK"
 
+# --- Step 1c: rsconnect manifest.json sync (fix-patterns: manifest-stale) ---
+# Hvis DESCRIPTION:Imports/Remotes/Depends ændret siden remote uden tilsvarende
+# manifest.json-update -> Connect Cloud deploy fejler.
+# Bypass: SKIP_MANIFEST_SYNC=1 git push
+echo ""
+echo "[1c/4] Validerer rsconnect manifest.json sync mod DESCRIPTION ..."
+if [ "${SKIP_MANIFEST_SYNC:-0}" != "1" ]; then
+  REMOTE_BASE=$(git rev-parse "@{u}" 2>/dev/null || git rev-parse "origin/develop" 2>/dev/null || echo "")
+  if [ -n "$REMOTE_BASE" ]; then
+    DESC_DIFF=$(git diff "$REMOTE_BASE"...HEAD -- DESCRIPTION | grep -E '^[+-]\s*(Imports|Remotes|Depends):' || true)
+    MANIFEST_DIFF=$(git diff "$REMOTE_BASE"...HEAD -- manifest.json || true)
+    if [ -n "$DESC_DIFF" ] && [ -z "$MANIFEST_DIFF" ]; then
+      echo ""
+      echo "✗ DESCRIPTION:Imports/Remotes/Depends ændret men manifest.json uændret"
+      echo "  Connect Cloud-deploy vil fejle (recurrence=4 i fix-patterns.jsonl)"
+      echo ""
+      echo "  Fix: Rscript -e 'rsconnect::writeManifest()' && git add manifest.json"
+      echo "       git commit -m 'chore(deploy): regen manifest.json'"
+      echo ""
+      echo "  Bypass: SKIP_MANIFEST_SYNC=1 git push"
+      exit 1
+    fi
+    echo "✓ Manifest-sync OK"
+  else
+    echo "  (skipped — ingen remote tracking branch fundet)"
+  fi
+else
+  echo "  (skipped — SKIP_MANIFEST_SYNC=1)"
+fi
+
 # --- Step 2: manifest validation ---
 echo ""
 echo "[2/4] Validerer test-classification manifest ..."

@@ -143,6 +143,10 @@ test_that("bfhcharts_internal() helper er fjernet (#423)", {
 
 test_that("BFHcharts public API er tilgaengelig for export pipeline", {
   skip_if_not(requireNamespace("BFHcharts", quietly = TRUE), "BFHcharts not installed")
+  skip_if_not(
+    utils::packageVersion("BFHcharts") >= "0.14.0",
+    "BFHcharts >= 0.14.0 kraevet (bfh_create_typst_document foerst eksporteret i 0.14.0)"
+  )
   # Verificer at de 3 funktioner der tidligere var interne er nu exporterede
   expect_true(isNamespaceLoaded("BFHcharts") || requireNamespace("BFHcharts", quietly = TRUE))
   expect_true(existsMethod("bfh_extract_spc_stats", "bfh_qic_result") ||

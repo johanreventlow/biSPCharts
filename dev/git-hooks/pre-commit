@@ -37,6 +37,50 @@ fi
 
 echo "Running pre-commit checks..."
 
+# --- Step 0.5: Non-ASCII detect i staged R-filer (fix-patterns: non-ascii) ---
+# Fanger danske tegn / unicode-symboler i R-kode foer R CMD check faar
+# chance for at klage. Bypass: SKIP_NONASCII=1 git commit
+if [ "${SKIP_NONASCII:-0}" != "1" ]; then
+  staged_r_for_ascii=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(R|r)$' | grep -v 'dev/')
+  if [ -n "$staged_r_for_ascii" ]; then
+    nonascii_hits=""
+    for f in $staged_r_for_ascii; do
+      [ -f "$f" ] || continue
+      hits=$(LC_ALL=C grep -nP '[^\x00-\x7F]' "$f" 2>/dev/null || true)
+      if [ -n "$hits" ]; then
+        nonascii_hits="${nonascii_hits}\n--- $f ---\n$hits"
+      fi
+    done
+    if [ -n "$nonascii_hits" ]; then
+      echo ""
+      echo "✗ Non-ASCII chars i R-kode — commit blokeret (R CMD check WARNING)"
+      echo ""
+      printf "%b\n" "$nonascii_hits" | head -30
+      echo ""
+      echo "  Fix: erstat aeoeaa/AEOEAA eller brug \\uXXXX escape-sequences"
+      echo "  Bypass: SKIP_NONASCII=1 git commit"
+      exit 1
+    fi
+  fi
+fi
+
+# --- Step 0.6: Manifest-sync warning (fix-patterns: manifest-stale) ---
+# Hvis DESCRIPTION staged uden manifest.json: warn (ikke blokerende — pre-push
+# blokerer hvis stadig stale). Bypass automatisk hvis manifest.json staged.
+desc_staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^DESCRIPTION$' || true)
+manifest_staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^manifest\.json$' || true)
+if [ -n "$desc_staged" ] && [ -z "$manifest_staged" ]; then
+  imports_changed=$(git diff --cached -- DESCRIPTION | grep -E '^[+-]\s*(Imports|Remotes|Depends):' || true)
+  if [ -n "$imports_changed" ]; then
+    echo ""
+    echo "⚠ DESCRIPTION:Imports/Remotes/Depends aendret men manifest.json IKKE staged"
+    echo "  Connect Cloud-deploy vil fejle hvis manifest ude af sync."
+    echo "  Foer push: Rscript -e 'rsconnect::writeManifest()' && git add manifest.json"
+    echo "  (commit tilladt — pre-push blokerer hvis stadig stale)"
+    echo ""
+  fi
+fi
+
 # Find staged R-filer (ekskl. dev/ og golem_utils.R)
 staged_r_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(R|r)$' | grep -v 'dev/' | grep -v 'golem_utils.R')
 

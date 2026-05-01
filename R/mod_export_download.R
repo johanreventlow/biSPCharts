@@ -144,12 +144,18 @@ generate_pdf_export <- function(input, app_state, file) {
   }
 
   # PDF-specifik metadata til BFHcharts Typst-template
+  # escape_typst_metadata() beskytter mod markup-injection (#427)
+  hospital_value <- if (nzchar(input$export_hospital %||% "")) {
+    input$export_hospital
+  } else {
+    get_hospital_name_for_export()
+  }
   metadata <- list(
-    hospital = if (nzchar(input$export_hospital %||% "")) input$export_hospital else get_hospital_name_for_export(),
-    department = input$export_department,
-    title = input$export_title,
-    analysis = input$pdf_improvement,
-    data_definition = data_definition_with_note,
+    hospital = escape_typst_metadata(hospital_value),
+    department = escape_typst_metadata(input$export_department),
+    title = escape_typst_metadata(input$export_title),
+    analysis = escape_typst_metadata(input$pdf_improvement),
+    data_definition = escape_typst_metadata(data_definition_with_note),
     date = Sys.Date()
   )
 

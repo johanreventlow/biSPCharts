@@ -315,6 +315,36 @@ validate_aspect_ratio <- function(width, height, warn_only = TRUE) {
   return(TRUE)
 }
 
+# ESCAPE TYPST METADATA =======================================================
+
+#' Escape user-input for Typst-template
+#'
+#' Escapes Typst-markup characters: #, $, backtick, backslash.
+#' Defense-in-depth -- BFHcharts forventes ogsaa at escape, men app-laget
+#' tilfoejer ekstra beskyttelse mod markup-injection.
+#'
+#' @param value Character or NULL/non-character (returneres uaendret).
+#'   Vectors behandles per element.
+#' @return Escaped character, eller value uaendret hvis NULL/non-character.
+#' @keywords internal
+escape_typst_metadata <- function(value) {
+  if (is.null(value) || !is.character(value)) {
+    return(value)
+  }
+  if (length(value) != 1L) {
+    return(vapply(value, escape_typst_metadata, character(1L)))
+  }
+
+  # Backslash foerst -- undgaar dobbelt-escape af efterfoelgende erstatninger.
+  # Alle erstatninger bruger regex-mode (uden fixed=TRUE) saa replacement-strengen
+  # fortolkes korrekt: \\\\ (4 tegn i kode) = \\ (2 tegn) = et \ i output.
+  value <- gsub("\\\\", "\\\\\\\\", value)
+  value <- gsub("#", "\\\\#", value)
+  value <- gsub("\\$", "\\\\$", value)
+  value <- gsub("`", "\\\\`", value)
+  value
+}
+
 # HELPER: NULL coalescing operator ============================================
 
 # %||% operatoren er defineret i golem_utils.R (fjernet duplikat, se #102)

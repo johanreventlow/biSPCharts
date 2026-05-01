@@ -309,18 +309,24 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # Bemaerk: bfh_create_typst_document() (preview-vejen) auto-genererer ikke
       # details -- det goer kun bfh_export_pdf(). Vi saetter derfor selv details
       # via BFHcharts::bfh_generate_details() saa preview matcher eksport.
+      # escape_typst_metadata() beskytter mod markup-injection (#427)
+      preview_hospital_value <- if (nzchar(hospital_input)) {
+        hospital_input
+      } else {
+        get_hospital_name_for_export()
+      }
       metadata <- list(
-        hospital = if (nzchar(hospital_input)) hospital_input else get_hospital_name_for_export(),
-        department = dept_input,
-        title = title_input,
-        analysis = analysis_input,
+        hospital = escape_typst_metadata(preview_hospital_value),
+        department = escape_typst_metadata(dept_input),
+        title = escape_typst_metadata(title_input),
+        analysis = escape_typst_metadata(analysis_input),
         details = safe_operation(
           operation_name = "Generate PDF preview details",
           code = BFHcharts::bfh_generate_details(pdf_result$bfh_qic_result),
           fallback = NULL,
           error_type = "processing"
         ),
-        data_definition = data_def_input,
+        data_definition = escape_typst_metadata(data_def_input),
         date = Sys.Date()
       )
 

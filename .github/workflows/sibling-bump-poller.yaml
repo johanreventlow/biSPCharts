@@ -1,0 +1,75 @@
+# Sibling-pkg-bump-poller (cron-only, daglig 07:00 UTC).
+#
+# Adresserer manuel cross-repo bump-friction per VERSIONING_POLICY.md §E.
+# Detekterer nye git-tags i sibling-pakker (BFHcharts, BFHtheme, BFHllm,
+# BFHchartsAssets) og opretter:
+#   - chore(deps): PR for PATCH/MINOR-bumps (auto)
+#   - issue for MAJOR-bumps (manuel review paakraevet)
+#
+# Lokal dry-run test: `DRY_RUN=1 Rscript dev/poll_sibling_bumps.R`.
+#
+# Required secret: BFH_ASSETS_PAT (eller GITHUB_TOKEN fallback) med
+# repo:contents:write + pull_requests:write + issues:write. Privat
+# BFHchartsAssets-tag-fetch kraever BFH_ASSETS_PAT.
+name: sibling-bump-poller
+
+on:
+  schedule:
+    - cron: '0 7 * * *'   # daglig 07:00 UTC = 08:00 dansk vinter / 09:00 sommer
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: sibling-bump-poller
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    name: poll-sibling-tags
+
+    env:
+      GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          token: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rsconnect, any::pkgload, any::renv
+          needs: check
+
+      - name: Run sibling-bump-poller
+        run: Rscript dev/poll_sibling_bumps.R
+
+      - name: Summary
+        if: always()
+        run: echo "::notice::Sibling-bump-poller faerdig -- tjek nyligt oprettede PRs/issues for resultater"

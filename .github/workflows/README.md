@@ -15,6 +15,7 @@ biSPCharts bruger fire lags CI/CD gates.
 | `lint` | Pushes/PRs | Ja | lintr-linting |
 | `validate-manifest` | Pushes/PRs | Ja | Test-classification manifest + Posit Connect manifest-sync |
 | `auto-regen-manifest` | Push develop (DESCRIPTION-ændring) + dispatch | Nej (auto-fix) | Regenererer `manifest.json` når `DESCRIPTION:Imports/Remotes/Depends` ændres; committer tilbage med `[skip manifest]`-flag |
+| `sibling-bump-poller` | Cron daglig 07:00 UTC + dispatch | Nej (auto-PR) | Polller sibling-pkg-tags (BFHcharts/BFHtheme/BFHllm/BFHchartsAssets) og opretter `chore(deps):` PR for PATCH/MINOR-bumps; issue for MAJOR-bumps (per VERSIONING §E) |
 
 ## Gate-aktivering: afhængigheder
 

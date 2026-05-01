@@ -192,7 +192,12 @@ create_app_state <- function() {
 
     # Aktiv navbar-tab (Issue #394): opdateres fra app_server_main.R observeEvent(input$main_navbar).
     # Bruges til at gate eksport-observere saa de kun korer paa eksporter-tab.
-    active_tab = "upload"
+    active_tab = "upload",
+
+    # Autogen-suspend flag: TRUE mens register_analysis_autogen overskriver
+    # pdf_improvement via updateTextAreaInput — suspenderer settings_save
+    # for at undgå dobbeltsave (NULL + auto-tekst) ved tab-skift til eksporter.
+    autogen_active = FALSE
   )
 
   # Test Mode Management with Startup Optimization

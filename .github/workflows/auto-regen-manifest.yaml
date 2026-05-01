@@ -1,0 +1,143 @@
+# Auto-regenerér manifest.json når DESCRIPTION:Imports/Remotes/Depends ændres.
+#
+# Adresserer fix-pattern `manifest-stale` (recurrence=4 i .claude/fix-patterns.jsonl).
+# Sikkerhedsnet hvis pre-push hook bypasses eller ikke installeret hos bidragyder.
+#
+# Trigger: push til develop med DESCRIPTION-ændring.
+# Recursion-guard: bot's egen commit indeholder `[skip manifest]` så workflow
+# ikke trigger sig selv. Workflow skipper også commits hvor manifest.json
+# allerede er staget af user (no-op hvis regen producerer identisk fil).
+#
+# Manuel trigger: workflow_dispatch — fx hvis manifest blev glemt i historik.
+#
+# Required secret: BFH_ASSETS_PAT med repo:contents:write + branch-protection-bypass.
+# Falder tilbage til GITHUB_TOKEN hvis BFH_ASSETS_PAT mangler (men branch
+# protection kan blokere bot-push i så fald).
+name: auto-regen-manifest
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'DESCRIPTION'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-regen-manifest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regen:
+    # Skip rekursive runs fra bot + eksplicitte opt-out commits.
+    # head_commit-fields evalueres i `if:`-context (sikker, ej shell-injection).
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event.head_commit.author.username != 'github-actions[bot]' &&
+          !contains(github.event.head_commit.message, '[skip manifest]')
+        )
+      }}
+    runs-on: ubuntu-latest
+    name: regen-on-deps-change
+
+    env:
+      GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      # Trigger-commit-SHA exposes via env-var ej direkte ${{ }}-interpolation
+      # i run:-blocks (best practice for at undgå skript-injection)
+      TRIGGER_SHA: ${{ github.sha }}
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          # PAT-token tillader workflow at push tilbage til develop selv ved
+          # branch-protection. GITHUB_TOKEN-pushes trigger ikke andre workflows.
+          token: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - name: Detect DESCRIPTION:Imports/Remotes/Depends change
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "deps_changed=true" >> "$GITHUB_OUTPUT"
+            echo "Manuel trigger — kør regen ubetinget"
+            exit 0
+          fi
+
+          # Compare HEAD vs HEAD~1 (sidste commit på develop)
+          if git diff HEAD~1 HEAD -- DESCRIPTION | grep -qE '^[+-]\s*(Imports|Remotes|Depends):'; then
+            echo "deps_changed=true" >> "$GITHUB_OUTPUT"
+            echo "DESCRIPTION dependency-fields ændret — regen påkrævet"
+          else
+            echo "deps_changed=false" >> "$GITHUB_OUTPUT"
+            echo "Kun ikke-dependency-fields ændret — skip regen"
+          fi
+
+      - name: Setup pandoc
+        if: steps.check.outputs.deps_changed == 'true'
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Setup R
+        if: steps.check.outputs.deps_changed == 'true'
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Install R dependencies
+        if: steps.check.outputs.deps_changed == 'true'
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rsconnect, any::pkgload, any::renv
+          needs: check
+
+      - name: Regenerate manifest.json
+        if: steps.check.outputs.deps_changed == 'true'
+        run: Rscript dev/_regen_manifest.R
+
+      - name: Validate regenerated manifest
+        if: steps.check.outputs.deps_changed == 'true'
+        run: Rscript dev/validate_connect_manifest.R manifest.json
+
+      - name: Commit + push if manifest changed
+        if: steps.check.outputs.deps_changed == 'true'
+        run: |
+          if git diff --quiet -- manifest.json; then
+            echo "manifest.json allerede i sync — ingen commit nødvendig"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "chore(deploy): auto-regen manifest.json [skip manifest]
+
+          Triggered by DESCRIPTION dependency change in ${TRIGGER_SHA}.
+          Adresserer fix-pattern \`manifest-stale\` (recurrence=4)."
+          git push origin develop
+          echo "Pushed regenereret manifest.json til develop"
+
+      - name: Summary
+        if: always()
+        env:
+          DEPS_CHANGED: ${{ steps.check.outputs.deps_changed }}
+        run: |
+          if [ "$DEPS_CHANGED" = "true" ]; then
+            if git diff --quiet HEAD~1 HEAD -- manifest.json 2>/dev/null; then
+              echo "::notice::manifest.json var allerede i sync — ingen ændring"
+            else
+              echo "::notice::manifest.json regenereret + committed"
+            fi
+          else
+            echo "::notice::DESCRIPTION dependency-fields uændret — regen sprunget over"
+          fi

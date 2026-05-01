@@ -14,6 +14,7 @@ biSPCharts bruger fire lags CI/CD gates.
 | `shinytest2` | Nightly 02:00 UTC + on-demand | Nej | Visuel regression (miljøfølsom, opt-in) |
 | `lint` | Pushes/PRs | Ja | lintr-linting |
 | `validate-manifest` | Pushes/PRs | Ja | Test-classification manifest + Posit Connect manifest-sync |
+| `auto-regen-manifest` | Push develop (DESCRIPTION-ændring) + dispatch | Nej (auto-fix) | Regenererer `manifest.json` når `DESCRIPTION:Imports/Remotes/Depends` ændres; committer tilbage med `[skip manifest]`-flag |
 
 ## Gate-aktivering: afhængigheder
 

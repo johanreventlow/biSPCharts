@@ -241,6 +241,15 @@ Alle fejl/forbedringer dokumenteres som GitHub Issues. Reference i commits:
 `fix: beskrivelse (fixes #123)`. Labels: `bug`, `enhancement`,
 `documentation`, `technical-debt`, `performance`, `testing`.
 
+### Fix-patterns store
+
+Recurring fix-mønstre logges i `.claude/fix-patterns.jsonl` (append-only,
+JSONL). Schema: `{date, pr, category, symptom, root_cause, fix, files,
+detection, recurrence, prevention, related_prs}`. **Slå op før fix:**
+`jq 'select(.category == "<cat>")' .claude/fix-patterns.jsonl`.
+**Tilføj efter merge** hvis ikke-trivielt fix; bump `recurrence` hvis
+samme pattern set før. Top-recurrence-patterns driver hook/skill-prioritering.
+
 ### AI/LLM Integration (BFHllm)
 
 biSPCharts = thin wrapper omkring BFHllm-pakken (`Suggests + Remotes`,

@@ -1,3 +1,13 @@
+# biSPCharts 0.3.3
+
+## Bug fixes
+
+* Erstatter `getFromNamespace()`-brug af BFHcharts-internals med public
+  API. `bfh_extract_spc_stats()`, `bfh_merge_metadata()` og
+  `bfh_create_typst_document()` er nu alle eksporterede funktioner i
+  BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
+  BFHcharts >= 0.14.0. (#423)
+
 # biSPCharts 0.3.2
 
 ## Sikkerhed

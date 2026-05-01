@@ -22,6 +22,8 @@
 #' @param app_state Reactive values object containing visualization state
 #' @param session Shiny session object (for clientData access)
 #' @param ns Namespace function for output IDs
+#' @param emit Emit API object from `create_emit_api(app_state)`, created once
+#'   outside the observer to avoid recreating it on every reactive invalidation.
 #'
 #' @return NULL (side effect: registers observer with Shiny)
 #'
@@ -38,7 +40,7 @@
 #' - Label placement accuracy (requires accurate device dimensions)
 #'
 #' @keywords internal
-register_viewport_observer <- function(app_state, session, ns) {
+register_viewport_observer <- function(app_state, session, ns, emit) {
   shiny::observe({
     # Read viewport dimensions from clientData
     width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
@@ -51,7 +53,6 @@ register_viewport_observer <- function(app_state, session, ns) {
     )
 
     # Update centralized viewport state
-    emit <- create_emit_api(app_state)
     set_viewport_dims(app_state, width, height, emit)
   })
 }

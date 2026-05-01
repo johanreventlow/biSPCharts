@@ -88,45 +88,56 @@ test_that("#422: 'Antal_foer' og 'Antal_oer' giver spc_input_error naar foer=oer
 })
 
 # ── Ingen-kollision-scenarierne (ingen spc_input_error fra kollision) ──────────
+# Moenster: withCallingHandlers fanger spc_input_error med "kolliderer" og
+# fail(). Andre fejl (BFHcharts-kald i test-env) tavsere vi bevidst igennem.
+# succeed() kaores KUN hvis ingen kollisions-fejl blev kastet.
+
+assert_no_collision_error <- function(expr_fn) {
+  caught_collision <- FALSE
+  tryCatch(
+    withCallingHandlers(
+      expr_fn(),
+      spc_input_error = function(e) {
+        if (grepl("kolliderer", conditionMessage(e), fixed = FALSE)) {
+          caught_collision <<- TRUE
+          invokeRestart("abort")
+        }
+      }
+    ),
+    error = function(e) {
+      # Tillad andre fejl (fx BFHcharts-runtime fejl i test-env)
+      # men ikke spc_input_error om kollision
+      invisible(NULL)
+    }
+  )
+  if (caught_collision) {
+    fail("Uventet kollisionsfejl kastet (ingen kollision forventet)")
+  }
+  succeed("Ingen kollisionsfejl kastet")
+}
 
 test_that("#422: enkelt dansk kolonnenavn giver ingen kollisionsfejl", {
   # "Aar" alene => ingen kollision mulig
   df <- make_df_with_cols(c("Dato", "Aar"))
-  result <- tryCatch(
+  assert_no_collision_error(function() {
     map_to_bfh_params(
       data = df,
       x_var = "Dato",
       y_var = "Aar",
       chart_type = "run"
-    ),
-    spc_input_error = function(e) {
-      if (grepl("kolliderer", conditionMessage(e))) {
-        fail(paste("Uventet kollisionsfejl:", conditionMessage(e)))
-      }
-      NULL
-    },
-    error = function(e) NULL # BFHcharts-kald kan fejle i test-env
-  )
-  succeed()
+    )
+  })
 })
 
 test_that("#422: 'Taeller' + 'Naevner' + 'Dato' giver ingen kollisionsfejl", {
   # Alle tre saniteres til unikke ASCII-navne
   df <- make_df_with_cols(c("Dato", "Taeller", "Naevner"))
-  result <- tryCatch(
+  assert_no_collision_error(function() {
     map_to_bfh_params(
       data = df,
       x_var = "Dato",
       y_var = "Taeller",
       chart_type = "run"
-    ),
-    spc_input_error = function(e) {
-      if (grepl("kolliderer", conditionMessage(e))) {
-        fail(paste("Uventet kollisionsfejl:", conditionMessage(e)))
-      }
-      NULL
-    },
-    error = function(e) NULL
-  )
-  succeed()
+    )
+  })
 })

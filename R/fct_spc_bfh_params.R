@@ -108,6 +108,14 @@ map_to_bfh_params <- function(
   centerline_value = NULL,
   ...
 ) {
+  # 0. Inject .original_row_id FOER kollisionscheck og sanitization.
+  # .original_row_id er ren ASCII (ingen danske tegn, ingen specialtegn) og
+  # kan ikke foraarsage kollision. Injection her sikrer at sanitized_col_names
+  # og names(data) har samme laengde inde i safe_operation (#422).
+  if (!".original_row_id" %in% names(data)) {
+    data$.original_row_id <- seq_len(nrow(data))
+  }
+
   # Hjaelpefunktion: konverter kolonnenavn til ASCII-sikkert navn (BFHcharts-krav).
   # Defineret paa funktions-niveau (foer safe_operation) saa kollisionscheck kan
   # kaste spc_input_error direkte uden at blive fanget af safe_operation (#422).
@@ -142,11 +150,7 @@ map_to_bfh_params <- function(
   safe_operation(
     operation_name = "BFHchart parameter mapping",
     code = {
-      # 1. Inject .original_row_id for comment mapping stability
-      if (!".original_row_id" %in% names(data)) {
-        data$.original_row_id <- seq_len(nrow(data))
-      }
-
+      # 1. .original_row_id allerede injiceret foer safe_operation (se trin 0 ovenfor).
       # DEBUG: Check x column type BEFORE sanitization
       log_debug(
         paste(

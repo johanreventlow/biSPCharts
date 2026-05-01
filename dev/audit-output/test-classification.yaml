@@ -1032,6 +1032,14 @@ files:
     rationale: Nye unit tests for escape_typst_metadata() helper (#427). 25 tests, alle passerer.
     reviewer: johanreventlow
     reviewed_date: '2026-05-01'
+  - file: test-export-preview-cache.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Nye unit tests for per-session PDF preview cache (#426). 11 tests, alle passerer.
+    reviewer: johanreventlow
+    reviewed_date: '2026-05-01'
   - file: test-utils_export_validation.R
     audit_category: green
     type: unit

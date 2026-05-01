@@ -153,15 +153,6 @@ inject_template_assets <- function(template_dir) {
   )
 }
 
-# TEMPORARY: Fjern når BFHcharts eksporterer bfh_create_typst_document,
-# bfh_extract_spc_stats og bfh_merge_metadata. Opret issue i BFHcharts-repo:
-# getFromNamespace() bryder CRAN-konventioner og CLAUDE.md-regel om aldrig at
-# implementere ekstern pakke-funktionalitet internt. Eskalering dokumenteret i
-# commit chore: marker bfhcharts_internal som TEMPORARY (Phase 3).
-bfhcharts_internal <- function(name) {
-  getFromNamespace(name, "BFHcharts")
-}
-
 # GET HOSPITAL NAME ===========================================================
 
 #' Get Hospital Name for Export
@@ -315,16 +306,14 @@ generate_pdf_preview <- function(bfh_qic_result,
           #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
           #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
           #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
-          spc_stats <- bfhcharts_internal("bfh_extract_spc_stats")(bfh_qic_result)
+          spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
 
           # 3. Merge metadata with chart title
-          metadata_full <- bfhcharts_internal("bfh_merge_metadata")(metadata, chart_title)
+          metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
 
-          # 4. Create Typst document.
-          # bfh_create_typst_document() er internal i BFHcharts (ikke i public
-          # NAMESPACE) -- tilgaaes via bfhcharts_internal()-helper.
+          # 4. Create Typst document via BFHcharts public API (>= 0.14.0).
           typst_file <- file.path(temp_dir, "document.typ")
-          bfhcharts_internal("bfh_create_typst_document")(
+          BFHcharts::bfh_create_typst_document(
             chart_image = chart_png,
             output = typst_file,
             metadata = metadata_full,

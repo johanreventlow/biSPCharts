@@ -36,6 +36,39 @@ MAX_MISSING_PERCENT <- 20
 #' @keywords internal
 MIN_NUMERIC_PERCENT <- 0.8
 
+# SPC DATAPUNKT-GRAENSER (#417) ================================================
+# Centraliserede graenser for datapunkt-validering.
+# Erstatter tidligere spredte magic numbers (3, 8, 10, 12) i kodebasen.
+
+#' SPC datapunkt-taerskler
+#'
+#' Samlet liste med alle datapunkt-graenser brugt paa tvaers af SPC-pipelinen.
+#'   hard_min       = matematisk minimum for SPC-beregning
+#'   warning_short  = under dette niveau er Anhoej-rules upalidelige
+#'   recommended    = konventionel SPC best-practice (mindst 15 punkter)
+#'
+#' @keywords internal
+SPC_DATA_THRESHOLDS <- list(
+  hard_min      = 3L, # Matematisk minimum: bevar eksisterende checks
+  warning_short = 12L, # Anhoej-rules upalidelige under dette antal
+  recommended   = 15L # Konventionel SPC best-practice
+)
+
+#' Hent SPC hard minimum datapunkter
+#' @return Integer. Matematisk minimum for SPC-analyse.
+#' @keywords internal
+get_spc_hard_min <- function() SPC_DATA_THRESHOLDS$hard_min
+
+#' Hent SPC advarselsgransens for kort serie
+#' @return Integer. Antal datapunkter under hvilke Anhoej-rules er upalidelige.
+#' @keywords internal
+get_spc_warning_threshold <- function() SPC_DATA_THRESHOLDS$warning_short
+
+#' Hent SPC anbefalet minimum datapunkter
+#' @return Integer. Anbefalet minimum for palidelig SPC-analyse.
+#' @keywords internal
+get_spc_recommended_threshold <- function() SPC_DATA_THRESHOLDS$recommended
+
 # SPC CONFIGURATION CONSTANTS ==================================================
 
 #' Standard kolonne navne for SPC analyse

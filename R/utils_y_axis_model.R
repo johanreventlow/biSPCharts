@@ -68,7 +68,12 @@ determine_internal_class <- function(ui_type, y, n_present = FALSE) {
 #' @return qicharts2-kode for korttype ("i", "c", "p", "u", "t", "g", "run")
 #' @keywords internal
 suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_integer_) {
-  if (!is.na(n_points) && n_points < 12) {
+  # Run-chart fallback ved kort serie. Bevidst 12L her (samme vaerdi som
+  # get_spc_warning_threshold() men konceptuelt separat: dette er en
+  # chart-type-beslutning, ikke en advarselsgransens).
+  # Koblede de to ville give stiltiende adfaerdsaendring ved fremtidig
+  # justering af warning-tærsklen. (#417 — se PR-beskrivelse)
+  if (!is.na(n_points) && n_points < 12L) {
     return("run")
   }
 

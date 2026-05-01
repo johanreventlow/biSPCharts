@@ -87,10 +87,10 @@ build_anhoej_rules_boxes <- function(data, config, chart_type, anhoej, get_plot_
       sum(!is.na(data[[config$y_col]]))
     }
 
-    if (meaningful_count < 10) {
+    if (meaningful_count < get_spc_hard_min()) { # (#417) hard block bruger hard_min (3), ikke warning_short
       list(
         status = "insufficient_data",
-        message = "Mindst 10 datapunkter n\u00f8dvendigt for SPC analyse"
+        message = "Mindst 3 datapunkter n\u00f8dvendigt for SPC analyse"
       )
     } else if (get_plot_state("is_computing") %||% FALSE) {
       list(

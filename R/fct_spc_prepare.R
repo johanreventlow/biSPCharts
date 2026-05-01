@@ -37,12 +37,12 @@ prepare_spc_data <- function(req) {
       class = "spc_prepare_error"
     )
   }
-  if (nrow(complete_data) < 3) {
+  if (nrow(complete_data) < get_spc_hard_min()) { # (#417)
     spc_abort(
       paste0(
         "Insufficient data points: ",
         nrow(complete_data),
-        ". Minimum 3 points required for SPC charts"
+        ". Minimum ", get_spc_hard_min(), " points required for SPC charts"
       ),
       class = "spc_prepare_error"
     )

@@ -115,13 +115,41 @@ generate_pdf_export <- function(input, app_state, file) {
     stop("Ingen plot tilg\u00e6ngeligt til eksport")
   }
 
+  # Advarsel-watermark til kort serie (#417)
+  # Tilfoejes til data_definition (pdf_description) da BFHcharts' Typst-template
+  # ikke har et dedikeret short_series_warning-felt. Concat er den sikre
+  # fallback der ikke kraever aendring i ekstern pakke.
+  n_pts_export <- if (!is.null(app_state$data$current_data)) {
+    nrow(app_state$data$current_data)
+  } else {
+    NA_integer_
+  }
+  short_series_note <- if (!is.na(n_pts_export) && n_pts_export < get_spc_warning_threshold()) {
+    paste0(
+      "Kort serie (n=", n_pts_export, "): ",
+      "Anhøj-rules er upålidelige under ", get_spc_warning_threshold(), " datapunkter."
+    )
+  } else {
+    NULL
+  }
+  base_description <- input$pdf_description %||% ""
+  data_definition_with_note <- if (!is.null(short_series_note) && nchar(short_series_note) > 0) {
+    if (nchar(trimws(base_description)) > 0) {
+      paste0(base_description, "\n\n", short_series_note)
+    } else {
+      short_series_note
+    }
+  } else {
+    base_description
+  }
+
   # PDF-specifik metadata til BFHcharts Typst-template
   metadata <- list(
     hospital = if (nzchar(input$export_hospital %||% "")) input$export_hospital else get_hospital_name_for_export(),
     department = input$export_department,
     title = input$export_title,
     analysis = input$pdf_improvement,
-    data_definition = input$pdf_description,
+    data_definition = data_definition_with_note,
     date = Sys.Date()
   )
 

@@ -245,3 +245,87 @@ test_that("handle_csv_upload viser detaljeret fejlbesked ved total-fail", {
     expect_true(grepl("komma-separator", shown))
   }
 })
+
+# =============================================================================
+# Row-limit konsistens: validate_uploaded_file() (#418)
+# =============================================================================
+
+test_that("validate_uploaded_file: 30k raekker er OK (ingen fejl)", {
+  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+
+  # Mocke limits: warning=50, max=100 saa vi kan bruge smaa testfiler
+  testthat::local_mocked_bindings(
+    get_upload_warning_row_count = function() 50L,
+    get_max_upload_line_count    = function() 100L
+  )
+
+  # 30 linjer under begge graenser
+  tmp <- tempfile(fileext = ".csv")
+  writeLines(c("Dato,Taeller", rep("2024-01-01,10", 30)), tmp)
+  on.exit(unlink(tmp))
+
+  file_info <- list(
+    name     = "test.csv",
+    datapath = tmp,
+    size     = file.size(tmp),
+    type     = "text/csv"
+  )
+
+  result <- validate_uploaded_file(file_info)
+  errors_about_rows <- grep("for mange raekker|for mange rækker", result$errors, value = TRUE)
+  expect_length(errors_about_rows, 0)
+})
+
+test_that("validate_uploaded_file: 75k raekker giver kun advarsel (ikke fejl)", {
+  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+
+  # Mocke limits: warning=50, max=100
+  testthat::local_mocked_bindings(
+    get_upload_warning_row_count = function() 50L,
+    get_max_upload_line_count    = function() 100L
+  )
+
+  # 75 linjer: over warning (50) men under max (100)
+  tmp <- tempfile(fileext = ".csv")
+  writeLines(c("Dato,Taeller", rep("2024-01-01,10", 75)), tmp)
+  on.exit(unlink(tmp))
+
+  file_info <- list(
+    name     = "test.csv",
+    datapath = tmp,
+    size     = file.size(tmp),
+    type     = "text/csv"
+  )
+
+  result <- validate_uploaded_file(file_info)
+  errors_about_rows <- grep("for mange raekker|for mange rækker", result$errors, value = TRUE)
+  # Skal IKKE give hard-stop fejl - kun advarsel via log_warn
+  expect_length(errors_about_rows, 0)
+})
+
+test_that("validate_uploaded_file: 150k raekker giver hard-stop fejl", {
+  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+
+  # Mocke limits: warning=50, max=100
+  testthat::local_mocked_bindings(
+    get_upload_warning_row_count = function() 50L,
+    get_max_upload_line_count    = function() 100L
+  )
+
+  # 150 linjer: over max (100) => hard stop
+  # Pga loop-break ved max+1 taller vi max+1 linjer og udloser fejlen
+  tmp <- tempfile(fileext = ".csv")
+  writeLines(c("Dato,Taeller", rep("2024-01-01,10", 150)), tmp)
+  on.exit(unlink(tmp))
+
+  file_info <- list(
+    name     = "test.csv",
+    datapath = tmp,
+    size     = file.size(tmp),
+    type     = "text/csv"
+  )
+
+  result <- validate_uploaded_file(file_info)
+  errors_about_rows <- grep("for mange r", result$errors, value = TRUE)
+  expect_gte(length(errors_about_rows), 1)
+})

@@ -76,6 +76,56 @@ test_that("classify_update_context returnerer 'general' for ukendte contexts", {
   }
 })
 
+test_that("classify_update_context udsender warning for ukendt context (#425)", {
+  skip_if_not(exists("classify_update_context", mode = "function"))
+  skip_if_not(exists("log_warn", mode = "function"))
+
+  # Sikrer at warning udsendes saa nye unknown contexts fanges i logs.
+  # Beskytter mod fremtidig regression hvor ny emit-call bruger context-streng
+  # der utilsigtet falder til general-grenen (som ej trigger plot-render).
+  withr::local_envvar(SPC_LOG_LEVEL = "WARN")
+
+  output <- utils::capture.output(
+    res <- classify_update_context(list(context = "calc_refresh"))
+  )
+
+  expect_equal(res, "general")
+  combined <- paste(output, collapse = " ")
+  expect_match(
+    combined,
+    "calc_refresh",
+    info = "Warning skal navngive den ukendte context"
+  )
+  expect_match(
+    combined,
+    "EVENT_CONTEXT_HANDLER",
+    info = "Warning skal indeholde EVENT_CONTEXT_HANDLER-tag"
+  )
+})
+
+test_that("classify_update_context udsender IKKE warning for kendte contexts (#425)", {
+  skip_if_not(exists("classify_update_context", mode = "function"))
+  skip_if_not(exists("log_warn", mode = "function"))
+
+  withr::local_envvar(SPC_LOG_LEVEL = "WARN")
+
+  known_contexts <- c(
+    "file_upload", "data_loaded", "paste_data",
+    "column_changed", "table_cells_edited", "session_restore"
+  )
+
+  for (ctx in known_contexts) {
+    output <- utils::capture.output(
+      classify_update_context(list(context = ctx))
+    )
+    combined <- paste(output, collapse = " ")
+    expect_false(
+      grepl("fald til 'general'", combined, fixed = TRUE),
+      info = paste("Kendt context", ctx, "skal IKKE udloese fallback-warning")
+    )
+  }
+})
+
 test_that("classify_update_context returnerer kun gyldige output-værdier", {
   skip_if_not(exists("classify_update_context", mode = "function"))
 

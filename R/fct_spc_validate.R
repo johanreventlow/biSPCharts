@@ -102,12 +102,12 @@ validate_spc_request <- function(
     )
   }
 
-  # 8. Mindst 3 datapunkter kraeves
-  if (nrow(data) < 3) {
+  # 8. Mindst get_spc_hard_min() datapunkter kraeves (#417)
+  if (nrow(data) < get_spc_hard_min()) {
     spc_abort(
       paste0(
         "For f\u00e5 datapunkter: ", nrow(data), " r\u00e6kke(r) fundet (too few/insufficient). ",
-        "minimum 3 datapunkter kr\u00e6ves for SPC-analyse."
+        "minimum ", get_spc_hard_min(), " datapunkter kr\u00e6ves for SPC-analyse."
       ),
       class = "spc_input_error"
     )

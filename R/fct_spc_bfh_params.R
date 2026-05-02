@@ -108,14 +108,49 @@ map_to_bfh_params <- function(
   centerline_value = NULL,
   ...
 ) {
+  # 0. Inject .original_row_id FOER kollisionscheck og sanitization.
+  # .original_row_id er ren ASCII (ingen danske tegn, ingen specialtegn) og
+  # kan ikke foraarsage kollision. Injection her sikrer at sanitized_col_names
+  # og names(data) har samme laengde inde i safe_operation (#422).
+  if (!".original_row_id" %in% names(data)) {
+    data$.original_row_id <- seq_len(nrow(data))
+  }
+
+  # Hjaelpefunktion: konverter kolonnenavn til ASCII-sikkert navn (BFHcharts-krav).
+  # Defineret paa funktions-niveau (foer safe_operation) saa kollisionscheck kan
+  # kaste spc_input_error direkte uden at blive fanget af safe_operation (#422).
+  sanitize_column_name <- function(name) {
+    # Replace Danish characters with ASCII equivalents
+    name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
+    name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
+    name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
+    # Remove any remaining non-ASCII characters
+    name <- iconv(name, to = "ASCII//TRANSLIT")
+    # Remove spaces and special chars (keep only alphanumeric and underscore)
+    name <- gsub("[^A-Za-z0-9_]", "_", name)
+    return(name)
+  }
+
+  # Kollisionscheck: to distinkte kolonner maa ikke kollidere efter sanitization.
+  # Placeret FOER safe_operation saa spc_input_error propagerer til kalder (#422).
+  # Silent failure her giver forkert plot uden fejlbesked til brugeren.
+  sanitized_col_names <- sapply(names(data), sanitize_column_name, USE.NAMES = FALSE)
+  if (anyDuplicated(sanitized_col_names)) {
+    duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
+    spc_abort(
+      paste0(
+        "Kolonnenavne kolliderer efter sanitization: ",
+        paste(duplicated_pairs, collapse = ", "),
+        ". Omdoeb kolonnerne i kilde-data."
+      ),
+      class = "spc_input_error"
+    )
+  }
+
   safe_operation(
     operation_name = "BFHchart parameter mapping",
     code = {
-      # 1. Inject .original_row_id for comment mapping stability
-      if (!".original_row_id" %in% names(data)) {
-        data$.original_row_id <- seq_len(nrow(data))
-      }
-
+      # 1. .original_row_id allerede injiceret foer safe_operation (se trin 0 ovenfor).
       # DEBUG: Check x column type BEFORE sanitization
       log_debug(
         paste(
@@ -128,24 +163,10 @@ map_to_bfh_params <- function(
       # 1b. CRITICAL FIX: BFHcharts rejects Danish characters (aeoeaa) in column names
       # Temporarily sanitize column names to ASCII-safe versions
       # Strategy: Create mapping of original -> sanitized names, rename data, use sanitized in params
-
-      sanitize_column_name <- function(name) {
-        # Replace Danish characters with ASCII equivalents
-        name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
-        name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
-        name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
-        # Remove any remaining non-ASCII characters
-        name <- iconv(name, to = "ASCII//TRANSLIT")
-        # Remove spaces and special chars (keep only alphanumeric and underscore)
-        name <- gsub("[^A-Za-z0-9_]", "_", name)
-        return(name)
-      }
+      # sanitized_col_names beregnet foer safe_operation (kollisionscheck) -- genbrug her.
 
       # Create column name mapping (original -> sanitized)
-      col_mapping <- setNames(
-        sapply(names(data), sanitize_column_name, USE.NAMES = FALSE),
-        names(data)
-      )
+      col_mapping <- setNames(sanitized_col_names, names(data))
 
       # Store original names for later reversal
       original_names <- names(data)

@@ -162,10 +162,10 @@ visualizationModuleServer <- function(
             }))
           }
         }
-        if (rows_with_data < 3) {
+        if (rows_with_data < get_spc_hard_min()) { # (#417)
           empty_state_msg <- sprintf(
-            "Indtast mindst 3 datapunkter\nfor at se diagrammet\n(%d af 3 indtastet)",
-            rows_with_data
+            "Indtast mindst %d datapunkter\nfor at se diagrammet\n(%d af %d indtastet)",
+            get_spc_hard_min(), rows_with_data, get_spc_hard_min()
           )
           graphics::plot.new()
           graphics::text(0.5, 0.5, empty_state_msg, cex = 1.1, col = get_hospital_colors()$ui_grey_dark)
@@ -232,12 +232,35 @@ visualizationModuleServer <- function(
       } else if (plot_ready) {
         data <- shiny::isolate(module_data_reactive())
         chart_type <- shiny::isolate(chart_type_reactive()) %||% "ukendt"
-        shiny::div(
-          class = "alert alert-success",
-          style = "font-size: 0.9rem;",
-          shiny::icon("check-circle"),
-          shiny::strong(" Graf genereret succesfuldt! "),
-          sprintf("Chart type: %s | Datapunkter: %d", chart_type, nrow(data))
+        n_pts <- nrow(data)
+
+        # UI-advarselsbanner ved kort serie (#417)
+        # Vises OVER succesbesked naar n < get_spc_warning_threshold() (12)
+        short_series_banner <- if (n_pts < get_spc_warning_threshold()) {
+          shiny::div(
+            class = "alert alert-warning spc-short-series-warning",
+            role = "alert",
+            style = "font-size: 0.9rem; margin-bottom: 4px;",
+            shiny::icon("exclamation-triangle"),
+            shiny::HTML(paste0(
+              " <strong>Kort serie (n=", n_pts, ").</strong> ",
+              "Anhøj-rules er upålidelige under ", get_spc_warning_threshold(),
+              " datapunkter. Tolk med forsigtighed."
+            ))
+          )
+        } else {
+          NULL
+        }
+
+        shiny::tagList(
+          short_series_banner,
+          shiny::div(
+            class = "alert alert-success",
+            style = "font-size: 0.9rem;",
+            shiny::icon("check-circle"),
+            shiny::strong(" Graf genereret! "),
+            sprintf("Chart type: %s | Datapunkter: %d", chart_type, n_pts)
+          )
         )
       }
     })

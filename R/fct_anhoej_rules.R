@@ -208,64 +208,6 @@ validate_anhoej_columns <- function(qic_data, require_signal = FALSE) {
 }
 
 
-#' Calculate Combined Anhoej Signal from Components
-#'
-#' Computes combined Anhoej signal (runs OR crossings) from individual components.
-#' This is a fallback function used when BFHchart doesn't provide `anhoej.signal`
-#' column directly.
-#'
-#' @details
-#' **Signal Logic:**
-#' - Per-point signal: TRUE if runs.signal is TRUE at that point
-#' - Overall signal: TRUE if runs_signal OR crossings_signal
-#'
-#' **Crossings Signal:**
-#' Crossings test is chart-wide, not per-point. If n.crossings < n.crossings.min,
-#' all points are considered to have a crossings signal (but typically only runs
-#' are highlighted per-point).
-#'
-#' @param qic_data data.frame. BFHchart qic_data with runs and crossings columns.
-#'
-#' @return logical vector. Per-point combined Anhoej signal.
-#'   Returns vector of FALSE if validation fails.
-#'
-#' @keywords internal
-#'
-#' @examples
-#' \dontrun{
-#' signal <- calculate_combined_anhoej_signal(qic_data)
-#' qic_data$signal <- signal
-#' }
-#' @noRd
-calculate_combined_anhoej_signal <- function(qic_data) {
-  # Validate input
-  if (!validate_anhoej_columns(qic_data, require_signal = FALSE)) {
-    # Return FALSE vector if validation fails
-    return(rep(FALSE, nrow(qic_data)))
-  }
-
-  # Start with runs.signal
-  signal <- qic_data$runs.signal
-
-  # Check crossings
-  n_crossings <- qic_data$n.crossings[1]
-  n_crossings_min <- qic_data$n.crossings.min[1]
-
-  crossings_signal <- !is.na(n_crossings) && !is.na(n_crossings_min) &&
-    n_crossings < n_crossings_min
-
-  # If crossings signal triggered, could highlight all points
-  # But qicharts2 only highlights runs violations per-point
-  # So we keep signal = runs.signal for per-point display
-
-  # Ensure logical type and handle NAs
-  signal <- as.logical(signal)
-  signal[is.na(signal)] <- FALSE
-
-  return(signal)
-}
-
-
 #' Format Anhoej Metadata for Display
 #'
 #' Formats Anhoej rules metadata into human-readable Danish text for logging

@@ -57,7 +57,8 @@ visualizationModuleServer <- function(
     register_module_data_observer(app_state, input, output, session)
 
     # === STAGE 5: Observers & Side Effects (mod_spc_chart_observers.R) ===
-    register_viewport_observer(app_state, session, ns)
+    emit <- create_emit_api(app_state)
+    register_viewport_observer(app_state, session, ns, emit)
 
     # Helper functions for app_state visualization management
     set_plot_state <- function(key, value) {

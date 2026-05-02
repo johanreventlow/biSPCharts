@@ -696,9 +696,48 @@ describe("Viewport Dimensions", {
     })
   })
 
-  it("uses clientData viewport dimensions when available", {
-    # This test requires actual Shiny session with clientData
-    skip("Requires full Shiny session with clientData")
+  it("uses clientData viewport dimensions when available (#428 Fase 2)", {
+    # testServer's mockclientdata returnerer 600x400 for enhver output-width/height.
+    # register_viewport_observer() laester session$clientData og kalder
+    # set_viewport_dims(app_state, width, height) naar dimensioner > 100px.
+    # Observable: app_state$visualization$viewport_dims opdateres med mockclientdata-vaerdier.
+    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+
+    app_state <- create_mock_app_state()
+
+    testServer(
+      visualizationModuleServer,
+      args = list(
+        column_config_reactive = reactive(list(
+          x_col = "Dato", y_col = "Tæller", n_col = NULL
+        )),
+        chart_type_reactive = reactive("i"),
+        target_value_reactive = reactive(NULL),
+        target_text_reactive = reactive(NULL),
+        centerline_value_reactive = reactive(NULL),
+        skift_config_reactive = reactive(list(show_phases = FALSE, skift_column = NULL)),
+        frys_config_reactive = reactive(NULL),
+        app_state = app_state
+      ),
+      {
+        # testServer's mockclientdata returnerer 600x400 for output_<id>_width/height.
+        # Flush for at sikre viewport-observer har koert.
+        session$flushReact()
+
+        # Viewport-dims skal vaere opdateret fra clientData (ikke NULL og ikke fallback 800x600)
+        dims <- shiny::isolate(app_state$visualization$viewport_dims)
+        expect_false(is.null(dims),
+          info = "viewport_dims skal vaere sat efter clientData er laest"
+        )
+        # mockclientdata leverer 600x400 — bekraeft at det er laest korrekt
+        expect_equal(dims$width, 600,
+          info = "viewport_dims$width skal matche mockclientdata-vaerdi (600px)"
+        )
+        expect_equal(dims$height, 400,
+          info = "viewport_dims$height skal matche mockclientdata-vaerdi (400px)"
+        )
+      }
+    )
   })
 })
 
@@ -706,10 +745,24 @@ describe("Viewport Dimensions", {
 
 describe("Debouncing", {
   it("debounces chart_config to prevent redundant renders", {
-    skip("Debouncing requires time-based testing framework")
+    # chart_config-debouncing (DEBOUNCE_DELAYS$input_change = 150ms) er
+    # allerede daekkket af §2.3.1d-testen (linje 533):
+    #   "debounces rapid events to single render (§2.3.1d)"
+    # Den test bruger testServer + chart_type reactiveVal + later::run_now(2)
+    # og verificerer at 3 hurtige chart_type-aendringer giver < 3 chart_config-eval.
+    # Denne test er en conscioest besluttet reference til §2.3.1d fremfor
+    # duplikeret daekning med identiske assertions.
+    # Afventer: konsolidering af debounce-teststruktur i #428 Fase 3.
+    skip("chart_config-debouncing daekkket af §2.3.1d (linje 533) — #428 Fase 3")
   })
 
   it("debounces spc_inputs to prevent redundant renders", {
-    skip("Debouncing requires time-based testing framework")
+    # spc_inputs = debounce(spc_inputs_raw, DEBOUNCE_DELAYS$file_select = 500ms).
+    # spc_inputs er modul-intern — ingen direkte ekstern observable returneres.
+    # Indirekte observable: visualization_update_needed event-taeller.
+    # Kompleksitet: kraever session$elapse(650+) + oevrig reaktiv kaedeventetid.
+    # Afventer: dedikeret test-infrastruktur for modulinterne debouncede reactives.
+    # Deadline: #428 Fase 3.
+    skip("spc_inputs modul-intern debounce — kræver dedikeret infrastruktur — #428 Fase 3")
   })
 })

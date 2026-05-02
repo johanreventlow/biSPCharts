@@ -78,7 +78,7 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
         parent_session$sendCustomMessage("discardPendingRestore", list())
       }
       if (!is.null(app_state)) {
-        app_state$session$peek_result <- list(has_payload = FALSE)
+        set_session_peek_result(app_state, list(has_payload = FALSE))
       }
     })
   })

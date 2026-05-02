@@ -123,6 +123,64 @@ if [ "${SKIP_STATE_LINT:-0}" != "1" ]; then
   fi
 fi
 
+# --- Step 0.8: skip()-lint-warning i tests/testthat/ (Issue #428) ---
+# Nye skip()-kald (kun added lines) uden paakraevet SKIP-REASON-kommentar
+# giver warning (ej blokerende). Bypass: SKIP_SKIP_LINT=1 git commit
+if [ "${SKIP_SKIP_LINT:-0}" != "1" ]; then
+  staged_test_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^tests/testthat/.*\.(R|r)$' || true)
+  if [ -n "$staged_test_files" ]; then
+    skip_lint_hits=""
+    for f in $staged_test_files; do
+      [ -f "$f" ] || continue
+      # Hent kun nye (added) linjer fra diff for denne fil
+      prev_line=""
+      while IFS= read -r line; do
+        # Kun added lines (starter med +, ikke +++)
+        case "$line" in
+          "+++"*) prev_line=""; continue ;;
+          "+"*)
+            content="${line:1}"
+            # Tjek om det er et nyt skip()-kald (ej skip_if/skip_if_not/skip_on_*)
+            if printf '%s' "$content" | grep -qE '(^|[^_a-zA-Z])skip\s*\('; then
+              # Tjek SKIP-REASON inline paa samme linje
+              if printf '%s' "$content" | grep -qE '#\s*SKIP-REASON:\s*(env|todo|permanent|regression|manual)'; then
+                prev_line="$content"
+                continue
+              fi
+              # Tjek SKIP-REASON paa foregaaende linje (over skip-kaldet)
+              if printf '%s' "$prev_line" | grep -qE '#\s*SKIP-REASON:\s*(env|todo|permanent|regression|manual)'; then
+                prev_line="$content"
+                continue
+              fi
+              # Intet SKIP-REASON fundet — log warning
+              # Find linjenummer i den faktiske fil
+              lineno=$(grep -n "" "$f" | grep -F "${content}" | head -1 | cut -d: -f1)
+              if [ -n "$lineno" ]; then
+                skip_lint_hits="${skip_lint_hits}\n  --- $f ---\n  ${lineno}:${content}"
+              else
+                skip_lint_hits="${skip_lint_hits}\n  --- $f ---\n  ?:${content}"
+              fi
+            fi
+            prev_line="$content"
+            ;;
+          *) prev_line="" ;;
+        esac
+      done < <(git diff --cached -U1 -- "$f")
+    done
+    if [ -n "$skip_lint_hits" ]; then
+      echo ""
+      echo "WARNING Ny skip()-kald uden SKIP-REASON kommentar (Issue #428)"
+      echo "  Foretraek: tilfoej kommentar over skip() med kategori + deadline"
+      echo "  Format: # SKIP-REASON: <env|todo|permanent|regression|manual> [<deadline>]"
+      printf "%b\n" "$skip_lint_hits"
+      echo ""
+      echo "  Bypass: SKIP_SKIP_LINT=1 git commit"
+      echo "  (commit tilladt -- kun warning)"
+      echo ""
+    fi
+  fi
+fi
+
 # Find staged R-filer (ekskl. dev/ og golem_utils.R)
 staged_r_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(R|r)$' | grep -v 'dev/' | grep -v 'golem_utils.R')
 

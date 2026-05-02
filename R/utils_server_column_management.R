@@ -302,12 +302,12 @@ setup_data_table <- function(input, output, session, app_state, emit) {
       # Use unified state management
       set_table_updating(app_state, TRUE)
       # Use unified state management
-      set_table_operation_in_progress(app_state, TRUE)
+      set_table_op_in_progress(app_state, TRUE)
 
       on.exit(
         {
           set_table_updating(app_state, FALSE)
-          set_table_operation_in_progress(app_state, FALSE)
+          set_table_op_in_progress(app_state, FALSE)
         },
         add = TRUE
       )
@@ -397,7 +397,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     # Saet vedvarende flag for at forhindre auto-save interferens
     # Use unified state management
-    set_table_operation_in_progress(app_state, TRUE)
+    set_table_op_in_progress(app_state, TRUE)
 
     new_row <- current_data_check[1, ]
     new_row[1, ] <- NA

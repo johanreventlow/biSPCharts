@@ -732,7 +732,7 @@ set_y_axis_autoset_done <- function(app_state, value) {
 #' @param value Logical TRUE/FALSE
 #'
 #' @keywords internal
-set_table_operation_in_progress <- function(app_state, value) {
+set_table_op_in_progress <- function(app_state, value) {
   shiny::isolate({
     app_state$data$table_operation_in_progress <- value
   })

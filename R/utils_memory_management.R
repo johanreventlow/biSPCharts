@@ -26,7 +26,7 @@ setup_session_cleanup <- function(session, app_state = NULL, observers = NULL) {
           set_current_data(app_state, NULL)
           set_original_data(app_state, NULL)
           set_table_updating(app_state, FALSE)
-          set_table_operation_in_progress(app_state, FALSE)
+          set_table_op_in_progress(app_state, FALSE)
         },
         fallback = function(e) {
           log_debug("Could not reset app state during cleanup", .context = "MEMORY_MGMT")

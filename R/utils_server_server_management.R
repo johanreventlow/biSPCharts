@@ -136,7 +136,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             # Saet gendannelses guards for at forhindre interferens
             set_session_restoring(app_state, TRUE)
             set_table_updating(app_state, TRUE)
-            set_table_operation_in_progress(app_state, TRUE)
+            set_table_op_in_progress(app_state, TRUE)
             app_state$session$auto_save_enabled <- FALSE
 
             # Oprydningsfunktion til at nulstille guards.
@@ -334,7 +334,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
           # Unified state assignment only
           app_state$session$auto_save_enabled <- TRUE
           # Unified state assignment only
-          set_table_operation_in_progress(app_state, FALSE)
+          set_table_op_in_progress(app_state, FALSE)
         },
         session = session,
         error_type = "processing",

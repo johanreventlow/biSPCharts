@@ -343,8 +343,11 @@ validateDataForChart <- function(data, config, chart_type) {
 
   # Skift column validation handled by qicharts2::qic() internally
 
-  if (nrow(data) < 8) {
-    warnings <- c(warnings, paste("Kun", nrow(data), "datapunkter - SPC analyse er mest p\u00e5lidelig med mindst 15-20 punkter"))
+  if (nrow(data) < get_spc_warning_threshold()) { # (#417)
+    warnings <- c(warnings, paste0(
+      "Kun ", nrow(data), " datapunkter - SPC analyse er mest p\u00e5lidelig med mindst ",
+      get_spc_warning_threshold(), "-", get_spc_recommended_threshold(), " punkter"
+    ))
   }
 
   return(list(valid = TRUE, warnings = warnings))

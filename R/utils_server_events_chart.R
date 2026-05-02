@@ -238,44 +238,38 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
     .context = "[UI_SYNC]"
   )
 
-  # Haandter programmatic token -- spring y_axis_unit-opdatering over
-  pending_token <- app_state$ui$pending_programmatic_inputs[["chart_type"]]
-  if (!is.null(pending_token) && identical(pending_token$value, input$chart_type)) {
-    app_state$ui$pending_programmatic_inputs[["chart_type"]] <- NULL
+  if (!identical(qic_ct, "run")) {
+    # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
+    # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
+    # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
+    desired_ui <- chart_type_to_ui_type(ct)
+    current_ui <- input_scalar(input$y_axis_unit, default = "count")
+    if (!identical(current_ui, desired_ui)) {
+      safe_programmatic_ui_update(session, app_state, function() {
+        shiny::updateSelectizeInput(session, "y_axis_unit", selected = desired_ui)
+      })
+    }
+    log_debug_kv(
+      message = "Chart type changed; updated y-axis UI type",
+      chart_type = qic_ct,
+      y_axis_unit = desired_ui,
+      .context = "[Y_AXIS_UI]"
+    )
   } else {
-    if (!identical(qic_ct, "run")) {
-      # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
-      # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
-      # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
-      desired_ui <- chart_type_to_ui_type(ct)
+    n_val <- get_n_column(app_state)
+    n_present <- has_input_value(n_val)
+    if (n_present) {
       current_ui <- input_scalar(input$y_axis_unit, default = "count")
-      if (!identical(current_ui, desired_ui)) {
+      if (!identical(current_ui, "percent")) {
         safe_programmatic_ui_update(session, app_state, function() {
-          shiny::updateSelectizeInput(session, "y_axis_unit", selected = desired_ui)
+          shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
         })
       }
       log_debug_kv(
-        message = "Chart type changed; updated y-axis UI type",
-        chart_type = qic_ct,
-        y_axis_unit = desired_ui,
+        message = "Chart type changed to run; updated y-axis UI to percent due to denominator",
+        n_present = TRUE,
         .context = "[Y_AXIS_UI]"
       )
-    } else {
-      n_val <- get_n_column(app_state)
-      n_present <- has_input_value(n_val)
-      if (n_present) {
-        current_ui <- input_scalar(input$y_axis_unit, default = "count")
-        if (!identical(current_ui, "percent")) {
-          safe_programmatic_ui_update(session, app_state, function() {
-            shiny::updateSelectizeInput(session, "y_axis_unit", selected = "percent")
-          })
-        }
-        log_debug_kv(
-          message = "Chart type changed to run; updated y-axis UI to percent due to denominator",
-          n_present = TRUE,
-          .context = "[Y_AXIS_UI]"
-        )
-      }
     }
   }
 

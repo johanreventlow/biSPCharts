@@ -224,6 +224,17 @@ reset_qic_performance_counters <- function() {
     register_roboto_font()
   }
 
+  # Defense-in-depth: vaer sikker paa BFHcharts >= 0.14.0 er installeret.
+  # bfh_create_typst_document() er foerst public i 0.14.0.
+  if (utils::packageVersion("BFHcharts") < "0.14.0") {
+    warning(
+      "biSPCharts kraever BFHcharts >= 0.14.0 for PDF-eksport. ",
+      "Installeret version: ", utils::packageVersion("BFHcharts"), ". ",
+      "Opdater BFHcharts for at undgaa fejl i PDF-preview.",
+      call. = FALSE
+    )
+  }
+
   invisible()
 }
 

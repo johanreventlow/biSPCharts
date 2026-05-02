@@ -57,9 +57,11 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
               estimated_rows = line_count
             )
           )
+        }
+        if (line_count > get_max_upload_line_count()) {
           errors <- c(errors, paste0(
             "CSV fil har for mange r\u00e6kker (maksimum ",
-            format(get_upload_warning_row_count(), big.mark = "."),
+            format(get_max_upload_line_count(), big.mark = "."),
             ")"
           ))
         }

@@ -223,6 +223,40 @@ test_that("calculate_combined_anhoej_signal() converts non-logical to logical", 
   expect_equal(result, c(FALSE, FALSE, TRUE, TRUE, FALSE))
 })
 
+test_that("calculate_combined_anhoej_signal() bruger crossings.signal kolonne (Def 2 semantik)", {
+  # Def 2 (fct_spc_bfh_signals.R) kombinerer runs OR crossings.signal
+  # Test at crossings-signal alene udloser TRUE for alle punkter
+  qic_data <- tibble(
+    runs.signal = c(FALSE, FALSE, FALSE, FALSE, FALSE),
+    crossings.signal = c(TRUE, TRUE, TRUE, TRUE, TRUE)
+  )
+
+  result <- calculate_combined_anhoej_signal(
+    qic_data,
+    runs_col = "runs.signal",
+    crossings_col = "crossings.signal"
+  )
+
+  expect_type(result, "logical")
+  expect_equal(result, rep(TRUE, 5))
+})
+
+test_that("calculate_combined_anhoej_signal() kombinerer runs OR crossings (Def 2 semantik)", {
+  # Blandet: nogle punkter har runs, andre crossings, ingen overlap
+  qic_data <- tibble(
+    runs.signal     = c(TRUE, FALSE, FALSE, FALSE, FALSE),
+    crossings.signal = c(FALSE, FALSE, FALSE, FALSE, TRUE)
+  )
+
+  result <- calculate_combined_anhoej_signal(
+    qic_data,
+    runs_col = "runs.signal",
+    crossings_col = "crossings.signal"
+  )
+
+  expect_equal(result, c(TRUE, FALSE, FALSE, FALSE, TRUE))
+})
+
 # ==============================================================================
 # Unit Tests: format_anhoej_metadata()
 # ==============================================================================

@@ -15,7 +15,7 @@
 
 
 metadata:
-  total_files: 132
+  total_files: 134
   audit_run: 2026-04-26T20:55:41+0200
   last_updated: 2026-04-29
   manifest_schema_version: '1.0'
@@ -489,6 +489,22 @@ files:
     type: unit
     handling: keep
     reviewed: no
+  - file: test-fct-spc-bfh-params-collision.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Tests for kolonne-navn-kollision efter sanitization (#422). 6 tests daekkende kollisions- og ikke-kollisions-scenarier.
+    reviewer: johanreventlow
+    reviewed_date: '2026-05-01'
+  - file: test-spc-data-thresholds.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Tests for centraliserede SPC datapunkt-graenser (#417). 26 tests daekkende getters, hard_min-checks, warning-triggers og export-watermark-logik.
+    reviewer: johanreventlow
+    reviewed_date: '2026-05-01'
   - file: test-file-io-comprehensive.R
     audit_category: green
     type: unit
@@ -1008,6 +1024,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-escape-typst-metadata.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Nye unit tests for escape_typst_metadata() helper (#427). 25 tests, alle passerer.
+    reviewer: johanreventlow
+    reviewed_date: '2026-05-01'
   - file: test-utils_export_validation.R
     audit_category: green
     type: unit
@@ -1239,6 +1263,12 @@ files:
     handling: keep
     reviewed: no
     rationale: Auto-tilfoejet.
+  - file: test-chart-type-observer-integration.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: no
+    rationale: Integration-test for observe_chart_type_input + sync_chart_type_to_state composition (task 4.4).
   - file: test-ui-update-service-table.R
     audit_category: green
     type: unit

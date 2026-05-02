@@ -94,7 +94,18 @@ classify_update_context <- function(update_context) {
     return("data_change")
   }
 
-  # Fallback
+  # Fallback — warn for at fange ukendte contexts der utilsigtet rammer general-grenen.
+  # General-handler trigger ej auto-detection eller plot-render, kun column-choices.
+  # Hvis nyt emit-kald skal trigge plot-update, skal context matche load|change|edit|modify|column-regex
+  # eller tilfoejes som eksplicit branch ovenfor. Se issue #425.
+  log_warn(
+    paste0(
+      "classify_update_context fald til 'general' for context: '", context,
+      "'. Verificer intent — tilfoej til load/data_change/table_edit/session_restore-grenen ",
+      "hvis context skal trigge plot-opdatering eller auto-detection."
+    ),
+    .context = "EVENT_CONTEXT_HANDLER"
+  )
   "general"
 }
 

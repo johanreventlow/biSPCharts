@@ -21,7 +21,7 @@
 - [x] 4.1 Opret `tests/testthat/test-sync-chart-type-to-state.R` — pure unit-tests uden Shiny
 - [x] 4.2 Test alle chart-type-transitioner (run, i, mr, p, pp, u, up, c, g, t)
 - [x] 4.3 Test edge-cases: NULL/tom state, ugyldig chart_type
-- [ ] 4.4 Integration-test (testServer): observer kalder sync + update korrekt
+- [x] 4.4 Integration-test (testServer): observer kalder sync + update korrekt
 
 ## 5. Validering
 

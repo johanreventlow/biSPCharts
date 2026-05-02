@@ -1239,6 +1239,12 @@ files:
     handling: keep
     reviewed: no
     rationale: Auto-tilfoejet.
+  - file: test-chart-type-observer-integration.R
+    audit_category: green
+    type: integration
+    handling: keep
+    reviewed: no
+    rationale: Integration-test for observe_chart_type_input + sync_chart_type_to_state composition (task 4.4).
   - file: test-ui-update-service-table.R
     audit_category: green
     type: unit

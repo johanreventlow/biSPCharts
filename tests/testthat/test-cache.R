@@ -366,23 +366,8 @@ test_that("session_reset event triggers cache invalidation", {
   expect_null(get_cached_result("test_before_reset"))
 })
 
-test_that("cache stats are accurate after operations", {
-  skip("get_cache_stats() blev fjernet. Intern .performance_cache er ikke længere eksponeret via public API — se manage_cache_size() og get_cached_result() for alternativer.")
-  clear_performance_cache()
-
-  cache_result("stats_key_1", list(value = 1), timeout_seconds = 300)
-  cache_result("stats_key_2", list(value = 2), timeout_seconds = 300)
-  cache_result("stats_key_3", list(value = 3), timeout_seconds = 300)
-
-  stats <- get_cache_stats()
-
-  expect_equal(stats$total_entries, 3)
-  expect_true(stats$total_size_bytes > 0)
-
-  clear_performance_cache()
-  stats_after <- get_cache_stats()
-  expect_equal(stats_after$total_entries, 0)
-})
+# get_cache_stats() fjernet — intern .performance_cache er ikke længere
+# eksponeret via public API. Se manage_cache_size() og get_cached_result().
 
 test_that("multiple cache operations handle concurrency safely", {
   clear_performance_cache()

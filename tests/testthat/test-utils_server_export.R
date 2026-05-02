@@ -133,6 +133,28 @@ test_that("Export helpers integrate with safe_operation correctly", {
   expect_null(generate_pdf_preview(NULL, list()))
 })
 
+# TEST: public BFHcharts API (#423) ==========================================
+
+test_that("bfhcharts_internal() helper er fjernet (#423)", {
+  # bfhcharts_internal() brugte getFromNamespace() og er nu erstattet
+  # med direkte BFHcharts::-kald. Sikrer ingen regression.
+  expect_false(exists("bfhcharts_internal", mode = "function"))
+})
+
+test_that("BFHcharts public API er tilgaengelig for export pipeline", {
+  skip_if_not(requireNamespace("BFHcharts", quietly = TRUE), "BFHcharts not installed")
+  skip_if_not(
+    utils::packageVersion("BFHcharts") >= "0.14.0",
+    "BFHcharts >= 0.14.0 kraevet (bfh_create_typst_document foerst eksporteret i 0.14.0)"
+  )
+  # Verificer at de 3 funktioner der tidligere var interne er nu exporterede
+  expect_true(isNamespaceLoaded("BFHcharts") || requireNamespace("BFHcharts", quietly = TRUE))
+  expect_true(existsMethod("bfh_extract_spc_stats", "bfh_qic_result") ||
+    is.function(tryCatch(BFHcharts::bfh_extract_spc_stats, error = function(e) NULL)))
+  expect_true(is.function(tryCatch(BFHcharts::bfh_merge_metadata, error = function(e) NULL)))
+  expect_true(is.function(tryCatch(BFHcharts::bfh_create_typst_document, error = function(e) NULL)))
+})
+
 # SUMMARY ====================================================================
 # Test coverage:
 # ✅ extract_spc_statistics() data extraction
@@ -141,3 +163,5 @@ test_that("Export helpers integrate with safe_operation correctly", {
 # ⚠️  generate_pdf_preview() full integration (requires BFHcharts + Quarto)
 # ✅ get_hospital_name_for_export() fallback
 # ✅ safe_operation integration
+# ✅ bfhcharts_internal() removed (#423)
+# ✅ BFHcharts public API accessible (#423)

@@ -644,10 +644,50 @@ describe("Security Hardening", {
     expect_false(result$valid)
   })
 
-  it("enforces rate limiting on uploads", {
-    skip("Requires session state and timing")
+  it("enforces rate limiting on uploads (#428 Fase 2)", {
+    # Rate-limit-logik bor i setup_file_upload() -> observeEvent(input$data_file):
+    # naar last_upload_time er sat for nylig, returnerer observeren tidligt
+    # (showNotification + return()) *inden* app_state$data$updating_table saettes.
+    # Observable: updating_table forbliver FALSE naar rate-limit trigges.
+    #
+    # Pattern: testServer(server_fn, {test_expr}) — server og test ADSKILT
+    # for korrekt fejl-propagation (se test-chart-type-observer-integration.R).
+    skip_if_not(exists("setup_file_upload", mode = "function"))
+    skip_if_not(exists("create_app_state", mode = "function"))
 
-    # Rate limiting prevents rapid successive uploads
-    # This would require mocking app_state and timing
+    # Opret en valid temp-CSV-fil som input$data_file kan pege paa
+    tmp_csv <- tempfile(fileext = ".csv")
+    writeLines("Dato;Tæller\n2024-01-01;10", tmp_csv)
+    on.exit(unlink(tmp_csv), add = TRUE)
+
+    app_state <- create_app_state()
+    emit <- create_emit_api(app_state)
+
+    # Server-funktion (registrerer upload-handler)
+    server_fn <- function(input, output, session) {
+      setup_file_upload(input, output, session, app_state, emit)
+    }
+
+    shiny::testServer(
+      server_fn,
+      {
+        # Foer-betingelse: updating_table er FALSE
+        expect_false(shiny::isolate(app_state$data$updating_table),
+          label = "updating_table skal starte FALSE"
+        )
+
+        # Simuler at en upload lige er sket (rate-limit vindue = RATE_LIMITS$file_upload_seconds)
+        app_state$session$last_upload_time <- Sys.time()
+
+        # Trigger data_file — rate-limit checker koerer foer req(input$data_file)
+        # saa et scalar-vaerdi er nok til at trigge observeEvent
+        session$setInputs(data_file = tmp_csv)
+
+        # Rate-limit skal have blokeret: updating_table forbliver FALSE
+        expect_false(shiny::isolate(app_state$data$updating_table),
+          label = "updating_table forbliver FALSE naar rate-limit blokerer upload"
+        )
+      }
+    )
   })
 })

@@ -1024,6 +1024,14 @@ files:
     reviewed: yes
     reviewer: johanreventlow
     reviewed_date: '2026-04-17'
+  - file: test-escape-typst-metadata.R
+    audit_category: green
+    type: unit
+    handling: keep
+    reviewed: yes
+    rationale: Nye unit tests for escape_typst_metadata() helper (#427). 25 tests, alle passerer.
+    reviewer: johanreventlow
+    reviewed_date: '2026-05-01'
   - file: test-utils_export_validation.R
     audit_category: green
     type: unit

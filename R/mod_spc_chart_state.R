@@ -214,7 +214,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
           shiny::isolate({
             was_updating <- state_flag(app_state$visualization$cache_updating)
             if (!was_updating) {
-              app_state$visualization$cache_updating <- TRUE
+              set_viz_cache_updating(app_state, TRUE)
             }
             was_updating
           })
@@ -222,7 +222,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
         error = function(e) {
           # Emergency cleanup if atomic operation fails
           log_error(paste("Atomic cache flag operation failed:", e$message), "VISUALIZATION")
-          app_state$visualization$cache_updating <- FALSE
+          set_viz_cache_updating(app_state, FALSE)
           return(TRUE) # Block this update attempt
         }
       )
@@ -235,7 +235,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
       # Level 3: Skip if data processing is in progress
       if (state_flag(shiny::isolate(app_state$data$updating_table))) {
         # Reset flag if we're bailing out
-        app_state$visualization$cache_updating <- FALSE
+        set_viz_cache_updating(app_state, FALSE)
         log_debug("Skipping visualization cache update - table update in progress", .context = "VISUALIZATION")
         return()
       }
@@ -249,7 +249,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
           on.exit(
             {
               # Clear guard flag on function exit (success or error)
-              app_state$visualization$cache_updating <- FALSE
+              set_viz_cache_updating(app_state, FALSE)
             },
             add = TRUE
           )

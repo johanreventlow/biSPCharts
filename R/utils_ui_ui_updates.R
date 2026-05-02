@@ -105,10 +105,10 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
     execution_start <- Sys.time()
     performance_start <- execution_start
 
-    shiny::isolate(app_state$ui$updating_programmatically <- TRUE)
+    set_ui_updating(app_state, TRUE)
     on.exit(
       {
-        shiny::isolate(app_state$ui$updating_programmatically <- FALSE)
+        set_ui_updating(app_state, FALSE)
 
         pending_queue <- length(safe_list(shiny::isolate(app_state$ui$queued_updates)))
         queue_idle <- !scalar_logical(shiny::isolate(app_state$ui$queue_processing))
@@ -216,7 +216,7 @@ safe_programmatic_ui_update <- function(session, app_state, update_function, del
       run_update()
     },
     fallback = function(e) {
-      app_state$ui$updating_programmatically <- FALSE
+      set_ui_updating(app_state, FALSE)
       app_state$ui$flag_reset_scheduled <- TRUE
       log_error(paste("LOOP_PROTECTION: Fejl under programmatisk UI opdatering:", e$message), "LOOP_PROTECTION")
       stop(e)

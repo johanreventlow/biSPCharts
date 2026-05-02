@@ -23,10 +23,10 @@ setup_session_cleanup <- function(session, app_state = NULL, observers = NULL) {
       safe_operation(
         "Reset app state during cleanup",
         code = {
-          app_state$data$current_data <- NULL
-          app_state$data$original_data <- NULL
-          app_state$data$updating_table <- FALSE
-          app_state$data$table_operation_in_progress <- FALSE
+          set_current_data(app_state, NULL)
+          set_original_data(app_state, NULL)
+          set_table_updating(app_state, FALSE)
+          set_table_operation_in_progress(app_state, FALSE)
         },
         fallback = function(e) {
           log_debug("Could not reset app state during cleanup", .context = "MEMORY_MGMT")

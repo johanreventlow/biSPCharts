@@ -81,6 +81,48 @@ if [ -n "$desc_staged" ] && [ -z "$manifest_staged" ]; then
   fi
 fi
 
+# --- Step 0.7: State-disciplin warning (Issue #424) ---
+# Advarer ved direkte app_state$X$Y <- mutations udenfor whitelist.
+# Whitelist: state_management.R, state_accessors.R, state_transitions.R + events-keys.
+# Bypass: SKIP_STATE_LINT=1 git commit
+if [ "${SKIP_STATE_LINT:-0}" != "1" ]; then
+  staged_r_for_state=$(git diff --cached --name-only --diff-filter=ACM \
+    | grep -E '\.(R|r)$' \
+    | grep -v 'dev/' \
+    | grep -v 'state_management\.R$' \
+    | grep -v 'utils_state_accessors\.R$' \
+    | grep -v 'utils_state_transitions\.R$' \
+    | grep -v 'utils_event_system\.R$' \
+    | grep -v 'utils_logging\.R$' \
+    | grep -v 'utils_advanced_debug\.R$')
+  if [ -n "$staged_r_for_state" ]; then
+    state_hits=""
+    for f in $staged_r_for_state; do
+      [ -f "$f" ] || continue
+      # Match: app_state$<noget>$<noget> <-  men ekskluder $events$ (legitim flag-counter)
+      hits=$(grep -nE 'app_state\$[a-zA-Z_]+\$[a-zA-Z_]+[[:space:]]*<-' "$f" 2>/dev/null \
+        | grep -v 'app_state\$events\$' \
+        | grep -v 'app_state\$test_mode\$' || true)
+      if [ -n "$hits" ]; then
+        state_hits="${state_hits}\n--- $f ---\n$hits"
+      fi
+    done
+    if [ -n "$state_hits" ]; then
+      echo ""
+      echo "⚠ Direkte app_state-mutation udenfor whitelist (Issue #424)"
+      echo "  Foretraek named accessor: set_X(app_state, value) eller transition_*-funktion"
+      echo ""
+      printf "%b\n" "$state_hits" | head -20
+      echo ""
+      echo "  Whitelist-filer: state_management.R, utils_state_accessors.R, utils_state_transitions.R"
+      echo "  Tilfoej accessor til R/utils_state_accessors.R hvis nyt API kraeves."
+      echo "  Bypass (kun naar transition-fit mangler): SKIP_STATE_LINT=1 git commit"
+      echo "  (commit tilladt — kun warning)"
+      echo ""
+    fi
+  fi
+fi
+
 # Find staged R-filer (ekskl. dev/ og golem_utils.R)
 staged_r_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(R|r)$' | grep -v 'dev/' | grep -v 'golem_utils.R')
 

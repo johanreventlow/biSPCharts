@@ -310,7 +310,7 @@ main_app_server <- function(input, output, session) {
       "Clear loop protection flags during session cleanup",
       code = {
         if (!is.null(app_state$ui)) {
-          app_state$ui$updating_programmatically <- FALSE
+          set_ui_updating(app_state, FALSE)
           app_state$ui$flag_reset_scheduled <- TRUE
         }
       },

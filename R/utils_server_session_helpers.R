@@ -551,7 +551,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
     # Clear the table operation flag and reset cleanup request
     # Use unified state management
-    app_state$data$table_operation_in_progress <- FALSE
+    set_table_operation_in_progress(app_state, FALSE)
     app_state$data$table_operation_cleanup_needed <- FALSE
   })
 

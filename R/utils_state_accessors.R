@@ -715,3 +715,85 @@ set_y_axis_autoset_done <- function(app_state, value) {
     app_state$ui$y_axis_unit_autoset_done <- value
   })
 }
+
+# ============================================================================
+# STATE-DISCIPLIN — FASE A (Issue #424)
+# ============================================================================
+# Accessors for top-recurrence-keys der tidligere blev muteret direkte.
+# Konsoliderer mutations gennem named API for testbarhed + lint-disciplin.
+
+#' Set Table Operation In Progress
+#'
+#' Toggle for igangvaerende tabel-operation (cleanup-debounce + race-guards).
+#' Bruges af utils_server_session_helpers, utils_server_column_management,
+#' utils_memory_management.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_table_operation_in_progress <- function(app_state, value) {
+  shiny::isolate({
+    app_state$data$table_operation_in_progress <- value
+  })
+}
+
+#' Set Session Restoring Flag
+#'
+#' Toggle for igangvaerende session-restore. Forhindrer auto-detection +
+#' auto-save trigger under restore-flow (Issue #193, #393).
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_session_restoring <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$restoring_session <- value
+  })
+}
+
+#' Set UI Updating Programmatically Flag
+#'
+#' Toggle for igangvaerende programmatisk UI-update. Brugt af
+#' safe_programmatic_ui_update() til race-protection mod brugerinteraktion.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_ui_updating <- function(app_state, value) {
+  shiny::isolate({
+    app_state$ui$updating_programmatically <- value
+  })
+}
+
+#' Set Visualization Cache Updating Flag
+#'
+#' Toggle for igangvaerende visualization-cache-opdatering. Forhindrer
+#' samtidige cache-rebuilds (mod_spc_chart_state).
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_viz_cache_updating <- function(app_state, value) {
+  shiny::isolate({
+    app_state$visualization$cache_updating <- value
+  })
+}
+
+#' Set Session Peek Result
+#'
+#' Sets the localStorage peek result (has_payload + metadata) used i
+#' landing-page restore-card (Issue #193).
+#'
+#' @param app_state Centralized app state
+#' @param value List med has_payload (logical) og evt. metadata-felter
+#'
+#' @keywords internal
+set_session_peek_result <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$peek_result <- value
+  })
+}

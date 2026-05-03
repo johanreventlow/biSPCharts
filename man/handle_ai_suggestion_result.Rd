@@ -2,7 +2,7 @@
 % Please edit documentation in R/mod_export_ai.R
 \name{handle_ai_suggestion_result}
 \alias{handle_ai_suggestion_result}
-\title{HÃ¥ndter AI Suggestion Resultat (intern hjÃ¦lper)}
+\title{Håndter AI Suggestion Resultat (intern hjælper)}
 \usage{
 handle_ai_suggestion_result(suggestion, session, output)
 }
@@ -14,7 +14,7 @@ handle_ai_suggestion_result(suggestion, session, output)
 \item{output}{Shiny output object}
 }
 \description{
-Opdaterer UI baseret pÃ¥ AI-suggestion-resultatet.
+Opdaterer UI baseret på AI-suggestion-resultatet.
 Adskilt fra handler for testbarhed og genbrug (async + sync sti).
 }
 \keyword{internal}

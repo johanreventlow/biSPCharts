@@ -135,10 +135,10 @@ initialize_spc_chart_state <- function(app_state) {
     set_module_data_cache(app_state, NULL)
   }
 
-  # Initialize consolidated event if not exists
-  if (is.null(shiny::isolate(app_state$events$visualization_update_needed))) {
-    app_state$events$visualization_update_needed <- 0L
-  }
+  # NOTE: app_state$events$visualization_update_needed initialiseres i
+  # create_app_state() (state_management.R:92). Tidligere defensive init
+  # her var dead code OG bypass af emit-API'en — fjernet via #448. Kun
+  # emit$visualization_update_needed() må skrive til counteren.
 
   # Initialize data at startup if available
   if (!is.null(shiny::isolate(app_state$data$current_data))) {

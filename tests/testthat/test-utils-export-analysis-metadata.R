@@ -56,7 +56,7 @@ test_that("build_export_analysis_metadata formats percent centerline and directi
   expect_equal(metadata$target_direction, "> 80%")
 })
 
-test_that("build_export_analysis_metadata uses qic_data centerline when summary missing", {
+test_that("build_export_analysis_metadata falls back to qic_data centerline and empty target context", {
   metadata <- build_export_analysis_metadata(
     bfh_qic_result = make_mock_bfh_qic_result(centerline = 7, include_summary = FALSE),
     department = "Akut"
@@ -69,27 +69,61 @@ test_that("build_export_analysis_metadata uses qic_data centerline when summary 
   expect_null(metadata$target)
 })
 
-test_that("resolve_analysis_centerline prefers raw qic_data over rounded summary (#470)", {
-  # Regression: BFHcharts $summary er afrundet til 4 decimaler (publicerings-
-  # format). Brug rå qic_data$cl som beregningskilde — undgå at afrunding
-  # forplanter sig til mål-vurdering og analyse-metadata.
-  bfh_qic_result <- list(
-    config = list(y_axis_unit = "percent"),
-    summary = data.frame(centerlinje = 0.9000),
-    qic_data = data.frame(cl = rep(0.90054321, 3))
-  )
+# ============================================================================
+# Regression tests: #470 - centerlinje-afrunding flipper malfortolkning
+# ============================================================================
+# BFHcharts' summary-lag afrunder kontrolgrænser (jf. utils_qic_summary.R:177).
+# resolve_analysis_centerline() skal bruge qic_data$cl (raa qicharts2-vaerdi)
+# primaert for at undgaa boundary-cases hvor afrunding flipper "maal opfyldt"-
+# vurdering.
 
-  centerline <- resolve_analysis_centerline(bfh_qic_result)
-  expect_equal(centerline, 0.90054321)
-  expect_false(identical(centerline, 0.9000))
+make_divergent_bfh_result <- function(raw_cl, summary_cl, y_axis_unit = "percent") {
+  # Mock hvor summary er afrundet vs. qic_data raa - illustrerer #470 bug
+  result <- list(
+    config = list(y_axis_unit = y_axis_unit),
+    summary = data.frame(centerlinje = summary_cl),
+    qic_data = data.frame(cl = rep(raw_cl, 3))
+  )
+  class(result) <- "bfh_qic_result"
+  result
+}
+
+test_that("resolve_analysis_centerline() prefers raw qic_data over rounded summary (#470)", {
+  # Rå cl=0.9005, summary afrundet til 0.9000
+  result <- make_divergent_bfh_result(raw_cl = 0.9005, summary_cl = 0.9000)
+  expect_equal(resolve_analysis_centerline(result), 0.9005)
 })
 
-test_that("resolve_analysis_centerline returns last row for time series with varying cl", {
-  # qic_data$cl kan variere over tid (fx ved frozen baseline). Brug sidste
-  # række (samme konvention som summary), ikke første.
-  bfh_qic_result <- list(
-    qic_data = data.frame(cl = c(10, 12, 15))
+test_that("at_target uses raw centerline so target=0.9003 with cl=0.9005 = TRUE (#470)", {
+  # Boundary-case: rå cl >= target opfyldt; summary afrundet ville flippe vurdering
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_divergent_bfh_result(raw_cl = 0.9005, summary_cl = 0.9000),
+    target_value = 0.9003,
+    target_text = ">= 90,03%"
   )
+  expect_true(metadata$at_target,
+    info = "Raw cl=0.9005 >= target=0.9003 -> mål opfyldt (afrundet 0.9000 ville flippe)"
+  )
+})
 
-  expect_equal(resolve_analysis_centerline(bfh_qic_result), 15)
+test_that("centerline value falls back to summary when qic_data mangler (#470)", {
+  # Degraderet input: kun summary tilgaengelig
+  result <- list(
+    config = list(y_axis_unit = "count"),
+    summary = data.frame(centerlinje = 42),
+    qic_data = NULL
+  )
+  class(result) <- "bfh_qic_result"
+  expect_equal(resolve_analysis_centerline(result), 42)
+})
+
+test_that("resolve_analysis_centerline returns last row for variable cl (freeze/part)", {
+  # Variabel cl ved freeze/part - sidste raekke matcher sidste fase
+  result <- list(
+    config = list(y_axis_unit = "count"),
+    summary = data.frame(centerlinje = c(10, 20)),
+    qic_data = data.frame(cl = c(10, 10, 10, 20, 20, 20))
+  )
+  class(result) <- "bfh_qic_result"
+  expect_equal(resolve_analysis_centerline(result), 20)
 })

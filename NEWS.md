@@ -2,27 +2,13 @@
 
 ## Bug fixes
 
-* **Klinisk kritisk:** `resolve_analysis_centerline()` brugte tidligere
-  `bfh_qic_result$summary$centerlinje` (afrundet til 4 decimaler af BFHcharts
-  som rapporteringsformat) som primær kilde til mål-vurdering og analyse-
-  metadata, og faldt kun tilbage til `qic_data$cl` (rå qicharts2-værdi)
-  hvis summary manglede. På boundary cases gav afrundingen forkert
-  fortolkning af om processen opfylder mål. Inverteret prioritet:
-  `qic_data$cl` (rå) bruges nu primært, summary kun som fallback. Returnerer
-  også sidste række (ikke første) for tidsserier med varierende centerlinje.
-  (`R/utils_export_analysis_metadata.R`, #470)
-
-* **Klinisk kritisk:** `runs_signal` viste tidligere TRUE på crossing-only
-  data fordi qicharts2's `runs.signal`-kolonne er kombineret Anhøj-signal
-  (sat ved enten runs- ELLER crossings-violation). biSPCharts mappede den
-  direkte til `runs_signal` → klinikere så "Runs-signal: Ja" når
-  processen faktisk kun havde crossings-violation. Fixet i
-  `extract_anhoej_metadata()` (`R/fct_anhoej_rules.R`),
-  `derive_anhoej_results()` (`R/fct_spc_anhoej_derivation.R`) og Excel
-  Section D (`R/fct_spc_excel_analysis.R`) ved at beregne runs- og
-  crossings-signaler separat ud fra `longest.run > longest.run.max`
-  henholdsvis `n.crossings < n.crossings.min`. Excel Section D har nu
-  separate "Runs-signal" og "Crossings-signal" kolonner. (#468)
+* **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå
+  `qic_data$cl` (uafrundet qicharts2-værdi) primært i stedet for
+  BFHcharts' afrundede `summary$centerlinje`. Tidligere kunne
+  afrunding flippe målfortolkning ved boundary-cases (eksempel: rå
+  cl=0.9005 opfylder target>=0.9003, men summary-værdi 0.9000 ville
+  forkert vise "ikke opfyldt"). Summary bruges nu kun som fallback
+  hvis qic_data mangler. (#470)
 
 * Erstatter `getFromNamespace()`-brug af BFHcharts-internals med public
   API. `bfh_extract_spc_stats()`, `bfh_merge_metadata()` og

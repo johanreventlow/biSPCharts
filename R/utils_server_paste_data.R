@@ -167,10 +167,10 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       "Behandl uploadet fil",
       fallback = function(e) {
         # H6 (#452): tidligere blev fejl efter MIME-validering swallowed
-        # silent (show_user = FALSE, fallback = NULL). Nu får brugeren
-        # en dansk fejl-besked så de ved hvorfor paste-feltet er tomt.
+        # silent (show_user = FALSE, fallback = NULL). Nu f\u00e5r brugeren
+        # en dansk fejl-besked s\u00e5 de ved hvorfor paste-feltet er tomt.
         shiny::showNotification(
-          paste0("Filen \"", file_info$name, "\" kunne ikke indlæses: ", e$message),
+          paste0("Filen \"", file_info$name, "\" kunne ikke indl\u00e6ses: ", e$message),
           type = "error",
           duration = 6
         )

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mod_export_ai.R
 \name{register_ai_suggestion_handler}
 \alias{register_ai_suggestion_handler}
-\title{Register AI Suggestion Handler}
+\title{Register AI Suggestion Handler (Async)}
 \usage{
 register_ai_suggestion_handler(session, input, output, app_state)
 }
@@ -16,10 +16,15 @@ register_ai_suggestion_handler(session, input, output, app_state)
 \item{app_state}{Global app state containing data and column mappings}
 }
 \value{
-NULL (side effect: registers observer with Shiny)
+NULL (side effect: registers observer and ExtendedTask with Shiny)
 }
 \description{
 Sets up event listener for AI suggestion button click.
-Generates SPC plot, calls BFHcharts analysis with AI enabled, updates UI.
+Generates SPC plot, calls bfh_generate_analysis() via ExtendedTask
+(asynkront) for at undg\u00e5 at blokere andre Shiny-sessions p\u00e5 Connect.
+}
+\details{
+Fallback til synkron eksekvering hvis ExtendedTask ikke er tilg\u00e6ngeligt
+(shiny < 1.8.0 eller promises mangler).
 }
 \keyword{internal}

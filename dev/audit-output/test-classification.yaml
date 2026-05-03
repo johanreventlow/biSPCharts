@@ -1,5 +1,5 @@
 metadata:
-  total_files: 173
+  total_files: 174
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
@@ -30,6 +30,16 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-anhoej-signal-semantics-468.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: 'yes'
+  rationale: Regression-tests illustrerer Anhoej-signal-semantik-bug (#468) med live
+    qicharts2/BFHcharts data. 7 tests skipped indtil bug fixed; 2 (control case +
+    BFHcharts cross-check) passerer.
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-03'
 - file: test-app-initialization.R
   audit_category: green
   type: unit

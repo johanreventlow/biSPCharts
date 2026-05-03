@@ -73,9 +73,9 @@ build_session_filename <- function(session_id = NULL, timestamp = Sys.time()) {
 sync_logs_to_github <- function(all_data,
                                 session_id = NULL,
                                 max_retries = 3L) {
-  pat <- Sys.getenv("GITHUB_PAT")
-  repo_url <- Sys.getenv("PIN_REPO_URL")
-  branch <- Sys.getenv("PIN_REPO_BRANCH")
+  pat <- safe_getenv("GITHUB_PAT")
+  repo_url <- safe_getenv("PIN_REPO_URL")
+  branch <- safe_getenv("PIN_REPO_BRANCH")
   if (nchar(branch) == 0) branch <- "main"
 
   if (nchar(pat) == 0 || nchar(repo_url) == 0) {

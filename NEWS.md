@@ -2,6 +2,14 @@
 
 ## Bug fixes
 
+* **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå
+  `qic_data$cl` (uafrundet qicharts2-værdi) primært i stedet for
+  BFHcharts' afrundede `summary$centerlinje`. Tidligere kunne
+  afrunding flippe målfortolkning ved boundary-cases (eksempel: rå
+  cl=0.9005 opfylder target>=0.9003, men summary-værdi 0.9000 ville
+  forkert vise "ikke opfyldt"). Summary bruges nu kun som fallback
+  hvis qic_data mangler. (#470)
+
 * Erstatter `getFromNamespace()`-brug af BFHcharts-internals med public
   API. `bfh_extract_spc_stats()`, `bfh_merge_metadata()` og
   `bfh_create_typst_document()` er nu alle eksporterede funktioner i

@@ -271,7 +271,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
         debug_log("File upload workflow completed successfully", "FILE_UPLOAD_FLOW", level = "INFO", session_id = sanitize_session_token(session$token))
 
         # Update rate limiting timestamp after successful upload
-        app_state$session$last_upload_time <- Sys.time()
+        set_last_upload_time(app_state)
       },
       error_type = "network",
       emit = emit,

@@ -215,6 +215,59 @@ test_that("set_last_error fylder error_history med FIFO-cap (max 10)", {
   expect_equal(get_last_error(app_state)$index, 12L)
 })
 
+test_that("H1: nye session-accessors (#447) eksisterer og returnerer defaults", {
+  app_state <- create_app_state()
+
+  # autogen_active
+  expect_false(is_autogen_active(app_state))
+  set_autogen_active(app_state, TRUE)
+  expect_true(is_autogen_active(app_state))
+  set_autogen_active(app_state, FALSE)
+  expect_false(is_autogen_active(app_state))
+
+  # has_data_status
+  expect_equal(get_has_data_status(app_state), "false")
+  set_has_data_status(app_state, "true")
+  expect_equal(get_has_data_status(app_state), "true")
+
+  # last_save_time
+  expect_null(get_last_save_time(app_state))
+  fixed_time <- as.POSIXct("2026-05-03 09:00:00", tz = "UTC")
+  set_last_save_time(app_state, fixed_time)
+  expect_equal(get_last_save_time(app_state), fixed_time)
+
+  # auto_save_enabled (default TRUE)
+  expect_true(is_auto_save_enabled(app_state))
+  set_auto_save_enabled(app_state, FALSE)
+  expect_false(is_auto_save_enabled(app_state))
+
+  # last_upload_time
+  expect_null(get_last_upload_time(app_state))
+  set_last_upload_time(app_state, fixed_time)
+  expect_equal(get_last_upload_time(app_state), fixed_time)
+})
+
+test_that("H1: set_module_data_cache (#447) opdaterer atomisk", {
+  app_state <- create_app_state()
+  test_data <- data.frame(x = 1:3, y = 4:6)
+
+  set_module_data_cache(app_state, test_data)
+  expect_equal(shiny::isolate(app_state$visualization$module_data_cache), test_data)
+  expect_equal(shiny::isolate(app_state$visualization$module_cached_data), test_data)
+
+  set_module_data_cache(app_state, NULL)
+  expect_null(shiny::isolate(app_state$visualization$module_data_cache))
+  expect_null(shiny::isolate(app_state$visualization$module_cached_data))
+})
+
+test_that("H1: set_table_op_cleanup_needed (#447) eksisterer", {
+  app_state <- create_app_state()
+  set_table_op_cleanup_needed(app_state, TRUE)
+  expect_true(shiny::isolate(app_state$data$table_operation_cleanup_needed))
+  set_table_op_cleanup_needed(app_state, FALSE)
+  expect_false(shiny::isolate(app_state$data$table_operation_cleanup_needed))
+})
+
 test_that("recovery-attempts og last_recovery_time accessors eksisterer", {
   app_state <- create_app_state()
   expect_equal(get_recovery_attempts(app_state), 0L)

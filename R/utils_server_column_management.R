@@ -314,7 +314,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
       # Trigger event-driven cleanup instead of timing-based
       # Use unified state management
-      app_state$data$table_operation_cleanup_needed <- TRUE
+      set_table_op_cleanup_needed(app_state, TRUE)
 
       safe_operation(
         operation_name = "ExcelR tabel data opdatering",
@@ -413,7 +413,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     # Trigger event-driven cleanup instead of timing-based
     # Use unified state management
-    app_state$data$table_operation_cleanup_needed <- TRUE
+    set_table_op_cleanup_needed(app_state, TRUE)
   })
 
   # UNIFIED STATE: Table reset functionality moved to utils_server_management.R

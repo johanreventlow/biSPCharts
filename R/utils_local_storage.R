@@ -344,7 +344,7 @@ autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) 
 
   # Graceful disable ved persistent fejl — kræver eksplicit app_state
   if (identical(result, FALSE) && !is.null(app_state)) {
-    app_state$session$auto_save_enabled <- FALSE
+    set_auto_save_enabled(app_state, FALSE)
   }
 
   invisible(result)

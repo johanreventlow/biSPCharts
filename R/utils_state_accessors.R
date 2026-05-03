@@ -854,3 +854,150 @@ set_session_peek_result <- function(app_state, value) {
     app_state$session$peek_result <- value
   })
 }
+
+# ============================================================================
+# H1 ADDITIONS — accessor-disciplin færdiggørelse (#447)
+# ============================================================================
+
+#' Set Autogen Active Flag
+#'
+#' Suspend-flag der signalerer at en programmatisk input-update er undervejs
+#' (mod_export_analysis), så settings_save ikke gemmer auto-tekst som
+#' bruger-ændring. Ryddes via session$onFlushed.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_autogen_active <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$autogen_active <- value
+  })
+}
+
+#' Get Autogen Active Flag
+#'
+#' @param app_state Centralized app state
+#'
+#' @return Logical (default FALSE)
+#'
+#' @keywords internal
+is_autogen_active <- function(app_state) {
+  shiny::isolate(isTRUE(app_state$session$autogen_active))
+}
+
+#' Get/Set Has-Data Status
+#'
+#' Wizard-gate-status: "true"/"false"-streng (renderText-kompatibel) der
+#' signalerer om der er meningsfuld data tilgængelig.
+#'
+#' @param app_state Centralized app state
+#' @param value "true" eller "false"
+#'
+#' @keywords internal
+get_has_data_status <- function(app_state) {
+  shiny::isolate(app_state$session$has_data_status %||% "false")
+}
+
+#' @rdname get_has_data_status
+#' @keywords internal
+set_has_data_status <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$has_data_status <- value
+  })
+}
+
+#' Get/Set Last Save Time
+#'
+#' Timestamp for seneste vellykket localStorage save (Issue #193).
+#'
+#' @param app_state Centralized app state
+#' @param value POSIXct timestamp (default `Sys.time()`)
+#'
+#' @keywords internal
+get_last_save_time <- function(app_state) {
+  shiny::isolate(app_state$session$last_save_time)
+}
+
+#' @rdname get_last_save_time
+#' @keywords internal
+set_last_save_time <- function(app_state, value = Sys.time()) {
+  shiny::isolate({
+    app_state$session$last_save_time <- value
+  })
+}
+
+#' Get/Set Auto-Save Enabled
+#'
+#' Feature-flag for automatisk session-persistering. Sættes til FALSE
+#' hvis localStorage er fuldt (quota-fejl).
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+is_auto_save_enabled <- function(app_state) {
+  shiny::isolate(app_state$session$auto_save_enabled %||% TRUE)
+}
+
+#' @rdname is_auto_save_enabled
+#' @keywords internal
+set_auto_save_enabled <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$auto_save_enabled <- value
+  })
+}
+
+#' Get/Set Last Upload Time
+#'
+#' Timestamp for seneste vellykket file-upload. Bruges af rate-limit-
+#' check i fct_file_operations.
+#'
+#' @param app_state Centralized app state
+#' @param value POSIXct timestamp (default `Sys.time()`)
+#'
+#' @keywords internal
+get_last_upload_time <- function(app_state) {
+  shiny::isolate(app_state$session$last_upload_time)
+}
+
+#' @rdname get_last_upload_time
+#' @keywords internal
+set_last_upload_time <- function(app_state, value = Sys.time()) {
+  shiny::isolate({
+    app_state$session$last_upload_time <- value
+  })
+}
+
+#' Set Table Operation Cleanup Needed Flag
+#'
+#' Markerer at en table-opdatering kræver post-flush cleanup (clearing
+#' table_operation_in_progress flag). Forhindrer race conditions
+#' mellem rapid table-edits.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_table_op_cleanup_needed <- function(app_state, value) {
+  shiny::isolate({
+    app_state$data$table_operation_cleanup_needed <- value
+  })
+}
+
+#' Set Visualization Module Data Cache
+#'
+#' Atomisk update af både module_data_cache og module_cached_data — disse
+#' to skal altid være synkrone for at undgå inkonsistens mellem modulets
+#' interne snapshot og UI-readable cache (mod_spc_chart_state).
+#'
+#' @param app_state Centralized app state
+#' @param data Data frame eller NULL
+#'
+#' @keywords internal
+set_module_data_cache <- function(app_state, data) {
+  shiny::isolate({
+    app_state$visualization$module_data_cache <- data
+    app_state$visualization$module_cached_data <- data
+  })
+}

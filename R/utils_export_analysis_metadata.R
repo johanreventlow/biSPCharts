@@ -23,16 +23,26 @@ resolve_analysis_centerline <- function(bfh_qic_result) {
     return(NULL)
   }
 
+  # #470: Brug qic_data$cl (raa qicharts2-vaerdi) primaert for at undgaa
+  # afrundings-tab i BFHcharts' summary-lag der ellers kan flippe
+  # malfortolkning ved boundary-cases. Eksempel: rå cl=0.9005,
+  # target>=0.9003 → maal opfyldt; men summary-centerlinje 0.9000 vil
+  # forkert give "ikke opfyldt".
+  #
+  # Sidste raekke matcher eksisterende semantik (sidste fase ved freeze/part).
+  qic_data <- bfh_qic_result$qic_data
+  if (!is.null(qic_data) && "cl" %in% names(qic_data) && nrow(qic_data) > 0) {
+    return(qic_data$cl[nrow(qic_data)])
+  }
+
+  # Fallback: summary kun hvis qic_data mangler (degraderet input).
+  # Note: summary-vaerdier er afrundede til UI-format; brug ikke til
+  # praecisionskritisk logik.
   summary_data <- bfh_qic_result$summary
   if (!is.null(summary_data) &&
     "centerlinje" %in% names(summary_data) &&
     nrow(summary_data) > 0) {
     return(summary_data$centerlinje[nrow(summary_data)])
-  }
-
-  qic_data <- bfh_qic_result$qic_data
-  if (!is.null(qic_data) && "cl" %in% names(qic_data) && nrow(qic_data) > 0) {
-    return(qic_data$cl[1])
   }
 
   NULL

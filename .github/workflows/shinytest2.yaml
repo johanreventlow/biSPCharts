@@ -20,6 +20,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PKG_SYSREQS: "FALSE"
       CI_SKIP_SHINYTEST2: "false"
       RUN_SHINYTEST2: "1"
       GOOGLE_API_KEY: ""
@@ -46,8 +47,6 @@ jobs:
         run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        env:
-          PKG_SYSREQS: false
         with:
           extra-packages: any::shinytest2, any::testthat
           needs: check

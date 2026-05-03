@@ -2,6 +2,18 @@
 
 ## Bug fixes
 
+* **Klinisk kritisk:** `runs_signal` viste tidligere TRUE på crossing-only
+  data fordi qicharts2's `runs.signal`-kolonne er kombineret Anhøj-signal
+  (sat ved enten runs- ELLER crossings-violation). biSPCharts mappede den
+  direkte til `runs_signal` → klinikere så "Runs-signal: Ja" når
+  processen faktisk kun havde crossings-violation. Fixet i
+  `extract_anhoej_metadata()` (`R/fct_anhoej_rules.R`),
+  `derive_anhoej_results()` (`R/fct_spc_anhoej_derivation.R`) og Excel
+  Section D (`R/fct_spc_excel_analysis.R`) ved at beregne runs- og
+  crossings-signaler separat ud fra `longest.run > longest.run.max`
+  henholdsvis `n.crossings < n.crossings.min`. Excel Section D har nu
+  separate "Runs-signal" og "Crossings-signal" kolonner. (#468)
+
 * Erstatter `getFromNamespace()`-brug af BFHcharts-internals med public
   API. `bfh_extract_spc_stats()`, `bfh_merge_metadata()` og
   `bfh_create_typst_document()` er nu alle eksporterede funktioner i

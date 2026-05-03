@@ -94,10 +94,7 @@ extract_anhoej_metadata <- function(qic_data) {
     return(NULL)
   }
 
-  # 3. Extract runs signal (aggregate: TRUE if any point signals)
-  runs_signal <- any(qic_data$runs.signal, na.rm = TRUE)
-
-  # 4. Extract crossings information
+  # 3. Extract crossings information FØRST (bruges til at udlede runs separat)
   # Ved multi-fase charts returnerer BFHchart per-fase værdier (en unik værdi pr. fase
   # gentaget for alle rækker i fasen). Vi samler korrekt på tværs af faser.
   has_parts <- "part" %in% names(qic_data) && length(unique(qic_data$part)) > 1
@@ -119,6 +116,30 @@ extract_anhoej_metadata <- function(qic_data) {
     # Crossings signal: TRUE if n.crossings < n.crossings.min
     crossings_signal <- !is.na(n_crossings) && !is.na(n_crossings_min) &&
       n_crossings < n_crossings_min
+  }
+
+  # 4. Extract runs signal (#468: qicharts2's runs.signal-kolonne er KOMBINERET
+  # Anhoej-signal — sat ved enten runs- ELLER crossings-violation, ikke kun runs).
+  # Brug longest.run > longest.run.max til separat runs-detektion.
+  # Verificeret mod qicharts2 source helper.functions.R `crsignal()` L91-168.
+  has_run_cols <- "longest.run" %in% names(qic_data) &&
+    "longest.run.max" %in% names(qic_data)
+
+  runs_signal <- if (has_run_cols) {
+    if (has_parts) {
+      # Multi-fase: TRUE hvis nogen fase har lang run > max
+      phase_run <- tapply(qic_data$longest.run, qic_data$part, function(x) x[1])
+      phase_run_max <- tapply(qic_data$longest.run.max, qic_data$part, function(x) x[1])
+      runs_per_phase <- !is.na(phase_run) & !is.na(phase_run_max) &
+        phase_run > phase_run_max
+      any(runs_per_phase)
+    } else {
+      lr <- qic_data$longest.run[1]
+      lr_max <- qic_data$longest.run.max[1]
+      !is.na(lr) && !is.na(lr_max) && lr > lr_max
+    }
+  } else {
+    FALSE
   }
 
   # 5. Extract longest run information (if available)

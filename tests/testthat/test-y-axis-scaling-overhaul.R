@@ -522,21 +522,10 @@ test_that("format_unscaled_number uses Danish notation", {
   expect_equal(format_unscaled_number(1000.75), "1.000,8")
 })
 
-# TEST: format_time_with_unit() ------------------------------------------------
-
-test_that("format_time_with_unit consolidates duplication correctly", {
-  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
-})
-
-test_that("format_time_with_unit handles edge cases", {
-  skip(paste(
-    "format_time_with_unit er fjernet og erstattet af format_time_composite",
-    "(R/utils_time_formatting.R). Edge case-dækning er flyttet til",
-    "test-label-formatting.R som verificerer komposit-format (0m, 30m, 1t,",
-    "1t 30m, 1d, 2d 13t). Den oprindelige test-forventning passer ikke",
-    "længere til ny API (10000 minutter → '6d 22t 40m', ikke '6,9 dage')."
-  ))
-})
+# Note: format_time_with_unit blev fjernet og erstattet af format_time_composite
+# (R/utils_time_formatting.R). Edge case-dækning ligger nu i
+# test-label-formatting.R som verificerer komposit-format (0m, 30m, 1t,
+# 1t 30m, 1d, 2d 13t). Tests for fjernet funktion er slettet (#428).
 
 # TEST: format_y_axis_time() ---------------------------------------------------
 
@@ -609,10 +598,6 @@ test_that("Extracted formatting produces identical output to original", {
 
   # Time formatting backward-compatibility cases flyttet til
   # test-time-formatting.R (format_time_composite)
-})
-
-test_that("format_time_with_unit eliminates duplication effectively", {
-  skip("Funktionen er fjernet. Se format_time_composite i utils_time_formatting.R")
 })
 
 # TEST: Komposit-format integration ==========================================

@@ -111,7 +111,25 @@ restore_column_class <- function(values, class_info) {
     values <- unlist(cleaned, use.names = FALSE)
   }
 
-  primary <- class_info$primary %||% "character"
+  # ALLOWED_PRIMARY whitelist (#457): class_info kommer fra browser-
+  # localStorage og kan manipuleres via DevTools. Whitelist holder
+  # coercion-paths kontrolleret — ukendte typer falder tilbage til
+  # rå values frem for at forsøge as.X() med uvalideret string.
+  allowed_primary <- c(
+    "integer", "numeric", "double", "character", "logical",
+    "factor", "Date", "POSIXct"
+  )
+  raw_primary <- class_info$primary %||% "character"
+  if (!is.character(raw_primary) || length(raw_primary) != 1L ||
+    !raw_primary %in% allowed_primary) {
+    log_warn(
+      sprintf("Ukendt class_info$primary fra localStorage: %s", as.character(raw_primary)),
+      .context = "LOCAL_STORAGE",
+      details = list(allowed = paste(allowed_primary, collapse = ","))
+    )
+    return(values)
+  }
+  primary <- raw_primary
 
   # Factor: brug gemte levels for at bevare rækkefølge
   if (isTRUE(class_info$is_factor)) {
@@ -137,7 +155,7 @@ restore_column_class <- function(values, class_info) {
     return(as.POSIXct(as.character(values), tz = tz))
   }
 
-  # Basis-typer
+  # Basis-typer (whitelisted ovenfor)
   switch(primary,
     "integer" = as.integer(values),
     "numeric" = as.numeric(values),

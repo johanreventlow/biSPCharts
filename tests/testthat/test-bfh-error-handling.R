@@ -61,104 +61,10 @@ test_that("classify_error_source handles unknown errors gracefully", {
   expect_match(classification$user_message, "uventet fejl")
 })
 
-# Test: Structured logging utilities
-test_that("sanitize_log_details removes sensitive data", {
-  set.seed(42)
-  skip("sanitize_log_details blev fjernet i logging-refactor. Ansvaret er flyttet til log_info/log_warn/log_error som strukturerer details internt.")
-  details <- list(
-    data = data.frame(x = 1:100, y = rnorm(100)),
-    session_token = "abc123def456ghi789",
-    long_string = paste(rep("x", 300), collapse = ""),
-    null_value = NULL,
-    chart_type = "run",
-    numeric_vector = rnorm(100)
-  )
-
-  sanitized <- sanitize_log_details(details)
-
-  # Data frame should be summarized
-  expect_match(sanitized$data, "<data.frame:")
-  expect_match(sanitized$data, "100 rows")
-
-  # Session token should be hashed (8 chars)
-  expect_equal(nchar(sanitized$session_token), 8)
-  expect_false(sanitized$session_token == "abc123def456ghi789")
-
-  # Long string should be truncated
-  expect_match(sanitized$long_string, "\\.\\.\\. \\(truncated\\)")
-  expect_lte(nchar(sanitized$long_string), 220) # 200 + truncation text
-
-  # NULL value should be removed
-  expect_null(sanitized$null_value)
-
-  # Chart type should be preserved
-  expect_equal(sanitized$chart_type, "run")
-
-  # Long numeric vector should be summarized
-  expect_match(sanitized$numeric_vector, "numeric values")
-  expect_match(sanitized$numeric_vector, "min=")
-  expect_match(sanitized$numeric_vector, "max=")
-})
-
-test_that("sanitize_log_details handles edge cases", {
-  skip("sanitize_log_details blev fjernet i logging-refactor.")
-  # NULL details
-  expect_equal(length(sanitize_log_details(NULL)), 0)
-
-  # Empty list
-  expect_equal(length(sanitize_log_details(list())), 0)
-
-  # Non-list input
-  expect_equal(length(sanitize_log_details("not a list")), 0)
-})
-
-test_that("log_with_throttle prevents log spam", {
-  skip("log_with_throttle blev fjernet. Throttling håndteres nu af logger-backend via options(spc.log.level) og .context-filtrering.")
-  # Track calls to log function
-  log_calls <- 0
-  mock_log_fn <- function(...) {
-    log_calls <<- log_calls + 1
-  }
-
-  # First call should log
-  log_with_throttle("test_key", interval_sec = 1, log_fn = mock_log_fn, "Test message")
-  expect_equal(log_calls, 1)
-
-  # Immediate second call should be throttled
-  log_with_throttle("test_key", interval_sec = 1, log_fn = mock_log_fn, "Test message")
-  expect_equal(log_calls, 1) # Still 1, not 2
-
-  # Wait for throttle interval to expire (simulate with option manipulation)
-  options(spc.log.throttle.test_key = Sys.time() - 2) # Set to 2 seconds ago
-
-  # Now it should log again
-  log_with_throttle("test_key", interval_sec = 1, log_fn = mock_log_fn, "Test message")
-  expect_equal(log_calls, 2)
-
-  # Cleanup
-  options(spc.log.throttle.test_key = NULL)
-})
-
-test_that("log_with_throttle validates parameters", {
-  skip("log_with_throttle blev fjernet i logging-refactor.")
-  # Invalid log_fn
-  expect_error(
-    log_with_throttle("key", 60, "not a function", "message"),
-    "log_fn must be a function"
-  )
-
-  # Invalid key
-  expect_error(
-    log_with_throttle(c("key1", "key2"), 60, function(...) {}, "message"),
-    "key must be a single character string"
-  )
-
-  # Invalid interval
-  expect_error(
-    log_with_throttle("key", -5, function(...) {}, "message"),
-    "interval_sec must be a positive number"
-  )
-})
+# Note: sanitize_log_details + log_with_throttle blev fjernet i logging-
+# refactor. Ansvaret er flyttet til log_info/log_warn/log_error (strukturerer
+# details internt) og logger-backend via options(spc.log.level) +
+# .context-filtrering. Tests for de fjernede funktioner er slettet (#428).
 
 # Test: Input-validering kaster fejl (opdateret efter #240)
 # Tidligere forventede testene NULL-return via safe_operation, men #240 indførte
@@ -256,40 +162,9 @@ test_that("Errors are logged with correct component tags", {
   expect_equal(classification$component, "BFH_VALIDATION")
 })
 
-# Test: Production safeguards
-test_that("No PII is leaked in error logs", {
-  skip("sanitize_log_details blev fjernet i logging-refactor — PII-filtrering sker nu implicit i log_*-kald og tests for dette ligger i test-logging-*.R.")
-  # Create data with potentially sensitive info
-  sensitive_data <- data.frame(
-    patient_id = c("123-45-6789", "987-65-4321"),
-    measure = c(10, 12),
-    date = Sys.Date() + 0:1
-  )
-
-  details <- list(
-    data = sensitive_data,
-    user_email = "test@example.com",
-    session_token = "secret_token_12345"
-  )
-
-  sanitized <- sanitize_log_details(details)
-
-  # Convert all sanitized values to a single string for testing
-  sanitized_str <- paste(unlist(sanitized), collapse = " ")
-
-  # Check that actual data values are not in sanitized output
-  expect_false(grepl("123-45-6789", sanitized_str, fixed = TRUE))
-  expect_false(grepl("987-65-4321", sanitized_str, fixed = TRUE))
-  # Note: user_email is NOT a special key like session_token, so it gets kept
-  # This is expected behavior - only specific sensitive fields are sanitized
-  expect_false(grepl("secret_token_12345", sanitized_str, fixed = TRUE))
-
-  # Check that data is summarized instead
-  expect_match(sanitized$data, "<data.frame:")
-
-  # Session token should be hashed
-  expect_equal(nchar(sanitized$session_token), 8)
-})
+# Note: PII-filtrerings-test er slettet (#428) — sanitize_log_details fjernet i
+# logging-refactor; PII-filtrering sker nu implicit i log_*-kald og dækkes af
+# test-logging-*.R.
 
 test_that("Error messages are actionable and user-friendly", {
   # Test various error scenarios

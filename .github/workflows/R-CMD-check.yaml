@@ -47,6 +47,12 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API der rammer
+      # add-apt-repository ppa:xtradeb/apps. Se #436 (Canonical DDoS recovery).
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -85,6 +91,12 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
+
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API der rammer
+      # add-apt-repository ppa:xtradeb/apps. Se #436 (Canonical DDoS recovery).
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -127,6 +139,12 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
+
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API der rammer
+      # add-apt-repository ppa:xtradeb/apps. Se #436 (Canonical DDoS recovery).
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

@@ -406,21 +406,22 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
       # deres target-/centerlinje-værdier må IKKE divideres med 100.
       percentage_charts <- c("p", "pp")
 
-      # Only normalize if chart type uses percentages AND value > 1
+      # NOTE: Don't use return() inside safe_operation code blocks (#446)
+      # \u2014 return() exits the wrapper, not normalize_scale_for_bfh, og
+      # safe_operation falder gennem til fallback. Brug result-variable.
       if (chart_type %in% percentage_charts && value > 1) {
-        normalized <- value / 100
+        result <- value / 100
         log_debug(
           paste(
             "Normalized", param_name, "for", chart_type, "chart:",
-            value, "\u2192", normalized
+            value, "\u2192", result
           ),
           .context = "BFH_SERVICE"
         )
-        return(normalized)
       } else {
-        # No normalization needed
-        return(value)
+        result <- value
       }
+      result
     },
     fallback = value,
     error_type = "scale_normalization"

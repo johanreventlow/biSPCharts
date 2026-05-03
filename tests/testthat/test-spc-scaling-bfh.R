@@ -50,3 +50,20 @@ test_that("normalize_scale_for_bfh: PROPORTION_CHART_TYPES indeholder ikke 'u' e
     info = "up er ikke en proportion-chart"
   )
 })
+
+test_that("normalize_scale_for_bfh: regression #446 -- begge branches returnerer eksakt værdi", {
+  # Pinner result-variable-pattern (#446). Tidligere brugte koden return()
+  # inde i safe_operation, som var dokumenteret som forbudt mønster i samme
+  # fil. Hvis safe_operation skifter implementation og return() begynder at
+  # eksitere wrapperen, ville fallback-værdien (samme som value) maskere bug
+  # for normaliserings-branchen — derfor skal vi teste eksakt rundt om 1.0
+  # for både p og pp.
+  expect_identical(normalize_scale_for_bfh(50, "p", "target"), 0.5)
+  expect_identical(normalize_scale_for_bfh(50, "pp", "centerline"), 0.5)
+  expect_identical(normalize_scale_for_bfh(0.7, "p", "target"), 0.7)
+  expect_identical(normalize_scale_for_bfh(0.7, "pp", "centerline"), 0.7)
+  expect_identical(normalize_scale_for_bfh(1, "p", "target"), 1)
+  expect_identical(normalize_scale_for_bfh(100, "p", "target"), 1)
+  # Non-proportion typer bruger else-branchen — value pass-through skal være eksakt
+  expect_identical(normalize_scale_for_bfh(2.5, "i", "target"), 2.5)
+})

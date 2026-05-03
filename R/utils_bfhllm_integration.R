@@ -196,13 +196,30 @@ is_bfhllm_available <- function() {
     return(FALSE)
   }
 
-  available <- BFHllm::bfhllm_chat_available()
+  # H7 (#453): wrap probe i tryCatch så bad config / network-fejl ej
+  # propagerer op til kalder. Matcher graceful-degradation-kontrakt
+  # i CLAUDE.md §6 ("NULL + log warning ved fejl") og samme pattern
+  # som generate_bfhllm_suggestion() bruger til chat-kald.
+  available <- tryCatch(
+    BFHllm::bfhllm_chat_available(),
+    error = function(e) {
+      log_warn(
+        sprintf("BFHllm probe fejlede: %s", e$message),
+        .context = LOG_CONTEXTS$ai$gemini,
+        details = list(error_class = class(e)[1])
+      )
+      FALSE
+    }
+  )
 
-  if (!available) {
-    log_warn("BFHllm not available - check API key configuration", .context = "AI_SETUP")
+  if (!isTRUE(available)) {
+    log_warn(
+      "BFHllm not available - check API key configuration",
+      .context = "AI_SETUP"
+    )
   }
 
-  return(available)
+  return(isTRUE(available))
 }
 
 #' Create BFHllm Cache for Shiny Session

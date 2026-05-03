@@ -37,6 +37,21 @@ test_that("is_bfhllm_available returnerer TRUE naar BFHllm er konfigureret korre
   expect_true(result)
 })
 
+test_that("is_bfhllm_available returnerer FALSE + log_warn ved BFHllm-probe-error (#453)", {
+  # H7 (#453): hvis BFHllm::bfhllm_chat_available() kaster en fejl
+  # (bad config, network probe failure), skal kalderen få FALSE og en
+  # warn-besked uden at fejlen propagerer op.
+  mockery::stub(is_bfhllm_available, "requireNamespace", TRUE)
+  mockery::stub(
+    is_bfhllm_available,
+    "BFHllm::bfhllm_chat_available",
+    function() stop("network probe failed")
+  )
+
+  result <- is_bfhllm_available()
+  expect_false(result)
+})
+
 test_that("generate_bfhllm_suggestion eksisterer og har korrekt signatur", {
   # Verificer funktion eksisterer + har forventede parametre.
   # Graceful degradation ved unavailable BFHllm kræver Shiny-session context

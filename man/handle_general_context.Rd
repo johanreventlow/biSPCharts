@@ -43,7 +43,7 @@ Handles general data updates without specific context.
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (general context)
-\item \u2192 update_column_choices_unified()
+\item â update_column_choices_unified()
 }
 }
 \keyword{internal}

@@ -24,9 +24,9 @@ Handles data loading scenarios (file upload, new data).
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (load context)
-\item \u2192 auto_detection_started
-\item \u2192 auto_detection_completed
-\item \u2192 ui_sync_needed
+\item â auto_detection_started
+\item â auto_detection_completed
+\item â ui_sync_needed
 }
 }
 \keyword{internal}

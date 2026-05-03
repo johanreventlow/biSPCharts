@@ -25,8 +25,8 @@ Handles direct table cell editing.
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (table_edit context)
-\item \u2192 navigation_changed
-\item \u2192 visualization_update_needed
+\item â navigation_changed
+\item â visualization_update_needed
 }
 }
 \keyword{internal}

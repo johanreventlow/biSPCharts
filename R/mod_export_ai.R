@@ -96,9 +96,9 @@ register_ai_button_state <- function(session, input, output, app_state) {
 #'
 #' Sets up event listener for AI suggestion button click.
 #' Generates SPC plot, calls bfh_generate_analysis() via ExtendedTask
-#' (asynkront) for at undg\u00e5 at blokere andre Shiny-sessions p\u00e5 Connect.
+#' (asynkront) for at undgÃ¥ at blokere andre Shiny-sessions pÃ¥ Connect.
 #'
-#' Fallback til synkron eksekvering hvis ExtendedTask ikke er tilg\u00e6ngeligt
+#' Fallback til synkron eksekvering hvis ExtendedTask ikke er tilgÃ¦ngeligt
 #' (shiny < 1.8.0 eller promises mangler).
 #'
 #' @param session Shiny session object
@@ -275,9 +275,9 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
   }
 }
 
-#' H\u00e5ndter AI Suggestion Resultat (intern hj\u00e6lper)
+#' HÃ¥ndter AI Suggestion Resultat (intern hjÃ¦lper)
 #'
-#' Opdaterer UI baseret p\u00e5 AI-suggestion-resultatet.
+#' Opdaterer UI baseret pÃ¥ AI-suggestion-resultatet.
 #' Adskilt fra handler for testbarhed og genbrug (async + sync sti).
 #'
 #' @param suggestion Character string med suggestion, eller NULL ved fejl

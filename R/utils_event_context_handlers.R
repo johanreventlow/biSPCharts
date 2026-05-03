@@ -10,7 +10,7 @@
 #' handler function.
 #'
 #' **Benefits**:
-#' - Reduced cyclomatic complexity (12 \u2192 ~3 per function)
+#' - Reduced cyclomatic complexity (12 â ~3 per function)
 #' - Easier to add new context types (just add handler)
 #' - Better testability (test each handler independently)
 #' - Self-documenting code (function names describe behavior)
@@ -167,9 +167,9 @@ resolve_column_update_reason <- function(context) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (load context)
-#' 2. \u2192 auto_detection_started
-#' 3. \u2192 auto_detection_completed
-#' 4. \u2192 ui_sync_needed
+#' 2. â auto_detection_started
+#' 3. â auto_detection_completed
+#' 4. â ui_sync_needed
 #'
 #' @keywords internal
 handle_load_context <- function(app_state, emit) {
@@ -203,8 +203,8 @@ handle_load_context <- function(app_state, emit) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (table_edit context)
-#' 2. \u2192 navigation_changed
-#' 3. \u2192 visualization_update_needed
+#' 2. â navigation_changed
+#' 3. â visualization_update_needed
 #'
 #' @keywords internal
 handle_table_edit_context <- function(app_state, emit) {
@@ -239,9 +239,9 @@ handle_table_edit_context <- function(app_state, emit) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (data_change context)
-#' 2. \u2192 update_column_choices_unified()
-#' 3. \u2192 navigation_changed
-#' 4. \u2192 visualization_update_needed
+#' 2. â update_column_choices_unified()
+#' 3. â navigation_changed
+#' 4. â visualization_update_needed
 #'
 #' @keywords internal
 handle_data_change_context <- function(app_state, emit, input, output, session, ui_service, context) {
@@ -292,7 +292,7 @@ handle_data_change_context <- function(app_state, emit, input, output, session, 
 #'
 #' **Event Chain**:
 #' 1. data_updated (general context)
-#' 2. \u2192 update_column_choices_unified()
+#' 2. â update_column_choices_unified()
 #'
 #' @keywords internal
 handle_general_context <- function(app_state, emit, input, output, session, ui_service, context) {
@@ -333,16 +333,16 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
 #'
 #' @details
 #' **Behavior**:
-#' - Updates column choices (selectize dropdowns) baseret p\u00e5 gendannet data
+#' - Updates column choices (selectize dropdowns) baseret pÃ¥ gendannet data
 #' - Triggerer navigation_changed (navigation + plot refresh)
 #' - Triggerer visualization_update_needed (SPC chart rendering)
-#' - **G\u00f8r IKKE** auto-detection (vi har allerede saved mappings)
+#' - **GÃ¸r IKKE** auto-detection (vi har allerede saved mappings)
 #'
 #' **Event Chain**:
 #' 1. data_updated (session_restore context)
-#' 2. \u2192 update_column_choices_unified() (populerer choices)
-#' 3. \u2192 navigation_changed
-#' 4. \u2192 visualization_update_needed
+#' 2. â update_column_choices_unified() (populerer choices)
+#' 3. â navigation_changed
+#' 4. â visualization_update_needed
 #'
 #' @keywords internal
 handle_session_restore_context <- function(app_state, emit, input, output, session, ui_service) {
@@ -394,11 +394,11 @@ handle_session_restore_context <- function(app_state, emit, input, output, sessi
 #' handler function, reducing cyclomatic complexity from ~12 to ~3.
 #'
 #' **Handler Mapping**:
-#' - `load` \u2192 `handle_load_context()`
-#' - `table_edit` \u2192 `handle_table_edit_context()`
-#' - `session_restore` \u2192 `handle_session_restore_context()`
-#' - `data_change` \u2192 `handle_data_change_context()`
-#' - `general` \u2192 `handle_general_context()`
+#' - `load` â `handle_load_context()`
+#' - `table_edit` â `handle_table_edit_context()`
+#' - `session_restore` â `handle_session_restore_context()`
+#' - `data_change` â `handle_data_change_context()`
+#' - `general` â `handle_general_context()`
 #'
 #' ## Cyclomatic Complexity Reduction
 #'

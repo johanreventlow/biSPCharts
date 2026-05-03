@@ -40,11 +40,11 @@ handler function, reducing cyclomatic complexity from ~12 to ~3.
 
 \strong{Handler Mapping}:
 \itemize{
-\item \code{load} \u2192 \code{handle_load_context()}
-\item \code{table_edit} \u2192 \code{handle_table_edit_context()}
-\item \code{session_restore} \u2192 \code{handle_session_restore_context()}
-\item \code{data_change} \u2192 \code{handle_data_change_context()}
-\item \code{general} \u2192 \code{handle_general_context()}
+\item \code{load} â \code{handle_load_context()}
+\item \code{table_edit} â \code{handle_table_edit_context()}
+\item \code{session_restore} â \code{handle_session_restore_context()}
+\item \code{data_change} â \code{handle_data_change_context()}
+\item \code{general} â \code{handle_general_context()}
 }
 }
 

@@ -252,7 +252,7 @@ read_spc_cache <- function(cache_key, app_state) {
       }
       result <- get_cached_spc_result(cache_key, qic_cache)
       if (!is.null(result)) {
-        log_info(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+        log_debug(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
       } else {
         log_debug(paste("Cache miss:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
       }

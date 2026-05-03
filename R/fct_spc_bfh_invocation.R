@@ -114,8 +114,8 @@ call_bfh_chart <- function(bfh_params) {
 
       elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
-      # 5. Log success with timing
-      log_info(
+      # 5. Log success with timing — DEBUG fordi det fyrer per render (#454)
+      log_debug(
         paste("BFHchart bfh_qic() call:", round(elapsed, 3), "seconds"),
         .context = "BFH_SERVICE"
       )

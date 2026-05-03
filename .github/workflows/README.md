@@ -8,7 +8,7 @@ biSPCharts bruger fire lags CI/CD gates.
 |----------|---------|--------------|--------|
 | `R-CMD-check` (smoke) | Alle pushes/PRs | Ja (errors) | Hurtig strukturcheck — ingen tests, kun ERRORs blokerer |
 | `R-CMD-check` (gate) | PRs→master + tags | Ja (warnings) | Fuld check med tests; WARNINGs blokerer |
-| `R-CMD-check` (release-gate) | PRs→master + tags | Ja | Tarball-build + `--as-cran` + artifact-audit |
+| `R-CMD-check` (release-gate) | Push til master + tags + dispatch | Nej for PRs | Tarball-build + `--as-cran` + artifact-audit efter merge/release |
 | `testthat` | PRs/push til master+develop | Ja | Fuld testthat-suite med `stop_on_failure = TRUE` |
 | `skip-inventory` | PRs mod master+develop | Nej (kun TODO-stigning) | Tæller skip()-kategorier; fejler ved uberettiget TODO-stigning |
 | `shinytest2` | Nightly 02:00 UTC + on-demand | Nej | Visuel regression (miljøfølsom, opt-in) |
@@ -19,8 +19,10 @@ biSPCharts bruger fire lags CI/CD gates.
 
 ## Gate-aktivering: afhængigheder
 
-`R-CMD-check-gate` og `release-gate` bruger `error-on: '"warning"'`. Disse
-kræver at følgende specs er landet før merge til master:
+`R-CMD-check-gate` bruger `error-on: '"warning"'` på PRs til master.
+`release-gate` kører ikke længere som almindelig PR-gate; den kører efter
+merge til master, på tags og manuelt via `workflow_dispatch`. Disse gates
+kræver at følgende specs er landet før release:
 
 - `fix-dependency-namespace-guards`
 - `cleanup-package-artifacts`

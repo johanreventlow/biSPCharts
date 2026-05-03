@@ -4,7 +4,7 @@
 # Job hierarchy:
 #   R-CMD-check    — hurtig smoke check på alle branches (--no-tests, error-on error)
 #   R-CMD-check-gate — fuld check med tests + warning-gate (kun PRs→master + tags)
-#   release-gate   — tarball build + --as-cran check + artifact audit (kun PRs→master + tags)
+#   release-gate   — tarball build + --as-cran check + artifact audit (master-push, tags, manual)
 name: R-CMD-check
 
 on:
@@ -32,6 +32,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
       CI_SKIP_SHINYTEST2: "true"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
@@ -78,6 +79,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
       CI_SKIP_SHINYTEST2: "true"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
@@ -118,12 +120,14 @@ jobs:
     runs-on: ubuntu-latest
     name: release-gate (tarball + as-cran)
     if: >
-      (github.event_name == 'pull_request' && github.base_ref == 'master') ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
 
     env:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
       CI_SKIP_SHINYTEST2: "true"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""

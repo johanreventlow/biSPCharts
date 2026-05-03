@@ -2,6 +2,16 @@
 
 ## Bug fixes
 
+* **Klinisk kritisk:** `resolve_analysis_centerline()` brugte tidligere
+  `bfh_qic_result$summary$centerlinje` (afrundet til 4 decimaler af BFHcharts
+  som rapporteringsformat) som primær kilde til mål-vurdering og analyse-
+  metadata, og faldt kun tilbage til `qic_data$cl` (rå qicharts2-værdi)
+  hvis summary manglede. På boundary cases gav afrundingen forkert
+  fortolkning af om processen opfylder mål. Inverteret prioritet:
+  `qic_data$cl` (rå) bruges nu primært, summary kun som fallback. Returnerer
+  også sidste række (ikke første) for tidsserier med varierende centerlinje.
+  (`R/utils_export_analysis_metadata.R`, #470)
+
 * **Klinisk kritisk:** `runs_signal` viste tidligere TRUE på crossing-only
   data fordi qicharts2's `runs.signal`-kolonne er kombineret Anhøj-signal
   (sat ved enten runs- ELLER crossings-violation). biSPCharts mappede den

@@ -56,7 +56,7 @@ test_that("build_export_analysis_metadata formats percent centerline and directi
   expect_equal(metadata$target_direction, "> 80%")
 })
 
-test_that("build_export_analysis_metadata falls back to qic_data centerline and empty target context", {
+test_that("build_export_analysis_metadata uses qic_data centerline when summary missing", {
   metadata <- build_export_analysis_metadata(
     bfh_qic_result = make_mock_bfh_qic_result(centerline = 7, include_summary = FALSE),
     department = "Akut"
@@ -67,4 +67,29 @@ test_that("build_export_analysis_metadata falls back to qic_data centerline and 
   expect_equal(metadata$target_direction, "")
   expect_equal(metadata$department, "Akut")
   expect_null(metadata$target)
+})
+
+test_that("resolve_analysis_centerline prefers raw qic_data over rounded summary (#470)", {
+  # Regression: BFHcharts $summary er afrundet til 4 decimaler (publicerings-
+  # format). Brug rå qic_data$cl som beregningskilde — undgå at afrunding
+  # forplanter sig til mål-vurdering og analyse-metadata.
+  bfh_qic_result <- list(
+    config = list(y_axis_unit = "percent"),
+    summary = data.frame(centerlinje = 0.9000),
+    qic_data = data.frame(cl = rep(0.90054321, 3))
+  )
+
+  centerline <- resolve_analysis_centerline(bfh_qic_result)
+  expect_equal(centerline, 0.90054321)
+  expect_false(identical(centerline, 0.9000))
+})
+
+test_that("resolve_analysis_centerline returns last row for time series with varying cl", {
+  # qic_data$cl kan variere over tid (fx ved frozen baseline). Brug sidste
+  # række (samme konvention som summary), ikke første.
+  bfh_qic_result <- list(
+    qic_data = data.frame(cl = c(10, 12, 15))
+  )
+
+  expect_equal(resolve_analysis_centerline(bfh_qic_result), 15)
 })

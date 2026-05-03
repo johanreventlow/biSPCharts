@@ -23,16 +23,19 @@ resolve_analysis_centerline <- function(bfh_qic_result) {
     return(NULL)
   }
 
+  # Brug rå qic_data$cl primært (qicharts2 beregningskilde, fuld præcision).
+  # BFHcharts $summary er rapporteringsformat (afrundet til 4 decimaler) og
+  # må ikke bruges til mål-vurdering — se #470.
+  qic_data <- bfh_qic_result$qic_data
+  if (!is.null(qic_data) && "cl" %in% names(qic_data) && nrow(qic_data) > 0) {
+    return(qic_data$cl[nrow(qic_data)])
+  }
+
   summary_data <- bfh_qic_result$summary
   if (!is.null(summary_data) &&
     "centerlinje" %in% names(summary_data) &&
     nrow(summary_data) > 0) {
     return(summary_data$centerlinje[nrow(summary_data)])
-  }
-
-  qic_data <- bfh_qic_result$qic_data
-  if (!is.null(qic_data) && "cl" %in% names(qic_data) && nrow(qic_data) > 0) {
-    return(qic_data$cl[1])
   }
 
   NULL

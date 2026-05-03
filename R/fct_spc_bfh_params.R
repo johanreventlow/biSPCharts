@@ -159,9 +159,11 @@ map_to_bfh_params <- function(
         .context = "BFH_SERVICE"
       )
 
-      # 1b. CRITICAL FIX: BFHcharts rejects Danish characters (aeoeaa) in column names
-      # Temporarily sanitize column names to ASCII-safe versions
-      # Strategy: Create mapping of original -> sanitized names, rename data, use sanitized in params
+      # 1b. WORKAROUND (M8 #462): BFHcharts rejects Danish characters (æøå)
+      # i column names — biSPCharts ASCII-translit'er navnene før kald +
+      # rev-mapper output for at bevare brugerens originale navne i UI.
+      # FOLLOW-UP: åbn issue i BFHcharts for native Danish-character-support
+      # i column-name-validator, og fjern denne workaround når levereret.
       # sanitized_col_names beregnet foer safe_operation (kollisionscheck) -- genbrug her.
 
       # Create column name mapping (original -> sanitized)

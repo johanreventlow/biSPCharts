@@ -54,7 +54,7 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          dpi = 96, plot_margin = NULL,
                          ylab = NULL, xlab = NULL,
                          subtitle = NULL, caption = NULL,
-                         return.data = FALSE,
+                         return.data = FALSE, print.summary = FALSE,
                          language = "da") {
   # Minimal struktur matchende real bfh_qic_result
   list(
@@ -76,13 +76,19 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
 if (requireNamespace("BFHcharts", quietly = TRUE)) {
   real_bfh_qic_args <- names(formals(BFHcharts::bfh_qic))
   mock_bfh_qic_formals <- formals(mock_bfh_qic)
-  real_has_language <- "language" %in% real_bfh_qic_args
-  mock_has_language <- "language" %in% names(mock_bfh_qic_formals)
-  if (!real_has_language && mock_has_language) {
-    mock_bfh_qic_formals$language <- NULL
-    formals(mock_bfh_qic) <- mock_bfh_qic_formals
+
+  # Adapter for forskelle mellem BFHcharts-versioner. Mock skal matche
+  # installeret real-version, ikke en specifik version, saa testene
+  # passer baade pre- og post-bump (jf. cross-repo bump-protokol).
+  for (arg_name in c("language", "print.summary")) {
+    real_has <- arg_name %in% real_bfh_qic_args
+    mock_has <- arg_name %in% names(mock_bfh_qic_formals)
+    if (!real_has && mock_has) {
+      mock_bfh_qic_formals[[arg_name]] <- NULL
+      formals(mock_bfh_qic) <- mock_bfh_qic_formals
+    }
   }
-  rm(real_bfh_qic_args, mock_bfh_qic_formals, real_has_language, mock_has_language)
+  rm(real_bfh_qic_args, mock_bfh_qic_formals)
 }
 
 # ------------------------------------------------------------------------------

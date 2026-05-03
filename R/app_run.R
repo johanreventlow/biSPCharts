@@ -27,8 +27,8 @@ configure_logging_from_yaml <- function(log_level = NULL) {
     }
   }
 
-  # Get current environment config
-  current_config <- Sys.getenv("GOLEM_CONFIG_ACTIVE", "default")
+  # Get current environment config (#458: typed via safe_getenv)
+  current_config <- safe_getenv("GOLEM_CONFIG_ACTIVE", "default", "character")
 
   # Read logging level from YAML
   tryCatch(
@@ -54,7 +54,7 @@ configure_logging_from_yaml <- function(log_level = NULL) {
   # Fallback to environment-based defaults
   default_level <- if (current_config %in% c("development", "testing")) "DEBUG" else "WARN"
 
-  if (Sys.getenv("SPC_LOG_LEVEL", "") == "") {
+  if (safe_getenv("SPC_LOG_LEVEL", "", "character") == "") {
     Sys.setenv(SPC_LOG_LEVEL = default_level)
     message(sprintf(
       "[LOG_CONFIG] Fallback log level '%s' for config '%s'",
@@ -74,7 +74,7 @@ configure_logging_from_yaml <- function(log_level = NULL) {
 configure_app_environment <- function(enable_test_mode = NULL, golem_options = list()) {
   # Auto-detect test mode if not specified
   if (is.null(enable_test_mode)) {
-    current_config <- Sys.getenv("GOLEM_CONFIG_ACTIVE", "production")
+    current_config <- safe_getenv("GOLEM_CONFIG_ACTIVE", "production", "character")
     enable_test_mode <- interactive() || current_config == "development"
   }
 

@@ -31,7 +31,7 @@ LAZY_LOADING_CONFIG <- list(
       file = "R/utils_advanced_debug.R",
       condition = function() {
         config_result <- tryCatch(get_golem_config("debug_mode_enabled"), error = function(e) FALSE)
-        env_result <- Sys.getenv("SPC_DEBUG_MODE", "FALSE") == "TRUE"
+        env_result <- isTRUE(safe_getenv("SPC_DEBUG_MODE", FALSE, "logical"))
         return(isTRUE(config_result) || isTRUE(env_result))
       },
       loaded = FALSE

@@ -25,8 +25,8 @@ resolve_analysis_centerline <- function(bfh_qic_result) {
 
   # #470: Brug qic_data$cl (raa qicharts2-vaerdi) primaert for at undgaa
   # afrundings-tab i BFHcharts' summary-lag der ellers kan flippe
-  # malfortolkning ved boundary-cases. Eksempel: rå cl=0.9005,
-  # target>=0.9003 → maal opfyldt; men summary-centerlinje 0.9000 vil
+  # malfortolkning ved boundary-cases. Eksempel: raa cl=0.9005,
+  # target>=0.9003 -> maal opfyldt; men summary-centerlinje 0.9000 vil
   # forkert give "ikke opfyldt".
   #
   # Sidste raekke matcher eksisterende semantik (sidste fase ved freeze/part).
@@ -61,18 +61,18 @@ compute_at_target <- function(centerline, target_value, target_text = NULL) {
   tolerance <- max(abs(target_value) * 0.05, 0.01)
   close_enough <- abs(centerline - target_value) <= tolerance
 
-  if (grepl("^\\s*(>|>=|≥|↑)", target_label)) {
+  if (grepl("^\\s*(>|>=|\u2265|\u2191)", target_label)) {
     return(close_enough || centerline >= target_value)
   }
 
-  if (grepl("^\\s*(<|<=|≤|↓)", target_label)) {
+  if (grepl("^\\s*(<|<=|\u2264|\u2193)", target_label)) {
     return(close_enough || centerline <= target_value)
   }
 
   close_enough
 }
 
-# Beregn is_stable fra Anhøj-rules på bfh_qic_result.
+# Beregn is_stable fra Anhoej-rules paa bfh_qic_result.
 # Stabil = ingen runs-violation OG ingen crossings-violation.
 resolve_is_stable <- function(bfh_qic_result) {
   if (is.null(bfh_qic_result)) {
@@ -87,45 +87,45 @@ resolve_is_stable <- function(bfh_qic_result) {
   !runs_detected && !crossings_detected
 }
 
-# Generer handlingsforslag-tekst baseret pa stabilitet og maal.
+# Generer handlingsforslag-tekst baseret paa stabilitet og maal.
 # Replikerer BFHcharts' fallback_action_text()-logik (6 faste cases).
 # Bruges til at holde handlingsforslaget ude af LLM-prompten saa LLM
 # ikke gentager dansk fast-tekst i sin generering.
 build_action_text <- function(is_stable, has_target, at_target) {
   if (is_stable && has_target && at_target) {
     paste0(
-      "Fortsæt den nuværende praksis og overvåg processen ",
-      "løbende for at fastholde det gode niveau."
+      "Forts\u00e6t den nuv\u00e6rende praksis og overv\u00e5g processen ",
+      "l\u00f8bende for at fastholde det gode niveau."
     )
   } else if (is_stable && has_target && !at_target) {
     paste0(
-      "Processen er stabil men når ikke målet. Forbedring ",
-      "kræver en bevidst ændring af processen – den ",
-      "nuværende praksis vil levere samme resultat."
+      "Processen er stabil men n\u00e5r ikke m\u00e5let. Forbedring ",
+      "kr\u00e6ver en bevidst \u00e6ndring af processen \u2013 den ",
+      "nuv\u00e6rende praksis vil levere samme resultat."
     )
   } else if (is_stable && !has_target) {
     paste0(
-      "Overvej at fastsætte et mål for indikatoren for at ",
+      "Overvej at fasts\u00e6tte et m\u00e5l for indikatoren for at ",
       "kunne vurdere om det aktuelle niveau er tilfredsstillende og om ",
       "der er behov for forbedring."
     )
   } else if (!is_stable && has_target && at_target) {
     paste0(
-      "Selvom målet aktuelt er opfyldt, er processen ustabil. ",
-      "Identificér og adressér årsagerne til variationen ",
+      "Selvom m\u00e5let aktuelt er opfyldt, er processen ustabil. ",
+      "Identific\u00e9r og adress\u00e9r \u00e5rsagerne til variationen ",
       "for at sikre at niveauet kan fastholdes."
     )
   } else if (!is_stable && has_target && !at_target) {
     paste0(
-      "Prioritér at identificere og fjerne de særlige ",
-      "årsager til variationen før yderligere ",
-      "forbedringstiltag iværksættes."
+      "Priorit\u00e9r at identificere og fjerne de s\u00e6rlige ",
+      "\u00e5rsager til variationen f\u00f8r yderligere ",
+      "forbedringstiltag iv\u00e6rks\u00e6ttes."
     )
   } else {
     paste0(
-      "Identificér og undersøg årsagerne til den ",
-      "usædvanlige variation. Når processen er bragt under ",
-      "kontrol, kan der fastsættes et realistisk mål."
+      "Identific\u00e9r og unders\u00f8g \u00e5rsagerne til den ",
+      "us\u00e6dvanlige variation. N\u00e5r processen er bragt under ",
+      "kontrol, kan der fasts\u00e6ttes et realistisk m\u00e5l."
     )
   }
 }

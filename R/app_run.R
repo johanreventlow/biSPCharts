@@ -122,20 +122,20 @@ configure_app_environment <- function(enable_test_mode = NULL, golem_options = l
 
 #' Validate boot-time configuration (#459)
 #'
-#' Køres tidligt i `run_app()` for at fail-fast på korrupt YAML, range-
+#' Koeres tidligt i `run_app()` for at fail-fast paa korrupt YAML, range-
 #' overskridelser i timing-konstanter eller manglende env-vars. Returnerer
 #' invisible TRUE hvis OK; signalerer typed `bisp_config_error` hvis ej.
 #'
 #' Tjekker:
-#' - GOLEM_CONFIG_ACTIVE er sat til en kendt værdi (default/development/
+#' - GOLEM_CONFIG_ACTIVE er sat til en kendt vaerdi (default/development/
 #'   production/testing)
 #' - DEBOUNCE_DELAYS, OPERATION_TIMEOUTS og UPLOAD_LIMITS indeholder
 #'   positive numerics inden for rimelige max-bounds (forhindrer fx
 #'   timeout = -1 eller upload-limit = TBs)
 #' - get_golem_config(...) kan kaldes uden at fejle (YAML kan parses)
 #'
-#' Returnerer struktureret kondition (klasse `bisp_config_error`) på
-#' fejl så caller kan håndtere det forskelligt fra runtime-errors.
+#' Returnerer struktureret kondition (klasse `bisp_config_error`) paa
+#' fejl saa caller kan haandtere det forskelligt fra runtime-errors.
 #'
 #' @return invisible(TRUE) ved success; signalerer ellers.
 #' @keywords internal
@@ -159,7 +159,7 @@ validate_configuration <- function() {
       if (!is.numeric(val) || length(val) != 1L || is.na(val) ||
         val < min_val || val > max_val) {
         errors <<- c(errors, sprintf(
-          "%s$%s = %s (skal være numerisk mellem %s og %s)",
+          "%s$%s = %s (skal v\u00e6re numerisk mellem %s og %s)",
           list_name, key, format(val), format(min_val), format(max_val)
         ))
       }
@@ -173,14 +173,14 @@ validate_configuration <- function() {
   }
   # NB: UPLOAD_LIMITS er ikke uniform type-gruppe (max_file_size_mb,
   # max_line_count, warning_row_count, max_xlsx_uncompressed_mb har
-  # vidt forskellige skalaer). Range-check skal være pr-felt — ikke
+  # vidt forskellige skalaer). Range-check skal vaere pr-felt -- ikke
   # gjort her endnu, ville give falske positiver. Issue #459 follow-up.
 
   # 3. YAML-parsing
   yaml_ok <- tryCatch(
     {
       if (exists("get_golem_config", mode = "function")) {
-        # Test at default-config kan læses
+        # Test at default-config kan laeses
         get_golem_config("logging")
         TRUE
       } else {
@@ -332,9 +332,9 @@ run_app <- function(port = NULL,
   # Configure logging level using YAML as single source of truth (AFTER env config)
   configure_logging_from_yaml(log_level)
 
-  # Boot-time config-validation (#459) — fail-fast på korrupt YAML eller
-  # range-overskridelser i timing-konstanter, så app ikke starter op med
-  # silent broken config der først manifesterer sig under load.
+  # Boot-time config-validation (#459) -- fail-fast paa korrupt YAML eller
+  # range-overskridelser i timing-konstanter, saa app ikke starter op med
+  # silent broken config der foerst manifesterer sig under load.
   validate_configuration()
 
   # Merge passed options directly (no feature flags needed - pure BFHcharts)

@@ -7,135 +7,148 @@
 # - Diagnostisk logging
 
 call_bfh_chart <- function(bfh_params) {
-  safe_operation(
-    operation_name = "BFHchart API call",
-    code = {
-      # 1. Validate params structure
-      if (is.null(bfh_params) || !is.list(bfh_params)) {
-        stop("bfh_params must be a non-null list")
-      }
+  # H5 (#451): Pre-condition validation kaster typed spc_render_error
+  # direkte. Tidligere brugte safe_operation + base stop() — fejlene
+  # blev fanget af wrapperen, returneret som NULL og rebrandet til
+  # generisk "BFHcharts rendering failed" i execute_bfh_request, hvilket
+  # tabte diagnostisk kontekst (manglende keys, parameter-struktur).
+  if (is.null(bfh_params) || !is.list(bfh_params)) {
+    spc_abort(
+      "bfh_params must be a non-null list",
+      class = "spc_render_error"
+    )
+  }
 
-      required_keys <- c("data", "x", "y", "chart_type")
-      missing_keys <- setdiff(required_keys, names(bfh_params))
-      if (length(missing_keys) > 0) {
-        stop(paste(
-          "Missing required parameters:",
-          paste(missing_keys, collapse = ", ")
-        ))
-      }
+  required_keys <- c("data", "x", "y", "chart_type")
+  missing_keys <- setdiff(required_keys, names(bfh_params))
+  if (length(missing_keys) > 0) {
+    spc_abort(
+      paste("Missing required parameters:", paste(missing_keys, collapse = ", ")),
+      class = "spc_render_error",
+      details = list(missing_keys = missing_keys)
+    )
+  }
 
-      # 2. Log invocation
-      log_debug(
-        paste(
-          "Calling BFHcharts::bfh_qic with",
-          nrow(bfh_params$data), "rows"
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # 3. Measure execution time
-      start_time <- Sys.time()
-
-      # 3b. CONSERVATIVE APPROACH: Only send core params
-      # BFHcharts accepterer kun et subset af parametre.
-      # plot_context sendes IKKE — BFHcharts bruger kun dimensioner i inches.
-      fields_to_keep <- c("data", "x", "y", "n", "chart_type", "freeze", "part", "multiply", "target_value", "target_text", "cl", "notes", "y_axis_unit", "width", "height", "units", "base_size", "chart_title")
-      bfh_params_clean <- bfh_params[names(bfh_params) %in% fields_to_keep]
-
-      removed_fields <- setdiff(names(bfh_params), fields_to_keep)
-      log_debug(
-        paste(
-          "Conservative param filtering - removed:",
-          paste(removed_fields, collapse = ", ")
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # Log target_value if present
-      if ("target_value" %in% names(bfh_params_clean)) {
-        log_debug(
-          paste(
-            "Target parameter included: target_value =", bfh_params_clean$target_value
-          ),
-          .context = "BFH_SERVICE"
-        )
-      }
-
-      # Log cl (centerline) if present
-      if ("cl" %in% names(bfh_params_clean)) {
-        log_debug(
-          paste(
-            "Centerline parameter included: cl =", bfh_params_clean$cl
-          ),
-          .context = "BFH_SERVICE"
-        )
-      }
-
-      # Log y_axis_unit if present
-      if ("y_axis_unit" %in% names(bfh_params_clean)) {
-        log_debug(
-          paste(
-            "Y-axis unit parameter included: y_axis_unit =", bfh_params_clean$y_axis_unit
-          ),
-          .context = "BFH_SERVICE"
-        )
-      }
-
-      # Log notes parameter presence
-      log_debug(
-        paste(
-          "[NOTES_TRACE] Is 'notes' param passed to BFHcharts?:",
-          "notes" %in% names(bfh_params_clean),
-          "| Notes count:", if ("notes" %in% names(bfh_params_clean)) length(bfh_params_clean$notes) else 0
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # 3c. DEBUG: Log data types being sent to BFHcharts
-      if (!is.null(bfh_params_clean$data)) {
-        x_col_name <- as.character(bfh_params_clean$x)
-        y_col_name <- as.character(bfh_params_clean$y)
-        n_col_name <- if (!is.null(bfh_params_clean$n)) as.character(bfh_params_clean$n) else NULL
-
-        log_debug(
-          paste(
-            "BFHcharts data types:",
-            "x(", x_col_name, ")=", class(bfh_params_clean$data[[x_col_name]])[1],
-            ", y(", y_col_name, ")=", class(bfh_params_clean$data[[y_col_name]])[1],
-            if (!is.null(n_col_name)) paste0(", n(", n_col_name, ")=", class(bfh_params_clean$data[[n_col_name]])[1]) else ""
-          ),
-          .context = "BFH_SERVICE"
-        )
-      }
-
-      # 4. Call BFHchart (use bfh_qic high-level API)
-      # Returns bfh_qic_result S3 object with plot, qic_data, summary, config
-      result <- do.call(BFHcharts::bfh_qic, bfh_params_clean)
-
-      elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
-
-      # 5. Log success with timing — DEBUG fordi det fyrer per render (#454)
-      log_debug(
-        paste("BFHchart bfh_qic() call:", round(elapsed, 3), "seconds"),
-        .context = "BFH_SERVICE"
-      )
-      log_debug(
-        paste(
-          "[DEBUG] bfh_qic result - class:",
-          paste(class(result), collapse = ", "),
-          "| names:", paste(names(result), collapse = ", "),
-          "| is_bfh_qic_result:", BFHcharts::is_bfh_qic_result(result)
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # NOTE: Don't use return() inside safe_operation code blocks!
-      result
-    },
-    fallback = NULL,
-    show_user = TRUE,
-    error_type = "bfh_api_call"
+  # 2. Log invocation
+  log_debug(
+    paste(
+      "Calling BFHcharts::bfh_qic with",
+      nrow(bfh_params$data), "rows"
+    ),
+    .context = "BFH_SERVICE"
   )
+
+  # 3. Measure execution time
+  start_time <- Sys.time()
+
+  # 3b. CONSERVATIVE APPROACH: Only send core params
+  # BFHcharts accepterer kun et subset af parametre.
+  # plot_context sendes IKKE — BFHcharts bruger kun dimensioner i inches.
+  fields_to_keep <- c(
+    "data", "x", "y", "n", "chart_type", "freeze", "part",
+    "multiply", "target_value", "target_text", "cl", "notes",
+    "y_axis_unit", "width", "height", "units", "base_size", "chart_title"
+  )
+  bfh_params_clean <- bfh_params[names(bfh_params) %in% fields_to_keep]
+
+  removed_fields <- setdiff(names(bfh_params), fields_to_keep)
+  log_debug(
+    paste(
+      "Conservative param filtering - removed:",
+      paste(removed_fields, collapse = ", ")
+    ),
+    .context = "BFH_SERVICE"
+  )
+
+  if ("target_value" %in% names(bfh_params_clean)) {
+    log_debug(
+      paste("Target parameter included: target_value =", bfh_params_clean$target_value),
+      .context = "BFH_SERVICE"
+    )
+  }
+  if ("cl" %in% names(bfh_params_clean)) {
+    log_debug(
+      paste("Centerline parameter included: cl =", bfh_params_clean$cl),
+      .context = "BFH_SERVICE"
+    )
+  }
+  if ("y_axis_unit" %in% names(bfh_params_clean)) {
+    log_debug(
+      paste("Y-axis unit parameter included: y_axis_unit =", bfh_params_clean$y_axis_unit),
+      .context = "BFH_SERVICE"
+    )
+  }
+  log_debug(
+    paste(
+      "[NOTES_TRACE] Is 'notes' param passed to BFHcharts?:",
+      "notes" %in% names(bfh_params_clean),
+      "| Notes count:",
+      if ("notes" %in% names(bfh_params_clean)) length(bfh_params_clean$notes) else 0
+    ),
+    .context = "BFH_SERVICE"
+  )
+
+  if (!is.null(bfh_params_clean$data)) {
+    x_col_name <- as.character(bfh_params_clean$x)
+    y_col_name <- as.character(bfh_params_clean$y)
+    n_col_name <- if (!is.null(bfh_params_clean$n)) as.character(bfh_params_clean$n) else NULL
+
+    log_debug(
+      paste(
+        "BFHcharts data types:",
+        "x(", x_col_name, ")=", class(bfh_params_clean$data[[x_col_name]])[1],
+        ", y(", y_col_name, ")=", class(bfh_params_clean$data[[y_col_name]])[1],
+        if (!is.null(n_col_name)) paste0(", n(", n_col_name, ")=", class(bfh_params_clean$data[[n_col_name]])[1]) else ""
+      ),
+      .context = "BFH_SERVICE"
+    )
+  }
+
+  # 4. Call BFHchart (bfh_qic high-level API). H5 (#451): wrap i tryCatch
+  # der lader spc_errors propagere uændret og konverterer alt andet til
+  # spc_render_error med original besked bevaret. Tidligere safe_operation
+  # rebrandede alle BFHcharts-fejl til generisk "BFHcharts rendering failed".
+  result <- tryCatch(
+    do.call(BFHcharts::bfh_qic, bfh_params_clean),
+    spc_error = function(e) rlang::cnd_signal(e),
+    error = function(e) {
+      log_error(
+        paste("BFHcharts::bfh_qic fejlede:", e$message),
+        .context = "BFH_SERVICE",
+        details = list(
+          error_class = class(e)[1],
+          chart_type = bfh_params_clean$chart_type
+        )
+      )
+      spc_abort(
+        paste("BFHcharts rendering fejlede:", e$message),
+        class = "spc_render_error",
+        details = list(
+          original_class = class(e)[1],
+          chart_type = bfh_params_clean$chart_type
+        )
+      )
+    }
+  )
+
+  elapsed <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
+
+  # 5. Log success with timing — DEBUG fordi det fyrer per render (#454)
+  log_debug(
+    paste("BFHchart bfh_qic() call:", round(elapsed, 3), "seconds"),
+    .context = "BFH_SERVICE"
+  )
+  log_debug(
+    paste(
+      "[DEBUG] bfh_qic result - class:",
+      paste(class(result), collapse = ", "),
+      "| names:", paste(names(result), collapse = ", "),
+      "| is_bfh_qic_result:", BFHcharts::is_bfh_qic_result(result)
+    ),
+    .context = "BFH_SERVICE"
+  )
+
+  result
 }
 
 
@@ -208,34 +221,9 @@ call_bfh_chart <- function(bfh_params) {
 #' \code{\link{call_bfh_chart}} for BFHchart invocation
 #' @keywords internal
 
-#' @noRd
-validate_chart_type_bfh <- function(chart_type) {
-  safe_operation(
-    operation_name = "Chart type validation",
-    code = {
-      # Supported chart types (fra config_chart_types.R)
-      supported_types <- SUPPORTED_CHART_TYPES_BFH
-
-      # Normalize to lowercase
-      chart_type <- tolower(trimws(chart_type))
-
-      # Validate
-      if (!chart_type %in% supported_types) {
-        stop(paste0(
-          "Invalid chart_type: '", chart_type, "'. ",
-          "Must be one of: ", paste(supported_types, collapse = ", ")
-        ))
-      }
-
-      log_debug(paste("Chart type validated:", chart_type), .context = "BFH_SERVICE")
-
-      # NOTE: Don't use return() inside safe_operation code blocks!
-      chart_type
-    },
-    fallback = NULL,
-    error_type = "chart_type_validation"
-  )
-}
+# NB: validate_chart_type_bfh fjernet 2026-05-03 (#451). Var dead code
+# uden callere i R/; faktisk chart-type-validering sker i
+# validate_spc_request() (R/fct_spc_validate.R) tidligere i pipelinen.
 
 
 #' Calculate Combined Anhøj Signal

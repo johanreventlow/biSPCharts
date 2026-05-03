@@ -295,12 +295,10 @@ test_that("Error messages are actionable and user-friendly", {
   # Test various error scenarios
   data <- create_test_data()
 
-  # Invalid chart type error - validate_chart_type_bfh uses safe_operation
-  # which returns NULL on error instead of throwing
-  result1 <- validate_chart_type_bfh("not_a_chart_type")
-
-  # safe_operation returns NULL on error
-  expect_null(result1)
+  # NB: tidligere kald til validate_chart_type_bfh fjernet (#451) — funktionen
+  # var dead code, faktisk validering sker i validate_spc_request().
+  # Her testes alene at error_classifier mapper invalid-chart-type-strings
+  # korrekt til "biSPCharts" / "Konfigurationsfejl".
 
   # Test error classification directly
   chart_error <- simpleError("Invalid chart_type: 'not_a_chart_type'. Must be one of: run, i, mr")

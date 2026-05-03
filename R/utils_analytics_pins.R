@@ -294,8 +294,8 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
     code = {
       github_sync_enabled <- isTRUE(golem::get_golem_options("analytics.github_sync_enabled"))
       if (github_sync_enabled &&
-        nchar(Sys.getenv("GITHUB_PAT")) > 0 &&
-        nchar(Sys.getenv("PIN_REPO_URL")) > 0) {
+        nchar(safe_getenv("GITHUB_PAT")) > 0 &&
+        nchar(safe_getenv("PIN_REPO_URL")) > 0) {
         result <- sync_logs_to_github(all_data, session_id = session_id)
         if (isTRUE(result$success)) {
           log_info(
@@ -315,7 +315,7 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
           )
         }
       } else if (requireNamespace("pins", quietly = TRUE) &&
-        nchar(Sys.getenv("CONNECT_SERVER")) > 0) {
+        nchar(safe_getenv("CONNECT_SERVER")) > 0) {
         board <- pins::board_connect()
         safe_pin_data <- filter_shinylogs_allowlist(all_data)
         pins::pin_write(board, safe_pin_data, config$pin_name,

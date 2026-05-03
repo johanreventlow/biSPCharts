@@ -134,7 +134,7 @@ map_to_bfh_params <- function(
   # Kollisionscheck: to distinkte kolonner maa ikke kollidere efter sanitization.
   # Placeret FOER safe_operation saa spc_input_error propagerer til kalder (#422).
   # Silent failure her giver forkert plot uden fejlbesked til brugeren.
-  sanitized_col_names <- sapply(names(data), sanitize_column_name, USE.NAMES = FALSE)
+  sanitized_col_names <- vapply(names(data), sanitize_column_name, character(1), USE.NAMES = FALSE)
   if (anyDuplicated(sanitized_col_names)) {
     duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
     spc_abort(
@@ -406,21 +406,22 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
       # deres target-/centerlinje-værdier må IKKE divideres med 100.
       percentage_charts <- c("p", "pp")
 
-      # Only normalize if chart type uses percentages AND value > 1
+      # NOTE: Don't use return() inside safe_operation code blocks (#446)
+      # \u2014 return() exits the wrapper, not normalize_scale_for_bfh, og
+      # safe_operation falder gennem til fallback. Brug result-variable.
       if (chart_type %in% percentage_charts && value > 1) {
-        normalized <- value / 100
+        result <- value / 100
         log_debug(
           paste(
             "Normalized", param_name, "for", chart_type, "chart:",
-            value, "\u2192", normalized
+            value, "\u2192", result
           ),
           .context = "BFH_SERVICE"
         )
-        return(normalized)
       } else {
-        # No normalization needed
-        return(value)
+        result <- value
       }
+      result
     },
     fallback = value,
     error_type = "scale_normalization"

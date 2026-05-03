@@ -14,8 +14,8 @@ Skal indeholde metadata og qic_data components}
 \itemize{
 \item data_definition: Character string beskrivelse af indikator
 \item chart_title: Character string graf titel
-\item y_axis_unit: Character string måleenhed (e.g. "dage", "antal", "procent")
-\item target_value: Numeric target værdi (optional, can be NULL)
+\item y_axis_unit: Character string maaleenhed (e.g. "dage", "antal", "procent")
+\item target_value: Numeric target vaerdi (optional, can be NULL)
 }}
 
 \item{session}{Shiny session object for cache access. Required.}
@@ -40,7 +40,7 @@ og LLM call til BFHllm::bfhllm_spc_suggestion().
 }
 \details{
 Funktionen bruger safe_operation() pattern og structured logging.
-Ved fejl returneres NULL så UI kan håndtere gracefully.
+Ved fejl returneres NULL saa UI kan haandtere gracefully.
 }
 \examples{
 \dontrun{
@@ -48,7 +48,7 @@ Ved fejl returneres NULL så UI kan håndtere gracefully.
 spc_result <- compute_spc_results_bfh(data, "date", "value", "run")
 context <- list(
   data_definition = "Ventetid til operation i dage",
-  chart_title = "Ventetid ortopædkirurgi 2024",
+  chart_title = "Ventetid ortopaedkirurgi 2024",
   y_axis_unit = "dage",
   target_value = 30
 )

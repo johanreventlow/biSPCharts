@@ -32,18 +32,18 @@ Handles data updates triggered by session restore (Issue #193).
 \details{
 \strong{Behavior}:
 \itemize{
-\item Updates column choices (selectize dropdowns) baseret på gendannet data
+\item Updates column choices (selectize dropdowns) baseret pÃ¥ gendannet data
 \item Triggerer navigation_changed (navigation + plot refresh)
 \item Triggerer visualization_update_needed (SPC chart rendering)
-\item \strong{Gør IKKE} auto-detection (vi har allerede saved mappings)
+\item \strong{GÃ¸r IKKE} auto-detection (vi har allerede saved mappings)
 }
 
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (session_restore context)
-\item → update_column_choices_unified() (populerer choices)
-\item → navigation_changed
-\item → visualization_update_needed
+\item â update_column_choices_unified() (populerer choices)
+\item â navigation_changed
+\item â visualization_update_needed
 }
 }
 \keyword{internal}

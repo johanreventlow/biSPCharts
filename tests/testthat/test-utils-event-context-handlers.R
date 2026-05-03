@@ -16,7 +16,7 @@ test_that("classify_update_context eksisterer og er en funktion", {
 })
 
 test_that("classify_update_context returnerer 'general' for NULL input", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   expect_equal(classify_update_context(NULL), "general")
   expect_equal(classify_update_context(list(context = NULL)), "general")
@@ -24,21 +24,21 @@ test_that("classify_update_context returnerer 'general' for NULL input", {
 })
 
 test_that("classify_update_context returnerer 'table_edit' for table_cells_edited", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   result <- classify_update_context(list(context = "table_cells_edited"))
   expect_equal(result, "table_edit")
 })
 
 test_that("classify_update_context returnerer 'session_restore' for session_restore", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   result <- classify_update_context(list(context = "session_restore"))
   expect_equal(result, "session_restore")
 })
 
 test_that("classify_update_context returnerer 'load' for upload-relaterede contexts", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   load_contexts <- c("file_upload", "file_loaded", "new_data", "paste_data")
 
@@ -51,7 +51,7 @@ test_that("classify_update_context returnerer 'load' for upload-relaterede conte
 })
 
 test_that("classify_update_context returnerer 'data_change' for change/edit contexts", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   change_contexts <- c("column_change", "data_edit", "data_modify")
 
@@ -64,7 +64,7 @@ test_that("classify_update_context returnerer 'data_change' for change/edit cont
 })
 
 test_that("classify_update_context returnerer 'general' for ukendte contexts", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   unknown_contexts <- c("unknown_event", "something_random", "xyz")
 
@@ -76,8 +76,58 @@ test_that("classify_update_context returnerer 'general' for ukendte contexts", {
   }
 })
 
+test_that("classify_update_context udsender warning for ukendt context (#425)", {
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
+  skip_if_not(exists("log_warn", mode = "function"))
+
+  # Sikrer at warning udsendes saa nye unknown contexts fanges i logs.
+  # Beskytter mod fremtidig regression hvor ny emit-call bruger context-streng
+  # der utilsigtet falder til general-grenen (som ej trigger plot-render).
+  withr::local_envvar(SPC_LOG_LEVEL = "WARN")
+
+  output <- utils::capture.output(
+    res <- classify_update_context(list(context = "calc_refresh"))
+  )
+
+  expect_equal(res, "general")
+  combined <- paste(output, collapse = " ")
+  expect_match(
+    combined,
+    "calc_refresh",
+    info = "Warning skal navngive den ukendte context"
+  )
+  expect_match(
+    combined,
+    "EVENT_CONTEXT_HANDLER",
+    info = "Warning skal indeholde EVENT_CONTEXT_HANDLER-tag"
+  )
+})
+
+test_that("classify_update_context udsender IKKE warning for kendte contexts (#425)", {
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
+  skip_if_not(exists("log_warn", mode = "function"))
+
+  withr::local_envvar(SPC_LOG_LEVEL = "WARN")
+
+  known_contexts <- c(
+    "file_upload", "data_loaded", "paste_data",
+    "column_changed", "table_cells_edited", "session_restore"
+  )
+
+  for (ctx in known_contexts) {
+    output <- utils::capture.output(
+      classify_update_context(list(context = ctx))
+    )
+    combined <- paste(output, collapse = " ")
+    expect_false(
+      grepl("fald til 'general'", combined, fixed = TRUE),
+      info = paste("Kendt context", ctx, "skal IKKE udloese fallback-warning")
+    )
+  }
+})
+
 test_that("classify_update_context returnerer kun gyldige output-værdier", {
-  skip_if_not(exists("classify_update_context", mode = "function"))
+  # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
 
   valid_outputs <- c("load", "table_edit", "data_change", "general", "session_restore")
 

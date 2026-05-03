@@ -214,7 +214,7 @@ register_navigation_events <- function(app_state, emit, session, register_observ
       priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
       {
         error_context <- app_state$last_error_context
-        error_info <- app_state$errors$last_error
+        error_info <- get_last_error(app_state)
 
         log_error("Consolidated error event triggered", .context = "ERROR_SYSTEM")
 
@@ -244,13 +244,13 @@ register_navigation_events <- function(app_state, emit, session, register_observ
           error_type <- error_context$type %||% "general"
 
           if (error_type == "processing") {
-            app_state$errors$recovery_attempts <- app_state$errors$recovery_attempts + 1L
+            increment_recovery_attempts(app_state)
             ctx <- error_context$context
             if (!is.null(ctx) && grepl("data|processing|convert|qic", ctx, ignore.case = TRUE)) {
               log_debug("Processing error detected - may need data validation", .context = "ERROR_SYSTEM")
             }
           } else if (error_type == "validation") {
-            app_state$errors$recovery_attempts <- app_state$errors$recovery_attempts + 1L
+            increment_recovery_attempts(app_state)
             log_debug("Validation error detected - clearing validation state", .context = "ERROR_SYSTEM")
           } else if (error_type == "network") {
             ctx <- error_context$context
@@ -265,8 +265,7 @@ register_navigation_events <- function(app_state, emit, session, register_observ
         }
 
         if (!is.null(app_state$errors)) {
-          app_state$errors$error_count <- app_state$errors$error_count + 1L
-          app_state$errors$last_error <- list(
+          set_last_error(app_state, list(
             type = if (!is.null(error_context)) {
               error_context$type
             } else if (!is.null(error_info)) {
@@ -276,7 +275,7 @@ register_navigation_events <- function(app_state, emit, session, register_observ
             },
             context = if (!is.null(error_context)) error_context$context else "consolidated_handler",
             timestamp = Sys.time()
-          )
+          ))
         }
       }
     )
@@ -289,7 +288,7 @@ register_navigation_events <- function(app_state, emit, session, register_observ
       ignoreInit = TRUE,
       priority = OBSERVER_PRIORITIES$LOW,
       {
-        app_state$errors$last_recovery_time <- Sys.time()
+        set_last_recovery_time(app_state)
         log_info("Error recovery completed", .context = "ERROR_SYSTEM")
         log_debug_kv(
           recovery_time = as.character(Sys.time()),

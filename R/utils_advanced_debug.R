@@ -111,10 +111,16 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
     should_log <- debug_mode
   }
 
-  # Output log entry only if allowed by filter
+  # Output log entry only if allowed by filter — gå gennem central
+  # log_msg() (#463 QW-6) i stedet for raw cat() så component-tag og
+  # level-filter respekteres ensartet med resten af kodebasen.
   if (should_log) {
     log_entry <- paste(log_parts, collapse = " ")
-    cat(log_entry, "\n")
+    if (exists("log_msg", mode = "function")) {
+      log_msg(log_entry, level = "DEBUG", component = "ADVANCED_DEBUG")
+    } else {
+      cat(log_entry, "\n")
+    }
   }
 
   # Store in global debug history if enabled

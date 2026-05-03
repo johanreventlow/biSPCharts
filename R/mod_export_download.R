@@ -127,7 +127,7 @@ generate_pdf_export <- function(input, app_state, file) {
   short_series_note <- if (!is.na(n_pts_export) && n_pts_export < get_spc_warning_threshold()) {
     paste0(
       "Kort serie (n=", n_pts_export, "): ",
-      "Anhøj-rules er upålidelige under ", get_spc_warning_threshold(), " datapunkter."
+      "Anh\u00f8j-rules er up\u00e5lidelige under ", get_spc_warning_threshold(), " datapunkter."
     )
   } else {
     NULL

@@ -133,13 +133,6 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' @keywords internal
 #' @noRd
 observe_chart_type_input <- function(input, session, app_state, register_observer) {
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
   has_input_value <- function(value) {
     nzchar(input_scalar(value, default = ""))
   }
@@ -291,13 +284,6 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
 #' @keywords internal
 #' @noRd
 observe_y_axis_unit_input <- function(input, session, app_state, register_observer) {
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
   has_input_value <- function(value) {
     nzchar(input_scalar(value, default = ""))
   }
@@ -406,13 +392,6 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
 #' @keywords internal
 #' @noRd
 observe_n_column_change <- function(input, session, app_state, register_observer) {
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
   has_input_value <- function(value) {
     nzchar(input_scalar(value, default = ""))
   }
@@ -493,13 +472,6 @@ observe_n_column_change <- function(input, session, app_state, register_observer
 #' @keywords internal
 #' @noRd
 observe_target_value <- function(input, session, app_state, register_observer) {
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
   # Debounce target-input for at undgaa re-render + mappings-sync per tastetryk.
   # Matcher chart_update-debounce (500ms) i fct_visualization_server.R.
   # Fixes #395: hvert tegn trigrede settings_save + 3 plot-contexts + Typst PDF.
@@ -599,13 +571,6 @@ observe_target_value <- function(input, session, app_state, register_observer) {
 #' @keywords internal
 #' @noRd
 observe_centerline_value <- function(input, session, app_state, register_observer) {
-  input_scalar <- function(value, default = "") {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    as.character(value[[1]])
-  }
-
   register_observer(
     "centerline_value",
     shiny::observeEvent(input$centerline_value,

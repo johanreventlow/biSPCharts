@@ -300,21 +300,21 @@ setup_data_table <- function(input, output, session, app_state, emit) {
       }
 
       # Use unified state management
-      app_state$data$updating_table <- TRUE
+      set_table_updating(app_state, TRUE)
       # Use unified state management
-      app_state$data$table_operation_in_progress <- TRUE
+      set_table_op_in_progress(app_state, TRUE)
 
       on.exit(
         {
-          app_state$data$updating_table <- FALSE
-          app_state$data$table_operation_in_progress <- FALSE
+          set_table_updating(app_state, FALSE)
+          set_table_op_in_progress(app_state, FALSE)
         },
         add = TRUE
       )
 
       # Trigger event-driven cleanup instead of timing-based
       # Use unified state management
-      app_state$data$table_operation_cleanup_needed <- TRUE
+      set_table_op_cleanup_needed(app_state, TRUE)
 
       safe_operation(
         operation_name = "ExcelR tabel data opdatering",
@@ -397,7 +397,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     # Saet vedvarende flag for at forhindre auto-save interferens
     # Use unified state management
-    app_state$data$table_operation_in_progress <- TRUE
+    set_table_op_in_progress(app_state, TRUE)
 
     new_row <- current_data_check[1, ]
     new_row[1, ] <- NA
@@ -413,7 +413,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
 
     # Trigger event-driven cleanup instead of timing-based
     # Use unified state management
-    app_state$data$table_operation_cleanup_needed <- TRUE
+    set_table_op_cleanup_needed(app_state, TRUE)
   })
 
   # UNIFIED STATE: Table reset functionality moved to utils_server_management.R

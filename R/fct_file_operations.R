@@ -225,7 +225,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
     upload_tracer$step("state_management_setup")
 
     # Unified state assignment only - Set table updating flag
-    app_state$data$updating_table <- TRUE
+    set_table_updating(app_state, TRUE)
 
     debug_log("File upload state flags set", "FILE_UPLOAD_FLOW",
       level = "TRACE",
@@ -235,7 +235,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
     on.exit(
       {
         # Unified state assignment only - Clear table updating flag
-        app_state$data$updating_table <- FALSE
+        set_table_updating(app_state, FALSE)
       },
       add = TRUE
     )
@@ -271,7 +271,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
         debug_log("File upload workflow completed successfully", "FILE_UPLOAD_FLOW", level = "INFO", session_id = sanitize_session_token(session$token))
 
         # Update rate limiting timestamp after successful upload
-        app_state$session$last_upload_time <- Sys.time()
+        set_last_upload_time(app_state)
       },
       error_type = "network",
       emit = emit,
@@ -346,7 +346,7 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     session$onFlushed(
       function() {
         shiny::isolate({
-          app_state$session$restoring_session <- FALSE
+          set_session_restoring(app_state, FALSE)
           log_debug(
             "restoring_session flag cleared after Excel upload restore",
             .context = "SESSION_RESTORE"

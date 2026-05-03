@@ -58,6 +58,25 @@ sanitize_selection <- function(input_value) {
   return(input_value)
 }
 
+#' Reduce input value to scalar character with default
+#'
+#' Defensiv variant af `sanitize_selection()` der returnerer en konkret
+#' fallback-string i stedet for NULL. Bruges af observers der har brug
+#' for et entydigt skalar-input til state-mutation eller logging.
+#'
+#' @param value Input-værdi (kan være NULL/character(0)/NA/vector).
+#' @param default Default-string der returneres ved NULL/missing.
+#'
+#' @return Character scalar (length 1).
+#'
+#' @keywords internal
+input_scalar <- function(value, default = "") {
+  if (is.null(value) || length(value) == 0 || anyNA(value)) {
+    return(default)
+  }
+  as.character(value[[1]])
+}
+
 # NAVIGATION UTILITIES =========================================
 
 #' Tilbagelink til forrige side

@@ -116,7 +116,9 @@ build_bfh_args <- function(prepared, axes, extra_params) {
 execute_bfh_request <- function(bfh_params, prepared) {
   t_bfh_start <- Sys.time()
   bfh_result <- call_bfh_chart(bfh_params)
-  log_info(
+  # H8 (#454): pipeline-timing skifter fra INFO til DEBUG. Per-render-
+  # timing mætter prod-logs (5-10 plots/min) og maskerer state-events.
+  log_debug(
     paste(
       "Step 7c bfh_qic:",
       round(difftime(Sys.time(), t_bfh_start, units = "secs"), 2),
@@ -129,7 +131,9 @@ execute_bfh_request <- function(bfh_params, prepared) {
     spc_abort("BFHcharts rendering failed", class = "spc_render_error")
   }
 
-  # Beregn x-labels en gang -- bruges til begge plots (bfh_result og standardized)
+  # H4 (#450): x_scale + x_theme appliceres ÉN gang efter
+  # transform_bfh_output(). Tidligere appliceret to gange (her + efter
+  # transform), hvilket gav duplikeret layer-objekt og bloated layer-list.
   x_labels_col <- paste0(".x_labels_", prepared$x_var)
   x_scale <- NULL
   x_theme <- NULL
@@ -140,9 +144,6 @@ execute_bfh_request <- function(bfh_params, prepared) {
     x_theme <- ggplot2::theme(
       axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
     )
-    if (!is.null(bfh_result$plot)) {
-      bfh_result$plot <- bfh_result$plot + x_scale + x_theme
-    }
   }
 
   t_transform_start <- Sys.time()
@@ -154,7 +155,7 @@ execute_bfh_request <- function(bfh_params, prepared) {
     freeze_applied = !is.null(prepared$freeze_var) &&
       prepared$freeze_var %in% names(prepared$data)
   )
-  log_info(
+  log_debug(
     paste(
       "Step 7d transform:",
       round(difftime(Sys.time(), t_transform_start, units = "secs"), 2),

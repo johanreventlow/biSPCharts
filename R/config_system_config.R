@@ -143,7 +143,12 @@ RATE_LIMITS <- list(
 UPLOAD_LIMITS <- list(
   max_file_size_mb = 50, # Maksimal filstørrelse i MB
   max_line_count = 100000, # Maksimalt antal linjer (afvis upload)
-  warning_row_count = 50000 # Rækketærskel for advarselsbesked
+  warning_row_count = 50000, # Rækketærskel for advarselsbesked
+  # Loft for ukomprimeret xlsx-indhold (zip-bomb-beskyttelse, #449).
+  # En 1 MB malformeret xlsx kan ekspandere til GB ukomprimeret;
+  # readxl ekspanderer fuld ZIP før row-limit anvendes, så vi tjekker
+  # via utils::unzip(list = TRUE) før read_excel-kald.
+  max_xlsx_uncompressed_mb = 200
 )
 
 #' @keywords internal
@@ -154,6 +159,9 @@ get_max_upload_line_count <- function() UPLOAD_LIMITS$max_line_count
 
 #' @keywords internal
 get_upload_warning_row_count <- function() UPLOAD_LIMITS$warning_row_count
+
+#' @keywords internal
+get_max_xlsx_uncompressed_mb <- function() UPLOAD_LIMITS$max_xlsx_uncompressed_mb
 
 #' Auto-save debounce delays (milliseconds)
 #' @keywords internal

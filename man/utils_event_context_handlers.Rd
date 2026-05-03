@@ -16,7 +16,7 @@ handler function.
 
 \strong{Benefits}:
 \itemize{
-\item Reduced cyclomatic complexity (12 → ~3 per function)
+\item Reduced cyclomatic complexity (12 â ~3 per function)
 \item Easier to add new context types (just add handler)
 \item Better testability (test each handler independently)
 \item Self-documenting code (function names describe behavior)

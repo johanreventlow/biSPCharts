@@ -16,9 +16,10 @@ fallback til Roboto/sans paa systemer hvor Mari ikke er installeret
 (f.eks. Posit Connect Cloud).
 }
 \details{
-Mari fonts er bundlet i inst/templates/typst/bfh-template/fonts/ mappen.
-Fonten er proprietaer (Bispebjerg og Frederiksberg Hospital) og maa ikke
-distribueres i public packages -- derfor ligger den i biSPCharts (private).
+Mari fonts leveres nu af den private BFHchartsAssets companion-pakke
+(system.file("assets/fonts", package = "BFHchartsAssets")).
+Fonten er proprietaer (Region Hovedstaden) og distribueres ikke i
+public packages -- BFHchartsAssets er privat (kræver GITHUB_PAT).
 }
 \seealso{
 Other font_registration: 

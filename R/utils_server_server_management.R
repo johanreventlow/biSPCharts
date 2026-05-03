@@ -33,7 +33,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
       # has_payload = FALSE (eller mangler) -> default landing
       if (!isTRUE(peek$has_payload)) {
         log_info("session_peek: ingen gemt session", .context = "SESSION_RESTORE")
-        app_state$session$peek_result <- list(has_payload = FALSE)
+        set_session_peek_result(app_state, list(has_payload = FALSE))
         return()
       }
 
@@ -45,7 +45,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
         )
         clearDataLocally(session)
         session$sendCustomMessage("discardPendingRestore", list())
-        app_state$session$peek_result <- list(has_payload = FALSE)
+        set_session_peek_result(app_state, list(has_payload = FALSE))
         return()
       }
 
@@ -64,7 +64,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
         )
         clearDataLocally(session)
         session$sendCustomMessage("discardPendingRestore", list())
-        app_state$session$peek_result <- list(has_payload = FALSE)
+        set_session_peek_result(app_state, list(has_payload = FALSE))
         return()
       }
 
@@ -78,14 +78,14 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
           active_tab = peek$active_tab
         )
       )
-      app_state$session$peek_result <- list(
+      set_session_peek_result(app_state, list(
         has_payload = TRUE,
         timestamp = peek$timestamp,
         nrows = peek$nrows,
         ncols = peek$ncols,
         indicator_title = peek$indicator_title %||% "",
         active_tab = peek$active_tab
-      )
+      ))
     }
   )
 
@@ -134,9 +134,9 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             }
 
             # Saet gendannelses guards for at forhindre interferens
-            app_state$session$restoring_session <- TRUE
-            app_state$data$updating_table <- TRUE
-            app_state$data$table_operation_in_progress <- TRUE
+            set_session_restoring(app_state, TRUE)
+            set_table_updating(app_state, TRUE)
+            set_table_op_in_progress(app_state, TRUE)
             app_state$session$auto_save_enabled <- FALSE
 
             # Oprydningsfunktion til at nulstille guards.
@@ -147,7 +147,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             # i session$onFlushed nedenfor.
             on.exit(
               {
-                app_state$data$updating_table <- FALSE
+                set_table_updating(app_state, FALSE)
                 # auto_save_enabled genaktiveres i session$onFlushed() nedenfor
                 # for at undgaa at stale input$main_navbar overskriver active_tab
                 app_state$data$table_operation_cleanup_needed <- TRUE
@@ -300,7 +300,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             session$onFlushed(
               function() {
                 shiny::isolate({
-                  app_state$session$restoring_session <- FALSE
+                  set_session_restoring(app_state, FALSE)
                   app_state$session$auto_save_enabled <- TRUE
                   log_info(
                     "restoring_session flag cleared and auto_save re-enabled after flush",
@@ -328,13 +328,13 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
         fallback = {
           # Reset guards even on error
           # Unified state assignment only
-          app_state$data$updating_table <- FALSE
+          set_table_updating(app_state, FALSE)
           # Unified state assignment only
-          app_state$session$restoring_session <- FALSE
+          set_session_restoring(app_state, FALSE)
           # Unified state assignment only
           app_state$session$auto_save_enabled <- TRUE
           # Unified state assignment only
-          app_state$data$table_operation_in_progress <- FALSE
+          set_table_op_in_progress(app_state, FALSE)
         },
         session = session,
         error_type = "processing",
@@ -564,7 +564,7 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
   app_state$session$pending_excel_upload <- NULL
 
   # Unified state only
-  app_state$data$updating_table <- TRUE
+  set_table_updating(app_state, TRUE)
 
   # Force hide Anhoej rules until real data is loaded
   # Unified state assignment only
@@ -648,7 +648,7 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
   }
 
   # Unified state only
-  app_state$data$updating_table <- FALSE
+  set_table_updating(app_state, FALSE)
 }
 
 show_clear_confirmation_modal <- function(has_data, has_settings, app_state) {

@@ -571,7 +571,7 @@ create_data_table_card <- function() {
   )
 }
 
-#' Inline kolonnemapping -- 6 dropdowns i \u00e9n r\u00e6kke over datatabellen
+#' Inline kolonnemapping -- 6 dropdowns i Ã©n rÃ¦kke over datatabellen
 #' @noRd
 create_inline_column_mapping <- function() {
   # Compact selectize med forkortet label

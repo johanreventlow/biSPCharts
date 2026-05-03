@@ -251,7 +251,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # Use isolate() to safely check reactive value outside reactive context
   current_has_data_status <- isolate(app_state$session$has_data_status)
   if (is.null(current_has_data_status)) {
-    app_state$session$has_data_status <- "false"
+    set_has_data_status(app_state, "false")
   }
 
   # Helper function to evaluate has_data status (PERFORMANCE OPTIMIZED)
@@ -275,26 +275,21 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # UNIFIED EVENT LISTENERS: Update has_data status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
   shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_has_data_status()
-    app_state$session$has_data_status <- new_status
+    set_has_data_status(app_state, evaluate_has_data_status())
   })
 
   shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_has_data_status()
-    app_state$session$has_data_status <- new_status
+    set_has_data_status(app_state, evaluate_has_data_status())
   })
 
   shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_has_data_status()
-    app_state$session$has_data_status <- new_status
+    set_has_data_status(app_state, evaluate_has_data_status())
   })
 
   # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
   shiny::observeEvent(TRUE, once = TRUE, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    initial_dataLoaded <- evaluate_dataLoaded_status()
-    initial_has_data <- evaluate_has_data_status()
-    app_state$session$dataLoaded_status <- initial_dataLoaded
-    app_state$session$has_data_status <- initial_has_data
+    app_state$session$dataLoaded_status <- evaluate_dataLoaded_status()
+    set_has_data_status(app_state, evaluate_has_data_status())
   })
 
   output$has_data <- shiny::renderText({
@@ -551,8 +546,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
     # Clear the table operation flag and reset cleanup request
     # Use unified state management
-    app_state$data$table_operation_in_progress <- FALSE
-    app_state$data$table_operation_cleanup_needed <- FALSE
+    set_table_op_in_progress(app_state, FALSE)
+    set_table_op_cleanup_needed(app_state, FALSE)
   })
 
   # Register observer with manager (only if created)
@@ -567,8 +562,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   output$session_save_status <- shiny::renderUI({
     # Brug boolean flag i stedet for timestamp for at undgaa re-render
     # ved hvert save-cycle. JS ejer tidsteksten.
-    has_saved <- !is.null(app_state$session$last_save_time)
-    auto_save_on <- app_state$session$auto_save_enabled
+    has_saved <- !is.null(get_last_save_time(app_state))
+    auto_save_on <- is_auto_save_enabled(app_state)
 
     if (isFALSE(auto_save_on)) {
       return(shiny::span(
@@ -609,13 +604,13 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     )
 
     if (isTRUE(result$success)) {
-      app_state$session$last_save_time <- Sys.time()
+      set_last_save_time(app_state)
     } else {
       log_warn(
         "localStorage save failed (quota or permission)",
         .context = "AUTO_SAVE"
       )
-      app_state$session$auto_save_enabled <- FALSE
+      set_auto_save_enabled(app_state, FALSE)
       shiny::showNotification(
         paste0(
           "Browseren kan ikke gemme mere data (lokal lagerplads fuld). ",

@@ -12,17 +12,19 @@ create_ui_update_service(session, app_state)
 \item{app_state}{Centralized app state}
 }
 \value{
-List of UI update functions (merged column + form APIs)
+List of UI update functions (merged column + form + table APIs)
 }
 \description{
-Backward-kompatibel wrapper der komponerer column- og form-services.
+Backward-kompatibel wrapper der komponerer column-, form- og table-services.
 Eksisterende kaldere fortsaetter uaendret; fremtidig kode boer bruge
-\code{create_column_update_service()} og \code{create_form_update_service()} direkte.
+\code{create_column_update_service()}, \code{create_form_update_service()} og
+\code{create_table_update_service()} direkte.
 }
 \examples{
 \dontrun{
 ui_service <- create_ui_update_service(session, app_state)
 ui_service$update_column_choices()
+ui_service$update_excelr_data("main_data_table", data)
 }
 
 }

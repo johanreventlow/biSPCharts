@@ -10,7 +10,7 @@
 #' handler function.
 #'
 #' **Benefits**:
-#' - Reduced cyclomatic complexity (12 → ~3 per function)
+#' - Reduced cyclomatic complexity (12 â ~3 per function)
 #' - Easier to add new context types (just add handler)
 #' - Better testability (test each handler independently)
 #' - Self-documenting code (function names describe behavior)
@@ -78,7 +78,7 @@ classify_update_context <- function(update_context) {
     return("table_edit")
   }
 
-  # Session restore (exact match for precision — må ikke trigger
+  # Session restore (exact match for precision \u2014 m\u00e5 ikke trigger
   # auto-detection siden vi har gemte mappings at gendanne)
   if (identical(context, "session_restore")) {
     return("session_restore")
@@ -94,7 +94,18 @@ classify_update_context <- function(update_context) {
     return("data_change")
   }
 
-  # Fallback
+  # Fallback \u2014 warn for at fange ukendte contexts der utilsigtet rammer general-grenen.
+  # General-handler trigger ej auto-detection eller plot-render, kun column-choices.
+  # Hvis nyt emit-kald skal trigge plot-update, skal context matche load|change|edit|modify|column-regex
+  # eller tilfoejes som eksplicit branch ovenfor. Se issue #425.
+  log_warn(
+    paste0(
+      "classify_update_context fald til 'general' for context: '", context,
+      "'. Verificer intent \u2014 tilfoej til load/data_change/table_edit/session_restore-grenen ",
+      "hvis context skal trigge plot-opdatering eller auto-detection."
+    ),
+    .context = "EVENT_CONTEXT_HANDLER"
+  )
   "general"
 }
 
@@ -156,9 +167,9 @@ resolve_column_update_reason <- function(context) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (load context)
-#' 2. → auto_detection_started
-#' 3. → auto_detection_completed
-#' 4. → ui_sync_needed
+#' 2. â auto_detection_started
+#' 3. â auto_detection_completed
+#' 4. â ui_sync_needed
 #'
 #' @keywords internal
 handle_load_context <- function(app_state, emit) {
@@ -192,8 +203,8 @@ handle_load_context <- function(app_state, emit) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (table_edit context)
-#' 2. → navigation_changed
-#' 3. → visualization_update_needed
+#' 2. â navigation_changed
+#' 3. â visualization_update_needed
 #'
 #' @keywords internal
 handle_table_edit_context <- function(app_state, emit) {
@@ -228,9 +239,9 @@ handle_table_edit_context <- function(app_state, emit) {
 #'
 #' **Event Chain**:
 #' 1. data_updated (data_change context)
-#' 2. → update_column_choices_unified()
-#' 3. → navigation_changed
-#' 4. → visualization_update_needed
+#' 2. â update_column_choices_unified()
+#' 3. â navigation_changed
+#' 4. â visualization_update_needed
 #'
 #' @keywords internal
 handle_data_change_context <- function(app_state, emit, input, output, session, ui_service, context) {
@@ -281,7 +292,7 @@ handle_data_change_context <- function(app_state, emit, input, output, session, 
 #'
 #' **Event Chain**:
 #' 1. data_updated (general context)
-#' 2. → update_column_choices_unified()
+#' 2. â update_column_choices_unified()
 #'
 #' @keywords internal
 handle_general_context <- function(app_state, emit, input, output, session, ui_service, context) {
@@ -322,20 +333,20 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
 #'
 #' @details
 #' **Behavior**:
-#' - Updates column choices (selectize dropdowns) baseret på gendannet data
+#' - Updates column choices (selectize dropdowns) baseret pÃ¥ gendannet data
 #' - Triggerer navigation_changed (navigation + plot refresh)
 #' - Triggerer visualization_update_needed (SPC chart rendering)
-#' - **Gør IKKE** auto-detection (vi har allerede saved mappings)
+#' - **GÃ¸r IKKE** auto-detection (vi har allerede saved mappings)
 #'
 #' **Event Chain**:
 #' 1. data_updated (session_restore context)
-#' 2. → update_column_choices_unified() (populerer choices)
-#' 3. → navigation_changed
-#' 4. → visualization_update_needed
+#' 2. â update_column_choices_unified() (populerer choices)
+#' 3. â navigation_changed
+#' 4. â visualization_update_needed
 #'
 #' @keywords internal
 handle_session_restore_context <- function(app_state, emit, input, output, session, ui_service) {
-  # Kolonne choices skal populeres så selectize kan sætte selected værdier.
+  # Kolonne choices skal populeres s\u00e5 selectize kan s\u00e6tte selected v\u00e6rdier.
   safe_operation(
     "Update column choices on session restore",
     code = {
@@ -350,7 +361,7 @@ handle_session_restore_context <- function(app_state, emit, input, output, sessi
     }
   )
 
-  # Trigger plot rendering — restore skal vise SPC chart med det samme.
+  # Trigger plot rendering \u2014 restore skal vise SPC chart med det samme.
   emit$navigation_changed()
   emit$visualization_update_needed()
 
@@ -383,11 +394,11 @@ handle_session_restore_context <- function(app_state, emit, input, output, sessi
 #' handler function, reducing cyclomatic complexity from ~12 to ~3.
 #'
 #' **Handler Mapping**:
-#' - `load` → `handle_load_context()`
-#' - `table_edit` → `handle_table_edit_context()`
-#' - `session_restore` → `handle_session_restore_context()`
-#' - `data_change` → `handle_data_change_context()`
-#' - `general` → `handle_general_context()`
+#' - `load` â `handle_load_context()`
+#' - `table_edit` â `handle_table_edit_context()`
+#' - `session_restore` â `handle_session_restore_context()`
+#' - `data_change` â `handle_data_change_context()`
+#' - `general` â `handle_general_context()`
 #'
 #' ## Cyclomatic Complexity Reduction
 #'

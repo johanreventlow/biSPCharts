@@ -10,11 +10,20 @@ inject_template_assets(template_dir)
 \item{template_dir}{Sti til bfh-template mappen i temp directory}
 }
 \value{
-invisible(TRUE) ved succes, invisible(FALSE) ved fejl
+invisible(TRUE) hvis BFHchartsAssets var tilgængelig og injection
+lykkedes; invisible(FALSE) hvis BFHchartsAssets ikke er installeret
+eller injection fejlede. Funktionen kaster ikke errors.
 }
 \description{
-Kopierer fonts og images fra biSPCharts' template til en temp-mappe
-hvor BFHcharts har oprettet Typst-template strukturen.
-Bruges fordi BFHcharts' GitHub repo ikke inkluderer fonts/images.
+Delegerer asset-injection til den private companion-pakke \code{BFHchartsAssets}.
+biSPCharts bundler ikke længere proprietære fonts (Mari, Arial) eller
+hospital-logoer i sit eget repo — disse leveres af \code{BFHchartsAssets} via
+privat distribution.
+}
+\details{
+Funktionssignatur bevares for bagudkompatibilitet med eksisterende
+kald-sites (\code{mod_export_download.R}, samt fallback-pathen i
+\code{utils_server_export.R:370}). Kontrakt matcher
+\code{BFHcharts::bfh_export_pdf()}'s \code{inject_assets}-callback parameter.
 }
 \keyword{internal}

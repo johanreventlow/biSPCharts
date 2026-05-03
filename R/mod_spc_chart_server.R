@@ -8,8 +8,8 @@
 #          Acts as the orchestrator for the complete visualization pipeline.
 #
 # Architecture Pattern:
-#   Input reactives (parameters) → State (data) → Config → Inputs →
-#   Computation (caching) → Observers (side effects) → UI rendering → Outputs
+#   Input reactives (parameters) \u2192 State (data) \u2192 Config \u2192 Inputs \u2192
+#   Computation (caching) \u2192 Observers (side effects) \u2192 UI rendering \u2192 Outputs
 #
 # Phase 2c Refactoring: COMPLETE (417 LOC, 69% reduction from 1330 LOC)
 #   - Stage 1: Data Management (mod_spc_chart_state.R)
@@ -22,7 +22,7 @@
 #
 # Key design principles:
 #   - Clear separation of concerns (each module has single responsibility)
-#   - Reactive chain isolation (state → config → inputs → computation)
+#   - Reactive chain isolation (state \u2192 config \u2192 inputs \u2192 computation)
 #   - Performance optimization (debouncing, caching with context awareness)
 #   - Error handling (safe_operation, graceful fallbacks)
 #   - Observability (structured logging, debug context)
@@ -128,7 +128,7 @@ visualizationModuleServer <- function(
 
     ## SPC Plot Output
     # Responsive plot with automatic font sizing based on viewport dimensions.
-    # Fallback dimensions (800×600) used when clientData unavailable (Issue #193).
+    # Fallback dimensions (800\u00d7600) used when clientData unavailable (Issue #193).
     output$spc_plot_actual <- shiny::renderPlot(
       width = function() {
         w <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
@@ -244,7 +244,7 @@ visualizationModuleServer <- function(
             shiny::icon("exclamation-triangle"),
             shiny::HTML(paste0(
               " <strong>Kort serie (n=", n_pts, ").</strong> ",
-              "Anhøj-rules er upålidelige under ", get_spc_warning_threshold(),
+              "Anh\u00f8j-rules er up\u00e5lidelige under ", get_spc_warning_threshold(),
               " datapunkter. Tolk med forsigtighed."
             ))
           )
@@ -266,7 +266,7 @@ visualizationModuleServer <- function(
     })
 
 
-    ## Anhøj Rules Value Boxes
+    ## Anh\u00f8j Rules Value Boxes
     # Delegated to utils_spc_chart_ui_helpers.R (Stage 6)
     output$anhoej_rules_boxes <- shiny::renderUI({
       data <- module_data_reactive()

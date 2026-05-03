@@ -126,9 +126,18 @@ PERFORMANCE_THRESHOLDS <- list(
   reactive_warning = 0.5, # 500ms for reactive expressions
   debounce_warning = 1.0, # 1 second for debounced operations
   memory_warning = 10, # 10MB memory change warning
-  cache_timeout_default = 300, # 5 minutes default cache
   max_cache_entries = 50 # Maximum cached reactive results
+  # NB: cache_timeout_default flyttet til CACHE_CONFIG som canonical
+  # source (#456). Brug get_cache_default_timeout() som getter.
 )
+
+#' Get default cache timeout in seconds (canonical accessor, #456)
+#'
+#' @return Integer (default 300s = 5 min)
+#' @keywords internal
+get_cache_default_timeout <- function() {
+  CACHE_CONFIG$default_timeout_seconds
+}
 
 #' Rate limiting thresholds for security
 #' @keywords internal

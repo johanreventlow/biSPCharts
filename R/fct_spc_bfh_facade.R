@@ -277,7 +277,10 @@ write_spc_cache <- function(cache_key, result, app_state) {
     {
       qic_cache <- get_or_init_qic_cache(app_state)
       if (!is.null(qic_cache)) {
-        cache_ttl <- CACHE_CONFIG$default_timeout_seconds %||% 3600
+        # M2 (#456): single source of truth — CACHE_CONFIG$default_timeout_seconds
+        # er altid initialiseret i config_system_config.R, så %||%-fallback til
+        # 3600 maskerede tidligere divergens mellem konfigureret 300s og brugt 3600s.
+        cache_ttl <- CACHE_CONFIG$default_timeout_seconds
         cache_spc_result(cache_key, result, qic_cache, ttl = cache_ttl)
         log_debug(paste("Result cached with TTL:", cache_ttl, "seconds"), .context = "BFH_SERVICE")
       }

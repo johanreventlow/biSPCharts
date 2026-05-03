@@ -39,7 +39,7 @@ main_app_server <- function(input, output, session) {
   debug_mode_on <- isTRUE(tryCatch(
     golem::get_golem_options("debug_mode_enabled"),
     error = function(e) FALSE
-  )) || Sys.getenv("SPC_DEBUG_MODE", "FALSE") == "TRUE"
+  )) || isTRUE(safe_getenv("SPC_DEBUG_MODE", FALSE, "logical"))
   if (debug_mode_on) {
     initialize_advanced_debug(enable_history = TRUE, max_history_entries = 1000)
   }

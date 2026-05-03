@@ -1,5 +1,5 @@
 metadata:
-  total_files: 172
+  total_files: 173
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
@@ -1329,6 +1329,14 @@ files:
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
 - file: test-utils-server-paste-data.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-03'
+  rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-config-boot-validation.R
   audit_category: post-audit
   type: unit
   handling: keep

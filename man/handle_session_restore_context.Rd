@@ -32,10 +32,10 @@ Handles data updates triggered by session restore (Issue #193).
 \details{
 \strong{Behavior}:
 \itemize{
-\item Updates column choices (selectize dropdowns) baseret pÃ¥ gendannet data
+\item Updates column choices (selectize dropdowns) baseret på gendannet data
 \item Triggerer navigation_changed (navigation + plot refresh)
 \item Triggerer visualization_update_needed (SPC chart rendering)
-\item \strong{GÃ¸r IKKE} auto-detection (vi har allerede saved mappings)
+\item \strong{Gør IKKE} auto-detection (vi har allerede saved mappings)
 }
 
 \strong{Event Chain}:

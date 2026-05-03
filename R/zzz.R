@@ -286,8 +286,8 @@ initialize_package_globals <- function() {
 #'
 #' @noRd
 initialize_logging_system <- function() {
-  # Set default log level if not set
-  if (!nzchar(Sys.getenv("SPC_LOG_LEVEL", ""))) {
+  # Set default log level if not set (#458: typed via safe_getenv)
+  if (!nzchar(safe_getenv("SPC_LOG_LEVEL", "", "character"))) {
     Sys.setenv(SPC_LOG_LEVEL = "INFO")
   }
 

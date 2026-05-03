@@ -333,10 +333,10 @@ handle_general_context <- function(app_state, emit, input, output, session, ui_s
 #'
 #' @details
 #' **Behavior**:
-#' - Updates column choices (selectize dropdowns) baseret pÃ¥ gendannet data
+#' - Updates column choices (selectize dropdowns) baseret på gendannet data
 #' - Triggerer navigation_changed (navigation + plot refresh)
 #' - Triggerer visualization_update_needed (SPC chart rendering)
-#' - **GÃ¸r IKKE** auto-detection (vi har allerede saved mappings)
+#' - **Gør IKKE** auto-detection (vi har allerede saved mappings)
 #'
 #' **Event Chain**:
 #' 1. data_updated (session_restore context)

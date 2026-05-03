@@ -21,10 +21,10 @@ NULL (side effect: registers observer and ExtendedTask with Shiny)
 \description{
 Sets up event listener for AI suggestion button click.
 Generates SPC plot, calls bfh_generate_analysis() via ExtendedTask
-(asynkront) for at undgÃ¥ at blokere andre Shiny-sessions pÃ¥ Connect.
+(asynkront) for at undgå at blokere andre Shiny-sessions på Connect.
 }
 \details{
-Fallback til synkron eksekvering hvis ExtendedTask ikke er tilgÃ¦ngeligt
+Fallback til synkron eksekvering hvis ExtendedTask ikke er tilgængeligt
 (shiny < 1.8.0 eller promises mangler).
 }
 \keyword{internal}

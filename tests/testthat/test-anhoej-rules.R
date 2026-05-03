@@ -576,24 +576,22 @@ test_that("Anhøj rules handle minimal data (3 points)", {
 })
 
 test_that("Anhøj rules handle freeze period correctly", {
-  skip("Baseline-fixture har forkert kolonne-layout for aktuel facade — se rationale øverst i baseline comparison-sektion")
   skip_if_not_installed("BFHcharts")
 
-  # Arrange
+  # Baseline-kolonner: Dato (x), Skift (logical), Frys (logical), Taeller (y), Naevner
+  # Tidligere skip-årsag (forkert kolonne-layout) løst ved at bruge eksplicitte
+  # kolonnenavne i stedet for positionel indeksering.
   baseline <- load_baseline("run", "freeze")
 
-  # Act
   result <- compute_spc_results_bfh(
     data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
+    x_var = "Dato",
+    y_var = "Taeller",
     chart_type = "run",
-    freeze_var = if ("freeze" %in% names(baseline$input_data)) "freeze" else NULL
+    freeze_var = "Frys"
   )
 
-  # Assert
   expect_false(is.null(result$metadata$anhoej_rules))
-  # Freeze should not prevent Anhøj calculation
   expect_true(result$metadata$freeze_applied)
 })
 

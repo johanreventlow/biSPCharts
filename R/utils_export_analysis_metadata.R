@@ -61,15 +61,73 @@ compute_at_target <- function(centerline, target_value, target_text = NULL) {
   tolerance <- max(abs(target_value) * 0.05, 0.01)
   close_enough <- abs(centerline - target_value) <= tolerance
 
-  if (grepl("^\\s*(>|>=|\u2265|\u2191)", target_label)) {
+  if (grepl("^\\s*(>|>=|≥|↑)", target_label)) {
     return(close_enough || centerline >= target_value)
   }
 
-  if (grepl("^\\s*(<|<=|\u2264|\u2193)", target_label)) {
+  if (grepl("^\\s*(<|<=|≤|↓)", target_label)) {
     return(close_enough || centerline <= target_value)
   }
 
   close_enough
+}
+
+# Beregn is_stable fra Anhøj-rules på bfh_qic_result.
+# Stabil = ingen runs-violation OG ingen crossings-violation.
+resolve_is_stable <- function(bfh_qic_result) {
+  if (is.null(bfh_qic_result)) {
+    return(TRUE)
+  }
+  anhoej <- bfh_qic_result$metadata$anhoej_rules
+  if (is.null(anhoej)) {
+    return(TRUE)
+  }
+  runs_detected <- isTRUE(anhoej$runs_detected)
+  crossings_detected <- isTRUE(anhoej$crossings_detected)
+  !runs_detected && !crossings_detected
+}
+
+# Generer handlingsforslag-tekst baseret pa stabilitet og maal.
+# Replikerer BFHcharts' fallback_action_text()-logik (6 faste cases).
+# Bruges til at holde handlingsforslaget ude af LLM-prompten saa LLM
+# ikke gentager dansk fast-tekst i sin generering.
+build_action_text <- function(is_stable, has_target, at_target) {
+  if (is_stable && has_target && at_target) {
+    paste0(
+      "Fortsæt den nuværende praksis og overvåg processen ",
+      "løbende for at fastholde det gode niveau."
+    )
+  } else if (is_stable && has_target && !at_target) {
+    paste0(
+      "Processen er stabil men når ikke målet. Forbedring ",
+      "kræver en bevidst ændring af processen – den ",
+      "nuværende praksis vil levere samme resultat."
+    )
+  } else if (is_stable && !has_target) {
+    paste0(
+      "Overvej at fastsætte et mål for indikatoren for at ",
+      "kunne vurdere om det aktuelle niveau er tilfredsstillende og om ",
+      "der er behov for forbedring."
+    )
+  } else if (!is_stable && has_target && at_target) {
+    paste0(
+      "Selvom målet aktuelt er opfyldt, er processen ustabil. ",
+      "Identificér og adressér årsagerne til variationen ",
+      "for at sikre at niveauet kan fastholdes."
+    )
+  } else if (!is_stable && has_target && !at_target) {
+    paste0(
+      "Prioritér at identificere og fjerne de særlige ",
+      "årsager til variationen før yderligere ",
+      "forbedringstiltag iværksættes."
+    )
+  } else {
+    paste0(
+      "Identificér og undersøg årsagerne til den ",
+      "usædvanlige variation. Når processen er bragt under ",
+      "kontrol, kan der fastsættes et realistisk mål."
+    )
+  }
 }
 
 build_export_analysis_metadata <- function(bfh_qic_result,
@@ -77,20 +135,35 @@ build_export_analysis_metadata <- function(bfh_qic_result,
                                            target_text = NULL,
                                            data_definition = "",
                                            chart_title = "",
-                                           department = "") {
+                                           department = "",
+                                           baseline_analysis = "",
+                                           signal_examples = "") {
   y_axis_unit <- bfh_qic_result$config$y_axis_unit %||% ""
-  centerline <- resolve_analysis_centerline(bfh_qic_result)
+  centerline_raw <- resolve_analysis_centerline(bfh_qic_result)
   normalized_target_value <- normalize_mapping(target_value)
   normalized_target_text <- normalize_mapping(target_text) %||% ""
   normalized_department <- trimws(department %||% "")
 
+  at_target <- compute_at_target(centerline_raw, normalized_target_value, normalized_target_text)
+  is_stable <- resolve_is_stable(bfh_qic_result)
+  has_target <- !is.null(normalized_target_value) &&
+    !is.na(normalized_target_value) &&
+    is.numeric(normalized_target_value) &&
+    !is.null(centerline_raw) &&
+    !is.na(centerline_raw)
+
   list(
     data_definition = data_definition %||% "",
     target = normalized_target_value,
+    target_display = format_analysis_context_value(normalized_target_value, y_axis_unit),
     chart_title = chart_title %||% "",
     department = normalized_department,
-    centerline = format_analysis_context_value(centerline, y_axis_unit),
-    at_target = compute_at_target(centerline, normalized_target_value, normalized_target_text),
-    target_direction = normalized_target_text
+    y_axis_unit = y_axis_unit,
+    centerline = format_analysis_context_value(centerline_raw, y_axis_unit),
+    at_target = at_target,
+    target_direction = normalized_target_text,
+    action_text = build_action_text(is_stable, has_target, at_target),
+    baseline_analysis = baseline_analysis %||% "",
+    signal_examples = signal_examples %||% ""
   )
 }

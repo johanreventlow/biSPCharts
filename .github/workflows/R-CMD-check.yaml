@@ -54,6 +54,8 @@ jobs:
         run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          PKG_SYSREQS: false
         with:
           extra-packages: any::rcmdcheck
           needs: check
@@ -99,6 +101,8 @@ jobs:
         run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          PKG_SYSREQS: false
         with:
           extra-packages: any::rcmdcheck
           needs: check
@@ -147,6 +151,8 @@ jobs:
         run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          PKG_SYSREQS: false
         with:
           extra-packages: any::rcmdcheck
           needs: check

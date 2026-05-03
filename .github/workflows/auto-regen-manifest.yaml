@@ -103,6 +103,8 @@ jobs:
       - name: Install R dependencies
         if: steps.check.outputs.deps_changed == 'true'
         uses: r-lib/actions/setup-r-dependencies@v2
+        env:
+          PKG_SYSREQS: false
         with:
           extra-packages: any::rsconnect, any::pkgload, any::renv
           needs: check

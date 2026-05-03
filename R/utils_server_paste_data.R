@@ -163,70 +163,84 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       return()
     }
 
-    safe_operation("Behandl uploadet fil", {
-      ext <- tolower(tools::file_ext(file_info$name))
+    safe_operation(
+      "Behandl uploadet fil",
+      fallback = function(e) {
+        # H6 (#452): tidligere blev fejl efter MIME-validering swallowed
+        # silent (show_user = FALSE, fallback = NULL). Nu får brugeren
+        # en dansk fejl-besked så de ved hvorfor paste-feltet er tomt.
+        shiny::showNotification(
+          paste0("Filen \"", file_info$name, "\" kunne ikke indlæses: ", e$message),
+          type = "error",
+          duration = 6
+        )
+        NULL
+      },
+      code = {
+        ext <- tolower(tools::file_ext(file_info$name))
 
-      if (ext %in% c("xlsx", "xls")) {
-        excel_sheets <- list_excel_sheets(file_info$datapath)
-        if (is.null(excel_sheets) || length(excel_sheets) == 0) {
-          shiny::showNotification(
-            "Excel-filen kunne ikke l\u00e6ses (ingen ark fundet)",
-            type = "error", duration = 5
-          )
-          return()
-        }
-        if (is_bispchart_excel_format(excel_sheets)) {
-          # biSPCharts gem-format: gendannelse direkte uden paste-felt
-          handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
-        } else if (length(excel_sheets) == 1) {
-          # Standard single-sheet: laes direkte
-          data <- readxl::read_excel(
-            file_info$datapath,
-            sheet = excel_sheets[1],
-            col_names = TRUE
-          )
+        if (ext %in% c("xlsx", "xls")) {
+          excel_sheets <- list_excel_sheets(file_info$datapath)
+          if (is.null(excel_sheets) || length(excel_sheets) == 0) {
+            shiny::showNotification(
+              "Excel-filen kunne ikke l\u00e6ses (ingen ark fundet)",
+              type = "error", duration = 5
+            )
+            return()
+          }
+          if (is_bispchart_excel_format(excel_sheets)) {
+            # biSPCharts gem-format: gendannelse direkte uden paste-felt
+            handle_excel_upload(file_info$datapath, session, app_state, emit, ui_service)
+          } else if (length(excel_sheets) == 1) {
+            # Standard single-sheet: laes direkte
+            data <- readxl::read_excel(
+              file_info$datapath,
+              sheet = excel_sheets[1],
+              col_names = TRUE
+            )
+            shiny::updateTextAreaInput(
+              session, "paste_data_input",
+              value = excel_data_to_paste_text(data)
+            )
+            shiny::showNotification(
+              paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
+              type = "message", duration = 3
+            )
+          } else {
+            # Standard multi-sheet: vis sheet-picker, vent paa eksplicit valg
+            empty_flags <- detect_empty_sheets(file_info$datapath, excel_sheets)
+            app_state$session$pending_excel_upload <- list(
+              datapath = file_info$datapath,
+              name = file_info$name,
+              sheets = excel_sheets,
+              empty_flags = empty_flags
+            )
+            shinyjs::show("excel_sheet_dropdown")
+            shiny::showNotification(
+              paste0(
+                "\"", file_info$name, "\" indeholder ",
+                length(excel_sheets),
+                " faneblade \u2014 v\u00e6lg det \u00f8nskede ark fra menuen"
+              ),
+              type = "message", duration = 5
+            )
+          }
+        } else if (ext %in% c("csv", "txt")) {
+          # CSV: encoding-aware preview i paste-felt (#166)
+          text_content <- read_csv_detect_encoding(file_info$datapath)
           shiny::updateTextAreaInput(
             session, "paste_data_input",
-            value = excel_data_to_paste_text(data)
+            value = paste(text_content, collapse = "\n")
           )
           shiny::showNotification(
             paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
             type = "message", duration = 3
           )
         } else {
-          # Standard multi-sheet: vis sheet-picker, vent paa eksplicit valg
-          empty_flags <- detect_empty_sheets(file_info$datapath, excel_sheets)
-          app_state$session$pending_excel_upload <- list(
-            datapath = file_info$datapath,
-            name = file_info$name,
-            sheets = excel_sheets,
-            empty_flags = empty_flags
-          )
-          shinyjs::show("excel_sheet_dropdown")
-          shiny::showNotification(
-            paste0(
-              "\"", file_info$name, "\" indeholder ",
-              length(excel_sheets),
-              " faneblade \u2014 v\u00e6lg det \u00f8nskede ark fra menuen"
-            ),
-            type = "message", duration = 5
-          )
+          shiny::showNotification("Kun xlsx, xls og csv filer underst\u00f8ttes", type = "error")
         }
-      } else if (ext %in% c("csv", "txt")) {
-        # CSV: encoding-aware preview i paste-felt (#166)
-        text_content <- read_csv_detect_encoding(file_info$datapath)
-        shiny::updateTextAreaInput(
-          session, "paste_data_input",
-          value = paste(text_content, collapse = "\n")
-        )
-        shiny::showNotification(
-          paste0("\"", file_info$name, "\" indl\u00e6st \u2014 tryk Forts\u00e6t for at analysere"),
-          type = "message", duration = 3
-        )
-      } else {
-        shiny::showNotification("Kun xlsx, xls og csv filer underst\u00f8ttes", type = "error")
       }
-    })
+    )
   })
 
   # Render: Excel sheet-picker dropdown items (vises ved multi-sheet upload)
@@ -256,25 +270,38 @@ setup_paste_data_observers <- function(input, output, app_state, session, emit, 
       return()
     }
 
-    safe_operation("Indlaes valgt Excel-ark", {
-      data <- readxl::read_excel(
-        path = pending$datapath,
-        sheet = sheet_name,
-        col_names = TRUE
-      )
-      shiny::updateTextAreaInput(
-        session, "paste_data_input",
-        value = excel_data_to_paste_text(data)
-      )
-      shiny::showNotification(
-        paste0(
-          "Ark \"", sheet_name, "\" indl\u00e6st - tryk Forts\u00e6t for at analysere"
-        ),
-        type = "message", duration = 4
-      )
-      app_state$session$pending_excel_upload <- NULL
-      shinyjs::hide("excel_sheet_dropdown")
-    })
+    safe_operation(
+      "Indlaes valgt Excel-ark",
+      fallback = function(e) {
+        # H6 (#452): user-facing fejl-besked i stedet for silent fallback.
+        shiny::showNotification(
+          paste0("Arket \"", sheet_name, "\" kunne ikke indl\u00e6ses: ", e$message),
+          type = "error",
+          duration = 6
+        )
+        shinyjs::hide("excel_sheet_dropdown")
+        NULL
+      },
+      code = {
+        data <- readxl::read_excel(
+          path = pending$datapath,
+          sheet = sheet_name,
+          col_names = TRUE
+        )
+        shiny::updateTextAreaInput(
+          session, "paste_data_input",
+          value = excel_data_to_paste_text(data)
+        )
+        shiny::showNotification(
+          paste0(
+            "Ark \"", sheet_name, "\" indl\u00e6st - tryk Forts\u00e6t for at analysere"
+          ),
+          type = "message", duration = 4
+        )
+        app_state$session$pending_excel_upload <- NULL
+        shinyjs::hide("excel_sheet_dropdown")
+      }
+    )
   })
 }
 

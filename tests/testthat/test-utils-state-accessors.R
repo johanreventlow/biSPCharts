@@ -192,8 +192,41 @@ test_that("get_last_error, set_last_error og get_error_count eksisterer", {
   app_state <- create_app_state()
   expect_null(get_last_error(app_state))
   expect_equal(get_error_count(app_state), 0L)
-  set_last_error(app_state, list(type = "validation", message = "fejl"))
+  err1 <- list(type = "validation", message = "fejl")
+  set_last_error(app_state, err1)
   expect_equal(get_error_count(app_state), 1L)
+  expect_equal(get_last_error(app_state), err1)
+})
+
+test_that("set_last_error fylder error_history med FIFO-cap (max 10)", {
+  app_state <- create_app_state()
+  expect_equal(length(get_error_history(app_state)), 0L)
+
+  for (i in seq_len(12)) {
+    set_last_error(app_state, list(type = "test", index = i))
+  }
+
+  history <- get_error_history(app_state)
+  expect_equal(length(history), 10L)
+  # Oldest two evicted (i=1 og i=2), nyeste = i=12
+  expect_equal(history[[1]]$index, 3L)
+  expect_equal(history[[10]]$index, 12L)
+  expect_equal(get_error_count(app_state), 12L)
+  expect_equal(get_last_error(app_state)$index, 12L)
+})
+
+test_that("recovery-attempts og last_recovery_time accessors eksisterer", {
+  app_state <- create_app_state()
+  expect_equal(get_recovery_attempts(app_state), 0L)
+  expect_null(get_last_recovery_time(app_state))
+
+  increment_recovery_attempts(app_state)
+  increment_recovery_attempts(app_state)
+  expect_equal(get_recovery_attempts(app_state), 2L)
+
+  fixed_time <- as.POSIXct("2026-05-03 12:00:00", tz = "UTC")
+  set_last_recovery_time(app_state, fixed_time)
+  expect_equal(get_last_recovery_time(app_state), fixed_time)
 })
 
 test_that("is_test_mode_enabled og set_test_mode_enabled eksisterer", {

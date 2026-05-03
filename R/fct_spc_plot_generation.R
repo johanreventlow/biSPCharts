@@ -1,6 +1,8 @@
 # fct_spc_plot_generation.R
-# Main SPC plot generation logic using qicharts2
-# Extracted from fct_spc_calculations.R for better maintainability
+# Main SPC plot generation orchestration via BFHcharts (post ADR-015)
+# Extracted from fct_spc_calculations.R for better maintainability.
+# NB: Indeholder også legacy qic-helpers (#462) der kun bruges af tests
+# — migreres til BFHcharts-facade-tests og slettes derefter.
 #
 # Dependencies ----------------------------------------------------------------
 
@@ -559,19 +561,10 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
   )
 
   # Normaliser config-v\u00e6rdier: character(0) og tomme strings behandles som NULL
-  # (config-felter med character(0) opstaar fx ved ugyldige input fra UI)
-  normalize_config_val <- function(val) {
-    if (is.null(val) || length(val) == 0) {
-      return(NULL)
-    }
-    if (is.character(val) && !nzchar(trimws(val))) {
-      return(NULL)
-    }
-    val
-  }
-  x_col_val <- normalize_config_val(config$x_col)
-  y_col_val <- normalize_config_val(config$y_col)
-  n_col_val <- normalize_config_val(config$n_col)
+  # via sanitize_selection() (utils_ui_ui_helpers.R) der har samme kontrakt.
+  x_col_val <- sanitize_selection(config$x_col)
+  y_col_val <- sanitize_selection(config$y_col)
+  n_col_val <- sanitize_selection(config$n_col)
 
   # Fallback: hvis x_col er NULL (fx character(0) fra UI), inj\u00e9r r\u00e6kkenummer som x-akse
   # S\u00e5 backend ikke fejler p\u00e5 manglende x_var -- standard SPC-adf\u00e6rd n\u00e5r x ikke er specificeret.

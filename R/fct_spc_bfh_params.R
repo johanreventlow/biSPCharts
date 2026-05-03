@@ -134,7 +134,7 @@ map_to_bfh_params <- function(
   # Kollisionscheck: to distinkte kolonner maa ikke kollidere efter sanitization.
   # Placeret FOER safe_operation saa spc_input_error propagerer til kalder (#422).
   # Silent failure her giver forkert plot uden fejlbesked til brugeren.
-  sanitized_col_names <- sapply(names(data), sanitize_column_name, USE.NAMES = FALSE)
+  sanitized_col_names <- vapply(names(data), sanitize_column_name, character(1), USE.NAMES = FALSE)
   if (anyDuplicated(sanitized_col_names)) {
     duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
     spc_abort(

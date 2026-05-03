@@ -4,6 +4,29 @@
 
 # Dependencies ----------------------------------------------------------------
 
+#' Parse værdier som numerisk med dansk decimal-komma-tolerance
+#'
+#' Konverterer en vector til numerisk via en to-pass-strategi: prøv
+#' standard `as.numeric(as.character(x))` først, derefter med komma
+#' erstattet af punktum (dansk talformat). Returnerer numerisk vector
+#' med NA hvor begge konverteringer fejler.
+#'
+#' Brugt af `validate_spc_request()` (#463 QW-3) til at acceptere både
+#' "1.5" og "1,5" som gyldige tal i tæller-/nævner-kolonner uden at
+#' duplikere `gsub(",", ".", ...)`-mønsteret manuelt på fire steder.
+#'
+#' @param x Input-vector (typisk character eller numeric).
+#' @return Numerisk vector af samme længde som `x`. NA på ikke-konverterbar.
+#' @keywords internal
+parse_danish_numeric <- function(x) {
+  std <- suppressWarnings(as.numeric(as.character(x)))
+  if (!any(is.na(std)) || !is.character(x)) {
+    return(std)
+  }
+  with_dot <- suppressWarnings(as.numeric(gsub(",", ".", x, fixed = TRUE)))
+  ifelse(is.na(std), with_dot, std)
+}
+
 # HJAeLPEFUNKTIONER ============================================================
 
 #' Tjek om en kolonne primaert indeholder numeriske vaerdier
@@ -119,7 +142,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
   # Return default hvis ingen x-kolonne
   if (is.null(x_col) || !x_col %in% names(data)) {
     return(list(
-      x_data = 1:nrow(data),
+      x_data = seq_len(nrow(data)),
       x.format = NULL,
       is_date = FALSE
     ))
@@ -217,7 +240,7 @@ validate_x_column_format <- function(data, x_col, x_axis_unit = "observation") {
   } else {
     # Fallback til observation nummer
     return(list(
-      x_data = 1:length(x_data),
+      x_data = seq_along(x_data),
       x.format = NULL,
       is_date = FALSE
     ))

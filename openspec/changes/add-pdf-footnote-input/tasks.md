@@ -66,7 +66,7 @@
   - [x] `validate_export_inputs(footnote = strrep("a", 1000))` kaster længde-fejl
   - [x] Default `""` ved manglende input
 - [x] Udvid `tests/testthat/test-utils_export_validation.R` med footnote-cases (max-length, exact-cap, NULL/empty)
-- [ ] **Manuel:** Test live PDF-eksport med footnote — verificér placering + readability (kræver browser)
+- [x] **Manuel:** Test live PDF-eksport med footnote — verificér placering + readability (bekræftet af bruger 2026-05-04)
 
 ## Dokumentation
 
@@ -79,8 +79,8 @@
 - [x] Pre-push gate (fast) passerer (verificeret via PR #510 + #512 + #517 + #518 push-flows)
 - [x] Manifest-validator passerer (`Rscript dev/validate_connect_manifest.R` → "Connect manifest OK")
 - [x] BFHcharts cross-repo dependency synced (ingen bump påkrævet)
-- [ ] Manuel test: round-trip preview ↔ PDF viser footnote konsistent (kræver browser)
-- [ ] Manuel test: tom footnote-felt → PDF uden footnote-element (ej tom blok) (kræver browser)
+- [x] Manuel test: round-trip preview ↔ PDF viser footnote konsistent (bekræftet af bruger 2026-05-04)
+- [x] Manuel test: tom footnote-felt → PDF uden footnote-element (ej tom blok) (bekræftet af bruger 2026-05-04)
 
 ## Archive
 

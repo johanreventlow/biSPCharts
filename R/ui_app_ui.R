@@ -20,17 +20,22 @@ create_ui_header <- function() {
   # Fallback: ingen @font-face injiceres -- browser bruger naesteoverladte
   # system-font fra CSS font-family-stack (Arial, Helvetica, sans-serif).
   mari_fontface_css <- if (requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    # Brug Mari-Book.otf / Mari-Bold.otf (internal family = "Mari", weight=4/7).
+    # Tidligere brugte vi MariOffice-Book.ttf / MariOffice-Bold.ttf der internt
+    # hedder "Mari Office" (med mellemrum) -- mismatch mod CSS-deklarationen
+    # `font-family: 'Mari'` resulterede i forkert weight-rendering i browser.
+    # Mari-*.otf filerne er authoritative-navngivne (BFHchartsAssets v0.1.0).
     "
       /* Mari hospital font via BFHchartsAssets companion-pakke (@font-face) */
       @font-face {
         font-family: 'Mari';
-        src: url('bfh_assets/MariOffice-Book.ttf') format('truetype');
+        src: url('bfh_assets/Mari-Book.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
       }
       @font-face {
         font-family: 'Mari';
-        src: url('bfh_assets/MariOffice-Bold.ttf') format('truetype');
+        src: url('bfh_assets/Mari-Bold.otf') format('opentype');
         font-weight: bold;
         font-style: normal;
       }

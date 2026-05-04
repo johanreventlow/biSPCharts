@@ -28,6 +28,18 @@
 
 ## Bug fixes
 
+* **Mari-font: forkert variant (fed) i UI lokalt.** CSS `@font-face`
+  declarerer `font-family: 'Mari'` men pegede på `MariOffice-Book.ttf` +
+  `MariOffice-Bold.ttf` der internt har family `"Mari Office"` (med
+  mellemrum). Family-name-mismatch kombineret med name-collision mod
+  user-installeret system-Mari førte til at browser valgte forkert
+  variant (typisk Bold/Regular i stedet for Book) ved render af body-
+  tekst. Fix: skift til `Mari-Book.otf` + `Mari-Bold.otf` (samme
+  BFHchartsAssets v0.1.0-companion-pakke), der har korrekt internal
+  family `"Mari"` + matchende weight-metadata (Book=4, Bold=7).
+  `register_mari_font()` opdateret til samme filer for konsistens
+  mellem browser-CSS og R/ggplot/Typst-rendering.
+
 * **PDF-preview: hospital-logo manglede i preview (men ikke i download).**
   `generate_pdf_preview()` (`R/utils_server_export.R`) kaldte
   `BFHcharts::bfh_create_typst_document()` FØR `inject_template_assets()`.

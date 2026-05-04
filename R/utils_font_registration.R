@@ -220,14 +220,17 @@ register_mari_font <- function() {
     return(invisible(NULL))
   }
 
-  # Book-varianten matcher Mac system-default for "Mari" (lettere end Regular)
-  font_plain <- file.path(font_dir, "MariOffice-Book.ttf")
-  font_bold <- file.path(font_dir, "MariOffice-Bold.ttf")
+  # Brug Mari-*.otf (internal family = "Mari", weight=4/7) i stedet for
+  # MariOffice-*.ttf (internal family = "Mari Office" -- mismatch mod
+  # font-family: 'Mari'-deklarationen forvirrer browser/typst).
+  # Book-varianten matcher Mac system-default for "Mari" (lettere end Regular).
+  font_plain <- file.path(font_dir, "Mari-Book.otf")
+  font_bold <- file.path(font_dir, "Mari-Bold.otf")
 
   if (!file.exists(font_plain)) {
     log_warn(
       component = "[FONT_REGISTRATION]",
-      message = "MariOffice-Book.ttf ikke fundet i BFHchartsAssets \u2014 Mari font-registrering sprunget over",
+      message = "Mari-Book.otf ikke fundet i BFHchartsAssets \u2014 Mari font-registrering sprunget over",
       details = list(expected_path = font_plain)
     )
     return(invisible(NULL))

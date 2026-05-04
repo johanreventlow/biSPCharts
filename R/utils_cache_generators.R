@@ -65,11 +65,31 @@ get_observer_priorities_config <- function() {
     code = {
       priorities <- list()
 
-      # Get observer priorities if they exist
-      if (exists("OBSERVER_PRIORITIES", envir = .GlobalEnv)) {
+      # Get observer priorities if they exist (#492 3.1).
+      # I package-mode lever OBSERVER_PRIORITIES i biSPCharts-namespace,
+      # ikke .GlobalEnv. Tidligere lookup ville altid falde til hardcoded
+      # default med forkerte numeriske niveauer (HIGH=900L vs faktisk 2000
+      # i config_observer_priorities.R).
+      # Package-namespace-lookup fejler kun udenfor pakke-kontekst (fx ren
+      # source('global.R')); fald tilbage til .GlobalEnv-sti uden noise.
+      pkg_ns <- tryCatch(
+        asNamespace("biSPCharts"),
+        error = function(e) {
+          log_debug(
+            paste("asNamespace('biSPCharts') ej tilgaengelig:", conditionMessage(e)),
+            .context = "CACHE_GENERATOR"
+          )
+          NULL
+        }
+      )
+      if (!is.null(pkg_ns) &&
+        exists("OBSERVER_PRIORITIES", envir = pkg_ns, inherits = FALSE)) {
+        priorities <- get("OBSERVER_PRIORITIES", envir = pkg_ns, inherits = FALSE)
+      } else if (exists("OBSERVER_PRIORITIES", envir = .GlobalEnv)) {
+        # Dev-mode fallback (source('global.R') uden devtools::load_all)
         priorities <- get("OBSERVER_PRIORITIES", envir = .GlobalEnv)
       } else {
-        # Default priorities
+        # Default priorities (sidste fallback hvis package ej loadet endnu)
         priorities <- list(
           STATE_MANAGEMENT = 1000L,
           HIGH = 900L,

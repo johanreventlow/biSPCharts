@@ -15,6 +15,22 @@ observer_manager <- function() {
   list(
     add = function(observer, name = NULL) {
       id <- if (is.null(name)) length(observers) + 1 else name
+      # Destruér eksisterende observer ved navne-overwrite (#487) for at
+      # undgaa orphan-observers i Shiny's reactive graph. Cleanup_all() rydder
+      # kun det der er i `observers`-listen — overskrevne entries forsvinder
+      # ellers aldrig.
+      existing <- observers[[id]]
+      if (!is.null(existing) && !is.null(existing$destroy)) {
+        tryCatch(
+          existing$destroy(),
+          error = function(e) {
+            log_warn(
+              message = paste("Observer destroy fejlede ved overwrite for", id, ":", e$message),
+              .context = "OBSERVER_MGMT"
+            )
+          }
+        )
+      }
       observers[[id]] <<- observer
       id
     },

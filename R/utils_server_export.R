@@ -321,8 +321,13 @@ generate_pdf_preview <- function(bfh_qic_result,
             template = "bfh-diagram"
           )
 
-          # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke)
-          inject_template_assets(file.path(temp_dir, "bfh-template"))
+          # 4b. Inject biSPCharts fonts+images (BFHcharts' repo har dem ikke).
+          # Returnerer FALSE hvis BFHchartsAssets ikke er installeret — i saa
+          # tilfaelde maa Typst bruge system-fonts (#491). Uden den guard ville
+          # kommandoen referere ikke-eksisterende font_path-mappe og enten
+          # kollapse Typst-compile eller fallback til Typst's bundled fonts
+          # uden at vi ville vide hvad der faktisk skete.
+          assets_injected <- isTRUE(inject_template_assets(file.path(temp_dir, "bfh-template")))
 
           # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
           temp_png <- tempfile(fileext = ".png")
@@ -330,18 +335,24 @@ generate_pdf_preview <- function(bfh_qic_result,
           # Use quarto typst compile with PNG format.
           # --ignore-system-fonts: undgaar at Typst picker system-Mari-varianter
           # (fx Mari Heavy.otf med metadata style=Heavy,Regular) som regular weight.
-          font_path <- file.path(temp_dir, "bfh-template", "fonts")
+          # Aktiveres KUN hvis assets blev injected; ellers maa system-fonts staa
+          # som fallback for at undgaa cryptic compile-fejl.
+          base_args <- c(
+            "typst", "compile",
+            typst_file,
+            temp_png,
+            "-f", "png",
+            "--ppi", as.character(dpi)
+          )
+          if (assets_injected) {
+            font_path <- file.path(temp_dir, "bfh-template", "fonts")
+            font_args <- c("--font-path", font_path, "--ignore-system-fonts")
+          } else {
+            font_args <- character(0)
+          }
           compile_result <- system2(
             "quarto",
-            args = c(
-              "typst", "compile",
-              typst_file,
-              temp_png,
-              "-f", "png",
-              "--ppi", as.character(dpi),
-              "--font-path", font_path,
-              "--ignore-system-fonts"
-            ),
+            args = c(base_args, font_args),
             stdout = TRUE,
             stderr = TRUE
           )

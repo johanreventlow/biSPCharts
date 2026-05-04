@@ -36,8 +36,10 @@ resolve_analysis_centerline <- function(bfh_qic_result) {
   }
 
   # Fallback: summary kun hvis qic_data mangler (degraderet input).
-  # Note: summary-vaerdier er afrundede til UI-format; brug ikke til
-  # praecisionskritisk logik.
+  # Note: BFHcharts >= 0.15.0 returnerer raw qicharts2-praecision i
+  # summary-kolonner — afrundings-bug fra tidligere versioner er fixed.
+  # Vi beholder qic_data$cl som primær for at undgaa fremtidig regression
+  # hvis BFHcharts genintroducerer rounding (#492 3.4).
   summary_data <- bfh_qic_result$summary
   if (!is.null(summary_data) &&
     "centerlinje" %in% names(summary_data) &&

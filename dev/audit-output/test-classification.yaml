@@ -580,6 +580,14 @@ files:
     Klar til CI.'
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-observer-leak-overwrite-487.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-04'
+  rationale: Regression-test for #487 observer-leak ved navne-overwrite — tilfoejet manuelt.
 - file: test-outlier-count-latest-part.R
   audit_category: green
   type: unit
@@ -1034,6 +1042,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-04'
   rationale: Regression-test for #482 cache-key freeze/part/cl/notes — tilfoejet manuelt.
+- file: test-llm-context-truncation-489.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-04'
+  rationale: Regression-test for #489 LLM-context-cap — tilfoejet manuelt.
 - file: test-cache-session-scope.R
   audit_category: post-audit
   type: unit

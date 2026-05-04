@@ -185,6 +185,17 @@ EXPORT_DEPARTMENT_MAX_LENGTH <- 250
 #' @keywords internal
 EXPORT_HOSPITAL_MAX_LENGTH <- 250
 
+#' Maximum character length for export footnote
+#'
+#' Begraenser footnote (datakilde-attribution) til 500 karakterer.
+#' Footnote rendres som lille graa UPPERCASE-tekst nederst-hoejre i
+#' BFHcharts Typst-template (`footer_content`-parameter, 6pt) -- begraensningen
+#' sikrer at attribution-tekst ikke overflower template-footer-blokken.
+#' Kilde: #485 (production-readiness review).
+#'
+#' @keywords internal
+EXPORT_FOOTNOTE_MAX_LENGTH <- 500L
+
 # FILENAME GENERATION CONSTANTS ================================================
 
 #' Default prefix for exported filenames

@@ -252,6 +252,25 @@ get_ui_viewport_default(parameter)
 
 ---
 
+## Export Configuration
+
+PDF/PNG-eksport-konstanter (defineret i `R/config_export_config.R`).
+
+### Metadata Character Limits
+
+| Konstant | Default | Beskrivelse |
+|----------|---------|-------------|
+| `EXPORT_TITLE_MAX_LENGTH` | 200 | Maks chart-titel |
+| `EXPORT_DESCRIPTION_MAX_LENGTH` | 2000 | Maks PDF-datadefinition + LLM-context truncation-cap |
+| `EXPORT_DEPARTMENT_MAX_LENGTH` | 250 | Maks afdelings-/afsnit-navn |
+| `EXPORT_HOSPITAL_MAX_LENGTH` | 250 | Maks hospitalsnavn |
+| `EXPORT_FOOTNOTE_MAX_LENGTH` | 500 | Maks fodnote/datakilde-attribution (sendes som `metadata$footer_content` til BFHcharts Typst-template, #485) |
+
+Limits håndhæves client-side (HTML5 `maxlength` for input-felter) +
+server-side via `validate_export_inputs()`.
+
+---
+
 ## Environment Variables
 
 ### Logging

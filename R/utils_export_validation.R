@@ -29,6 +29,8 @@
 #' @param title Chart titel (max 200 tegn)
 #' @param department Afdeling/afsnit (max 100 tegn)
 #' @param description Indikator beskrivelse (max 2000 tegn)
+#' @param footnote Datakilde-attribution (max EXPORT_FOOTNOTE_MAX_LENGTH tegn).
+#'   Sendes til BFHcharts Typst-template som `footer_content` (#485).
 #' @param width Custom bredde i pixels (kun PNG)
 #' @param height Custom hoejde i pixels (kun PNG)
 #'
@@ -59,6 +61,7 @@ validate_export_inputs <- function(format,
                                    department = "",
                                    hospital = "",
                                    description = "",
+                                   footnote = "",
                                    width = NULL,
                                    height = NULL) {
   errors <- character(0)
@@ -68,6 +71,7 @@ validate_export_inputs <- function(format,
   department <- department %||% ""
   hospital <- hospital %||% ""
   description <- description %||% ""
+  footnote <- footnote %||% ""
 
   # Character limit validation
   if (nchar(title) > EXPORT_TITLE_MAX_LENGTH) {
@@ -99,6 +103,14 @@ validate_export_inputs <- function(format,
       "Hospitalsnavn m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
       EXPORT_HOSPITAL_MAX_LENGTH,
       nchar(hospital)
+    ))
+  }
+
+  if (nchar(footnote) > EXPORT_FOOTNOTE_MAX_LENGTH) {
+    errors <- c(errors, sprintf(
+      "Fodnote m\u00e5 max v\u00e6re %d tegn (nuv\u00e6rende: %d)",
+      EXPORT_FOOTNOTE_MAX_LENGTH,
+      nchar(footnote)
     ))
   }
 

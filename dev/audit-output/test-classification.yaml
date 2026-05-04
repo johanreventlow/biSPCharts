@@ -353,6 +353,14 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-export-footnote.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: yes
+  rationale: Footnote -> BFHcharts footer_content wiring (#485). Tester metadata-propagation, escape, validator length-cap, LLM truncation.
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-04'
 - file: test-export-quarto-capability.R
   audit_category: green
   type: unit

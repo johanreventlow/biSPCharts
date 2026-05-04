@@ -94,7 +94,7 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
     "Setup event listeners",
     code = {
       # #492 3.7: Tidligere blev flaget skrevet men aldrig laest som guard.
-      # Aktiver det nu for ægte idempotens — en double-init ville ellers
+      # Aktiver det nu for \u00e6gte idempotens \u2014 en double-init ville ellers
       # skabe duplicate observers paa sammen events.
       if (!isTRUE(app_state$infrastructure$event_listeners_setup)) {
         setup_event_listeners(app_state, emit,
@@ -104,7 +104,7 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
         app_state$infrastructure$event_listeners_setup <- TRUE
       } else {
         log_debug(
-          "Event listeners already setup — skipping duplicate registration",
+          "Event listeners already setup \u2014 skipping duplicate registration",
           .context = "APP_INIT"
         )
       }

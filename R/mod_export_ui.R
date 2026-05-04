@@ -135,23 +135,6 @@ mod_export_ui <- function(id) {
           ),
 
           # Metadata fields (alle formater) ----
-          shiny::div(
-            style = "margin-bottom: 15px;",
-            shiny::textAreaInput(
-              ns("export_title"),
-              "Titel:",
-              value = "",
-              # placeholder = "Skriv en kort og sigende titel,\n**eller konkluder, hvad grafen viser**",
-              placeholder = "Skriv en kort titel, eller tilf\u00f8j en konklusion,\n**der tydeligt opsummerer, hvad grafen fort\u00e6ller**",
-              width = "100%",
-              rows = 2,
-              resize = "vertical"
-            ),
-            shiny::tags$small(
-              class = "text-muted",
-              sprintf("Maksimalt %d karakterer", EXPORT_TITLE_MAX_LENGTH)
-            )
-          ),
           shiny::conditionalPanel(
             condition = sprintf("input['%s'] != 'png'", ns("export_format")),
             shiny::div(
@@ -175,33 +158,20 @@ mod_export_ui <- function(id) {
               width = "100%"
             )
           ),
-          ## Fodnote / Datakilde: rendres som footer-tekst paa baade PDF og PNG (#485)
           shiny::div(
             style = "margin-bottom: 15px;",
-            shiny::tagList(
-              shiny::textAreaInput(
-                ns("export_footnote"),
-                shiny::tagList(
-                  "Fodnote / Datakilde (vises under chart):",
-                  shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-                    bslib::tooltip(sprintf(
-                      "Klinisk attribution vist nederst paa eksporten. Maks %d tegn. Renderes som UPPERCASE-tekst i PDF (BFHcharts footer_content).",
-                      EXPORT_FOOTNOTE_MAX_LENGTH
-                    ))
-                ),
-                value = "",
-                placeholder = "Eksempel: Datakilde: KvalDB udtræk 2026-04-29",
-                width = "100%",
-                rows = 2,
-                resize = "vertical"
-              ),
-              # HTML5 maxlength (klient-side hard cap; server validerer ogsaa)
-              shiny::tags$script(sprintf(
-                "$('#%s').attr('maxlength', %d);",
-                ns("export_footnote"),
-                EXPORT_FOOTNOTE_MAX_LENGTH
-              )),
-              shiny::helpText(sprintf("Maks. %d tegn.", EXPORT_FOOTNOTE_MAX_LENGTH))
+            shiny::textAreaInput(
+              ns("export_title"),
+              "Indikatortitel:",
+              value = "",
+              placeholder = "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**",
+              width = "100%",
+              rows = 2,
+              resize = "vertical"
+            ),
+            shiny::tags$small(
+              class = "text-muted",
+              sprintf("Maksimalt %d karakterer", EXPORT_TITLE_MAX_LENGTH)
             )
           ),
 
@@ -336,6 +306,24 @@ mod_export_ui <- function(id) {
                 )
               )
             ),
+          ),
+
+          ## Datakilde / fodnote: nederste felt; sendes til BFHcharts footer_content (#485)
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::textInput(
+              ns("export_footnote"),
+              "Datakilde ell. fodnote:",
+              value = "",
+              placeholder = "Eksempel: Datakilde: KvalDB udtræk 2026-04-29",
+              width = "100%"
+            ),
+            # HTML5 maxlength (klient-side hard cap; server validerer ogsaa)
+            shiny::tags$script(sprintf(
+              "$('#%s').attr('maxlength', %d);",
+              ns("export_footnote"),
+              EXPORT_FOOTNOTE_MAX_LENGTH
+            ))
           ),
         )
       ),

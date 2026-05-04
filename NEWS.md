@@ -42,6 +42,19 @@
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
 
+## Bug fixes
+
+* **Branding-fix: Mari-font + BFH-farver lokalt:** Slettet stale `_brand.yml`
+  fra repo-root. Filen var en forældet POC-spec (Lato-font + Flatly
+  primary-blå #375a7f) der konflikterede med authoritative
+  `inst/config/brand.yml` (Mari + BFH hospital-blå #007dbb). bslib >= 0.7.0
+  auto-detekterer `_brand.yml` på cwd ved `bs_theme()`-kald og injicerer
+  Lato html-dependency, hvilket overstyrede biSPCharts'
+  `font-family-base = "Mari, Arial, ..."`. Konsekvens lokalt:
+  forkert font (Lato) + forkert primær-blå. `inst/config/brand.yml` er nu
+  eneste branding-source. Verificeret: `bs_theme_dependencies()` indeholder
+  ej længere Lato.
+
 ## Interne ændringer
 
 * Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`

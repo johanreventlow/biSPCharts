@@ -314,7 +314,6 @@ initialize_startup_performance_optimizations <- function() {
 #' }
 #'
 #' @import shiny
-#' @import golem
 #' @importFrom golem with_golem_options
 #' @export
 run_app <- function(port = NULL,

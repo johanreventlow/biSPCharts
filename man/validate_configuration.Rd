@@ -10,14 +10,14 @@ validate_configuration()
 invisible(TRUE) ved success; signalerer ellers.
 }
 \description{
-Køres tidligt i \code{run_app()} for at fail-fast på korrupt YAML, range-
+Koeres tidligt i \code{run_app()} for at fail-fast paa korrupt YAML, range-
 overskridelser i timing-konstanter eller manglende env-vars. Returnerer
 invisible TRUE hvis OK; signalerer typed \code{bisp_config_error} hvis ej.
 }
 \details{
 Tjekker:
 \itemize{
-\item GOLEM_CONFIG_ACTIVE er sat til en kendt værdi (default/development/
+\item GOLEM_CONFIG_ACTIVE er sat til en kendt vaerdi (default/development/
 production/testing)
 \item DEBOUNCE_DELAYS, OPERATION_TIMEOUTS og UPLOAD_LIMITS indeholder
 positive numerics inden for rimelige max-bounds (forhindrer fx
@@ -25,7 +25,7 @@ timeout = -1 eller upload-limit = TBs)
 \item get_golem_config(...) kan kaldes uden at fejle (YAML kan parses)
 }
 
-Returnerer struktureret kondition (klasse \code{bisp_config_error}) på
-fejl så caller kan håndtere det forskelligt fra runtime-errors.
+Returnerer struktureret kondition (klasse \code{bisp_config_error}) paa
+fejl saa caller kan haandtere det forskelligt fra runtime-errors.
 }
 \keyword{internal}

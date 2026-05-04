@@ -28,8 +28,17 @@ op via raekke-indeks.}
 data.frame; tom hvis ingen punkter (caller fortolker via \code{nrow()}).
 }
 \description{
-Returnerer en data.frame med raekker hvor enten \code{runs.signal == TRUE}
-eller punktet er uden for kontrolgraenser. Returnerer en attribut
-\code{empty_message} hvis ingen punkter findes - caller kan vise besked.
+Returnerer en data.frame med raekker hvor enten en Anhoej-violation
+(runs eller crossings) er aktiv eller punktet er uden for
+kontrolgraenser. Returnerer en attribut \code{empty_message} hvis ingen
+punkter findes - caller kan vise besked.
+}
+\details{
+#468: Tidligere blev \code{qic_data$runs.signal} brugt direkte som
+"Runs-signal"-rapport, men qicharts2's runs.signal er KOMBINERET
+Anhoej-signal (sat ved enten runs- ELLER crossings-violation). Vi
+beregner nu runs- og crossings-signaler separat per raekke ud fra
+longest.run/longest.run.max og n.crossings/n.crossings.min, og
+eksponerer dem som separate kolonner.
 }
 \keyword{internal}

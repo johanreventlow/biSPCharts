@@ -39,6 +39,84 @@ test_that("mock_bfh_qic matches BFHcharts::bfh_qic signature", {
   expect_setequal(mock_args, real_args)
 })
 
+# Body-kontrakt for #490: mock_bfh_qic skal returnere shape kompatibel med
+# BFHcharts 0.15.0 + transform_bfh_output. Fanger drift hvis nogen ved en fejl
+# bytter $qic_data tilbage til $data eller dropper Anhoej-kolonner.
+
+test_that("mock_bfh_qic returnerer bfh_qic_result-struktur (#490)", {
+  data <- data.frame(
+    date = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 10),
+    value = 1:10
+  )
+  result <- mock_bfh_qic(data = data, x = "date", y = "value", chart_type = "i")
+
+  expect_s3_class(result, "bfh_qic_result")
+  expect_true("qic_data" %in% names(result))
+  expect_false("data" %in% names(result),
+    info = "Mock skal eksponere $qic_data, ej $data — transform_bfh_output laeser $qic_data"
+  )
+  expect_true("summary" %in% names(result))
+  expect_true("config" %in% names(result))
+})
+
+test_that("mock_bfh_qic$qic_data inkluderer Anhoej-rule-kolonner (#490)", {
+  data <- data.frame(
+    date = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 5),
+    value = 1:5
+  )
+  result <- mock_bfh_qic(data = data, x = "date", y = "value")
+
+  required_cols <- c(
+    "x", "y", "cl", "anhoej.signal", "runs.signal",
+    "sigma.signal", "n.crossings", "n.crossings.min",
+    "longest.run", "longest.run.max", "part"
+  )
+  expect_true(all(required_cols %in% names(result$qic_data)),
+    info = "qic_data skal eksponere alle Anhoej/sigma-kolonner per BFHcharts 0.15.0-kontrakt"
+  )
+})
+
+test_that("mock_bfh_qic$summary har decomposed signal-kolonner (#490)", {
+  data <- data.frame(
+    date = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 5),
+    value = 1:5
+  )
+  result <- mock_bfh_qic(data = data, x = "date", y = "value")
+
+  required_summary_cols <- c(
+    "part", "centerlinje", "runs_signal",
+    "crossings_signal", "anhoej_signal"
+  )
+  expect_true(all(required_summary_cols %in% names(result$summary)),
+    info = "summary skal eksponere decomposed signal-kolonner (ej legacy loebelaengde_signal)"
+  )
+  expect_false("loebelaengde_signal" %in% names(result$summary),
+    info = "Legacy summary-kolonne fjernet i BFHcharts 0.15.0"
+  )
+})
+
+test_that("mock_bfh_qic kan rutes gennem transform_bfh_output uden fejl (#490)", {
+  skip_if(
+    !exists("transform_bfh_output", mode = "function"),
+    "transform_bfh_output ikke tilgængelig"
+  )
+  data <- data.frame(
+    date = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 8),
+    value = c(10, 12, 11, 14, 13, 15, 11, 12)
+  )
+  bfh_result <- mock_bfh_qic(data = data, x = "date", y = "value", chart_type = "i")
+
+  out <- transform_bfh_output(bfh_result,
+    chart_type = "i",
+    multiply = 1,
+    freeze_applied = FALSE
+  )
+
+  expect_true(is.list(out))
+  expect_true("qic_data" %in% names(out))
+  expect_equal(nrow(out$qic_data), 8L)
+})
+
 # ------------------------------------------------------------------------------
 # pins mock contracts
 # ------------------------------------------------------------------------------

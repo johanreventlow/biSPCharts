@@ -48,17 +48,18 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      # Pre-install system deps saa pak's sysreqs-handler skipper xtradeb PPA-add.
-      # Pakker uden RSPM binary for Noble falder til source-kompilering og kræver dev headers.
-      # PKG_SYSREQS=FALSE forhindrer auto-install, saa vi gør det manuelt her.
-      # curl >= 7.1.0: libcurl4-openssl-dev + libssl-dev
-      # fs >= 2.1.0: libuv1-dev + cmake
-      # openssl + websocket: libssl-dev
-      # xml2: libxml2-dev
-      # chromium: workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      # Pre-install alle system dev-headers som pak-lockfilen kraeever for source-build.
+      # PKG_SYSREQS=FALSE forhindrer pak's auto-install (undgaar xtradeb PPA HTTP 504).
+      # Liste fra pak lockfile (source-pkgs): curl, fs, openssl, websocket, xml2,
+      # jpeg, gert, systemfonts, textshaping, ragg. Se #436 + #527.
+      # chromium: pre-install undgaar xtradeb PPA-add via launchpad.net REST API.
       - name: Pre-install system deps (source-pkg dev headers + chromium workaround)
         run: |
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libuv1-dev libxml2-dev cmake
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libuv1-dev libgit2-dev \
+            zlib1g-dev libicu-dev libpng-dev libjpeg-dev \
+            libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \
+            libxml2-dev libx11-dev cmake
           sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
@@ -101,17 +102,18 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
-      # Pre-install system deps saa pak's sysreqs-handler skipper xtradeb PPA-add.
-      # Pakker uden RSPM binary for Noble falder til source-kompilering og kræver dev headers.
-      # PKG_SYSREQS=FALSE forhindrer auto-install, saa vi gør det manuelt her.
-      # curl >= 7.1.0: libcurl4-openssl-dev + libssl-dev
-      # fs >= 2.1.0: libuv1-dev + cmake
-      # openssl + websocket: libssl-dev
-      # xml2: libxml2-dev
-      # chromium: workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      # Pre-install alle system dev-headers som pak-lockfilen kraeever for source-build.
+      # PKG_SYSREQS=FALSE forhindrer pak's auto-install (undgaar xtradeb PPA HTTP 504).
+      # Liste fra pak lockfile (source-pkgs): curl, fs, openssl, websocket, xml2,
+      # jpeg, gert, systemfonts, textshaping, ragg. Se #436 + #527.
+      # chromium: pre-install undgaar xtradeb PPA-add via launchpad.net REST API.
       - name: Pre-install system deps (source-pkg dev headers + chromium workaround)
         run: |
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libuv1-dev libxml2-dev cmake
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libuv1-dev libgit2-dev \
+            zlib1g-dev libicu-dev libpng-dev libjpeg-dev \
+            libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \
+            libxml2-dev libx11-dev cmake
           sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
@@ -158,17 +160,18 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
-      # Pre-install system deps saa pak's sysreqs-handler skipper xtradeb PPA-add.
-      # Pakker uden RSPM binary for Noble falder til source-kompilering og kræver dev headers.
-      # PKG_SYSREQS=FALSE forhindrer auto-install, saa vi gør det manuelt her.
-      # curl >= 7.1.0: libcurl4-openssl-dev + libssl-dev
-      # fs >= 2.1.0: libuv1-dev + cmake
-      # openssl + websocket: libssl-dev
-      # xml2: libxml2-dev
-      # chromium: workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      # Pre-install alle system dev-headers som pak-lockfilen kraeever for source-build.
+      # PKG_SYSREQS=FALSE forhindrer pak's auto-install (undgaar xtradeb PPA HTTP 504).
+      # Liste fra pak lockfile (source-pkgs): curl, fs, openssl, websocket, xml2,
+      # jpeg, gert, systemfonts, textshaping, ragg. Se #436 + #527.
+      # chromium: pre-install undgaar xtradeb PPA-add via launchpad.net REST API.
       - name: Pre-install system deps (source-pkg dev headers + chromium workaround)
         run: |
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libuv1-dev libxml2-dev cmake
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libuv1-dev libgit2-dev \
+            zlib1g-dev libicu-dev libpng-dev libjpeg-dev \
+            libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \
+            libxml2-dev libx11-dev cmake
           sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - uses: r-lib/actions/setup-r-dependencies@v2

@@ -48,7 +48,8 @@ Imports:
     config (>= 0.3.0),
     systemfonts (>= 1.0.0),
     pkgload (>= 1.3.0),
-    svglite (>= 2.1.0)
+    svglite (>= 2.1.0),
+    openxlsx (>= 4.2.0)
 Suggests:
     chromote,
     httr2,
@@ -59,7 +60,6 @@ Suggests:
     rmarkdown,
     rprojroot,
     writexl (>= 1.4.0),
-    openxlsx (>= 4.2.0),
     microbenchmark (>= 1.4.0),
     covr (>= 3.6.0),
     qicharts2 (>= 0.7.0),

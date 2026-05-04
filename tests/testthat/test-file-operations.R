@@ -503,12 +503,14 @@ describe("Edge Cases", {
     writeLines(csv_content, csv_file)
     on.exit(unlink(csv_file))
 
-    # readr should handle this gracefully
-    result <- readr::read_csv2(
+    # readr should handle this gracefully -- forventet "parsing issues"
+    # warning ved inkonsistente kolonner; vi tester at parser stadig
+    # returnerer 2 rækker.
+    result <- suppressWarnings(readr::read_csv2(
       csv_file,
       locale = readr::locale(encoding = "UTF-8"),
       show_col_types = FALSE
-    )
+    ))
 
     expect_equal(nrow(result), 2)
   })

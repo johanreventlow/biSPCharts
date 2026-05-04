@@ -105,14 +105,16 @@ test_that("Column selection UI updates handle empty states", {
 test_that("Performance ikke påvirkes af character(0) handling", {
   skip_if_not_installed("microbenchmark")
 
-  # Benchmark character(0) handling
-  benchmark_result <- microbenchmark::microbenchmark(
+  # Benchmark character(0) handling. suppressWarnings: microbenchmark
+  # advarer "less accurate nanosecond times to avoid potential integer
+  # overflows" på langtidsbench-targets; ej testrelevant.
+  benchmark_result <- suppressWarnings(microbenchmark::microbenchmark(
     char_zero = biSPCharts:::sanitize_selection(character(0)),
     null_input = biSPCharts:::sanitize_selection(NULL),
     empty_string = biSPCharts:::sanitize_selection(""),
     valid_input = biSPCharts:::sanitize_selection("valid"),
     times = 100
-  )
+  ))
 
   # All operations should be fast (under 1ms median)
   expect_true(all(benchmark_result$time < 1e6)) # 1ms in nanoseconds

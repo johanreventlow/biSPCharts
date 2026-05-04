@@ -629,12 +629,14 @@ describe("Malformed Data Handling", {
     writeLines(malformed_csv, temp_file)
     on.exit(unlink(temp_file))
 
-    # readr should handle gracefully
-    result <- readr::read_csv2(
+    # readr should handle gracefully -- forventet "parsing issues"-warning
+    # når input har inkonsistente kolonner. Vi tester at parser stadig
+    # returnerer 2 rækker, ikke at warning bobles op.
+    result <- suppressWarnings(readr::read_csv2(
       temp_file,
       locale = readr::locale(encoding = "UTF-8"),
       show_col_types = FALSE
-    )
+    ))
 
     expect_equal(nrow(result), 2)
   })

@@ -10,6 +10,7 @@ validate_export_inputs(
   department = "",
   hospital = "",
   description = "",
+  footnote = "",
   width = NULL,
   height = NULL
 )
@@ -22,6 +23,9 @@ validate_export_inputs(
 \item{department}{Afdeling/afsnit (max 100 tegn)}
 
 \item{description}{Indikator beskrivelse (max 2000 tegn)}
+
+\item{footnote}{Datakilde-attribution (max EXPORT_FOOTNOTE_MAX_LENGTH tegn).
+Sendes til BFHcharts Typst-template som \code{footer_content} (#485).}
 
 \item{width}{Custom bredde i pixels (kun PNG)}
 

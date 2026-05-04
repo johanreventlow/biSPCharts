@@ -318,14 +318,17 @@ describe("Multi-Part Data", {
 
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
 
-    result <- generateSPCPlot(
+    # suppressWarnings: små test-phaser (<8 punkter) trigger forventet
+    # qicharts2-warning "Phase(s) ... fewer than 8 observations" -- vi
+    # tester multi-part-struktur, ikke statistisk reliability.
+    result <- suppressWarnings(generateSPCPlot(
       data = test_data,
       config = config,
       chart_type = "p",
       show_phases = TRUE,
       skift_column = "Skift",
       chart_title_reactive = reactive("Multi-Part Test")
-    )
+    ))
 
     verify_plot_structure(result, expected_layers_min = 4)
 
@@ -356,14 +359,15 @@ describe("Multi-Part Data", {
 
     config <- list(x_col = "Obs", y_col = "Værdi", n_col = NULL)
 
-    result <- generateSPCPlot(
+    # suppressWarnings: korte test-phaser, se note ved Multi-Part Test ovenfor.
+    result <- suppressWarnings(generateSPCPlot(
       data = test_data,
       config = config,
       chart_type = "i",
       show_phases = TRUE,
       skift_column = "Skift",
       chart_title_reactive = reactive("Part Transition Test")
-    )
+    ))
 
     verify_plot_structure(result)
 
@@ -389,14 +393,17 @@ describe("Multi-Part Data", {
 
     config <- list(x_col = "Obs", y_col = "Tæller", n_col = "Nævner")
 
-    result <- generateSPCPlot(
+    # suppressWarnings: kort baseline (5 < 8 punkter) trigger forventet
+    # qicharts2-warning "freeze = N: baseline has fewer than 8 observations".
+    # Vi tester freeze-mekanisme, ikke statistisk reliability.
+    result <- suppressWarnings(generateSPCPlot(
       data = test_data,
       config = config,
       chart_type = "p",
       show_phases = FALSE,
       frys_column = "Frys",
       chart_title_reactive = reactive("Freeze Baseline Test")
-    )
+    ))
 
     verify_plot_structure(result)
 

@@ -28,6 +28,44 @@
 
 ## Bug fixes
 
+* **PDF-eksport: forkert Mari-variant (Heavy) i body-tekst.** Typst's
+  font-matcher valgte `Mari-Heavy.otf` til `set text(font: "Mari")`-render
+  i stedet for `Mari-Book.otf`. Root cause: BFHchartsAssets v0.1.0 leverer
+  6 Mari-OTF-varianter (Light/Book/Regular/Bold/Heavy/Poster) der alle
+  har internal weight-metadata = 4 undtagen Bold (=7). Ambiguous metadata
+  → Typst vælger første scan-match (typisk Heavy alfabetisk). Verificeret
+  via `pdffonts SPC-41.pdf` (lokal: MariHeavy) vs `pdffonts SPC-36.pdf`
+  (Connect Cloud: MariBook). Fix i `inject_template_assets()`
+  (`R/utils_server_export.R`): efter `BFHchartsAssets::inject_bfh_assets()`
+  prunes staged `bfh-template/fonts/` til kun Mari-Book.otf + Mari-Bold.otf
+  + Arial-fallbacks. BFHchartsAssets selv urørt; biSPCharts kontrollerer
+  hvad Typst ser per export.
+
+* **Mari-font: forkert variant (fed) i UI lokalt.** CSS `@font-face`
+  declarerer `font-family: 'Mari'` men pegede på `MariOffice-Book.ttf` +
+  `MariOffice-Bold.ttf` der internt har family `"Mari Office"` (med
+  mellemrum). Family-name-mismatch kombineret med name-collision mod
+  user-installeret system-Mari førte til at browser valgte forkert
+  variant (typisk Bold/Regular i stedet for Book) ved render af body-
+  tekst. Fix: skift til `Mari-Book.otf` + `Mari-Bold.otf` (samme
+  BFHchartsAssets v0.1.0-companion-pakke), der har korrekt internal
+  family `"Mari"` + matchende weight-metadata (Book=4, Bold=7).
+  `register_mari_font()` opdateret til samme filer for konsistens
+  mellem browser-CSS og R/ggplot/Typst-rendering.
+
+* **PDF-preview: hospital-logo manglede i preview (men ikke i download).**
+  `generate_pdf_preview()` (`R/utils_server_export.R`) kaldte
+  `BFHcharts::bfh_create_typst_document()` FØR `inject_template_assets()`.
+  Konsekvens: `.typ`-filen skrev `logo_path: none` (default i template) før
+  `Hospital_Maerke_RGB_A1_str.png` blev kopieret ind, og Typst-render
+  skipede foreground-blokken. PDF-download (`generate_pdf_export()`) var ej
+  ramt — den bruger `bfh_export_pdf()`-pipelinen der orkestrerer
+  inject-then-write korrekt internt. Fix: sæt
+  `metadata$logo_path = "images/Hospital_Maerke_RGB_A1_str.png"` eksplicit
+  før `bfh_create_typst_document()`-kaldet (matcher
+  `.detect_packaged_logo()`-konventionen i BFHcharts). Logo-filen kopieres
+  ind via `inject_template_assets()` umiddelbart efter, før Typst kompilerer.
+
 * **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå
   `qic_data$cl` (uafrundet qicharts2-værdi) primært i stedet for
   BFHcharts' afrundede `summary$centerlinje`. Tidligere kunne
@@ -41,6 +79,19 @@
   `bfh_create_typst_document()` er nu alle eksporterede funktioner i
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
+
+## Bug fixes
+
+* **Branding-fix: Mari-font + BFH-farver lokalt:** Slettet stale `_brand.yml`
+  fra repo-root. Filen var en forældet POC-spec (Lato-font + Flatly
+  primary-blå #375a7f) der konflikterede med authoritative
+  `inst/config/brand.yml` (Mari + BFH hospital-blå #007dbb). bslib >= 0.7.0
+  auto-detekterer `_brand.yml` på cwd ved `bs_theme()`-kald og injicerer
+  Lato html-dependency, hvilket overstyrede biSPCharts'
+  `font-family-base = "Mari, Arial, ..."`. Konsekvens lokalt:
+  forkert font (Lato) + forkert primær-blå. `inst/config/brand.yml` er nu
+  eneste branding-source. Verificeret: `bs_theme_dependencies()` indeholder
+  ej længere Lato.
 
 ## Interne ændringer
 

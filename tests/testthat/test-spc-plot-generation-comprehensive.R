@@ -221,8 +221,10 @@ test_that("generateSPCPlot phase and freeze functionality works", {
     n_col = "Nævner"
   )
 
-  # TEST: With phases and freeze
-  phase_result <- generateSPCPlot(
+  # TEST: With phases and freeze -- suppressWarnings: kort baseline (5 < 8
+  # punkter) trigger forventet qicharts2-warning; vi tester phase/freeze-
+  # struktur, ikke statistisk reliability.
+  phase_result <- suppressWarnings(generateSPCPlot(
     data = phase_data,
     config = config,
     chart_type = "p",
@@ -230,7 +232,7 @@ test_that("generateSPCPlot phase and freeze functionality works", {
     skift_column = "Skift",
     frys_column = "Frys",
     chart_title_reactive = reactive("Phase Test")
-  )
+  ))
 
   expect_s3_class(phase_result$plot, "ggplot")
   expect_true(is.data.frame(phase_result$qic_data))

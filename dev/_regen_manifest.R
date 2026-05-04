@@ -25,21 +25,18 @@ files <- files[file.exists(files)]
 cat("Total files i bundle:", length(files), "\n")
 
 # biSPCharts er app'en selv — skal IKKE indgå som dependency i manifest.
-# Unload + remove fra installed library for at undgå "installed from source"-fejl.
+# rsconnect::writeManifest() fejler hvis pakken er source-installeret.
+# Unload + fjern fra library inden writeManifest.
 if ("biSPCharts" %in% loadedNamespaces() &&
     requireNamespace("pkgload", quietly = TRUE)) {
   try(pkgload::unload("biSPCharts"), silent = TRUE)
 }
-# Forsøg at fjerne biSPCharts fra .libPaths, så rsconnect ikke ser den som dep
-try({
-  bisp_lib <- find.package("biSPCharts", quiet = TRUE)
-  if (length(bisp_lib) > 0) {
-    cat("Bemærk: biSPCharts er installeret i:", bisp_lib, "\n")
-    cat("Hvis manifest fejler med 'installed from source', kør:\n")
-    cat("  remove.packages('biSPCharts')\n")
-    cat("og forsøg igen.\n")
-  }
-}, silent = TRUE)
+bisp_path <- tryCatch(find.package("biSPCharts"), error = function(e) character(0))
+if (length(bisp_path) > 0) {
+  cat("Fjerner source-installeret biSPCharts fra library:", bisp_path, "\n")
+  remove.packages("biSPCharts", lib = dirname(bisp_path))
+  cat("biSPCharts fjernet\n")
+}
 
 rsconnect::writeManifest(appDir = ".", appFiles = files)
 cat("manifest.json regenereret OK\n")

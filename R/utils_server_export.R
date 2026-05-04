@@ -311,6 +311,19 @@ generate_pdf_preview <- function(bfh_qic_result,
           # 3. Merge metadata with chart title
           metadata_full <- BFHcharts::bfh_merge_metadata(metadata, chart_title)
 
+          # 3b. Sæt logo_path manuelt (preview-fix #485-followup).
+          #     bfh_create_typst_document() accepterer ikke inject_assets-callback
+          #     (kun bfh_export_pdf gør). Uden manuel logo_path skriver template
+          #     .typ-fil med default `logo_path: none` -> intet logo i preview
+          #     selv om inject_template_assets() bagefter kopierer logo-filen.
+          #     Stien er relativ til typst-document-mappen og matcher
+          #     .detect_packaged_logo() i BFHcharts/R/utils_export_helpers.R
+          #     (autodetekt-mønster brugt af bfh_export_pdf-pipelinen).
+          if (is.null(metadata_full$logo_path) &&
+            requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+            metadata_full$logo_path <- "images/Hospital_Maerke_RGB_A1_str.png"
+          }
+
           # 4. Create Typst document via BFHcharts public API (>= 0.14.0).
           typst_file <- file.path(temp_dir, "document.typ")
           BFHcharts::bfh_create_typst_document(

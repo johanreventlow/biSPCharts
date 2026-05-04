@@ -164,7 +164,7 @@ mod_export_ui <- function(id) {
               ns("export_title"),
               "Indikatortitel:",
               value = "",
-              placeholder = "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**",
+              placeholder = "Skriv en kort titel, eller tilf\u00f8j en konklusion,\n**der tydeligt opsummerer, hvad grafen fort\u00e6ller**",
               width = "100%",
               rows = 2,
               resize = "vertical"
@@ -315,7 +315,7 @@ mod_export_ui <- function(id) {
               ns("export_footnote"),
               "Datakilde ell. fodnote:",
               value = "",
-              placeholder = "Eksempel: Datakilde: KvalDB udtræk 2026-04-29",
+              placeholder = "Eksempel: Datakilde: KvalDB udtr\u00e6k 2026-04-29",
               width = "100%"
             ),
             # HTML5 maxlength (klient-side hard cap; server validerer ogsaa)

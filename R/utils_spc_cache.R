@@ -111,13 +111,18 @@ generate_spc_cache_key <- function(data, config) {
       }
 
       # 3. Extract relevant data columns for signature
-      # Only hash columns that affect SPC calculation
+      # Only hash columns that affect SPC calculation. freeze_column og
+      # part_column inkluderes (#482): toggle af freeze/part skifter
+      # kolonne-vaerdier i data, og dermed cache-key — undgaar stale chart
+      # ved baseline/fase-aendringer.
       data_columns <- c(
         config$x_column,
         config$y_column,
         config$n_column,
         config$cl_column,
-        config$kommentar_column
+        config$kommentar_column,
+        config$freeze_column,
+        config$part_column
       )
 
       # Filter to existing columns
@@ -147,11 +152,18 @@ generate_spc_cache_key <- function(data, config) {
       }
 
       # 5. Extract stable configuration elements
+      # freeze_column/part_column/cl_column/kommentar_column tilfoejes (#482):
+      # kolonne-NAVNE indgaar i config-hash saa skift mellem to forskellige
+      # freeze-kolonner trigger cache-miss selv om data-indhold er ens.
       config_signature <- list(
         chart_type = config$chart_type,
         x_column = config$x_column,
         y_column = config$y_column,
         n_column = config$n_column,
+        cl_column = config$cl_column,
+        freeze_column = config$freeze_column,
+        part_column = config$part_column,
+        kommentar_column = config$kommentar_column,
         freeze_position = config$freeze_position,
         part_positions = config$part_positions,
         target_value = config$target_value,

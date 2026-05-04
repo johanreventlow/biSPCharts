@@ -1034,6 +1034,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-cache-key-freeze-part-482.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-04'
+  rationale: Regression-test for #482 cache-key freeze/part/cl/notes — tilfoejet manuelt.
 - file: test-llm-context-truncation-489.R
   audit_category: post-audit
   type: unit

@@ -10,12 +10,19 @@ build_cache_key(
   x_var,
   y_var,
   n_var,
-  multiply,
-  extra_params,
-  use_cache
+  cl_var = NULL,
+  freeze_var = NULL,
+  part_var = NULL,
+  notes_column = NULL,
+  multiply = 1,
+  extra_params = list(),
+  use_cache = TRUE
 )
 }
 \description{
-Byg cache-nøgle for SPC-beregning
+Inkluderer kolonne-navne for freeze/part/cl/notes (#482) saa cache-miss
+triggeres ved toggle af baseline, fase eller centerline-override. Tidligere
+var disse hardcoded NULL — cache returnerede stale chart ved freeze/part-
+toggle, hvilket kunne flippe baseline-fortolkning klinisk.
 }
 \keyword{internal}

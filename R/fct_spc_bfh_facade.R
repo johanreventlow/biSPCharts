@@ -171,7 +171,12 @@ compute_spc_results_bfh <- function(
   )
 
   extra_params <- list(...)
-  cache_key <- build_cache_key(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache)
+  cache_key <- build_cache_key(
+    data, chart_type, x_var, y_var, n_var,
+    cl_var = cl_var, freeze_var = freeze_var,
+    part_var = part_var, notes_column = notes_column,
+    multiply = multiply, extra_params = extra_params, use_cache = use_cache
+  )
 
   cached <- read_spc_cache(cache_key, app_state)
   if (!is.null(cached)) {
@@ -204,8 +209,17 @@ compute_spc_results_bfh <- function(
 
 #' Byg cache-nøgle for SPC-beregning
 #'
+#' Inkluderer kolonne-navne for freeze/part/cl/notes (#482) saa cache-miss
+#' triggeres ved toggle af baseline, fase eller centerline-override. Tidligere
+#' var disse hardcoded NULL — cache returnerede stale chart ved freeze/part-
+#' toggle, hvilket kunne flippe baseline-fortolkning klinisk.
+#'
 #' @keywords internal
-build_cache_key <- function(data, chart_type, x_var, y_var, n_var, multiply, extra_params, use_cache) {
+build_cache_key <- function(data, chart_type, x_var, y_var, n_var,
+                            cl_var = NULL, freeze_var = NULL,
+                            part_var = NULL, notes_column = NULL,
+                            multiply = 1, extra_params = list(),
+                            use_cache = TRUE) {
   if (!use_cache) {
     return(NULL)
   }
@@ -216,6 +230,10 @@ build_cache_key <- function(data, chart_type, x_var, y_var, n_var, multiply, ext
         x_column = x_var,
         y_column = y_var,
         n_column = n_var,
+        cl_column = cl_var,
+        freeze_column = freeze_var,
+        part_column = part_var,
+        kommentar_column = notes_column,
         freeze_position = NULL,
         part_positions = NULL,
         target_value = extra_params$target_value,

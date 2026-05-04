@@ -319,9 +319,24 @@ validate_aspect_ratio <- function(width, height, warn_only = TRUE) {
 
 #' Escape user-input for Typst-template
 #'
-#' Escapes Typst-markup characters: #, $, backtick, backslash.
-#' Defense-in-depth -- BFHcharts forventes ogsaa at escape, men app-laget
-#' tilfoejer ekstra beskyttelse mod markup-injection.
+#' Escapes Typst-markup characters for at undgaa at user-input fortolkes som
+#' Typst-markup ved indsaettelse i template. Defense-in-depth -- BFHcharts
+#' forventes ogsaa at escape, men app-laget tilfoejer ekstra beskyttelse
+#' mod markup-injection.
+#'
+#' Escaped tegn (jf. Typst-syntaks):
+#' \itemize{
+#'   \item Backslash (\\) -- escape-prefiks selv
+#'   \item Hash (#) -- function-call/raw-block
+#'   \item Dollar ($) -- math-mode
+#'   \item Backtick (\code{`}) -- raw-text
+#'   \item Asterisk (*) -- bold (#486)
+#'   \item Underscore (_) -- emphasis/italic (#486)
+#'   \item Square brackets (\code{[}, \code{]}) -- content-block (#486)
+#'   \item Angle brackets (\code{<}, \code{>}) -- label/syntax (#486)
+#'   \item At-sign (@) -- reference (#486)
+#'   \item Line-leading =, -, +, / -- heading/list-markers (#486)
+#' }
 #'
 #' @param value Character or NULL/non-character (returneres uaendret).
 #'   Vectors behandles per element.
@@ -342,6 +357,23 @@ escape_typst_metadata <- function(value) {
   value <- gsub("#", "\\\\#", value)
   value <- gsub("\\$", "\\\\$", value)
   value <- gsub("`", "\\\\`", value)
+
+  # #486: Markup-tegn der inden for tekst kan inducere format-aendring.
+  value <- gsub("\\*", "\\\\*", value)
+  value <- gsub("_", "\\\\_", value)
+  value <- gsub("\\[", "\\\\[", value)
+  value <- gsub("\\]", "\\\\]", value)
+  value <- gsub("<", "\\\\<", value)
+  value <- gsub(">", "\\\\>", value)
+  value <- gsub("@", "\\\\@", value)
+
+  # #486: Line-leading markup (heading/list). Brug multi-line-mode (?m) saa
+  # ^ matcher start-af-linje, ej kun start-af-streng.
+  value <- gsub("(?m)^=", "\\\\=", value, perl = TRUE)
+  value <- gsub("(?m)^-", "\\\\-", value, perl = TRUE)
+  value <- gsub("(?m)^\\+", "\\\\+", value, perl = TRUE)
+  value <- gsub("(?m)^/", "\\\\/", value, perl = TRUE)
+
   value
 }
 

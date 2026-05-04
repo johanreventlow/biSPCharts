@@ -129,3 +129,70 @@ test_that("escape_typst_metadata haandterer tom streng", {
   result <- escape_typst_metadata("")
   expect_equal(result, "")
 })
+
+# TEST: #486 — udvidet markup-coverage =========================================
+# Sikrer escape af markup-tegn der tidligere blev render'd som format
+# (bold, emphasis, label, reference, list, heading) i Typst-PDF.
+
+test_that("escape_typst_metadata escaper asterisk (*) — bold", {
+  result <- escape_typst_metadata("Geriatri *G16*")
+  # Forventet: "Geriatri \*G16\*" (R-streng = "Geriatri \\*G16\\*")
+  expect_equal(result, "Geriatri \\*G16\\*")
+})
+
+test_that("escape_typst_metadata escaper underscore (_) — emphasis", {
+  result <- escape_typst_metadata("kategori_a_b")
+  expect_equal(result, "kategori\\_a\\_b")
+})
+
+test_that("escape_typst_metadata escaper square brackets ([ ]) — content-block", {
+  result <- escape_typst_metadata("[indhold]")
+  expect_equal(result, "\\[indhold\\]")
+})
+
+test_that("escape_typst_metadata escaper angle brackets (< >) — label/syntax", {
+  result <- escape_typst_metadata("<test>")
+  expect_equal(result, "\\<test\\>")
+})
+
+test_that("escape_typst_metadata escaper at-sign (@) — reference", {
+  result <- escape_typst_metadata("test@host")
+  expect_equal(result, "test\\@host")
+})
+
+test_that("escape_typst_metadata escaper line-leading = (heading)", {
+  result <- escape_typst_metadata("=Heading")
+  expect_equal(result, "\\=Heading")
+
+  # Multi-line: kun line-leading skal escapes
+  multi <- escape_typst_metadata("normal\n=second-line")
+  expect_equal(multi, "normal\n\\=second-line")
+})
+
+test_that("escape_typst_metadata escaper line-leading - (list)", {
+  result <- escape_typst_metadata("-list item")
+  expect_equal(result, "\\-list item")
+})
+
+test_that("escape_typst_metadata escaper line-leading + (list)", {
+  result <- escape_typst_metadata("+list item")
+  expect_equal(result, "\\+list item")
+})
+
+test_that("escape_typst_metadata escaper line-leading / (list)", {
+  result <- escape_typst_metadata("/term: definition")
+  expect_equal(result, "\\/term: definition")
+})
+
+test_that("escape_typst_metadata bevarer ikke-leading -, +, / (kun line-leading escapes)", {
+  # Inde i tekst skal disse ej escapes (kun line-leading er markup-trigger)
+  result <- escape_typst_metadata("a-b+c/d")
+  expect_equal(result, "a-b+c/d")
+})
+
+test_that("escape_typst_metadata kombinerer alle markup-tegn (#486)", {
+  # Realistisk klinisk bruger-input med flere markup-trigger
+  input <- "<test@host>"
+  result <- escape_typst_metadata(input)
+  expect_equal(result, "\\<test\\@host\\>")
+})

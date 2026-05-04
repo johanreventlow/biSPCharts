@@ -114,7 +114,11 @@ initialize_shinylogs_tracking <- function(session,
 #' @return Named list med `enabled` (logical) og `source` (character)
 #' @keywords internal
 resolve_analytics_config <- function() {
-  if (toupper(Sys.getenv("BISPC_DISABLE_ANALYTICS", "")) %in% c("TRUE", "1", "YES", "ON")) {
+  # #458: typed env access via safe_getenv. Disable-flagget tester eksplicit
+  # mod string-tokens (TRUE/1/YES/ON), så character-type bevares for at
+  # respektere case-insensitive matching.
+  disable_flag <- safe_getenv("BISPC_DISABLE_ANALYTICS", "", "character")
+  if (toupper(disable_flag) %in% c("TRUE", "1", "YES", "ON")) {
     return(list(enabled = FALSE, source = "env:BISPC_DISABLE_ANALYTICS"))
   }
   config_val <- tryCatch(
@@ -124,7 +128,7 @@ resolve_analytics_config <- function() {
   if (!is.null(config_val)) {
     return(list(enabled = isTRUE(config_val), source = "golem-config"))
   }
-  enable_flag <- Sys.getenv("ENABLE_SHINYLOGS", "TRUE")
+  enable_flag <- safe_getenv("ENABLE_SHINYLOGS", "TRUE", "character")
   list(
     enabled = toupper(enable_flag) %in% c("TRUE", "1", "YES", "ON"),
     source = "env:ENABLE_SHINYLOGS (legacy)"

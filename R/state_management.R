@@ -398,33 +398,29 @@ create_emit_api <- function(app_state) {
       })
     },
 
-    # SPRINT 4: Legacy compatibility functions (kept for API stability, but now map to data_updated only)
+    # SPRINT 4: Legacy compatibility functions — bevares for API stabilitet
+    # (#462). 0 R/-callers, men tests/test-event-system-emit.R + integration-
+    # workflows verificerer aliases'ne eksplicit.
     data_loaded = function() {
       shiny::isolate({
-        # Fire consolidated event only (legacy event firing removed)
         app_state$events$data_updated <- app_state$events$data_updated + 1L
-
-        # Store context
         if (!exists("last_data_update_context", envir = app_state)) {
           app_state$last_data_update_context <- list()
         }
         app_state$last_data_update_context <- list(
-          context = "data_loaded", # SPRINT 4: Removed "legacy_" prefix
+          context = "data_loaded",
           timestamp = Sys.time()
         )
       })
     },
     data_changed = function() {
       shiny::isolate({
-        # Fire consolidated event only (legacy event firing removed)
         app_state$events$data_updated <- app_state$events$data_updated + 1L
-
-        # Store context
         if (!exists("last_data_update_context", envir = app_state)) {
           app_state$last_data_update_context <- list()
         }
         app_state$last_data_update_context <- list(
-          context = "data_changed", # SPRINT 4: Removed "legacy_" prefix
+          context = "data_changed",
           timestamp = Sys.time()
         )
       })

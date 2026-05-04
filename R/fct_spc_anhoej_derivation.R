@@ -75,8 +75,14 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
     if (col %in% names(data)) as.double(safe_max(data[[col]])) else NA_real_
   }
 
-  runs_signal <- if ("runs.signal" %in% names(data)) {
-    any(data$runs.signal, na.rm = TRUE)
+  # #468: qicharts2's runs.signal-kolonne er KOMBINERET Anhoej-signal (sat ved
+  # enten runs- ELLER crossings-violation), ikke kun runs. Brug derfor
+  # longest.run > longest.run.max til separat runs-detektion.
+  # Verificeret mod qicharts2 source helper.functions.R `crsignal()` L91-168.
+  runs_signal <- if ("longest.run" %in% names(data) && "longest.run.max" %in% names(data)) {
+    lr <- safe_max(data$longest.run)
+    lr_max <- safe_max(data$longest.run.max)
+    !is.na(lr) && !is.na(lr_max) && lr > lr_max
   } else {
     FALSE
   }

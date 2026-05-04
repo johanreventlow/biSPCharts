@@ -47,6 +47,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
       # Trigger-commit-SHA exposes via env-var ej direkte ${{ }}-interpolation
@@ -93,6 +94,12 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
+
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        if: steps.check.outputs.deps_changed == 'true'
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - name: Install R dependencies
         if: steps.check.outputs.deps_changed == 'true'

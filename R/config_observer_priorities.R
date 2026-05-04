@@ -62,7 +62,9 @@ OBSERVER_PRIORITIES <- list(
   CLEANUP = 200, # Cleanup operations
   LOGGING = 100, # Monitoring and logging
 
-  # Compatibility aliases for legacy code
+  # NB (#462): legacy aliases er aktivt brugt 6+ steder (mod_export_ai,
+  # utils_server_events_navigation, utils_server_events_data, ...).
+  # Behold indtil opfølgnings-PR hvor alle callers migreres samlet.
   HIGH = 2000, # Maps to STATE_MANAGEMENT
   MEDIUM = 1250, # Maps to DATA_PROCESSING
   LOW = 750, # Maps to UI_SYNC

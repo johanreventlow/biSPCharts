@@ -174,6 +174,32 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
 validate_excel_file <- function(file_path) {
   errors <- character(0)
 
+  # ZIP-BOMB GUARD (#449): xlsx er et ZIP-arkiv. En lille fil kan
+  # ekspandere til GB ukomprimeret. readxl::read_excel() ekspanderer
+  # fuld ZIP før den respekterer n_max, så size-validering på disk
+  # alene er utilstrækkelig. Tjek total ukomprimeret størrelse via
+  # utils::unzip(list = TRUE) før vi rører read_excel.
+  zip_check <- tryCatch(
+    {
+      entries <- utils::unzip(file_path, list = TRUE)
+      total_mb <- sum(entries$Length, na.rm = TRUE) / (1024 * 1024)
+      list(ok = TRUE, total_mb = total_mb)
+    },
+    error = function(e) list(ok = FALSE, error = e$message)
+  )
+
+  if (isTRUE(zip_check$ok)) {
+    limit_mb <- get_max_xlsx_uncompressed_mb()
+    if (zip_check$total_mb > limit_mb) {
+      errors <- c(errors, sprintf(
+        "Excel-fil er for stor efter dekomprimering (%.1f MB > %d MB graense)",
+        zip_check$total_mb, limit_mb
+      ))
+      return(list(valid = FALSE, errors = errors))
+    }
+  }
+  # Hvis zip_check fejler (ej ZIP/xlsx) lader vi readxl give brugbar fejl
+
   safe_operation(
     "Validate Excel file structure",
     code = {

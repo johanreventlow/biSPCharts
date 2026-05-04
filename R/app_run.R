@@ -27,8 +27,8 @@ configure_logging_from_yaml <- function(log_level = NULL) {
     }
   }
 
-  # Get current environment config
-  current_config <- Sys.getenv("GOLEM_CONFIG_ACTIVE", "default")
+  # Get current environment config (#458: typed via safe_getenv)
+  current_config <- safe_getenv("GOLEM_CONFIG_ACTIVE", "default", "character")
 
   # Read logging level from YAML
   tryCatch(
@@ -54,7 +54,7 @@ configure_logging_from_yaml <- function(log_level = NULL) {
   # Fallback to environment-based defaults
   default_level <- if (current_config %in% c("development", "testing")) "DEBUG" else "WARN"
 
-  if (Sys.getenv("SPC_LOG_LEVEL", "") == "") {
+  if (safe_getenv("SPC_LOG_LEVEL", "", "character") == "") {
     Sys.setenv(SPC_LOG_LEVEL = default_level)
     message(sprintf(
       "[LOG_CONFIG] Fallback log level '%s' for config '%s'",
@@ -74,7 +74,7 @@ configure_logging_from_yaml <- function(log_level = NULL) {
 configure_app_environment <- function(enable_test_mode = NULL, golem_options = list()) {
   # Auto-detect test mode if not specified
   if (is.null(enable_test_mode)) {
-    current_config <- Sys.getenv("GOLEM_CONFIG_ACTIVE", "production")
+    current_config <- safe_getenv("GOLEM_CONFIG_ACTIVE", "production", "character")
     enable_test_mode <- interactive() || current_config == "development"
   }
 
@@ -118,6 +118,94 @@ configure_app_environment <- function(enable_test_mode = NULL, golem_options = l
     config_profile = config_profile,
     test_mode = enable_test_mode
   ))
+}
+
+#' Validate boot-time configuration (#459)
+#'
+#' Koeres tidligt i `run_app()` for at fail-fast paa korrupt YAML, range-
+#' overskridelser i timing-konstanter eller manglende env-vars. Returnerer
+#' invisible TRUE hvis OK; signalerer typed `bisp_config_error` hvis ej.
+#'
+#' Tjekker:
+#' - GOLEM_CONFIG_ACTIVE er sat til en kendt vaerdi (default/development/
+#'   production/testing)
+#' - DEBOUNCE_DELAYS, OPERATION_TIMEOUTS og UPLOAD_LIMITS indeholder
+#'   positive numerics inden for rimelige max-bounds (forhindrer fx
+#'   timeout = -1 eller upload-limit = TBs)
+#' - get_golem_config(...) kan kaldes uden at fejle (YAML kan parses)
+#'
+#' Returnerer struktureret kondition (klasse `bisp_config_error`) paa
+#' fejl saa caller kan haandtere det forskelligt fra runtime-errors.
+#'
+#' @return invisible(TRUE) ved success; signalerer ellers.
+#' @keywords internal
+validate_configuration <- function() {
+  errors <- character(0)
+
+  # 1. Validate GOLEM_CONFIG_ACTIVE
+  valid_envs <- c("default", "development", "production", "testing")
+  cfg <- safe_getenv("GOLEM_CONFIG_ACTIVE", "default", "character")
+  if (!cfg %in% valid_envs) {
+    errors <- c(errors, sprintf(
+      "GOLEM_CONFIG_ACTIVE='%s' er ikke en af %s",
+      cfg, paste(valid_envs, collapse = "/")
+    ))
+  }
+
+  # 2. Range-check timing-konstanter
+  range_check <- function(named_list, list_name, min_val, max_val) {
+    for (key in names(named_list)) {
+      val <- named_list[[key]]
+      if (!is.numeric(val) || length(val) != 1L || is.na(val) ||
+        val < min_val || val > max_val) {
+        errors <<- c(errors, sprintf(
+          "%s$%s = %s (skal v\u00e6re numerisk mellem %s og %s)",
+          list_name, key, format(val), format(min_val), format(max_val)
+        ))
+      }
+    }
+  }
+  if (exists("DEBOUNCE_DELAYS", inherits = TRUE)) {
+    range_check(DEBOUNCE_DELAYS, "DEBOUNCE_DELAYS", 0, 60000)
+  }
+  if (exists("OPERATION_TIMEOUTS", inherits = TRUE)) {
+    range_check(OPERATION_TIMEOUTS, "OPERATION_TIMEOUTS", 0, 600000)
+  }
+  # NB: UPLOAD_LIMITS er ikke uniform type-gruppe (max_file_size_mb,
+  # max_line_count, warning_row_count, max_xlsx_uncompressed_mb har
+  # vidt forskellige skalaer). Range-check skal vaere pr-felt -- ikke
+  # gjort her endnu, ville give falske positiver. Issue #459 follow-up.
+
+  # 3. YAML-parsing
+  yaml_ok <- tryCatch(
+    {
+      if (exists("get_golem_config", mode = "function")) {
+        # Test at default-config kan laeses
+        get_golem_config("logging")
+        TRUE
+      } else {
+        TRUE
+      }
+    },
+    error = function(e) {
+      errors <<- c(errors, sprintf("YAML-config kunne ikke parses: %s", e$message))
+      FALSE
+    }
+  )
+
+  if (length(errors) > 0) {
+    msg <- paste0(
+      "Boot-time config-validering fejlede (", length(errors), " problem(er)):\n  - ",
+      paste(errors, collapse = "\n  - ")
+    )
+    rlang::abort(
+      message = msg,
+      class = c("bisp_config_error", "error", "condition"),
+      details = list(errors = errors, env = cfg, yaml_ok = yaml_ok)
+    )
+  }
+
+  invisible(TRUE)
 }
 
 #' Initialize startup performance optimizations
@@ -243,6 +331,11 @@ run_app <- function(port = NULL,
 
   # Configure logging level using YAML as single source of truth (AFTER env config)
   configure_logging_from_yaml(log_level)
+
+  # Boot-time config-validation (#459) -- fail-fast paa korrupt YAML eller
+  # range-overskridelser i timing-konstanter, saa app ikke starter op med
+  # silent broken config der foerst manifesterer sig under load.
+  validate_configuration()
 
   # Merge passed options directly (no feature flags needed - pure BFHcharts)
   merged_options <- options

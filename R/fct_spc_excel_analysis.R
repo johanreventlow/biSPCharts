@@ -401,9 +401,17 @@ build_anhoej_section <- function(anhoej_per_part) {
 
 #' Byg sektion D (Special cause-punkter) til SPC-analyse-arket
 #'
-#' Returnerer en data.frame med raekker hvor enten `runs.signal == TRUE`
-#' eller punktet er uden for kontrolgraenser. Returnerer en attribut
-#' `empty_message` hvis ingen punkter findes - caller kan vise besked.
+#' Returnerer en data.frame med raekker hvor enten en Anhoej-violation
+#' (runs eller crossings) er aktiv eller punktet er uden for
+#' kontrolgraenser. Returnerer en attribut `empty_message` hvis ingen
+#' punkter findes - caller kan vise besked.
+#'
+#' #468: Tidligere blev `qic_data$runs.signal` brugt direkte som
+#' "Runs-signal"-rapport, men qicharts2's runs.signal er KOMBINERET
+#' Anhoej-signal (sat ved enten runs- ELLER crossings-violation). Vi
+#' beregner nu runs- og crossings-signaler separat per r\u00e6kke ud fra
+#' longest.run/longest.run.max og n.crossings/n.crossings.min, og
+#' eksponerer dem som separate kolonner.
 #'
 #' @param qic_data data.frame.
 #' @param original_data data.frame eller NULL. Bruges til at slaa dato og notes
@@ -431,7 +439,7 @@ build_special_cause_section <- function(qic_data,
     paste("Centrallinje", unit_suffix_cl),
     paste("\u00d8vre gr\u00e6nse", unit_suffix_ucl),
     paste("Nedre gr\u00e6nse", unit_suffix_lcl),
-    "Out-of-limits", "Runs-signal", "Notes", "N\u00e6vner (n)"
+    "Out-of-limits", "Runs-signal", "Crossings-signal", "Notes", "N\u00e6vner (n)"
   )
 
   if (nrow(qic_data) == 0L) {
@@ -443,11 +451,33 @@ build_special_cause_section <- function(qic_data,
   has_y <- "y" %in% names(qic_data)
   has_ucl <- "ucl" %in% names(qic_data)
   has_lcl <- "lcl" %in% names(qic_data)
-  has_runs <- "runs.signal" %in% names(qic_data)
+
+  # #468: Beregn separate runs- og crossings-signaler per r\u00e6kke.
+  # Erstatter tidligere qic_data$runs.signal-direkte-brug der konflaterede
+  # de to violations.
+  has_run_cols <- "longest.run" %in% names(qic_data) &&
+    "longest.run.max" %in% names(qic_data)
+  has_cross_cols <- "n.crossings" %in% names(qic_data) &&
+    "n.crossings.min" %in% names(qic_data)
+
+  runs_per_row <- if (has_run_cols) {
+    !is.na(qic_data$longest.run) & !is.na(qic_data$longest.run.max) &
+      qic_data$longest.run > qic_data$longest.run.max
+  } else {
+    rep(FALSE, nrow(qic_data))
+  }
+
+  crossings_per_row <- if (has_cross_cols) {
+    !is.na(qic_data$n.crossings) & !is.na(qic_data$n.crossings.min) &
+      qic_data$n.crossings < qic_data$n.crossings.min
+  } else {
+    rep(FALSE, nrow(qic_data))
+  }
 
   ooc_idx <- .excel_ooc_rows(qic_data)
-  runs_idx <- if (has_runs) which(qic_data$runs.signal & !is.na(qic_data$runs.signal)) else integer(0)
-  signal_rows <- sort(unique(c(ooc_idx, runs_idx)))
+  runs_idx <- which(runs_per_row)
+  crossings_idx <- which(crossings_per_row)
+  signal_rows <- sort(unique(c(ooc_idx, runs_idx, crossings_idx)))
 
   if (length(signal_rows) == 0L) {
     df <- data.frame(matrix(ncol = length(cols), nrow = 0))
@@ -467,6 +497,7 @@ build_special_cause_section <- function(qic_data,
 
     is_ooc <- i %in% ooc_idx
     is_runs <- i %in% runs_idx
+    is_crossings <- i %in% crossings_idx
 
     note_val <- ""
     n_val <- NA_real_
@@ -491,6 +522,7 @@ build_special_cause_section <- function(qic_data,
       Nedre_graense = lcl_val,
       `Out-of-limits` = to_ja_nej(is_ooc),
       `Runs-signal` = to_ja_nej(is_runs),
+      `Crossings-signal` = to_ja_nej(is_crossings),
       Notes = note_val,
       Naevner = n_val
     )

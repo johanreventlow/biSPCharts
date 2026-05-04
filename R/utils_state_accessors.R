@@ -538,20 +538,16 @@ set_user_session_started <- function(app_state, value) {
 }
 
 # ============================================================================
-# ERROR STATE ACCESSORS — FASE 3 ADDITIONS (ny sub-sektion)
+# ERROR STATE ACCESSORS
 # ============================================================================
+#
+# Canonical schema lives in `create_app_state()` (state_management.R):
+#   last_error, error_count, error_history (cap 10), recovery_attempts,
+#   last_recovery_time. All access goes through these accessors so callers
+#   never reach into `app_state$errors$*` directly. See issue #444.
 
-# Ensure the errors sub-state is initialised once per create_app_state() call.
-# It is bootstrapped lazily here so we do not need to touch state_management.R.
-
-.ensure_errors_state <- function(app_state) {
-  if (is.null(shiny::isolate(app_state$errors))) {
-    app_state$errors <- shiny::reactiveValues(
-      error_list = list(),
-      error_count = 0L
-    )
-  }
-}
+# Maximum entries kept in `error_history` (FIFO eviction).
+ERROR_HISTORY_CAP <- 10L
 
 #' Get Last Error
 #'
@@ -563,26 +559,28 @@ set_user_session_started <- function(app_state, value) {
 #'
 #' @keywords internal
 get_last_error <- function(app_state) {
-  .ensure_errors_state(app_state)
-  shiny::isolate({
-    lst <- app_state$errors$error_list
-    if (length(lst) == 0L) NULL else lst[[length(lst)]]
-  })
+  shiny::isolate(app_state$errors$last_error)
 }
 
 #' Set Last Error
 #'
-#' Records a new error and increments the error counter.
+#' Records a new error: updates `last_error`, appends to `error_history`
+#' (capped at `ERROR_HISTORY_CAP` via FIFO eviction) and increments
+#' `error_count`.
 #'
 #' @param app_state Centralized app state
 #' @param value Named list describing the error
 #'
 #' @keywords internal
 set_last_error <- function(app_state, value) {
-  .ensure_errors_state(app_state)
   shiny::isolate({
-    app_state$errors$error_list <- c(app_state$errors$error_list, list(value))
-    app_state$errors$error_count <- app_state$errors$error_count + 1L
+    app_state$errors$last_error <- value
+    history <- c(app_state$errors$error_history, list(value))
+    if (length(history) > ERROR_HISTORY_CAP) {
+      history <- history[(length(history) - ERROR_HISTORY_CAP + 1L):length(history)]
+    }
+    app_state$errors$error_history <- history
+    app_state$errors$error_count <- (app_state$errors$error_count %||% 0L) + 1L
   })
 }
 
@@ -596,8 +594,67 @@ set_last_error <- function(app_state, value) {
 #'
 #' @keywords internal
 get_error_count <- function(app_state) {
-  .ensure_errors_state(app_state)
   shiny::isolate(app_state$errors$error_count %||% 0L)
+}
+
+#' Get Error History
+#'
+#' Returns the recent error history (max `ERROR_HISTORY_CAP`, FIFO).
+#'
+#' @param app_state Centralized app state
+#'
+#' @return List of error records (oldest first)
+#'
+#' @keywords internal
+get_error_history <- function(app_state) {
+  shiny::isolate(app_state$errors$error_history %||% list())
+}
+
+#' Get Recovery Attempts
+#'
+#' @param app_state Centralized app state
+#'
+#' @return Integer
+#'
+#' @keywords internal
+get_recovery_attempts <- function(app_state) {
+  shiny::isolate(app_state$errors$recovery_attempts %||% 0L)
+}
+
+#' Increment Recovery Attempts
+#'
+#' Adds 1 to the recovery-attempt counter.
+#'
+#' @param app_state Centralized app state
+#'
+#' @keywords internal
+increment_recovery_attempts <- function(app_state) {
+  shiny::isolate({
+    app_state$errors$recovery_attempts <- (app_state$errors$recovery_attempts %||% 0L) + 1L
+  })
+}
+
+#' Get Last Recovery Time
+#'
+#' @param app_state Centralized app state
+#'
+#' @return POSIXct or NULL
+#'
+#' @keywords internal
+get_last_recovery_time <- function(app_state) {
+  shiny::isolate(app_state$errors$last_recovery_time)
+}
+
+#' Set Last Recovery Time
+#'
+#' @param app_state Centralized app state
+#' @param value POSIXct timestamp (default `Sys.time()`)
+#'
+#' @keywords internal
+set_last_recovery_time <- function(app_state, value = Sys.time()) {
+  shiny::isolate({
+    app_state$errors$last_recovery_time <- value
+  })
 }
 
 # ============================================================================
@@ -795,5 +852,152 @@ set_viz_cache_updating <- function(app_state, value) {
 set_session_peek_result <- function(app_state, value) {
   shiny::isolate({
     app_state$session$peek_result <- value
+  })
+}
+
+# ============================================================================
+# H1 ADDITIONS — accessor-disciplin færdiggørelse (#447)
+# ============================================================================
+
+#' Set Autogen Active Flag
+#'
+#' Suspend-flag der signalerer at en programmatisk input-update er undervejs
+#' (mod_export_analysis), så settings_save ikke gemmer auto-tekst som
+#' bruger-ændring. Ryddes via session$onFlushed.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_autogen_active <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$autogen_active <- value
+  })
+}
+
+#' Get Autogen Active Flag
+#'
+#' @param app_state Centralized app state
+#'
+#' @return Logical (default FALSE)
+#'
+#' @keywords internal
+is_autogen_active <- function(app_state) {
+  shiny::isolate(isTRUE(app_state$session$autogen_active))
+}
+
+#' Get/Set Has-Data Status
+#'
+#' Wizard-gate-status: "true"/"false"-streng (renderText-kompatibel) der
+#' signalerer om der er meningsfuld data tilgængelig.
+#'
+#' @param app_state Centralized app state
+#' @param value "true" eller "false"
+#'
+#' @keywords internal
+get_has_data_status <- function(app_state) {
+  shiny::isolate(app_state$session$has_data_status %||% "false")
+}
+
+#' @rdname get_has_data_status
+#' @keywords internal
+set_has_data_status <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$has_data_status <- value
+  })
+}
+
+#' Get/Set Last Save Time
+#'
+#' Timestamp for seneste vellykket localStorage save (Issue #193).
+#'
+#' @param app_state Centralized app state
+#' @param value POSIXct timestamp (default `Sys.time()`)
+#'
+#' @keywords internal
+get_last_save_time <- function(app_state) {
+  shiny::isolate(app_state$session$last_save_time)
+}
+
+#' @rdname get_last_save_time
+#' @keywords internal
+set_last_save_time <- function(app_state, value = Sys.time()) {
+  shiny::isolate({
+    app_state$session$last_save_time <- value
+  })
+}
+
+#' Get/Set Auto-Save Enabled
+#'
+#' Feature-flag for automatisk session-persistering. Sættes til FALSE
+#' hvis localStorage er fuldt (quota-fejl).
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+is_auto_save_enabled <- function(app_state) {
+  shiny::isolate(app_state$session$auto_save_enabled %||% TRUE)
+}
+
+#' @rdname is_auto_save_enabled
+#' @keywords internal
+set_auto_save_enabled <- function(app_state, value) {
+  shiny::isolate({
+    app_state$session$auto_save_enabled <- value
+  })
+}
+
+#' Get/Set Last Upload Time
+#'
+#' Timestamp for seneste vellykket file-upload. Bruges af rate-limit-
+#' check i fct_file_operations.
+#'
+#' @param app_state Centralized app state
+#' @param value POSIXct timestamp (default `Sys.time()`)
+#'
+#' @keywords internal
+get_last_upload_time <- function(app_state) {
+  shiny::isolate(app_state$session$last_upload_time)
+}
+
+#' @rdname get_last_upload_time
+#' @keywords internal
+set_last_upload_time <- function(app_state, value = Sys.time()) {
+  shiny::isolate({
+    app_state$session$last_upload_time <- value
+  })
+}
+
+#' Set Table Operation Cleanup Needed Flag
+#'
+#' Markerer at en table-opdatering kræver post-flush cleanup (clearing
+#' table_operation_in_progress flag). Forhindrer race conditions
+#' mellem rapid table-edits.
+#'
+#' @param app_state Centralized app state
+#' @param value Logical TRUE/FALSE
+#'
+#' @keywords internal
+set_table_op_cleanup_needed <- function(app_state, value) {
+  shiny::isolate({
+    app_state$data$table_operation_cleanup_needed <- value
+  })
+}
+
+#' Set Visualization Module Data Cache
+#'
+#' Atomisk update af både module_data_cache og module_cached_data — disse
+#' to skal altid være synkrone for at undgå inkonsistens mellem modulets
+#' interne snapshot og UI-readable cache (mod_spc_chart_state).
+#'
+#' @param app_state Centralized app state
+#' @param data Data frame eller NULL
+#'
+#' @keywords internal
+set_module_data_cache <- function(app_state, data) {
+  shiny::isolate({
+    app_state$visualization$module_data_cache <- data
+    app_state$visualization$module_cached_data <- data
   })
 }

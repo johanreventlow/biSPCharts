@@ -61,9 +61,10 @@ test_that("classify_error_source handles unknown errors gracefully", {
   expect_match(classification$user_message, "uventet fejl")
 })
 
-# sanitize_log_details og log_with_throttle fjernet i logging-refactor.
-# PII-filtrering + throttling sker nu implicit i log_*-kald.
-# Tests for dette ligger i test-logging-*.R.
+# Note: sanitize_log_details + log_with_throttle blev fjernet i logging-
+# refactor. Ansvaret er flyttet til log_info/log_warn/log_error (strukturerer
+# details internt) og logger-backend via options(spc.log.level) +
+# .context-filtrering. Tests for de fjernede funktioner er slettet (#428).
 
 # Test: Input-validering kaster fejl (opdateret efter #240)
 # Tidligere forventede testene NULL-return via safe_operation, men #240 indførte
@@ -161,20 +162,18 @@ test_that("Errors are logged with correct component tags", {
   expect_equal(classification$component, "BFH_VALIDATION")
 })
 
-# Test: Production safeguards
-# sanitize_log_details fjernet — PII-filtrering sker nu implicit i log_*-kald.
-# Tests for dette ligger i test-logging-*.R.
+# Note: PII-filtrerings-test er slettet (#428) — sanitize_log_details fjernet i
+# logging-refactor; PII-filtrering sker nu implicit i log_*-kald og dækkes af
+# test-logging-*.R.
 
 test_that("Error messages are actionable and user-friendly", {
   # Test various error scenarios
   data <- create_test_data()
 
-  # Invalid chart type error - validate_chart_type_bfh uses safe_operation
-  # which returns NULL on error instead of throwing
-  result1 <- validate_chart_type_bfh("not_a_chart_type")
-
-  # safe_operation returns NULL on error
-  expect_null(result1)
+  # NB: tidligere kald til validate_chart_type_bfh fjernet (#451) — funktionen
+  # var dead code, faktisk validering sker i validate_spc_request().
+  # Her testes alene at error_classifier mapper invalid-chart-type-strings
+  # korrekt til "biSPCharts" / "Konfigurationsfejl".
 
   # Test error classification directly
   chart_error <- simpleError("Invalid chart_type: 'not_a_chart_type'. Must be one of: run, i, mr")

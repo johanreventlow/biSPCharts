@@ -74,15 +74,20 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
 }
 
 if (requireNamespace("BFHcharts", quietly = TRUE)) {
+  # Drop mock-formals that real bfh_qic no longer exposes, so the
+  # contract-test (`expect_setequal(mock_args, real_args)`) survives upstream
+  # API trimming without per-arg test changes. Mock body never references
+  # these legacy args, so removing them is safe.
   real_bfh_qic_args <- names(formals(BFHcharts::bfh_qic))
   mock_bfh_qic_formals <- formals(mock_bfh_qic)
-  real_has_language <- "language" %in% real_bfh_qic_args
-  mock_has_language <- "language" %in% names(mock_bfh_qic_formals)
-  if (!real_has_language && mock_has_language) {
-    mock_bfh_qic_formals$language <- NULL
+  legacy_args <- setdiff(names(mock_bfh_qic_formals), real_bfh_qic_args)
+  for (arg in legacy_args) {
+    mock_bfh_qic_formals[[arg]] <- NULL
+  }
+  if (length(legacy_args) > 0) {
     formals(mock_bfh_qic) <- mock_bfh_qic_formals
   }
-  rm(real_bfh_qic_args, mock_bfh_qic_formals, real_has_language, mock_has_language)
+  rm(real_bfh_qic_args, mock_bfh_qic_formals, legacy_args)
 }
 
 # ------------------------------------------------------------------------------

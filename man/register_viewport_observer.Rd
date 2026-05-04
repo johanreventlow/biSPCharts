@@ -4,7 +4,7 @@
 \alias{register_viewport_observer}
 \title{Register Viewport Dimension Observer}
 \usage{
-register_viewport_observer(app_state, session, ns)
+register_viewport_observer(app_state, session, ns, emit)
 }
 \arguments{
 \item{app_state}{Reactive values object containing visualization state}
@@ -12,6 +12,9 @@ register_viewport_observer(app_state, session, ns)
 \item{session}{Shiny session object (for clientData access)}
 
 \item{ns}{Namespace function for output IDs}
+
+\item{emit}{Emit API object from \code{create_emit_api(app_state)}, created once
+outside the observer to avoid recreating it on every reactive invalidation.}
 }
 \value{
 NULL (side effect: registers observer with Shiny)

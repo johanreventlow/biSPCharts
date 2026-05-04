@@ -1,12 +1,47 @@
 # biSPCharts 0.3.3
 
+## Nye features
+
+* **Berig analyse-metadata til BFHddl-pipeline-paritet:**
+  `build_export_analysis_metadata()` returnerer nu yderligere felter til
+  brug i AI-context og PDF-eksport: `y_axis_unit` (rå unit-streng),
+  `target_display` (formatteret target med unit), `action_text`
+  (handlingsforslag baseret på 6-case Anhøj-stabilitet × målopfyldelse-
+  matrix, replikerer `pipeline_action_text()` i BFHddl), `baseline_analysis`
+  (optional pre-beregnet baseline-tekst, default `""`) og `signal_examples`
+  (optional, default `""`). Eksisterende felter (`data_definition`, `target`,
+  `chart_title`, `department`, `centerline`, `at_target`, `target_direction`)
+  bevares. BFHcharts' `bfh_generate_analysis()` ignorerer ekstra felter; de
+  bruges af biSPCharts' egne LLM-context- og PDF-eksport-flows. (#175)
+
 ## Bug fixes
+
+* **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå
+  `qic_data$cl` (uafrundet qicharts2-værdi) primært i stedet for
+  BFHcharts' afrundede `summary$centerlinje`. Tidligere kunne
+  afrunding flippe målfortolkning ved boundary-cases (eksempel: rå
+  cl=0.9005 opfylder target>=0.9003, men summary-værdi 0.9000 ville
+  forkert vise "ikke opfyldt"). Summary bruges nu kun som fallback
+  hvis qic_data mangler. (#470)
 
 * Erstatter `getFromNamespace()`-brug af BFHcharts-internals med public
   API. `bfh_extract_spc_stats()`, `bfh_merge_metadata()` og
   `bfh_create_typst_document()` er nu alle eksporterede funktioner i
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
+
+## Dependencies
+
+* Bump `BFHcharts (>= 0.15.0)` (cross-repo bump-protokol). BFHcharts
+  0.15.0 dekomponerer Anhoej-signaler i `summary` (nye `runs_signal`,
+  `crossings_signal`, `anhoej_signal`-kolonner; legacy
+  `summary$loebelaengde_signal` fjernet) og returnerer raw qicharts2-
+  praecision i numeriske kontrolgraense-kolonner. biSPCharts paavirkes
+  ikke direkte: `summary$loebelaengde_signal` blev ikke brugt nogen
+  steder, og raw-precision-skiftet er allerede haandteret via #470
+  (rå `qic_data$cl`). Forbereder downstream-migration af #468 til at
+  bruge nye dekomponerede signaler. Se BFHcharts NEWS 0.15.0 for fuld
+  migration. (BFHcharts PR #293)
 
 # biSPCharts 0.3.2
 

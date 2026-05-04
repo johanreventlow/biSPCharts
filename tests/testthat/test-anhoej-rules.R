@@ -384,156 +384,22 @@ test_that("compute_spc_results_bfh() signal column matches BFHchart anhoej.signa
 })
 
 # ==============================================================================
-# Validation Tests: qicharts2 Baseline Comparison
-# ==============================================================================
-#
-# DEPRECATED: Disse tests er skippet permanent.
-#
-# Rationale: Testene sammenligner biSPCharts-output (via compute_spc_results_bfh)
-# mod baselines genereret med qicharts2::qic(). Efter BFHcharts v0.7.2 beregner
-# BFHcharts selv Anhøj-reglerne, og qicharts2-fallbacken blev fjernet fra
-# facaden (fct_spc_bfh_facade.R §7e). BFHcharts' og qicharts2' algoritmer
-# producerer numerisk forskellige resultater på identiske inputs (fx er
-# n_crossings ikke identisk), så eksakt baseline-sammenligning er ikke
-# længere arkitektonisk meningsfuldt.
-#
-# Se åbenbart: R/fct_spc_bfh_facade.R linje 549-552 for arkitekturskiftet.
-# Unit-tests for extract_anhoej_metadata() (linjer 34-345) dækker stadig
-# korrekthed af metadata-ekstraktion.
-
-test_that("Run chart: Anhøj rules match qicharts2 baseline - anhoej scenario", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("run", "anhoej")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    chart_type = "run"
-  )
-
-  # Assert: Anhøj metadata matches baseline
-  expect_false(is.null(result$metadata$anhoej_rules))
-
-  # Compare runs detection
-  expect_equal(
-    result$metadata$anhoej_rules$runs_detected,
-    baseline$qic_output$anhoej_rules$runs_signal
-  )
-
-  # Compare crossings detection
-  # Note: Baseline uses different naming
-  expect_equal(
-    result$metadata$anhoej_rules$n_crossings,
-    baseline$qic_output$anhoej_rules$n_crossings
-  )
-})
-
-test_that("Run chart: No Anhøj violations in basic scenario", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("run", "basic")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    chart_type = "run"
-  )
-
-  # Assert: Should have Anhøj metadata even if no violations
-  expect_false(is.null(result$metadata$anhoej_rules))
-})
-
-test_that("I chart: Anhøj rules detected correctly", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("i", "anhoej")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    chart_type = "i"
-  )
-
-  # Assert: Anhøj metadata present
-  expect_false(is.null(result$metadata$anhoej_rules))
-  expect_true("runs_detected" %in% names(result$metadata$anhoej_rules))
-})
-
-test_that("P chart: Anhøj rules with denominator", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("p", "basic")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    n_var = names(baseline$input_data)[3],
-    chart_type = "p"
-  )
-
-  # Assert
-  expect_false(is.null(result$metadata$anhoej_rules))
-})
-
-test_that("C chart: Anhøj rules for count data", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("c", "basic")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    chart_type = "c"
-  )
-
-  # Assert
-  expect_false(is.null(result$metadata$anhoej_rules))
-})
-
-test_that("U chart: Anhøj rules for rate data", {
-  skip("BFHcharts v0.7.2 beregner Anhøj-regler selv — qicharts2-baselines ikke længere ækvivalente")
-  skip_if_not_installed("BFHcharts")
-
-  # Arrange
-  baseline <- load_baseline("u", "basic")
-
-  # Act
-  result <- compute_spc_results_bfh(
-    data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
-    n_var = names(baseline$input_data)[3],
-    chart_type = "u"
-  )
-
-  # Assert
-  expect_false(is.null(result$metadata$anhoej_rules))
-})
-
-# ==============================================================================
 # Edge Case Tests
 # ==============================================================================
+#
+# NB: 6 baseline-comparison-tests fjernet 2026-05-03 (#440 wontfix-decision).
+# Tests sammenlignede compute_spc_results_bfh() output mod qicharts2-baselines,
+# men BFHcharts beregner Anhøj selv siden v0.7.2 (bevidst arkitektur-valg).
+# BFHcharts' og qicharts2' algoritmer producerer numerisk forskellige
+# resultater på identiske inputs — eksakt baseline-sammenligning er ikke
+# arkitektonisk meningsfuld.
+#
+# Anhøj-detektion er stadig dækket via:
+# - extract_anhoej_metadata() unit-tests (linjer 34-127)
+# - validate_anhoej_columns() unit-tests (linjer 133-175)
+# - calculate_combined_anhoej_signal() unit-tests (linjer 181-224)
+# - format_anhoej_metadata() unit-tests (linjer 230-287)
+# Se git log for fjernede tests hvis behov for historisk reference.
 
 test_that("Anhøj rules handle all points on center line", {
   # Arrange: All points exactly on center line
@@ -576,24 +442,22 @@ test_that("Anhøj rules handle minimal data (3 points)", {
 })
 
 test_that("Anhøj rules handle freeze period correctly", {
-  skip("Baseline-fixture har forkert kolonne-layout for aktuel facade — se rationale øverst i baseline comparison-sektion")
   skip_if_not_installed("BFHcharts")
 
-  # Arrange
+  # Baseline-kolonner: Dato (x), Skift (logical), Frys (logical), Taeller (y), Naevner
+  # Tidligere skip-årsag (forkert kolonne-layout) løst ved at bruge eksplicitte
+  # kolonnenavne i stedet for positionel indeksering.
   baseline <- load_baseline("run", "freeze")
 
-  # Act
   result <- compute_spc_results_bfh(
     data = baseline$input_data,
-    x_var = names(baseline$input_data)[1],
-    y_var = names(baseline$input_data)[2],
+    x_var = "Dato",
+    y_var = "Taeller",
     chart_type = "run",
-    freeze_var = if ("freeze" %in% names(baseline$input_data)) "freeze" else NULL
+    freeze_var = "Frys"
   )
 
-  # Assert
   expect_false(is.null(result$metadata$anhoej_rules))
-  # Freeze should not prevent Anhøj calculation
   expect_true(result$metadata$freeze_applied)
 })
 

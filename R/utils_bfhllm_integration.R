@@ -156,7 +156,7 @@ get_system_config <- function() {
 #' @keywords internal
 initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
   if (!requireNamespace("BFHllm", quietly = TRUE)) {
-    log_info("BFHllm not installed - AI features disabled")
+    log_info("BFHllm not installed - AI features disabled", .context = "AI_SETUP")
     return(invisible(NULL))
   }
 
@@ -174,6 +174,7 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
   )
 
   log_info("BFHllm initialized",
+    .context = "AI_SETUP",
     details = list(
       model = ai_config$model,
       timeout = ai_config$timeout_seconds,
@@ -196,13 +197,30 @@ is_bfhllm_available <- function() {
     return(FALSE)
   }
 
-  available <- BFHllm::bfhllm_chat_available()
+  # H7 (#453): wrap probe i tryCatch så bad config / network-fejl ej
+  # propagerer op til kalder. Matcher graceful-degradation-kontrakt
+  # i CLAUDE.md §6 ("NULL + log warning ved fejl") og samme pattern
+  # som generate_bfhllm_suggestion() bruger til chat-kald.
+  available <- tryCatch(
+    BFHllm::bfhllm_chat_available(),
+    error = function(e) {
+      log_warn(
+        sprintf("BFHllm probe fejlede: %s", e$message),
+        .context = LOG_CONTEXTS$ai$gemini,
+        details = list(error_class = class(e)[1])
+      )
+      FALSE
+    }
+  )
 
-  if (!available) {
-    log_warn("BFHllm not available - check API key configuration", .context = "AI_SETUP")
+  if (!isTRUE(available)) {
+    log_warn(
+      "BFHllm not available - check API key configuration",
+      .context = "AI_SETUP"
+    )
   }
 
-  return(available)
+  return(isTRUE(available))
 }
 
 #' Create BFHllm Cache for Shiny Session
@@ -249,7 +267,7 @@ create_bfhllm_cache <- function(session) {
 #' @keywords internal
 generate_bfhllm_suggestion <- function(spc_result, context, session, max_chars = NULL) {
   if (!requireNamespace("BFHllm", quietly = TRUE)) {
-    log_info("BFHllm not installed - skipping AI suggestion")
+    log_info("BFHllm not installed - skipping AI suggestion", .context = "AI_SUGGESTION")
     return(NULL)
   }
 
@@ -267,6 +285,7 @@ generate_bfhllm_suggestion <- function(spc_result, context, session, max_chars =
   cache <- create_bfhllm_cache(session)
 
   log_info("Generating AI suggestion via BFHllm",
+    .context = "AI_SUGGESTION",
     details = list(
       chart_type = spc_result$metadata$chart_type %||% "unknown",
       use_rag = use_rag,
@@ -299,6 +318,7 @@ generate_bfhllm_suggestion <- function(spc_result, context, session, max_chars =
     log_warn("BFHllm returned NULL suggestion", .context = "AI_SUGGESTION")
   } else {
     log_info("BFHllm suggestion generated successfully",
+      .context = "AI_SUGGESTION",
       details = list(length = nchar(suggestion))
     )
   }

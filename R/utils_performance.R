@@ -72,7 +72,7 @@ evaluate_data_content_cached <- function(data, cache_key = NULL, session = NULL,
     cached_result <- get(cache_key, envir = cache_env)
     # Valider cache er fresh (ikke for gammel)
     if (!is.null(cached_result$timestamp) &&
-      (Sys.time() - cached_result$timestamp) < PERFORMANCE_THRESHOLDS$cache_timeout_default) {
+      (Sys.time() - cached_result$timestamp) < get_cache_default_timeout()) {
       log_debug(paste("Cache hit for data content check:", cache_key), "PERFORMANCE")
       return(cached_result$result)
     }

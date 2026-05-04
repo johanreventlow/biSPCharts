@@ -44,9 +44,9 @@ Handles data structure changes (column changes, modifications).
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (data_change context)
-\item → update_column_choices_unified()
-\item → navigation_changed
-\item → visualization_update_needed
+\item â update_column_choices_unified()
+\item â navigation_changed
+\item â visualization_update_needed
 }
 }
 \keyword{internal}

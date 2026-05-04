@@ -23,7 +23,9 @@ support YAML configuration for dynamic thresholds.
 \item \code{"reactive_warning"}: Reactive expression time threshold — default 0.5s
 \item \code{"debounce_warning"}: Debounced operation time threshold — default 1.0s
 \item \code{"memory_warning"}: Memory change warning threshold — default 10MB
-\item \code{"cache_timeout_default"}: Default cache lifetime — default 300s (5 min)
+\item \code{"cache_timeout_default"}: ALIAS — flyttet til CACHE_CONFIG (#456).
+Brug \code{get_cache_config("default_timeout_seconds")} eller
+\code{get_cache_default_timeout()} direkte.
 \item \code{"max_cache_entries"}: Maximum cached entries — default 50
 }
 }

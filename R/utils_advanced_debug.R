@@ -107,14 +107,19 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
   # INFO and above always shown for important state changes
   should_log <- TRUE
   if (level == "TRACE") {
-    debug_mode <- Sys.getenv("SHINY_DEBUG_MODE", "FALSE") == "TRUE"
-    should_log <- debug_mode
+    should_log <- isTRUE(safe_getenv("SHINY_DEBUG_MODE", FALSE, "logical"))
   }
 
-  # Output log entry only if allowed by filter
+  # Output log entry only if allowed by filter — gå gennem central
+  # log_msg() (#463 QW-6) i stedet for raw cat() så component-tag og
+  # level-filter respekteres ensartet med resten af kodebasen.
   if (should_log) {
     log_entry <- paste(log_parts, collapse = " ")
-    cat(log_entry, "\n")
+    if (exists("log_msg", mode = "function")) {
+      log_msg(log_entry, level = "DEBUG", component = "ADVANCED_DEBUG")
+    } else {
+      cat(log_entry, "\n")
+    }
   }
 
   # Store in global debug history if enabled
@@ -683,8 +688,7 @@ initialize_advanced_debug <- function(enable_history = TRUE, max_history_entries
   debug_log("Advanced debug system initialized", "SESSION_LIFECYCLE", level = "INFO")
 
   # REDUCED NOISE: Only show debug system banner if verbose debugging enabled
-  debug_mode <- Sys.getenv("SHINY_DEBUG_MODE", "FALSE") == "TRUE"
-  if (debug_mode) {
+  if (isTRUE(safe_getenv("SHINY_DEBUG_MODE", FALSE, "logical"))) {
     log_info("ADVANCED DEBUG SYSTEM ACTIVE ===", .context = "ADVANCED_DEBUG")
     log_info("Available utilities:", .context = "ADVANCED_DEBUG")
     log_info("- debug_log()              Enhanced logging med categories", "ADVANCED_DEBUG")

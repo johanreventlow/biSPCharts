@@ -8,19 +8,41 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
+permissions: read-all
+
 jobs:
   export-smoke-test:
     runs-on: ubuntu-latest
     name: Quarto capability check
 
+    env:
+      GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
+      CI_SKIP_SHINYTEST2: "true"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
     steps:
       - uses: actions/checkout@v4
 
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: "4.3"
+          r-version: "release"
+          use-public-rspm: true
 
-      - uses: r-lib/actions/setup-renv@v2
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API der rammer
+      # add-apt-repository ppa:xtradeb/apps. Se #436 (Canonical DDoS recovery).
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::testthat, any::mockery
+          needs: check
 
       - name: Installer Quarto CLI
         uses: quarto-dev/quarto-actions/setup@v2
@@ -31,6 +53,10 @@ jobs:
         run: |
           quarto --version
           quarto typst --version
+        shell: bash
+
+      - name: Install local package
+        run: R CMD INSTALL .
         shell: bash
 
       - name: Kor export capability tests

@@ -203,7 +203,8 @@ favicon <- function(path = "www/favicon.ico") {
 #' @return String indicating environment (development, production, testing, default)
 detect_golem_environment <- function() {
   # Check GOLEM_CONFIG_ACTIVE first (primary environment variable)
-  golem_config <- Sys.getenv("GOLEM_CONFIG_ACTIVE", "")
+  # #458: typed env access via safe_getenv
+  golem_config <- safe_getenv("GOLEM_CONFIG_ACTIVE", "", "character")
   if (golem_config != "") {
     mapped_env <- switch(golem_config,
       "development" = "development",
@@ -219,7 +220,7 @@ detect_golem_environment <- function() {
   }
 
   # Map R_CONFIG_ACTIVE to GOLEM_CONFIG_ACTIVE for backward compatibility
-  r_config <- Sys.getenv("R_CONFIG_ACTIVE", "")
+  r_config <- safe_getenv("R_CONFIG_ACTIVE", "", "character")
   if (r_config != "") {
     mapped_env <- switch(r_config,
       "development" = "development",

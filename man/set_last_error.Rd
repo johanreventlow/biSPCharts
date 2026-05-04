@@ -12,6 +12,8 @@ set_last_error(app_state, value)
 \item{value}{Named list describing the error}
 }
 \description{
-Records a new error and increments the error counter.
+Records a new error: updates \code{last_error}, appends to \code{error_history}
+(capped at \code{ERROR_HISTORY_CAP} via FIFO eviction) and increments
+\code{error_count}.
 }
 \keyword{internal}

@@ -41,9 +41,9 @@ Handles data updates triggered by session restore (Issue #193).
 \strong{Event Chain}:
 \enumerate{
 \item data_updated (session_restore context)
-\item → update_column_choices_unified() (populerer choices)
-\item → navigation_changed
-\item → visualization_update_needed
+\item â update_column_choices_unified() (populerer choices)
+\item â navigation_changed
+\item â visualization_update_needed
 }
 }
 \keyword{internal}

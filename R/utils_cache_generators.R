@@ -182,22 +182,23 @@ get_system_config_snapshot <- function() {
       # Environment detection
       config$environment <- detect_golem_environment()
 
-      # Log level
-      config$log_level <- Sys.getenv("SPC_LOG_LEVEL", "INFO")
+      # Log level (#458: typed env access via safe_getenv)
+      config$log_level <- safe_getenv("SPC_LOG_LEVEL", "INFO", "character")
 
       # Key environment variables
       config$env_vars <- list(
-        golem_config_active = Sys.getenv("GOLEM_CONFIG_ACTIVE", ""),
-        test_mode_auto_load = Sys.getenv("TEST_MODE_AUTO_LOAD", "FALSE"),
-        spc_debug_mode = Sys.getenv("SPC_DEBUG_MODE", "FALSE"),
-        spc_source_loading = Sys.getenv("SPC_SOURCE_LOADING", "FALSE")
+        golem_config_active = safe_getenv("GOLEM_CONFIG_ACTIVE", "", "character"),
+        test_mode_auto_load = safe_getenv("TEST_MODE_AUTO_LOAD", "FALSE", "character"),
+        spc_debug_mode = safe_getenv("SPC_DEBUG_MODE", "FALSE", "character"),
+        spc_source_loading = safe_getenv("SPC_SOURCE_LOADING", "FALSE", "character")
       )
 
       # Runtime flags
       config$runtime_flags <- list(
         interactive_session = interactive(),
+        # Bevidst raw Sys.getenv() — vi tjekker ENV-key existence, ikke value
         package_mode = !"SPC_SOURCE_LOADING" %in% names(Sys.getenv()) ||
-          Sys.getenv("SPC_SOURCE_LOADING", "FALSE") == "FALSE"
+          safe_getenv("SPC_SOURCE_LOADING", "FALSE", "character") == "FALSE"
       )
 
       config$generated_at <- Sys.time()

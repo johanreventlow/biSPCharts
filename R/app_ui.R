@@ -252,10 +252,7 @@ app_sys <- function(...) {
 #' @noRd
 get_golem_config <- function(
   value,
-  config = Sys.getenv(
-    "GOLEM_CONFIG_ACTIVE",
-    "default"
-  ),
+  config = safe_getenv("GOLEM_CONFIG_ACTIVE", default = "default"),
   use_parent = TRUE
 ) {
   # Avoid app_sys during package loading to prevent freeze

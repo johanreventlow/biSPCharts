@@ -96,9 +96,9 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
         # gemmer den programmatiske input-ændring som en bruger-ændring.
         # onFlushed(once=TRUE) rydder flaget efter Shiny har flushet
         # updateTextAreaInput-beskeden til klienten.
-        app_state$session$autogen_active <- TRUE
+        set_autogen_active(app_state, TRUE)
         session$onFlushed(function() {
-          app_state$session$autogen_active <- FALSE
+          set_autogen_active(app_state, FALSE)
         }, once = TRUE)
         shiny::updateTextAreaInput(session, "pdf_improvement", value = auto_text)
       }

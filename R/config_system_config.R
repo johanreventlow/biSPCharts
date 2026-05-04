@@ -126,9 +126,18 @@ PERFORMANCE_THRESHOLDS <- list(
   reactive_warning = 0.5, # 500ms for reactive expressions
   debounce_warning = 1.0, # 1 second for debounced operations
   memory_warning = 10, # 10MB memory change warning
-  cache_timeout_default = 300, # 5 minutes default cache
   max_cache_entries = 50 # Maximum cached reactive results
+  # NB: cache_timeout_default flyttet til CACHE_CONFIG som canonical
+  # source (#456). Brug get_cache_default_timeout() som getter.
 )
+
+#' Get default cache timeout in seconds (canonical accessor, #456)
+#'
+#' @return Integer (default 300s = 5 min)
+#' @keywords internal
+get_cache_default_timeout <- function() {
+  CACHE_CONFIG$default_timeout_seconds
+}
 
 #' Rate limiting thresholds for security
 #' @keywords internal
@@ -143,7 +152,12 @@ RATE_LIMITS <- list(
 UPLOAD_LIMITS <- list(
   max_file_size_mb = 50, # Maksimal filstørrelse i MB
   max_line_count = 100000, # Maksimalt antal linjer (afvis upload)
-  warning_row_count = 50000 # Rækketærskel for advarselsbesked
+  warning_row_count = 50000, # Rækketærskel for advarselsbesked
+  # Loft for ukomprimeret xlsx-indhold (zip-bomb-beskyttelse, #449).
+  # En 1 MB malformeret xlsx kan ekspandere til GB ukomprimeret;
+  # readxl ekspanderer fuld ZIP før row-limit anvendes, så vi tjekker
+  # via utils::unzip(list = TRUE) før read_excel-kald.
+  max_xlsx_uncompressed_mb = 200
 )
 
 #' @keywords internal
@@ -154,6 +168,9 @@ get_max_upload_line_count <- function() UPLOAD_LIMITS$max_line_count
 
 #' @keywords internal
 get_upload_warning_row_count <- function() UPLOAD_LIMITS$warning_row_count
+
+#' @keywords internal
+get_max_xlsx_uncompressed_mb <- function() UPLOAD_LIMITS$max_xlsx_uncompressed_mb
 
 #' Auto-save debounce delays (milliseconds)
 #' @keywords internal

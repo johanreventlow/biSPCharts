@@ -3,8 +3,9 @@
 #
 # Scenarie-dækning:
 # 1. Baseline: korrekte output-felter og typer
-# 2. Runs-signal: TRUE/FALSE baseret paa runs.signal-kolonnen
-# 3. Crossings-signal: TRUE/FALSE baseret paa n.crossings vs n.crossings.min
+# 2. Runs-signal: TRUE/FALSE baseret paa longest.run > longest.run.max
+#    (#468: IKKE qic_data$runs.signal som tidligere — det er kombineret signal)
+# 3. Crossings-signal: TRUE/FALSE baseret paa n.crossings < n.crossings.min
 # 4. Kombineret anhoej_signal (runs ELLER crossings)
 # 5. Manglende valgfrie kolonner → NA_real_ returnereres
 # 6. Tomme/NULL datasaet → returnerer sikre defaults
@@ -100,32 +101,57 @@ test_that("data_points_used matcher nrow(qic_data)", {
 # 2. Runs-signal
 # ==============================================================================
 
-test_that("runs_signal er FALSE naar ingen runs.signal er TRUE", {
-  qd <- make_qic_data(runs_signal = rep(FALSE, 20))
+test_that("runs_signal er FALSE naar longest.run <= longest.run.max", {
+  # #468: runs_signal afhaenger nu af longest.run > longest.run.max,
+  # ikke af kombineret runs.signal-kolonne.
+  qd <- make_qic_data(longest_run = 3, longest_run_max = 8)
   result <- derive_anhoej_results(qd)
   expect_false(result$runs_signal)
 })
 
-test_that("runs_signal er TRUE naar mindst ét runs.signal er TRUE", {
-  sig <- rep(FALSE, 20)
-  sig[10:17] <- TRUE
-  qd <- make_qic_data(runs_signal = sig)
+test_that("runs_signal er TRUE naar longest.run > longest.run.max (#468)", {
+  qd <- make_qic_data(longest_run = 12, longest_run_max = 8)
   result <- derive_anhoej_results(qd)
   expect_true(result$runs_signal)
 })
 
-test_that("runs_signal er FALSE naar runs.signal-kolonne mangler", {
-  qd <- make_qic_data()
-  qd$runs.signal <- NULL
+test_that("runs_signal er FALSE naar longest.run-kolonner mangler", {
+  qd <- make_qic_data(include_optional = FALSE)
   result <- derive_anhoej_results(qd)
   expect_false(result$runs_signal)
 })
 
-test_that("runs_signal haandterer NA-vaerdier korrekt (ignorerer dem)", {
-  sig <- c(NA, FALSE, NA, TRUE, FALSE)
-  qd <- make_qic_data(n = 5, runs_signal = sig)
+test_that("runs_signal haandterer NA i longest.run-felter (#468)", {
+  # NA-guard: hvis enten longest.run eller longest.run.max er NA -> ingen signal
+  qd <- make_qic_data(longest_run = NA_integer_, longest_run_max = 8)
   result <- derive_anhoej_results(qd)
-  expect_true(result$runs_signal)
+  expect_false(result$runs_signal)
+
+  qd2 <- make_qic_data(longest_run = 10, longest_run_max = NA_real_)
+  result2 <- derive_anhoej_results(qd2)
+  expect_false(result2$runs_signal)
+})
+
+test_that("runs_signal er IKKE drevet af qic_data\\$runs.signal (#468 regression)", {
+  # qicharts2's runs.signal er kombineret signal — derive_anhoej_results
+  # skal IKKE bruge det til at saette runs_signal. Crossing-only data
+  # har runs.signal=TRUE men longest.run <= longest.run.max.
+  qd <- data.frame(
+    runs.signal = rep(TRUE, 20), # Saetter runs.signal=TRUE som qicharts2 ville
+    n.crossings = 3L,
+    n.crossings.min = 6L, # Kryds-violation aktiv
+    longest.run = 5L,
+    longest.run.max = 7L, # Ingen runs-violation
+    sigma.signal = rep(FALSE, 20),
+    part = rep(1L, 20),
+    y = seq_len(20)
+  )
+  result <- derive_anhoej_results(qd)
+  expect_false(result$runs_signal,
+    info = "longest.run=5 <= max=7 -> ingen runs-violation, trods runs.signal=TRUE"
+  )
+  expect_true(result$crossings_signal)
+  expect_true(result$anhoej_signal)
 })
 
 test_that("runs_signal er FALSE naar alle runs.signal er NA", {
@@ -205,9 +231,11 @@ test_that("anhoej_signal er FALSE naar baade runs og crossings er FALSE", {
 })
 
 test_that("anhoej_signal er TRUE naar kun runs_signal er TRUE", {
-  sig <- rep(FALSE, 20)
-  sig[10:18] <- TRUE
-  qd <- make_qic_data(runs_signal = sig, n_crossings = 10, n_crossings_min = 8)
+  # #468: runs_signal udløses nu af longest.run > longest.run.max
+  qd <- make_qic_data(
+    longest_run = 12, longest_run_max = 8,
+    n_crossings = 10, n_crossings_min = 8
+  )
   result <- derive_anhoej_results(qd)
   expect_true(result$runs_signal)
   expect_false(result$crossings_signal)
@@ -215,7 +243,10 @@ test_that("anhoej_signal er TRUE naar kun runs_signal er TRUE", {
 })
 
 test_that("anhoej_signal er TRUE naar kun crossings_signal er TRUE", {
-  qd <- make_qic_data(runs_signal = rep(FALSE, 20), n_crossings = 3, n_crossings_min = 8)
+  qd <- make_qic_data(
+    longest_run = 3, longest_run_max = 8,
+    n_crossings = 3, n_crossings_min = 8
+  )
   result <- derive_anhoej_results(qd)
   expect_false(result$runs_signal)
   expect_true(result$crossings_signal)
@@ -223,9 +254,10 @@ test_that("anhoej_signal er TRUE naar kun crossings_signal er TRUE", {
 })
 
 test_that("anhoej_signal er TRUE naar baade runs OG crossings er TRUE", {
-  sig <- rep(FALSE, 20)
-  sig[10:18] <- TRUE
-  qd <- make_qic_data(runs_signal = sig, n_crossings = 3, n_crossings_min = 8)
+  qd <- make_qic_data(
+    longest_run = 12, longest_run_max = 8,
+    n_crossings = 3, n_crossings_min = 8
+  )
   result <- derive_anhoej_results(qd)
   expect_true(result$runs_signal)
   expect_true(result$crossings_signal)
@@ -312,16 +344,23 @@ test_that("show_phases = TRUE filtrerer til seneste part", {
 })
 
 test_that("show_phases = TRUE: runs_signal baseres paa seneste part", {
+  # #468: runs_signal afhaenger nu af longest.run > longest.run.max per fase
   qd <- make_qic_data(n = 30)
   qd$part <- c(rep(1L, 20), rep(2L, 10))
-  # Part 1: runs-signal i alt, Part 2: ingen
-  qd$runs.signal <- c(rep(TRUE, 20), rep(FALSE, 10))
+  # Part 1: lang run (12 > 8 max) -> runs-violation
+  # Part 2: kort run (3 <= 8) -> ingen runs-violation
+  qd$longest.run <- c(rep(12L, 20), rep(3L, 10))
+  qd$longest.run.max <- c(rep(8L, 20), rep(8L, 10))
 
   result_all <- derive_anhoej_results(qd, show_phases = FALSE)
   result_latest <- derive_anhoej_results(qd, show_phases = TRUE)
 
-  expect_true(result_all$runs_signal) # part 1 har TRUE
-  expect_false(result_latest$runs_signal) # kun part 2 — ingen signal
+  expect_true(result_all$runs_signal,
+    info = "safe_max(longest.run) over alle = 12 > 8 -> TRUE"
+  )
+  expect_false(result_latest$runs_signal,
+    info = "Kun part 2: longest.run = 3 <= 8 -> FALSE"
+  )
 })
 
 test_that("show_phases = TRUE: crossings_signal baseres paa seneste part", {
@@ -425,14 +464,18 @@ test_that("u-anhoej baseline: korrekte metrics", {
 # ==============================================================================
 
 test_that("derive_anhoej_results er konsistent med manuelt udregnet site-1-logik", {
-  # Genskaber eksakt Site-1-logik og sammenligner
+  # #468: Anhoej-runs-regel kraever STRICT longest.run > longest.run.max
+  # (ikke >=). Tidligere udgave af denne test brugte longest.run = 8,
+  # longest.run.max = 8 og forventede runs_signal=TRUE — det var forkert
+  # (boundary-case). Opdateret til at bruge longest.run = 10 (klar
+  # runs-violation 10 > 8).
   n <- 24
   sig <- c(rep(FALSE, 16), rep(TRUE, 8))
   qd <- data.frame(
     runs.signal = sig,
     n.crossings = 7,
     n.crossings.min = 9,
-    longest.run = 8,
+    longest.run = 10,
     longest.run.max = 8,
     sigma.signal = rep(FALSE, n),
     part = rep(1L, n),
@@ -442,13 +485,36 @@ test_that("derive_anhoej_results er konsistent med manuelt udregnet site-1-logik
 
   result <- derive_anhoej_results(qd, show_phases = FALSE)
 
-  # Manuelt beregnet (Site-1 logik med safe_max, men safe_max(konstant) = konstant)
   expect_true(result$runs_signal)
   expect_true(result$crossings_signal)
   expect_true(result$anhoej_signal)
-  expect_equal(result$longest_run, 8)
+  expect_equal(result$longest_run, 10)
   expect_equal(result$longest_run_max, 8)
   expect_equal(result$n_crossings, 7)
   expect_equal(result$n_crossings_min, 9)
   expect_equal(result$data_points_used, n)
+})
+
+test_that("derive_anhoej_results: boundary longest.run == max NOT runs_signal (#468)", {
+  # Anhoej-runs-regel: signal kun ved STRICT longest.run > longest.run.max.
+  # Boundary-case (8 == 8) skal IKKE udloese runs_signal.
+  qd <- data.frame(
+    runs.signal = rep(FALSE, 10),
+    n.crossings = 5L,
+    n.crossings.min = 3L,
+    longest.run = 8L,
+    longest.run.max = 8L,
+    part = rep(1L, 10),
+    y = seq_len(10)
+  )
+
+  result <- derive_anhoej_results(qd, show_phases = FALSE)
+
+  expect_false(result$runs_signal,
+    info = "8 == 8 er ikke runs-violation"
+  )
+  expect_false(result$crossings_signal,
+    info = "5 > 3 er ikke crossings-violation"
+  )
+  expect_false(result$anhoej_signal)
 })

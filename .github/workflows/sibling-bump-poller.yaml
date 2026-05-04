@@ -36,6 +36,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       GH_TOKEN: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
 
@@ -60,6 +61,11 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
+
+      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # Workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      - name: Pre-install chromium (workaround xtradeb PPA flake)
+        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2

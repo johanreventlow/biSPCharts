@@ -1,15 +1,9 @@
 # utils_y_axis_model.R
 # Y-akse datamodel: UI-typer → interne klasser → kortvalg
-
-# Interne klasser (konstanter)
-INTERNAL_CLASSES <- list(
-  MEASUREMENT = "MEASUREMENT",
-  COUNT = "COUNT",
-  PROPORTION = "PROPORTION",
-  RATE_INTERNAL = "RATE_INTERNAL",
-  TIME_BETWEEN = "TIME_BETWEEN",
-  COUNT_BETWEEN = "COUNT_BETWEEN"
-)
+#
+# NB: INTERNAL_CLASSES er flyttet til R/config_y_axis_classes.R (#461) for
+# at følge konfig-arkitekturen (constants i config_*.R + getter). Læs den
+# fil hvis du vil tilføje/ændre interne klasser.
 
 #' Afgør om en y-akse UI-type tilhører tids-familien
 #'

@@ -116,25 +116,24 @@ map_to_bfh_params <- function(
     data$.original_row_id <- seq_len(nrow(data))
   }
 
-  # Hjaelpefunktion: konverter kolonnenavn til ASCII-sikkert navn (BFHcharts-krav).
-  # Defineret paa funktions-niveau (foer safe_operation) saa kollisionscheck kan
-  # kaste spc_input_error direkte uden at blive fanget af safe_operation (#422).
-  sanitize_column_name <- function(name) {
-    # Replace Danish characters with ASCII equivalents
+  # M6 (#460): omd\u00f8bt fra sanitize_column_name til ascii_column_name_for_bfh
+  # for at undg\u00e5 shadow-collision med utils_input_sanitization.R-versionen
+  # der har MODSAT semantik (tillader \u00e6\u00f8\u00e5, kun til UI-display).
+  # NB: iconv("ASCII//TRANSLIT") alene mapper \u00e5\u2192a og \u00f8\u2192o, ikke \u00e5\u2192aa og
+  # \u00f8\u2192oe \u2014 s\u00e5 eksplicitte gsub-mappings bevares (dansk konvention).
+  ascii_column_name_for_bfh <- function(name) {
     name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
     name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
     name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
-    # Remove any remaining non-ASCII characters
     name <- iconv(name, to = "ASCII//TRANSLIT")
-    # Remove spaces and special chars (keep only alphanumeric and underscore)
-    name <- gsub("[^A-Za-z0-9_]", "_", name)
-    return(name)
+    if (is.na(name)) name <- ""
+    gsub("[^A-Za-z0-9_]", "_", name)
   }
 
   # Kollisionscheck: to distinkte kolonner maa ikke kollidere efter sanitization.
   # Placeret FOER safe_operation saa spc_input_error propagerer til kalder (#422).
   # Silent failure her giver forkert plot uden fejlbesked til brugeren.
-  sanitized_col_names <- sapply(names(data), sanitize_column_name, USE.NAMES = FALSE)
+  sanitized_col_names <- vapply(names(data), ascii_column_name_for_bfh, character(1), USE.NAMES = FALSE)
   if (anyDuplicated(sanitized_col_names)) {
     duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
     spc_abort(
@@ -160,9 +159,11 @@ map_to_bfh_params <- function(
         .context = "BFH_SERVICE"
       )
 
-      # 1b. CRITICAL FIX: BFHcharts rejects Danish characters (aeoeaa) in column names
-      # Temporarily sanitize column names to ASCII-safe versions
-      # Strategy: Create mapping of original -> sanitized names, rename data, use sanitized in params
+      # 1b. WORKAROUND (M8 #462): BFHcharts rejects Danish characters (æøå)
+      # i column names — biSPCharts ASCII-translit'er navnene før kald +
+      # rev-mapper output for at bevare brugerens originale navne i UI.
+      # FOLLOW-UP: åbn issue i BFHcharts for native Danish-character-support
+      # i column-name-validator, og fjern denne workaround når levereret.
       # sanitized_col_names beregnet foer safe_operation (kollisionscheck) -- genbrug her.
 
       # Create column name mapping (original -> sanitized)
@@ -406,21 +407,22 @@ normalize_scale_for_bfh <- function(value, chart_type, param_name = "value") {
       # deres target-/centerlinje-værdier må IKKE divideres med 100.
       percentage_charts <- c("p", "pp")
 
-      # Only normalize if chart type uses percentages AND value > 1
+      # NOTE: Don't use return() inside safe_operation code blocks (#446)
+      # \u2014 return() exits the wrapper, not normalize_scale_for_bfh, og
+      # safe_operation falder gennem til fallback. Brug result-variable.
       if (chart_type %in% percentage_charts && value > 1) {
-        normalized <- value / 100
+        result <- value / 100
         log_debug(
           paste(
             "Normalized", param_name, "for", chart_type, "chart:",
-            value, "\u2192", normalized
+            value, "\u2192", result
           ),
           .context = "BFH_SERVICE"
         )
-        return(normalized)
       } else {
-        # No normalization needed
-        return(value)
+        result <- value
       }
+      result
     },
     fallback = value,
     error_type = "scale_normalization"

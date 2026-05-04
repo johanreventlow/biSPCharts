@@ -130,26 +130,19 @@ get_module_data <- function(app_state) {
 initialize_spc_chart_state <- function(app_state) {
   # Initialize module data cache in app_state if not already present
   # Use isolate() to safely check reactive value outside reactive context
-  current_cached_data <- shiny::isolate(app_state$visualization$module_cached_data)
-  if (is.null(current_cached_data)) {
-    app_state$visualization$module_cached_data <- NULL
+  if (is.null(shiny::isolate(app_state$visualization$module_cached_data)) &&
+    is.null(shiny::isolate(app_state$visualization$module_data_cache))) {
+    set_module_data_cache(app_state, NULL)
   }
 
-  current_data_cache <- shiny::isolate(app_state$visualization$module_data_cache)
-  if (is.null(current_data_cache)) {
-    app_state$visualization$module_data_cache <- NULL
-  }
-
-  # Initialize consolidated event if not exists
-  if (is.null(shiny::isolate(app_state$events$visualization_update_needed))) {
-    app_state$events$visualization_update_needed <- 0L
-  }
+  # NOTE: app_state$events$visualization_update_needed initialiseres i
+  # create_app_state() (state_management.R:92). Tidligere defensive init
+  # her var dead code OG bypass af emit-API'en — fjernet via #448. Kun
+  # emit$visualization_update_needed() må skrive til counteren.
 
   # Initialize data at startup if available
   if (!is.null(shiny::isolate(app_state$data$current_data))) {
-    initial_data <- get_module_data(app_state)
-    app_state$visualization$module_data_cache <- initial_data
-    app_state$visualization$module_cached_data <- initial_data
+    set_module_data_cache(app_state, get_module_data(app_state))
   }
 }
 
@@ -258,8 +251,7 @@ register_module_data_observer <- function(app_state, input, output, session) {
           result_data <- get_module_data(app_state)
 
           # Atomic cache update - both values updated together
-          app_state$visualization$module_data_cache <- result_data
-          app_state$visualization$module_cached_data <- result_data
+          set_module_data_cache(app_state, result_data)
 
           data_info <- if (!is.null(result_data)) {
             paste("rows:", nrow(result_data), "cols:", ncol(result_data))

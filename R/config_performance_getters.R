@@ -82,7 +82,9 @@ get_operation_timeout <- function(operation = "chart_render") {
 #' - `"reactive_warning"`: Reactive expression time threshold — default 0.5s
 #' - `"debounce_warning"`: Debounced operation time threshold — default 1.0s
 #' - `"memory_warning"`: Memory change warning threshold — default 10MB
-#' - `"cache_timeout_default"`: Default cache lifetime — default 300s (5 min)
+#' - `"cache_timeout_default"`: ALIAS — flyttet til CACHE_CONFIG (#456).
+#'   Brug `get_cache_config("default_timeout_seconds")` eller
+#'   `get_cache_default_timeout()` direkte.
 #' - `"max_cache_entries"`: Maximum cached entries — default 50
 #'
 #' @param metric Character string naming the performance metric
@@ -101,6 +103,11 @@ get_operation_timeout <- function(operation = "chart_render") {
 #'
 #' @keywords internal
 get_performance_threshold <- function(metric = "reactive_warning") {
+  # M2 (#456): cache_timeout_default delegerer nu til CACHE_CONFIG.
+  # Bagudkompatibel — kalder kan stadig bruge den gamle metric-streng.
+  if (identical(metric, "cache_timeout_default")) {
+    return(get_cache_default_timeout())
+  }
   PERFORMANCE_THRESHOLDS[[metric]] %||% NULL
 }
 

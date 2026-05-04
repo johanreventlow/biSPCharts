@@ -91,7 +91,8 @@ get_log_level <- function() {
 #' @keywords internal
 get_effective_log_level <- function() {
   # Priority 1: Environment variable (highest priority override)
-  env_override <- Sys.getenv("SPC_LOG_LEVEL", "")
+  # #458: typed env access via safe_getenv
+  env_override <- safe_getenv("SPC_LOG_LEVEL", "", "character")
   if (nzchar(trimws(env_override))) {
     env_val <- trimws(toupper(env_override))
     # Validate it's a real log level

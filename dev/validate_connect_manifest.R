@@ -83,12 +83,20 @@ main <- function() {
 
   failures <- character(0)
   checked <- character(0)
+  semver_tag_pattern <- "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
 
   for (i in seq_len(nrow(remotes))) {
     remote <- remotes[i, ]
     pkg_desc <- manifest_package(manifest, remote$package)
     dep_row <- deps[deps$package == remote$package, ]
     is_required_import <- remote$package %in% imports$package
+
+    if (!is.na(remote$ref) && !grepl(semver_tag_pattern, remote$ref)) {
+      failures <- c(failures, sprintf(
+        "%s ref er ikke vX.Y.Z-tag: DESCRIPTION Remotes=%s (feature-branches og SHA er ikke deploy-stabile, jf. issue #445)",
+        remote$package, remote$ref
+      ))
+    }
 
     if (is.null(pkg_desc)) {
       if (is_required_import) {

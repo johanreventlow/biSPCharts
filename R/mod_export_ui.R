@@ -175,18 +175,33 @@ mod_export_ui <- function(id) {
               width = "100%"
             )
           ),
-          ## Fodnote: kun synlig for PNG (PDF har sin egen layout)
-          shiny::conditionalPanel(
-            condition = sprintf("input['%s'] == 'png'", ns("export_format")),
-            shiny::div(
-              style = "margin-bottom: 15px;",
-              shiny::textInput(
+          ## Fodnote / Datakilde: rendres som footer-tekst paa baade PDF og PNG (#485)
+          shiny::div(
+            style = "margin-bottom: 15px;",
+            shiny::tagList(
+              shiny::textAreaInput(
                 ns("export_footnote"),
-                "Fodnote:",
+                shiny::tagList(
+                  "Fodnote / Datakilde (vises under chart):",
+                  shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+                    bslib::tooltip(sprintf(
+                      "Klinisk attribution vist nederst paa eksporten. Maks %d tegn. Renderes som UPPERCASE-tekst i PDF (BFHcharts footer_content).",
+                      EXPORT_FOOTNOTE_MAX_LENGTH
+                    ))
+                ),
                 value = "",
-                placeholder = "F.eks. 'Kilde: LPR3' eller 'Data fra jan. 2023 til dec. 2024'",
-                width = "100%"
-              )
+                placeholder = "Eksempel: Datakilde: KvalDB udtræk 2026-04-29",
+                width = "100%",
+                rows = 2,
+                resize = "vertical"
+              ),
+              # HTML5 maxlength (klient-side hard cap; server validerer ogsaa)
+              shiny::tags$script(sprintf(
+                "$('#%s').attr('maxlength', %d);",
+                ns("export_footnote"),
+                EXPORT_FOOTNOTE_MAX_LENGTH
+              )),
+              shiny::helpText(sprintf("Maks. %d tegn.", EXPORT_FOOTNOTE_MAX_LENGTH))
             )
           ),
 

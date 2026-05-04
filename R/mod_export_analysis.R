@@ -66,7 +66,8 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
         ),
         data_definition = shiny::isolate(input$pdf_description %||% ""),
         chart_title = shiny::isolate(input$export_title %||% ""),
-        department = shiny::isolate(input$export_department %||% "")
+        department = shiny::isolate(input$export_department %||% ""),
+        footnote = shiny::isolate(input$export_footnote %||% "")
       )
 
       auto_text <- safe_operation(

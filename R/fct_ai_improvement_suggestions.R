@@ -156,7 +156,7 @@ truncate_llm_context_fields <- function(context,
   # Felter der kan rumme bruger-skrevet free-text. y_axis_unit og target er
   # korte enum/numeric — udelades.
   freetext_fields <- c(
-    "data_definition", "chart_title", "department",
+    "data_definition", "chart_title", "department", "footnote",
     "baseline_analysis", "signal_examples", "target_text",
     "target_display", "action_text", "y_axis_unit"
   )

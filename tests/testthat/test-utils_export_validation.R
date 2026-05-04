@@ -200,6 +200,29 @@ test_that("validate_export_inputs rejects overly long department", {
   )
 })
 
+test_that("validate_export_inputs rejects overly long footnote (#485)", {
+  # EXPORT_FOOTNOTE_MAX_LENGTH = 500, brug 501 tegn for at tippe over
+  long_footnote <- paste(rep("A", 501), collapse = "")
+
+  expect_error(
+    validate_export_inputs(format = "pdf", footnote = long_footnote),
+    "Fodnote må max være"
+  )
+})
+
+test_that("validate_export_inputs accepts footnote at exact max length (#485)", {
+  exact_footnote <- paste(rep("A", 500), collapse = "")
+
+  expect_true(
+    validate_export_inputs(format = "pdf", footnote = exact_footnote)
+  )
+})
+
+test_that("validate_export_inputs accepts NULL/empty footnote (#485)", {
+  expect_true(validate_export_inputs(format = "pdf", footnote = NULL))
+  expect_true(validate_export_inputs(format = "pdf", footnote = ""))
+})
+
 test_that("validate_export_inputs validates PNG dimensions", {
   # Width too small
   expect_error(

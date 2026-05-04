@@ -2,6 +2,18 @@
 
 ## Nye features
 
+* **Footnote-felt i PDF/PNG-eksport (#485):** Bruger kan nu tilføje
+  klinisk attribution (datakilde, udtræksdato) i trin 3 (Eksport).
+  Tekst sendes til BFHcharts Typst-template via `metadata$footer_content`
+  og rendres som lille gråtone-tekst nederst-højre under chart-billedet
+  (UPPERCASE 6pt, BFH brand-farve). Maksimal længde 500 tegn håndhæves
+  client-side (HTML5 `maxlength`) og server-side
+  (`EXPORT_FOOTNOTE_MAX_LENGTH` via `validate_export_inputs()`).
+  Markup-tegn escapes via `escape_typst_metadata()` (defense-in-depth,
+  #486-pattern). Footnote inkluderes også i AI-improvement-context
+  (truncates til `EXPORT_DESCRIPTION_MAX_LENGTH` ved over-cap, #489).
+  Tom footnote → ingen ekstra blok i PDF (graceful empty-state).
+
 * **Berig analyse-metadata til BFHddl-pipeline-paritet:**
   `build_export_analysis_metadata()` returnerer nu yderligere felter til
   brug i AI-context og PDF-eksport: `y_axis_unit` (rå unit-streng),
@@ -29,6 +41,17 @@
   `bfh_create_typst_document()` er nu alle eksporterede funktioner i
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
+
+## Interne ændringer
+
+* Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`
+  (template + `.DS_Store`) og `bfh_horisonal.typ`-eksempel. BFHcharts ejer
+  authoritative template og loader den via
+  `system.file('templates/typst/bfh-template', package = 'BFHcharts')`
+  (`BFHcharts/R/utils_typst.R:100,265`). Lokal kopi var ej refereret af
+  R-kode efter migration til BFHcharts/BFHchartsAssets-ejerskab (#399
+  follow-up) og divergent (definerede ubrugt `bfh-diagram2`-funktion).
+  README.md opdateret med pointer til authoritative kilde.
 
 ## Dependencies
 

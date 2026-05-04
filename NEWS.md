@@ -30,6 +30,17 @@
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
 
+## Interne ændringer
+
+* Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`
+  (template + `.DS_Store`) og `bfh_horisonal.typ`-eksempel. BFHcharts ejer
+  authoritative template og loader den via
+  `system.file('templates/typst/bfh-template', package = 'BFHcharts')`
+  (`BFHcharts/R/utils_typst.R:100,265`). Lokal kopi var ej refereret af
+  R-kode efter migration til BFHcharts/BFHchartsAssets-ejerskab (#399
+  follow-up) og divergent (definerede ubrugt `bfh-diagram2`-funktion).
+  README.md opdateret med pointer til authoritative kilde.
+
 ## Dependencies
 
 * Bump `BFHcharts (>= 0.15.0)` (cross-repo bump-protokol). BFHcharts

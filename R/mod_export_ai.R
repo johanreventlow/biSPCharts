@@ -139,7 +139,8 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
         target_text     = normalize_mapping(shiny::isolate(app_state$columns$mappings$target_text)),
         data_definition = shiny::isolate(input$pdf_description %||% ""),
         chart_title     = shiny::isolate(input$export_title %||% ""),
-        department      = shiny::isolate(input$export_department %||% "")
+        department      = shiny::isolate(input$export_department %||% ""),
+        footnote        = shiny::isolate(input$export_footnote %||% "")
       )
     }
   )
@@ -224,7 +225,8 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
           target_text     = normalize_mapping(app_state$columns$mappings$target_text),
           data_definition = input$pdf_description %||% "",
           chart_title     = input$export_title %||% "",
-          department      = input$export_department %||% ""
+          department      = input$export_department %||% "",
+          footnote        = input$export_footnote %||% ""
         )
 
         suggestion <- safe_operation(

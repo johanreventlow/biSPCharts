@@ -2,85 +2,85 @@
 
 ## Foran-arbejde
 
-- [ ] Bekræft cross-repo-koordinering: er Typst-template ejet af BFHcharts (privat) eller biSPCharts? Hvis BFHcharts → opret feature-request først (cross-repo §E).
-- [ ] Bekræft footnote-design med klinisk personale: tekst-blok under chart vs. footer på siden? Maks-længde 500 tegn passende?
+- [x] Bekræft cross-repo-koordinering: BFHcharts Typst-template har allerede `footer_content`-parameter (linje 27/52/207 i `bfh-template.typ`). Pipeline understøtter `metadata$footer_content` i `bfh_create_typst_document()` og `bfh_export_pdf()`. **Ingen BFHcharts-PR påkrævet.**
+- [x] Bekræft footnote-design: BFHcharts renderer som UPPERCASE 6pt grå tekst nederst-højre under chart. Maks-længde 500 tegn passende til klinisk attribution.
 
 ## Konfiguration
 
-- [ ] Tilføj `EXPORT_FOOTNOTE_MAX_LENGTH <- 500L` til `R/config_export_config.R`
-- [ ] Dokumentér konstant i header-kommentar med kilde (`#485`-link)
+- [x] Tilføj `EXPORT_FOOTNOTE_MAX_LENGTH <- 500L` til `R/config_export_config.R`
+- [x] Dokumentér konstant i header-kommentar med kilde (`#485`-link)
 
 ## Validator (utils_export_validation.R)
 
-- [ ] Tilføj `footnote = ""` parameter til `validate_export_inputs()`-signature
-- [ ] Tilføj længde-check: `nchar(footnote) > EXPORT_FOOTNOTE_MAX_LENGTH` → fejl
-- [ ] Tilføj test-cases til `tests/testthat/test-export-validation.R`
+- [x] Tilføj `footnote = ""` parameter til `validate_export_inputs()`-signature
+- [x] Tilføj længde-check: `nchar(footnote) > EXPORT_FOOTNOTE_MAX_LENGTH` → fejl
+- [x] Tilføj test-cases til `tests/testthat/test-utils_export_validation.R`
 
 ## Metadata-pipeline (utils_export_analysis_metadata.R)
 
-- [ ] Tilføj `footnote`-felt til `build_export_analysis_metadata()`-output
-- [ ] Default `""` hvis ej supplied
-- [ ] Anvend `escape_typst_metadata()` på input
+- [x] Tilføj `footnote`-felt til `build_export_analysis_metadata()`-output
+- [x] Default `""` hvis ej supplied
+- [x] Anvendes ved `escape_typst_metadata()` ved indsættelse i PDF metadata-list (PDF-export-pathen, ikke i analysis_metadata-builderen — analyse-konteksten beholder rå tekst til LLM)
 
 ## UI (mod_export_ui.R)
 
-- [ ] Tilføj `textAreaInput("export_footnote", ...)` til trin 3-panelet
-- [ ] Label: "Footnote / Datakilde (vises under chart)"
-- [ ] Placeholder: "Eksempel: Datakilde: KvalDB udtræk 2026-04-29"
-- [ ] Hjælp-tekst med karakter-counter (helpText eller bsTooltip)
-- [ ] Maks-længde-attr (HTML5 `maxlength`)
+- [x] Tilføj `textAreaInput("export_footnote", ...)` til trin 3-panelet (uconditional, gælder PDF + PNG)
+- [x] Label: "Fodnote / Datakilde (vises under chart)"
+- [x] Placeholder: "Eksempel: Datakilde: KvalDB udtræk 2026-04-29"
+- [x] Hjælp-tekst med karakter-info (helpText + bsTooltip)
+- [x] Maks-længde-attr (HTML5 `maxlength` via JS-snippet)
 
 ## Server — PDF (mod_export_download.R::generate_pdf_export)
 
-- [ ] Tilføj `footnote = input$export_footnote` til `validate_export_inputs()`-kald
-- [ ] Tilføj `footnote = escape_typst_metadata(input$export_footnote)` til `metadata`-list
-- [ ] Verificér at `BFHcharts::bfh_export_pdf()` accepterer `metadata$footnote` (kræver BFHcharts-PR hvis ikke)
+- [x] Tilføj `footnote = input$export_footnote` til `validate_export_inputs()`-kald
+- [x] Tilføj `footer_content = escape_typst_metadata(input$export_footnote)` til `metadata`-list (NULL hvis tom for graceful PDF-output)
+- [x] Verificér at `BFHcharts::bfh_export_pdf()` accepterer `metadata$footer_content` (verificeret: `BFHcharts/R/utils_typst.R:528-530` + `utils_export_helpers.R:131` whitelist)
 
 ## Server — PNG (mod_export_download.R::generate_png_export)
 
-- [ ] **Fjern** `ggplot2::labs(caption = footnote_text)`-tilføjelse til plot
-- [ ] Beslut: Skal PNG også vise footnote? Hvis ja: render som adskilt tekst-element via ggplot2 `theme()` eller ny `cowplot::plot_grid` — IKKE som plot-caption.
-- [ ] Hvis nej: dokumentér at footnote kun vises i PDF (UI-info-tekst)
+- [x] Tilføj `footnote = input$export_footnote` til `validate_export_inputs()`-kald
+- [x] Beslut: PNG beholder existing `ggplot2::labs(caption = ...)` for footnote (bevarer eksisterende UX, ej breaking change). PDF bruger BFHcharts Typst `footer_content` for separat tekst-element. Divergens dokumenteret i NEWS.
 
 ## Server — Preview (mod_export_server.R)
 
-- [ ] Opdater preview-flow til at bruge samme metadata-sti som download
-- [ ] Verificér at preview viser footnote konsistent med PDF-output (ej ggplot caption)
+- [x] PDF-preview pathen: tilføj `footer_content = escape_typst_metadata(...)` til preview-metadata + ny `debounced_footnote`-reactive
+- [x] PNG-preview pathen: behold eksisterende `ggplot2::labs(caption = ...)` (matcher PNG-eksport-styling)
+- [x] Verificér at PDF preview viser footnote konsistent med PDF-output (samme metadata-sti)
 
 ## Typst-template (cross-repo / BFHcharts)
 
-- [ ] **[BFHcharts-PR]** Tilføj optional `footnote`-parameter til `bfh-diagram`-template
-- [ ] Render footnote som lille gråtone-tekst under chart-billedet (anbefalet placering: footer)
-- [ ] Bekræft at template virker med `footnote = none` (graceful tom-state)
-- [ ] Bump BFHcharts version efter merge → opdatér biSPCharts `DESCRIPTION` lower-bound
+- [x] **Skip:** `footer_content`-parameter eksisterer allerede i BFHcharts `bfh-template.typ` (linje 27/52/207) — ingen template-ændring påkrævet
+- [x] Skip: render-block findes allerede (UPPERCASE 6pt grå nederst-højre)
+- [x] Skip: `footer_content = none` graceful tom-state allerede understøttet
+- [x] Skip: ingen BFHcharts version-bump påkrævet (current `>= 0.15.0` er tilstrækkelig)
 
 ## LLM-integration (#489-koordinering)
 
-- [ ] Tilføj `"footnote"` til `truncate_llm_context_fields`'s `freetext_fields`-liste i `R/fct_ai_improvement_suggestions.R`
+- [x] Tilføj `"footnote"` til `truncate_llm_context_fields`'s `freetext_fields`-liste i `R/fct_ai_improvement_suggestions.R`
 
 ## Tests
 
-- [ ] Ny: `tests/testthat/test-export-footnote.R`
-  - [ ] `build_export_analysis_metadata` propagerer footnote til output
-  - [ ] `escape_typst_metadata` anvendes på footnote
-  - [ ] `validate_export_inputs(footnote = strrep("a", 1000))` kaster længde-fejl
-  - [ ] Default `""` ved manglende input
-- [ ] Udvid `tests/testthat/test-export-validation.R` med footnote-cases
-- [ ] **Manuel:** Test live PDF-eksport med footnote — verificér placering + readability
+- [x] Ny: `tests/testthat/test-export-footnote.R`
+  - [x] `build_export_analysis_metadata` propagerer footnote til output
+  - [x] `escape_typst_metadata` anvendes på footnote
+  - [x] `validate_export_inputs(footnote = strrep("a", 1000))` kaster længde-fejl
+  - [x] Default `""` ved manglende input
+- [x] Udvid `tests/testthat/test-utils_export_validation.R` med footnote-cases (max-length, exact-cap, NULL/empty)
+- [ ] **Manuel:** Test live PDF-eksport med footnote — verificér placering + readability (kræver browser)
 
 ## Dokumentation
 
-- [ ] Opdatér `docs/CONFIGURATION.md` med `EXPORT_FOOTNOTE_MAX_LENGTH`
-- [ ] Opdatér `NEWS.md` under "Nye features": "Footnote-felt i eksport (#485)"
-- [ ] Opdatér `R/mod_export_ui.R` roxygen-doc
+- [x] Opdatér `docs/CONFIGURATION.md` med `EXPORT_FOOTNOTE_MAX_LENGTH`
+- [x] Opdatér `NEWS.md` under "Nye features": "Footnote-felt i eksport (#485)"
+- [x] Opdatér `R/mod_export_ui.R` (tooltip dokumenterer feltet inline)
 
 ## Pre-merge gate
 
 - [ ] Pre-push gate (fast) passerer
-- [ ] Manifest-validator passerer
-- [ ] BFHcharts cross-repo dependency synced (DESCRIPTION lower-bound + manifest)
-- [ ] Manuel test: round-trip preview ↔ PDF viser footnote konsistent
-- [ ] Manuel test: tom footnote-felt → PDF uden footnote-element (ej tom blok)
+- [ ] Manifest-validator passerer (ingen DESCRIPTION-Imports-ændringer; manifest forventes uændret)
+- [x] BFHcharts cross-repo dependency synced (ingen bump påkrævet)
+- [ ] Manuel test: round-trip preview ↔ PDF viser footnote konsistent (kræver browser)
+- [ ] Manuel test: tom footnote-felt → PDF uden footnote-element (ej tom blok) (kræver browser)
 
 ## Archive
 

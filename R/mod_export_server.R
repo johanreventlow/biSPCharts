@@ -277,6 +277,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
     debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
     debounced_hospital <- shiny::debounce(shiny::reactive(input$export_hospital %||% ""), millis = 1000)
+    debounced_footnote <- shiny::debounce(shiny::reactive(input$export_footnote %||% ""), millis = 1000)
 
     pdf_preview_image <- shiny::reactive({
       # Only generate for PDF format
@@ -304,6 +305,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       analysis_input <- debounced_analysis()
       data_def_input <- debounced_data_def()
       hospital_input <- debounced_hospital()
+      footnote_input <- trimws(debounced_footnote())
 
       # Build metadata for PDF generation
       # Bemaerk: bfh_create_typst_document() (preview-vejen) auto-genererer ikke
@@ -327,6 +329,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           error_type = "processing"
         ),
         data_definition = escape_typst_metadata(data_def_input),
+        footer_content = if (nzchar(footnote_input)) escape_typst_metadata(footnote_input) else NULL,
         date = Sys.Date()
       )
 

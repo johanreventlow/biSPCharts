@@ -101,7 +101,8 @@ generate_pdf_export <- function(input, app_state, file) {
     title = input$export_title,
     department = input$export_department,
     hospital = input$export_hospital,
-    description = input$pdf_description
+    description = input$pdf_description,
+    footnote = input$export_footnote
   )
 
   # Generer SPC plot via faelles helper
@@ -151,12 +152,17 @@ generate_pdf_export <- function(input, app_state, file) {
   } else {
     get_hospital_name_for_export()
   }
+  # footer_content: klinisk attribution (#485). BFHcharts Typst-template renderer
+  # som lille graa UPPERCASE-tekst nederst-hoejre. NULL hvis tom -> ingen
+  # tom blok i PDF (graceful empty-state).
+  footnote_value <- trimws(input$export_footnote %||% "")
   metadata <- list(
     hospital = escape_typst_metadata(hospital_value),
     department = escape_typst_metadata(input$export_department),
     title = escape_typst_metadata(input$export_title),
     analysis = escape_typst_metadata(input$pdf_improvement),
     data_definition = escape_typst_metadata(data_definition_with_note),
+    footer_content = if (nzchar(footnote_value)) escape_typst_metadata(footnote_value) else NULL,
     date = Sys.Date()
   )
 
@@ -200,6 +206,7 @@ generate_png_export <- function(input, app_state, file) {
     format = "png",
     title = input$export_title,
     department = input$export_department,
+    footnote = input$export_footnote,
     width = final_width_px,
     height = final_height_px
   )

@@ -76,8 +76,8 @@
 
 ## Pre-merge gate
 
-- [ ] Pre-push gate (fast) passerer
-- [ ] Manifest-validator passerer (ingen DESCRIPTION-Imports-ændringer; manifest forventes uændret)
+- [x] Pre-push gate (fast) passerer (verificeret via PR #510 + #512 + #517 + #518 push-flows)
+- [x] Manifest-validator passerer (`Rscript dev/validate_connect_manifest.R` → "Connect manifest OK")
 - [x] BFHcharts cross-repo dependency synced (ingen bump påkrævet)
 - [ ] Manuel test: round-trip preview ↔ PDF viser footnote konsistent (kræver browser)
 - [ ] Manuel test: tom footnote-felt → PDF uden footnote-element (ej tom blok) (kræver browser)

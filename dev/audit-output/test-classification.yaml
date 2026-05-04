@@ -580,6 +580,14 @@ files:
     Klar til CI.'
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-observer-leak-overwrite-487.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-04'
+  rationale: Regression-test for #487 observer-leak ved navne-overwrite — tilfoejet manuelt.
 - file: test-outlier-count-latest-part.R
   audit_category: green
   type: unit

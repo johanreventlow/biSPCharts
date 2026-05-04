@@ -48,8 +48,23 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # Observer registry for cleanup on session end
   observer_registry <- list()
 
-  # Helper function to register observers automatically
+  # Helper function to register observers automatically.
+  # Destruerer eksisterende observer ved navne-overwrite (#487) — ellers
+  # forbliver gamle observers aktive i Shiny's reactive graph som "zombies"
+  # (ej fanget af session-cleanup der kun rydder registry-indhold).
   register_observer <- function(name, observer) {
+    existing <- observer_registry[[name]]
+    if (!is.null(existing)) {
+      tryCatch(
+        if (!is.null(existing$destroy)) existing$destroy(),
+        error = function(e) {
+          log_warn(
+            message = paste("Observer destroy fejlede ved overwrite for", name, ":", e$message),
+            .context = "OBSERVER_MGMT"
+          )
+        }
+      )
+    }
     observer_registry[[name]] <<- observer
     observer
   }

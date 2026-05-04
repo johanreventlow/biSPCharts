@@ -143,14 +143,53 @@ inject_template_assets <- function(template_dir) {
     return(invisible(FALSE))
   }
 
-  safe_operation(
+  ok <- safe_operation(
     operation_name = "Inject template assets via BFHchartsAssets",
     code = {
       BFHchartsAssets::inject_bfh_assets(template_dir)
-      invisible(TRUE)
+      TRUE
     },
     fallback = FALSE
   )
+
+  # Post-inject font-prune: BFHchartsAssets leverer alle Mari-varianter
+  # (Light/Book/Regular/Bold/Heavy/Poster) i baade .otf (family="Mari") og
+  # .ttf (family="Mari Office")-format. Mari-*.otf-filerne har misvisende
+  # weight-metadata (alle weight=4 undtagen Bold=7), saa Typst's font-matcher
+  # kan vaelge fx Mari-Heavy.otf til "Mari weight=normal" i stedet for
+  # Mari-Book.otf -- konsekvens: PDF-body rendres med Heavy-variant
+  # (verificeret i SPC-41 vs SPC-36 PDF font-comparison).
+  #
+  # Fix: efter inject behold KUN Mari-Book.otf (default body) + Mari-Bold.otf
+  # (bold) + Arial-fallbacks. Mari-Heavy/Light/Poster + MariOffice-*.ttf +
+  # Mari.otf (Regular) fjernes fra staged fonts-dir saa Typst entydigt
+  # vaelger Book-variant. BFHchartsAssets selv er uaendret (companion-pkg
+  # leverer fortsat alle varianter; biSPCharts beslutter hvad Typst ser).
+  if (isTRUE(ok)) {
+    fonts_dir <- file.path(template_dir, "fonts")
+    if (dir.exists(fonts_dir)) {
+      keep <- c(
+        "Mari-Book.otf", "Mari-Bold.otf",
+        # Arial-varianter beholdes som Typst-fallback for ASCII-only-tekst
+        "ARIAL.TTF", "ARIALBD.TTF", "ARIALI.TTF", "ARIALBI.TTF"
+      )
+      all_fonts <- list.files(fonts_dir)
+      to_remove <- setdiff(all_fonts, keep)
+      if (length(to_remove) > 0) {
+        file.remove(file.path(fonts_dir, to_remove))
+        log_debug(
+          component = "[EXPORT]",
+          message = "Post-inject font-prune (#485 follow-up)",
+          details = list(
+            removed_count = length(to_remove),
+            kept = paste(keep, collapse = ", ")
+          )
+        )
+      }
+    }
+  }
+
+  invisible(ok)
 }
 
 # GET HOSPITAL NAME ===========================================================

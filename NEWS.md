@@ -30,6 +30,19 @@
   BFHcharts >= 0.14.0 og kaldes direkte via `BFHcharts::`. Kraever
   BFHcharts >= 0.14.0. (#423)
 
+## Dependencies
+
+* Bump `BFHcharts (>= 0.15.0)` (cross-repo bump-protokol). BFHcharts
+  0.15.0 dekomponerer Anhoej-signaler i `summary` (nye `runs_signal`,
+  `crossings_signal`, `anhoej_signal`-kolonner; legacy
+  `summary$loebelaengde_signal` fjernet) og returnerer raw qicharts2-
+  praecision i numeriske kontrolgraense-kolonner. biSPCharts paavirkes
+  ikke direkte: `summary$loebelaengde_signal` blev ikke brugt nogen
+  steder, og raw-precision-skiftet er allerede haandteret via #470
+  (rå `qic_data$cl`). Forbereder downstream-migration af #468 til at
+  bruge nye dekomponerede signaler. Se BFHcharts NEWS 0.15.0 for fuld
+  migration. (BFHcharts PR #293)
+
 # biSPCharts 0.3.2
 
 ## Sikkerhed

@@ -141,6 +141,11 @@ build_spc_excel <- function(data,
 
 # Skriv sektioner til "SPC-analyse"-ark med blank-raekker imellem.
 # Hver sektion faar sin egen header-raekke med sektionsnavn.
+#
+# Bruger-kontrolleret data (chart_title, department, baseline_analysis,
+# kommentar-kolonner, m.fl.) sanitiseres via sanitize_csv_output() inden
+# writeData() \u2014 saerlig vigtigt da SPC-analyse-arket aggregeret har bredere
+# user-input-overflade end Data/Indstillinger-arkene (#484).
 .write_spc_analysis_sheet <- function(wb, sections) {
   sheet_name <- SPC_ANALYSIS_SHEET_NAME
   openxlsx::addWorksheet(wb, sheet_name)
@@ -156,7 +161,7 @@ build_spc_excel <- function(data,
     if (nrow(df) > 0L) {
       openxlsx::writeData(wb,
         sheet = sheet_name,
-        x = df, startRow = current_row, rowNames = FALSE
+        x = sanitize_csv_output(df), startRow = current_row, rowNames = FALSE
       )
       current_row <<- current_row + nrow(df) + 1L
     } else {
@@ -184,7 +189,8 @@ build_spc_excel <- function(data,
   if (nrow(sections$special_cause) > 0L) {
     openxlsx::writeData(wb,
       sheet = sheet_name,
-      x = sections$special_cause, startRow = current_row, rowNames = FALSE
+      x = sanitize_csv_output(sections$special_cause),
+      startRow = current_row, rowNames = FALSE
     )
   } else {
     openxlsx::writeData(wb,

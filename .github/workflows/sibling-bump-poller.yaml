@@ -62,10 +62,14 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
-      # Pre-install chromium saa pak's sysreqs-handler skipper xtradeb PPA-add.
-      # Workaround for HTTP 504 fra launchpad.net REST API. Se #436.
-      - name: Pre-install chromium (workaround xtradeb PPA flake)
-        run: sudo apt-get install -y chromium-browser || sudo snap install chromium || true
+      # Pre-install system deps saa pak's sysreqs-handler skipper xtradeb PPA-add.
+      # libcurl4-openssl-dev: curl R-pakke >= 7.1.0 har ingen RSPM binary for Noble —
+      # falder tilbage til source-kompilering der kræver dev headers.
+      # chromium: workaround for HTTP 504 fra launchpad.net REST API. Se #436.
+      - name: Pre-install system deps (libcurl + chromium workaround)
+        run: |
+          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2

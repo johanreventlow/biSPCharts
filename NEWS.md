@@ -28,6 +28,19 @@
 
 ## Bug fixes
 
+* **PDF-preview: hospital-logo manglede i preview (men ikke i download).**
+  `generate_pdf_preview()` (`R/utils_server_export.R`) kaldte
+  `BFHcharts::bfh_create_typst_document()` FØR `inject_template_assets()`.
+  Konsekvens: `.typ`-filen skrev `logo_path: none` (default i template) før
+  `Hospital_Maerke_RGB_A1_str.png` blev kopieret ind, og Typst-render
+  skipede foreground-blokken. PDF-download (`generate_pdf_export()`) var ej
+  ramt — den bruger `bfh_export_pdf()`-pipelinen der orkestrerer
+  inject-then-write korrekt internt. Fix: sæt
+  `metadata$logo_path = "images/Hospital_Maerke_RGB_A1_str.png"` eksplicit
+  før `bfh_create_typst_document()`-kaldet (matcher
+  `.detect_packaged_logo()`-konventionen i BFHcharts). Logo-filen kopieres
+  ind via `inject_template_assets()` umiddelbart efter, før Typst kompilerer.
+
 * **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå
   `qic_data$cl` (uafrundet qicharts2-værdi) primært i stedet for
   BFHcharts' afrundede `summary$centerlinje`. Tidligere kunne

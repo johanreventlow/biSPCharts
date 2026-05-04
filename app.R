@@ -17,7 +17,9 @@ pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
 options("golem.app.prod" = TRUE)
 
 # Returner shinyApp objekt - Connect Cloud styrer livscyklus
+# Bruger ::: fordi app_ui/app_server er @keywords internal og dermed ej i
+# package-search-path efter pkgload::load_all(export_all = FALSE). Ref #481.
 shiny::shinyApp(
-  ui = app_ui,
-  server = app_server
+  ui = biSPCharts:::app_ui,
+  server = biSPCharts:::app_server
 )

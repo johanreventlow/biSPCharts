@@ -11,7 +11,6 @@
 #   - Test check_quarto_capability() check
 # ==============================================================================
 
-context("Export Utilities - BFHcharts Integration")
 
 # MOCK DATA ==================================================================
 

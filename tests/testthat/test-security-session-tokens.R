@@ -3,7 +3,6 @@
 # Tests session token hashing implemented 2025-09-26
 
 library(testthat)
-context("Security: Session Token Hashing Tests")
 
 # Implementeret 2025-09-26: Session tokens hashes nu (SHA256) foer logging
 # for at undgaa session token-exposure i logs.
@@ -15,7 +14,7 @@ test_that("hash_session_token function exists and works correctly", {
   test_token <- "test_session_token_123"
   hashed <- hash_session_token(test_token)
 
-  expect_is(hashed, "character")
+  expect_type(hashed, "character")
   expect_gt(nchar(hashed), 0)
   expect_lte(nchar(hashed), 8) # Should return first 8 characters of hash
   expect_true(grepl("^[a-f0-9]+$", hashed)) # Should be hexadecimal
@@ -38,7 +37,7 @@ test_that("hash_session_token handles invalid inputs safely", {
 
   # Test with empty string
   result_empty <- hash_session_token("")
-  expect_is(result_empty, "character")
+  expect_type(result_empty, "character")
   expect_gt(nchar(result_empty), 0)
 
   # Test with NA
@@ -141,7 +140,7 @@ test_that("session token hashing is used in server logging", {
   # Hash should work with realistic session tokens
   expect_no_error({
     hashed <- hash_session_token(mock_session_token)
-    expect_is(hashed, "character")
+    expect_type(hashed, "character")
     expect_equal(nchar(hashed), 8)
   })
 })

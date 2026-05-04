@@ -29,8 +29,11 @@ test_that("ExcelR data reconstruction uses name-based matching", {
   expect_equal(ncol(result_df), 6)
   expect_equal(names(result_df), c("Dato", "Tæller", "Nævner", "Skift", "Frys", "Kommentar"))
 
-  # Test type conversion with dplyr::across
-  converted_df <- result_df |>
+  # Test type conversion with dplyr::across. suppressWarnings: mock-data
+  # blander logical/character i samme kolonne; as.logical()/as.numeric()
+  # på blandede typer kan trigger forventede coercion-warnings, ej
+  # testrelevante.
+  converted_df <- suppressWarnings(result_df |>
     dplyr::mutate(
       dplyr::across(
         dplyr::any_of(c("Skift", "Frys")),
@@ -48,7 +51,7 @@ test_that("ExcelR data reconstruction uses name-based matching", {
         dplyr::any_of(c("Dato", "Kommentar")),
         ~ as.character(.x)
       )
-    )
+    ))
 
   # Verify types
   expect_type(converted_df$Skift, "logical")

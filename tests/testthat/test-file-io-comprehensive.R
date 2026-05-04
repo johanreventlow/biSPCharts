@@ -114,14 +114,16 @@ test_that("File parsing handles corrupted data gracefully", {
 
     writeLines(corrupted_files[[test_name]], temp_file)
 
-    # Should handle errors gracefully without crashing
-    result <- safe_operation(
+    # Should handle errors gracefully without crashing -- corrupte CSV
+    # giver forventede "parsing issues"-warnings; tests verificerer at
+    # safe_operation fanger fejl, ikke warning-bobble.
+    result <- suppressWarnings(safe_operation(
       paste("Parse corrupted file:", test_name),
       code = {
         readr::read_csv(temp_file, show_col_types = FALSE)
       },
       fallback = NULL
-    )
+    ))
 
     # Should either succeed with problems or return NULL
     expect_true(is.null(result) || is.data.frame(result))

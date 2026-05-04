@@ -174,12 +174,15 @@ test_that("compute_spc_results_bfh() handles S charts (standard deviation)", {
   set.seed(20251015)
   data <- create_test_data(n_rows = 20, chart_type = "s")
 
-  result <- compute_spc_results_bfh(
+  # S-chart uden target trigger forventet decorate-warning ("No CL or Target")
+  # + Inf-min/max-warnings når subgroup-statistik er glissé. Wrap i
+  # suppressWarnings: tests verificerer plot-konstruktion, ikke target-rendering.
+  result <- suppressWarnings(compute_spc_results_bfh(
     data = data,
     x_var = "month",
     y_var = "value",
     chart_type = "s"
-  )
+  ))
 
   expect_s3_class(result$plot, "ggplot")
   expect_equal(result$metadata$chart_type, "s")

@@ -274,10 +274,12 @@ test_that("safe_operation defensive programming patterns work", {
   expect_true(all(is.na(safe_column_access)))
   expect_equal(length(safe_column_access), 5)
 
-  # TEST: Safe type conversion
+  # TEST: Safe type conversion -- as.numeric("invalid") trigger forventet
+  # "NAs introduced by coercion"-warning; vi tester safe_operation-fallback,
+  # ikke warning-bobble.
   mixed_data <- c("1", "2", "invalid", "4", "5")
 
-  safe_conversion <- safe_operation(
+  safe_conversion <- suppressWarnings(safe_operation(
     operation_name = "Safe numeric conversion",
     code = {
       result <- as.numeric(mixed_data)
@@ -287,12 +289,13 @@ test_that("safe_operation defensive programming patterns work", {
       result
     },
     fallback = rep(0, length(mixed_data))
-  )
+  ))
 
   expect_equal(safe_conversion, rep(0, 5))
 
-  # TEST: Safe file operations
-  safe_file_read <- safe_operation(
+  # TEST: Safe file operations -- read.csv() på nonexistent path trigger
+  # forventet "cannot open file"-warning; vi tester fallback-aktivering.
+  safe_file_read <- suppressWarnings(safe_operation(
     operation_name = "Safe file reading",
     code = {
       read.csv("/nonexistent/file/path.csv")
@@ -301,7 +304,7 @@ test_that("safe_operation defensive programming patterns work", {
       error = "File not found",
       stringsAsFactors = FALSE
     )
-  )
+  ))
 
   expect_true(is.data.frame(safe_file_read))
   expect_equal(safe_file_read$error, "File not found")

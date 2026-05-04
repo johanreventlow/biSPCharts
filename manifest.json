@@ -21,36 +21,37 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.15.0",
+        "Version": "0.16.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
         "Encoding": "UTF-8",
         "Roxygen": "list(markdown = TRUE)",
         "RoxygenNote": "7.3.3",
-        "SystemRequirements": "Quarto CLI (>= 1.4.0) for PDF export via Typst templates",
+        "SystemRequirements": "Quarto CLI (>= 1.4.0) for PDF export via Typst\ntemplates",
         "URL": "https://github.com/johanreventlow/BFHcharts",
         "BugReports": "https://github.com/johanreventlow/BFHcharts/issues",
         "Depends": "R (>= 4.1.0)",
-        "Imports": "BFHtheme (>= 0.5.0),\nggplot2 (>= 3.4.0),\nqicharts2 (>= 0.7.0),\nscales (>= 1.2.0),\nlubridate (>= 1.9.0),\ndplyr (>= 1.1.0),\npurrr (>= 1.0.0),\nstringr (>= 1.5.0),\ntibble (>= 3.2.0),\nyaml,\nlemon,\nmarquee (>= 0.1.0),\ngrid,\ncommonmark (>= 1.9),\nxml2,\nsystemfonts,\nrlang,\nsvglite",
-        "Suggests": "testthat (>= 3.1.7),\nvdiffr,\ncovr,\npdftools (>= 3.3.0),\nwithr,\nBFHllm,\nknitr,\nrmarkdown",
+        "Imports": "BFHtheme (>= 0.5.0), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
+        "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, BFHllm, knitr, rmarkdown",
         "VignetteBuilder": "knitr",
+        "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
         "Config/testthat/edition": "3",
-        "Author": "Johan Reventlow [aut, cre]",
-        "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-03 20:30:45 UTC; unix",
         "RemoteType": "github",
-        "Remotes": "johanreventlow/BFHtheme,\njohanreventlow/BFHllm",
         "RemoteHost": "api.github.com",
-        "RemoteUsername": "johanreventlow",
         "RemoteRepo": "BFHcharts",
-        "RemoteRef": "v0.15.0",
-        "RemoteSha": "36c089d57a92a1f71897afa079f2a6a9055e9c72",
-        "GithubHost": "api.github.com",
+        "RemoteUsername": "johanreventlow",
+        "RemoteRef": "v0.16.1",
+        "RemoteSha": "940b18c7e695d8ca0f05f7471dca2e99c6cecf5e",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.15.0",
-        "GithubSHA1": "36c089d57a92a1f71897afa079f2a6a9055e9c72"
+        "GithubRef": "v0.16.1",
+        "GithubSHA1": "940b18c7e695d8ca0f05f7471dca2e99c6cecf5e",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-05-04 17:49:23 UTC; johanreventlow",
+        "Author": "Johan Reventlow [aut, cre]",
+        "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
+        "Built": "R 4.5.2; ; 2026-05-04 17:49:24 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -4813,7 +4814,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "1f302fc83bb913e8498b2ea3bcefa327"
+      "checksum": "eb6f0b3fc77f1d12c4c1859ffff81503"
     },
     "inst/.DS_Store": {
       "checksum": "4cc330613d67dba9392c83fee5b5fa20"
@@ -4951,7 +4952,7 @@
       "checksum": "5f4913fc0a1e497e314621369145b916"
     },
     "manifest.json": {
-      "checksum": "b95c2e5b1cf2c6b299a5bf6f71b5ae73"
+      "checksum": "d682db3d02904ffeb9d955b92f9f1081"
     },
     "NAMESPACE": {
       "checksum": "439e70a1c8604f2ab78314d57d54868a"
@@ -4984,7 +4985,7 @@
       "checksum": "f16f223d6192d5fed67778155708efb5"
     },
     "R/config_export_config.R": {
-      "checksum": "0121a4d48d2438897b441f11ef131d5c"
+      "checksum": "410356d2c0c0ff25130cefeb609bfa32"
     },
     "R/config_log_contexts.R": {
       "checksum": "12e793bb214c298341810fb31fc0bad5"
@@ -5017,7 +5018,7 @@
       "checksum": "10ad01820ef64ff38ec61d0e6d55f20a"
     },
     "R/fct_ai_improvement_suggestions.R": {
-      "checksum": "33ce173b1e68335cb8e6f0381e2ae4b9"
+      "checksum": "d05768191ab5ac6675a48f5ea917cfbd"
     },
     "R/fct_anhoej_rules.R": {
       "checksum": "3c7935916a4b2abb4792c9e3d5513e0c"
@@ -5107,19 +5108,19 @@
       "checksum": "7ec50160555333284a2e4a183a4c728a"
     },
     "R/mod_export_ai.R": {
-      "checksum": "01afc9758080dd5d4b0c497528c83640"
+      "checksum": "3defc28597463f9585e61631ad22e01d"
     },
     "R/mod_export_analysis.R": {
-      "checksum": "8bd1c5f42afb9ce820a735115ad2618d"
+      "checksum": "21c088a70cbe5156c3630f2fa9721b1c"
     },
     "R/mod_export_download.R": {
-      "checksum": "373277fef38375ae4b12ce5d52b733ba"
+      "checksum": "3a0fda45d30bbd4289c25b3c724d97ac"
     },
     "R/mod_export_server.R": {
-      "checksum": "b946ee1e29266a2df59e2916965c7417"
+      "checksum": "3c71972175d2cb74c22dcfe204dd08af"
     },
     "R/mod_export_ui.R": {
-      "checksum": "54d8f655b2a94d97ca56eb107199c0b1"
+      "checksum": "6dbe5d2ec61a5f03d73e6d22ccac92dc"
     },
     "R/mod_help_server.R": {
       "checksum": "39dd7f4e37c59b5e8f35e8405b0a7f60"
@@ -5161,7 +5162,7 @@
       "checksum": "2a1068a09aa4fb0a56cd51f1bef7cc6f"
     },
     "R/ui_app_ui.R": {
-      "checksum": "b6d6b4d8ae8716e6a9e9c96102beed01"
+      "checksum": "92375ce93df6b750b881ba9ca5274976"
     },
     "R/utils_advanced_debug.R": {
       "checksum": "9cc1b04596e6edb14625e739557ba3d7"
@@ -5203,7 +5204,7 @@
       "checksum": "ad29bacba617e29a0d3f6c3e210046b4"
     },
     "R/utils_export_analysis_metadata.R": {
-      "checksum": "949c2f2be9a3bbc65c3fa9e44c2e36ed"
+      "checksum": "3fe1125f54a138821dfcb5449bc32ff0"
     },
     "R/utils_export_filename.R": {
       "checksum": "7f95de3bebbe0ee9922fbd181537ae04"
@@ -5212,10 +5213,10 @@
       "checksum": "1c2339004fb32df6c6390fc4fe20c19b"
     },
     "R/utils_export_validation.R": {
-      "checksum": "942d42c0f0ecc8691293af667bec448d"
+      "checksum": "4eb5c12936f48d214a177f1084d78048"
     },
     "R/utils_font_registration.R": {
-      "checksum": "a2314731cc38ebfa5615e7e23f1eb81a"
+      "checksum": "d32421365235aab1dc2542d636feee30"
     },
     "R/utils_input_sanitization.R": {
       "checksum": "fcb9fcc29230abed0088050748bf7868"
@@ -5284,7 +5285,7 @@
       "checksum": "af9e37a623e61ce3043091ea00d7548a"
     },
     "R/utils_server_export.R": {
-      "checksum": "5baa2d44bbcd275dfd3b073576ec2c56"
+      "checksum": "991440d4f55c3c555d7f717968a0a8a1"
     },
     "R/utils_server_initialization.R": {
       "checksum": "5b48b9f3f54dca6ac36f0cfa683c036a"

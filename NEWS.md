@@ -28,6 +28,19 @@
 
 ## Bug fixes
 
+* **PDF-eksport: forkert Mari-variant (Heavy) i body-tekst.** Typst's
+  font-matcher valgte `Mari-Heavy.otf` til `set text(font: "Mari")`-render
+  i stedet for `Mari-Book.otf`. Root cause: BFHchartsAssets v0.1.0 leverer
+  6 Mari-OTF-varianter (Light/Book/Regular/Bold/Heavy/Poster) der alle
+  har internal weight-metadata = 4 undtagen Bold (=7). Ambiguous metadata
+  → Typst vælger første scan-match (typisk Heavy alfabetisk). Verificeret
+  via `pdffonts SPC-41.pdf` (lokal: MariHeavy) vs `pdffonts SPC-36.pdf`
+  (Connect Cloud: MariBook). Fix i `inject_template_assets()`
+  (`R/utils_server_export.R`): efter `BFHchartsAssets::inject_bfh_assets()`
+  prunes staged `bfh-template/fonts/` til kun Mari-Book.otf + Mari-Bold.otf
+  + Arial-fallbacks. BFHchartsAssets selv urørt; biSPCharts kontrollerer
+  hvad Typst ser per export.
+
 * **Mari-font: forkert variant (fed) i UI lokalt.** CSS `@font-face`
   declarerer `font-family: 'Mari'` men pegede på `MariOffice-Book.ttf` +
   `MariOffice-Bold.ttf` der internt har family `"Mari Office"` (med

@@ -71,6 +71,14 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
         return(NULL)
       }
 
+      # #489: Server-side cap paa free-text-felter foer LLM-kald for at undgaa
+      # cost-amplification + Gemini rate-limit ved meget store inputs.
+      # Bruger samme limit som EXPORT_DESCRIPTION_MAX_LENGTH (2000) for
+      # konsistens med PDF-eksport-validering. Truncation logges; ingen
+      # user-warning i denne sti (UI-laget validerer separat via
+      # validate_export_inputs).
+      context <- truncate_llm_context_fields(context)
+
       # PHI-check: CPR-moenstre i data_definition -> modal advarsel foer afsendelse.
       # Pattern matcher dansk CPR-format: 6 cifre + valgfri bindestreg + 4 cifre.
       data_def_text <- context$data_definition %||% ""
@@ -133,4 +141,40 @@ generate_improvement_suggestion <- function(spc_result, context, session, max_ch
     fallback = NULL,
     show_user = TRUE
   )
+}
+
+# Truncate free-text-felter i LLM-context til EXPORT_DESCRIPTION_MAX_LENGTH
+# (#489). Beskytter mod cost-amplification og Gemini rate-limit ved meget
+# lange inputs. Truncation logges paa info-niveau saa server-operatør kan
+# spore mønstre. Returnerer modificeret context med samme keys.
+truncate_llm_context_fields <- function(context,
+                                        max_length = EXPORT_DESCRIPTION_MAX_LENGTH) {
+  if (!is.list(context) || length(context) == 0) {
+    return(context)
+  }
+
+  # Felter der kan rumme bruger-skrevet free-text. y_axis_unit og target er
+  # korte enum/numeric — udelades.
+  freetext_fields <- c(
+    "data_definition", "chart_title", "department",
+    "baseline_analysis", "signal_examples", "target_text",
+    "target_display", "action_text", "y_axis_unit"
+  )
+
+  for (field in freetext_fields) {
+    val <- context[[field]]
+    if (!is.null(val) && is.character(val) && length(val) == 1L &&
+      !is.na(val) && nchar(val) > max_length) {
+      log_info(
+        message = sprintf(
+          "LLM-context: truncating %s fra %d til %d tegn (#489)",
+          field, nchar(val), max_length
+        ),
+        .context = "AI_SUGGESTION"
+      )
+      context[[field]] <- substr(val, 1L, max_length)
+    }
+  }
+
+  context
 }

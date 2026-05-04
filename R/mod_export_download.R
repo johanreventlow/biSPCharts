@@ -100,7 +100,8 @@ generate_pdf_export <- function(input, app_state, file) {
     format = "pdf",
     title = input$export_title,
     department = input$export_department,
-    hospital = input$export_hospital
+    hospital = input$export_hospital,
+    description = input$pdf_description
   )
 
   # Generer SPC plot via faelles helper

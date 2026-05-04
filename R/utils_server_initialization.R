@@ -93,8 +93,21 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
   safe_operation(
     "Setup event listeners",
     code = {
-      setup_event_listeners(app_state, emit, input = session$input, output = session$output, session, ui_service)
-      app_state$infrastructure$event_listeners_setup <- TRUE
+      # #492 3.7: Tidligere blev flaget skrevet men aldrig laest som guard.
+      # Aktiver det nu for ægte idempotens — en double-init ville ellers
+      # skabe duplicate observers paa sammen events.
+      if (!isTRUE(app_state$infrastructure$event_listeners_setup)) {
+        setup_event_listeners(app_state, emit,
+          input = session$input,
+          output = session$output, session, ui_service
+        )
+        app_state$infrastructure$event_listeners_setup <- TRUE
+      } else {
+        log_debug(
+          "Event listeners already setup — skipping duplicate registration",
+          .context = "APP_INIT"
+        )
+      }
     },
     fallback = function(e) {
       log_error(paste("ERROR in setup_event_listeners:", e$message), .context = "APP_INIT")

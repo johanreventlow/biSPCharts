@@ -127,3 +127,111 @@ test_that("resolve_analysis_centerline returns last row for variable cl (freeze/
   class(result) <- "bfh_qic_result"
   expect_equal(resolve_analysis_centerline(result), 20)
 })
+
+# ============================================================================
+# BFHddl-pipeline-paritet (#175) - berig metadata med y_axis_unit, target_display,
+# action_text, baseline_analysis, signal_examples
+# ============================================================================
+
+make_bfh_result_with_anhoej <- function(centerline = 50,
+                                        y_axis_unit = "count",
+                                        runs_detected = FALSE,
+                                        crossings_detected = FALSE) {
+  result <- list(
+    config = list(y_axis_unit = y_axis_unit),
+    summary = data.frame(centerlinje = centerline),
+    qic_data = data.frame(cl = rep(centerline, 3)),
+    metadata = list(
+      anhoej_rules = list(
+        runs_detected = runs_detected,
+        crossings_detected = crossings_detected
+      )
+    )
+  )
+  class(result) <- "bfh_qic_result"
+  result
+}
+
+test_that("build_export_analysis_metadata exposes y_axis_unit + target_display (#175)", {
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 0.85, y_axis_unit = "percent"),
+    target_value = 0.9,
+    target_text = ">= 90%"
+  )
+
+  expect_equal(metadata$y_axis_unit, "percent")
+  expect_equal(metadata$target_display, "90%")
+  expect_equal(metadata$centerline, "85%")
+})
+
+test_that("build_export_analysis_metadata returns action_text matching BFHddl 6-case logic (#175)", {
+  # Stable + target + at target -> "fortsæt"
+  m1 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 90, y_axis_unit = "count"),
+    target_value = 90,
+    target_text = ">= 90"
+  )
+  expect_match(m1$action_text, "Fortsæt den nuværende praksis")
+
+  # Stable + target + not at target -> "bevidst ændring"
+  m2 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 70, y_axis_unit = "count"),
+    target_value = 90,
+    target_text = ">= 90"
+  )
+  expect_match(m2$action_text, "stabil men når ikke målet")
+
+  # Stable + no target -> "fastsæt et mål"
+  m3 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 50, y_axis_unit = "count")
+  )
+  expect_match(m3$action_text, "fastsætte et mål")
+
+  # Unstable + target + at target -> "ustabil men opfyldt"
+  m4 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(
+      centerline = 90, y_axis_unit = "count", runs_detected = TRUE
+    ),
+    target_value = 90,
+    target_text = ">= 90"
+  )
+  expect_match(m4$action_text, "målet aktuelt er opfyldt, er processen ustabil")
+
+  # Unstable + target + not at target -> "fjern særlige årsager"
+  m5 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(
+      centerline = 70, y_axis_unit = "count", crossings_detected = TRUE
+    ),
+    target_value = 90,
+    target_text = ">= 90"
+  )
+  expect_match(m5$action_text, "Prioritér at identificere og fjerne")
+
+  # Unstable + no target -> "undersøg årsager"
+  m6 <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(
+      centerline = 50, y_axis_unit = "count", runs_detected = TRUE
+    )
+  )
+  expect_match(m6$action_text, "undersøg årsagerne til den")
+})
+
+test_that("build_export_analysis_metadata accepter optional baseline_analysis + signal_examples (#175)", {
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 50, y_axis_unit = "count"),
+    baseline_analysis = "Processen er stabil omkring 50 enheder.",
+    signal_examples = "2024-Q1: kortvarig stigning"
+  )
+
+  expect_equal(metadata$baseline_analysis, "Processen er stabil omkring 50 enheder.")
+  expect_equal(metadata$signal_examples, "2024-Q1: kortvarig stigning")
+})
+
+test_that("build_export_analysis_metadata defaulter baseline_analysis + signal_examples til tom string (#175)", {
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 50, y_axis_unit = "count")
+  )
+
+  expect_equal(metadata$baseline_analysis, "")
+  expect_equal(metadata$signal_examples, "")
+})

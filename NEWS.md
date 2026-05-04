@@ -1,5 +1,19 @@
 # biSPCharts 0.3.3
 
+## Nye features
+
+* **Berig analyse-metadata til BFHddl-pipeline-paritet:**
+  `build_export_analysis_metadata()` returnerer nu yderligere felter til
+  brug i AI-context og PDF-eksport: `y_axis_unit` (rå unit-streng),
+  `target_display` (formatteret target med unit), `action_text`
+  (handlingsforslag baseret på 6-case Anhøj-stabilitet × målopfyldelse-
+  matrix, replikerer `pipeline_action_text()` i BFHddl), `baseline_analysis`
+  (optional pre-beregnet baseline-tekst, default `""`) og `signal_examples`
+  (optional, default `""`). Eksisterende felter (`data_definition`, `target`,
+  `chart_title`, `department`, `centerline`, `at_target`, `target_direction`)
+  bevares. BFHcharts' `bfh_generate_analysis()` ignorerer ekstra felter; de
+  bruges af biSPCharts' egne LLM-context- og PDF-eksport-flows. (#175)
+
 ## Bug fixes
 
 * **Klinisk kritisk:** `resolve_analysis_centerline()` bruger nu rå

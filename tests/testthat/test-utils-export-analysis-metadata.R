@@ -128,6 +128,74 @@ test_that("resolve_analysis_centerline returns last row for variable cl (freeze/
   expect_equal(resolve_analysis_centerline(result), 20)
 })
 
+# Edge-case-tests for #488 — udvider dækning omkring #470:
+# (a) operator <=, (b) ingen direction, (c) tom qic_data fallback,
+# (d) NULL input, (e) NA i sidste cl-raekke.
+
+test_that("at_target med <=-target og raw cl flipper ej ved boundary (#470/#488)", {
+  # Rå cl=0.0995, target<=0.0997 -> opfyldt; summary 0.1000 ville flippe
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_divergent_bfh_result(raw_cl = 0.0995, summary_cl = 0.1000),
+    target_value = 0.0997,
+    target_text = "<= 9,97%"
+  )
+  expect_true(metadata$at_target,
+    info = "Raw cl=0.0995 <= target=0.0997 -> opfyldt (afrundet 0.1000 ville flippe)"
+  )
+})
+
+test_that("at_target uden retning bruger tolerance-baseret close_enough (#488)", {
+  # Ingen >/< prefix -> tolerance check (max(abs(target)*0.05, 0.01))
+  result <- make_divergent_bfh_result(raw_cl = 0.85, summary_cl = 0.85)
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = result,
+    target_value = 0.86,
+    target_text = "0,86"
+  )
+  # tolerance = max(0.86*0.05, 0.01) = 0.043; |0.85-0.86|=0.01 -> indenfor
+  expect_true(metadata$at_target)
+
+  # Klart udenfor tolerance
+  result2 <- make_divergent_bfh_result(raw_cl = 0.50, summary_cl = 0.50)
+  metadata2 <- build_export_analysis_metadata(
+    bfh_qic_result = result2,
+    target_value = 0.86,
+    target_text = "0,86"
+  )
+  expect_false(metadata2$at_target)
+})
+
+test_that("resolve_analysis_centerline fallbacker til summary ved tom qic_data (#488)", {
+  # qic_data er ikke-NULL men har 0 raekker -> fald tilbage til summary
+  result <- list(
+    config = list(y_axis_unit = "count"),
+    summary = data.frame(centerlinje = 12.5),
+    qic_data = data.frame(cl = numeric(0))
+  )
+  class(result) <- "bfh_qic_result"
+  expect_equal(resolve_analysis_centerline(result), 12.5)
+})
+
+test_that("resolve_analysis_centerline returnerer NULL ved fuldt tomt input (#488)", {
+  expect_null(resolve_analysis_centerline(NULL))
+
+  empty <- list(config = list(), summary = NULL, qic_data = NULL)
+  class(empty) <- "bfh_qic_result"
+  expect_null(resolve_analysis_centerline(empty))
+})
+
+test_that("resolve_analysis_centerline returnerer NA hvis sidste cl-raekke er NA (#488)", {
+  # NA i sidste raekke skal propageres ej silently coerced til 0
+  result <- list(
+    config = list(y_axis_unit = "count"),
+    summary = data.frame(centerlinje = 10),
+    qic_data = data.frame(cl = c(10, 10, NA_real_))
+  )
+  class(result) <- "bfh_qic_result"
+  cl <- resolve_analysis_centerline(result)
+  expect_true(is.na(cl))
+})
+
 # ============================================================================
 # BFHddl-pipeline-paritet (#175) - berig metadata med y_axis_unit, target_display,
 # action_text, baseline_analysis, signal_examples

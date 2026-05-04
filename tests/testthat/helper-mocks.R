@@ -44,6 +44,18 @@ mock_bfhllm_spc_suggestion <- function(spc_result, context, min_chars = 300,
 #'
 #' Returnerer minimal bfh_qic_result-struktur uden ggplot-rendering.
 #' formals() matcher den installerede BFHcharts::bfh_qic-version.
+#'
+#' Kontrakt-paritet med BFHcharts >= 0.15.0 (#490):
+#' - $qic_data (ej $data) — laesest af `transform_bfh_output()`
+#' - $summary med decomposed signal-kolonner (anhoej_signal, runs_signal,
+#'   crossings_signal, centerlinje) — erstatter legacy
+#'   summary$loebelaengde_signal
+#' - $config med y_axis_unit
+#' - S3-class "bfh_qic_result" saa S3-dispatch virker
+#' - Anhoej-rule-kolonner i qic_data (anhoej.signal, runs.signal,
+#'   sigma.signal, n.crossings, n.crossings.min, longest.run,
+#'   longest.run.max) — alle NA-defaults; tests kan overrides via
+#'   constructor-parametre.
 mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          y_axis_unit = NULL, chart_title = NULL,
                          target_value = NULL, target_text = NULL,
@@ -56,21 +68,62 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          subtitle = NULL, caption = NULL,
                          return.data = FALSE, print.summary = FALSE,
                          language = "da") {
-  # Minimal struktur matchende real bfh_qic_result
-  list(
+  n_rows <- nrow(data)
+  cl_value <- if (!is.null(cl)) {
+    cl
+  } else {
+    mean(as.numeric(data[[y]]), na.rm = TRUE)
+  }
+
+  qic_data <- data.frame(
+    x = seq_len(n_rows),
+    y = as.numeric(data[[y]]),
+    cl = rep(cl_value, n_rows),
+    lcl = rep(NA_real_, n_rows),
+    ucl = rep(NA_real_, n_rows),
+    # Anhoej-rule-kolonner (BFHcharts 0.15.0 contract)
+    anhoej.signal = rep(FALSE, n_rows),
+    runs.signal = rep(FALSE, n_rows),
+    sigma.signal = rep(FALSE, n_rows),
+    n.crossings = rep(NA_real_, n_rows),
+    n.crossings.min = rep(NA_real_, n_rows),
+    longest.run = rep(NA_real_, n_rows),
+    longest.run.max = rep(NA_real_, n_rows),
+    part = if (!is.null(part) && part %in% names(data)) {
+      as.factor(data[[part]])
+    } else {
+      factor(rep(1L, n_rows))
+    }
+  )
+
+  # signal-kolonne aliaserer anhoej.signal saa downstream-kald
+  # (transform_bfh_output) er glade ved enten `signal` eller `anhoej.signal`.
+  qic_data$signal <- qic_data$anhoej.signal
+
+  # Summary per part — decomposed signaler matcher BFHcharts 0.15.0
+  parts_levels <- levels(qic_data$part)
+  summary_df <- data.frame(
+    part = parts_levels,
+    centerlinje = rep(cl_value, length(parts_levels)),
+    runs_signal = rep(FALSE, length(parts_levels)),
+    crossings_signal = rep(FALSE, length(parts_levels)),
+    anhoej_signal = rep(FALSE, length(parts_levels))
+  )
+
+  result <- list(
     plot = ggplot2::ggplot(data.frame(x = 1:3, y = 1:3)) +
       ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +
       ggplot2::labs(title = chart_title %||% "Mock SPC Chart"),
-    data = data.frame(
-      x = seq_len(nrow(data)),
-      y = rep(mean(as.numeric(data[[y]]), na.rm = TRUE), nrow(data)),
-      cl = rep(mean(as.numeric(data[[y]]), na.rm = TRUE), nrow(data)),
-      lcl = rep(NA_real_, nrow(data)),
-      ucl = rep(NA_real_, nrow(data)),
-      signal = rep(FALSE, nrow(data))
-    ),
-    chart_type = chart_type
+    qic_data = qic_data,
+    summary = summary_df,
+    config = list(
+      y_axis_unit = y_axis_unit,
+      chart_type = chart_type,
+      chart_title = chart_title
+    )
   )
+  class(result) <- "bfh_qic_result"
+  result
 }
 
 if (requireNamespace("BFHcharts", quietly = TRUE)) {

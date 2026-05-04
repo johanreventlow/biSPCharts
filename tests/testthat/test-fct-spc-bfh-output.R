@@ -15,6 +15,14 @@ make_bfh_result <- function(qic_data = NULL, plot = NULL) {
       lcl = rep(9, 5)
     )
   }
+  # Tilføj Anhøj-kolonner hvis ej supplied (#468 BFHcharts 0.15.0 kontrakt:
+  # derive_anhoej_per_part() kræver runs.signal, n.crossings, n.crossings.min).
+  # Brug NA-defaults så tests ikke utilsigtet trigger Anhøj-warning.
+  for (col in c("runs.signal", "n.crossings", "n.crossings.min")) {
+    if (!col %in% names(qic_data)) {
+      qic_data[[col]] <- if (col == "runs.signal") FALSE else NA_real_
+    }
+  }
   if (is.null(plot)) {
     # Brug minimal ggplot for at undgå BFHcharts-dep i unit-test
     plot <- ggplot2::ggplot(qic_data, ggplot2::aes(x = x, y = y)) +

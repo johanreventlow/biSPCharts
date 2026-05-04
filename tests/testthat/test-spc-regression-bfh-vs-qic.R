@@ -719,13 +719,16 @@ test_that("S chart: Anhøj rules applied", {
   baseline <- load_baseline("s", "anhoej")
   cols <- extract_column_names(baseline)
 
-  # Act
-  bfh_result <- compute_spc_results_bfh(
+  # Act -- S-chart uden target trigger forventet decorate-warning ("No CL or
+  # Target") + Inf-min/max-warnings når subgroup-statistik er glissé.
+  # Wrap i suppressWarnings: tests verificerer signal-pipeline, ikke
+  # target-rendering.
+  bfh_result <- suppressWarnings(compute_spc_results_bfh(
     data = baseline$input_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
     chart_type = "s"
-  )
+  ))
 
   # Assert: Signals present
   expect_true("signal" %in% names(bfh_result$qic_data))
@@ -736,14 +739,14 @@ test_that("S chart: Freeze period handling", {
   baseline <- load_baseline("s", "freeze")
   cols <- extract_column_names(baseline)
 
-  # Act
-  bfh_result <- compute_spc_results_bfh(
+  # Act -- se note ved "S chart: Anhøj rules applied".
+  bfh_result <- suppressWarnings(compute_spc_results_bfh(
     data = baseline$input_data,
     x_var = cols$x_var,
     y_var = cols$y_var,
     chart_type = "s",
     freeze_var = cols$freeze_var
-  )
+  ))
 
   # Assert: All points present
   expect_equal(
@@ -779,8 +782,10 @@ test_that("All 7 chart types render without errors", {
       params$n_var <- cols$n_var
     }
 
-    # Call service layer
-    result <- do.call(compute_spc_results_bfh, params)
+    # Call service layer -- S-chart kan trigger forventede target-warnings,
+    # andre chart-typer er warning-fri. Wrap i suppressWarnings for at undgå
+    # incidental warnings i smoke-test (signal-pipeline testes andetsteds).
+    result <- suppressWarnings(do.call(compute_spc_results_bfh, params))
 
     # Assert: Basic structure
     expect_s3_class(

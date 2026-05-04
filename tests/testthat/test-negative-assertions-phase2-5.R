@@ -236,9 +236,11 @@ test_that("readr::read_csv varsler ved malformet CSV-struktur (§2.5.3)", {
 
   # readr fanger ragged rows som problems() — detect via suppressWarnings +
   # problems()-check. Dette er stabilere end expect_warning direkte.
-  parsed <- suppressMessages(
+  # suppressMessages + suppressWarnings: vi tester problems()-kontrakt,
+  # ikke warning/message-bobble (CI-gate har error-on=warning).
+  parsed <- suppressWarnings(suppressMessages(
     readr::read_csv(tmp, show_col_types = FALSE, progress = FALSE)
-  )
+  ))
   issues <- readr::problems(parsed)
 
   expect_gt(nrow(issues), 0,
@@ -431,16 +433,18 @@ test_that("safe_operation med function fallback modtager error-object (§2.5.3)"
 test_that("safe_operation med warning kode-blok fuldfører uden at kaste (§2.5.3)", {
   skip_if_not(exists("safe_operation", mode = "function"))
 
-  # safe_operation skal IKKE propagere warnings som fejl
+  # safe_operation skal IKKE propagere warnings som fejl.
+  # suppressWarnings: vi verificerer at warning ej blokerer flow, ikke
+  # at warning bobler op (CI-gate har error-on=warning).
   expect_no_error({
-    result <- safe_operation(
+    result <- suppressWarnings(safe_operation(
       "Test warning handling",
       code = {
         warning("Non-fatal warning")
         "code_result_after_warning"
       },
       fallback = "fallback_value"
-    )
+    ))
   })
 
   # safe_operation må ikke returnere fallback ved warnings (kun errors)

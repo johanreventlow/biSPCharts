@@ -111,7 +111,9 @@ test_that("generateSPCPlot standard plot < 5s", {
   skip_on_ci()
   test_data <- create_benchmark_data(n_rows = 100)
   config <- list(x_col = "Dato", y_col = "Teller", n_col = "Naevner")
-  benchmark_result <- bench::mark(
+  # suppressWarnings: bench::mark advarer "Some expressions had a GC..."
+  # ved kort iteration-count -- forventet, ej testrelevant.
+  benchmark_result <- suppressWarnings(bench::mark(
     plot = generateSPCPlot(
       data = test_data,
       config = config,
@@ -120,7 +122,7 @@ test_that("generateSPCPlot standard plot < 5s", {
     iterations = 3,
     check = FALSE,
     memory = FALSE
-  )
+  ))
   expect_lt(as.numeric(benchmark_result$median) * 1000, 5000)
 })
 
@@ -129,7 +131,7 @@ test_that("generateSPCPlot stor datasaet plot < 30s", {
   skip_on_ci()
   large_data <- create_benchmark_data(n_rows = 1000)
   config <- list(x_col = "Dato", y_col = "Teller", n_col = "Naevner")
-  benchmark_result <- bench::mark(
+  benchmark_result <- suppressWarnings(bench::mark(
     plot = generateSPCPlot(
       data = large_data,
       config = config,
@@ -138,7 +140,7 @@ test_that("generateSPCPlot stor datasaet plot < 30s", {
     iterations = 2,
     check = FALSE,
     memory = FALSE
-  )
+  ))
   expect_lt(as.numeric(benchmark_result$median) * 1000, 30000)
 })
 
@@ -219,14 +221,14 @@ test_that("generateSPCPlot benchmark variance er inden for bred tolerance", {
   skip_on_ci()
   test_data <- create_benchmark_data(n_rows = 100)
   config <- list(x_col = "Dato", y_col = "Teller", n_col = "Naevner")
-  run1 <- bench::mark(
+  run1 <- suppressWarnings(bench::mark(
     plot = generateSPCPlot(data = test_data, config = config, chart_type = "p"),
     iterations = 10, check = FALSE, memory = FALSE
-  )
-  run2 <- bench::mark(
+  ))
+  run2 <- suppressWarnings(bench::mark(
     plot = generateSPCPlot(data = test_data, config = config, chart_type = "p"),
     iterations = 10, check = FALSE, memory = FALSE
-  )
+  ))
   variance_pct <- abs(as.numeric(run2$median) - as.numeric(run1$median)) /
     as.numeric(run1$median) * 100
   expect_true(is.finite(variance_pct))

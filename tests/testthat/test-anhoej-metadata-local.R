@@ -44,7 +44,6 @@ create_anhoej_test_data <- function(pattern = "none", n_rows = 20) {
 
 # Unit Tests: Function Existence ==============================================
 
-context("compute_anhoej_metadata_local() - Function Existence")
 
 test_that("compute_anhoej_metadata_local() exists and is callable", {
   expect_true(exists("compute_anhoej_metadata_local"))
@@ -53,7 +52,6 @@ test_that("compute_anhoej_metadata_local() exists and is callable", {
 
 # Unit Tests: Basic Functionality ============================================
 
-context("compute_anhoej_metadata_local() - Basic Functionality")
 
 test_that("compute_anhoej_metadata_local() returns valid metadata structure", {
   # Arrange
@@ -125,7 +123,6 @@ test_that("compute_anhoej_metadata_local() handles P charts with denominator", {
 
 # Unit Tests: Anhøj Rules Detection ==========================================
 
-context("compute_anhoej_metadata_local() - Anhøj Rules Detection")
 
 test_that("compute_anhoej_metadata_local() detects runs violations", {
   # Arrange: Data with intentional long run
@@ -172,7 +169,6 @@ test_that("compute_anhoej_metadata_local() handles normal variation (no violatio
 
 # Unit Tests: Parameter Validation ===========================================
 
-context("compute_anhoej_metadata_local() - Parameter Validation")
 
 test_that("compute_anhoej_metadata_local() requires data parameter", {
   config <- list(x_col = "month", y_col = "value", chart_type = "run")
@@ -237,7 +233,6 @@ test_that("compute_anhoej_metadata_local() handles invalid column names", {
 
 # Unit Tests: Edge Cases ======================================================
 
-context("compute_anhoej_metadata_local() - Edge Cases")
 
 test_that("compute_anhoej_metadata_local() handles minimum dataset (n=3)", {
   data <- create_anhoej_test_data(n_rows = 3)
@@ -308,7 +303,6 @@ test_that("compute_anhoej_metadata_local() handles negative values", {
 
 # Integration Tests: extract_anhoej_metadata() ================================
 
-context("compute_anhoej_metadata_local() - Integration with extract_anhoej_metadata()")
 
 test_that("compute_anhoej_metadata_local() uses extract_anhoej_metadata() internally", {
   # This test verifies the integration with existing utility
@@ -346,7 +340,6 @@ test_that("compute_anhoej_metadata_local() output matches direct qic() + extract
 
 # Performance Tests ===========================================================
 
-context("compute_anhoej_metadata_local() - Performance")
 
 test_that("compute_anhoej_metadata_local() is lightweight (< 100ms for n=50)", {
   data <- create_anhoej_test_data(n_rows = 50)
@@ -381,7 +374,6 @@ test_that("compute_anhoej_metadata_local() performance scales linearly", {
 
 # Error Handling Tests ========================================================
 
-context("compute_anhoej_metadata_local() - Error Handling")
 
 test_that("compute_anhoej_metadata_local() handles empty data gracefully", {
   empty_data <- tibble::tibble(

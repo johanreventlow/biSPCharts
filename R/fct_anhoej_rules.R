@@ -142,15 +142,28 @@ extract_anhoej_metadata <- function(qic_data) {
     FALSE
   }
 
-  # 5. Extract longest run information (if available)
+  # 5. Extract longest run information (if available).
+  # NOTE (#492 3.6): max(..., na.rm=TRUE) returnerer -Inf med warning hvis
+  # alle vaerdier er NA. Konverter -Inf til NA for at undgaa "-Inf punkter"
+  # i format_anhoej_metadata's sprintf-output.
+  finite_or_na <- function(x) if (is.finite(x)) x else NA_real_
+
   longest_run <- if ("longest.run" %in% names(qic_data)) {
-    if (has_parts) max(qic_data$longest.run, na.rm = TRUE) else qic_data$longest.run[1]
+    if (has_parts) {
+      finite_or_na(suppressWarnings(max(qic_data$longest.run, na.rm = TRUE)))
+    } else {
+      qic_data$longest.run[1]
+    }
   } else {
     NA_integer_
   }
 
   longest_run_max <- if ("longest.run.max" %in% names(qic_data)) {
-    if (has_parts) max(qic_data$longest.run.max, na.rm = TRUE) else qic_data$longest.run.max[1]
+    if (has_parts) {
+      finite_or_na(suppressWarnings(max(qic_data$longest.run.max, na.rm = TRUE)))
+    } else {
+      qic_data$longest.run.max[1]
+    }
   } else {
     NA_real_
   }
@@ -252,9 +265,9 @@ format_anhoej_metadata <- function(anhoej_meta) {
     return("Anh\u00f8j metadata ikke tilg\u00e6ngelig")
   }
 
-  # Runs text
+  # Runs text. is.finite() blokkerer baade NA og -Inf (#492 3.6).
   runs_text <- if (anhoej_meta$runs_signal) {
-    if (!is.na(anhoej_meta$longest_run)) {
+    if (is.finite(anhoej_meta$longest_run)) {
       sprintf("Ja (%d punkter)", anhoej_meta$longest_run)
     } else {
       "Ja"

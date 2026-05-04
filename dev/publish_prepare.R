@@ -60,9 +60,10 @@ suppressPackageStartupMessages({
 })
 
 SIBLINGS <- list(
-  BFHcharts = "johanreventlow/BFHcharts",
-  BFHtheme  = "johanreventlow/BFHtheme",
-  BFHllm    = "johanreventlow/BFHllm"
+  BFHcharts        = "johanreventlow/BFHcharts",
+  BFHtheme         = "johanreventlow/BFHtheme",
+  BFHllm           = "johanreventlow/BFHllm",
+  BFHchartsAssets  = "johanreventlow/BFHchartsAssets"
 )
 
 gate_log_step <- function(n, total, msg) {
@@ -442,8 +443,19 @@ phase_manifest <- function() {
   # python = NULL: deaktivér python-env detection (rsconnect 1.8.0+ forsøger
   # auto-detect "managed" python venv som fejler uden RETICULATE_PYTHON sat).
   # biSPCharts har ingen python-deps; manifest skal være rent R-only.
+  # forceGeneratePythonEnvironment = FALSE: ekstra defensiv mod rsconnect 1.8.0+
+  # auto-detection. RETICULATE_PYTHON sættes tomt for at sikre at reticulate
+  # ej forsoeger detection af "managed" venv (kendt rsconnect 1.8.0-bug).
+  old_reticulate <- Sys.getenv("RETICULATE_PYTHON", unset = NA)
+  Sys.setenv(RETICULATE_PYTHON = "")
+  on.exit(
+    if (is.na(old_reticulate)) Sys.unsetenv("RETICULATE_PYTHON")
+    else Sys.setenv(RETICULATE_PYTHON = old_reticulate),
+    add = TRUE
+  )
   res <- tryCatch(
-    rsconnect::writeManifest(appDir = ".", appFiles = app_files, python = NULL),
+    rsconnect::writeManifest(appDir = ".", appFiles = app_files, python = NULL,
+                              forceGeneratePythonEnvironment = FALSE),
     error = function(e) e
   )
   if (inherits(res, "error")) {

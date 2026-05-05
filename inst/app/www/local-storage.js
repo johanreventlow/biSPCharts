@@ -232,22 +232,86 @@ $(document).ready(function() {
   spc_expire_stale_sessions();
 });
 
+// QuotaExceededError detection (varierer per browser)
+function spc_is_quota_error(e) {
+  if (!e) return false;
+  return e.name === 'QuotaExceededError' ||
+    e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||  // Firefox
+    e.code === 22 || e.code === 1014;  // Safari/Firefox legacy
+}
+
+// Ryd alle spc_app_*-entries undtagen den aktuelle key. Bruges som
+// recovery-trin ved QuotaExceededError — fjerner stale data fra
+// tidligere dev-iterationer eller andre lokale apps på samme origin.
+// Returnerer antal fjernede keys.
+function spc_cleanup_stale_entries(keepKey) {
+  var removed = 0;
+  try {
+    var keysToRemove = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf('spc_app_') === 0 && k !== keepKey) {
+        keysToRemove.push(k);
+      }
+    }
+    keysToRemove.forEach(function(k) {
+      try { localStorage.removeItem(k); removed++; } catch(_) {}
+    });
+  } catch(_) {}
+  return removed;
+}
+
 // Save data to localStorage with app prefix
 // Note: `data` er allerede en JSON-string fra Rs jsonlite::toJSON().
 // Vi krypterer den før setItem og pakker i wrapper-format.
 // Returnerer Promise<boolean> — async pga. WebCrypto.
+//
+// Quota-recovery (#528 follow-up): Ved QuotaExceededError prøver vi at
+// rydde stale spc_app_*-entries og retry én gang. Det dækker tilfælde
+// hvor dev-iterationer har stablet gamle entries op, eller hvor andre
+// lokale apps på samme origin fylder quota.
 window.saveAppState = function(key, data) {
   var storageKey = 'spc_app_' + key;
-  return spc_encrypt_payload(data).then(function(payload) {
+
+  function attemptSetItem(payload) {
     try {
       localStorage.setItem(storageKey, payload);
-      return true;
+      return { ok: true };
     } catch(e) {
-      console.error('Failed to save to localStorage:', e);
-      return false;
+      return { ok: false, err: e };
     }
+  }
+
+  return spc_encrypt_payload(data).then(function(payload) {
+    var payloadSize = payload ? payload.length : 0;
+    var first = attemptSetItem(payload);
+    if (first.ok) return true;
+
+    // Første forsøg fejlede — log diagnostic + forsøg recovery
+    console.warn(
+      '[SPC] localStorage.setItem fejlede:',
+      first.err && first.err.name, '|',
+      first.err && first.err.message,
+      '| payload size:', payloadSize, 'bytes'
+    );
+
+    if (spc_is_quota_error(first.err)) {
+      var removed = spc_cleanup_stale_entries(storageKey);
+      console.info('[SPC] Quota recovery: ryddet', removed, 'stale spc_app_*-entries — retry setItem');
+      var second = attemptSetItem(payload);
+      if (second.ok) {
+        console.info('[SPC] Quota recovery succes — save fuldført efter cleanup');
+        return true;
+      }
+      console.error(
+        '[SPC] Quota recovery fejlede stadig efter cleanup:',
+        second.err && second.err.name, '|',
+        second.err && second.err.message
+      );
+    }
+    return false;
   }).catch(function(e) {
-    console.error('saveAppState pipeline failed:', e);
+    console.error('saveAppState pipeline failed:', e && e.message, '|', e && e.name);
     return false;
   });
 };

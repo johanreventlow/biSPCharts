@@ -113,24 +113,28 @@ test_that("Target and centerline use identical processing", {
   expect_equal(target_result, 0.75, info = "Both should normalize to 0.75")
 })
 
-test_that("QIC input preparation prevents double-scaling", {
-  # Test the prepare_qic_inputs function
+test_that("BFH parameter mapping prevents double-scaling for P charts", {
+  p_data <- data.frame(
+    dato = seq.Date(as.Date("2024-01-01"), by = "week", length.out = 4),
+    taeller = c(10, 30, 60, 80),
+    naevner = c(100, 100, 100, 100)
+  )
 
-  # Mock proportion data [0,1]
-  y_data <- c(0.1, 0.3, 0.6, 0.8)
-  n_data <- c(100, 100, 100, 100)
+  params <- map_to_bfh_params(
+    data = p_data,
+    x_var = "dato",
+    y_var = "taeller",
+    n_var = "naevner",
+    chart_type = "p",
+    target_value = 80,
+    centerline_value = 75
+  )
 
-  # P-chart with denominators
-  qic_inputs <- prepare_qic_inputs(y_data * 100, n_data, "p", "percent") # Input as counts
-
-  # Should prepare y as counts, n as denominators
-  expect_equal(qic_inputs$y, c(10, 30, 60, 80)) # Counts
-  expect_equal(qic_inputs$n, c(100, 100, 100, 100)) # Denominators
-  expect_equal(qic_inputs$chart_type, "p")
-
-  # Target normalization should work
-  target_normalized <- qic_inputs$normalize("80%")
-  expect_equal(target_normalized, 0.8, info = "Target should normalize to 0.8 for qicharts2")
+  expect_equal(params$data$taeller, p_data$taeller, info = "P-chart tællerdata skal forblive counts")
+  expect_equal(params$data$naevner, p_data$naevner, info = "P-chart nævnere skal sendes med")
+  expect_equal(rlang::as_string(params$n), "naevner")
+  expect_equal(params$target_value, 0.8, info = "P-chart target 80 skal normaliseres til 0.8")
+  expect_equal(params$cl, 0.75, info = "P-chart centerline 75 skal normaliseres til 0.75")
 })
 
 test_that("Run chart vs P-chart: run er data-drevet, p er proportion-intern", {
@@ -267,18 +271,24 @@ test_that("Edge case: mixed decimal/integer data", {
   )
 })
 
-test_that("Validation catches potential 100×-bugs", {
-  # Test validation functions that should catch problems
-
-  # Proportion data outside [0,1] when not using counts+n
-  validation <- validate_qic_inputs(
-    y = c(10, 30, 60, 80), # These look like percents, not proportions
-    n = NULL, # No denominators
-    internal_unit = "proportion"
+test_that("Live SPC validation rejects impossible P-chart counts", {
+  invalid_p_data <- data.frame(
+    dato = seq.Date(as.Date("2024-01-01"), by = "week", length.out = 4),
+    taeller = c(10, 120, 60, 80),
+    naevner = c(100, 100, 100, 100)
   )
 
-  expect_false(validation$valid, info = "Should detect invalid proportion range")
-  expect_length(validation$warnings, 1)
+  expect_error(
+    validate_spc_request(
+      data = invalid_p_data,
+      x_var = "dato",
+      y_var = "taeller",
+      n_var = "naevner",
+      chart_type = "p"
+    ),
+    "Tæller-kolonne.*overstiger nævner-kolonne",
+    fixed = FALSE
+  )
 })
 
 test_that("Performance: normalization is reasonably fast", {

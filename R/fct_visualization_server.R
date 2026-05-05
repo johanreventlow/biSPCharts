@@ -319,15 +319,6 @@ setup_visualization <- function(input, output, session, app_state) {
         val <- app_state$columns$mappings$kommentar_column
       }
 
-      log_debug(
-        paste(
-          "[NOTES_TRACE] UI selected kommentar_column:",
-          if (is.null(val)) "NULL" else val,
-          "| Auto-detected fallback:",
-          if (is.null(app_state$columns$mappings$kommentar_column)) "NULL" else app_state$columns$mappings$kommentar_column
-        ),
-        .context = "[NOTES_UI]"
-      )
       return(val)
     }),
     app_state = app_state

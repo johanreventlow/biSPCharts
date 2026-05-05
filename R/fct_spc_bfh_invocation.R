@@ -78,16 +78,6 @@ call_bfh_chart <- function(bfh_params) {
       .context = "BFH_SERVICE"
     )
   }
-  log_debug(
-    paste(
-      "[NOTES_TRACE] Is 'notes' param passed to BFHcharts?:",
-      "notes" %in% names(bfh_params_clean),
-      "| Notes count:",
-      if ("notes" %in% names(bfh_params_clean)) length(bfh_params_clean$notes) else 0
-    ),
-    .context = "BFH_SERVICE"
-  )
-
   if (!is.null(bfh_params_clean$data)) {
     x_col_name <- as.character(bfh_params_clean$x)
     y_col_name <- as.character(bfh_params_clean$y)

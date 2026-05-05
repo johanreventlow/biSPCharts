@@ -1,6 +1,6 @@
 Package: biSPCharts
 Title: Statistical Process Control for Clinical Quality Improvement
-Version: 0.3.3
+Version: 0.3.4
 Authors@R:
     person("Johan", "Reventlow", , "johan@reventlow.dk", role = c("aut", "cre"))
 Description:

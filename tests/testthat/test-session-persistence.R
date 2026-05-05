@@ -146,21 +146,58 @@ test_that("local-storage.js saveAppState does NOT double-encode (static check)",
   )
 })
 
-test_that("local-storage.js loadAppState still parses JSON once (static check)", {
+test_that("local-storage.js parses stored JSON exactly once (no double-decode)", {
+  # REGRESSION-GUARD (#193): Filen skal kalde JSON.parse på localStorage-
+  # output, men aldrig i en double-decode-pipeline. Issue #528 flyttede
+  # JSON.parse fra loadAppState-body til spc_decrypt_payload-helper, så
+  # vi verificerer på fil-niveau at parse-step eksisterer og at output
+  # af et JSON.parse ikke parses igen.
   js_file <- file.path("..", "..", "inst", "app", "www", "local-storage.js")
   skip_if_not(file.exists(js_file), "local-storage.js not found")
 
   js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
 
-  load_fn_match <- regmatches(
-    js_text,
-    regexpr("window\\.loadAppState\\s*=\\s*function[^}]+\\}[^}]*\\}", js_text)
-  )
-
-  expect_length(load_fn_match, 1)
   expect_true(
-    grepl("JSON\\.parse", load_fn_match),
-    info = "loadAppState must still call JSON.parse() to deserialize stored data"
+    grepl("JSON\\.parse", js_text),
+    info = "local-storage.js skal kalde JSON.parse for at deserialisere stored data"
+  )
+  expect_false(
+    grepl("JSON\\.parse\\s*\\(\\s*JSON\\.parse", js_text),
+    info = "Double-decode-mønstret JSON.parse(JSON.parse(...)) er forbudt"
+  )
+})
+
+test_that("local-storage.js implementerer AES-GCM-encrypt-pipeline (#528)", {
+  # Issue #528: Verificér at krypterings-pipelinen er installeret. Tester
+  # på fil-niveau at WebCrypto + IndexedDB-helpers + wrapper-format-marker
+  # findes — sikrer at vi ikke ved et uheld ruller tilbage til plain
+  # storage uden at opdage det.
+  js_file <- file.path("..", "..", "inst", "app", "www", "local-storage.js")
+  skip_if_not(file.exists(js_file), "local-storage.js not found")
+
+  js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
+
+  expect_true(
+    grepl("AES-GCM", js_text),
+    info = "AES-GCM skal være konfigureret som krypterings-algoritme"
+  )
+  expect_true(
+    grepl("crypto\\.subtle\\.encrypt", js_text) &&
+      grepl("crypto\\.subtle\\.decrypt", js_text),
+    info = "WebCrypto subtle.encrypt + subtle.decrypt skal anvendes"
+  )
+  expect_true(
+    grepl("indexedDB\\.open", js_text),
+    info = "Krypterings-nøgle skal lagres i IndexedDB (non-extractable)"
+  )
+  expect_true(
+    grepl("_enc:\\s*1", js_text),
+    info = "Krypteret payload skal pakkes i wrapper-format med _enc-marker"
+  )
+  # Non-extractable nøgle: generateKey kaldes med extractable=false
+  expect_true(
+    grepl("generateKey\\s*\\([\\s\\S]*?false", js_text, perl = TRUE),
+    info = "AES-GCM-nøgle skal være non-extractable (generateKey ... false)"
   )
 })
 

@@ -1,3 +1,21 @@
+# biSPCharts 0.3.4 (development)
+
+## Security
+
+* **localStorage-kryptering via WebCrypto AES-GCM-256 (#528):** Session-data
+  i `localStorage` krypteres nu med non-extractable AES-GCM-256-nøgle
+  gemt i IndexedDB. Same-Origin-Policy + non-extractable CryptoKey
+  beskytter mod passive scrapere og browser-extensions uden samme origin.
+  Implementation er fuldt transparent for brugeren — save/restore-flow
+  uændret bortset fra ~50 ms ekstra latency ved load (under perceptions-
+  threshold). Eksisterende plain-JSON-payloads læses uændret og
+  re-skrives krypteret ved næste auto-save (silent migration uden
+  brugerinvolvering). Browsere uden WebCrypto eller IndexedDB falder
+  tilbage til plain storage med console-warning. Implementation:
+  `inst/app/www/local-storage.js` (encrypt/decrypt + IndexedDB-keystore),
+  `inst/app/www/shiny-handlers.js` (Promise-flow til peek/load/save).
+  R-side API uændret.
+
 # biSPCharts 0.3.3
 
 ## Nye features

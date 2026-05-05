@@ -7,28 +7,33 @@
 // Handler for saving app state via Shiny messages
 // Issue #193: Rapporterer success/failure tilbage til R så server-side
 // kan deaktivere auto-save ved quota-fejl eller andre persistente fejl.
+// Issue #528: saveAppState returnerer nu Promise<boolean> pga. async
+// AES-GCM-encrypt — håndterer succes/fejl via .then().
 Shiny.addCustomMessageHandler('saveAppState', function(message) {
   var dataLen = message.data ? message.data.length : 0;
   console.log('[SPC] saveAppState handler called, key:', message.key, 'size:', dataLen);
-  var success = window.saveAppState(message.key, message.data);
-  console.log('[SPC] saveAppState success:', success);
-  if (success) {
-    window._spcLastSaveTime = Date.now();
-    _spcUpdateSaveElapsed();
-  } else {
-    console.error('saveAppState failed for key:', message.key);
-  }
-  Shiny.setInputValue('local_storage_save_result', {
-    success: success,
-    timestamp: new Date().toISOString(),
-    key: message.key
-  }, {priority: 'event'});
+  Promise.resolve(window.saveAppState(message.key, message.data)).then(function(success) {
+    console.log('[SPC] saveAppState success:', success);
+    if (success) {
+      window._spcLastSaveTime = Date.now();
+      _spcUpdateSaveElapsed();
+    } else {
+      console.error('saveAppState failed for key:', message.key);
+    }
+    Shiny.setInputValue('local_storage_save_result', {
+      success: success,
+      timestamp: new Date().toISOString(),
+      key: message.key
+    }, {priority: 'event'});
+  });
 });
 
 // Handler for loading app state via Shiny messages
+// Issue #528: loadAppState returnerer Promise<object|null>.
 Shiny.addCustomMessageHandler('loadAppState', function(message) {
-  var data = window.loadAppState(message.key);
-  Shiny.setInputValue('loaded_app_state', data, {priority: 'event'});
+  Promise.resolve(window.loadAppState(message.key)).then(function(data) {
+    Shiny.setInputValue('loaded_app_state', data, {priority: 'event'});
+  });
 });
 
 // Handler for clearing app state via Shiny messages
@@ -56,25 +61,26 @@ Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
 // Issue #193 / brugerstyret restore.
 $(document).on('shiny:sessioninitialized', function() {
   console.log('[SPC] shiny:sessioninitialized fired');
-  var data = window.loadAppState('current_session');
-  console.log('[SPC] localStorage peek: data present =', data !== null);
-  if (data) {
-    // Cache fuld payload — sendes til R først ved brugerens valg
-    window.__pendingRestore = data;
-    // Send kun metadata-subset til R (ingen PHI i log)
-    Shiny.setInputValue('session_peek', {
-      has_payload: true,
-      version: data.version || null,
-      timestamp: data.timestamp || null,
-      nrows: (data.data && data.data.nrows) || null,
-      ncols: (data.data && data.data.ncols) || null,
-      indicator_title: (data.metadata && data.metadata.indicator_title) || '',
-      active_tab: (data.metadata && data.metadata.active_tab) || null
-    }, {priority: 'event'});
-  } else {
-    window.__pendingRestore = null;
-    Shiny.setInputValue('session_peek', {has_payload: false}, {priority: 'event'});
-  }
+  // Issue #528: loadAppState er async pga. WebCrypto-decrypt.
+  // session_peek emitteres så snart payload er læst + dekrypteret.
+  Promise.resolve(window.loadAppState('current_session')).then(function(data) {
+    console.log('[SPC] localStorage peek: data present =', data !== null);
+    if (data) {
+      window.__pendingRestore = data;
+      Shiny.setInputValue('session_peek', {
+        has_payload: true,
+        version: data.version || null,
+        timestamp: data.timestamp || null,
+        nrows: (data.data && data.data.nrows) || null,
+        ncols: (data.data && data.data.ncols) || null,
+        indicator_title: (data.metadata && data.metadata.indicator_title) || '',
+        active_tab: (data.metadata && data.metadata.active_tab) || null
+      }, {priority: 'event'});
+    } else {
+      window.__pendingRestore = null;
+      Shiny.setInputValue('session_peek', {has_payload: false}, {priority: 'event'});
+    }
+  });
 });
 
 // Trigges af R når bruger klikker "Gendan session"

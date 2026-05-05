@@ -69,14 +69,14 @@ describe("Empty and Null Data Handling", {
     expect_equal(ncol(empty_data), 0)
 
     # Auto-detection should handle gracefully
-    skip_if_not(exists("detect_columns_name_based", mode = "function"))
+    require_internal("detect_columns_name_based", mode = "function")
     result <- detect_columns_name_based(character(0))
     expect_null(result$x_col)
     expect_null(result$y_col)
   })
 
   it("handles NULL data input", {
-    skip_if_not(exists("detect_columns_full_analysis", mode = "function"))
+    require_internal("detect_columns_full_analysis", mode = "function")
 
     result <- detect_columns_full_analysis(NULL)
 
@@ -88,7 +88,7 @@ describe("Empty and Null Data Handling", {
   it("handles data frame with only NA values", {
     na_data <- create_edge_case_data("all_na", n = 5)
 
-    skip_if_not(exists("find_numeric_columns", mode = "function"))
+    require_internal("find_numeric_columns", mode = "function")
     numeric_cols <- find_numeric_columns(na_data)
 
     # Should identify columns as numeric despite NA values
@@ -99,7 +99,7 @@ describe("Empty and Null Data Handling", {
     data <- data.frame(matrix(1:9, ncol = 3))
     names(data) <- rep("", 3)
 
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
     result <- validate_data_for_auto_detect(data)
 
     expect_false(result$suitable)
@@ -115,7 +115,7 @@ describe("Single Row/Column Data", {
 
     expect_equal(nrow(single_row), 1)
 
-    skip_if_not(exists("detect_columns_full_analysis", mode = "function"))
+    require_internal("detect_columns_full_analysis", mode = "function")
     result <- detect_columns_full_analysis(single_row)
 
     # Should still attempt detection
@@ -127,7 +127,7 @@ describe("Single Row/Column Data", {
 
     expect_equal(ncol(single_col), 1)
 
-    skip_if_not(exists("detect_columns_full_analysis", mode = "function"))
+    require_internal("detect_columns_full_analysis", mode = "function")
     result <- detect_columns_full_analysis(single_col)
 
     # Should detect the one column appropriately
@@ -140,7 +140,7 @@ describe("Single Row/Column Data", {
     expect_equal(nrow(single_value), 1)
     expect_equal(ncol(single_value), 1)
 
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
     result <- validate_data_for_auto_detect(single_value)
 
     # Should fail validation (too small)
@@ -149,7 +149,7 @@ describe("Single Row/Column Data", {
 
   it("generates SPC plot with minimum data (10 rows)", {
     set.seed(42)
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     min_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 10),
@@ -189,7 +189,7 @@ describe("Danish Characters Comprehensive", {
     expect_true("Tæller" %in% names(danish_data))
     expect_true("Nævner" %in% names(danish_data))
 
-    skip_if_not(exists("detect_columns_name_based", mode = "function"))
+    require_internal("detect_columns_name_based", mode = "function")
     result <- detect_columns_name_based(names(danish_data))
 
     expect_equal(result$y_col, "Tæller")
@@ -227,7 +227,7 @@ describe("Danish Characters Comprehensive", {
   })
 
   it("parses Danish month names correctly", {
-    skip_if_not(exists("parse_danish_dates", mode = "function"))
+    require_internal("parse_danish_dates", mode = "function")
 
     danish_dates <- c(
       "15 jan 2024", "20 februar 2024", "1 marts 2024",
@@ -253,7 +253,7 @@ describe("Danish Characters Comprehensive", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("detect_columns_name_based", mode = "function"))
+    require_internal("detect_columns_name_based", mode = "function")
     result <- detect_columns_name_based(names(mixed_data))
 
     # Should detect despite mixed names
@@ -291,7 +291,7 @@ describe("Extreme Value Handling", {
   it("handles very large numbers (1e15)", {
     large_data <- create_edge_case_data("extreme_large", n = 10)
 
-    skip_if_not(exists("score_by_data_characteristics", mode = "function"))
+    require_internal("score_by_data_characteristics", mode = "function")
     score <- score_by_data_characteristics(large_data$y, role = "y_column")
 
     # Should not crash or return NA
@@ -302,7 +302,7 @@ describe("Extreme Value Handling", {
   it("handles very small numbers (1e-15)", {
     small_data <- create_edge_case_data("extreme_small", n = 10)
 
-    skip_if_not(exists("score_by_statistical_properties", mode = "function"))
+    require_internal("score_by_statistical_properties", mode = "function")
     score <- score_by_statistical_properties(small_data$y, role = "y_column")
 
     # Should handle without crashing
@@ -330,7 +330,7 @@ describe("Extreme Value Handling", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("score_by_data_characteristics", mode = "function"))
+    require_internal("score_by_data_characteristics", mode = "function")
     score <- score_by_data_characteristics(zero_data$y, role = "y_column")
 
     # Should handle zeros gracefully
@@ -344,7 +344,7 @@ describe("Extreme Value Handling", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("score_by_data_characteristics", mode = "function"))
+    require_internal("score_by_data_characteristics", mode = "function")
     score <- score_by_data_characteristics(negative_data$y, role = "y_column")
 
     # Negative values should lower score but not crash
@@ -352,7 +352,7 @@ describe("Extreme Value Handling", {
   })
 
   it("generates plot with extreme Y-axis range", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
     skip("Visual inspection needed for extreme ranges")
 
     extreme_data <- data.frame(
@@ -384,7 +384,7 @@ describe("Large File Performance", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("detect_columns_full_analysis", mode = "function"))
+    require_internal("detect_columns_full_analysis", mode = "function")
 
     start_time <- Sys.time()
     result <- detect_columns_full_analysis(large_data)
@@ -404,7 +404,7 @@ describe("Large File Performance", {
     names(wide_data)[2] <- "Værdi"
     wide_data$Dato <- seq.Date(as.Date("2024-01-01"), by = "day", length.out = 100)
 
-    skip_if_not(exists("find_numeric_columns", mode = "function"))
+    require_internal("find_numeric_columns", mode = "function")
 
     start_time <- Sys.time()
     numeric_cols <- find_numeric_columns(wide_data)
@@ -425,7 +425,7 @@ describe("Large File Performance", {
 
   it("validates large CSV file efficiently", {
     set.seed(42)
-    skip_if_not(exists("validate_csv_file", mode = "function"))
+    require_internal("validate_csv_file", mode = "function")
 
     # Create large test CSV
     large_data <- data.frame(
@@ -454,7 +454,7 @@ describe("Large File Performance", {
 describe("Boundary Conditions", {
   it("handles exactly MIN_SPC_ROWS data points", {
     set.seed(42)
-    skip_if_not(exists("MIN_SPC_ROWS"))
+    require_internal("MIN_SPC_ROWS")
 
     min_rows <- ifelse(exists("MIN_SPC_ROWS"), MIN_SPC_ROWS, 10)
 
@@ -464,7 +464,7 @@ describe("Boundary Conditions", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
     result <- validate_data_for_auto_detect(boundary_data)
 
     # Should be valid at exactly minimum
@@ -473,7 +473,7 @@ describe("Boundary Conditions", {
 
   it("handles MIN_SPC_ROWS - 1 data points", {
     set.seed(42)
-    skip_if_not(exists("MIN_SPC_ROWS"))
+    require_internal("MIN_SPC_ROWS")
 
     min_rows <- ifelse(exists("MIN_SPC_ROWS"), MIN_SPC_ROWS, 10)
 
@@ -483,7 +483,7 @@ describe("Boundary Conditions", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
     result <- validate_data_for_auto_detect(boundary_data)
 
     # validate_data_for_auto_detect håndhæver kun det absolutte minimum (2 rækker),
@@ -501,7 +501,7 @@ describe("Boundary Conditions", {
     )
     names(data)[1] <- long_name
 
-    skip_if_not(exists("detect_columns_name_based", mode = "function"))
+    require_internal("detect_columns_name_based", mode = "function")
     result <- detect_columns_name_based(names(data))
 
     # Should handle long names without crashing
@@ -510,7 +510,7 @@ describe("Boundary Conditions", {
 
   it("handles maximum recommended SPC points", {
     set.seed(42)
-    skip_if_not(exists("RECOMMENDED_SPC_POINTS"))
+    require_internal("RECOMMENDED_SPC_POINTS")
 
     rec_points <- ifelse(exists("RECOMMENDED_SPC_POINTS"), RECOMMENDED_SPC_POINTS, 20)
 
@@ -533,7 +533,7 @@ describe("Boundary Conditions", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("find_numeric_columns", mode = "function"))
+    require_internal("find_numeric_columns", mode = "function")
     numeric_cols <- find_numeric_columns(partial_data)
 
     # Should identify x and z, skip y
@@ -555,7 +555,7 @@ describe("Special Data Types", {
 
     expect_s3_class(date_data$Dato, "Date")
 
-    skip_if_not(exists("detect_date_columns_robust", mode = "function"))
+    require_internal("detect_date_columns_robust", mode = "function")
     result <- detect_date_columns_robust(date_data)
 
     # Should detect Date column
@@ -577,7 +577,7 @@ describe("Special Data Types", {
 
     expect_s3_class(datetime_data$Tidspunkt, "POSIXct")
 
-    skip_if_not(exists("detect_date_columns_robust", mode = "function"))
+    require_internal("detect_date_columns_robust", mode = "function")
     result <- detect_date_columns_robust(datetime_data)
 
     # Should detect POSIXct column
@@ -595,7 +595,7 @@ describe("Special Data Types", {
     expect_s3_class(factor_data$Kategori, "factor")
 
     # Should convert factor to character for detection
-    skip_if_not(exists("detect_columns_full_analysis", mode = "function"))
+    require_internal("detect_columns_full_analysis", mode = "function")
     result <- detect_columns_full_analysis(factor_data)
 
     expect_true(!is.null(result))
@@ -611,7 +611,7 @@ describe("Special Data Types", {
 
     expect_type(logical_data$Flag, "logical")
 
-    skip_if_not(exists("find_numeric_columns", mode = "function"))
+    require_internal("find_numeric_columns", mode = "function")
     numeric_cols <- find_numeric_columns(logical_data)
 
     # Logical columns should not be treated as numeric for SPC
@@ -661,7 +661,7 @@ describe("Malformed Data Handling", {
       stringsAsFactors = FALSE
     )
 
-    skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
+    require_internal("preprocess_uploaded_data", mode = "function")
 
     result <- preprocess_uploaded_data(
       whitespace_data,

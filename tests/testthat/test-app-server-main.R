@@ -11,14 +11,14 @@
 #   - run_app() eksistens
 #   - create_emit_api() struktur
 
-skip_if_fn <- function(name) skip_if_not(exists(name, mode = "function"))
+require_fn <- function(name) require_internal(name, mode = "function")
 
 # ===========================================================================
 # hash_session_token — ren funktion, ingen Shiny krævet
 # ===========================================================================
 
 test_that("hash_session_token returnerer 8-tegns hex string", {
-  skip_if_fn("hash_session_token")
+  require_fn("hash_session_token")
 
   result <- hash_session_token("test_token_abc123")
 
@@ -30,7 +30,7 @@ test_that("hash_session_token returnerer 8-tegns hex string", {
 })
 
 test_that("hash_session_token er deterministisk for samme input", {
-  skip_if_fn("hash_session_token")
+  require_fn("hash_session_token")
 
   token <- "deterministic_test_token"
   result1 <- hash_session_token(token)
@@ -40,7 +40,7 @@ test_that("hash_session_token er deterministisk for samme input", {
 })
 
 test_that("hash_session_token returnerer 'unknown' for NULL og non-character input", {
-  skip_if_fn("hash_session_token")
+  require_fn("hash_session_token")
 
   expect_equal(hash_session_token(NULL), "unknown")
   expect_equal(hash_session_token(123), "unknown")
@@ -48,7 +48,7 @@ test_that("hash_session_token returnerer 'unknown' for NULL og non-character inp
 })
 
 test_that("hash_session_token producerer unikke hashes for forskellige tokens", {
-  skip_if_fn("hash_session_token")
+  require_fn("hash_session_token")
 
   h1 <- hash_session_token("token_session_A")
   h2 <- hash_session_token("token_session_B")
@@ -93,8 +93,8 @@ test_that("main_app_server eksisterer og er en funktion", {
 # ===========================================================================
 
 test_that("create_emit_api returnerer en liste med alle forventede emit-funktioner", {
-  skip_if_fn("create_emit_api")
-  skip_if_fn("create_app_state")
+  require_fn("create_emit_api")
+  require_fn("create_app_state")
 
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
@@ -117,8 +117,8 @@ test_that("create_emit_api returnerer en liste med alle forventede emit-funktion
 })
 
 test_that("emit$data_updated incrementerer event counter", {
-  skip_if_fn("create_emit_api")
-  skip_if_fn("create_app_state")
+  require_fn("create_emit_api")
+  require_fn("create_app_state")
 
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
@@ -131,8 +131,8 @@ test_that("emit$data_updated incrementerer event counter", {
 })
 
 test_that("emit$data_updated saniterer ugyldige context-argumenter", {
-  skip_if_fn("create_emit_api")
-  skip_if_fn("create_app_state")
+  require_fn("create_emit_api")
+  require_fn("create_app_state")
 
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
@@ -148,8 +148,8 @@ test_that("emit$data_updated saniterer ugyldige context-argumenter", {
 })
 
 test_that("emit$data_updated gemmer context i last_data_update_context", {
-  skip_if_fn("create_emit_api")
-  skip_if_fn("create_app_state")
+  require_fn("create_emit_api")
+  require_fn("create_app_state")
 
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)

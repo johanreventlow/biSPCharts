@@ -192,10 +192,10 @@ test_that("all logging functions exist and are callable", {
 })
 
 test_that("logging functions support consistent API", {
-  skip_if_not(exists("log_info", mode = "function"))
-  skip_if_not(exists("log_debug", mode = "function"))
-  skip_if_not(exists("log_warn", mode = "function"))
-  skip_if_not(exists("log_error", mode = "function"))
+  require_internal("log_info", mode = "function")
+  require_internal("log_debug", mode = "function")
+  require_internal("log_warn", mode = "function")
+  require_internal("log_error", mode = "function")
 
   expect_no_error(log_info("Test info message"))
   expect_no_error(log_debug("Test debug message"))
@@ -206,10 +206,10 @@ test_that("logging functions support consistent API", {
 })
 
 test_that("logging functions support .context parameter for backward compatibility", {
-  skip_if_not(exists("log_info", mode = "function"))
-  skip_if_not(exists("log_debug", mode = "function"))
-  skip_if_not(exists("log_warn", mode = "function"))
-  skip_if_not(exists("log_error", mode = "function"))
+  require_internal("log_info", mode = "function")
+  require_internal("log_debug", mode = "function")
+  require_internal("log_warn", mode = "function")
+  require_internal("log_error", mode = "function")
 
   expect_no_error(log_info("Test message", .context = "TEST_CONTEXT"))
   expect_no_error(log_debug("Test message", .context = "TEST_CONTEXT"))
@@ -221,10 +221,10 @@ test_that("logging functions support .context parameter for backward compatibili
 })
 
 test_that("logging functions support component parameter for new style", {
-  skip_if_not(exists("log_info", mode = "function"))
-  skip_if_not(exists("log_debug", mode = "function"))
-  skip_if_not(exists("log_warn", mode = "function"))
-  skip_if_not(exists("log_error", mode = "function"))
+  require_internal("log_info", mode = "function")
+  require_internal("log_debug", mode = "function")
+  require_internal("log_warn", mode = "function")
+  require_internal("log_error", mode = "function")
 
   expect_no_error(log_info("Test message", component = "TEST_COMPONENT"))
   expect_no_error(log_debug("Test message", component = "TEST_COMPONENT"))
@@ -235,7 +235,7 @@ test_that("logging functions support component parameter for new style", {
 })
 
 test_that("component parameter takes precedence over .context when both provided", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   expect_no_error({
     log_info("Test message", component = "COMPONENT", .context = "CONTEXT")
@@ -243,7 +243,7 @@ test_that("component parameter takes precedence over .context when both provided
 })
 
 test_that("logging functions support structured details parameter", {
-  skip_if_not(exists("log_debug_kv", mode = "function"))
+  require_internal("log_debug_kv", mode = "function")
 
   expect_no_error({
     log_debug_kv(
@@ -256,8 +256,8 @@ test_that("logging functions support structured details parameter", {
 })
 
 test_that("logging respects log level configuration", {
-  skip_if_not(exists("log_debug", mode = "function"))
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_debug", mode = "function")
+  require_internal("log_info", mode = "function")
 
   original_level <- Sys.getenv("SPC_LOG_LEVEL", "")
 
@@ -280,7 +280,7 @@ test_that("logging respects log level configuration", {
 })
 
 test_that("logging system avoids raw cat() fallbacks in production", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   captured_output <- capture.output(
     {
@@ -297,7 +297,7 @@ test_that("logging system avoids raw cat() fallbacks in production", {
 })
 
 test_that("logging functions handle errors gracefully", {
-  skip_if_not(exists("log_error", mode = "function"))
+  require_internal("log_error", mode = "function")
 
   expect_no_error(log_error(NULL))
   expect_no_error(log_error(""))
@@ -318,7 +318,7 @@ test_that("logging contexts follow standardized naming convention", {
     "ERROR_HANDLING", "TEST_MODE", "PERFORMANCE_MONITOR"
   )
 
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   for (context in standard_contexts) {
     expect_no_error({
@@ -328,7 +328,7 @@ test_that("logging contexts follow standardized naming convention", {
 })
 
 test_that("logging operations are performant", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   start_time <- Sys.time()
   log_info("Performance test message", component = "PERFORMANCE_TEST")
@@ -346,7 +346,7 @@ test_that("logging operations are performant", {
 })
 
 test_that("safe_operation integrates correctly with logging system", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   expect_no_error({
     result <- safe_operation(
@@ -374,7 +374,7 @@ test_that("safe_operation integrates correctly with logging system", {
 })
 
 test_that("logging system manages memory efficiently", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   memory_used_mb <- function() {
     gc_info <- gc()
@@ -395,7 +395,7 @@ test_that("logging system manages memory efficiently", {
 })
 
 test_that("logging output follows consistent format", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   captured_output <- capture.output(
     {
@@ -412,7 +412,7 @@ test_that("logging output follows consistent format", {
 })
 
 test_that("logging API handles edge cases correctly", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   expect_no_error(log_info("Test message", component = ""))
   expect_no_error(log_info("Test message", .context = ""))
@@ -424,7 +424,7 @@ test_that("logging API handles edge cases correctly", {
 })
 
 test_that("logging system initializes correctly", {
-  skip_if_not(exists("log_info", mode = "function"))
+  require_internal("log_info", mode = "function")
 
   expect_no_error(log_info("Initialization test message"))
 
@@ -433,7 +433,7 @@ test_that("logging system initializes correctly", {
 })
 
 test_that("structured logging with log_debug_kv works correctly", {
-  skip_if_not(exists("log_debug_kv", mode = "function"))
+  require_internal("log_debug_kv", mode = "function")
 
   expect_no_error({
     log_debug_kv(
@@ -454,10 +454,10 @@ test_that("structured logging with log_debug_kv works correctly", {
 })
 
 test_that("logging system works end-to-end", {
-  skip_if_not(exists("log_debug", mode = "function"))
-  skip_if_not(exists("log_info", mode = "function"))
-  skip_if_not(exists("log_warn", mode = "function"))
-  skip_if_not(exists("log_error", mode = "function"))
+  require_internal("log_debug", mode = "function")
+  require_internal("log_info", mode = "function")
+  require_internal("log_warn", mode = "function")
+  require_internal("log_error", mode = "function")
 
   expect_no_error({
     log_debug("Debug message", component = "INTEGRATION_TEST")

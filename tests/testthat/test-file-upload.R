@@ -109,7 +109,7 @@ test_that("TODO Fase 3: handle_excel_upload kræver reaktiv kontekst", {
 
 test_that("setup_file_upload haandterer opkald korrekt", {
   skip_if_not_installed("shiny")
-  skip_if_not(exists("setup_file_upload", mode = "function"))
+  require_internal("setup_file_upload", mode = "function")
 
   mock_input <- list()
   mock_output <- list()

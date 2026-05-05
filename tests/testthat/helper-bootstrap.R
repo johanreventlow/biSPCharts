@@ -35,6 +35,26 @@ updateSelectizeInput <- shiny::updateSelectizeInput
 req <- shiny::req
 
 # ------------------------------------------------------------------------------
+# Internal symbol checks
+# ------------------------------------------------------------------------------
+# Use this instead of skip_if_not(exists(...)) for package internals. A missing
+# internal symbol should fail loudly; otherwise tests can go green without
+# exercising the production contract they were written for.
+require_internal <- function(name, mode = "any") {
+  ns <- asNamespace("biSPCharts")
+  if (!exists(name, envir = ns, mode = mode, inherits = FALSE)) {
+    stop(
+      sprintf("Required biSPCharts internal '%s' is missing", name),
+      call. = FALSE
+    )
+  }
+
+  value <- get(name, envir = ns, mode = mode, inherits = FALSE)
+  assign(name, value, envir = parent.frame())
+  invisible(value)
+}
+
+# ------------------------------------------------------------------------------
 # Package loading
 # ------------------------------------------------------------------------------
 # VIGTIGT: helper.R sourses af pkgload::load_all(helpers=TRUE), som er default.

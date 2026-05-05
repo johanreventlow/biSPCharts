@@ -7,7 +7,7 @@ test_that("create_app_state basic functionality works", {
   # TEST: Core app_state creation and structure
 
   # Skip if create_app_state function not available
-  skip_if_not(exists("create_app_state", mode = "function"), "create_app_state function not available")
+  require_internal("create_app_state", mode = "function")
 
   # SETUP: Create app state
   app_state <- create_app_state()

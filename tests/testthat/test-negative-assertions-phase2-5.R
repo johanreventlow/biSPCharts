@@ -21,7 +21,7 @@
 
 test_that("generate_improvement_suggestion returnerer NULL når BFHllm utilgængelig (§2.5.3)", {
   set.seed(42)
-  skip_if_not(exists("generate_improvement_suggestion", mode = "function"))
+  require_internal("generate_improvement_suggestion", mode = "function")
   skip_if_not_installed("BFHllm") # Midlertidigt fjernet fra deploy-bundle
 
   # Mock is_bfhllm_available til altid at returnere FALSE
@@ -52,7 +52,7 @@ test_that("generate_improvement_suggestion returnerer NULL når BFHllm utilgæng
 })
 
 test_that("generate_improvement_suggestion returnerer NULL ved NULL inputs (§2.5.3)", {
-  skip_if_not(exists("generate_improvement_suggestion", mode = "function"))
+  require_internal("generate_improvement_suggestion", mode = "function")
   skip_if_not_installed("BFHllm") # Midlertidigt fjernet fra deploy-bundle
 
   mock_session <- shiny::MockShinySession$new()
@@ -125,7 +125,7 @@ test_that("httr2::req_perform timeout propagerer som error (§2.5.3)", {
 # ------------------------------------------------------------------------------
 
 test_that("autoSaveAppState deaktiverer auto_save ved quota-exceeded (§2.5.3)", {
-  skip_if_not(exists("autoSaveAppState", mode = "function"))
+  require_internal("autoSaveAppState", mode = "function")
 
   # Setup: app_state med auto_save_enabled=TRUE
   app_state <- new.env(parent = emptyenv())
@@ -168,7 +168,7 @@ test_that("autoSaveAppState deaktiverer auto_save ved quota-exceeded (§2.5.3)",
 })
 
 test_that("autoSaveAppState springer over når auto_save_enabled=FALSE (§2.5.3)", {
-  skip_if_not(exists("autoSaveAppState", mode = "function"))
+  require_internal("autoSaveAppState", mode = "function")
 
   # Setup: app_state med auto_save_enabled=FALSE
   app_state <- new.env(parent = emptyenv())
@@ -253,7 +253,7 @@ test_that("readr::read_csv varsler ved malformet CSV-struktur (§2.5.3)", {
 # ------------------------------------------------------------------------------
 
 test_that("compute_spc_results_bfh håndterer all-NA data defensivt (§2.5.3)", {
-  skip_if_not(exists("compute_spc_results_bfh", mode = "function"))
+  require_internal("compute_spc_results_bfh", mode = "function")
 
   all_na_data <- data.frame(
     x = 1:10,
@@ -295,7 +295,7 @@ test_that("compute_spc_results_bfh håndterer all-NA data defensivt (§2.5.3)", 
 })
 
 test_that("validate_numeric_column fejler for all-NA kolonne (§2.5.3)", {
-  skip_if_not(exists("validate_numeric_column", mode = "function"))
+  skip("Legacy validate_numeric_column blev fjernet; all-NA validering dækkes via compute_spc_results_bfh/parse pipeline.")
 
   all_na_data <- data.frame(
     numerisk = rep(NA_real_, 5)
@@ -319,7 +319,7 @@ test_that("validate_numeric_column fejler for all-NA kolonne (§2.5.3)", {
 # ------------------------------------------------------------------------------
 
 test_that("compute_spc_results_bfh fejler for data med 1 række (§2.5.3)", {
-  skip_if_not(exists("compute_spc_results_bfh", mode = "function"))
+  require_internal("compute_spc_results_bfh", mode = "function")
 
   single_row <- data.frame(x = 1L, y = 42.0)
 
@@ -348,7 +348,7 @@ test_that("compute_spc_results_bfh fejler for data med 1 række (§2.5.3)", {
 })
 
 test_that("compute_spc_results_bfh fejler for tom data (§2.5.3)", {
-  skip_if_not(exists("compute_spc_results_bfh", mode = "function"))
+  require_internal("compute_spc_results_bfh", mode = "function")
 
   empty_data <- data.frame(x = integer(0), y = numeric(0))
 
@@ -376,7 +376,7 @@ test_that("compute_spc_results_bfh fejler for tom data (§2.5.3)", {
 # ------------------------------------------------------------------------------
 
 test_that("safe_operation returnerer fallback ved fejl (§2.5.3)", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   # Graceful error-handling: safe_operation fanger stop() og returnerer fallback
   expect_no_error({
@@ -393,7 +393,7 @@ test_that("safe_operation returnerer fallback ved fejl (§2.5.3)", {
 })
 
 test_that("safe_operation propagerer resultat ved success (§2.5.3)", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   expect_no_error({
     result <- safe_operation(
@@ -409,7 +409,7 @@ test_that("safe_operation propagerer resultat ved success (§2.5.3)", {
 })
 
 test_that("safe_operation med function fallback modtager error-object (§2.5.3)", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   captured_error <- NULL
   expect_no_error({
@@ -431,7 +431,7 @@ test_that("safe_operation med function fallback modtager error-object (§2.5.3)"
 })
 
 test_that("safe_operation med warning kode-blok fuldfører uden at kaste (§2.5.3)", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   # safe_operation skal IKKE propagere warnings som fejl.
   # suppressWarnings: vi verificerer at warning ej blokerer flow, ikke
@@ -459,7 +459,7 @@ test_that("safe_operation med warning kode-blok fuldfører uden at kaste (§2.5.
 
 test_that("compute_spc_results_bfh kaster fejl ved ugyldig chart_type (§2.5.3)", {
   set.seed(42)
-  skip_if_not(exists("compute_spc_results_bfh", mode = "function"))
+  require_internal("compute_spc_results_bfh", mode = "function")
 
   data <- data.frame(x = 1:10, y = rnorm(10))
 
@@ -486,7 +486,7 @@ test_that("compute_spc_results_bfh kaster fejl ved ugyldig chart_type (§2.5.3)"
 # ------------------------------------------------------------------------------
 
 test_that("sanitize_column_name saniterer SQL injection-strings (§2.5.3, #244)", {
-  skip_if_not(exists("sanitize_column_name", mode = "function"))
+  require_internal("sanitize_column_name", mode = "function")
 
   # sanitize_column_name fjerner ikke-tilladte tegn (allowed: A-Za-z0-9_æøåÆØÅ .-)
   # og HTML-escaper quotes. Kontrakten er at output er ændret og ikke identisk
@@ -513,7 +513,7 @@ test_that("sanitize_column_name saniterer SQL injection-strings (§2.5.3, #244)"
 })
 
 test_that("validate_file_extension afviser path traversal-forsøg (§2.5.3, #244)", {
-  skip_if_not(exists("validate_file_extension", mode = "function"))
+  require_internal("validate_file_extension", mode = "function")
 
   traversal_inputs <- c(
     "../../../etc/passwd",
@@ -531,7 +531,7 @@ test_that("validate_file_extension afviser path traversal-forsøg (§2.5.3, #244
 })
 
 test_that("sanitize_csv_output blokerer formula injection-strings (§2.5.3, #244)", {
-  skip_if_not(exists("sanitize_csv_output", mode = "function"))
+  require_internal("sanitize_csv_output", mode = "function")
 
   formula_inputs <- c("=CMD()", "+HYPERLINK()", "-2+3+cmd|", "@SUM(A1:A100)")
 

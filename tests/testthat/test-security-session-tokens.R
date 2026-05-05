@@ -8,7 +8,7 @@ library(testthat)
 # for at undgaa session token-exposure i logs.
 
 test_that("hash_session_token function exists and works correctly", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test with valid token
   test_token <- "test_session_token_123"
@@ -25,7 +25,7 @@ test_that("hash_session_token function exists and works correctly", {
 })
 
 test_that("hash_session_token handles invalid inputs safely", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test with NULL token
   result_null <- hash_session_token(NULL)
@@ -46,7 +46,7 @@ test_that("hash_session_token handles invalid inputs safely", {
 })
 
 test_that("hash_session_token produces secure hashes", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test that different tokens produce different hashes
   token1 <- "session_token_1"
@@ -68,7 +68,7 @@ test_that("hash_session_token produces secure hashes", {
 })
 
 test_that("hashed tokens are not reversible", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test that hash doesn't contain original token
   original_token <- "super_secret_session_token_12345"
@@ -86,7 +86,7 @@ test_that("hashed tokens are not reversible", {
 })
 
 test_that("session token hashing uses SHA256 algorithm", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Bekræft at implementeringen bruger SHA256 (opgraderet fra SHA1 af sikkerhedsmæssige årsager)
   test_token <- "test_token_for_verification"
@@ -105,7 +105,7 @@ test_that("session token hashing uses SHA256 algorithm", {
 })
 
 test_that("hash length is appropriate for logging", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test multiple tokens to ensure consistent length
   test_tokens <- c(
@@ -129,7 +129,7 @@ test_that("session token hashing is used in server logging", {
   # We can't easily test the actual server function, but we can verify
   # that the hashing function would work in the expected context
 
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Simulate the type of session token that Shiny might generate
   mock_session_token <- paste0(
@@ -146,7 +146,7 @@ test_that("session token hashing is used in server logging", {
 })
 
 test_that("performance of session token hashing is acceptable", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Measure performance of hashing operation
   test_token <- "performance_test_session_token_123456789"
@@ -178,7 +178,7 @@ test_that("session token exposure vulnerability is fixed", {
   # This test documents the security vulnerability that was fixed
   # and ensures it doesn't regress
 
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Before the fix: session tokens were logged directly
   # After the fix: session tokens are hashed before logging
@@ -203,7 +203,7 @@ test_that("session token exposure vulnerability is fixed", {
 
 test_that("hash collision resistance is adequate for logging", {
   set.seed(42)
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Generate many different tokens and verify low collision rate
   n_tokens <- 1000
@@ -227,7 +227,7 @@ test_that("hash collision resistance is adequate for logging", {
 
 # Documentation and compliance tests
 test_that("session token hashing meets security best practices", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Verify that implementation follows security best practices:
 
@@ -255,7 +255,7 @@ test_that("session token hashing meets security best practices", {
 
 # Integration with error handling
 test_that("session token hashing integrates with error handling", {
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Test that hashing works even in error conditions
   expect_no_error({
@@ -276,7 +276,7 @@ test_that("session token hashing integrates with error handling", {
 # Final integration test
 test_that("session token security system works end-to-end", {
   set.seed(42)
-  skip_if_not(exists("hash_session_token", mode = "function"))
+  require_internal("hash_session_token", mode = "function")
 
   # Simulate complete workflow
   expect_no_error({

@@ -20,7 +20,7 @@ write_tmp_csv <- function(content, fileext = ".csv", use_bytes = FALSE) {
 # =============================================================================
 
 test_that("validate_csv_file accepterer semikolon-separeret CSV (dansk standard)", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   csv <- "Dato;Tæller;Nævner\n2024-01-01;10;100\n2024-02-01;15;120"
   path <- write_tmp_csv(csv)
@@ -37,7 +37,7 @@ test_that("validate_csv_file accepterer semikolon-separeret CSV (dansk standard)
 # =============================================================================
 
 test_that("validate_csv_file accepterer komma-separeret CSV (engelsk format)", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   csv <- "Date,Count,Denominator\n2024-01-01,10,100\n2024-02-01,15,120"
   path <- write_tmp_csv(csv)
@@ -48,7 +48,7 @@ test_that("validate_csv_file accepterer komma-separeret CSV (engelsk format)", {
 })
 
 test_that("validate_csv_file accepterer komma-sep CSV med punkt-decimal", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   csv <- "Date,Count,Denominator\n2024-01-01,10.5,100.3\n2024-02-01,15.3,120.7"
   path <- write_tmp_csv(csv)
@@ -65,7 +65,7 @@ test_that("validate_csv_file accepterer komma-sep CSV med punkt-decimal", {
 # =============================================================================
 
 test_that("validate_csv_file accepterer tab-separeret CSV", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   csv <- "Dato\tTæller\tNævner\n2024-01-01\t10\t100\n2024-02-01\t15\t120"
   path <- write_tmp_csv(csv)
@@ -76,7 +76,7 @@ test_that("validate_csv_file accepterer tab-separeret CSV", {
 })
 
 test_that("validate_csv_file accepterer tab-sep CSV med dansk komma-decimal", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   # Parser-strategi 2: auto-detect (delim=NULL, decimal_mark=",")
   # Dansk komma-decimal med tab-delimiter er en gyldig kombination
@@ -93,7 +93,7 @@ test_that("validate_csv_file accepterer tab-sep CSV med dansk komma-decimal", {
 # =============================================================================
 
 test_that("validate_csv_file accepterer CSV med UTF-8 BOM i header", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   # UTF-8 BOM: \xEF\xBB\xBF efterfulgt af semikolon-CSV
   csv_text <- "Dato;Tæller;Nævner\n2024-01-01;10;100\n2024-02-01;15;120"
@@ -107,7 +107,7 @@ test_that("validate_csv_file accepterer CSV med UTF-8 BOM i header", {
 })
 
 test_that("validate_csv_file accepterer CSV med mixed CRLF/LF line endings", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   # Windows CRLF line endings
   csv_bytes <- charToRaw("Dato;Tæller;Nævner\r\n2024-01-01;10;100\r\n2024-02-01;15;120")
@@ -123,7 +123,7 @@ test_that("validate_csv_file accepterer CSV med mixed CRLF/LF line endings", {
 # =============================================================================
 
 test_that("validate_csv_file afviser tom fil (0 rækker efter header)", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   # Kun header, ingen data-rækker
   csv <- "Dato;Tæller;Nævner"
@@ -136,7 +136,7 @@ test_that("validate_csv_file afviser tom fil (0 rækker efter header)", {
 })
 
 test_that("validate_csv_file afviser fil med 0 kolonner", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
 
   # Binær/tom fil kan heller ikke parses
   path <- tempfile(fileext = ".csv")
@@ -157,8 +157,8 @@ test_that("validate_csv_file afviser fil med 0 kolonner", {
 # =============================================================================
 
 test_that("parse_file parser komma-sep fil som validator accepterer", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
-  skip_if_not(exists("parse_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
+  require_internal("parse_file", mode = "function")
 
   csv <- "Date,Count,Denominator\n2024-01-01,10,100\n2024-02-01,15,120"
   path <- write_tmp_csv(csv)
@@ -175,8 +175,8 @@ test_that("parse_file parser komma-sep fil som validator accepterer", {
 })
 
 test_that("parse_file parser tab-sep fil som validator accepterer", {
-  skip_if_not(exists("validate_csv_file", mode = "function"))
-  skip_if_not(exists("parse_file", mode = "function"))
+  require_internal("validate_csv_file", mode = "function")
+  require_internal("parse_file", mode = "function")
 
   csv <- "Dato\tTæller\tNævner\n2024-01-01\t10\t100\n2024-02-01\t15\t120"
   path <- write_tmp_csv(csv)

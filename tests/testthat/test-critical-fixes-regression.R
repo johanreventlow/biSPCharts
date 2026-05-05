@@ -186,7 +186,7 @@ test_that("Event system priority consistency regression", {
   # REGRESSION: Verify at event system bruger konsistente priorities
   # Bug: Inconsistent priority usage can cause race conditions
 
-  skip_if_not(exists("OBSERVER_PRIORITIES"), "OBSERVER_PRIORITIES not available")
+  require_internal("OBSERVER_PRIORITIES")
 
   # Test: Critical events skal bruge HIGH priorities
   # Faktiske værdier: STATE_MANAGEMENT=2000, AUTO_DETECT=1500, DATA_PROCESSING=1250, UI_SYNC=750
@@ -309,7 +309,7 @@ test_that("Safe operation fallback execution regression", {
   # REGRESSION: Verify safe_operation fallback bliver kaldt korrekt
   # Bug: Fallback functions might not execute properly on errors
 
-  skip_if_not(exists("safe_operation"), "safe_operation function not available")
+  require_internal("safe_operation")
 
   # Test: Fallback execution på error
   fallback_executed <- FALSE

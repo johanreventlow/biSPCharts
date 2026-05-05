@@ -18,7 +18,7 @@ make_p_data <- function(n_vals, y_vals = NULL, nrow = NULL) {
 # --- generateSPCPlot pre-filter tests ----------------------------------------
 
 test_that("pre-filter fjerner rækker med n == 0 for p-kort", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   # 12 rækker: én har n == 0 → forventer 11 rækker i resultatet
   n_vals <- c(0L, rep(100L, 11))
@@ -32,7 +32,7 @@ test_that("pre-filter fjerner rækker med n == 0 for p-kort", {
 })
 
 test_that("pre-filter fjerner rækker med n < 0 for p-kort", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   n_vals <- c(-5L, rep(100L, 11))
   y_vals <- c(1L, rep(5L, 11))
@@ -45,7 +45,7 @@ test_that("pre-filter fjerner rækker med n < 0 for p-kort", {
 })
 
 test_that("pre-filter fjerner rækker med n = Inf for u-kort", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   n_vals <- c(Inf, rep(100, 11))
   y_vals <- c(1, rep(5, 11))
@@ -58,7 +58,7 @@ test_that("pre-filter fjerner rækker med n = Inf for u-kort", {
 })
 
 test_that("pre-filter fjerner rækker med n = NA for p-kort", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   n_vals <- c(NA_real_, rep(100, 11))
   y_vals <- c(1, rep(5, 11))
@@ -71,7 +71,7 @@ test_that("pre-filter fjerner rækker med n = NA for p-kort", {
 })
 
 test_that("pre-filter fjerner rækker med y > n for p-kort", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   # Én række: y (10) > n (5) → ugyldig for P-chart
   n_vals <- c(5L, rep(100L, 11))
@@ -85,7 +85,7 @@ test_that("pre-filter fjerner rækker med y > n for p-kort", {
 })
 
 test_that("pre-filter sætter dropped_denominator_rows i metadata", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   # 2 dårlige rækker: én n==0, én n<0
   n_vals <- c(0L, -3L, rep(100L, 10))
@@ -99,7 +99,7 @@ test_that("pre-filter sætter dropped_denominator_rows i metadata", {
 })
 
 test_that("pre-filter påvirker IKKE data med udelukkende gyldige n-værdier", {
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot ikke tilgængelig")
+  require_internal("generateSPCPlot", mode = "function")
 
   n_vals <- rep(100L, 12)
   y_vals <- rep(5L, 12)

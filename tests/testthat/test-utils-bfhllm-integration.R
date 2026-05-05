@@ -56,7 +56,7 @@ test_that("generate_bfhllm_suggestion eksisterer og har korrekt signatur", {
   # Verificer funktion eksisterer + har forventede parametre.
   # Graceful degradation ved unavailable BFHllm kræver Shiny-session context
   # (bfhllm_spc_suggestion bruger session til cache-lookup) — testes manuelt.
-  skip_if_not(exists("generate_bfhllm_suggestion", mode = "function"))
+  require_internal("generate_bfhllm_suggestion", mode = "function")
 
   args <- names(formals(generate_bfhllm_suggestion))
   expect_true("spc_result" %in% args)
@@ -86,7 +86,7 @@ test_that("initialize_bfhllm kalder bfhllm_configure med korrekte parametre", {
 })
 
 test_that("get_ai_config returnerer sensible defaults", {
-  skip_if_not(exists("get_ai_config", mode = "function"))
+  require_internal("get_ai_config", mode = "function")
 
   config <- get_ai_config()
 
@@ -103,7 +103,7 @@ test_that("get_ai_config returnerer sensible defaults", {
 })
 
 test_that("get_rag_config returnerer sensible defaults", {
-  skip_if_not(exists("get_rag_config", mode = "function"))
+  require_internal("get_rag_config", mode = "function")
 
   config <- get_rag_config()
 
@@ -113,7 +113,7 @@ test_that("get_rag_config returnerer sensible defaults", {
 })
 
 test_that("create_bfhllm_cache eksisterer og har korrekt signatur", {
-  skip_if_not(exists("create_bfhllm_cache", mode = "function"))
+  require_internal("create_bfhllm_cache", mode = "function")
 
   args <- names(formals(create_bfhllm_cache))
   expect_true("session" %in% args)

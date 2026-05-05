@@ -150,15 +150,6 @@ map_to_bfh_params <- function(
     operation_name = "BFHchart parameter mapping",
     code = {
       # 1. .original_row_id allerede injiceret foer safe_operation (se trin 0 ovenfor).
-      # DEBUG: Check x column type BEFORE sanitization
-      log_debug(
-        paste(
-          "BEFORE sanitization - x column type:",
-          "x(", x_var, ")=", class(data[[x_var]])[1]
-        ),
-        .context = "BFH_SERVICE"
-      )
-
       # 1b. WORKAROUND (M8 #462): BFHcharts rejects Danish characters (æøå)
       # i column names — biSPCharts ASCII-translit'er navnene før kald +
       # rev-mapper output for at bevare brugerens originale navne i UI.
@@ -171,17 +162,6 @@ map_to_bfh_params <- function(
 
       # Store original names for later reversal
       original_names <- names(data)
-
-      # DEBUG: Check col_mapping structure before renaming
-      log_debug(
-        paste(
-          "col_mapping check:",
-          "class =", class(col_mapping),
-          "| length =", length(col_mapping),
-          "| example:", if (length(col_mapping) > 0) paste(names(col_mapping)[1], "\u2192", col_mapping[1]) else "empty"
-        ),
-        .context = "BFH_SERVICE"
-      )
 
       # Rename data columns to sanitized names
       # CRITICAL: Use unname() to get just the values, not named character vector
@@ -197,18 +177,6 @@ map_to_bfh_params <- function(
           "Column name sanitization:",
           if (x_var != x_var_sanitized) paste(x_var, "\u2192", x_var_sanitized) else "none",
           if (y_var != y_var_sanitized) paste(y_var, "\u2192", y_var_sanitized) else "none"
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # DEBUG: Verify data types after column renaming
-      log_debug(
-        paste(
-          "After column renaming - Data types:",
-          "x(", x_var_sanitized, ")=", class(data[[x_var_sanitized]])[1],
-          ", y(", y_var_sanitized, ")=", class(data[[y_var_sanitized]])[1],
-          if (!is.null(n_var_sanitized)) paste0(", n(", n_var_sanitized, ")=", class(data[[n_var_sanitized]])[1]) else "",
-          " | First 3 y values:", paste(head(data[[y_var_sanitized]], 3), collapse = ", ")
         ),
         .context = "BFH_SERVICE"
       )
@@ -312,17 +280,10 @@ map_to_bfh_params <- function(
           match_idx <- which(tolower(original_names) == tolower(notes_column))
           if (length(match_idx) > 0) {
             notes_column_sanitized <- col_mapping[original_names[match_idx[1]]]
-            log_debug(
-              paste(
-                "[NOTES_TRACE] Case-insensitive match:",
-                notes_column, "\u2192", original_names[match_idx[1]]
-              ),
-              .context = "BFH_SERVICE"
-            )
           } else {
             log_warn(
               paste(
-                "[NOTES_TRACE] Column not found in data:",
+                "Notes column not found in data:",
                 notes_column, "| Available columns:",
                 paste(head(original_names, 5), collapse = ", ")
               ),
@@ -331,16 +292,6 @@ map_to_bfh_params <- function(
           }
         }
       }
-
-      # DEBUG: Log column name mapping for notes
-      log_debug(
-        paste(
-          "[NOTES_TRACE] Original notes_column:", notes_column,
-          "| Sanitized:", notes_column_sanitized,
-          "| Exists in data:", !is.null(notes_column_sanitized) && notes_column_sanitized %in% names(data)
-        ),
-        .context = "BFH_SERVICE"
-      )
 
       if (!is.null(notes_column_sanitized) && notes_column_sanitized %in% names(data)) {
         # Extract notes data and ensure it's character type
@@ -357,16 +308,6 @@ map_to_bfh_params <- function(
         if (any(nzchar(notes_char))) {
           params$notes <- notes_char
         }
-
-        log_debug(
-          paste(
-            "[NOTES_TRACE] Notes vector created.",
-            "Non-empty notes:", sum(nzchar(notes_char)),
-            "| Total length:", length(notes_char),
-            "| First value:", if (length(notes_char) > 0) substring(notes_char[1], 1, 20) else "NONE"
-          ),
-          .context = "BFH_SERVICE"
-        )
       }
 
       # 8. Pass through additional parameters

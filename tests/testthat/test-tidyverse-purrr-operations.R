@@ -2,7 +2,19 @@
 # Comprehensive tests for purrr operations in tidyverse migration
 
 test_that("purrr::map_lgl operations handle edge cases correctly", {
-  # Test data with mixed types for has_data_content check
+  require_internal("evaluate_dataLoaded_status", mode = "function")
+  require_internal("evaluate_has_data_status", mode = "function")
+
+  make_status_app_state <- function(data) {
+    app_state <- new.env(parent = emptyenv())
+    app_state$data <- shiny::reactiveValues(current_data = data)
+    app_state$session <- shiny::reactiveValues(
+      file_uploaded = FALSE,
+      user_started_session = FALSE
+    )
+    app_state
+  }
+
   test_data <- data.frame(
     logical_col = c(TRUE, FALSE, NA),
     numeric_col = c(1, 2, NA),
@@ -12,49 +24,16 @@ test_that("purrr::map_lgl operations handle edge cases correctly", {
     stringsAsFactors = FALSE
   )
 
-  # Test the has_data_content logic from server_utils_session_helpers.R
-  if (exists("evaluate_has_data_status")) {
-    # Test with meaningful data
-    meaningful_data <- test_data |>
-      purrr::map_lgl(~ {
-        if (is.logical(.x)) {
-          any(.x, na.rm = TRUE)
-        } else if (is.numeric(.x)) {
-          any(!is.na(.x))
-        } else if (is.character(.x)) {
-          any(nzchar(.x, keepNA = FALSE), na.rm = TRUE)
-        } else {
-          FALSE
-        }
-      }) |>
-      any()
+  meaningful_state <- make_status_app_state(test_data)
+  expect_equal(shiny::isolate(evaluate_has_data_status(meaningful_state)), "true")
+  expect_equal(shiny::isolate(evaluate_dataLoaded_status(meaningful_state)), "TRUE")
 
-    expect_true(meaningful_data)
-
-    # Test with empty data
-    empty_data <- data.frame(
-      empty_col1 = c(NA, NA, NA),
-      empty_col2 = c("", "", "")
-    )
-
-    empty_result <- empty_data |>
-      purrr::map_lgl(~ {
-        if (is.logical(.x)) {
-          any(.x, na.rm = TRUE)
-        } else if (is.numeric(.x)) {
-          any(!is.na(.x))
-        } else if (is.character(.x)) {
-          any(nzchar(.x, keepNA = FALSE), na.rm = TRUE)
-        } else {
-          FALSE
-        }
-      }) |>
-      any()
-
-    expect_false(empty_result)
-  } else {
-    skip("evaluate_has_data_status function not available")
-  }
+  empty_state <- make_status_app_state(data.frame(
+    empty_col1 = c(NA, NA, NA),
+    empty_col2 = c("", "", "")
+  ))
+  expect_equal(shiny::isolate(evaluate_has_data_status(empty_state)), "false")
+  expect_equal(shiny::isolate(evaluate_dataLoaded_status(empty_state)), "FALSE")
 })
 
 test_that("purrr::map_int operations for data quality analysis", {

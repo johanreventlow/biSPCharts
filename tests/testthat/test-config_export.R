@@ -407,7 +407,8 @@ test_that("All configuration constants are exported", {
       info = paste("Constant", constant, "should be defined")
     )
   }
-  # TODO Fase 4: EXPORT_PDF_CONFIG og EXPORT_PNG_CONFIG mangler (#203-followup)
+  expect_false(exists("EXPORT_PDF_CONFIG"))
+  expect_false(exists("EXPORT_PNG_CONFIG"))
 })
 
 test_that("Configuration constants are immutable types", {

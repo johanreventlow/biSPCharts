@@ -2,18 +2,14 @@
 # Rewrite Fase 2: TDD mod nuværende performance API
 # Baseret paa R/fct_spc_bfh_service.R, R/state_management.R
 #
-# NOTE: Mange benchmark-tests er markeret SKIP med TODO paa grund af API-drift:
-# generateSPCPlot()-signaturen er aendret (config-baseret, ikke x_col/y_col/n_col)
-# og cache-API er aendret. Se Issue #203 for Fase 3 followup.
+# NOTE: Benchmark-tests er opdateret til den nuvaerende config-baserede
+# generateSPCPlot()-signatur og det nuvaerende cache/autodetect API.
 
 # =============================================================================
 # KENDTE BEGRAENSNINGER I NUVAERENDE IMPLEMENTATION (dokumenteret):
 #
-# 1. generateSPCPlot() bruger nu config-parameter (ikke x_col, y_col, n_col).
-#    Alle benchmark-tests der kalder den gamle API fejler.
-# 2. cache_startup_data() og load_cached_startup_data() tager nu ingen argumenter.
-# 3. detect_columns_full_analysis() eksisterer ikke i namespace.
-# 4. detect_columns_name_based() eksisterer ikke i namespace.
+# 1. generateSPCPlot() bruger config-parameter (ikke x_col, y_col, n_col).
+# 2. cache_startup_data() og load_cached_startup_data() tager ingen argumenter.
 # =============================================================================
 
 # Helper til at oprette benchmark data (bevar fra original)
@@ -162,10 +158,8 @@ test_that("load_cached_startup_data er hurtigere end gentagen cache_startup_data
   expect_lt(as.numeric(load_time$median), as.numeric(build_time$median))
 })
 
-test_that("TODO Fase 3: detect_columns_full_analysis 1000 raekker < 200ms", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — detect_columns_full_analysis() ikke i namespace (#203-followup)"
-  ))
+test_that("detect_columns_full_analysis 1000 raekker < 200ms", {
+  skip_if_not_installed("bench")
   large_data <- create_benchmark_data(n_rows = 1000, n_cols = 10)
   benchmark_result <- bench::mark(
     processing = detect_columns_full_analysis(large_data),
@@ -175,10 +169,8 @@ test_that("TODO Fase 3: detect_columns_full_analysis 1000 raekker < 200ms", {
   expect_lt(as.numeric(benchmark_result$median) * 1000, 200)
 })
 
-test_that("TODO Fase 3: detect_columns_name_based dansk overhead < 10%", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — detect_columns_name_based() ikke i namespace (#203-followup)"
-  ))
+test_that("detect_columns_name_based dansk overhead < 10%", {
+  skip_if_not_installed("bench")
   ascii_cols <- c("Teller", "Nevner", "Dato")
   danish_cols <- c("Taeller", "Naevner", "Dato")
   ascii_time <- bench::mark(ascii = detect_columns_name_based(ascii_cols), iterations = 100, check = FALSE)
@@ -201,19 +193,15 @@ test_that("generateSPCPlot memory < 50MB", {
   expect_lt(mem_result$memory_mb, 50)
 })
 
-test_that("TODO Fase 3: detect_columns_full_analysis memory skalerer linjaert", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — detect_columns_full_analysis() ikke i namespace (#203-followup)"
-  ))
+test_that("detect_columns_full_analysis resultat-footprint er stabilt", {
   sizes <- c(100, 500, 1000)
-  memory_usage <- numeric(length(sizes))
-  for (i in seq_along(sizes)) {
-    test_data <- create_benchmark_data(n_rows = sizes[i])
-    mem_result <- measure_memory_usage(detect_columns_full_analysis(test_data))
-    memory_usage[i] <- mem_result$memory_mb
-  }
-  memory_ratio <- memory_usage[3] / memory_usage[1]
-  expect_lt(memory_ratio, 15)
+  result_sizes <- vapply(sizes, function(n_rows) {
+    test_data <- create_benchmark_data(n_rows = n_rows)
+    as.numeric(object.size(detect_columns_full_analysis(test_data)))
+  }, numeric(1))
+
+  expect_true(all(is.finite(result_sizes)))
+  expect_lt(max(result_sizes) / min(result_sizes), 2)
 })
 
 test_that("generateSPCPlot benchmark variance er inden for bred tolerance", {

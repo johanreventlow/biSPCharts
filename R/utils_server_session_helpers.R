@@ -160,6 +160,64 @@ activate_session_timeout_from_config <- function(input, session,
 
 # HJAeLPEFUNKTIONER SETUP ====================================================
 
+evaluate_dataLoaded_status <- function(app_state, session = NULL) {
+  current_data_check <- app_state$data$current_data
+
+  if (is.null(current_data_check)) {
+    return("FALSE")
+  }
+
+  meaningful_data <- evaluate_data_content_cached(
+    current_data_check,
+    session = session,
+    invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
+  )
+
+  file_uploaded_check <- app_state$session$file_uploaded
+  user_started_session_check <- app_state$session$user_started_session
+  user_has_started <- file_uploaded_check || user_started_session_check %||% FALSE
+
+  log_debug_kv(
+    meaningful_data = meaningful_data,
+    file_uploaded_check = file_uploaded_check,
+    user_started_session_check = user_started_session_check,
+    user_has_started = user_has_started,
+    .context = "NAVIGATION_UNIFIED"
+  )
+
+  if (meaningful_data || user_has_started) "TRUE" else "FALSE"
+}
+
+evaluate_has_data_status <- function(app_state, session = NULL) {
+  current_data_check <- app_state$data$current_data
+
+  if (is.null(current_data_check)) {
+    return("false")
+  }
+
+  meaningful_data <- evaluate_data_content_cached(
+    current_data_check,
+    session = session,
+    invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
+  )
+
+  if (meaningful_data) "true" else "false"
+}
+
+register_session_status_observers <- function(events, evaluator, setter, priority) {
+  observers <- lapply(
+    c("data_updated", "session_reset", "navigation_changed"),
+    function(event_name) {
+      force(event_name)
+      shiny::observeEvent(events[[event_name]], ignoreInit = TRUE, priority = priority, {
+        setter(evaluator())
+      })
+    }
+  )
+
+  invisible(observers)
+}
+
 ## Hovedfunktion for hjaelper
 # Opsaetter alle hjaelper observers og status funktioner
 setup_helper_observers <- function(input, output, session, obs_manager = NULL, app_state = NULL) {
@@ -181,63 +239,16 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     app_state$session$dataLoaded_status <- "FALSE"
   }
 
-  # Helper function to evaluate dataLoaded status (PERFORMANCE OPTIMIZED)
-  evaluate_dataLoaded_status <- function() {
-    current_data_check <- app_state$data$current_data
-
-    result <- if (is.null(current_data_check)) {
-      "FALSE"
-    } else {
-      # PERFORMANCE OPTIMIZED: Use cached content validator instead of repeated purrr::map_lgl
-      meaningful_data <- evaluate_data_content_cached(
-        current_data_check,
-        cache_key = "dataLoaded_content_check",
-        session = session,
-        invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
-      )
-
-      # Betragt kun data som indlaest hvis:
-      # 1. Der er meningsfuldt data, ELLER
-      # 2. Bruger har uploadet en fil, ELLER
-      # 3. Bruger har eksplicit startet en ny session
-      # Use unified state management
-      file_uploaded_check <- app_state$session$file_uploaded
-
-      # Use unified state management
-      user_started_session_check <- app_state$session$user_started_session
-
-      user_has_started <- file_uploaded_check || user_started_session_check %||% FALSE
-
-      log_debug_kv(
-        meaningful_data = meaningful_data,
-        file_uploaded_check = file_uploaded_check,
-        user_started_session_check = user_started_session_check,
-        user_has_started = user_has_started,
-        .context = "NAVIGATION_UNIFIED"
-      )
-
-      final_result <- if (meaningful_data || user_has_started) "TRUE" else "FALSE"
-      final_result
-    }
-    return(result)
-  }
+  data_loaded_evaluator <- function() evaluate_dataLoaded_status(app_state, session)
 
   # UNIFIED EVENT LISTENERS: Update dataLoaded status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_dataLoaded_status()
-    app_state$session$dataLoaded_status <- new_status
-  })
-
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_dataLoaded_status()
-    app_state$session$dataLoaded_status <- new_status
-  })
-
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    new_status <- evaluate_dataLoaded_status()
-    app_state$session$dataLoaded_status <- new_status
-  })
+  register_session_status_observers(
+    events = app_state$events,
+    evaluator = data_loaded_evaluator,
+    setter = function(value) app_state$session$dataLoaded_status <- value,
+    priority = OBSERVER_PRIORITIES$DATA_PROCESSING
+  )
 
   # Data indlaesnings status flags - foelger BFH UTH moenster
   output$dataLoaded <- shiny::renderText({
@@ -254,42 +265,21 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     set_has_data_status(app_state, "false")
   }
 
-  # Helper function to evaluate has_data status (PERFORMANCE OPTIMIZED)
-  evaluate_has_data_status <- function() {
-    current_data_check <- app_state$data$current_data
-
-    if (is.null(current_data_check)) {
-      "false"
-    } else {
-      # PERFORMANCE OPTIMIZED: Use shared cached content validator
-      meaningful_data <- evaluate_data_content_cached(
-        current_data_check,
-        cache_key = "has_data_content_check",
-        session = session,
-        invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
-      )
-      if (meaningful_data) "true" else "false"
-    }
-  }
+  has_data_evaluator <- function() evaluate_has_data_status(app_state, session)
 
   # UNIFIED EVENT LISTENERS: Update has_data status when relevant events occur
   # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  shiny::observeEvent(app_state$events$data_updated, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    set_has_data_status(app_state, evaluate_has_data_status())
-  })
-
-  shiny::observeEvent(app_state$events$session_reset, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    set_has_data_status(app_state, evaluate_has_data_status())
-  })
-
-  shiny::observeEvent(app_state$events$navigation_changed, ignoreInit = TRUE, priority = OBSERVER_PRIORITIES$DATA_PROCESSING, {
-    set_has_data_status(app_state, evaluate_has_data_status())
-  })
+  register_session_status_observers(
+    events = app_state$events,
+    evaluator = has_data_evaluator,
+    setter = function(value) set_has_data_status(app_state, value),
+    priority = OBSERVER_PRIORITIES$DATA_PROCESSING
+  )
 
   # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
   shiny::observeEvent(TRUE, once = TRUE, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    app_state$session$dataLoaded_status <- evaluate_dataLoaded_status()
-    set_has_data_status(app_state, evaluate_has_data_status())
+    app_state$session$dataLoaded_status <- data_loaded_evaluator()
+    set_has_data_status(app_state, has_data_evaluator())
   })
 
   output$has_data <- shiny::renderText({

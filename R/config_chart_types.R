@@ -7,7 +7,7 @@
 #
 # ANVENDES AF:
 #   - UI dropdowns (chart type selection)
-#   - Plot generation (qicharts2::qic interface)
+#   - Plot generation (BFHcharts interface)
 #   - Input validation (chart type -> naevner relevans)
 #
 # RELATERET:

@@ -147,7 +147,7 @@ validate_spc_request <- function(
 
   # 11. y_var skal vaere numerisk (eller konverterbar -- inkl. danske talformater)
   if (!is.numeric(y_vals)) {
-    converted <- parse_danish_numeric(y_vals)
+    converted <- parse_danish_number(y_vals)
     any_convertible <- !all(is.na(converted))
     non_na_vals <- !all(is.na(y_vals))
     if (non_na_vals && !any_convertible) {
@@ -165,7 +165,7 @@ validate_spc_request <- function(
   if (!is.null(n_var) && n_var %in% names(data) &&
     ct_normalized %in% c("p", "pp", "u", "up")) {
     n_vals <- data[[n_var]]
-    n_numeric <- parse_danish_numeric(n_vals)
+    n_numeric <- parse_danish_number(n_vals)
     # n=0 er gyldig klinisk observation ("ingen patienter denne m\u00e5ned") og
     # konverteres til NA i prepare-steget (ikke en fejl her). Kun n<0 er ugyldig.
     invalid_n <- !is.na(n_numeric) & (n_numeric < 0 | is.infinite(n_numeric))
@@ -204,8 +204,8 @@ validate_spc_request <- function(
 
   # 15. P/P'-kort: taeller <= naevner (proportion kan ikke overstige 1)
   if (!is.null(n_var) && n_var %in% names(data) && ct_normalized %in% c("p", "pp")) {
-    y_num <- parse_danish_numeric(data[[y_var]])
-    n_vals2 <- parse_danish_numeric(data[[n_var]])
+    y_num <- parse_danish_number(data[[y_var]])
+    n_vals2 <- parse_danish_number(data[[n_var]])
     invalid_prop <- !is.na(y_num) & !is.na(n_vals2) & y_num > n_vals2
     if (any(invalid_prop)) {
       first_invalid <- which(invalid_prop)[1]

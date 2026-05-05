@@ -44,8 +44,7 @@ test_that("chart_type_requires_denominator identificerer korrekte typer", {
   # Typer der IKKE kræver nævner
   expect_false(chart_type_requires_denominator("i"))
   expect_false(chart_type_requires_denominator("c"))
-  # TODO Fase 4: mr og g er ikke registreret i CHART_TYPES_DA
-  # - de konverteres til "run" via fallback og kræver derfor nævner
+  # mr og g er ikke registreret i CHART_TYPES_DA og fallbacker derfor til run.
   # expect_false(chart_type_requires_denominator("mr"))
   # expect_false(chart_type_requires_denominator("g"))
 })

@@ -611,15 +611,29 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
         col_choices <- setNames(new_col_names, new_col_names)
         col_choices <- c("V\u00e6lg kolonne" = "", col_choices)
 
-        ui_service$update_all_columns(
-          choices = col_choices,
-          selected = list()
-        )
+        for (column_input in c(
+          "x_column", "y_column", "n_column",
+          "skift_column", "frys_column", "kommentar_column"
+        )) {
+          shiny::updateSelectizeInput(
+            session,
+            column_input,
+            choices = col_choices,
+            selected = ""
+          )
+        }
       } else {
-        ui_service$update_all_columns(
-          choices = c("V\u00e6lg kolonne" = ""),
-          selected = list()
-        )
+        for (column_input in c(
+          "x_column", "y_column", "n_column",
+          "skift_column", "frys_column", "kommentar_column"
+        )) {
+          shiny::updateSelectizeInput(
+            session,
+            column_input,
+            choices = c("V\u00e6lg kolonne" = ""),
+            selected = ""
+          )
+        }
       }
 
       shiny::updateTextInput(session, "target_value", value = "")

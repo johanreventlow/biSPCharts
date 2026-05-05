@@ -87,6 +87,29 @@ test_that("transition_session_restore sætter restoring_session = TRUE", {
   expect_equal(result$columns$mappings$y_column, "Vaerdi")
 })
 
+test_that("transition_session_restore ignores empty saved metadata fields", {
+  df <- data.frame(Dato = as.Date("2024-01-01") + 0:2, Vaerdi = 1:3)
+  parsed <- new_parsed_file(df, format = "excel", encoding = "UTF-8")
+  parsed$meta$saved_metadata <- list(
+    x_column = "Dato",
+    y_column = "Vaerdi",
+    n_column = "",
+    skift_column = NULL,
+    frys_column = NA_character_,
+    kommentar_column = "Kommentar"
+  )
+
+  result <- transition_session_restore(parsed)
+
+  expect_named(result$columns$mappings, c("x_column", "y_column", "kommentar_column"))
+  expect_equal(result$columns$mappings$x_column, "Dato")
+  expect_equal(result$columns$mappings$y_column, "Vaerdi")
+  expect_equal(result$columns$mappings$kommentar_column, "Kommentar")
+  expect_false("n_column" %in% names(result$columns$mappings))
+  expect_false("skift_column" %in% names(result$columns$mappings))
+  expect_false("frys_column" %in% names(result$columns$mappings))
+})
+
 # Tests: apply_state_transition() -------------------------------------------
 
 test_that("apply_state_transition anvender ændringer på plain environment", {
@@ -181,4 +204,30 @@ test_that("apply_state_transition bevarer nested reactiveValues-grene", {
   expect_true(shiny::isolate(app_state$columns$auto_detect$completed))
   expect_equal(shiny::isolate(app_state$columns$mappings$x_column), "Dato")
   expect_equal(shiny::isolate(app_state$columns$mappings$y_column), "Vaerdi")
+})
+
+test_that("apply_state_transition applies session restore transition to app_state", {
+  app_state <- create_app_state()
+  df <- data.frame(
+    Dato = as.Date("2024-01-01") + 0:2,
+    Vaerdi = c(10, 12, 11),
+    Kommentar = c("baseline", "", "follow-up")
+  )
+  parsed <- new_parsed_file(df, format = "excel", encoding = "UTF-8")
+  parsed$meta$saved_metadata <- list(
+    x_column = "Dato",
+    y_column = "Vaerdi",
+    kommentar_column = "Kommentar"
+  )
+
+  apply_state_transition(app_state, transition_session_restore(parsed))
+
+  expect_equal(shiny::isolate(app_state$data$current_data), df)
+  expect_equal(shiny::isolate(app_state$data$original_data), df)
+  expect_true(shiny::isolate(app_state$session$file_uploaded))
+  expect_true(shiny::isolate(app_state$session$restoring_session))
+  expect_true(shiny::isolate(app_state$columns$auto_detect$completed))
+  expect_equal(shiny::isolate(app_state$columns$mappings$x_column), "Dato")
+  expect_equal(shiny::isolate(app_state$columns$mappings$y_column), "Vaerdi")
+  expect_equal(shiny::isolate(app_state$columns$mappings$kommentar_column), "Kommentar")
 })

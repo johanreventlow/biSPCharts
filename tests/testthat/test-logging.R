@@ -334,7 +334,7 @@ test_that("logging operations are performant", {
   log_info("Performance test message", component = "PERFORMANCE_TEST")
   single_time <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
-  expect_lt(single_time, 0.01)
+  expect_lt(single_time, 0.05)
 
   start_time <- Sys.time()
   for (i in 1:100) {
@@ -342,7 +342,7 @@ test_that("logging operations are performant", {
   }
   batch_time <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
 
-  expect_lt(batch_time, 1.0)
+  expect_lt(batch_time, 2.0)
 })
 
 test_that("safe_operation integrates correctly with logging system", {

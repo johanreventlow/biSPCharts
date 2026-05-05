@@ -111,7 +111,7 @@ transition_session_restore <- function(parsed_file) {
       "skift_column", "frys_column", "kommentar_column"
     )) {
       val <- metadata[[field]]
-      if (!is.null(val) && nzchar(val)) {
+      if (is.character(val) && length(val) == 1L && !is.na(val) && nzchar(val)) {
         mappings[[field]] <- val
       }
     }

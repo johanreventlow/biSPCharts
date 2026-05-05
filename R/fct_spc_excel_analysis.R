@@ -298,7 +298,7 @@ build_per_part_section <- function(qic_data,
     part_groups <- lapply(parts, function(p) which(qic_data$part == p & !is.na(qic_data$part)))
   }
 
-  rows <- lapply(seq_along(parts), function(i) {
+  df <- purrr::map_dfr(seq_along(parts), function(i) {
     p <- parts[[i]]
     idx <- part_groups[[i]]
     sub <- qic_data[idx, , drop = FALSE]
@@ -319,7 +319,7 @@ build_per_part_section <- function(qic_data,
     }
     if (is.na(phase_name)) phase_name <- ""
 
-    list(
+    tibble::tibble(
       Part = as.integer(p),
       `Phase-navn` = phase_name,
       Fra_raekke = as.integer(min(idx)),
@@ -335,7 +335,6 @@ build_per_part_section <- function(qic_data,
     )
   })
 
-  df <- do.call(rbind.data.frame, c(rows, list(stringsAsFactors = FALSE, make.row.names = FALSE)))
   names(df) <- c(
     "Part", "Phase-navn", "Fra (r\u00e6kke)", "Til (r\u00e6kke)", "N",
     paste("Centrallinje", unit_suffix_cl),
@@ -369,7 +368,17 @@ build_anhoej_section <- function(anhoej_per_part) {
   )
 
   if (length(anhoej_per_part) == 0L) {
-    df <- data.frame(matrix(ncol = length(cols), nrow = 0))
+    df <- tibble::tibble(
+      Part = integer(),
+      Laengste_serie = numeric(),
+      longest_run_max = numeric(),
+      n_crossings = numeric(),
+      n_crossings_min = numeric(),
+      runs_signal = character(),
+      crossings_signal = character(),
+      anhoej_signal = character(),
+      dansk_tolkning = character()
+    )
     names(df) <- cols
     return(df)
   }
@@ -378,8 +387,8 @@ build_anhoej_section <- function(anhoej_per_part) {
     if (isTRUE(x)) "JA" else "NEJ"
   }
 
-  rows <- lapply(anhoej_per_part, function(p) {
-    list(
+  df <- purrr::map_dfr(anhoej_per_part, function(p) {
+    tibble::tibble(
       Part = as.integer(p$part %||% 1L),
       Laengste_serie = if (is.na(p$longest_run)) NA_real_ else as.numeric(p$longest_run),
       `Maks tilladt (longest_run_max)` = if (is.na(p$longest_run_max)) NA_real_ else as.numeric(p$longest_run_max),
@@ -392,7 +401,6 @@ build_anhoej_section <- function(anhoej_per_part) {
     )
   })
 
-  df <- do.call(rbind.data.frame, c(rows, list(stringsAsFactors = FALSE, make.row.names = FALSE)))
   names(df) <- cols
   df
 }
@@ -443,7 +451,19 @@ build_special_cause_section <- function(qic_data,
   )
 
   if (nrow(qic_data) == 0L) {
-    df <- data.frame(matrix(ncol = length(cols), nrow = 0))
+    df <- tibble::tibble(
+      Raekke = integer(),
+      Dato = as.Date(character()),
+      Vaerdi = numeric(),
+      Centrallinje = numeric(),
+      Oevre_graense = numeric(),
+      Nedre_graense = numeric(),
+      out_of_limits = character(),
+      runs_signal = character(),
+      crossings_signal = character(),
+      Notes = character(),
+      Naevner = numeric()
+    )
     names(df) <- cols
     return(df)
   }
@@ -480,7 +500,19 @@ build_special_cause_section <- function(qic_data,
   signal_rows <- sort(unique(c(ooc_idx, runs_idx, crossings_idx)))
 
   if (length(signal_rows) == 0L) {
-    df <- data.frame(matrix(ncol = length(cols), nrow = 0))
+    df <- tibble::tibble(
+      Raekke = integer(),
+      Dato = as.Date(character()),
+      Vaerdi = numeric(),
+      Centrallinje = numeric(),
+      Oevre_graense = numeric(),
+      Nedre_graense = numeric(),
+      out_of_limits = character(),
+      runs_signal = character(),
+      crossings_signal = character(),
+      Notes = character(),
+      Naevner = numeric()
+    )
     names(df) <- cols
     return(df)
   }
@@ -489,7 +521,7 @@ build_special_cause_section <- function(qic_data,
     if (isTRUE(x)) "JA" else "NEJ"
   }
 
-  rows <- lapply(signal_rows, function(i) {
+  df <- purrr::map_dfr(signal_rows, function(i) {
     y_val <- if (has_y) .excel_to_ui_unit(qic_data$y[i], y_axis_unit) else NA_real_
     cl_val <- if ("cl" %in% names(qic_data)) .excel_to_ui_unit(qic_data$cl[i], y_axis_unit) else NA_real_
     ucl_val <- if (has_ucl) .excel_to_ui_unit(qic_data$ucl[i], y_axis_unit) else NA_real_
@@ -513,7 +545,7 @@ build_special_cause_section <- function(qic_data,
       }
     }
 
-    list(
+    tibble::tibble(
       Raekke = as.integer(i),
       Dato = .excel_date_for_row(original_data, i, x_column = x_column),
       Vaerdi = y_val,
@@ -528,7 +560,6 @@ build_special_cause_section <- function(qic_data,
     )
   })
 
-  df <- do.call(rbind.data.frame, c(rows, list(stringsAsFactors = FALSE, make.row.names = FALSE)))
   names(df) <- cols
   df
 }

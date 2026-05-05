@@ -1,9 +1,9 @@
 metadata:
-  total_files: 174
+  total_files: 181
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
-    reviewed: 110
+    reviewed: 115
     unreviewed: 18
     needs_triage: 1
 files:
@@ -1138,6 +1138,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-fct_spc_bfh_invocation.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-05'
+  rationale: Wave 6 coverage-test tilfoejet manuelt efter audit-baseline 2026-04-26.
 - file: test-fct_spc_excel_analysis.R
   audit_category: post-audit
   type: unit
@@ -1346,6 +1354,38 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-utils_csv_delimiter_detection.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-05'
+  rationale: Wave 6 coverage-test tilfoejet manuelt efter audit-baseline 2026-04-26.
+- file: test-utils_local_storage.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-05'
+  rationale: Wave 6 coverage-test tilfoejet manuelt efter audit-baseline 2026-04-26.
+- file: test-utils_server_event_listeners.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-05'
+  rationale: Wave 6 coverage-test tilfoejet manuelt efter audit-baseline 2026-04-26.
+- file: test-utils_server_server_management.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-05'
+  rationale: Wave 6 coverage-test tilfoejet manuelt efter audit-baseline 2026-04-26.
 - file: test-utils-bfhllm-integration.R
   audit_category: post-audit
   type: unit

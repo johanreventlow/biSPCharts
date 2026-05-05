@@ -123,28 +123,12 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
-- file: test-clean-qic-call-args.R
-  audit_category: stub
-  type: unit
-  handling: keep
-  reviewed: yes
-  rationale: Reel unit-test på freeze-adjustment (2 test_that-blokke). Misklassificeret
-    som stub.
-  reviewer: johanreventlow
-  reviewed_date: '2026-04-17'
 - file: test-column-observer-consolidation.R
   audit_category: green
   type: unit
   handling: fix-in-phase-3
   reviewed: yes
   rationale: Green-partial med 4/14 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
-  reviewer: johanreventlow
-  reviewed_date: '2026-04-17'
-- file: test-comment-row-mapping.R
-  audit_category: green
-  type: unit
-  handling: keep
-  reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
 - file: test-comprehensive-ui-sync.R

@@ -213,9 +213,8 @@ generate_qic_cache_key <- function(data, params) {
   paste0("qic_", data_digest, "_", param_digest)
 }
 
-# NOTE: cached_qic() function removed in Sprint 5 Fase 2
-# Caching is now handled via log_qic_call_wrapper() in utils_qic_debug_logging.R
-# This provides better integration with the existing call chain and debug logging
+# NOTE: cached_qic() function removed in Sprint 5 Fase 2.
+# BFHcharts result caching is handled in utils_spc_cache.R/fct_spc_bfh_facade.R.
 
 #' Get QIC Cache Statistics
 #'

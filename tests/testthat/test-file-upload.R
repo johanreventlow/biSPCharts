@@ -71,13 +71,7 @@ test_that("handle_csv_upload og handle_excel_upload eksisterer med korrekte sign
   expect_true("emit" %in% excel_args)
 })
 
-test_that("TODO Fase 3: handle_csv_upload kræver reaktiv kontekst", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — handle_csv_upload() kræver reaktiv kontekst ",
-    "(kalder app_state$data$current_data i debug_state_change) (#203-followup)\n",
-    "Nuvaerende signatur: handle_csv_upload(file_path, app_state, session_id, emit)\n",
-    "Gammel signatur: handle_csv_upload(file_path, NULL, NULL, NULL)"
-  ))
+test_that("handle_csv_upload virker med aktuel app_state-signatur", {
   test_csv <- tempfile(fileext = ".csv")
   writeLines("Dato,Teller,Naevner\n2024-01-01,10,100", test_csv)
   on.exit(unlink(test_csv), add = TRUE)
@@ -85,14 +79,12 @@ test_that("TODO Fase 3: handle_csv_upload kræver reaktiv kontekst", {
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
   result <- handle_csv_upload(test_csv, app_state, NULL, emit)
-  expect_true(is.data.frame(result) || is.list(result))
+  expect_null(result)
+  expect_equal(nrow(shiny::isolate(app_state$data$current_data)), 1)
+  expect_true(all(c("Dato", "Teller", "Naevner") %in% names(shiny::isolate(app_state$data$current_data))))
 })
 
-test_that("TODO Fase 3: handle_excel_upload kræver reaktiv kontekst", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — handle_excel_upload() kræver reaktiv kontekst (#203-followup)\n",
-    "Nuvaerende signatur: handle_excel_upload(file_path, session, app_state, emit, ui_service)"
-  ))
+test_that("handle_excel_upload virker med aktuel app_state-signatur", {
   skip_if_not_installed("readxl")
   skip_if_not(requireNamespace("openxlsx", quietly = TRUE))
 
@@ -104,7 +96,9 @@ test_that("TODO Fase 3: handle_excel_upload kræver reaktiv kontekst", {
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
   result <- handle_excel_upload(temp_file, NULL, app_state, emit, NULL)
-  expect_true(is.data.frame(result) || is.list(result))
+  expect_null(result)
+  expect_equal(nrow(shiny::isolate(app_state$data$current_data)), 1)
+  expect_true(all(c("Dato", "Teller", "Naevner") %in% names(shiny::isolate(app_state$data$current_data))))
 })
 
 test_that("setup_file_upload haandterer opkald korrekt", {

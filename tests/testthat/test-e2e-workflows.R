@@ -163,13 +163,18 @@ test_that("Error recovery workflow haandterer fejl graciost", {
   })
 })
 
-test_that("TODO Fase 3: create_chart_validator eksisterer ikke", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — create_chart_validator() ikke i namespace (#203-followup)"
-  ))
-  validator <- create_chart_validator()
-  expect_true(is.list(validator))
-  expect_true(is.function(validator$validate_chart_data))
+test_that("SPC request validation uses current validator contract", {
+  test_data <- data.frame(
+    Dato = as.Date(c("2024-01-01", "2024-02-01", "2024-03-01")),
+    Taeller = c(10, 12, 11)
+  )
+
+  request <- validate_spc_request(test_data, "Dato", "Taeller", "run")
+
+  expect_s3_class(request, "spc_request")
+  expect_equal(request$x_var, "Dato")
+  expect_equal(request$y_var, "Taeller")
+  expect_equal(request$chart_type, "run")
 })
 
 test_that("Session lifecycle management virker korrekt", {

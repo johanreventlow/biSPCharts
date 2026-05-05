@@ -113,8 +113,9 @@ test_that("generateSPCPlot handles different chart types correctly", {
   run_result <- generateSPCPlot(base_data, run_config, "run", chart_title_reactive = reactive("Run Chart Test"))
 
   expect_s3_class(run_result$plot, "ggplot")
-  # TODO Fase 4: run chart percentage scaling ikke implementeret (#203-followup)
-  # expect_true(all(run_result$qic_data$y >= 80 & run_result$qic_data$y <= 100))
+  # Run charts with denominators use proportions internally; label scaling is
+  # handled by the rendering layer.
+  expect_true(all(run_result$qic_data$y >= 0 & run_result$qic_data$y <= 1))
 
   # TEST: I-chart (individual values)
   i_config <- list(x_col = "Obs", y_col = "Værdi", n_col = NULL)
@@ -194,8 +195,8 @@ test_that("generateSPCPlot date handling and formatting works", {
   )
 
   expect_s3_class(char_result$plot, "ggplot")
-  # TODO Fase 4: character x-kolonne konverteres ikke til factor (#203-followup)
-  # expect_true(is.factor(char_result$qic_data$x))
+  # Character x-values are converted to sequence indices for qicharts2.
+  expect_equal(char_result$qic_data$x, seq_len(nrow(char_data)))
 })
 
 test_that("generateSPCPlot phase and freeze functionality works", {

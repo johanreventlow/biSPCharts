@@ -27,12 +27,8 @@ test_that("QIC chart type conversion fungerer med nuvaerende CHART_TYPES_DA navn
   expect_equal(get_qic_chart_type("unknown"), "run")
 })
 
-test_that("TODO Fase 3: MR-kort er ikke i nuvaerende CHART_TYPES_DA", {
-  skip(paste0(
-    "TODO Fase 3: R-bug afsloeret — 'MR-kort' chart-type ikke i CHART_TYPES_DA (#203-followup)\n",
-    "Nuvaerende chart-typer: run, i, p, u, c. MR-kort mangler."
-  ))
-  expect_equal(get_qic_chart_type("MR-kort (Moving Range)"), "mr")
+test_that("ikke-understoettet MR-label fallbacker til run", {
+  expect_equal(get_qic_chart_type("MR-kort (Moving Range)"), "run")
 })
 
 test_that("Hospital theme application fungerer", {

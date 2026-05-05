@@ -280,12 +280,12 @@ test_that("Input validation edge cases håndteres", {
   expect_equal(sanitize_user_input(NULL), "",
     info = "NULL input should return empty string"
   )
-  # TODO Fase 4: sanitize_user_input krasher på character(0) og NA_character_
-  # (subscript out of bounds i strsplit). Disse edge cases er ikke håndteret.
-  # expect_equal(sanitize_user_input(character(0)), "",
-  #              info = "Empty character vector should return empty string")
-  # expect_equal(sanitize_user_input(NA_character_), "",
-  #              info = "NA character should return empty string")
+  expect_equal(sanitize_user_input(character(0)), "",
+    info = "Empty character vector should return empty string"
+  )
+  expect_equal(sanitize_user_input(NA_character_), "",
+    info = "NA character should return empty string"
+  )
 
   # Mixed encoding inputs
   mixed_encoding <- "Normal text mixed with \u00e9\u00f1\u00fc special chars"

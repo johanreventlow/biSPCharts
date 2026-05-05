@@ -213,8 +213,8 @@ sanitize_user_input <- function(input_value,
                                 max_length = NULL,
                                 allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?*_",
                                 html_escape = TRUE) {
-  # Handle NULL input
-  if (is.null(input_value)) {
+  # Handle empty inputs before string operations that expect length one.
+  if (is.null(input_value) || length(input_value) == 0 || all(is.na(input_value))) {
     return("")
   }
 

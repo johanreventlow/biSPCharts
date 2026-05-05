@@ -67,7 +67,7 @@ test_that("Basic plot generation med qicharts2 integration", {
 })
 
 test_that("safe_operation returnerer fallback ved plot-fejl", {
-  skip_if_not(exists("safe_operation", mode = "function"))
+  require_internal("safe_operation", mode = "function")
 
   result <- safe_operation(
     operation_name = "Test fallback",

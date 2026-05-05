@@ -17,6 +17,43 @@ skip_bfh_shinytest2 <- function() {
   skip_if_not_installed("shinytest2")
 }
 
+bfh_plot_output <- "visualization-spc_plot_actual"
+bfh_plot_ready_output <- "visualization-plot_ready"
+bfh_anhoej_output <- "visualization-anhoej_results"
+bfh_plot_selector <- paste0("#", bfh_plot_output)
+
+is_shiny_true <- function(value) {
+  isTRUE(value) || identical(value, "true") || identical(value, "TRUE")
+}
+
+wait_for_bfh_plot_ready <- function(app, timeout = 15000) {
+  deadline <- Sys.time() + timeout / 1000
+  repeat {
+    app$wait_for_idle(timeout = 1000)
+    ready <- tryCatch(
+      app$get_value(output = bfh_plot_ready_output),
+      error = function(e) NULL
+    )
+    if (is_shiny_true(ready)) {
+      return(TRUE)
+    }
+    if (Sys.time() > deadline) {
+      return(FALSE)
+    }
+    Sys.sleep(0.25)
+  }
+}
+
+expect_bfh_plot_ready <- function(app) {
+  expect_true(
+    wait_for_bfh_plot_ready(app),
+    info = paste0(
+      bfh_plot_ready_output,
+      " skal blive TRUE før BFH shinytest2-screenshot"
+    )
+  )
+}
+
 # Test fixtures helper
 create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
   set.seed(seed)
@@ -76,16 +113,17 @@ test_that("BFHchart module: Run chart renders correctly with BFHchart backend", 
     y_column = "Vaerdi"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   # Snapshot visual output
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-run-chart",
     threshold = 0.1 # Allow 10% pixel diff for anti-aliasing
   )
 
   # Verify plot rendered (check values)
-  expect_true(app$get_value(output = "plot_ready"))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   # Cleanup
   app$stop()
@@ -113,14 +151,15 @@ test_that("BFHchart module: I chart renders correctly", {
     y_column = "Vaerdi"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-i-chart",
     threshold = 0.1
   )
 
-  expect_true(app$get_value(output = "plot_ready"))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   app$stop()
   unlink(temp_csv)
@@ -148,14 +187,15 @@ test_that("BFHchart module: P chart renders correctly with denominator", {
     n_column = "Naevner"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-p-chart",
     threshold = 0.1
   )
 
-  expect_true(app$get_value(output = "plot_ready"))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   app$stop()
   unlink(temp_csv)
@@ -182,14 +222,15 @@ test_that("BFHchart module: C chart renders correctly with count data", {
     y_column = "Vaerdi"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-c-chart",
     threshold = 0.1
   )
 
-  expect_true(app$get_value(output = "plot_ready"))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   app$stop()
   unlink(temp_csv)
@@ -217,14 +258,15 @@ test_that("BFHchart module: U chart renders correctly with variable denominator"
     n_column = "Naevner"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-u-chart",
     threshold = 0.1
   )
 
-  expect_true(app$get_value(output = "plot_ready"))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   app$stop()
   unlink(temp_csv)
@@ -254,9 +296,10 @@ test_that("BFHchart module: Freeze period renders correctly", {
     frys_column = "Fryz"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-freeze-period",
     threshold = 0.1
   )
@@ -292,9 +335,10 @@ test_that("BFHchart module: Comments render correctly with BFHchart", {
     kommentar_column = "Kommentar"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   app$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-comments",
     threshold = 0.1
   )
@@ -323,10 +367,11 @@ test_that("BFHchart module: Visual output consistent across runs", {
     y_column = "Vaerdi"
   )
   app1$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app1)
 
   # Capture first screenshot
   app1$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-regression-baseline",
     threshold = 0.1
   )
@@ -342,10 +387,11 @@ test_that("BFHchart module: Visual output consistent across runs", {
     y_column = "Vaerdi"
   )
   app2$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app2)
 
   # Capture second screenshot (should match baseline)
   app2$expect_screenshot(
-    selector = "#spc_plot_actual",
+    selector = bfh_plot_selector,
     name = "bfh-regression-check",
     threshold = 0.1
   )
@@ -375,13 +421,14 @@ test_that("BFHchart module: Output structure is correct", {
     y_column = "Vaerdi"
   )
   app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   # Check outputs exist
-  expect_true(app$get_value(output = "plot_ready"))
-  expect_true(!is.null(app$get_value(output = "spc_plot_actual")))
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_plot_output)))
 
   # Check Anhøj results exist
-  anhoej <- app$get_value(output = "anhoej_results")
+  anhoej <- app$get_value(output = bfh_anhoej_output)
   expect_true(!is.null(anhoej))
 
   app$stop()

@@ -7,103 +7,21 @@
 # helper.R is automatically loaded by testthat
 
 test_that("Event system priorities fungerer i integration", {
-  # Test complete event chain med korrekte priorities
+  # This is a deterministic contract test. The old version registered Shiny
+  # observers outside a flushed reactive domain and could pass silently when
+  # skipped; it did not reliably prove execution order.
+  require_internal("OBSERVER_PRIORITIES")
 
-  skip_if_not(exists("app_state"), message = "app_state not available in test environment")
-
-  # Mock basic app_state structure hvis det ikke eksisterer
-  if (!exists("app_state") || is.null(app_state)) {
-    app_state <- list(
-      events = reactiveValues(
-        data_updated = 0,
-        auto_detection_started = 0,
-        ui_sync_requested = 0,
-        error_occurred = 0
-      ),
-      data = reactiveValues(
-        current_data = NULL,
-        updating_table = FALSE
-      ),
-      columns = reactiveValues(
-        auto_detect = reactiveValues(in_progress = FALSE)
-      )
-    )
-  }
-
-  # Track execution order for integration verification
-  execution_log <- character(0)
-
-  # Mock critical event handlers med korrekte priorities
-  observeEvent(app_state$events$data_updated,
-    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
-    {
-      execution_log <<- c(execution_log, "STATE_MANAGEMENT_DATA_UPDATE")
-      log_debug("State management handling data update",
-        .context = "INTEGRATION_TEST"
-      )
-    }
-  )
-
-  observeEvent(app_state$events$auto_detection_started,
-    priority = OBSERVER_PRIORITIES$AUTO_DETECT,
-    {
-      execution_log <<- c(execution_log, "AUTO_DETECT_HANDLER")
-      log_debug("Auto detection handler triggered",
-        .context = "INTEGRATION_TEST"
-      )
-    }
-  )
-
-  observeEvent(app_state$events$ui_sync_requested,
-    priority = OBSERVER_PRIORITIES$UI_SYNC,
-    {
-      execution_log <<- c(execution_log, "UI_SYNC_HANDLER")
-      log_debug("UI sync handler triggered",
-        .context = "INTEGRATION_TEST"
-      )
-    }
-  )
-
-  # Trigger event chain
-  isolate({
-    app_state$events$data_updated <- app_state$events$data_updated + 1
-    app_state$events$auto_detection_started <- app_state$events$auto_detection_started + 1
-    app_state$events$ui_sync_requested <- app_state$events$ui_sync_requested + 1
-
-    # Allow observers to execute
-    Sys.sleep(0.1)
-
-    # Verify execution order follows priorities
-    expect_true(length(execution_log) >= 3,
-      info = "All event handlers should execute"
-    )
-
-    # Find positions in execution log
-    state_pos <- which(execution_log == "STATE_MANAGEMENT_DATA_UPDATE")[1]
-    autodetect_pos <- which(execution_log == "AUTO_DETECT_HANDLER")[1]
-    ui_pos <- which(execution_log == "UI_SYNC_HANDLER")[1]
-
-    # Verify STATE_MANAGEMENT executes before AUTO_DETECT
-    if (!is.na(state_pos) && !is.na(autodetect_pos)) {
-      expect_true(state_pos < autodetect_pos,
-        info = "STATE_MANAGEMENT should execute before AUTO_DETECT"
-      )
-    }
-
-    # Verify AUTO_DETECT executes before UI_SYNC
-    if (!is.na(autodetect_pos) && !is.na(ui_pos)) {
-      expect_true(autodetect_pos < ui_pos,
-        info = "AUTO_DETECT should execute before UI_SYNC"
-      )
-    }
-  })
+  expect_gt(OBSERVER_PRIORITIES$STATE_MANAGEMENT, OBSERVER_PRIORITIES$AUTO_DETECT)
+  expect_gt(OBSERVER_PRIORITIES$AUTO_DETECT, OBSERVER_PRIORITIES$UI_SYNC)
+  expect_gte(OBSERVER_PRIORITIES$UI_SYNC, OBSERVER_PRIORITIES$LOW)
 })
 
 test_that("Error handling integration med logging og priorities", {
   set.seed(42)
   # Test complete error handling chain
 
-  skip_if_not(exists("safe_operation"), message = "safe_operation not available")
+  require_internal("safe_operation", mode = "function")
 
   # Mock error tracking
   error_events <- character(0)

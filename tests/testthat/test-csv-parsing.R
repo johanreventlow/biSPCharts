@@ -46,22 +46,20 @@ test_that("Test data kan læses og behandles korrekt", {
 })
 
 test_that("ensure_standard_columns virker med test data", {
+  require_internal("ensure_standard_columns", mode = "function")
+
   test_data <- data.frame(
     Dato = c("2024-01-01", "2024-02-01"),
     Tæller = c(10, 15),
     Nævner = c(100, 120)
   )
 
-  if (exists("ensure_standard_columns")) {
-    result <- ensure_standard_columns(test_data)
-    expect_true(is.data.frame(result))
-    # ensure_standard_columns only cleans data, doesn't add Skift/Frys columns
-    expect_true(all(c("Dato", "Tæller", "Nævner") %in% names(result)))
-    expect_equal(nrow(result), nrow(test_data))
-    expect_true(all(grepl("^[a-zA-Z]", names(result)))) # Names should be valid
-  } else {
-    skip("ensure_standard_columns function not available")
-  }
+  result <- ensure_standard_columns(test_data)
+  expect_true(is.data.frame(result))
+  # ensure_standard_columns only cleans data, doesn't add Skift/Frys columns
+  expect_true(all(c("Dato", "Tæller", "Nævner") %in% names(result)))
+  expect_equal(nrow(result), nrow(test_data))
+  expect_true(all(grepl("^[a-zA-Z]", names(result)))) # Names should be valid
 })
 
 # =============================================================================
@@ -69,7 +67,7 @@ test_that("ensure_standard_columns virker med test data", {
 # =============================================================================
 
 test_that("ensure_standard_columns tilføjer Skift og Frys hvis de mangler", {
-  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+  require_internal("ensure_standard_columns", mode = "function")
 
   data <- data.frame(
     Dato = c("2024-01-01", "2024-02-01"),
@@ -89,7 +87,7 @@ test_that("ensure_standard_columns tilføjer Skift og Frys hvis de mangler", {
 })
 
 test_that("ensure_standard_columns tilføjer kun Frys hvis Skift allerede findes", {
-  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+  require_internal("ensure_standard_columns", mode = "function")
 
   data <- data.frame(
     Skift = c(FALSE, TRUE),
@@ -106,7 +104,7 @@ test_that("ensure_standard_columns tilføjer kun Frys hvis Skift allerede findes
 })
 
 test_that("ensure_standard_columns ændrer ikke data med begge kolonner", {
-  skip_if_not(exists("ensure_standard_columns", mode = "function"))
+  require_internal("ensure_standard_columns", mode = "function")
 
   data <- data.frame(
     Skift = c(FALSE, TRUE),
@@ -136,7 +134,7 @@ create_mock_emit <- function() {
 }
 
 test_that("handle_csv_upload parser dansk CSV (semikolon + komma-decimal)", {
-  skip_if_not(exists("handle_csv_upload", mode = "function"))
+  require_internal("handle_csv_upload", mode = "function")
 
   csv_content <- "Dato;T\u00e6ller;N\u00e6vner\n2024-01-01;10,5;100\n2024-02-01;15,3;120"
   temp_file <- tempfile(fileext = ".csv")
@@ -152,7 +150,7 @@ test_that("handle_csv_upload parser dansk CSV (semikolon + komma-decimal)", {
 })
 
 test_that("handle_csv_upload parser engelsk CSV (komma + punkt-decimal)", {
-  skip_if_not(exists("handle_csv_upload", mode = "function"))
+  require_internal("handle_csv_upload", mode = "function")
 
   csv_content <- "Date,Count,Denominator\n2024-01-01,10.5,100\n2024-02-01,15.3,120"
   temp_file <- tempfile(fileext = ".csv")
@@ -168,7 +166,7 @@ test_that("handle_csv_upload parser engelsk CSV (komma + punkt-decimal)", {
 })
 
 test_that("handle_csv_upload parser tab-separeret fil", {
-  skip_if_not(exists("handle_csv_upload", mode = "function"))
+  require_internal("handle_csv_upload", mode = "function")
 
   csv_content <- "Dato\tT\u00e6ller\tN\u00e6vner\n2024-01-01\t10\t100\n2024-02-01\t15\t120"
   temp_file <- tempfile(fileext = ".csv")
@@ -188,7 +186,7 @@ test_that("handle_csv_upload parser tab-separeret fil", {
 # =============================================================================
 
 test_that("read_csv_detect_encoding læser UTF-8 med danske tegn", {
-  skip_if_not(exists("read_csv_detect_encoding", mode = "function"))
+  require_internal("read_csv_detect_encoding", mode = "function")
 
   csv_content <- "Måned;Tæller;Nævner\nJanuar;10;100\nFebruar;15;120"
   temp_file <- tempfile(fileext = ".csv")
@@ -201,7 +199,7 @@ test_that("read_csv_detect_encoding læser UTF-8 med danske tegn", {
 })
 
 test_that("read_csv_detect_encoding læser Latin1 med danske tegn", {
-  skip_if_not(exists("read_csv_detect_encoding", mode = "function"))
+  require_internal("read_csv_detect_encoding", mode = "function")
 
   csv_content <- "Måned;Tæller;Nævner\nJanuar;10;100"
   temp_file <- tempfile(fileext = ".csv")
@@ -251,7 +249,7 @@ test_that("handle_csv_upload viser detaljeret fejlbesked ved total-fail", {
 # =============================================================================
 
 test_that("validate_uploaded_file: 30k raekker er OK (ingen fejl)", {
-  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+  require_internal("validate_uploaded_file", mode = "function")
 
   # Mocke limits: warning=50, max=100 saa vi kan bruge smaa testfiler
   testthat::local_mocked_bindings(
@@ -277,7 +275,7 @@ test_that("validate_uploaded_file: 30k raekker er OK (ingen fejl)", {
 })
 
 test_that("validate_uploaded_file: 75k raekker giver kun advarsel (ikke fejl)", {
-  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+  require_internal("validate_uploaded_file", mode = "function")
 
   # Mocke limits: warning=50, max=100
   testthat::local_mocked_bindings(
@@ -304,7 +302,7 @@ test_that("validate_uploaded_file: 75k raekker giver kun advarsel (ikke fejl)", 
 })
 
 test_that("validate_uploaded_file: 150k raekker giver hard-stop fejl", {
-  skip_if_not(exists("validate_uploaded_file", mode = "function"))
+  require_internal("validate_uploaded_file", mode = "function")
 
   # Mocke limits: warning=50, max=100
   testthat::local_mocked_bindings(

@@ -78,7 +78,7 @@ test_that("classify_update_context returnerer 'general' for ukendte contexts", {
 
 test_that("classify_update_context udsender warning for ukendt context (#425)", {
   # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
-  skip_if_not(exists("log_warn", mode = "function"))
+  require_internal("log_warn", mode = "function")
 
   # Sikrer at warning udsendes saa nye unknown contexts fanges i logs.
   # Beskytter mod fremtidig regression hvor ny emit-call bruger context-streng
@@ -105,7 +105,7 @@ test_that("classify_update_context udsender warning for ukendt context (#425)", 
 
 test_that("classify_update_context udsender IKKE warning for kendte contexts (#425)", {
   # M1 (#455): hård require — skip_if_not(exists()) ville lade testen passere stille hvis funktionen blev slettet.
-  skip_if_not(exists("log_warn", mode = "function"))
+  require_internal("log_warn", mode = "function")
 
   withr::local_envvar(SPC_LOG_LEVEL = "WARN")
 
@@ -159,13 +159,13 @@ test_that("resolve_column_update_reason eksisterer og er en funktion", {
 })
 
 test_that("resolve_column_update_reason returnerer 'manual' for NULL", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   expect_equal(resolve_column_update_reason(NULL), "manual")
 })
 
 test_that("resolve_column_update_reason returnerer 'edit' for edit-relaterede contexts", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   edit_contexts <- c("table_cells_edited", "column_change", "data_edit", "data_modify")
 
@@ -178,14 +178,14 @@ test_that("resolve_column_update_reason returnerer 'edit' for edit-relaterede co
 })
 
 test_that("resolve_column_update_reason returnerer 'session' for session contexts", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   result <- resolve_column_update_reason("session_restore")
   expect_equal(result, "session")
 })
 
 test_that("resolve_column_update_reason returnerer 'upload' for load-relaterede contexts", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   upload_contexts <- c("file_upload", "file_loaded", "new_data")
 
@@ -198,7 +198,7 @@ test_that("resolve_column_update_reason returnerer 'upload' for load-relaterede 
 })
 
 test_that("resolve_column_update_reason returnerer 'manual' for ukendte contexts", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   unknown_contexts <- c("unknown_event", "xyz", "something_random")
 
@@ -211,7 +211,7 @@ test_that("resolve_column_update_reason returnerer 'manual' for ukendte contexts
 })
 
 test_that("resolve_column_update_reason returnerer kun gyldige output-værdier", {
-  skip_if_not(exists("resolve_column_update_reason", mode = "function"))
+  require_internal("resolve_column_update_reason", mode = "function")
 
   valid_outputs <- c("upload", "edit", "session", "manual")
 

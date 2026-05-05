@@ -183,7 +183,7 @@ describe("Excel File Support", {
 
 describe("File Validation", {
   it("validates file path security", {
-    skip_if_not(exists("validate_safe_file_path", mode = "function"))
+    require_internal("validate_safe_file_path", mode = "function")
 
     # Valid temp file
     temp_file <- tempfile()
@@ -195,7 +195,7 @@ describe("File Validation", {
   })
 
   it("rejects path traversal attempts", {
-    skip_if_not(exists("validate_safe_file_path", mode = "function"))
+    require_internal("validate_safe_file_path", mode = "function")
 
     # Path traversal attempt
     dangerous_path <- "../../../etc/passwd"
@@ -207,7 +207,7 @@ describe("File Validation", {
   })
 
   it("validates file extension", {
-    skip_if_not(exists("validate_file_extension", mode = "function"))
+    require_internal("validate_file_extension", mode = "function")
 
     expect_true(validate_file_extension("csv"))
     expect_true(validate_file_extension("xlsx"))
@@ -217,7 +217,7 @@ describe("File Validation", {
   })
 
   it("validates file size limits", {
-    skip_if_not(exists("validate_uploaded_file", mode = "function"))
+    require_internal("validate_uploaded_file", mode = "function")
 
     # Create small test file
     temp_file <- tempfile(fileext = ".csv")
@@ -236,7 +236,7 @@ describe("File Validation", {
   })
 
   it("rejects files exceeding size limit", {
-    skip_if_not(exists("validate_uploaded_file", mode = "function"))
+    require_internal("validate_uploaded_file", mode = "function")
 
     # Mock file info with excessive size
     file_info <- list(
@@ -256,7 +256,7 @@ describe("File Validation", {
 
 describe("Collect Metadata", {
   it("collect_metadata includes frys_column", {
-    skip_if_not(exists("collect_metadata", mode = "function"))
+    require_internal("collect_metadata", mode = "function")
 
     # Mock input med alle felter
     mock_input <- list(
@@ -285,7 +285,7 @@ describe("Collect Metadata", {
   })
 
   it("roundtrips metadata through JSON (lokal session restore)", {
-    skip_if_not(exists("collect_metadata", mode = "function"))
+    require_internal("collect_metadata", mode = "function")
 
     # Simuler komplet metadata fra collect_metadata
     original_metadata <- list(
@@ -318,7 +318,7 @@ describe("Collect Metadata", {
 
 describe("Data Preprocessing & Cleaning", {
   it("removes empty rows", {
-    skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
+    require_internal("preprocess_uploaded_data", mode = "function")
 
     data <- data.frame(
       x = c(1, NA, 3, NA),
@@ -336,7 +336,7 @@ describe("Data Preprocessing & Cleaning", {
   })
 
   it("cleans column names", {
-    skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
+    require_internal("preprocess_uploaded_data", mode = "function")
 
     data <- data.frame(
       `Column...1` = c(1, 2, 3),
@@ -355,7 +355,7 @@ describe("Data Preprocessing & Cleaning", {
 
   it("preserves data integrity during preprocessing", {
     set.seed(42)
-    skip_if_not(exists("preprocess_uploaded_data", mode = "function"))
+    require_internal("preprocess_uploaded_data", mode = "function")
 
     data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 12),
@@ -378,7 +378,7 @@ describe("Data Preprocessing & Cleaning", {
 
 describe("Error Handling & Recovery", {
   it("handles encoding errors with helpful message", {
-    skip_if_not(exists("handle_upload_error", mode = "function"))
+    require_internal("handle_upload_error", mode = "function")
 
     error <- simpleError("invalid multibyte string")
     file_info <- list(
@@ -394,7 +394,7 @@ describe("Error Handling & Recovery", {
   })
 
   it("handles permission errors with helpful message", {
-    skip_if_not(exists("handle_upload_error", mode = "function"))
+    require_internal("handle_upload_error", mode = "function")
 
     error <- simpleError("permission denied")
     file_info <- list(
@@ -410,7 +410,7 @@ describe("Error Handling & Recovery", {
   })
 
   it("handles corrupted file errors", {
-    skip_if_not(exists("handle_upload_error", mode = "function"))
+    require_internal("handle_upload_error", mode = "function")
 
     error <- simpleError("File appears to be corrupted")
     file_info <- list(
@@ -431,7 +431,7 @@ describe("Error Handling & Recovery", {
 describe("Data Validation for Auto-Detection", {
   it("validates suitable data for auto-detection", {
     set.seed(42)
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
 
     data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 12),
@@ -449,7 +449,7 @@ describe("Data Validation for Auto-Detection", {
   })
 
   it("detects insufficient data for auto-detection", {
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
 
     # Only one row
     data <- data.frame(
@@ -465,7 +465,7 @@ describe("Data Validation for Auto-Detection", {
   })
 
   it("detects missing column names", {
-    skip_if_not(exists("validate_data_for_auto_detect", mode = "function"))
+    require_internal("validate_data_for_auto_detect", mode = "function")
 
     data <- data.frame(
       matrix(1:9, ncol = 3)
@@ -611,7 +611,7 @@ describe("Edge Cases", {
 
 describe("Security Hardening", {
   it("sanitizes CSV formula injection attempts", {
-    skip_if_not(exists("sanitize_csv_output", mode = "function"))
+    require_internal("sanitize_csv_output", mode = "function")
 
     malicious_data <- data.frame(
       x = c("=SUM(A1:A10)", "@WEBSERVICE()", "-2+3", "+cmd|'/c calc'!A1"),
@@ -626,7 +626,7 @@ describe("Security Hardening", {
   })
 
   it("validates MIME type matches file extension", {
-    skip_if_not(exists("validate_uploaded_file", mode = "function"))
+    require_internal("validate_uploaded_file", mode = "function")
 
     # Create CSV but claim it's Excel
     csv_file <- tempfile(fileext = ".csv")
@@ -654,8 +654,8 @@ describe("Security Hardening", {
     #
     # Pattern: testServer(server_fn, {test_expr}) — server og test ADSKILT
     # for korrekt fejl-propagation (se test-chart-type-observer-integration.R).
-    skip_if_not(exists("setup_file_upload", mode = "function"))
-    skip_if_not(exists("create_app_state", mode = "function"))
+    require_internal("setup_file_upload", mode = "function")
+    require_internal("create_app_state", mode = "function")
 
     # Opret en valid temp-CSV-fil som input$data_file kan pege paa
     tmp_csv <- tempfile(fileext = ".csv")

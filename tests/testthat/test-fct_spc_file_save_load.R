@@ -162,8 +162,8 @@ test_that("parse_spc_excel returnerer NULL ved korrupt Indstillinger-ark", {
 #   6. auto_detection_started bliver IKKE kaldt (da mappings allerede gendannes)
 
 test_that("handle_excel_upload round-trip genskaber mappings og trigger session_restore", {
-  skip_if_not(exists("handle_excel_upload", mode = "function"))
-  skip_if_not(exists("build_spc_excel", mode = "function"))
+  require_internal("handle_excel_upload", mode = "function")
+  require_internal("build_spc_excel", mode = "function")
 
   # --- Byg en realistisk save-fil ---
   data <- data.frame(
@@ -274,7 +274,7 @@ test_that("handle_excel_upload round-trip genskaber mappings og trigger session_
 })
 
 test_that("handle_excel_upload fallback uden metadata triggerer auto-detection", {
-  skip_if_not(exists("handle_excel_upload", mode = "function"))
+  require_internal("handle_excel_upload", mode = "function")
 
   # Lav en ugyldig "save-fil" hvor Indstillinger-arket eksisterer men er korrupt.
   # parse_spc_excel returnerer NULL for denne, så handle_excel_upload skal

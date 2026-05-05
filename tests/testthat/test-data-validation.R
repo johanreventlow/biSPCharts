@@ -32,8 +32,7 @@ test_that("ensure_standard_columns virker korrekt", {
 })
 
 test_that("validate_numeric_column fungerer", {
-  # Skip if function not available
-  skip_if_not(exists("validate_numeric_column", mode = "function"), "validate_numeric_column function not available")
+  skip("Legacy validate_numeric_column blev fjernet; numerisk validering dækkes af parse_and_validate_spc_data().")
 
   test_data <- data.frame(
     numerisk = c(1, 2, 3),
@@ -62,8 +61,7 @@ test_that("validate_numeric_column fungerer", {
 # fct_time_parsing.R). Ingen direkte erstatning kræves.
 
 test_that("safe_date_parse fungerer robust", {
-  # Skip if function not available
-  skip_if_not(exists("safe_date_parse", mode = "function"), "safe_date_parse function not available")
+  skip("Legacy safe_date_parse blev fjernet; datoparsing dækkes af parse_danish_dates()/time-parsing tests.")
 
   # Test valid danske datoer
   danske_datoer <- c("01-01-2024", "15-02-2024", "31-12-2023")

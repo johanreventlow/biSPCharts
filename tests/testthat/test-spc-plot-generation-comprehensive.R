@@ -7,7 +7,7 @@ test_that("generateSPCPlot basic functionality works with valid data", {
   # TEST: Core generateSPCPlot function with standard Danish SPC data
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Standard Danish clinical data format
   test_data <- data.frame(
@@ -51,7 +51,7 @@ test_that("generateSPCPlot handles Danish number format parsing", {
   # TEST: Danish number formats with comma as decimal separator
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Data with Danish number formats
   test_data <- data.frame(
@@ -88,7 +88,7 @@ test_that("generateSPCPlot handles different chart types correctly", {
   # TEST: All supported SPC chart types
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Base data for different chart types
   base_data <- data.frame(
@@ -129,7 +129,7 @@ test_that("generateSPCPlot date handling and formatting works", {
   # TEST: Date column processing and intelligent formatting
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Data with different date formats
   date_data <- data.frame(
@@ -202,7 +202,7 @@ test_that("generateSPCPlot phase and freeze functionality works", {
   # TEST: Phase separation lines and freeze baseline
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Data with phase changes
   phase_data <- data.frame(
@@ -251,7 +251,7 @@ test_that("generateSPCPlot target line functionality works", {
   # TEST: Target line addition and positioning
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Standard data
   test_data <- data.frame(
@@ -298,7 +298,7 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
   #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
   #   - 'text_color' → 'color', mapping$colour → ^color quosure
   # Assertions er tight mod BFHcharts-interne lag — fragilt ved BFHcharts-ændringer.
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
   skip_if_not_installed("rlang")
 
   test_data <- data.frame(
@@ -338,7 +338,7 @@ test_that("generateSPCPlot target label bruger geom_marquee", {
   #   - Kolonne 'type' fjernet → brug grepl() på 'label' i stedet
   #   - 'text_color' → 'color' (#565656 → #333333), mapping$colour → ^color quosure
   # Assertions er tight mod BFHcharts-interne lag — fragilt ved BFHcharts-ændringer.
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
   skip_if_not_installed("rlang")
 
   test_data <- data.frame(
@@ -379,7 +379,7 @@ test_that("generateSPCPlot comment annotations work", {
   # TEST: Comment data processing and ggrepel integration
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Data with comments
   comment_data <- data.frame(
@@ -424,7 +424,7 @@ test_that("generateSPCPlot error handling works correctly", {
   # TEST: Various error conditions and defensive programming
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # TEST: Empty data
   empty_data <- data.frame()
@@ -526,7 +526,7 @@ test_that("generateSPCPlot performance and caching works", {
   # TEST: Performance features and caching mechanisms
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Larger dataset to trigger performance considerations
   large_data <- data.frame(
@@ -571,7 +571,7 @@ test_that("generateSPCPlot hospital theme integration works", {
   # TEST: Hospital branding and theme application
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Standard test data
   test_data <- data.frame(
@@ -619,7 +619,7 @@ test_that("generateSPCPlot Danish clinical data patterns work", {
   # TEST: Real-world Danish clinical data patterns
 
   # Skip if generateSPCPlot function not available
-  skip_if_not(exists("generateSPCPlot", mode = "function"), "generateSPCPlot function not available")
+  require_internal("generateSPCPlot", mode = "function")
 
   # SETUP: Typical Danish hospital data format
   danish_data <- data.frame(

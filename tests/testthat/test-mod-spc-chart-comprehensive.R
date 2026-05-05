@@ -218,7 +218,7 @@ describe("Reactive Chains", {
   # §2.3.1 (a): data_updated → session$returned$plot populated
   # Leveret i §2.3.1 (#230)
   it("updates plot when data changes (§2.3.1a)", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     test_data <- create_test_data_for_module()
     app_state <- create_mock_app_state()
@@ -270,7 +270,7 @@ describe("Reactive Chains", {
   })
 
   it("handles cache update atomicity correctly", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
     test_data <- create_test_data_for_module()
@@ -286,7 +286,7 @@ describe("Reactive Chains", {
   })
 
   it("prevents race conditions with guard flag", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
 
@@ -346,7 +346,7 @@ describe("Cache Update Atomicity", {
 
 describe("Error Handling", {
   it("handles null data gracefully", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
 
@@ -370,7 +370,7 @@ describe("Error Handling", {
   })
 
   it("handles empty data gracefully", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
 
@@ -394,7 +394,7 @@ describe("Error Handling", {
   })
 
   it("sets appropriate warnings on validation failure", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
     # Reelle data (≥3 rækker) passerer req()- og create_chart_config_reactive-guards.
@@ -436,7 +436,7 @@ describe("UI Rendering", {
   # §2.3.1 (b): null-data → warnings gemt
   # Leveret i §2.3.1 (#230)
   it("stores warnings when data is null (§2.3.1b)", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
     # Eksplicit null-data + forud-populerede warnings simulerer fejl-scenarie
@@ -481,7 +481,7 @@ describe("UI Rendering", {
   # §2.3.1 (c): guard-flag cache_updating respekteres ved samtidige events
   # Leveret i §2.3.1 (#230)
   it("respects cache_updating guard flag (§2.3.1c)", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
     test_data <- create_test_data_for_module()
@@ -531,7 +531,7 @@ describe("UI Rendering", {
   # §2.3.1 (d): debounce — to events inden for debounce-window → kun én render
   # Leveret i §2.3.1 (#230)
   it("debounces rapid events to single render (§2.3.1d)", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
     skip_if_not_installed("later")
 
     app_state <- create_mock_app_state()
@@ -672,7 +672,7 @@ describe("Module State Management", {
 
 describe("Viewport Dimensions", {
   it("handles missing viewport dimensions gracefully", {
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
     test_data <- create_test_data_for_module()
@@ -701,7 +701,7 @@ describe("Viewport Dimensions", {
     # register_viewport_observer() laester session$clientData og kalder
     # set_viewport_dims(app_state, width, height) naar dimensioner > 100px.
     # Observable: app_state$visualization$viewport_dims opdateres med mockclientdata-vaerdier.
-    skip_if_not(exists("visualizationModuleServer", mode = "function"))
+    require_internal("visualizationModuleServer", mode = "function")
 
     app_state <- create_mock_app_state()
 

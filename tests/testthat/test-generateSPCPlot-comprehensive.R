@@ -60,7 +60,7 @@ describe("Basic Chart Types", {
     # render-laget viser ingen kontrolgrænselinjer for run charts.
     # Assertions opdateret: test det semantiske invariant (all NA) frem for kolonne-fravær.
     # y-værdier er proportioner (0-1) når n_col angives — ikke procent (70-110).
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 15, chart_type = "run")
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -88,7 +88,7 @@ describe("Basic Chart Types", {
   })
 
   it("generates i chart with control limits", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 20, chart_type = "i")
     config <- list(x_col = "Dato", y_col = "Værdi", n_col = NULL)
@@ -117,7 +117,7 @@ describe("Basic Chart Types", {
   })
 
   it("generates p chart with percentage y-axis", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 24, chart_type = "p")
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -141,7 +141,7 @@ describe("Basic Chart Types", {
   })
 
   it("generates c chart for count data", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "week", length.out = 15),
@@ -168,7 +168,7 @@ describe("Basic Chart Types", {
   })
 
   it("generates u chart for rate data", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 18, chart_type = "u")
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -193,7 +193,7 @@ describe("Basic Chart Types", {
 
 describe("Y-Axis Formatting", {
   it("formats percent values correctly", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 12)
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -216,7 +216,7 @@ describe("Y-Axis Formatting", {
   })
 
   it("applies K/M notation for large counts", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     # Store tal data
     test_data <- data.frame(
@@ -244,7 +244,7 @@ describe("Y-Axis Formatting", {
   })
 
   it("handles rate calculations", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 12)
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -268,7 +268,7 @@ describe("Y-Axis Formatting", {
     # y-værdier passes igennem uforandrede (61 min forbliver 61).
     # Gammel assertion all(y < 60) var forkert — BFHcharts har ikke denne feature.
     # Test rettet til: korrekt unit, strukturel validering, numeriske y-værdier.
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     # Test data med minutter — inkl. værdi > 60 (verifik. at ingen transformation)
     test_data <- data.frame(
@@ -300,7 +300,7 @@ describe("Y-Axis Formatting", {
 
 describe("Multi-Part Data", {
   it("creates separate control limits per part", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     # Data med phase change
     test_data <- data.frame(
@@ -344,7 +344,7 @@ describe("Multi-Part Data", {
   })
 
   it("handles part transitions correctly", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       Obs = 1:12,
@@ -377,7 +377,7 @@ describe("Multi-Part Data", {
   })
 
   it("handles freeze baseline correctly", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       Obs = 1:15,
@@ -417,7 +417,7 @@ describe("Multi-Part Data", {
 describe("X-Axis Datetime Formatting", {
   it("formats weekly data correctly", {
     set.seed(42)
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "week", length.out = 20),
@@ -445,7 +445,7 @@ describe("X-Axis Datetime Formatting", {
   })
 
   it("formats monthly data correctly", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 24, with_dates = TRUE)
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")
@@ -465,7 +465,7 @@ describe("X-Axis Datetime Formatting", {
 
   it("formats daily data correctly", {
     set.seed(42)
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       Dato = seq.Date(as.Date("2024-01-01"), by = "day", length.out = 30),
@@ -497,7 +497,7 @@ describe("X-Axis Datetime Formatting", {
     # Originale labels gemmes i side-channel .x_labels_<col>. BFHcharts returnerer
     # integer i qic_data$x — is.factor() assertion var forkert.
     # Test verificerer: plottet genereres korrekt (strukturel validering).
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- data.frame(
       `Uge tekst` = paste("Uge", 1:12),
@@ -528,7 +528,7 @@ describe("X-Axis Datetime Formatting", {
 
 describe("Edge Cases", {
   it("handles empty data gracefully", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     empty_data <- data.frame()
     config <- list(x_col = "Obs", y_col = "Tæller", n_col = "Nævner")
@@ -545,7 +545,7 @@ describe("Edge Cases", {
   })
 
   it("handles single row data", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     single_data <- data.frame(
       Obs = 1,
@@ -569,7 +569,7 @@ describe("Edge Cases", {
   })
 
   it("handles extreme values", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     extreme_data <- data.frame(
       Obs = 1:10,
@@ -596,7 +596,7 @@ describe("Edge Cases", {
   })
 
   it("handles all NA values gracefully", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     na_data <- data.frame(
       Obs = 1:10,
@@ -620,7 +620,7 @@ describe("Edge Cases", {
   })
 
   it("handles mixed NA values", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     mixed_data <- data.frame(
       Obs = 1:10,
@@ -648,7 +648,7 @@ describe("Edge Cases", {
   })
 
   it("handles zero denominators", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     zero_data <- data.frame(
       Obs = 1:8,
@@ -680,7 +680,7 @@ describe("Edge Cases", {
 describe("Performance", {
   it("completes in <1.5s for 1000 rows", {
     set.seed(42)
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
     skip_on_cran()
 
     # Large dataset
@@ -716,7 +716,7 @@ describe("Performance", {
   })
 
   it("caches x-column validation", {
-    skip_if_not(exists("generateSPCPlot", mode = "function"))
+    require_internal("generateSPCPlot", mode = "function")
 
     test_data <- create_test_data(n = 50)
     config <- list(x_col = "Dato", y_col = "Tæller", n_col = "Nævner")

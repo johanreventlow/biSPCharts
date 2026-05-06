@@ -66,7 +66,7 @@ get_or_init_qic_cache <- function(app_state) {
 #' }
 #'
 #' @keywords internal
-create_qic_cache <- function(max_size = 50) {
+create_qic_cache <- function(max_size = 100) {
   cache <- new.env(parent = emptyenv())
   metrics <- list(
     hits = 0,

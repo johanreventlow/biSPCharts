@@ -188,13 +188,6 @@ create_module_data_reactive <- function(app_state) {
 #'
 #' @keywords internal
 register_module_data_observer <- function(app_state, input, output, session) {
-  state_flag <- function(value, default = FALSE) {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    isTRUE(value[[1]])
-  }
-
   shiny::observeEvent(
     app_state$events$visualization_update_needed,
     ignoreInit = TRUE,

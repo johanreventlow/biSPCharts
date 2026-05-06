@@ -136,7 +136,7 @@ generate_pdf_export <- function(input, app_state, file) {
   }
   base_description <- input$pdf_description %||% ""
   data_definition_with_note <- if (!is.null(short_series_note) && nchar(short_series_note) > 0) {
-    if (nchar(trimws(base_description)) > 0) {
+    if (nzchar(trimws(base_description))) {
       paste0(base_description, "\n\n", short_series_note)
     } else {
       short_series_note

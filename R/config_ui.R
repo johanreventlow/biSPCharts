@@ -133,3 +133,19 @@ VIEWPORT_DEFAULTS <- list(
   height = 600, # Default height i pixels
   dpi = 96 # Standard DPI for web graphics
 )
+
+#' Kliniske enhedstype-labels til UI-selector
+#'
+#' Bruges i `current_unit()` til at mappe korte enhedskoder til
+#' fulde danske navne. Tilfoej nye enhedstyper her.
+#'
+#' @keywords internal
+UNIT_TYPE_LABELS <- list(
+  "med"  = "Medicinsk Afdeling",
+  "kir"  = "Kirurgisk Afdeling",
+  "icu"  = "Intensiv Afdeling",
+  "amb"  = "Ambulatorie",
+  "akut" = "Akutmodtagelse",
+  "paed" = "Pædiatrisk Afdeling",
+  "gyn"  = "Gynækologi/Obstetrik"
+)

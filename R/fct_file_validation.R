@@ -5,23 +5,12 @@
 # ENHANCED FILE VALIDATION ===================================================
 
 ## Enhanced file validation with comprehensive checks
-validate_uploaded_file <- function(file_info, session_id = NULL) {
-  errors <- character(0)
-
-  # File existence check
-  if (!file.exists(file_info$datapath)) {
-    errors <- c(errors, "Uploaded fil findes ikke eller er beskadiget")
-    return(list(valid = FALSE, errors = errors))
-  }
-
-  # Enhanced file size validation med DoS protection
+check_file_size <- function(file_info) {
   max_size_mb <- get_max_file_size_mb()
   if (file_info$size > max_size_mb * 1024 * 1024) {
-    # Log potential DoS attempt for large files
-    if (file_info$size > 100 * 1024 * 1024) { # Over 100MB is suspicious
-      log_warn(
+    if (file_info$size > 100 * 1024 * 1024) {
+      log_warn("Extremely large file upload attempt - potential DoS",
         component = "[FILE_SECURITY]",
-        message = "Extremely large file upload attempt - potential DoS",
         details = list(
           filename = file_info$name,
           size_mb = round(file_info$size / (1024 * 1024), 2),
@@ -29,145 +18,134 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
         )
       )
     }
-    errors <- c(errors, paste("Filst\u00f8rrelse overskrider maksimum p\u00e5", max_size_mb, "MB"))
+    return(list(valid = FALSE, message = paste("Filst\u00f8rrelse overskrider maksimum p\u00e5", max_size_mb, "MB")))
   }
+  list(valid = TRUE, message = NULL)
+}
 
-  # Additional DoS protection: Row count limits for data files
-  if (tolower(tools::file_ext(file_info$name)) == "csv") {
-    # Quick row count check for CSV files uden at laese al data
-    safe_operation(
-      "Quick CSV row count validation",
-      code = {
-        # Count lines i file (approximation)
-        con <- file(file_info$datapath, "r")
-        on.exit(close(con), add = TRUE)
-        line_count <- 0
-        while (length(readLines(con, n = 1)) > 0) {
-          line_count <- line_count + 1
-          if (line_count > get_max_upload_line_count()) { # Stop counting at reasonable limit
-            break
-          }
-        }
-        if (line_count > get_upload_warning_row_count()) {
-          log_warn(
-            component = "[FILE_SECURITY]",
-            message = "Large row count detected - performance risk",
-            details = list(
-              filename = file_info$name,
-              estimated_rows = line_count
-            )
-          )
-        }
-        if (line_count > get_max_upload_line_count()) {
-          errors <- c(errors, paste0(
-            "CSV fil har for mange r\u00e6kker (maksimum ",
-            format(get_max_upload_line_count(), big.mark = "."),
-            ")"
-          ))
-        }
-      },
-      fallback = function(e) {
-        # If we can't count, allow file but log warning
-        log_warn(
-          component = "[FILE_VALIDATION]",
-          message = "Kunne ikke validere antal r\u00e6kker",
-          details = list(filename = file_info$name, error = e$message)
+check_row_count_csv <- function(file_info) {
+  if (tolower(tools::file_ext(file_info$name)) != "csv") {
+    return(list(valid = TRUE, message = NULL))
+  }
+  row_error <- tryCatch(
+    {
+      con <- file(file_info$datapath, "r")
+      on.exit(close(con), add = TRUE)
+      line_count <- 0
+      while (length(readLines(con, n = 1)) > 0) {
+        line_count <- line_count + 1
+        if (line_count > get_max_upload_line_count()) break
+      }
+      if (line_count > get_upload_warning_row_count()) {
+        log_warn("Large row count detected - performance risk",
+          component = "[FILE_SECURITY]",
+          details = list(filename = file_info$name, estimated_rows = line_count)
         )
       }
+      if (line_count > get_max_upload_line_count()) {
+        paste0(
+          "CSV fil har for mange r\u00e6kker (maksimum ",
+          format(get_max_upload_line_count(), big.mark = "."),
+          ")"
+        )
+      } else {
+        NULL
+      }
+    },
+    error = function(e) {
+      log_warn("Kunne ikke validere antal r\u00e6kker",
+        component = "[FILE_VALIDATION]",
+        details = list(filename = file_info$name, error = e$message)
+      )
+      NULL
+    }
+  )
+  if (!is.null(row_error)) list(valid = FALSE, message = row_error) else list(valid = TRUE, message = NULL)
+}
+
+check_extension <- function(file_ext) {
+  if (!validate_file_extension(file_ext)) {
+    return(list(valid = FALSE, message = "Ikke-tilladt filtype. Kun CSV, Excel tilladt"))
+  }
+  list(valid = TRUE, message = NULL)
+}
+
+check_mime_type <- function(file_info, file_ext) {
+  file_header <- readBin(file_info$datapath, what = "raw", n = 8)
+  is_valid_mime <- switch(tolower(trimws(file_ext)),
+    "csv" = !any(file_header[1:4] == as.raw(c(0x50, 0x4B, 0x03, 0x04))),
+    "xlsx" = identical(file_header[1:4], as.raw(c(0x50, 0x4B, 0x03, 0x04))),
+    "xls" = {
+      identical(file_header[1:8], as.raw(c(0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1))) ||
+        identical(file_header[1:4], as.raw(c(0x09, 0x08, 0x10, 0x00))) ||
+        identical(file_header[1:4], as.raw(c(0x50, 0x4B, 0x03, 0x04)))
+    },
+    FALSE
+  )
+  if (!is_valid_mime) {
+    log_warn("MIME type mismatch detected - potential file masquerading",
+      component = "[FILE_SECURITY]",
+      details = list(
+        filename = file_info$name,
+        extension = file_ext,
+        header_bytes = as.character(file_header[1:8])
+      )
     )
+    return(list(valid = FALSE, message = "Filtype stemmer ikke overens med indhold"))
+  }
+  list(valid = TRUE, message = NULL)
+}
+
+validate_uploaded_file <- function(file_info, session_id = NULL) {
+  if (!file.exists(file_info$datapath)) {
+    return(list(valid = FALSE, errors = c("Uploaded fil findes ikke eller er beskadiget")))
   }
 
-  # Empty file check
   if (file_info$size == 0) {
-    errors <- c(errors, "Uploaded fil er tom")
+    return(list(valid = FALSE, errors = c("Uploaded fil er tom")))
   }
 
-  # Enhanced file extension validation med security hardening
   file_ext <- tools::file_ext(file_info$name)
 
-  # Brug centraliseret validation med sikkerhedshardening
-  if (!validate_file_extension(file_ext)) {
-    errors <- c(errors, "Ikke-tilladt filtype. Kun CSV, Excel tilladt")
-  }
+  checks <- list(
+    check_file_size(file_info),
+    check_row_count_csv(file_info),
+    check_extension(file_ext)
+  )
 
-  # MIME type validation - sikr at file extension matcher content type
+  errors <- unlist(purrr::map(checks, function(r) if (!r$valid) r$message else NULL))
+
+  # MIME check only when basic checks pass (avoids reading header on clearly invalid files)
   if (length(errors) == 0) {
-    # Basic MIME type check baseret paa file header
-    file_header <- readBin(file_info$datapath, what = "raw", n = 8)
-
-    # Check for common malicious patterns eller uoverensstemmelser
-    is_valid_mime <- switch(tolower(trimws(file_ext)),
-      "csv" = {
-        # CSV filer boer ikke have binary headers
-        !any(file_header[1:4] == as.raw(c(0x50, 0x4B, 0x03, 0x04))) # ZIP header (Excel)
-      },
-      "xlsx" = {
-        # Excel files should have ZIP/OLE header
-        identical(file_header[1:4], as.raw(c(0x50, 0x4B, 0x03, 0x04))) # ZIP header
-      },
-      "xls" = {
-        # Legacy Excel files have OLE header
-        identical(file_header[1:8], as.raw(c(0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1))) ||
-          identical(file_header[1:4], as.raw(c(0x09, 0x08, 0x10, 0x00))) ||
-          identical(file_header[1:4], as.raw(c(0x50, 0x4B, 0x03, 0x04)))
-      },
-      FALSE # Default - reject if unknown
-    )
-
-    if (!is_valid_mime) {
-      log_warn(
-        component = "[FILE_SECURITY]",
-        message = "MIME type mismatch detected - potential file masquerading",
-        details = list(
-          filename = file_info$name,
-          extension = file_ext,
-          header_bytes = as.character(file_header[1:8])
-        )
-      )
-      errors <- c(errors, "Filtype stemmer ikke overens med indhold")
-    }
+    mime_result <- check_mime_type(file_info, file_ext)
+    if (!mime_result$valid) errors <- c(errors, mime_result$message)
   }
 
-  # Additional validation for specific file types
-  if (tolower(file_ext) %in% c("xlsx", "xls")) {
-    validation_excel <- validate_excel_file(file_info$datapath)
-    if (!validation_excel$valid) {
-      errors <- c(errors, validation_excel$errors)
+  # Type-specific deep validation only when format checks pass
+  if (length(errors) == 0) {
+    type_result <- if (tolower(file_ext) %in% c("xlsx", "xls")) {
+      validate_excel_file(file_info$datapath)
+    } else if (tolower(file_ext) == "csv") {
+      validate_csv_file(file_info$datapath)
+    } else {
+      list(valid = TRUE, errors = character(0))
     }
-  } else if (tolower(file_ext) == "csv") {
-    validation_csv <- validate_csv_file(file_info$datapath)
-    if (!validation_csv$valid) {
-      errors <- c(errors, validation_csv$errors)
-    }
+    errors <- c(errors, type_result$errors)
   }
 
-  # Log validation results
   if (length(errors) > 0) {
-    debug_log("File validation failed", "FILE_UPLOAD_FLOW",
-      level = "WARNING",
-      context = list(
-        filename = file_info$name,
-        file_size = file_info$size,
-        validation_errors = errors
-      ),
-      session_id = session_id
+    log_warn("File validation failed",
+      .context = "FILE_UPLOAD_FLOW",
+      details = list(filename = file_info$name, file_size = file_info$size, validation_errors = errors)
     )
   } else {
-    debug_log("File validation successful", "FILE_UPLOAD_FLOW",
-      level = "INFO",
-      context = list(
-        filename = file_info$name,
-        file_size = file_info$size,
-        file_extension = file_ext
-      ),
-      session_id = session_id
+    log_info("File validation successful",
+      .context = "FILE_UPLOAD_FLOW",
+      details = list(filename = file_info$name, file_size = file_info$size, file_extension = file_ext)
     )
   }
 
-  return(list(
-    valid = length(errors) == 0,
-    errors = errors
-  ))
+  list(valid = length(errors) == 0, errors = errors)
 }
 
 ## Excel file specific validation
@@ -378,17 +356,16 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
   }
 
   # Log detailed error information
-  debug_log("Enhanced error handling triggered", "ERROR_HANDLING",
-    level = "ERROR",
-    context = list(
+  log_error("Enhanced error handling triggered",
+    .context = "ERROR_HANDLING",
+    details = list(
       error_type = error_type,
       error_message = error_message,
       filename = file_info$name,
       file_size = file_info$size,
       file_type = file_info$type,
       suggestions = suggestions
-    ),
-    session_id = session_id
+    )
   )
 
   # Gate tekniske fejldetaljer bag hide_error_details (default TRUE i produktion)
@@ -518,14 +495,13 @@ validate_data_for_auto_detect <- function(data, session_id = NULL) {
   suitable <- length(issues) == 0
 
   # Log validation results
-  debug_log("Data validation for auto-detection completed", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("Data validation for auto-detection completed",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       suitable = suitable,
       validation_results = validation_results,
       issues = if (length(issues) > 0) issues else "none"
-    ),
-    session_id = session_id
+    )
   )
 
   return(list(
@@ -614,15 +590,14 @@ preprocess_uploaded_data <- function(data, file_info, session_id = NULL) {
   }
 
   # Log preprocessing results
-  debug_log("Data preprocessing completed", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("Data preprocessing completed",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       filename = file_info$name,
       cleaning_log = cleaning_log,
       original_dimensions = original_dims,
       final_dimensions = final_dims
-    ),
-    session_id = session_id
+    )
   )
 
 

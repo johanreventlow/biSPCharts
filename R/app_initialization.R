@@ -284,8 +284,7 @@ get_initialization_status_report <- function(init_results) {
     return(data.frame(
       component = "initialization",
       status = "not_started",
-      details = "initialize_app() has not been called",
-      stringsAsFactors = FALSE
+      details = "initialize_app() has not been called"
     ))
   }
 
@@ -319,8 +318,7 @@ get_initialization_status_report <- function(init_results) {
     status_rows[[component]] <- data.frame(
       component = component,
       status = status,
-      details = details,
-      stringsAsFactors = FALSE
+      details = details
     )
   }
 

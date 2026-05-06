@@ -42,7 +42,7 @@ test_that("get_performance_threshold returns correct values for known metrics", 
   expect_equal(get_performance_threshold("reactive_warning"), 0.5, info = "reactive_warning should be 0.5")
   expect_equal(get_performance_threshold("debounce_warning"), 1.0, info = "debounce_warning should be 1.0")
   expect_equal(get_performance_threshold("memory_warning"), 10, info = "memory_warning should be 10")
-  expect_equal(get_performance_threshold("cache_timeout_default"), 300, info = "cache_timeout_default should be 300")
+  expect_equal(get_performance_threshold("cache_timeout_default"), 600, info = "cache_timeout_default should be 600 (increased from 300 in #561)")
   # Note: max_cache_entries is in CACHE_CONFIG, not PERFORMANCE_THRESHOLDS
 })
 
@@ -57,8 +57,8 @@ test_that("get_performance_threshold defaults to 'reactive_warning'", {
 })
 
 test_that("get_cache_config returns correct values for known settings", {
-  expect_equal(get_cache_config("default_timeout_seconds"), 300, info = "default_timeout_seconds should be 300")
-  expect_equal(get_cache_config("extended_timeout_seconds"), 600, info = "extended_timeout_seconds should be 600")
+  expect_equal(get_cache_config("default_timeout_seconds"), 600, info = "default_timeout_seconds should be 600 (increased from 300 in #561)")
+  expect_equal(get_cache_config("extended_timeout_seconds"), 1800, info = "extended_timeout_seconds should be 1800 (increased from 600 in #561)")
   expect_equal(get_cache_config("short_timeout_seconds"), 60, info = "short_timeout_seconds should be 60")
   expect_equal(get_cache_config("size_limit_entries"), 50, info = "size_limit_entries should be 50")
   expect_equal(get_cache_config("cleanup_interval_seconds"), 300, info = "cleanup_interval_seconds should be 300")
@@ -71,7 +71,7 @@ test_that("get_cache_config returns NULL for unknown settings", {
 
 test_that("get_cache_config defaults to 'default_timeout_seconds'", {
   result <- get_cache_config()
-  expect_equal(result, 300, info = "Default should be default_timeout_seconds (300)")
+  expect_equal(result, 600, info = "Default should be default_timeout_seconds (600)")
 })
 
 test_that("get_autosave_delay returns correct values for known contexts", {

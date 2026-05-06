@@ -158,136 +158,13 @@ activate_session_timeout_from_config <- function(input, session,
 
 # Dependencies ----------------------------------------------------------------
 
-# HJAeLPEFUNKTIONER SETUP ====================================================
-
-evaluate_dataLoaded_status <- function(app_state, session = NULL) {
-  current_data_check <- app_state$data$current_data
-
-  if (is.null(current_data_check)) {
-    return("FALSE")
-  }
-
-  meaningful_data <- evaluate_data_content_cached(
-    current_data_check,
-    session = session,
-    invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
-  )
-
-  file_uploaded_check <- app_state$session$file_uploaded
-  user_started_session_check <- app_state$session$user_started_session
-  user_has_started <- file_uploaded_check || user_started_session_check %||% FALSE
-
-  log_debug_kv(
-    meaningful_data = meaningful_data,
-    file_uploaded_check = file_uploaded_check,
-    user_started_session_check = user_started_session_check,
-    user_has_started = user_has_started,
-    .context = "NAVIGATION_UNIFIED"
-  )
-
-  if (meaningful_data || user_has_started) "TRUE" else "FALSE"
-}
-
-evaluate_has_data_status <- function(app_state, session = NULL) {
-  current_data_check <- app_state$data$current_data
-
-  if (is.null(current_data_check)) {
-    return("false")
-  }
-
-  meaningful_data <- evaluate_data_content_cached(
-    current_data_check,
-    session = session,
-    invalidate_events = c("data_loaded", "session_reset", "navigation_changed")
-  )
-
-  if (meaningful_data) "true" else "false"
-}
-
-register_session_status_observers <- function(events, evaluator, setter, priority) {
-  observers <- lapply(
-    c("data_updated", "session_reset", "navigation_changed"),
-    function(event_name) {
-      force(event_name)
-      shiny::observeEvent(events[[event_name]], ignoreInit = TRUE, priority = priority, {
-        setter(evaluator())
-      })
-    }
-  )
-
-  invisible(observers)
-}
-
 ## Hovedfunktion for hjaelper
 # Opsaetter alle hjaelper observers og status funktioner
 setup_helper_observers <- function(input, output, session, obs_manager = NULL, app_state = NULL) {
-  state_flag <- function(value, default = FALSE) {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    isTRUE(value[[1]])
-  }
-
   # Centralized state is now always available
   # UNIFIED STATE: Empty table initialization now handled through session management events
 
-  # UNIFIED EVENT SYSTEM: Use centralized app_state for dataLoaded status
-  # Initialize dataLoaded status in app_state if not already present
-  # Use isolate() to safely check reactive value outside reactive context
-  current_status <- isolate(app_state$session$dataLoaded_status)
-  if (is.null(current_status)) {
-    app_state$session$dataLoaded_status <- "FALSE"
-  }
-
-  data_loaded_evaluator <- function() evaluate_dataLoaded_status(app_state, session)
-
-  # UNIFIED EVENT LISTENERS: Update dataLoaded status when relevant events occur
-  # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  register_session_status_observers(
-    events = app_state$events,
-    evaluator = data_loaded_evaluator,
-    setter = function(value) app_state$session$dataLoaded_status <- value,
-    priority = OBSERVER_PRIORITIES$DATA_PROCESSING
-  )
-
-  # Data indlaesnings status flags - foelger BFH UTH moenster
-  output$dataLoaded <- shiny::renderText({
-    # UNIFIED EVENT SYSTEM: Return value from centralized app_state
-    app_state$session$dataLoaded_status
-  })
-  outputOptions(output, "dataLoaded", suspendWhenHidden = FALSE)
-
-  # UNIFIED EVENT SYSTEM: Use centralized app_state for has_data status
-  # Initialize has_data status in app_state if not already present
-  # Use isolate() to safely check reactive value outside reactive context
-  current_has_data_status <- isolate(app_state$session$has_data_status)
-  if (is.null(current_has_data_status)) {
-    set_has_data_status(app_state, "false")
-  }
-
-  has_data_evaluator <- function() evaluate_has_data_status(app_state, session)
-
-  # UNIFIED EVENT LISTENERS: Update has_data status when relevant events occur
-  # SPRINT 4: Migrated from data_loaded to consolidated data_updated event
-  register_session_status_observers(
-    events = app_state$events,
-    evaluator = has_data_evaluator,
-    setter = function(value) set_has_data_status(app_state, value),
-    priority = OBSERVER_PRIORITIES$DATA_PROCESSING
-  )
-
-  # Initial evaluation to set correct startup state (once = TRUE: kun ved opstart)
-  shiny::observeEvent(TRUE, once = TRUE, priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT, {
-    app_state$session$dataLoaded_status <- data_loaded_evaluator()
-    set_has_data_status(app_state, has_data_evaluator())
-  })
-
-  output$has_data <- shiny::renderText({
-    # UNIFIED EVENT SYSTEM: Return value from centralized app_state
-    app_state$session$has_data_status
-  })
-  outputOptions(output, "has_data", suspendWhenHidden = FALSE)
-
+  register_session_status_outputs(output, session, app_state)
 
   # Feature flag guard: Hvis auto-save er deaktiveret i config, springer vi
   # oprettelsen af auto-save observers helt over. Dette gemmer baade CPU og
@@ -545,76 +422,8 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     obs_manager$add(obs_settings_save, "settings_auto_save")
   }
 
-  # Diskret save-status indikator i navbar (Issue #193)
-  # R renderer kun containeren; JS (shiny-handlers.js) haandterer
-  # tidstaelling client-side hvert 5 s for at undgaa reactiveTimer
-  # keepalive-effekt paa Connect Cloud.
-  output$session_save_status <- shiny::renderUI({
-    # Brug boolean flag i stedet for timestamp for at undgaa re-render
-    # ved hvert save-cycle. JS ejer tidsteksten.
-    has_saved <- !is.null(get_last_save_time(app_state))
-    auto_save_on <- is_auto_save_enabled(app_state)
-
-    if (isFALSE(auto_save_on)) {
-      return(shiny::span(
-        shiny::icon("triangle-exclamation"),
-        " Automatisk lagring deaktiveret",
-        style = paste0("color: ", get_hospital_colors()$danger, "; font-size: 0.8rem;"),
-        title = "Browseren har ikke plads til mere. Din data er stadig i appen."
-      ))
-    }
-
-    if (!has_saved) {
-      return(NULL)
-    }
-
-    # Container -- JS (_spcUpdateSaveElapsed) opdaterer teksten loebende
-    shiny::span(
-      shiny::icon("check"),
-      " ",
-      shiny::span(id = "save-elapsed-text", "Session gemt"),
-      style = paste0("color: ", get_hospital_colors()$lightgrey, "; font-size: 0.8rem;"),
-      title = "Indstillinger og data gemmes automatisk i din browser"
-    )
-  })
-
-  # JS -> R feedback-kanal for localStorage save-result (Issue #193)
-  # Lytter paa result fra shiny-handlers.js saveAppState handler.
-  # Ved success: opdater last_save_time. Ved fejl: deaktiver auto-save og
-  # vis dansk warning til brugeren.
-  obs_save_result <- shiny::observeEvent(input$local_storage_save_result, {
-    result <- input$local_storage_save_result
-    if (is.null(result)) {
-      return()
-    }
-
-    log_info(
-      sprintf("localStorage save result: success=%s", isTRUE(result$success)),
-      .context = "LOCAL_STORAGE"
-    )
-
-    if (isTRUE(result$success)) {
-      set_last_save_time(app_state)
-    } else {
-      log_warn(
-        "localStorage save failed (quota or permission)",
-        .context = "AUTO_SAVE"
-      )
-      set_auto_save_enabled(app_state, FALSE)
-      shiny::showNotification(
-        paste0(
-          "Browseren kan ikke gemme mere data (lokal lagerplads fuld). ",
-          "Automatisk lagring er deaktiveret for denne session."
-        ),
-        type = "warning",
-        duration = 8
-      )
-    }
-  })
-
-  if (!is.null(obs_manager)) {
-    obs_manager$add(obs_save_result, "local_storage_save_result")
-  }
+  register_session_save_status_output(output, app_state)
+  register_local_storage_save_result_observer(input, obs_manager, app_state)
 
   # UNIFIED EVENT SYSTEM: No return value needed - all navigation handled via events
   # Navigation is now managed through unified event system with dataLoaded_status and has_data_status
@@ -642,36 +451,16 @@ create_empty_session_data <- function() {
 # Reaktiv funktion for nuvaerende organisatoriske enhed
 current_unit <- function(input) {
   shiny::reactive({
-    # Helper to sanitize input values (same as in visualization server)
-    sanitize_input <- function(input_value) {
-      if (is.null(input_value) || length(input_value) == 0 || identical(input_value, character(0)) || input_value == "") {
-        return("")
-      }
-      if (length(input_value) > 1) {
-        input_value <- input_value[1]
-      }
-      return(input_value)
-    }
-
-    unit_type_safe <- sanitize_input(input$unit_type)
+    unit_type_safe <- input_scalar(input$unit_type)
     if (unit_type_safe == "select") {
-      unit_names <- list(
-        "med" = "Medicinsk Afdeling",
-        "kir" = "Kirurgisk Afdeling",
-        "icu" = "Intensiv Afdeling",
-        "amb" = "Ambulatorie",
-        "akut" = "Akutmodtagelse",
-        "paed" = "P\u00e6diatrisk Afdeling",
-        "gyn" = "Gyn\u00e6kologi/Obstetrik"
-      )
-      selected_unit <- sanitize_input(input$unit_select)
-      if (selected_unit != "" && selected_unit %in% names(unit_names)) {
-        return(unit_names[[selected_unit]])
+      selected_unit <- input_scalar(input$unit_select)
+      if (nzchar(selected_unit) && selected_unit %in% names(UNIT_TYPE_LABELS)) {
+        return(UNIT_TYPE_LABELS[[selected_unit]])
       } else {
         return("")
       }
     } else {
-      return(sanitize_input(input$unit_custom))
+      return(input_scalar(input$unit_custom))
     }
   })
 }
@@ -680,18 +469,7 @@ current_unit <- function(input) {
 # Reaktiv funktion for komplet chart titel
 chart_title <- function(input) {
   shiny::reactive({
-    # Helper to sanitize input values (same pattern throughout app)
-    sanitize_input <- function(input_value) {
-      if (is.null(input_value) || length(input_value) == 0 || identical(input_value, character(0)) || input_value == "") {
-        return("")
-      }
-      if (length(input_value) > 1) {
-        input_value <- input_value[1]
-      }
-      return(input_value)
-    }
-
-    indicator_title_safe <- sanitize_input(input$indicator_title)
+    indicator_title_safe <- input_scalar(input$indicator_title)
     base_title <- if (indicator_title_safe == "") "SPC Analyse" else indicator_title_safe
     unit_name <- current_unit(input)()
 

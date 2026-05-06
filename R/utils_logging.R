@@ -241,6 +241,23 @@ get_effective_log_level <- function() {
 # intern hjaelper (ikke-eksporteret)
 .timestamp <- function() format(Sys.time(), "%H:%M:%S")
 
+# intern hjaelper (ikke-eksporteret)
+# Redacts values whose key names match common secret patterns.
+.redact_secrets <- function(details) {
+  if (is.null(details) || length(details) == 0) {
+    return(details)
+  }
+  secret_pattern <- "(?i)(key|token|pat|password|secret|credential)"
+  lapply(seq_along(details), function(i) {
+    nm <- names(details)[i]
+    if (!is.null(nm) && grepl(secret_pattern, nm, perl = TRUE)) {
+      "***REDACTED***"
+    } else {
+      details[[i]]
+    }
+  }) |> setNames(names(details))
+}
+
 #' Primaer logging-funktion med level-filtering
 #'
 #' Central logging-funktion der haandterer alle log-beskeder med automatisk
@@ -375,7 +392,7 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_safe <- lapply(.redact_secrets(details), function(x) if (is.null(x)) "NULL" else x)
         details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(message, " [", details_str, "]")
       },
@@ -425,7 +442,7 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_safe <- lapply(.redact_secrets(details), function(x) if (is.null(x)) "NULL" else x)
         details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(message, " [", details_str, "]")
       },
@@ -479,7 +496,7 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
   if (!is.null(details)) {
     details_formatted <- tryCatch(
       {
-        details_safe <- lapply(details, function(x) if (is.null(x)) "NULL" else x)
+        details_safe <- lapply(.redact_secrets(details), function(x) if (is.null(x)) "NULL" else x)
         details_str <- paste(names(details_safe), unlist(details_safe, use.names = FALSE), sep = "=", collapse = ", ")
         paste0(msg, " [", details_str, "]")
       },

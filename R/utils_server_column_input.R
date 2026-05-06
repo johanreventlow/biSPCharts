@@ -85,18 +85,25 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   normalized_value <- normalize_column_input(new_value)
 
   # ============================================================================
+  # STEP 2+3+4: GUARD — skip alle side-effects hvis værdien ikke ændrer sig
+  # ============================================================================
+  # Forhindrer reaktive invalidations når UI-sync skriver identiske værdier
+  # tilbage til app_state (sker efter autodetect → updateSelectizeInput-loop).
+
+  current_val <- shiny::isolate(app_state$columns$mappings[[col_name]])
+  if (identical(current_val, normalized_value)) {
+    return(invisible(NULL))
+  }
+
+  # ============================================================================
   # STEP 2: STATE UPDATE
   # ============================================================================
-  # Update app_state to keep it synchronized with UI
-  # This ensures app_state always reflects current UI state
-  # CRITICAL FIX: Write to hierarchical mappings structure (app_state$columns$mappings)
 
   app_state$columns$mappings[[col_name]] <- normalized_value
 
   # ============================================================================
   # STEP 3: CACHE INVALIDATION
   # ============================================================================
-  # Clear cached column input to ensure fresh data on next access
 
   cache_key <- paste0(col_name, "_input")
   if (!is.null(app_state$ui_cache)) {
@@ -106,13 +113,8 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   # ============================================================================
   # STEP 4: EVENT EMISSION (BATCHED)
   # ============================================================================
-  # Trigger downstream reactive observers to update UI, plots, etc.
-  #
-  # PERFORMANCE: Use batching to reduce reactive storm overhead
-  # Multiple rapid column changes → single batched event after 50ms delay
 
   if (exists("column_choices_changed", envir = as.environment(emit))) {
-    # Use batching if available, fallback to immediate emission
     if (exists("schedule_batched_update", mode = "function")) {
       schedule_batched_update(
         update_fn = function() {
@@ -123,7 +125,6 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
         batch_key = "column_choices"
       )
     } else {
-      # Fallback: immediate emission (backwards compatibility)
       emit$column_choices_changed()
     }
   }

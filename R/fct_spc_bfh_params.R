@@ -8,6 +8,187 @@
 # - Freeze/part position-beregning
 # - Notes/comment-integrering
 
+ascii_column_name_for_bfh <- function(name) {
+  name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
+  name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
+  name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
+  name <- iconv(name, to = "ASCII//TRANSLIT")
+  if (is.na(name)) name <- ""
+  gsub("[^A-Za-z0-9_]", "_", name)
+}
+
+build_bfh_column_mapping <- function(data) {
+  sanitized_col_names <- vapply(names(data), ascii_column_name_for_bfh, character(1), USE.NAMES = FALSE)
+  if (anyDuplicated(sanitized_col_names)) {
+    duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
+    spc_abort(
+      paste0(
+        "Kolonnenavne kolliderer efter sanitization: ",
+        paste(duplicated_pairs, collapse = ", "),
+        ". Omdoeb kolonnerne i kilde-data."
+      ),
+      class = "spc_input_error"
+    )
+  }
+
+  setNames(sanitized_col_names, names(data))
+}
+
+extract_freeze_position <- function(data, freeze_var) {
+  if (is.null(freeze_var) || !freeze_var %in% names(data)) {
+    return(NULL)
+  }
+
+  freeze_col <- data[[freeze_var]]
+  logical_vec <- suppressWarnings(as.logical(freeze_col))
+  numeric_vec <- suppressWarnings(as.numeric(freeze_col))
+  is_freeze <- (!is.na(logical_vec) & logical_vec) |
+    (!is.na(numeric_vec) & numeric_vec == 1)
+
+  freeze_positions <- which(is_freeze)
+  if (length(freeze_positions) == 0) NULL else freeze_positions[1]
+}
+
+extract_part_positions <- function(data, part_var) {
+  if (is.null(part_var) || !part_var %in% names(data)) {
+    return(NULL)
+  }
+
+  part_col <- data[[part_var]]
+  logical_vec <- suppressWarnings(as.logical(part_col))
+  numeric_vec <- suppressWarnings(as.numeric(part_col))
+  is_part_boundary <- (!is.na(logical_vec) & logical_vec) |
+    (!is.na(numeric_vec) & numeric_vec == 1)
+
+  part_positions <- which(is_part_boundary)
+  if (length(part_positions) == 0) NULL else part_positions
+}
+
+resolve_notes_column <- function(notes_column, col_mapping) {
+  if (is.null(notes_column)) {
+    return(NULL)
+  }
+
+  if (notes_column %in% names(col_mapping)) {
+    return(col_mapping[[notes_column]])
+  }
+
+  original_names <- names(col_mapping)
+  match_idx <- which(tolower(original_names) == tolower(notes_column))
+  if (length(match_idx) > 0) {
+    return(col_mapping[[original_names[match_idx[1]]]])
+  }
+
+  log_warn(
+    paste(
+      "Notes column not found in data:",
+      notes_column, "| Available columns:",
+      paste(head(original_names, 5), collapse = ", ")
+    ),
+    .context = "BFH_SERVICE"
+  )
+  NULL
+}
+
+extract_notes_vector <- function(data, notes_column) {
+  if (is.null(notes_column) || !notes_column %in% names(data)) {
+    return(NULL)
+  }
+
+  notes_char <- as.character(data[[notes_column]])
+  notes_char[is.na(notes_char)] <- ""
+  if (any(nzchar(notes_char))) notes_char else NULL
+}
+
+build_bfh_params_core <- function(
+  data,
+  col_mapping,
+  x_var,
+  y_var,
+  n_var,
+  freeze_var,
+  part_var,
+  notes_column,
+  target_value,
+  centerline_value,
+  chart_type,
+  extra_params
+) {
+  original_names <- names(data)
+  names(data) <- unname(col_mapping[names(data)])
+
+  x_var_sanitized <- col_mapping[x_var]
+  y_var_sanitized <- col_mapping[y_var]
+  n_var_sanitized <- if (!is.null(n_var)) col_mapping[n_var] else NULL
+
+  log_debug(
+    paste(
+      "Column name sanitization:",
+      if (x_var != x_var_sanitized) paste(x_var, "\u2192", x_var_sanitized) else "none",
+      if (y_var != y_var_sanitized) paste(y_var, "\u2192", y_var_sanitized) else "none"
+    ),
+    .context = "BFH_SERVICE"
+  )
+
+  params <- list(
+    data = data,
+    x = rlang::sym(x_var_sanitized),
+    y = rlang::sym(y_var_sanitized),
+    chart_type = chart_type,
+    .column_mapping = col_mapping,
+    .original_names = original_names
+  )
+  if (!is.null(n_var_sanitized)) {
+    params$n <- rlang::sym(n_var_sanitized)
+  }
+
+  freeze_var_sanitized <- if (!is.null(freeze_var)) col_mapping[freeze_var] else NULL
+  part_var_sanitized <- if (!is.null(part_var)) col_mapping[part_var] else NULL
+  freeze_position <- extract_freeze_position(data, freeze_var_sanitized)
+  part_positions <- extract_part_positions(data, part_var_sanitized)
+
+  if (!is.null(freeze_position)) {
+    params$freeze <- freeze_position
+    log_debug(paste("Freeze position set to:", freeze_position), .context = "BFH_SERVICE")
+  }
+  if (!is.null(part_positions)) {
+    params$part <- part_positions
+    log_debug(paste("Part boundaries:", paste(part_positions, collapse = ", ")), .context = "BFH_SERVICE")
+  }
+
+  if (!is.null(target_value)) {
+    params$target_value <- normalize_scale_for_bfh(target_value, chart_type, "target")
+  }
+  if (!is.null(centerline_value)) {
+    params$cl <- normalize_scale_for_bfh(centerline_value, chart_type, "centerline")
+  }
+
+  notes_column_sanitized <- resolve_notes_column(notes_column, col_mapping)
+  notes <- extract_notes_vector(data, notes_column_sanitized)
+  if (!is.null(notes)) {
+    params$notes <- notes
+  }
+
+  if (length(extra_params) > 0) {
+    if ("chart_title" %in% names(extra_params)) {
+      extra_params$chart_title <- resolve_bfh_chart_title(extra_params$chart_title)
+    }
+    params <- c(params, extra_params)
+  }
+
+  log_debug(
+    paste(
+      "BFHchart parameters mapped:",
+      "chart_type =", chart_type,
+      ", has_denominator =", !is.null(n_var),
+      ", has_freeze =", !is.null(params$freeze),
+      ", has_part =", !is.null(params$part)
+    ),
+    .context = "BFH_SERVICE"
+  )
+  params
+}
+
 #' Map biSPCharts Parameters to BFHchart API
 #'
 #' Transforms biSPCharts-style parameters to BFHchart API conventions. Handles
@@ -116,35 +297,8 @@ map_to_bfh_params <- function(
     data$.original_row_id <- seq_len(nrow(data))
   }
 
-  # M6 (#460): omd\u00f8bt fra sanitize_column_name til ascii_column_name_for_bfh
-  # for at undg\u00e5 shadow-collision med utils_input_sanitization.R-versionen
-  # der har MODSAT semantik (tillader \u00e6\u00f8\u00e5, kun til UI-display).
-  # NB: iconv("ASCII//TRANSLIT") alene mapper \u00e5\u2192a og \u00f8\u2192o, ikke \u00e5\u2192aa og
-  # \u00f8\u2192oe \u2014 s\u00e5 eksplicitte gsub-mappings bevares (dansk konvention).
-  ascii_column_name_for_bfh <- function(name) {
-    name <- gsub("\u00e6", "ae", name, ignore.case = TRUE)
-    name <- gsub("\u00f8", "oe", name, ignore.case = TRUE)
-    name <- gsub("\u00e5", "aa", name, ignore.case = TRUE)
-    name <- iconv(name, to = "ASCII//TRANSLIT")
-    if (is.na(name)) name <- ""
-    gsub("[^A-Za-z0-9_]", "_", name)
-  }
-
-  # Kollisionscheck: to distinkte kolonner maa ikke kollidere efter sanitization.
-  # Placeret FOER safe_operation saa spc_input_error propagerer til kalder (#422).
-  # Silent failure her giver forkert plot uden fejlbesked til brugeren.
-  sanitized_col_names <- vapply(names(data), ascii_column_name_for_bfh, character(1), USE.NAMES = FALSE)
-  if (anyDuplicated(sanitized_col_names)) {
-    duplicated_pairs <- names(data)[sanitized_col_names %in% sanitized_col_names[duplicated(sanitized_col_names)]]
-    spc_abort(
-      paste0(
-        "Kolonnenavne kolliderer efter sanitization: ",
-        paste(duplicated_pairs, collapse = ", "),
-        ". Omdoeb kolonnerne i kilde-data."
-      ),
-      class = "spc_input_error"
-    )
-  }
+  col_mapping <- build_bfh_column_mapping(data)
+  extra_params <- list(...)
 
   safe_operation(
     operation_name = "BFHchart parameter mapping",
@@ -155,183 +309,20 @@ map_to_bfh_params <- function(
       # rev-mapper output for at bevare brugerens originale navne i UI.
       # FOLLOW-UP: åbn issue i BFHcharts for native Danish-character-support
       # i column-name-validator, og fjern denne workaround når levereret.
-      # sanitized_col_names beregnet foer safe_operation (kollisionscheck) -- genbrug her.
-
-      # Create column name mapping (original -> sanitized)
-      col_mapping <- setNames(sanitized_col_names, names(data))
-
-      # Store original names for later reversal
-      original_names <- names(data)
-
-      # Rename data columns to sanitized names
-      # CRITICAL: Use unname() to get just the values, not named character vector
-      names(data) <- unname(col_mapping[names(data)])
-
-      # Map biSPCharts variable names to sanitized versions
-      x_var_sanitized <- col_mapping[x_var]
-      y_var_sanitized <- col_mapping[y_var]
-      n_var_sanitized <- if (!is.null(n_var)) col_mapping[n_var] else NULL
-
-      log_debug(
-        paste(
-          "Column name sanitization:",
-          if (x_var != x_var_sanitized) paste(x_var, "\u2192", x_var_sanitized) else "none",
-          if (y_var != y_var_sanitized) paste(y_var, "\u2192", y_var_sanitized) else "none"
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # 2. Build base parameters (using NSE - bare column names with SANITIZED names)
-      params <- list(
+      build_bfh_params_core(
         data = data,
-        x = rlang::sym(x_var_sanitized),
-        y = rlang::sym(y_var_sanitized),
+        col_mapping = col_mapping,
+        x_var = x_var,
+        y_var = y_var,
+        n_var = n_var,
+        freeze_var = freeze_var,
+        part_var = part_var,
+        notes_column = notes_column,
+        target_value = target_value,
+        centerline_value = centerline_value,
         chart_type = chart_type,
-        .column_mapping = col_mapping, # Store mapping for potential reversal
-        .original_names = original_names
+        extra_params = extra_params
       )
-
-      # 3. Add denominator if provided
-      if (!is.null(n_var_sanitized)) {
-        params$n <- rlang::sym(n_var_sanitized)
-      }
-
-      # 4. Add freeze parameter if provided
-      # NOTE: freeze_var and part_var still reference ORIGINAL names, need to look up in sanitized data
-      freeze_var_sanitized <- if (!is.null(freeze_var)) col_mapping[freeze_var] else NULL
-      part_var_sanitized <- if (!is.null(part_var)) col_mapping[part_var] else NULL
-
-      if (!is.null(freeze_var_sanitized) && freeze_var_sanitized %in% names(data)) {
-        # Find first TRUE value in freeze column (using SANITIZED name)
-        freeze_col <- data[[freeze_var_sanitized]]
-        # Convert to logical vector, handling both TRUE/FALSE and 0/1 values
-        logical_vec <- suppressWarnings(as.logical(freeze_col))
-        numeric_vec <- suppressWarnings(as.numeric(freeze_col))
-        # Combine: TRUE if either logical TRUE or numeric 1
-        is_freeze <- (!is.na(logical_vec) & logical_vec == TRUE) |
-          (!is.na(numeric_vec) & numeric_vec == 1)
-        freeze_positions <- which(is_freeze)
-        if (length(freeze_positions) > 0) {
-          params$freeze <- freeze_positions[1]
-          log_debug(
-            paste("Freeze position set to:", freeze_positions[1]),
-            .context = "BFH_SERVICE"
-          )
-        }
-      }
-
-      # 5. Add part parameter if provided
-      if (!is.null(part_var_sanitized) && part_var_sanitized %in% names(data)) {
-        # BUG FIX: Each TRUE in Skift column marks a part boundary directly
-        # Previous implementation used diff() which found BOTH TRUE->FALSE and FALSE->TRUE changes,
-        # resulting in double boundaries (e.g., marking row 13 gave boundaries at 12 AND 13)
-        part_col <- data[[part_var_sanitized]]
-
-        # Convert to logical vector, handling both TRUE/FALSE and 0/1 values
-        logical_vec <- suppressWarnings(as.logical(part_col))
-        numeric_vec <- suppressWarnings(as.numeric(part_col))
-
-        # Combine: TRUE if either logical TRUE or numeric 1
-        is_part_boundary <- (!is.na(logical_vec) & logical_vec == TRUE) |
-          (!is.na(numeric_vec) & numeric_vec == 1)
-
-        part_positions <- which(is_part_boundary)
-        if (length(part_positions) > 0) {
-          params$part <- part_positions
-          log_debug(
-            paste("Part boundaries:", paste(part_positions, collapse = ", ")),
-            .context = "BFH_SERVICE"
-          )
-        }
-      }
-
-      # 6. Add target value if provided (normalized if needed)
-      if (!is.null(target_value)) {
-        params$target_value <- normalize_scale_for_bfh(
-          value = target_value,
-          chart_type = chart_type,
-          param_name = "target"
-        )
-      }
-
-      # 7. Add centerline value if provided (normalized if needed)
-      # BFHcharts parameter name: cl (not centerline_value)
-      if (!is.null(centerline_value)) {
-        params$cl <- normalize_scale_for_bfh(
-          value = centerline_value,
-          chart_type = chart_type,
-          param_name = "centerline"
-        )
-      }
-
-      # 7b. Add notes column if provided (map kommentarer -> notes)
-      # BFHcharts expects a character vector for the notes parameter
-      # IMPORTANT: notes_column refers to ORIGINAL column name (before sanitization)
-
-      # ROBUST COLUMN NAME MATCHING: Case-insensitive with fallback
-      notes_column_sanitized <- NULL
-      if (!is.null(notes_column)) {
-        # Try exact match first
-        if (notes_column %in% names(col_mapping)) {
-          notes_column_sanitized <- col_mapping[notes_column]
-        } else {
-          # Fallback: Case-insensitive match
-          original_names <- names(col_mapping)
-          match_idx <- which(tolower(original_names) == tolower(notes_column))
-          if (length(match_idx) > 0) {
-            notes_column_sanitized <- col_mapping[original_names[match_idx[1]]]
-          } else {
-            log_warn(
-              paste(
-                "Notes column not found in data:",
-                notes_column, "| Available columns:",
-                paste(head(original_names, 5), collapse = ", ")
-              ),
-              .context = "BFH_SERVICE"
-            )
-          }
-        }
-      }
-
-      if (!is.null(notes_column_sanitized) && notes_column_sanitized %in% names(data)) {
-        # Extract notes data and ensure it's character type
-        notes_data <- data[[notes_column_sanitized]]
-
-        # Convert to character vector (handles factor, numeric, etc.)
-        notes_char <- as.character(notes_data)
-
-        # Replace NA with empty strings (BFHcharts may not handle NA)
-        notes_char[is.na(notes_char)] <- ""
-
-        # Kun send notes hvis der faktisk er ikke-tomme noter
-        # Tomme notes-vektorer kan foraarsage langsom label placement i BFHcharts
-        if (any(nzchar(notes_char))) {
-          params$notes <- notes_char
-        }
-      }
-
-      # 8. Pass through additional parameters
-      extra_params <- list(...)
-      if (length(extra_params) > 0) {
-        if ("chart_title" %in% names(extra_params)) {
-          extra_params$chart_title <- resolve_bfh_chart_title(extra_params$chart_title)
-        }
-        params <- c(params, extra_params)
-      }
-
-      log_debug(
-        paste(
-          "BFHchart parameters mapped:",
-          "chart_type =", chart_type,
-          ", has_denominator =", !is.null(n_var),
-          ", has_freeze =", !is.null(params$freeze),
-          ", has_part =", !is.null(params$part)
-        ),
-        .context = "BFH_SERVICE"
-      )
-
-      # NOTE: Don't use return() inside safe_operation code blocks!
-      params
     },
     fallback = NULL,
     error_type = "parameter_mapping"

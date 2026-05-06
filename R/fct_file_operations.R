@@ -142,7 +142,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
   # Unified state: App state is always available
 
   # File upload handler
-  shiny::observeEvent(input$data_file, {
+  shiny::observeEvent(input$data_file, ignoreInit = TRUE, {
     # RATE LIMITING: Prevent DoS via rapid uploads
     # Uses RATE_LIMITS$file_upload_seconds for centralized security configuration
     last_upload_time <- shiny::isolate(app_state$session$last_upload_time)

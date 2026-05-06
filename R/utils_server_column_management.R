@@ -95,7 +95,7 @@ show_column_edit_modal <- function(session, app_state = NULL) {
 
   current_names <- names(current_data_check)
 
-  name_inputs <- lapply(1:length(current_names), function(i) {
+  name_inputs <- lapply(seq_along(current_names), function(i) {
     shiny::textInput(
       paste0("col_name_", i),
       paste("Kolonne", i, ":"),
@@ -133,7 +133,7 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
   current_names <- names(current_data_check)
   new_names <- character(length(current_names))
 
-  for (i in 1:length(current_names)) {
+  for (i in seq_along(current_names)) {
     input_value <- input[[paste0("col_name_", i)]]
     if (!is.null(input_value) && input_value != "") {
       new_names[i] <- trimws(input_value)
@@ -165,8 +165,8 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
   if (!identical(current_names, new_names)) {
     changed_cols <- which(current_names != new_names)
     # K2 FIX: Sanitize column names to prevent XSS via <script> injection in notifications
-    safe_old_names <- sapply(current_names[changed_cols], htmltools::htmlEscape)
-    safe_new_names <- sapply(new_names[changed_cols], htmltools::htmlEscape)
+    safe_old_names <- vapply(current_names[changed_cols], htmltools::htmlEscape, character(1L))
+    safe_new_names <- vapply(new_names[changed_cols], htmltools::htmlEscape, character(1L))
     change_summary <- paste(
       paste0("'", safe_old_names, "' -> '", safe_new_names, "'"),
       collapse = ", "

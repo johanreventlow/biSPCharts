@@ -85,47 +85,16 @@ detect_date_columns_robust <- function(data, success_threshold = 0.8) {
       .context = "DATE_DETECT"
     )
 
-    # Test Danish formats first
-    best_score <- 0
-    best_format <- NULL
-    best_reason <- NULL
+    best <- find_best_date_format(
+      test_sample, danish_formats, intl_formats, success_threshold
+    )
 
-    for (format_type in c("danish", "international")) {
-      formats_to_test <- if (format_type == "danish") danish_formats else intl_formats
-
-      for (format in formats_to_test) {
-        success_rate <- test_date_parsing_format(test_sample, format)
-
-        if (success_rate > best_score) {
-          best_score <- success_rate
-          best_format <- format
-          best_reason <- paste(format_type, format, "parsing")
-        }
-
-        # Early exit if we find perfect Danish format match
-        if (format_type == "danish" && success_rate >= 0.95) {
-          break
-        }
-      }
-
-      # Prefer Danish formats - break if we found good Danish match
-      if (format_type == "danish" && best_score >= success_threshold) {
-        break
-      }
-    }
-
-    # Add to candidates if meets threshold
-    if (best_score >= success_threshold) {
-      date_candidates[[col_name]] <- list(
-        score = best_score,
-        suggested_format = best_format,
-        reason = best_reason
-      )
-
+    if (!is.null(best)) {
+      date_candidates[[col_name]] <- best
       log_debug_kv(
         column = col_name,
-        score = round(best_score, 3),
-        format = best_format,
+        score = round(best$score, 3),
+        format = best$suggested_format,
         .context = "DATE_DETECT"
       )
     }
@@ -138,6 +107,48 @@ detect_date_columns_robust <- function(data, success_threshold = 0.8) {
   )
 
   return(date_candidates)
+}
+
+#' Find Best Date Format for a Sample
+#'
+#' Tests Danish formats first (with early exit on near-perfect match),
+#' then international formats as fallback. Returns NULL if no format
+#' meets the success threshold.
+#'
+#' @param test_sample Character vector of values to test
+#' @param danish_formats Character vector of Danish format strings
+#' @param intl_formats Character vector of international format strings
+#' @param success_threshold Minimum success rate (0-1) to accept a format
+#' @return Named list(score, suggested_format, reason) or NULL
+#' @keywords internal
+find_best_date_format <- function(test_sample, danish_formats, intl_formats, success_threshold) {
+  best_score <- 0
+  best_format <- NULL
+  best_reason <- NULL
+
+  for (format_type in c("danish", "international")) {
+    formats_to_test <- if (format_type == "danish") danish_formats else intl_formats
+
+    for (format in formats_to_test) {
+      success_rate <- test_date_parsing_format(test_sample, format)
+
+      if (success_rate > best_score) {
+        best_score <- success_rate
+        best_format <- format
+        best_reason <- paste(format_type, format, "parsing")
+      }
+
+      if (format_type == "danish" && success_rate >= 0.95) break
+    }
+
+    if (format_type == "danish" && best_score >= success_threshold) break
+  }
+
+  if (best_score >= success_threshold) {
+    list(score = best_score, suggested_format = best_format, reason = best_reason)
+  } else {
+    NULL
+  }
 }
 
 #' Test Date Parsing for a Specific Format

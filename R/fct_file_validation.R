@@ -27,10 +27,8 @@ check_row_count_csv <- function(file_info) {
   if (tolower(tools::file_ext(file_info$name)) != "csv") {
     return(list(valid = TRUE, message = NULL))
   }
-  row_error <- NULL
-  safe_operation(
-    "Quick CSV row count validation",
-    code = {
+  row_error <- tryCatch(
+    {
       con <- file(file_info$datapath, "r")
       on.exit(close(con), add = TRUE)
       line_count <- 0
@@ -45,18 +43,21 @@ check_row_count_csv <- function(file_info) {
         )
       }
       if (line_count > get_max_upload_line_count()) {
-        row_error <<- paste0(
+        paste0(
           "CSV fil har for mange r\u00e6kker (maksimum ",
           format(get_max_upload_line_count(), big.mark = "."),
           ")"
         )
+      } else {
+        NULL
       }
     },
-    fallback = function(e) {
+    error = function(e) {
       log_warn("Kunne ikke validere antal r\u00e6kker",
         component = "[FILE_VALIDATION]",
         details = list(filename = file_info$name, error = e$message)
       )
+      NULL
     }
   )
   if (!is.null(row_error)) list(valid = FALSE, message = row_error) else list(valid = TRUE, message = NULL)

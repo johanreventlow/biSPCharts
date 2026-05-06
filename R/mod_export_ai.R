@@ -24,18 +24,15 @@
 #'
 #' @keywords internal
 register_ai_button_state <- function(session, input, output, app_state) {
-  # Review fund #4: Cache BFHllm availability per session.
-  # is_bfhllm_available() kalder BFHllm::bfhllm_chat_available() som
-  # har log-sideeffekter ("BFHllm setup validated successfully") og evt.
-  # netvaerksarbejde. API-noeglen aendrer sig ikke under session-levetid,
-  # saa vi cacher resultatet en gang per session. Det fjerner stoej-loggen
-  # uden at aendre funktionaliteten.
-  bfhllm_available_cached <- NULL
+  # Cache BFHllm availability in app_state$session so it survives module
+  # re-initialization and is shared across observers in the same session.
+  # is_bfhllm_available() has log side-effects and potential network work;
+  # API key does not change during a session.
   get_bfhllm_available <- function() {
-    if (is.null(bfhllm_available_cached)) {
-      bfhllm_available_cached <<- isTRUE(is_bfhllm_available())
+    if (is.null(app_state$session$bfhllm_available)) {
+      app_state$session$bfhllm_available <- isTRUE(is_bfhllm_available())
     }
-    bfhllm_available_cached
+    app_state$session$bfhllm_available
   }
 
   # Manage AI button state based on data and API key availability

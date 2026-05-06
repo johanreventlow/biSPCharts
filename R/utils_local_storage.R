@@ -134,7 +134,8 @@ restore_column_class <- function(values, class_info) {
   # Factor: brug gemte levels for at bevare rækkefølge
   if (isTRUE(class_info$is_factor)) {
     char_values <- as.character(values)
-    return(factor(char_values, levels = class_info$levels))
+    stored_levels <- head(class_info$levels, 10000L)
+    return(factor(char_values, levels = stored_levels))
   }
 
   # Date: parse ISO8601

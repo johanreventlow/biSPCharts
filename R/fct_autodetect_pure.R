@@ -57,7 +57,7 @@ new_autodetect_result <- function(raw) {
 #' @param x AutodetectResult-objekt.
 #' @param ... Ignoreres.
 #' @export
-print.AutodetectResult <- function(x, ...) {
+print.AutodetectResult <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(sprintf(
     "AutodetectResult [%s]\n  x=%s  y=%s  n=%s  skift=%s  frys=%s\n",
     format(x$timestamp, "%H:%M:%S"),

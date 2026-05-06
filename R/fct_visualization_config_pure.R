@@ -108,7 +108,7 @@ new_visualization_config <- function(x_col, y_col, n_col, chart_type, source) {
 #' @param x VisualizationConfig-objekt.
 #' @param ... Ignoreres.
 #' @export
-print.VisualizationConfig <- function(x, ...) {
+print.VisualizationConfig <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(sprintf(
     "VisualizationConfig [%s]\n  x=%s  y=%s  n=%s  chart=%s\n",
     x$source,

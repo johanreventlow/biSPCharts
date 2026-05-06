@@ -92,7 +92,7 @@ validate_spc_request_contract <- function(x) {
 }
 
 #' @export
-print.spc_request <- function(x, ...) {
+print.spc_request <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(
     sprintf(
       "<spc_request> chart_type=%s x=%s y=%s n=%s rows=%d\n",
@@ -193,7 +193,7 @@ validate_spc_prepared_contract <- function(x) {
 }
 
 #' @export
-print.spc_prepared <- function(x, ...) {
+print.spc_prepared <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(
     sprintf(
       "<spc_prepared> chart_type=%s x=%s y=%s rows=%d (filtreret fra %d)\n",
@@ -273,7 +273,7 @@ validate_spc_axes_contract <- function(x) {
 }
 
 #' @export
-print.spc_axes <- function(x, ...) {
+print.spc_axes <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(
     sprintf(
       "<spc_axes> unit=%s multiply=%g target=%s\n",

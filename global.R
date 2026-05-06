@@ -155,7 +155,7 @@ if (use_source_loading) {
     # UI components
     "R/utils_ui_ui_components.R",
     "R/utils_ui_ui_updates.R",
-    "R/ui_app_ui.R",
+    "R/utils_ui_app_layout.R",
 
     # Shiny modules
     "R/mod_spc_chart_ui.R",

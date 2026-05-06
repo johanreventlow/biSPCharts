@@ -98,11 +98,6 @@ validate_safe_file_path <- function(uploaded_path) {
     normalizePath(file.path(tempdir(), "shiny-uploads"), mustWork = FALSE)
   )
 
-  # Add current working directory data folder if it exists
-  if (dir.exists("./data")) {
-    allowed_bases <- c(allowed_bases, normalizePath("./data", mustWork = FALSE))
-  }
-
   # Validate path is within allowed directories with enhanced checking
   # Normalize paths to forward slashes for consistent cross-platform comparison
   safe_path <- any(vapply(allowed_bases, function(base) {

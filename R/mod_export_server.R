@@ -71,7 +71,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         app_state$columns$mappings$x_column,
         app_state$columns$mappings$y_column,
         chart_type,
-        nchar(trimws(chart_type)) > 0
+        nzchar(trimws(chart_type))
       )
 
       # NOTE: We do NOT require app_state$visualization$plot_object here because:

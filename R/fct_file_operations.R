@@ -142,7 +142,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
   # Unified state: App state is always available
 
   # File upload handler
-  shiny::observeEvent(input$data_file, {
+  shiny::observeEvent(input$data_file, ignoreInit = TRUE, {
     # RATE LIMITING: Prevent DoS via rapid uploads
     # Uses RATE_LIMITS$file_upload_seconds for centralized security configuration
     last_upload_time <- shiny::isolate(app_state$session$last_upload_time)
@@ -176,14 +176,13 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
     upload_tracer$step("upload_initiated")
 
 
-    debug_log("File upload started", "FILE_UPLOAD_FLOW",
-      level = "INFO",
-      context = list(
+    log_info("File upload started",
+      .context = "FILE_UPLOAD_FLOW",
+      details = list(
         filename = input$data_file$name,
         size_bytes = input$data_file$size,
         file_type = input$data_file$type
-      ),
-      session_id = sanitize_session_token(session$token)
+      )
     )
 
     upload_tracer$step("file_validation")
@@ -193,13 +192,12 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
     validation_result <- validate_uploaded_file(input$data_file, sanitize_session_token(session$token))
     if (!validation_result$valid) {
       upload_tracer$complete("file_validation_failed")
-      debug_log("File validation failed", "ERROR_HANDLING",
-        level = "ERROR",
-        context = list(
+      log_error("File validation failed",
+        .context = "ERROR_HANDLING",
+        details = list(
           validation_errors = validation_result$errors,
           filename = input$data_file$name
-        ),
-        session_id = sanitize_session_token(session$token)
+        )
       )
 
       shiny::showNotification(
@@ -227,11 +225,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
     # Unified state assignment only - Set table updating flag
     set_table_updating(app_state, TRUE)
 
-    debug_log("File upload state flags set", "FILE_UPLOAD_FLOW",
-      level = "TRACE",
-      context = list(updating_table = TRUE),
-      session_id = sanitize_session_token(session$token)
-    )
+    log_debug("File upload state flags set", .context = "FILE_UPLOAD_FLOW")
     on.exit(
       {
         # Unified state assignment only - Clear table updating flag
@@ -256,11 +250,11 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
         upload_tracer$step("file_processing_started")
 
         if (file_ext %in% c("xlsx", "xls")) {
-          debug_log("Starting Excel file processing", "FILE_UPLOAD_FLOW", level = "INFO", session_id = sanitize_session_token(session$token))
+          log_info("Starting Excel file processing", .context = "FILE_UPLOAD_FLOW")
           handle_excel_upload(file_path, session, app_state, emit, ui_service)
           upload_tracer$step("excel_processing_complete")
         } else {
-          debug_log("Starting CSV file processing", "FILE_UPLOAD_FLOW", level = "INFO", session_id = sanitize_session_token(session$token))
+          log_info("Starting CSV file processing", .context = "FILE_UPLOAD_FLOW")
           # SPRINT 1 SECURITY FIX: Sanitize token passed to handle_csv_upload
           handle_csv_upload(file_path, app_state, sanitize_session_token(session$token), emit)
           upload_tracer$step("csv_processing_complete")
@@ -268,7 +262,7 @@ setup_file_upload <- function(input, output, session, app_state, emit, ui_servic
 
         # Complete workflow tracing
         upload_tracer$complete("file_upload_workflow_complete")
-        debug_log("File upload workflow completed successfully", "FILE_UPLOAD_FLOW", level = "INFO", session_id = sanitize_session_token(session$token))
+        log_info("File upload workflow completed successfully", .context = "FILE_UPLOAD_FLOW")
 
         # Update rate limiting timestamp after successful upload
         set_last_upload_time(app_state)
@@ -436,10 +430,9 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
 #' @seealso \code{\link{handle_excel_upload}}, \code{\link{ensure_standard_columns}}
 #' @noRd
 handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NULL) {
-  debug_log("CSV upload processing started", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(file_path = file_path),
-    session_id = session_id
+  log_info("CSV upload processing started",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(file_path = file_path)
   )
 
   # Brug parse_file() til pure parsing \u2014 ingen app_state-mutation her
@@ -476,14 +469,13 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     )
   }
 
-  debug_log("CSV data loaded successfully", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("CSV data loaded successfully",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       rows = parsed$meta$rows,
       columns = parsed$meta$cols,
       column_names = names(parsed$data)
-    ),
-    session_id = session_id
+    )
   )
 
   # State snapshot til diagnostik
@@ -500,14 +492,13 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   emit$data_updated(context = "session_file_loaded")
   emit$navigation_changed()
 
-  debug_log("Data loaded event emitted successfully", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("Data loaded event emitted successfully",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       rows = parsed$meta$rows,
       columns = parsed$meta$cols,
       event_system = "unified_event_bus"
-    ),
-    session_id = session_id
+    )
   )
 
   # State snapshot efter upload

@@ -183,10 +183,7 @@ redact_debug_snapshot <- function(snapshot) {
 #' }
 debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE,
                                  include_data_summary = TRUE, session_id = NULL) {
-  debug_log(paste("Taking state snapshot:", checkpoint_name),
-    "STATE_TRANSITION",
-    level = "TRACE", session_id = session_id
-  )
+  log_debug(paste("Taking state snapshot:", checkpoint_name), .context = "STATE_TRANSITION")
 
   snapshot <- list(
     checkpoint = checkpoint_name,
@@ -341,10 +338,7 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
     }
   } else {
     snapshot$state_available <- FALSE
-    debug_log("State snapshot warning: app_state is NULL",
-      "STATE_TRANSITION",
-      level = "WARN", session_id = session_id
-    )
+    log_debug("State snapshot warning: app_state is NULL", .context = "STATE_TRANSITION")
   }
 
   # Log snapshot summary
@@ -357,10 +351,7 @@ debug_state_snapshot <- function(checkpoint_name, app_state, include_hash = TRUE
     context$state_hash <- substr(snapshot$state_hash, 1, 8)
   }
 
-  debug_log("State snapshot completed", "STATE_TRANSITION",
-    level = "TRACE",
-    context = context, session_id = session_id
-  )
+  log_debug("State snapshot completed", .context = "STATE_TRANSITION")
 
   return(snapshot)
 }
@@ -386,10 +377,7 @@ debug_performance_timer <- function(operation_name, session_id = NULL) {
   start_time <- Sys.time()
   checkpoints <- list()
 
-  debug_log(paste("Performance timer started:", operation_name),
-    "PERFORMANCE",
-    level = "TRACE", session_id = session_id
-  )
+  log_debug(paste("Performance timer started:", operation_name), .context = "PERFORMANCE")
 
   timer <- list(
     operation = operation_name,
@@ -406,11 +394,7 @@ debug_performance_timer <- function(operation_name, session_id = NULL) {
         elapsed = elapsed
       )
 
-      debug_log(paste("Checkpoint:", checkpoint_name), "PERFORMANCE",
-        level = "TRACE",
-        context = list(elapsed_seconds = round(elapsed, 3)),
-        session_id = session_id
-      )
+      log_debug(paste("Checkpoint:", checkpoint_name), .context = "PERFORMANCE")
 
       return(elapsed)
     },
@@ -432,10 +416,9 @@ debug_performance_timer <- function(operation_name, session_id = NULL) {
         checkpoints = length(checkpoints)
       )
 
-      debug_log(paste("Performance timer completed:", operation_name),
-        "PERFORMANCE",
-        level = "INFO", context = context,
-        session_id = session_id
+      log_info(paste("Performance timer completed:", operation_name),
+        .context = "PERFORMANCE",
+        details = context
       )
 
       return(list(
@@ -481,10 +464,7 @@ debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = 
   steps <- list()
   snapshots <- list()
 
-  debug_log(paste("Workflow trace started:", workflow_name),
-    "WORKFLOW_TRACE",
-    level = "INFO", session_id = session_id
-  )
+  log_info(paste("Workflow trace started:", workflow_name), .context = "WORKFLOW_TRACE")
 
   # Take initial snapshot
   if (!is.null(app_state)) {
@@ -525,11 +505,7 @@ debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = 
         snapshots[[step_name]] <<- snapshot
       }
 
-      debug_log(paste("Workflow step:", step_name), "WORKFLOW_TRACE",
-        level = "TRACE",
-        context = list(elapsed_seconds = round(elapsed, 3)),
-        session_id = session_id
-      )
+      log_debug(paste("Workflow step:", step_name), .context = "WORKFLOW_TRACE")
 
       return(elapsed)
     },
@@ -567,10 +543,9 @@ debug_workflow_tracer <- function(workflow_name, app_state = NULL, session_id = 
           step_sequence = paste(step_names, collapse = " \u2192 ")
         )
 
-        debug_log(paste("Workflow trace completed:", workflow_name),
-          "WORKFLOW_TRACE",
-          level = "INFO", context = context,
-          session_id = session_id
+        log_info(paste("Workflow trace completed:", workflow_name),
+          .context = "WORKFLOW_TRACE",
+          details = context
         )
       }
 
@@ -614,9 +589,7 @@ debug_session_lifecycle <- function(session_id, session_object = NULL) {
   lifecycle_start <- Sys.time()
   events <- list()
 
-  debug_log("Session lifecycle debugging started", "SESSION_LIFECYCLE",
-    level = "INFO", session_id = session_id
-  )
+  log_info("Session lifecycle debugging started", .context = "SESSION_LIFECYCLE")
 
   debugger <- list(
     session_id = session_id,
@@ -636,11 +609,7 @@ debug_session_lifecycle <- function(session_id, session_object = NULL) {
 
       events[[event_name]] <<- event_info
 
-      debug_log(paste("Session event:", event_name), "SESSION_LIFECYCLE",
-        level = "TRACE",
-        context = list(elapsed_seconds = round(elapsed, 3)),
-        session_id = session_id
-      )
+      log_debug(paste("Session event:", event_name), .context = "SESSION_LIFECYCLE")
     },
 
     # Complete lifecycle debugging
@@ -653,8 +622,9 @@ debug_session_lifecycle <- function(session_id, session_object = NULL) {
         events_tracked = length(events)
       )
 
-      debug_log("Session lifecycle debugging completed", "SESSION_LIFECYCLE",
-        level = "INFO", context = context, session_id = session_id
+      log_info("Session lifecycle debugging completed",
+        .context = "SESSION_LIFECYCLE",
+        details = context
       )
 
       return(list(
@@ -685,7 +655,7 @@ initialize_advanced_debug <- function(enable_history = TRUE, max_history_entries
     .GlobalEnv$DEBUG_MAX_HISTORY <- max_history_entries
   }
 
-  debug_log("Advanced debug system initialized", "SESSION_LIFECYCLE", level = "INFO")
+  log_info("Advanced debug system initialized", .context = "SESSION_LIFECYCLE")
 
   # REDUCED NOISE: Only show debug system banner if verbose debugging enabled
   if (isTRUE(safe_getenv("SHINY_DEBUG_MODE", FALSE, "logical"))) {

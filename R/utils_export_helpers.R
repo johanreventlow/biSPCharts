@@ -197,7 +197,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   # Construct chart title (kun brugerens titel - hospital/afdeling tilfoejes
   # som subtitle direkte paa plottet i PNG-specifikke kontekster)
   is_png_context <- plot_context %in% c("export_png", "export_preview")
-  export_title <- if (!is.null(title_input) && nchar(trimws(title_input)) > 0) {
+  export_title <- if (!is.null(title_input) && nzchar(trimws(title_input))) {
     gsub("\n", "\\\n", title_input, fixed = TRUE)
   } else if (is_png_context) {
     # PNG/preview: ingen default-titel - tom titel giver rent billede
@@ -274,8 +274,8 @@ build_export_plot <- function(app_state, title_input, dept_input,
           width = context_dims$width_px,
           height = context_dims$height_px,
           dpi = context_dims$dpi,
-          has_title = nchar(trimws(title_input %||% "")) > 0,
-          has_dept = nchar(trimws(dept_input %||% "")) > 0
+          has_title = nzchar(trimws(title_input %||% "")),
+          has_dept = nzchar(trimws(dept_input %||% ""))
         )
       )
 

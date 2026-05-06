@@ -473,7 +473,7 @@ observe_n_column_change <- function(input, session, app_state, register_observer
 #' @noRd
 observe_target_value <- function(input, session, app_state, register_observer) {
   # Debounce target-input for at undgaa re-render + mappings-sync per tastetryk.
-  # Matcher chart_update-debounce (500ms) i fct_visualization_server.R.
+  # Matcher chart_update-debounce (500ms) i utils_server_visualization.R.
   # Fixes #395: hvert tegn trigrede settings_save + 3 plot-contexts + Typst PDF.
   debounced_target_value <- shiny::debounce(
     shiny::reactive(input$target_value %||% ""),
@@ -490,7 +490,7 @@ observe_target_value <- function(input, session, app_state, register_observer) {
             # CRITICAL: Gem baade target_value og target_text i mappings
             # Export-modul laeser fra mappings, ikke fra reactives
 
-            # Parse target_value (same logic as in fct_visualization_server.R)
+            # Parse target_value (same logic as in utils_server_visualization.R)
             target_input <- input_scalar(debounced_target_value(), default = "")
             if (!nzchar(target_input)) {
               app_state$columns$mappings$target_value <- NULL

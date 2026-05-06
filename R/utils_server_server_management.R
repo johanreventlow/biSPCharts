@@ -179,8 +179,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
 
             # Reconstruct data.frame manually med class-preservation
             reconstructed_data <- data.frame(
-              matrix(nrow = saved_data$nrows, ncol = saved_data$ncols),
-              stringsAsFactors = FALSE
+              matrix(nrow = saved_data$nrows, ncol = saved_data$ncols)
             )
 
             # Set column names first if available

@@ -94,12 +94,6 @@ sync_ui_with_columns_unified <- function(app_state, input, output, session, ui_s
 update_column_choices_unified <- function(app_state, input, output, session, ui_service = NULL, reason = "manual") {
   log_debug_block("COLUMN_CHOICES_UNIFIED", "Starting column choices update")
 
-  state_flag <- function(value, default = FALSE) {
-    if (is.null(value) || length(value) == 0 || anyNA(value)) {
-      return(default)
-    }
-    isTRUE(value[[1]])
-  }
 
   # Check if we should skip during table operations
   if (state_flag(app_state$data$updating_table)) {

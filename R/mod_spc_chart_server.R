@@ -40,7 +40,8 @@ visualizationModuleServer <- function(
   chart_title_reactive = NULL,
   y_axis_unit_reactive = NULL,
   kommentar_column_reactive = NULL,
-  app_state = NULL
+  app_state = NULL,
+  emit = NULL
 ) {
   shiny::moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -57,8 +58,10 @@ visualizationModuleServer <- function(
     register_module_data_observer(app_state, input, output, session)
 
     # === STAGE 5: Observers & Side Effects (mod_spc_chart_observers.R) ===
-    emit <- create_emit_api(app_state)
-    register_viewport_observer(app_state, session, ns, emit)
+    # Use caller-provided emit if available; fall back to local instance.
+    # Both options wrap the same app_state$events, so no double-fire occurs.
+    module_emit <- emit %||% create_emit_api(app_state)
+    register_viewport_observer(app_state, session, ns, module_emit)
 
     # Helper functions for app_state visualization management
     set_plot_state <- function(key, value) {

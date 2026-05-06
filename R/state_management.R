@@ -332,6 +332,10 @@ create_app_state <- function() {
   app_state$infrastructure$session_active <- TRUE # Session lifecycle tracking
   app_state$infrastructure$background_tasks_active <- TRUE # Background task control
 
+  # Initialize top-level context fields so emit functions never hit missing-field path
+  app_state$last_data_update_context <- list()
+  app_state$last_error_context <- list()
+
   return(app_state)
 }
 
@@ -388,9 +392,6 @@ create_emit_api <- function(app_state) {
         app_state$events$data_updated <- app_state$events$data_updated + 1L
 
         # Store data update context for optimization
-        if (!exists("last_data_update_context", envir = app_state)) {
-          app_state$last_data_update_context <- list()
-        }
         app_state$last_data_update_context <- list(
           context = context,
           timestamp = Sys.time()
@@ -404,9 +405,6 @@ create_emit_api <- function(app_state) {
     data_loaded = function() {
       shiny::isolate({
         app_state$events$data_updated <- app_state$events$data_updated + 1L
-        if (!exists("last_data_update_context", envir = app_state)) {
-          app_state$last_data_update_context <- list()
-        }
         app_state$last_data_update_context <- list(
           context = "data_loaded",
           timestamp = Sys.time()
@@ -416,9 +414,6 @@ create_emit_api <- function(app_state) {
     data_changed = function() {
       shiny::isolate({
         app_state$events$data_updated <- app_state$events$data_updated + 1L
-        if (!exists("last_data_update_context", envir = app_state)) {
-          app_state$last_data_update_context <- list()
-        }
         app_state$last_data_update_context <- list(
           context = "data_changed",
           timestamp = Sys.time()
@@ -515,10 +510,6 @@ create_emit_api <- function(app_state) {
         app_state$events$error_occurred <- app_state$events$error_occurred + 1L
 
         # Store error context for debugging
-        if (!exists("last_error_context", envir = app_state)) {
-          app_state$last_error_context <- list()
-        }
-
         app_state$last_error_context <- list(
           type = error_type,
           context = context,

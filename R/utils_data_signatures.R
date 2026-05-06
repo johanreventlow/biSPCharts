@@ -102,10 +102,10 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
   if (cache_size > 100) {
     # Remove oldest 20 entries
     cache_keys <- ls(envir = .data_signature_cache)
-    cache_times <- sapply(cache_keys, function(k) {
+    cache_times <- vapply(cache_keys, function(k) {
       entry <- get(k, envir = .data_signature_cache)
-      entry$timestamp
-    })
+      as.numeric(entry$timestamp)
+    }, numeric(1L))
     oldest_keys <- cache_keys[order(cache_times)][1:20]
     rm(list = oldest_keys, envir = .data_signature_cache)
   }

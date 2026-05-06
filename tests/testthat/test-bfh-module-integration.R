@@ -45,13 +45,17 @@ wait_for_bfh_plot_ready <- function(app, timeout = 15000) {
 }
 
 expect_bfh_plot_ready <- function(app) {
-  expect_true(
-    wait_for_bfh_plot_ready(app),
-    info = paste0(
-      bfh_plot_ready_output,
-      " skal blive TRUE før BFH shinytest2-screenshot"
+  ready <- wait_for_bfh_plot_ready(app)
+  if (!ready) {
+    stop(
+      paste0(
+        bfh_plot_ready_output,
+        " blev ikke TRUE før BFH shinytest2-screenshot"
+      ),
+      call. = FALSE
     )
-  )
+  }
+  expect_true(ready)
 }
 
 # Test fixtures helper
@@ -85,6 +89,8 @@ get_app_driver <- function(name) {
 # Helper to upload CSV via current upload input id
 upload_test_data <- function(app, csv_path) {
   app$upload_file(direct_file_upload = csv_path)
+  app$wait_for_idle(timeout = 5000)
+  app$click("load_paste_data")
   app$wait_for_idle(timeout = 5000)
 }
 

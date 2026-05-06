@@ -89,14 +89,14 @@ debug_log <- function(message, category, level = "DEBUG", context = NULL,
   if (!is.null(context)) {
     context_str <- ""
     if (is.list(context)) {
-      context_items <- sapply(names(context), function(name) {
+      context_items <- vapply(names(context), function(name) {
         value <- context[[name]]
         if (is.vector(value) && length(value) > 1) {
           paste0(name, "=[", paste(value, collapse = ","), "]")
         } else {
           paste0(name, "=", value)
         }
-      })
+      }, character(1L))
       context_str <- paste0(" |", paste(context_items, collapse = " "))
     }
     log_parts$context <- context_str

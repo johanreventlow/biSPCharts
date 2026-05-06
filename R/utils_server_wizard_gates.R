@@ -92,7 +92,7 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   spc_save_filename <- function() {
     md <- collect_metadata(input, app_state)
     title <- md$indicator_title
-    if (is.null(title) || nchar(trimws(title)) == 0) {
+    if (is.null(title) || !nzchar(trimws(title))) {
       return("data_biSPCharts.xlsx")
     }
     safe_title <- sanitize_filename(trimws(title))

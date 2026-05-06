@@ -271,8 +271,7 @@ setup_data_table <- function(input, output, session, app_state, emit) {
           names(data) %in% c("T\u00e6ller", "N\u00e6vner") ~ 80,
           names(data) == "Kommentar" ~ 300,
           TRUE ~ 120
-        ),
-        stringsAsFactors = FALSE
+        )
       ),
       allowInsertRow = FALSE,
       allowInsertColumn = FALSE,

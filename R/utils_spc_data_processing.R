@@ -210,7 +210,7 @@ generate_y_axis_label <- function(chart_type, y_unit_label, y_col, n_col = NULL)
     "Y-axis label generation",
     code = {
       # Use unit label if available and not empty
-      if (!is.null(y_unit_label) && nchar(trimws(y_unit_label)) > 0) {
+      if (!is.null(y_unit_label) && nzchar(trimws(y_unit_label))) {
         return(y_unit_label)
       }
 

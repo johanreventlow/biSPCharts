@@ -632,8 +632,7 @@ create_empty_session_data <- function() {
     Dato = rep(NA_character_, 20),
     "T\u00e6ller" = rep(NA_real_, 20),
     "N\u00e6vner" = rep(NA_real_, 20),
-    Kommentar = rep(NA_character_, 20),
-    stringsAsFactors = FALSE
+    Kommentar = rep(NA_character_, 20)
   )
 }
 

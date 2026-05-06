@@ -73,14 +73,12 @@ build_spc_excel <- function(data,
     meta_df <- data.frame(
       Felt = character(0),
       Vaerdi = character(0),
-      stringsAsFactors = FALSE,
       check.names = FALSE
     )
   } else {
     meta_df <- data.frame(
       Felt = names(metadata),
       Vaerdi = unname(meta_values),
-      stringsAsFactors = FALSE,
       check.names = FALSE
     )
   }

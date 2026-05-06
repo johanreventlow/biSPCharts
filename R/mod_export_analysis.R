@@ -89,7 +89,7 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
       # Opdatér kun hvis feltet er tomt eller indeholder den forrige auto-tekst
       current_text <- shiny::isolate(input$pdf_improvement) %||% ""
       prev_auto <- shiny::isolate(last_auto_analysis())
-      user_has_edited <- nchar(trimws(current_text)) > 0 && current_text != prev_auto
+      user_has_edited <- nzchar(trimws(current_text)) && current_text != prev_auto
 
       if (!user_has_edited) {
         last_auto_analysis(auto_text)

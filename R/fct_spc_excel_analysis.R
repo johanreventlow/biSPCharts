@@ -219,7 +219,7 @@ build_overview_section <- function(qic_data,
     bfhc_ver
   )
 
-  df <- data.frame(Felt = fields, Vaerdi = values, stringsAsFactors = FALSE, check.names = FALSE)
+  df <- data.frame(Felt = fields, Vaerdi = values, check.names = FALSE)
   names(df)[2] <- "V\u00e6rdi"
   df
 }
@@ -262,8 +262,7 @@ build_per_part_section <- function(qic_data,
     Median = numeric(0),
     Target = numeric(0),
     `Delta til CL` = numeric(0),
-    check.names = FALSE,
-    stringsAsFactors = FALSE
+    check.names = FALSE
   )
   names(empty_df) <- c(
     "Part", "Phase-navn", "Fra (r\u00e6kke)", "Til (r\u00e6kke)", "N",

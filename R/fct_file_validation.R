@@ -143,24 +143,22 @@ validate_uploaded_file <- function(file_info, session_id = NULL) {
 
   # Log validation results
   if (length(errors) > 0) {
-    debug_log("File validation failed", "FILE_UPLOAD_FLOW",
-      level = "WARNING",
-      context = list(
+    log_warn("File validation failed",
+      .context = "FILE_UPLOAD_FLOW",
+      details = list(
         filename = file_info$name,
         file_size = file_info$size,
         validation_errors = errors
-      ),
-      session_id = session_id
+      )
     )
   } else {
-    debug_log("File validation successful", "FILE_UPLOAD_FLOW",
-      level = "INFO",
-      context = list(
+    log_info("File validation successful",
+      .context = "FILE_UPLOAD_FLOW",
+      details = list(
         filename = file_info$name,
         file_size = file_info$size,
         file_extension = file_ext
-      ),
-      session_id = session_id
+      )
     )
   }
 
@@ -378,17 +376,16 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
   }
 
   # Log detailed error information
-  debug_log("Enhanced error handling triggered", "ERROR_HANDLING",
-    level = "ERROR",
-    context = list(
+  log_error("Enhanced error handling triggered",
+    .context = "ERROR_HANDLING",
+    details = list(
       error_type = error_type,
       error_message = error_message,
       filename = file_info$name,
       file_size = file_info$size,
       file_type = file_info$type,
       suggestions = suggestions
-    ),
-    session_id = session_id
+    )
   )
 
   # Gate tekniske fejldetaljer bag hide_error_details (default TRUE i produktion)
@@ -518,14 +515,13 @@ validate_data_for_auto_detect <- function(data, session_id = NULL) {
   suitable <- length(issues) == 0
 
   # Log validation results
-  debug_log("Data validation for auto-detection completed", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("Data validation for auto-detection completed",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       suitable = suitable,
       validation_results = validation_results,
       issues = if (length(issues) > 0) issues else "none"
-    ),
-    session_id = session_id
+    )
   )
 
   return(list(
@@ -614,15 +610,14 @@ preprocess_uploaded_data <- function(data, file_info, session_id = NULL) {
   }
 
   # Log preprocessing results
-  debug_log("Data preprocessing completed", "FILE_UPLOAD_FLOW",
-    level = "INFO",
-    context = list(
+  log_info("Data preprocessing completed",
+    .context = "FILE_UPLOAD_FLOW",
+    details = list(
       filename = file_info$name,
       cleaning_log = cleaning_log,
       original_dimensions = original_dims,
       final_dimensions = final_dims
-    ),
-    session_id = session_id
+    )
   )
 
 

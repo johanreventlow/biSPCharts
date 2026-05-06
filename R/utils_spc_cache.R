@@ -1,6 +1,9 @@
 # utils_spc_cache.R
-# Backend-Agnostic SPC Cache Utilities
-# Task 033 Stream 1: Cache abstraction for BFHchart and qicharts2
+# Kanonisk SPC computation-cache (xxhash64-nøgler, LRU-eviction).
+# Tre cache-lag eksisterer; dette er den primære:
+#   utils_spc_cache.R         — kanonisk SPC-resultater (dette lag)
+#   utils_qic_caching.R       — Anhøj/qicharts2-resultater (supplerende)
+#   utils_performance_caching.R — generisk key-value (config, branding)
 
 #' Generate Backend-Agnostic SPC Cache Key
 #'

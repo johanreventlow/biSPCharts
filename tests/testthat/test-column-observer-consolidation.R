@@ -137,6 +137,30 @@ test_that("handle_column_input handles missing emit function gracefully", {
   expect_identical(isolate(app_state$columns$mappings$x_column), "dato")
 })
 
+test_that("handle_column_input returns early without side effects when value unchanged", {
+  app_state <- new.env()
+  app_state$ui <- list()
+  app_state$columns <- reactiveValues(mappings = reactiveValues(x_column = "dato"))
+  app_state$ui_cache <- list(x_column_input = "SENTINEL")
+
+  emit <- new.env()
+  emit_called <- FALSE
+  emit$column_choices_changed <- function() {
+    emit_called <<- TRUE
+  }
+
+  isolate(handle_column_input("x_column", "dato", app_state, emit))
+
+  # Mapping uændret
+  expect_identical(isolate(app_state$columns$mappings$x_column), "dato")
+
+  # Cache IKKE overskrevet (sentinel bevaret — ingen side-effect ved no-op)
+  expect_identical(app_state$ui_cache$x_column_input, "SENTINEL")
+
+  # Emit IKKE kaldt
+  expect_false(emit_called)
+})
+
 # ============================================================================
 # UNIT TESTS: create_column_observer()
 # ============================================================================

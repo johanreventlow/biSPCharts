@@ -97,6 +97,10 @@ sync_logs_to_github <- function(all_data,
   auth_url <- inject_pat_into_url(repo_url, pat)
   filename <- build_session_filename(session_id)
 
+  # gert.trace=FALSE forhindrer libgit2 C-niveau trace-logging i at emitte rå URL
+  old_trace_opt <- options(gert.trace = FALSE)
+  on.exit(options(old_trace_opt), add = TRUE)
+
   tryCatch(
     {
       gert::git_clone(

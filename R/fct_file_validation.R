@@ -31,11 +31,9 @@ check_row_count_csv <- function(file_info) {
     {
       con <- file(file_info$datapath, "r")
       on.exit(close(con), add = TRUE)
-      line_count <- 0
-      while (length(readLines(con, n = 1)) > 0) {
-        line_count <- line_count + 1
-        if (line_count > get_max_upload_line_count()) break
-      }
+      max_lines <- get_max_upload_line_count()
+      lines <- readLines(con, n = max_lines + 1L, warn = FALSE)
+      line_count <- length(lines)
       if (line_count > get_upload_warning_row_count()) {
         log_warn("Large row count detected - performance risk",
           component = "[FILE_SECURITY]",

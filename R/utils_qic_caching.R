@@ -102,10 +102,10 @@ create_qic_cache <- function(max_size = 100) {
         cache_keys <- ls(envir = cache)
         if (length(cache_keys) > 0) {
           # Get last_accessed times for all entries
-          access_times <- sapply(cache_keys, function(k) {
+          access_times <- vapply(cache_keys, function(k) {
             entry <- get(k, envir = cache)
-            entry$last_accessed
-          })
+            as.numeric(entry$last_accessed)
+          }, numeric(1L))
 
           # Find least recently used
           lru_key <- cache_keys[which.min(access_times)]

@@ -220,7 +220,7 @@ new_parsed_file <- function(data, format, encoding, warnings = character()) {
 #' @param x ParsedFile-objekt.
 #' @param ... Ignoreres.
 #' @export
-print.ParsedFile <- function(x, ...) {
+print.ParsedFile <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(sprintf(
     "ParsedFile: %d raekker x %d kolonner [%s/%s]\n",
     x$meta$rows, x$meta$cols, x$meta$format, x$meta$encoding

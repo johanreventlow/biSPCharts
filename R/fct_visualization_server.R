@@ -321,7 +321,8 @@ setup_visualization <- function(input, output, session, app_state) {
 
       return(val)
     }),
-    app_state = app_state
+    app_state = app_state,
+    emit = create_emit_api(app_state)
   )
 
   # Plot klar tjek

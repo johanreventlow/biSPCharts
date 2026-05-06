@@ -197,8 +197,8 @@ TEST_MODE_CONFIG <- list(
 #'
 #' @keywords internal
 CACHE_CONFIG <- list(
-  default_timeout_seconds = 300, # 5 minutes - standard cache lifetime
-  extended_timeout_seconds = 600, # 10 minutes - for expensive computations
+  default_timeout_seconds = 600, # 10 minutes - matches clinical review session length
+  extended_timeout_seconds = 1800, # 30 minutes - for expensive computations
   short_timeout_seconds = 60, # 1 minute - for frequently changing data
   size_limit_entries = 50, # Maximum number of cached entries
   cleanup_interval_seconds = 300 # How often to run cache cleanup (5 min)

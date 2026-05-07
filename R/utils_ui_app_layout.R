@@ -1,5 +1,5 @@
-# app_ui.R
-# Consolidated UI components for SPC app
+# utils_ui_app_layout.R
+# UI-helper-komponenter for SPC app layout (header, upload-side, main content)
 
 # UI components now loaded globally in global.R for better performance
 

@@ -119,58 +119,6 @@ Y_AXIS_UI_TYPES_DA <- list(
   "Tid (dage)" = "time_days"
 )
 
-# SPC VISUALIZATION CONSTANTS ===================================================
-
-#' Farve palette for SPC charts
-#' @keywords internal
-SPC_COLORS <- list(
-  # Target linjer
-  target_line = "#2E8B57", # SeaGreen for maalvaerdi linjer
-  control_line = "#FF6B6B", # Coral for kontrolgraenser
-
-  # Data punkter
-  normal_point = "#4A90E2", # Blaa for normale datapunkter
-  special_cause = "#FF4444", # Roed for special cause punkter
-
-  # Chart baggrund
-  chart_bg = "#FFFFFF", # Hvid baggrund
-  grid_line = "#E8E8E8", # Lys graa for grid
-
-  # UI elementer
-  success = "#28A745", # Groen for success states
-  warning = "#FFC107", # Gul for warnings
-  error = "#DC3545", # Roed for errors
-  info = "#17A2B8" # Blaa for info
-)
-
-#' Alpha vaerdier for gennemsigtighed
-#' @keywords internal
-SPC_ALPHA_VALUES <- list(
-  target_line = 0.8,
-  control_line = 0.7,
-  data_point = 0.9,
-  background = 0.1,
-  highlight = 1.0
-)
-
-#' Linje typer for SPC charts
-#' @keywords internal
-SPC_LINE_TYPES <- list(
-  solid = "solid",
-  dashed = "dashed",
-  dotted = "dotted",
-  dot_dash = "dotdash"
-)
-
-#' Standard linje bredder
-#' @keywords internal
-SPC_LINE_WIDTHS <- list(
-  thin = 0.8,
-  normal = 1.0,
-  thick = 1.2,
-  extra_thick = 1.5
-)
-
 # SPC COMMENT PROCESSING CONSTANTS =============================================
 
 #' Kommentar behandling konfiguration

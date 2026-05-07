@@ -108,7 +108,8 @@ DEBOUNCE_DELAYS <- list(
   input_change = 150, # 150ms - rapid user input (dropdown, typing) - OPTIMIZED
   file_select = 500, # 500ms - file selection and complex inputs
   chart_update = 500, # 500ms - chart rendering (reduced from 800ms) - OPTIMIZED
-  table_cleanup = 2000 # 2000ms - table operation cleanup (conservative delay)
+  table_cleanup = 2000, # 2000ms - table operation cleanup (conservative delay)
+  metadata_input = 1500 # 1500ms - cosmetic metadata fields (title, dept, footnote, target) — #646
 )
 
 #' Loop protection delays for UI updates (milliseconds)

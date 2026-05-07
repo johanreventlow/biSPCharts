@@ -65,6 +65,12 @@ test_that("Debounce delays er korrekt konfigureret i DEBOUNCE_DELAYS", {
   expect_true("file_select" %in% names(DEBOUNCE_DELAYS),
     info = "file_select delay skal være defineret"
   )
+  expect_true("metadata_input" %in% names(DEBOUNCE_DELAYS),
+    info = "metadata_input delay skal være defineret (#646)"
+  )
+  expect_true(DEBOUNCE_DELAYS$metadata_input >= 1000,
+    info = "metadata_input bør være >=1000ms for at absorbere keystrokes (#646)"
+  )
 
   # Verificer værdier er reasonable (mellem 100-2000ms)
   if (exists("DEBOUNCE_DELAYS")) {

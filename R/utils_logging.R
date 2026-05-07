@@ -25,11 +25,15 @@ LOG_LEVELS <- list(
 # intern hjaelper (ikke-eksporteret)
 .level_name <- function(x) {
   inv <- setNames(names(LOG_LEVELS), unlist(LOG_LEVELS, use.names = FALSE))
-  inv[as.character(x)] %||% "INFO"
+  coalesce_blank(inv[as.character(x)], "INFO")
 }
 
-# intern hjaelper (ikke-eksporteret)
-`%||%` <- function(a, b) if (is.null(a) || length(a) == 0 || identical(a, "")) b else a
+# Udvidet null-coalesce: returnerer `default` når x er NULL, length-0 eller "" (tom streng).
+# Bruges i log_debug_kv (nms[[i]]-pattern) og .level_name (character(0)-case).
+# Adskilles bevidst fra %||% (null-only) for at gøre semantik eksplicit.
+coalesce_blank <- function(x, default) {
+  if (is.null(x) || length(x) == 0L || identical(x, "")) default else x
+}
 
 #' Hent aktuel log level fra environment variabel
 #'
@@ -577,7 +581,7 @@ log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
   if (length(dots) > 0) {
     nms <- names(dots) %||% rep("", length(dots))
     for (i in seq_along(dots)) {
-      key <- nms[[i]] %||% paste0("..", i)
+      key <- coalesce_blank(nms[[i]], paste0("..", i))
       val <- .safe_format(dots[[i]])
       log_debug(paste0(key, ": ", val), .context = ctx)
     }
@@ -586,7 +590,7 @@ log_debug_kv <- function(..., .context = NULL, .list_data = NULL) {
   if (!is.null(.list_data) && is.list(.list_data)) {
     nms <- names(.list_data) %||% rep("", length(.list_data))
     for (i in seq_along(.list_data)) {
-      key <- nms[[i]] %||% paste0("..", i)
+      key <- coalesce_blank(nms[[i]], paste0("..", i))
       val <- .safe_format(.list_data[[i]])
       log_debug(paste0(key, ": ", val), .context = ctx)
     }

@@ -82,13 +82,13 @@ read_shinylogs_all <- function(log_directory) {
       }
     )
   })
-  entries <- Filter(Negate(is.null), entries)
+  entries <- purrr::compact(entries)
   if (length(entries) == 0) {
     return(empty_result)
   }
 
   bind_safe <- function(lst) {
-    dfs <- Filter(function(x) !is.null(x), lst)
+    dfs <- purrr::compact(lst)
     if (length(dfs) == 0) {
       return(data.frame())
     }

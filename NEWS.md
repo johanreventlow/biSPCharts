@@ -1,5 +1,10 @@
 # biSPCharts 0.3.3
 
+## Interne ændringer
+
+* Tilføjet `docs/ENVIRONMENT_VARIABLES.md` med samlet oversigt over alle
+  env-vars — types, defaults, call sites og boot-validering. (#459)
+
 ## Nye features
 
 * **Eliminer dobbelt-render af analyse-graf efter data-upload (#610):**

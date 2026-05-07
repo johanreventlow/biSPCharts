@@ -13,7 +13,9 @@ get_hospital_branding_config <- function() {
     code = {
       branding_config <- list()
 
-      # Hospital colors
+      # Hospital colors — kald getter hvis tilgængelig; ellers BFH-brand defaults.
+      # Defaults matcher BFHtheme::bfh_cols() farvepalette og er korrekte for
+      # biSPCharts-brug; de erstatter IKKE branding-getter under normal drift.
       if (exists("get_hospital_colors", mode = "function")) {
         branding_config$colors <- get_hospital_colors()
       } else {
@@ -42,6 +44,7 @@ get_hospital_branding_config <- function() {
       return(branding_config)
     },
     fallback = function(e) {
+      # Error-fallback: minimale BFH-brand defaults så UI ikke crasher.
       log_warn(paste("Failed to generate hospital branding cache:", e$message), "CACHE_GENERATOR")
       return(list(
         colors = list(primary = "#007dbb", secondary = "#646c6f"),

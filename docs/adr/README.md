@@ -30,9 +30,8 @@ Hvor:
 - `.md` er Markdown format
 
 **Eksempler:**
-- `ADR-001-ui-sync-throttle-250ms.md`
-- `ADR-002-shared-data-signatures.md`
-- `ADR-003-qic-cache-invalidation-strategy.md`
+- `ADR-001-pure-bfhcharts-workflow.md`
+- `ADR-002-ui-sync-throttle-250ms.md`
 
 ## ADR Template
 
@@ -94,9 +93,8 @@ Lav en ADR når du:
 - Ændrer en eksisterende arkitektonisk beslutning
 
 **Eksempler fra biSPCharts:**
-- Hvorfor throttle UI sync på 250ms i stedet for 800ms? → ADR-001
-- Hvorfor centralisere data signatures? → Ville være ADR-002
-- Hvorfor context-aware cache invalidation? → Ville være ADR-003
+- Hvorfor bruge pure BFHcharts workflow? → ADR-001
+- Hvorfor throttle UI sync på 250ms? → ADR-002
 
 ### Hvornår skal du IKKE lave en ADR?
 
@@ -143,7 +141,8 @@ ADRs er **immutable** efter accept:
 
 | ADR | Titel | Status | Dato |
 |-----|-------|--------|------|
-| [ADR-001](./ADR-001-ui-sync-throttle-250ms.md) | UI Sync Throttle 250ms | Accepted | 2025-10-10 |
+| [ADR-001](./ADR-001-pure-bfhcharts-workflow.md) | Pure BFHcharts Workflow for SPC Calculation | Accepted | 2025-10-10 |
+| [ADR-002](./ADR-002-ui-sync-throttle-250ms.md) | UI Sync Throttle 250ms | Accepted | 2025-10-10 |
 
 ## Søgning i ADRs
 

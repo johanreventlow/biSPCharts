@@ -149,7 +149,7 @@ golem_add_external_resources <- function() {
 
   # Registrér BFHchartsAssets-fonts som browser-tilgængeligt resource-prefix
   # hvis companion-pakken er tilgængelig. Giver browser adgang til Mari-fonts
-  # via url('bfh_assets/MariOffice-*.ttf') i CSS @font-face (se ui_app_ui.R).
+  # via url('bfh_assets/MariOffice-*.ttf') i CSS @font-face (se utils_ui_app_layout.R).
   # Graceful skip: intet prefix registreres, CSS emitter ikke @font-face.
   if (requireNamespace("BFHchartsAssets", quietly = TRUE)) {
     bfh_fonts_dir <- system.file("assets/fonts", package = "BFHchartsAssets")

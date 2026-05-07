@@ -159,11 +159,22 @@ dansk, lower-bound deps, 9-trins pre-release checklist, separat
 
 ### SPC Pipeline (facade-arkitektur)
 
-`compute_spc_results_bfh()` orkestrerer: validate → prepare → resolve_axes →
-build_args → execute → decorate. S3-typed errors arver fra `spc_error`
+`compute_spc_results_bfh()` orkestrerer:
+validate → prepare → resolve_axes → build_args → execute → decorate.
+S3-typed errors arver fra `spc_error`
 (`spc_input_error`, `spc_prepare_error`, `spc_render_error`).
 
-**Filer:** `R/fct_spc_{bfh_facade,validate,prepare,execute,decorate}.R`.
+**Filer:**
+- `fct_spc_bfh_facade.R` — orkestrering (entry point)
+- `fct_spc_validate.R` — input-validering
+- `fct_spc_prepare.R` — data-forberedelse + numerisk parsing
+- `fct_spc_bfh_params.R` — resolve_axis_units + build_bfh_args
+- `fct_spc_bfh_invocation.R` — execute_bfh_request (BFHcharts-kald)
+- `fct_spc_decorate.R` — decorate_plot_for_display
+- `fct_spc_bfh_output.R` — output-standardisering
+- `fct_spc_bfh_signals.R` — Anhøj-signal-tilknytning
+- `fct_spc_contracts.R` — S3-type constructors (spc_request, spc_prepared, spc_axes)
+
 ADR: `docs/adr/ADR-015-bfhchart-migrering.md`.
 
 ### Coordination Workflow

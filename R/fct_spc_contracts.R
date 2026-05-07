@@ -60,37 +60,6 @@ new_spc_request <- function(
   )
 }
 
-#' Valider at et objekt overholder spc_request-kontrakten
-#'
-#' Bruges i tests. Kaster informative fejl ved brud.
-#'
-#' @param x Objekt der skal valideres.
-#' @return Usynlig `x` hvis gyldig; kaster fejl ellers.
-#' @keywords internal
-validate_spc_request_contract <- function(x) {
-  if (!inherits(x, "spc_request")) {
-    stop("Objekt er ikke en spc_request")
-  }
-  required <- c("data", "x_var", "y_var", "chart_type")
-  missing_fields <- setdiff(required, names(x))
-  if (length(missing_fields) > 0) {
-    stop(paste("spc_request mangler felter:", paste(missing_fields, collapse = ", ")))
-  }
-  if (!is.data.frame(x$data)) {
-    stop("spc_request$data skal vaere data.frame")
-  }
-  if (!is.character(x$x_var) || !nzchar(x$x_var)) {
-    stop("spc_request$x_var skal vaere ikke-tomt character")
-  }
-  if (!is.character(x$y_var) || !nzchar(x$y_var)) {
-    stop("spc_request$y_var skal vaere ikke-tomt character")
-  }
-  if (!is.character(x$chart_type) || !nzchar(x$chart_type)) {
-    stop("spc_request$chart_type skal vaere ikke-tomt character")
-  }
-  invisible(x)
-}
-
 #' @export
 print.spc_request <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(
@@ -166,32 +135,6 @@ new_spc_prepared <- function(
   )
 }
 
-#' Valider at et objekt overholder spc_prepared-kontrakten
-#'
-#' @param x Objekt der skal valideres.
-#' @return Usynlig `x` hvis gyldig; kaster fejl ellers.
-#' @keywords internal
-validate_spc_prepared_contract <- function(x) {
-  if (!inherits(x, "spc_prepared")) {
-    stop("Objekt er ikke en spc_prepared")
-  }
-  required <- c("data", "x_var", "y_var", "chart_type", "n_rows_original", "n_rows_filtered")
-  missing_fields <- setdiff(required, names(x))
-  if (length(missing_fields) > 0) {
-    stop(paste("spc_prepared mangler felter:", paste(missing_fields, collapse = ", ")))
-  }
-  if (!is.data.frame(x$data)) {
-    stop("spc_prepared$data skal vaere data.frame")
-  }
-  if (!is.numeric(x$n_rows_original) || x$n_rows_original < 0) {
-    stop("spc_prepared$n_rows_original skal vaere ikke-negativ numerisk")
-  }
-  if (!is.numeric(x$n_rows_filtered) || x$n_rows_filtered < 0) {
-    stop("spc_prepared$n_rows_filtered skal vaere ikke-negativ numerisk")
-  }
-  invisible(x)
-}
-
 #' @export
 print.spc_prepared <- function(x, ...) { # S3 print-metode — cat() er idiomatisk
   cat(
@@ -243,33 +186,6 @@ new_spc_axes <- function(
     ),
     class = c("spc_axes", "list")
   )
-}
-
-#' Valider at et objekt overholder spc_axes-kontrakten
-#'
-#' @param x Objekt der skal valideres.
-#' @return Usynlig `x` hvis gyldig; kaster fejl ellers.
-#' @keywords internal
-validate_spc_axes_contract <- function(x) {
-  if (!inherits(x, "spc_axes")) {
-    stop("Objekt er ikke en spc_axes")
-  }
-  required <- c("y_axis_unit", "multiply")
-  missing_fields <- setdiff(required, names(x))
-  if (length(missing_fields) > 0) {
-    stop(paste("spc_axes mangler felter:", paste(missing_fields, collapse = ", ")))
-  }
-  valid_units <- c("count", "percent", "rate", "time")
-  if (!x$y_axis_unit %in% valid_units) {
-    stop(paste0(
-      "spc_axes$y_axis_unit '", x$y_axis_unit, "' er ugyldig. ",
-      "Skal vaere: ", paste(valid_units, collapse = ", ")
-    ))
-  }
-  if (!is.numeric(x$multiply) || length(x$multiply) != 1 || x$multiply <= 0) {
-    stop("spc_axes$multiply skal vaere positiv numerisk skalaar")
-  }
-  invisible(x)
 }
 
 #' @export

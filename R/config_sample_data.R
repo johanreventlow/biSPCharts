@@ -11,7 +11,7 @@
 #
 # RELATERET:
 #   - config_chart_types.R - Chart type definitions
-#   - ui_app_ui.R - Upload page UI
+#   - utils_ui_app_layout.R - Upload page UI
 #   - utils_server_event_listeners.R - Sample data observer
 # ==============================================================================
 

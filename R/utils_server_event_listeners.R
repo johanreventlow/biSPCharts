@@ -135,17 +135,10 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   # 7. Wizard navigation gates (utils_server_wizard_gates.R)
   setup_wizard_gates(input, output, app_state, session)
 
-  # Issue #193: Bridge manuel tab-skift til event-bus
-  register_observer(
-    "main_navbar_manual",
-    shiny::observeEvent(input$main_navbar,
-      ignoreInit = TRUE,
-      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
-      {
-        emit$navigation_changed()
-      }
-    )
-  )
+  # Issue #536: main_navbar-observer er konsolideret til app_server_main.R
+  # (med STATE_MANAGEMENT-priority for at sikre state-write FØR emit). Den
+  # tidligere duplikerede observer her er fjernet for at undgå race condition
+  # hvor navigation_changed-listeners så stale active_tab.
 
   # 8. Paste data og sample data observers (utils_server_paste_data.R)
   setup_paste_data_observers(input, output, app_state, session, emit, ui_service)

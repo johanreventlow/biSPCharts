@@ -141,12 +141,32 @@ activate_session_timeout_from_config <- function(input, session,
     .scheduler = .scheduler
   )
 
-  # Nulstil timer ved enhver input-aendring
-  shiny::observe({
-    # Touch alle inputs for at oprette reaktiv afhaengighed
-    shiny::reactiveValuesToList(input)
-    timeout_handle$reset()
-  })
+  # Nulstil timer ved konkrete bruger-handlinger (issue #534).
+  # Tidligere brugte vi reactiveValuesToList(input) — det touchede ALLE inputs
+  # inkl. programmatiske updateSelectizeInput-kald (chart-type sync, restore-flow),
+  # hvilket undergravede "brugeraktivitet"-semantikken.
+  user_activity_inputs <- c(
+    "main_navbar", # tab-skift
+    "data_file", # primaer file-upload
+    "direct_file_upload", # paste/sample alternative file-upload
+    "load_paste_data", # paste-knap
+    "selected_sample", # sample-data valg
+    "trigger_file_upload", # file-upload trigger-knap
+    "selected_excel_sheet", # Excel sheet-valg
+    "manual_autodetect_button", # eksplicit autodetect
+    "back_to_upload", # wizard tilbage
+    "continue_to_export", # wizard fortsaet
+    "toggle_sample_dropdown" # sample-dropdown toggle
+  )
+
+  for (input_id in user_activity_inputs) {
+    local({
+      id <- input_id
+      shiny::observeEvent(input[[id]], ignoreInit = TRUE, {
+        timeout_handle$reset()
+      })
+    })
+  }
 
   # Annuller timer naar session lukker
   session$onSessionEnded(function() {

@@ -224,24 +224,21 @@ main_app_server <- function(input, output, session) {
   export_module_status <- mod_export_server("export", app_state, parent_session = session)
 
   ## Track forrige tab for kontekstuel tilbagenavigation paa hjaelpesider
-  current_tab <- shiny::reactiveVal("start")
-  previous_tab <- shiny::reactiveVal("start")
-  # Issue #536: Konsolideret main_navbar-observer.
-  # Tidligere fandtes en duplikeret observer i utils_server_event_listeners.R
-  # som emittede navigation_changed. Vi konsoliderer her med STATE_MANAGEMENT-
-  # priority for at garantere active_tab er sat FØR navigation_changed-listeners
-  # (STATUS_UPDATES = 500) afvikles. Atomisk: state-write → emit.
+  ## Issue #532: state konsolideret til app_state$navigation (single source of truth).
+  ## Issue #536: Konsolideret main_navbar-observer med STATE_MANAGEMENT-priority
+  ## for at garantere state-write FØR navigation_changed-listeners (STATUS_UPDATES = 500).
+  ## Atomisk: state-write → emit.
   shiny::observeEvent(input$main_navbar,
     ignoreInit = TRUE,
     priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
     {
       new_tab <- input$main_navbar
-      old_tab <- current_tab()
+      old_tab <- app_state$navigation$current_tab
       help_tabs <- c("app_guide", "hjaelp")
       if (new_tab %in% help_tabs) {
-        previous_tab(old_tab)
+        app_state$navigation$previous_tab <- old_tab
       }
-      current_tab(new_tab)
+      app_state$navigation$current_tab <- new_tab
       # Opdater app_state saa eksport-observere kan gate paa aktiv tab (Issue #394)
       app_state$session$active_tab <- new_tab
       emit$navigation_changed()
@@ -249,10 +246,10 @@ main_app_server <- function(input, output, session) {
   )
 
   ## App-vejledning modul (tilbagenavigation til forrige tab)
-  mod_app_guide_server("app_guide", parent_session = session, previous_tab = previous_tab)
+  mod_app_guide_server("app_guide", parent_session = session, app_state = app_state)
 
   ## Hjaelpeside modul (tilbagenavigation til forrige tab)
-  mod_help_server("help", parent_session = session, previous_tab = previous_tab)
+  mod_help_server("help", parent_session = session, app_state = app_state)
 
   ## Landing page modul
   mod_landing_server("landing", parent_session = session, app_state = app_state)

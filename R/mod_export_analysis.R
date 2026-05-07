@@ -26,10 +26,8 @@
 #'
 #' @keywords internal
 register_analysis_autogen <- function(session, input, output, export_plot, app_state) {
-  # Gem sidst auto-genererede tekst til sammenligning med brugerens input.
-  # Undgår flaky analysis_source flag der fejlagtigt skifter til "user"
-  # pga. Shiny flush-timing issues.
-  last_auto_analysis <- shiny::reactiveVal("")
+  # Sidst auto-genererede tekst læses/skrives via app_state$ui$last_auto_analysis
+  # (migreret fra reactiveVal, ADR-004 — tracking-state hører i centralt app_state).
 
   # Auto-generer analysetekst når SPC-resultat er tilgængeligt.
   # Bruger observe() (ikke observeEvent) saa tab-guard evalueres FØR
@@ -88,11 +86,11 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
 
       # Opdatér kun hvis feltet er tomt eller indeholder den forrige auto-tekst
       current_text <- shiny::isolate(input$pdf_improvement) %||% ""
-      prev_auto <- shiny::isolate(last_auto_analysis())
+      prev_auto <- shiny::isolate(app_state$ui$last_auto_analysis)
       user_has_edited <- nzchar(trimws(current_text)) && current_text != prev_auto
 
       if (!user_has_edited) {
-        last_auto_analysis(auto_text)
+        app_state$ui$last_auto_analysis <- auto_text
         # Sæt suspend-flag FØR updateTextAreaInput så settings_save ikke
         # gemmer den programmatiske input-ændring som en bruger-ændring.
         # onFlushed(once=TRUE) rydder flaget efter Shiny har flushet
@@ -110,7 +108,7 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
   # Vis/skjul auto-indikator: synlig når feltets tekst matcher auto-teksten
   shiny::observe({
     current <- input$pdf_improvement %||% ""
-    auto <- last_auto_analysis()
+    auto <- app_state$ui$last_auto_analysis
     is_auto <- nchar(auto) > 0 && current == auto
     shinyjs::toggle("analysis_auto_indicator", condition = is_auto)
   })

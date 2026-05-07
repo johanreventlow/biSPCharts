@@ -24,6 +24,10 @@ NULL
 #' - `column_removed`: Data structure changed
 #' - `load`: Initial data load
 #' - `new`: New data created
+#' - `paste_data`: Data pasted via clipboard
+#' - `session_file_loaded`: Session-file restore via upload
+#' - `new_session`: Fresh session start
+#' - `session_restore`: localStorage-restore (cache er tom, full clear no-op-safe)
 #'
 #' **Selective Invalidation** (data value changes):
 #' - `table_cells_edited`: Only affected chart types
@@ -68,7 +72,9 @@ invalidate_qic_cache_smart <- function(app_state, update_context = NULL) {
   # STRATEGY 1: Full cache clear on structural changes
   structural_changes <- c(
     "upload", "column_added", "column_removed",
-    "load", "new", "file_upload"
+    "load", "new", "file_upload",
+    "paste_data", "session_file_loaded",
+    "new_session", "session_restore"
   )
 
   if (context %in% structural_changes) {

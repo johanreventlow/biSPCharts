@@ -70,11 +70,44 @@ devtools::load_all(helpers = FALSE)
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE", "EXPORT_MODULE"))
 # set_debug_context(c("EXPORT_MODULE"))
 # set_debug_context(c("RAG", "AI_METADATA", "AI_SUGGESTION", "GEMINI_API", "AI_CACHE"))
-set_debug_context(NULL)
-# set_debug_context(c("SESSION_RESTORE", "COLUMN_CHOICES_UNIFIED", "VISUALIZATION"))
-# set_debug_context(c("SESSION_RESTORE", "COLUMN_CHOICES_UNIFIED", "VISUALIZATION", "SPC_PIPELINE", "BFH_SERVICE"))
+# =============================================================================
+# RE-RENDER DIAGNOSE — trin 2/3 preview cascade-tracking
+# =============================================================================
+# Filtrer DEBUG til kontekster der afsloerer reactive-entry/exit, cache-hits,
+# tab-gating, debounce-aktivitet og event-flow. Drop AI/RAG/SESSION-stoej.
+set_debug_context(c(
+  "EXPORT_MODULE",       # export_plot/pdf_export_plot reactive entry + render-gate
+  "BACKEND_WRAPPER",     # generateSPCPlot CALLED
+  "BFH_SERVICE",         # SPC compute + cached=TRUE/FALSE
+  "BFH_TIMING",          # tidsforbrug pr compute
+  "SPC_CACHE",           # cache hit/miss
+  "QIC_CACHE",           # cache invalidation context
+  "AUTO_SAVE",           # debounce-cascade
+  "VIEWPORT_DIMENSIONS", # viewport_ready signal-timing
+  "EVENT_SYSTEM",        # emit$ + listener-fire
+  "FILE_UPLOAD_FLOW",    # paste/upload trigger-kilder
+  "AUTO_DETECT_CACHE",   # autodetect re-runs
+  "RENDER_PLOT",         # analyse-render entry
+  "VISUALIZATION"        # plot_object reactive
+))
 
-# Run app with test mode enabled for development
+# =============================================================================
+# REACTLOG — fuld dependency-graf efter session
+# =============================================================================
+# Efter app-luk: kald shiny::reactlogShow() i konsol for visualisering.
+# (reactlog::reactlog_show() kraever eksplicit log-argument; brug shiny-wrapperen.)
+options(shiny.reactlog = TRUE)
+if (requireNamespace("reactlog", quietly = TRUE)) {
+  reactlog::reactlog_enable()
+}
+
+# =============================================================================
+# SHINY-DIAGNOSTIK — trace + autoreload off (undgaa stoej + dobbelt-init)
+# =============================================================================
+options(shiny.trace = FALSE)        # saet TRUE for raw websocket-frames
+options(shiny.autoreload = FALSE)
+options(shiny.minified = FALSE)
+options(shiny.fullstacktrace = TRUE)
 
 # Browser-launch: RStudio viewer bruges automatisk i RStudio.
 # Firefox via 'open' kan ramme race condition — brug manuelt besøg
@@ -82,5 +115,6 @@ set_debug_context(NULL)
 # shiny::devmode(TRUE)
 options(shiny.port = 8080)
 options(shiny.launch.browser = TRUE)
-# run_app(enable_test_mode = FALSE, log_level = "DEBUG")
-run_app(enable_test_mode = FALSE, log_level = "INFO")
+
+# DEBUG-niveau for re-render diagnose. Skift tilbage til "INFO" naar faerdig.
+run_app(enable_test_mode = FALSE, log_level = "DEBUG")

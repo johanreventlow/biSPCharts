@@ -63,6 +63,15 @@ setup_column_management <- function(input, output, session, app_state, emit) {
     }
   )
 
+  # Aabn modal til kolonne-mapping. Modal-felterne erstatter den tidligere
+  # inline-mapping over datatabellen. STATUS_UPDATES-priority (UI-kun).
+  shiny::observeEvent(input$open_column_mapping_modal,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      show_column_mapping_modal(session, app_state)
+    }
+  )
+
   # Rediger kolonnenavne modal — STATUS_UPDATES (UI-modal kun).
   shiny::observeEvent(input$edit_column_names,
     priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
@@ -196,6 +205,38 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
   } else {
     shiny::showNotification("Ingen \u00e6ndringer i kolonnenavne", type = "message", duration = 2)
   }
+}
+
+## Vis kolonne-mapping modal
+# Viser modal med 6 dropdowns til mapping af datakolonner til SPC-variable.
+# Erstatter den tidligere inline-mapping og samler ogsaa Auto-detekt-knappen.
+show_column_mapping_modal <- function(session, app_state) {
+  current_data <- app_state$data$current_data
+  shiny::req(current_data)
+
+  choices <- names(current_data)
+
+  mappings <- shiny::isolate(
+    shiny::reactiveValuesToList(app_state$columns$mappings)
+  )
+  if (!is.list(mappings)) mappings <- list()
+
+  shiny::showModal(shiny::modalDialog(
+    title = "Tildel kolonner",
+    size = "l",
+    easyClose = TRUE,
+    create_inline_column_mapping(choices = choices, mappings = mappings),
+    footer = shiny::tagList(
+      shiny::actionButton(
+        "auto_detect_columns",
+        label = "Auto-detektér kolonner",
+        icon = shiny::icon("magic"),
+        title = "Lad appen forslå kolonne-tildelinger ud fra data",
+        class = "btn-primary"
+      ),
+      shiny::modalButton("Luk")
+    )
+  ))
 }
 
 ## Vis tilfoej kolonne modal

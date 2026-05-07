@@ -247,6 +247,15 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
+    /* Download-data-knap: hvid tekst paa hover (baggrund bliver moerk) */
+    .download-data-btn:hover,
+    .download-data-btn:hover .fa,
+    .download-data-btn:hover .fas,
+    .download-data-btn:focus,
+    .download-data-btn:focus-visible {
+      color: #fff !important;
+    }
+
     /* Export preview loading spinner */
     .export-preview-container .recalculating {
       opacity: 0.3 !important;
@@ -357,12 +366,14 @@ create_ui_main_content <- function() {
           ),
           shiny::tags$p(
             class = "mb-2",
-            shiny::tags$strong("Kolonnetildelinger (\u00f8verst)"),
+            shiny::tags$strong("Kolonnetildelinger"),
             shiny::tags$br(),
-            "Klik ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
-            " for at lade appen g\u00e6tte hvilke kolonner der er X-akse, Y-akse osv. ",
-            "Du kan altid \u00e6ndre tildelingerne manuelt via dropdown-menuerne. ",
-            "X-akse (typisk dato) og Y-akse (den v\u00e6rdi der f\u00f8lges) er p\u00e5kr\u00e6vede. ",
+            "Klik ", shiny::tags$em("Tildel kolonner"),
+            " \u00f8verst over datatabellen for at \u00e5bne dialogen, hvor du kan v\u00e6lge ",
+            "hvilke kolonner der er Tid/kategori (X-akse), T\u00e6ller (Y-akse), N\u00e6vner osv. ",
+            "Brug ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
+            " inde i dialogen for at lade appen forsl\u00e5 tildelinger ud fra data. ",
+            "Tid/kategori og T\u00e6ller er p\u00e5kr\u00e6vede. ",
             "V\u00e6lg en N\u00e6vner hvis du arbejder med andele eller rater."
           ),
           shiny::tags$p(
@@ -435,10 +446,10 @@ create_ui_main_content <- function() {
       shinyjs::disabled(
         shiny::downloadButton(
           "download_spc_file",
-          "Gem kopi af data og indstillinger",
-          class = "btn-outline-secondary",
+          "Download kopi af data og indstillinger",
+          class = "btn-outline-secondary download-data-btn",
           style = "width: auto; min-width: 200px;",
-          title = "Gem kopi af data og indstillinger til Excel-fil"
+          title = "Download kopi af data og indstillinger til Excel-fil"
         )
       ),
       shiny::actionButton(
@@ -537,10 +548,10 @@ create_data_table_card <- function() {
         shiny::div(
           class = "btn-group-sm",
           shiny::actionButton(
-            "auto_detect_columns",
-            label = "Auto-detekt\u00e9r kolonner",
-            icon = shiny::icon("magic"),
-            title = "Auto-detekt\u00e9r kolonner",
+            "open_column_mapping_modal",
+            label = "Tildel kolonner",
+            icon = shiny::icon("table-columns"),
+            title = "Tildel datakolonner til diagrammets variable",
             class = "btn-primary btn-sm"
           ),
           shiny::actionButton(
@@ -560,7 +571,7 @@ create_data_table_card <- function() {
           shiny::actionButton(
             "add_row",
             label = "R\u00e6kke",
-            icon = shiny::icon("plus-square"),
+            icon = shiny::icon("plus"),
             title = "Tilf\u00f8j r\u00e6kke",
             class = "btn-secondary btn-sm"
           )
@@ -569,76 +580,88 @@ create_data_table_card <- function() {
     ),
     bslib::card_body(
       fill = TRUE,
-      # Inline kolonnemapping over datatabellen
-      create_inline_column_mapping(),
       excelR::excelOutput("main_data_table", height = "auto")
     )
   )
 }
 
-#' Inline kolonnemapping -- 6 dropdowns i én række over datatabellen
+#' Inline kolonnemapping -- 6 dropdowns til modal-dialog
+#' @param choices Character vector af kolonnenavne
+#' @param mappings Named list med pre-selekterede vaerdier
 #' @noRd
-create_inline_column_mapping <- function() {
-  # Compact selectize med forkortet label
-  compact_select <- function(id, label, tooltip_text = NULL) {
-    el <- shiny::div(
-      style = "flex: 1 1 0; min-width: 100px;",
-      shiny::selectizeInput(
-        id, label,
-        choices = NULL, selected = NULL,
-        width = "100%",
-        options = list(placeholder = "V\u00e6lg...")
-      )
-    )
-    if (!is.null(tooltip_text)) {
-      el <- el |> bslib::tooltip(tooltip_text, placement = "top", options = list(fallbackPlacements = list("top", "bottom")))
+create_inline_column_mapping <- function(choices = character(0), mappings = list()) {
+  pretty_choices <- c(
+    stats::setNames("", "V\u00e6lg kolonne..."),
+    stats::setNames(as.character(choices), as.character(choices))
+  )
+
+  modal_select <- function(id, label, tooltip_text = NULL) {
+    selected <- mappings[[id]]
+    if (is.null(selected) || !nzchar(selected)) {
+      selected <- ""
     }
-    el
+
+    label_node <- if (!is.null(tooltip_text)) {
+      shiny::tagList(
+        label,
+        shiny::icon(
+          "circle-info",
+          style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;"
+        ) |>
+          bslib::tooltip(tooltip_text, placement = "right")
+      )
+    } else {
+      label
+    }
+
+    shiny::selectizeInput(
+      id, label_node,
+      choices = pretty_choices,
+      selected = selected,
+      width = "100%",
+      options = list(placeholder = "V\u00e6lg...", allowEmptyOption = TRUE)
+    )
   }
 
   shiny::div(
-    class = "column-mapping-row",
-    style = paste0(
-      "display: flex; gap: 6px; padding: 4px 0 8px 0; ",
-      "border-bottom: 1px solid #dee2e6; margin-bottom: 8px;"
-    ),
-    # Begraens selectize input-felt til en linje, men lad dropdown vise fulde navne
-    shiny::tags$style(shiny::HTML(paste0(
-      ".column-mapping-row .selectize-input { height: 36px; overflow: hidden; }",
-      ".column-mapping-row .selectize-input > .item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
-      ".column-mapping-row .selectize-dropdown .option { white-space: normal; overflow: visible; }"
-    ))),
-    compact_select(
-      "x_column", "X-akse",
-      paste0(
-        "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned). ",
-        "Underst\u00f8ttede datoformater: 15-03-2024, 15/03/2024, 15.03.2024, 2024-03-15 ",
-        "eller \"15 mar 2024\". Andre tekster bruges som observationsnumre."
+    class = "column-mapping-modal",
+    shiny::tags$style(shiny::HTML(
+      ".column-mapping-modal .selectize-dropdown { z-index: 1080 !important; }"
+    )),
+    bslib::layout_columns(
+      col_widths = c(6, 6),
+      modal_select(
+        "x_column", "Tid/kategori (X-akse)",
+        paste0(
+          "Kolonne med tidspunkter eller observationsnumre (fx Dato, Uge, M\u00e5ned). ",
+          "Underst\u00f8ttede datoformater: 15-03-2024, 15/03/2024, 15.03.2024, 2024-03-15 ",
+          "eller \"15 mar 2024\". Andre tekster bruges som observationsnumre."
+        )
+      ),
+      modal_select(
+        "y_column", "T\u00e6ller (Y-akse)",
+        "Kolonne med den v\u00e6rdi der skal f\u00f8lges (fx antal, ventetid, score)"
+      ),
+      modal_select(
+        "n_column", "N\u00e6vner (Y-akse)",
+        paste0(
+          "V\u00e6lg en n\u00e6vner-kolonne hvis du arbejder med ",
+          "andele eller rater (fx infektioner pr. 100 patienter). ",
+          "Ellers kan du springe dette felt over."
+        )
+      ),
+      modal_select(
+        "skift_column", "Skift",
+        "Opdeler diagrammet i faser ved kendte proces\u00e6ndringer. Kolonne med TRUE/1 markerer nye faser (tilf\u00f8jes automatisk hvis den mangler)."
+      ),
+      modal_select(
+        "frys_column", "Frys",
+        "L\u00e5ser kontrolgr\u00e6nser baseret p\u00e5 en baseline-periode. Kolonne med TRUE/1 markerer baseline-punkter (tilf\u00f8jes automatisk hvis den mangler)."
+      ),
+      modal_select(
+        "kommentar_column", "Kommentar",
+        "Valgfri: Kolonne med kommentarer eller noter"
       )
-    ),
-    compact_select(
-      "y_column", "Y-akse",
-      "Kolonne med den v\u00e6rdi der skal f\u00f8lges (fx antal, ventetid, score)"
-    ),
-    compact_select(
-      "n_column", "N\u00e6vner (n)",
-      paste0(
-        "V\u00e6lg en n\u00e6vner-kolonne hvis du arbejder med ",
-        "andele eller rater (fx infektioner pr. 100 patienter). ",
-        "Ellers kan du springe dette felt over."
-      )
-    ),
-    compact_select(
-      "skift_column", "Skift",
-      "Opdeler diagrammet i faser ved kendte proces\u00e6ndringer. Kolonne med TRUE/1 markerer nye faser (tilf\u00f8jes automatisk hvis den mangler)."
-    ),
-    compact_select(
-      "frys_column", "Frys",
-      "L\u00e5ser kontrolgr\u00e6nser baseret p\u00e5 en baseline-periode. Kolonne med TRUE/1 markerer baseline-punkter (tilf\u00f8jes automatisk hvis den mangler)."
-    ),
-    compact_select(
-      "kommentar_column", "Kommentar",
-      "Valgfri: Kolonne med kommentarer eller noter"
     )
   )
 }

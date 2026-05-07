@@ -55,10 +55,11 @@ test_that("log_info redakterer nøgle-navne der matcher secret-mønster", {
       details = list(api_key = "super_hemmeligt", rows = 42L)
     )
   )
-  expect_false(grepl("super_hemmeligt", paste(output, collapse = "")),
+  combined <- paste(output, collapse = "")
+  expect_false(grepl("super_hemmeligt", combined),
     info = "api_key-værdien må ikke fremgå af log-output"
   )
-  expect_true(grepl("REDACTED", paste(output, collapse = "")),
+  expect_true(grepl("REDACTED", combined),
     info = "Redakteret felt skal indeholde REDACTED"
   )
 })

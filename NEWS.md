@@ -7,6 +7,11 @@
 
 # biSPCharts 0.3.3
 
+## Interne ændringer
+
+* Tilføjet `docs/ENVIRONMENT_VARIABLES.md` med samlet oversigt over alle
+  env-vars — types, defaults, call sites og boot-validering. (#459)
+
 ## Nye features
 
 * **Eliminer dobbelt-render af analyse-graf efter data-upload (#610):**
@@ -40,6 +45,12 @@
   bruges af biSPCharts' egne LLM-context- og PDF-eksport-flows. (#175)
 
 ## Bug fixes
+
+* **Cache-key kollision i `generate_shared_data_signature()`:** Cache-nøglen
+  baserede sig på sampling af first/middle/last row, hvilket kunne give
+  kollision for datasæt med identiske endepunkter men forskelle i mellemliggende
+  rækker (fx kun i anden række af 10). Beregner nu altid full xxhash64-digest
+  af hele data-frame'en — eliminerer kollisionsrisikoen helt. (#494)
 
 * **PDF-eksport: forkert Mari-variant (Heavy) i body-tekst.** Typst's
   font-matcher valgte `Mari-Heavy.otf` til `set text(font: "Mari")`-render
@@ -107,6 +118,11 @@
   ej længere Lato.
 
 ## Interne ændringer
+
+* Udvid integration-test-coverage for `mod_landing_server` click-handlere:
+  `restore_saved_session`-klik sender `performSessionRestore` til
+  `parent_session`, og `discard_saved_session`-klik sender
+  `discardPendingRestore` + nulstiller `peek_result`. (#590)
 
 * Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`
   (template + `.DS_Store`) og `bfh_horisonal.typ`-eksempel. BFHcharts ejer

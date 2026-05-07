@@ -43,3 +43,69 @@ test_that("log_error accepterer details som liste", {
     )
   )
 })
+
+# Secret-redaktion (#575) =====================================================
+
+test_that("log_info redakterer nøgle-navne der matcher secret-mønster", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
+  output <- capture.output(
+    log_info(
+      "test",
+      .context = "TEST",
+      details = list(api_key = "super_hemmeligt", rows = 42L)
+    )
+  )
+  combined <- paste(output, collapse = "")
+  expect_false(grepl("super_hemmeligt", combined),
+    info = "api_key-værdien må ikke fremgå af log-output"
+  )
+  expect_true(grepl("REDACTED", combined),
+    info = "Redakteret felt skal indeholde REDACTED"
+  )
+})
+
+test_that("log_warn redakterer token-felt i details", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
+  output <- capture.output(
+    log_warn(
+      "test",
+      .context = "TEST",
+      details = list(token = "ghp_ABC123", user = "alice")
+    )
+  )
+  combined <- paste(output, collapse = "")
+  expect_false(grepl("ghp_ABC123", combined))
+  expect_true(grepl("REDACTED", combined))
+  # Ikke-hemmelige felter forbliver synlige
+  expect_true(grepl("alice", combined))
+})
+
+test_that("log_error redakterer password-felt i details", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
+  output <- capture.output(
+    log_error(
+      "test",
+      .context = "TEST",
+      details = list(password = "hemlig123", reason = "auth_failed")
+    )
+  )
+  combined <- paste(output, collapse = "")
+  expect_false(grepl("hemlig123", combined))
+  expect_true(grepl("REDACTED", combined))
+})
+
+test_that("log_info bevarer ikke-hemmelige felter uændrede", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
+  output <- capture.output(
+    log_info(
+      "test",
+      .context = "TEST",
+      details = list(rows = 42L, session_id = "abc", chart_type = "run")
+    )
+  )
+  combined <- paste(output, collapse = "")
+  expect_true(grepl("42", combined))
+  expect_true(grepl("abc", combined))
+  expect_true(grepl("run", combined))
+  expect_false(grepl("REDACTED", combined))
+})

@@ -77,3 +77,26 @@ test_that("detect_csv_delimiter rejects one-column content as not parseable", {
   expect_equal(result$ncol, 0L)
   expect_equal(result$nrow, 0L)
 })
+
+test_that("detect_csv_delimiter parser UTF-8 BOM + semikolon korrekt", {
+  require_internal("detect_csv_delimiter", mode = "function")
+
+  # UTF-8 BOM = EF BB BF — tilføjes af Windows Notepad/Excel ved CSV-eksport
+  bom <- "\xef\xbb\xbf"
+  path <- tempfile(fileext = ".csv")
+  writeBin(
+    chartr("", "", paste0(bom, "Date;Count;Denominator\n2024-01-01;10,5;100\n2024-02-01;11,5;120\n")),
+    con = path
+  )
+  on.exit(unlink(path), add = TRUE)
+
+  result <- detect_csv_delimiter(path)
+
+  expect_true(result$parseable,
+    info = "BOM-prefixet fil skal fortsat genkendes som parseable"
+  )
+  expect_equal(result$strategy, "semikolon")
+  expect_equal(result$delimiter, ";")
+  expect_equal(result$ncol, 3L)
+  expect_equal(result$nrow, 2L)
+})

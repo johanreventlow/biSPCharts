@@ -4,6 +4,8 @@
 
 library(testthat)
 
+set.seed(42) # reproducibilitet: make_qic_data bruger runif()
+
 # Hjælper: lav minimal qic_data med n observationer
 make_qic_data <- function(n_obs, n_crossings_min = NA, n_crossings = NA) {
   data.frame(

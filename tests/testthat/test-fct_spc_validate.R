@@ -107,6 +107,31 @@ test_that("validate_spc_request kaster spc_input_error ved manglende n_var for p
   )
 })
 
+# 0-row pipeline (#588) =======================================================
+
+test_that("compute_spc_results_bfh kaster spc_input_error ved 0 rækker", {
+  empty_df <- data.frame(
+    dato = as.Date(character(0)),
+    vaerdi = numeric(0)
+  )
+  expect_error(
+    compute_spc_results_bfh(empty_df, "dato", "vaerdi", "run"),
+    class = "spc_input_error"
+  )
+})
+
+test_that("compute_spc_results_bfh fejlbesked nævner 'tom' eller 'empty' ved 0 rækker", {
+  empty_df <- data.frame(dato = as.Date(character(0)), vaerdi = numeric(0))
+  err <- tryCatch(
+    compute_spc_results_bfh(empty_df, "dato", "vaerdi", "run"),
+    spc_input_error = function(e) e
+  )
+  expect_true(
+    grepl("tom|empty|ingen|0", conditionMessage(err), ignore.case = TRUE),
+    info = paste("Fejlbesked mangler 'tom'/'empty'/'ingen'/'0':", conditionMessage(err))
+  )
+})
+
 test_that("validate_spc_request accepterer p-kort med n_var", {
   df <- data.frame(dato = 1:10, tæller = 1:10, naevner = rep(100L, 10))
   req <- validate_spc_request(df, "dato", "tæller", "p", n_var = "naevner")

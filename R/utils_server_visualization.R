@@ -160,6 +160,10 @@ setup_visualization <- function(input, output, session, app_state) {
   }), millis = DEBOUNCE_DELAYS$chart_update)
 
   # Initialiser visualiserings modul - no debouncing for valuebox stability
+  # NB: Module-id "visualization" er hardcoded i inst/app/www/viewport-ready.js
+  # (selectorer #visualization-spc_plot_actual + visualization-viewport_ready
+  # input-id). Hvis id'et omdoebes, skal JS-filen opdateres synkront — ellers
+  # silent-break af Issue #610 cold-start-gating.
   visualization <- visualizationModuleServer(
     "visualization",
     column_config_reactive = column_config,

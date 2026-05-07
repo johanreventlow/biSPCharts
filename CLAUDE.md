@@ -60,7 +60,7 @@ observeEvent(app_state$events$data_updated,
 ```
 
 **Filer:** `global.R` (events), `R/utils_server_event_listeners.R` (`setup_event_listeners()`),
-emit API via `create_emit_api()`.
+emit API via `create_emit_api()`. **Rationale:** `docs/adr/ADR-003-unified-event-architecture.md`.
 
 ### App State Structure
 
@@ -72,6 +72,9 @@ app_state$data       # current_data, original_data, file_info
 app_state$columns    # auto_detect, mappings, ui_sync
 app_state$session    # Session state
 ```
+
+**Rationale:** `docs/adr/ADR-004-hierarchical-app-state.md`. Race-prevention
+strategi: `docs/adr/ADR-006-hybrid-anti-race-strategy.md`.
 
 ### Golem Configuration
 
@@ -92,6 +95,7 @@ Auto-save (debounce 2s data / 1s settings) + auto-restore via localStorage.
 Schema-version-gate (`LOCAL_STORAGE_SCHEMA_VERSION`). Class-preservation per
 kolonne. Detaljer: `R/utils_local_storage.R`,
 `R/utils_server_server_management.R`, `inst/app/www/local-storage.js`.
+**Rationale:** `docs/adr/ADR-005-session-persistence-localstorage.md`.
 
 ### Excel I/O
 

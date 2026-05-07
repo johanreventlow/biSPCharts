@@ -10,8 +10,8 @@ Named list med viewport parametre
 VIEWPORT_DEFAULTS
 }
 \description{
-Standard viewport st\u00f8rrelse og DPI settings til konsistent plot rendering.
-Disse v\u00e6rdier bruges som fallback n\u00e5r viewport dimensioner ikke er tilg\u00e6ngelige.
+Standard viewport stoerrelse og DPI settings til konsistent plot rendering.
+Disse vaerdier bruges som fallback naar viewport dimensioner ikke er tilgaengelige.
 }
 \details{
 \itemize{

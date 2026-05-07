@@ -2,14 +2,14 @@
 % Please edit documentation in R/config_ui.R
 \name{UI_HEIGHTS}
 \alias{UI_HEIGHTS}
-\title{Standard h\u00f8jder for UI komponenter}
+\title{Standard hoejder for UI komponenter}
 \format{
-Named list med CSS h\u00f8jde strings
+Named list med CSS hoejde strings
 }
 \usage{
 UI_HEIGHTS
 }
 \description{
-CSS h\u00f8jde v\u00e6rdier til konsistent UI layout p\u00e5 tv\u00e6rs af komponenter.
+CSS hoejde vaerdier til konsistent UI layout paa tvaers af komponenter.
 }
 \keyword{internal}

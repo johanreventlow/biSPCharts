@@ -10,6 +10,6 @@ Named list med numeriske vektorer for kolonne bredder
 UI_COLUMN_WIDTHS
 }
 \description{
-Pr\u00e6definerede kolonne bredde kombinationer til bslib layout systemer.
+Praedefinerede kolonne bredde kombinationer til bslib layout systemer.
 }
 \keyword{internal}

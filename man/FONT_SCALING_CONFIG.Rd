@@ -10,30 +10,30 @@ Named list med scaling parametre
 FONT_SCALING_CONFIG
 }
 \description{
-Styrer hvordan base_size skaleres baseret p\u00e5 viewport dimensioner.
+Styrer hvordan base_size skaleres baseret paa viewport dimensioner.
 }
 \details{
 base_size beregnes som: max(min_size, min(max_size, viewport_diagonal / divisor))
 hvor viewport_diagonal = sqrt(width_px * height_px)
 
-GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width \u00d7 height)) giver balanced
-scaling baseret p\u00e5 b\u00e5de bredde og h\u00f8jde. Dette sikrer at fonts skalerer
-intuitivt med den samlede plotst\u00f8rrelse, ikke kun \u00e9n dimension.
+GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width x height)) giver balanced
+scaling baseret paa baade bredde og hoejde. Dette sikrer at fonts skalerer
+intuitivt med den samlede plotstoerrelse, ikke kun en dimension.
 
 VIGTIG: Shiny's renderPlot() multiplicerer automatisk res med pixelratio,
-s\u00e5 vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
-visuel st\u00f8rrelse p\u00e5 tv\u00e6rs af standard og Retina displays.
+saa vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
+visuel stoerrelse paa tvaers af standard og Retina displays.
 \itemize{
-\item divisor: Lavere v\u00e6rdi = st\u00f8rre fonts (40 = ~40\% st\u00f8rre end 56)
+\item divisor: Lavere vaerdi = stoerre fonts (40 = ~40\% stoerre end 56)
 \item min_size: Minimum font size uanset viewport
-\item max_size: Maximum font size selv p\u00e5 store sk\u00e6rme
+\item max_size: Maximum font size selv paa store skaerme
 }
 
 Eksempler ved divisor = 56:
 \itemize{
-\item 700\u00d7500px viewport: diagonal = 836px \u2192 base_size = 14.9pt
-\item 1000\u00d7800px viewport: diagonal = 894px \u2192 base_size = 16.0pt
-\item 1400\u00d7900px viewport: diagonal = 1668px \u2192 base_size = 29.8pt
+\item 700x500px viewport: diagonal = 836px -> base_size = 14.9pt
+\item 1000x800px viewport: diagonal = 894px -> base_size = 16.0pt
+\item 1400x900px viewport: diagonal = 1668px -> base_size = 29.8pt
 }
 }
 \keyword{internal}

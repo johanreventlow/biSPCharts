@@ -134,16 +134,19 @@ test_that("generateSPCPlot accepts plot_context parameter", {
     n_col = NULL
   )
 
-  # Test that plot generation works with context parameter
-  # Note: BFHcharts may produce warnings about fonts - this is expected
-  result <- generateSPCPlot(
+  # Test that plot generation works with context parameter.
+  # suppressWarnings(): BFHcharts emitterer FONT_FALLBACK-warning når CI-runner
+  # mangler de proprietære BFH-fonte (forventet — env har ej BFHchartsAssets).
+  # Warning ville bryde release-gate (#650). Upstream BFHcharts bør konvertere
+  # FONT_FALLBACK warning() → message() (tracked separat).
+  result <- suppressWarnings(generateSPCPlot(
     data = test_data,
     config = config,
     chart_type = "i",
     viewport_width = 800,
     viewport_height = 600,
     plot_context = "analysis"
-  )
+  ))
 
   expect_type(result, "list")
   expect_true("plot" %in% names(result))

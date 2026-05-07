@@ -1,5 +1,5 @@
 metadata:
-  total_files: 181
+  total_files: 182
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
@@ -1410,3 +1410,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-viewport-ready-signal.R
+  audit_category: post-audit
+  type: integration
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-07'
+  rationale: Tilfoejet manuelt — fil oprettet ifm. Issue #610 (viewport_ready signal).

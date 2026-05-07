@@ -66,8 +66,10 @@ create_spc_results_reactive <- function(
 
     # M11: Context-aware cache key for plot isolation
     # Issue #62: Separate cache per context to prevent dimension bleeding
+    # Issue #610: Single source of truth — vp dims fra inputs (sat via
+    # viewport_ready event), ikke get_viewport_dims(app_state). Dette
+    # forhindrer split-brain mellem cache-key og BFHcharts-kald.
     plot_context <- "analysis" # Analyse-side always uses "analysis" context
-    vp_dims <- get_viewport_dims(app_state)
 
     cache_key <- digest::digest(
       list(
@@ -84,8 +86,8 @@ create_spc_results_reactive <- function(
         inputs$y_axis_unit,
         inputs$kommentar_column,
         inputs$base_size, # FIX: Invalider cache ved breddeaendring/fuldskaerm
-        vp_dims$width, # NEW: Viewport width for dimension-aware caching
-        vp_dims$height # NEW: Viewport height for dimension-aware caching
+        inputs$viewport_width_px, # Issue #610: from inputs (single source)
+        inputs$viewport_height_px # Issue #610: from inputs (single source)
       ),
       algo = "xxhash64"
     )
@@ -143,8 +145,8 @@ create_spc_results_reactive <- function(
     computation <- safe_operation(
       "Generate SPC plot",
       code = {
-        # M10: Hent viewport dimensions fra centraliseret state
-        vp_dims <- get_viewport_dims(app_state)
+        # Issue #610: Viewport dims fra inputs (single source) — ikke
+        # get_viewport_dims(app_state) som ville aabne for split-brain.
 
         # SPRINT 4: Pass QIC cache for performance optimization
         qic_cache <- if (!is.null(app_state) && !is.null(app_state$cache)) {
@@ -167,8 +169,8 @@ create_spc_results_reactive <- function(
           y_axis_unit = inputs$y_axis_unit,
           kommentar_column = inputs$kommentar_column,
           base_size = inputs$base_size,
-          viewport_width = vp_dims$width,
-          viewport_height = vp_dims$height,
+          viewport_width = inputs$viewport_width_px,
+          viewport_height = inputs$viewport_height_px,
           qic_cache = qic_cache,
           app_state = app_state,
           plot_context = "analysis" # M11: Analyse-side uses "analysis" context
@@ -301,8 +303,9 @@ create_spc_results_reactive <- function(
       inputs <- spc_inputs_reactive()
       # M11: Context-aware cache binding
       # Issue #62: Include context and viewport dimensions for cache isolation
+      # Issue #610: vp dims fra inputs (single source) — sammen med cache-key
+      # i reactive body for at undgaa split-brain.
       plot_context <- "analysis"
-      vp_dims <- get_viewport_dims(app_state)
 
       list(
         "spc_results",
@@ -318,9 +321,9 @@ create_spc_results_reactive <- function(
         inputs$title,
         inputs$y_axis_unit,
         inputs$kommentar_column,
-        inputs$base_size, # FIX: Invalider cache ved breddeaendring/fuldskaerm
-        vp_dims$width, # NEW: Invalidate cache on viewport width change
-        vp_dims$height # NEW: Invalidate cache on viewport height change
+        inputs$base_size,
+        inputs$viewport_width_px,
+        inputs$viewport_height_px
       )
     })
 }

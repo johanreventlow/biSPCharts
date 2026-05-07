@@ -143,6 +143,30 @@ ADRs er **immutable** efter accept:
 |-----|-------|--------|------|
 | [ADR-001](./ADR-001-pure-bfhcharts-workflow.md) | Pure BFHcharts Workflow for SPC Calculation | Accepted | 2025-10-10 |
 | [ADR-002](./ADR-002-ui-sync-throttle-250ms.md) | UI Sync Throttle 250ms | Accepted | 2025-10-10 |
+| [ADR-014](./ADR-014-deprecate-optimized-event-pipeline.md) | Deprecate Optimized Event Pipeline | Accepted | — |
+| [ADR-015](./ADR-015-bfhchart-migrering.md) | BFHcharts Migration (Hybrid Architecture) | Accepted | — |
+| [ADR-016](./ADR-016-gemini-integration.md) | Gemini AI Integration | Accepted | — |
+| [ADR-017](./ADR-017-test-regression-gate-design.md) | Test Regression Gate Design | Accepted | — |
+| [ADR-018](./ADR-018-minimal-public-api-surface.md) | Minimal Public API Surface | Accepted | — |
+| [ADR-019](./ADR-019-production-entrypoint-and-pkgload-boundary.md) | Production Entrypoint and pkgload Boundary | Accepted | — |
+
+### Nummereringsgap: ADR-003..ADR-013
+
+ADR-numrene 003-013 er **ikke allokerede**. Følgende load-bearing
+arkitektoniske beslutninger bør retroaktivt dokumenteres som ADRs (se
+issue #531 — udskudt arbejde):
+
+- Unified event-architecture (event-bus + emit + prioriterede observers)
+- Centraliseret app_state-design + hierarkisk reactiveValues-struktur
+- Session-persistence via localStorage (issue #193)
+- Hybrid Anti-Race Strategy (5-lags race-prevention)
+
+Indtil ADRs er skrevet, refererer CLAUDE.md (sektion 2) til den primære
+kode-implementation: `R/utils_server_event_listeners.R`,
+`R/state_management.R`, `R/utils_local_storage.R`.
+
+Nye ADRs efter denne note bør fortsætte fra ADR-020+ for at undgå
+forvirring med det dokumenterede gap.
 
 ## Søgning i ADRs
 

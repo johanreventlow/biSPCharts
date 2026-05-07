@@ -103,8 +103,6 @@ read_shinylogs_all <- function(log_directory) {
   )
 }
 
-`%||%` <- function(x, y) if (is.null(x)) y else x
-
 #' Roter log-filer (komprimer gamle, slet meget gamle)
 #'
 #' @param log_directory Sti til log-mappe
@@ -133,7 +131,7 @@ rotate_log_files <- function(log_directory,
       tryCatch(
         {
           con <- gzfile(paste0(f, ".gz"), "wb")
-          writeLines(readLines(f), con)
+          writeLines(readLines(f, encoding = "UTF-8"), con)
           close(con)
           unlink(f)
         },

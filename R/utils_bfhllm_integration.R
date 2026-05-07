@@ -201,8 +201,11 @@ is_bfhllm_available <- function() {
   # propagerer op til kalder. Matcher graceful-degradation-kontrakt
   # i CLAUDE.md §6 ("NULL + log warning ved fejl") og samme pattern
   # som generate_bfhllm_suggestion() bruger til chat-kald.
+  # suppressWarnings(): BFHllm::bfhllm_validate_setup() kalder warning() ved
+  # manglende API-key (forventet i CI + ved unsat env). Egen log_warn nedenfor
+  # dækker observability — upstream-warning ville bryde test-gate (#650).
   available <- tryCatch(
-    BFHllm::bfhllm_chat_available(),
+    suppressWarnings(BFHllm::bfhllm_chat_available()),
     error = function(e) {
       log_warn(
         sprintf("BFHllm probe fejlede: %s", e$message),

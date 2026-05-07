@@ -60,13 +60,17 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   )
 
   # Gate: Plot renderet -> unlock trin 3, enable Fortsaet-knap
-  shiny::observe({
+  # priority = UI_SYNC (750): korer efter state-opdateringer, undgaar dobbelt-
+  # trigger naar plot_ready flippes FALSE->TRUE i samme reactive cyklus.
+  shiny::observe(priority = OBSERVER_PRIORITIES$UI_SYNC, {
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
       session$sendCustomMessage("wizard-complete-step", 2)
       session$sendCustomMessage("wizard-unlock-step", 3)
       shinyjs::enable("continue_to_export")
     } else {
+      # Kun send lock-beskeder naar plot_ready eksplicit er FALSE (ej NULL ved init)
+      req(!is.null(plot_ready))
       session$sendCustomMessage("wizard-uncomplete-step", 2)
       session$sendCustomMessage("wizard-lock-step", 3)
       shinyjs::disable("continue_to_export")
@@ -74,7 +78,8 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   })
 
   # Gem-knap: aktiv naar data er uploadet (trin 2 og trin 3)
-  shiny::observe({
+  # priority = UI_SYNC (750): korer efter state-opdateringer
+  shiny::observe(priority = OBSERVER_PRIORITIES$UI_SYNC, {
     has_data <- isTRUE(app_state$session$file_uploaded) ||
       (!is.null(app_state$data$current_data) &&
         nrow(app_state$data$current_data) > 0)

@@ -395,13 +395,15 @@ test_that("generateSPCPlot comment annotations work", {
   config <- list(x_col = "Obs", y_col = "Tæller", n_col = "Nævner")
 
   # TEST: With comments
-  comment_result <- generateSPCPlot(
+  # suppressWarnings(): BFHcharts FONT_FALLBACK-warning når CI mangler BFH-fonte.
+  # Se test-context-aware-plots.R for detaljer (#650).
+  comment_result <- suppressWarnings(generateSPCPlot(
     data = comment_data,
     config = config,
     chart_type = "p",
     kommentar_column = "Kommentar",
     chart_title_reactive = reactive("Comment Test")
-  )
+  ))
 
   expect_s3_class(comment_result$plot, "ggplot")
 

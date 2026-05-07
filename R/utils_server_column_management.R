@@ -229,9 +229,9 @@ show_column_mapping_modal <- function(session, app_state) {
     footer = shiny::tagList(
       shiny::actionButton(
         "auto_detect_columns",
-        label = "Auto-detektér kolonner",
+        label = "Auto-detekt\u00e9r kolonner",
         icon = shiny::icon("magic"),
-        title = "Lad appen forslå kolonne-tildelinger ud fra data",
+        title = "Lad appen forsl\u00e5 kolonne-tildelinger ud fra data",
         class = "btn-primary"
       ),
       shiny::modalButton("Luk")

@@ -252,7 +252,11 @@ create_app_state <- function() {
     ),
 
     # AUTODEFAULT FLAGS
-    y_axis_unit_autoset_done = FALSE
+    y_axis_unit_autoset_done = FALSE,
+
+    # Senest auto-genereret analysetekst (migrated from reactiveVal i mod_export_analysis.R)
+    # ADR-004: hører i app_state$ui da tracking-state er session-global, ikke module-intern.
+    last_auto_analysis = ""
   )
 
   # UI Cache - Track last known user input selections to preserve intent during updates

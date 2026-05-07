@@ -88,6 +88,9 @@ register_viewport_observer <- function(
   # browsers (Issue #610 acceptance criterion).
   .scheduler(
     function() {
+      if (!isTRUE(app_state$infrastructure$session_active)) {
+        return(invisible(NULL))
+      }
       if (isTRUE(shiny::isolate(app_state$visualization$viewport_ready))) {
         return(invisible(NULL))
       }

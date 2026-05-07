@@ -62,11 +62,32 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
     # PREVIEW GENERATION ======================================================
 
+    # METADATA-INPUT-DEBOUNCE (#646) ==========================================
+    # Debounce title + department paa input-niveau (1500ms). Tidligere blev
+    # hele export_plot/pdf_export_plot debounced med 500/1000ms, men det
+    # ramte ogsaa png_width/png_height-skift (spinner-klik). Per-input-debounce
+    # adskiller cosmetic-typing (slow debounce) fra dimension-skift (snappy).
+    debounced_title <- shiny::debounce(
+      shiny::reactive(input$export_title %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
+    debounced_dept <- shiny::debounce(
+      shiny::reactive(input$export_department %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
+
     # Export plot reactive - regenerates plot with export-specific dimensions
     # Issue #61: Separate plot generation with context "export_preview" (800x450px)
     # Issue #62: Cache isolated from analysis context
-    # Debounced to prevent excessive re-rendering when user types metadata
+    # Issue #646: title/dept debounced paa input-niveau (1500ms) — png_width/
+    # png_height passerer reactive uden delay for snappy spinner-respons.
     export_plot <- shiny::reactive({
+      # TAB-GUARD (Issue #644): hejs guard fra renderPlot til selve reactive.
+      # Tidligere fyrede export_plot paa fremmed tab fordi register_analysis_autogen
+      # observerede reactive paa tvaers af tab-skift. Reactive-niveau-guard
+      # eliminerer Typst-render + BFH-compute paa upload/analyser-tab.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       chart_type <- resolve_export_chart_type(app_state)
 
       # Single req() call for all required dependencies
@@ -90,10 +111,9 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         message = "export_plot() reactive - all req() checks passed, generating plot"
       )
 
-      # Read export metadata inputs (triggers reactive dependency)
-      # Note: Use %||% to ensure reactive dependency is tracked even if NULL
-      title_input <- input$export_title %||% ""
-      dept_input <- input$export_department %||% ""
+      # Read DEBOUNCED metadata inputs (#646)
+      title_input <- debounced_title()
+      dept_input <- debounced_dept()
 
       # Beregn preview-dimensioner (samme proportioner som brugerens valg,
       # men skaleret til preview-bredde 800px). Disse SKAL matche renderPlot's
@@ -112,7 +132,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         override_width_px = preview_width,
         override_height_px = preview_height
       )
-    }) |> shiny::debounce(millis = 500) # Debounce metadata changes for performance
+    })
 
     # PDF EXPORT PLOT GENERATION ==============================================
 
@@ -120,8 +140,11 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # This ensures correct label placement for high-res print output
     # (200x120mm @ 300 DPI = ~2362x1417px)
     # Issue #65: Use shared helper to reduce code duplication
-    # Issue #67: Helper is undebounced; reactive debounces for preview performance
+    # Issue #646: Title/dept debounced paa input-niveau via debounced_title/dept
     pdf_export_plot <- shiny::reactive({
+      # TAB-GUARD (Issue #644): kun beregn pdf_export_plot paa eksporter-tab.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       shiny::req(
         app_state,
         app_state$data$current_data,
@@ -129,13 +152,13 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         app_state$columns$mappings$y_column
       )
 
-      # Read export metadata inputs (triggers reactive dependency)
-      title_input <- input$export_title %||% ""
-      dept_input <- input$export_department %||% ""
+      # Read DEBOUNCED metadata inputs (#646)
+      title_input <- debounced_title()
+      dept_input <- debounced_dept()
 
       # Issue #65: Use shared helper with "export_pdf" context
       build_export_plot(app_state, title_input, dept_input, "export_pdf")
-    }) |> shiny::debounce(millis = 1000) # Debounce for preview performance
+    })
 
     # EXPORT PREVIEW RENDERING ================================================
 
@@ -281,12 +304,32 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # PDF preview reactive - generates PNG preview of Typst PDF layout
     # Only active when format is "pdf"
     # Debounced metadata-inputs til PDF preview (undgaar re-render per tastetryk)
-    debounced_analysis <- shiny::debounce(shiny::reactive(input$pdf_improvement %||% ""), millis = 1000)
-    debounced_data_def <- shiny::debounce(shiny::reactive(input$pdf_description %||% ""), millis = 1000)
-    debounced_hospital <- shiny::debounce(shiny::reactive(input$export_hospital %||% ""), millis = 1000)
-    debounced_footnote <- shiny::debounce(shiny::reactive(input$export_footnote %||% ""), millis = 1000)
+    # Issue #646: hejs debounce 1000 → 1500ms for at absorbere flere keystrokes
+    # i lange tekst-felter. Behold separate reactives for at undgaa unoedig
+    # kobling i pdf-preview-cascade.
+    debounced_analysis <- shiny::debounce(
+      shiny::reactive(input$pdf_improvement %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
+    debounced_data_def <- shiny::debounce(
+      shiny::reactive(input$pdf_description %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
+    debounced_hospital <- shiny::debounce(
+      shiny::reactive(input$export_hospital %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
+    debounced_footnote <- shiny::debounce(
+      shiny::reactive(input$export_footnote %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
 
     pdf_preview_image <- shiny::reactive({
+      # TAB-GUARD (Issue #644): Typst→PNG-render er dyr (~2s) og maa ej koere
+      # mens brugeren er paa upload/analyser-tab. Tidligere lakage skyldtes at
+      # output$pdf_preview kun tab-guardede output-niveauet, ikke reactive-bodyen.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       # Only generate for PDF format
       format <- input$export_format %||% "pdf"
       if (format != "pdf") {
@@ -381,7 +424,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         },
         error_type = "processing"
       )
-    }) |> shiny::debounce(millis = 1000) # Debounce for performance (PDF generation is slow)
+    }) |> shiny::debounce(millis = DEBOUNCE_DELAYS$metadata_input) # #646: 1500ms — Typst-render dyr, faerre cascades
 
     # PDF preview renderImage - displays PNG preview of Typst PDF layout
     output$pdf_preview <- shiny::renderImage(

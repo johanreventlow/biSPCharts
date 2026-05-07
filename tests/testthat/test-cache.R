@@ -403,5 +403,50 @@ test_that("cache invalidation is safe when cache functions don't exist", {
   }
 })
 
+# ===========================================================================
+# Issue #643: paste_data + session-contexts skal trigge structural clear,
+# ikke ramme conservative-fallback-grenen med WARN.
+# ===========================================================================
+
+test_that("invalidate_qic_cache_smart accepterer paste_data + session-contexts som structural", {
+  skip_if_not(
+    exists("invalidate_qic_cache_smart"),
+    "invalidate_qic_cache_smart not available"
+  )
+
+  # Minimal app_state med mock-cache
+  cache_cleared <- FALSE
+  mock_cache <- list(
+    clear = function() {
+      cache_cleared <<- TRUE
+    },
+    clear_prefix = function(prefix) {
+      cache_cleared <<- TRUE
+    }
+  )
+
+  build_state <- function() {
+    list(cache = list(qic = mock_cache))
+  }
+
+  whitelisted_contexts <- c(
+    "paste_data", "session_file_loaded",
+    "new_session", "session_restore"
+  )
+
+  for (ctx in whitelisted_contexts) {
+    cache_cleared <- FALSE
+    state <- build_state()
+
+    expect_no_warning(
+      invalidate_qic_cache_smart(state, list(context = ctx)),
+      message = sprintf("Context '%s' skal ikke trigge WARN-fallback", ctx)
+    )
+    expect_true(cache_cleared,
+      info = sprintf("Context '%s' skal trigge full cache-clear", ctx)
+    )
+  }
+})
+
 # Cleanup after all tests
 clear_performance_cache()

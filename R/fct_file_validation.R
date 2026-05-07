@@ -29,10 +29,10 @@ check_row_count_csv <- function(file_info) {
   }
   row_error <- tryCatch(
     {
-      con <- file(file_info$datapath, "r")
+      con <- file(file_info$datapath, "r", encoding = "UTF-8")
       on.exit(close(con), add = TRUE)
       max_lines <- get_max_upload_line_count()
-      lines <- readLines(con, n = max_lines + 1L, warn = FALSE)
+      lines <- readLines(con, n = max_lines + 1L, warn = FALSE, encoding = "UTF-8")
       line_count <- length(lines)
       if (line_count > get_upload_warning_row_count()) {
         log_warn("Large row count detected - performance risk",
@@ -43,7 +43,7 @@ check_row_count_csv <- function(file_info) {
       if (line_count > get_max_upload_line_count()) {
         paste0(
           "CSV fil har for mange r\u00e6kker (maksimum ",
-          format(get_max_upload_line_count(), big.mark = "."),
+          format(get_max_upload_line_count(), big.mark = ".", decimal.mark = ","),
           ")"
         )
       } else {

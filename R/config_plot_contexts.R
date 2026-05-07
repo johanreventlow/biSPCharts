@@ -175,10 +175,3 @@ validate_plot_context <- function(context, stop_on_invalid = TRUE) {
 
   return(is_valid)
 }
-
-# NULL coalescing operator (hvis ikke allerede defineret)
-if (!exists("%||%")) {
-  `%||%` <- function(x, y) {
-    if (is.null(x)) y else x
-  }
-}

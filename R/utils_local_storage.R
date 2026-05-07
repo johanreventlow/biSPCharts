@@ -167,9 +167,6 @@ restore_column_class <- function(values, class_info) {
   )
 }
 
-# Null-coalesce helper (defineret her hvis ikke globalt tilgængelig)
-`%||%` <- function(a, b) if (is.null(a)) b else a
-
 # LOCAL STORAGE FUNKTIONER ===================================================
 
 ## Local Storage funktioner til server med datastruktur preservation

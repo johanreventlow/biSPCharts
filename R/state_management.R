@@ -283,6 +283,11 @@ create_app_state <- function() {
       height = NULL,
       last_updated = NULL
     ),
+    # Issue #610: Cold-start gate. FALSE indtil first-layout signal modtages
+    # (browser ResizeObserver via input$viewport_ready, eller later::later
+    # fallback). spc_inputs_raw req()er paa denne for at undgaa syntetisk
+    # 800x600 cold-start render.
+    viewport_ready = FALSE,
     anhoej_results = list(
       # Initialize with default values instead of NULL to prevent "Beregner..." stuck state
       longest_run = NA_real_,

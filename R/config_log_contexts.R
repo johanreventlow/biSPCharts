@@ -119,7 +119,8 @@ LOG_CONTEXTS <- list(
     x_axis_format = "X_AXIS_FORMAT",
     y_axis_scaling = "Y_AXIS_SCALING",
     sync = "[UI_SYNC]", # Bracket format for consistency with legacy
-    y_axis_ui = "[Y_AXIS_UI]"
+    y_axis_ui = "[Y_AXIS_UI]",
+    viewport = "VIEWPORT_DIMENSIONS"
   ),
 
   # === Column Management ===

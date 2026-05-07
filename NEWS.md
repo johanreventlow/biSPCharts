@@ -3,19 +3,10 @@
 ## Nye features
 
 * **Eliminer dobbelt-render af analyse-graf efter data-upload (#610):**
-  Browser-side `ResizeObserver` (`inst/app/www/viewport-ready.js`) sender
-  nu et `viewport_ready`-signal til serveren først når plot-containeren
-  har fået en reel layout-måling. `spc_inputs_raw` er gated på dette
-  signal, hvilket eliminerer den syntetiske 800x600 cold-start-render
-  (Shiny's CSS-default container-størrelse rapporteres umiddelbart via
-  `session$clientData` før browseren har målt layout). Tidligere førte
-  dette til to separate analyse-renders per upload med forskellige
-  cache-keys. `spc_inputs` er nu single source of truth for viewport
-  i compute- og cache-pipelinen — tidligere eksisterede en split-brain
-  mellem `FONT_SCALING`'s viewport (clientData) og BFHcharts-kaldets
-  viewport (`get_viewport_dims(app_state)`). Fallback via
-  `later::later(2s)` sikrer at signalet flippes selv i miljøer uden
-  `ResizeObserver` (headless tests, JS deaktiveret).
+  Analyse-grafen rendres nu kun én gang efter upload. Tidligere udløste
+  Shiny's CSS-default container-størrelse (800×600) en syntetisk
+  cold-start-render før browseren havde målt det reelle viewport, hvilket
+  gav to separate beregninger med forskellige cache-keys per upload.
 
 * **Footnote-felt i PDF/PNG-eksport (#485):** Bruger kan nu tilføje
   klinisk attribution (datakilde, udtræksdato) i trin 3 (Eksport).

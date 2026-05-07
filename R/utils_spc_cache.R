@@ -258,7 +258,8 @@ get_cached_spc_result <- function(cache_key, cache) {
       cached_value <- cache$get(cache_key)
 
       if (!is.null(cached_value)) {
-        log_debug(
+        # Issue #647: hejs til INFO saa cache-hit synes uden DEBUG-level.
+        log_info(
           paste("Cache hit for key:", substr(cache_key, 1, 40), "..."),
           .context = "SPC_CACHE"
         )
@@ -314,7 +315,8 @@ cache_spc_result <- function(cache_key, result, cache, ttl = 3600) {
       # Store in cache
       cache$set(cache_key, result, timeout = ttl)
 
-      log_debug(
+      # Issue #647: hejs til INFO saa cache-store-ratio synes uden DEBUG-level.
+      log_info(
         paste(
           "Cached SPC result:",
           "key =", substr(cache_key, 1, 40), "...",

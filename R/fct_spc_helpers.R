@@ -35,7 +35,9 @@ is_column_numeric <- function(col, threshold = 0.5) {
 value_box_signal_theme <- function(status_info, signal) {
   colors <- get_hospital_colors()
   if (status_info$status == "ready" && isTRUE(signal)) {
-    # Signal detekteret: medium graa baggrund med hvid tekst (matcher btn-secondary)
+    # Signal detekteret: medium graa baggrund med hvid tekst (matcher btn-secondary).
+    # "#ffffff" er bevidst — brand-paletten har ingen white-farve; white-on-grey-mid
+    # er klinisk konvention for signal-tilstand (WCAG 4.5:1 kontrast OK).
     bslib::value_box_theme(bg = colors$ui_grey_mid, fg = "#ffffff")
   } else if (status_info$status == "ready") {
     # Ingen signal (OK): lys graa baggrund med moerk tekst

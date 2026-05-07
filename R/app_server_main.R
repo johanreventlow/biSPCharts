@@ -253,7 +253,9 @@ main_app_server <- function(input, output, session) {
   session_debugger$event("server_setup_complete")
   log_debug("All server components setup completed", .context = "SESSION_LIFECYCLE")
 
-  # FASE 3: Emit session_started event for name-only detection
+  # FASE 3: Emit session_started event for name-only detection.
+  # reactive(TRUE) + once = TRUE + ignoreInit = FALSE er bevidst:
+  # observer skal køre én gang straks ved session-start (init-trigger-pattern).
   shiny::observeEvent(shiny::reactive(TRUE),
     {
       emit$session_started()

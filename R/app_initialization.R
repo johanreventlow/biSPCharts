@@ -322,5 +322,5 @@ get_initialization_status_report <- function(init_results) {
     )
   }
 
-  return(do.call(rbind, status_rows))
+  dplyr::bind_rows(status_rows)
 }

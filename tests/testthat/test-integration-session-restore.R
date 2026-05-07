@@ -200,3 +200,88 @@ test_that("Landing module: set_session_peek_result haandterer discard-flow", {
   set_session_peek_result(app_state, list(has_payload = FALSE))
   expect_false(isTRUE(shiny::isolate(app_state$session$peek_result$has_payload)))
 })
+
+# ============================================================================
+# SUITE: Click-handler -> sendCustomMessage (Issue #590)
+#
+# Verificerer at klik paa restore/discard-knapperne sender korrekt
+# custom message til parent_session. Monkey-patcher parent_session$sendCustomMessage
+# for at fange opkald uden fuld browser-integration.
+# ============================================================================
+
+test_that("Landing module: restore_saved_session klik sender performSessionRestore til parent_session", {
+  skip_if_not_installed("shiny")
+
+  # Mock parent_session som capture-target for sendCustomMessage
+  parent_msgs <- list()
+  mock_parent_session <- list(
+    sendCustomMessage = function(type, message) {
+      parent_msgs[[length(parent_msgs) + 1L]] <<- list(type = type, message = message)
+      invisible(NULL)
+    }
+  )
+
+  app_state <- create_app_state()
+  set_session_peek_result(app_state, mock_local_storage_peek_result(has_payload = TRUE))
+
+  shiny::testServer(
+    mod_landing_server,
+    args = list(parent_session = mock_parent_session, app_state = app_state),
+    {
+      session$flushReact()
+
+      # Simuler klik paa "Gendan session"-knappen
+      session$setInputs(restore_saved_session = 1L)
+      session$flushReact()
+
+      # parent_session skal have modtaget performSessionRestore
+      types <- vapply(parent_msgs, `[[`, character(1L), "type")
+      expect_true("performSessionRestore" %in% types,
+        label = paste0(
+          "restore_saved_session-klik skal sende performSessionRestore til parent_session; ",
+          "modtagne types: ", paste(types, collapse = ", ")
+        )
+      )
+    }
+  )
+})
+
+test_that("Landing module: discard_saved_session klik nulstiller peek_result", {
+  skip_if_not_installed("shiny")
+
+  parent_msgs <- list()
+  mock_parent_session <- list(
+    sendCustomMessage = function(type, message) {
+      parent_msgs[[length(parent_msgs) + 1L]] <<- list(type = type, message = message)
+      invisible(NULL)
+    }
+  )
+
+  app_state <- create_app_state()
+  set_session_peek_result(app_state, mock_local_storage_peek_result(has_payload = TRUE))
+  expect_true(isTRUE(shiny::isolate(app_state$session$peek_result$has_payload)))
+
+  shiny::testServer(
+    mod_landing_server,
+    args = list(parent_session = mock_parent_session, app_state = app_state),
+    {
+      session$flushReact()
+
+      # Simuler klik paa "Start ny session"-knappen
+      session$setInputs(discard_saved_session = 1L)
+      session$flushReact()
+
+      # peek_result skal vaere clearet (has_payload = FALSE)
+      expect_false(
+        isTRUE(shiny::isolate(app_state$session$peek_result$has_payload)),
+        label = "discard_saved_session skal saette peek_result$has_payload = FALSE"
+      )
+
+      # parent_session skal have modtaget discardPendingRestore
+      types <- vapply(parent_msgs, `[[`, character(1L), "type")
+      expect_true("discardPendingRestore" %in% types,
+        label = "discard_saved_session-klik skal sende discardPendingRestore til parent_session"
+      )
+    }
+  )
+})

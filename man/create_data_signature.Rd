@@ -10,15 +10,15 @@ create_data_signature(data)
 \item{data}{Data frame}
 }
 \value{
-Data signature
+Data signatur
 }
 \description{
-Backward compatibility wrapper for existing code.
-Maps old create_data_signature() to new shared version.
+Baglæns-kompatibel wrapper for eksisterende kode.
+Mapper gammel create_data_signature() til ny shared version.
 }
 \details{
-This function provides backward compatibility for code that uses
-the old create_data_signature() function. New code should use
-generate_shared_data_signature() directly.
+Denne funktion sikrer baglæns-kompatibilitet for kode der bruger den
+gamle create_data_signature()-funktion. Ny kode bør bruge
+generate_shared_data_signature() direkte.
 }
 \keyword{internal}

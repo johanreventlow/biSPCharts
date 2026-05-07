@@ -210,6 +210,8 @@ manage_cache_size <- function(size_limit = NULL, app_state = NULL) {
 #' Henter cached result hvis det eksisterer og ikke er expired.
 #'
 #' @param cache_key Character string med cache key
+#' @param app_state Optional app_state for centralized cache resolution.
+#'   Default NULL bruger global cache env.
 #'
 #' @return Cached result eller NULL hvis ikke fundet/expired
 #'
@@ -247,6 +249,8 @@ get_cached_result <- function(cache_key, app_state = NULL) {
 #' @param cache_key Character string med cache key
 #' @param value Value at cache
 #' @param timeout_seconds Timeout i sekunder
+#' @param app_state Optional app_state for centralized cache resolution.
+#'   Default NULL bruger global cache env.
 #'
 cache_result <- function(cache_key, value, timeout_seconds, app_state = NULL) {
   cache_env <- resolve_performance_cache(app_state)

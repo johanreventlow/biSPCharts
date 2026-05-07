@@ -8,6 +8,9 @@ get_cached_result(cache_key, app_state = NULL)
 }
 \arguments{
 \item{cache_key}{Character string med cache key}
+
+\item{app_state}{Optional app_state for centralized cache resolution.
+Default NULL bruger global cache env.}
 }
 \value{
 Cached result eller NULL hvis ikke fundet/expired

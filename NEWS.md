@@ -101,6 +101,12 @@
 
 ## Interne ændringer
 
+* Extraheret `has_input_value()`-helper i `utils_server_events_chart.R`
+  (eliminerer 3 duplicate closures). (#463)
+
+* Fjernet defensiv `cat()`-fallback i `utils_advanced_debug.R` —
+  `log_msg()` er altid tilgaengelig ved pakke-load. (#463)
+
 * Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`
   (template + `.DS_Store`) og `bfh_horisonal.typ`-eksempel. BFHcharts ejer
   authoritative template og loader den via

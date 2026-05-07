@@ -1,9 +1,9 @@
 # ==============================================================================
 # CONFIG_UI.R
 # ==============================================================================
-# FORMÅL: UI layout constants, CSS styles og responsive font scaling configuration.
+# FORM\u00c5L: UI layout constants, CSS styles og responsive font scaling configuration.
 #         Centraliserer alle UI-relaterede dimensioner og styling for konsistent
-#         appearance på tværs af komponenter.
+#         appearance p\u00e5 tv\u00e6rs af komponenter.
 #
 # ANVENDES AF:
 #   - UI rendering (column widths, heights, styles)
@@ -21,7 +21,7 @@
 
 #' Standard kolonne bredder for UI
 #'
-#' Prædefinerede kolonne bredde kombinationer til bslib layout systemer.
+#' Pr\u00e6definerede kolonne bredde kombinationer til bslib layout systemer.
 #' @format Named list med numeriske vektorer for kolonne bredder
 #' @keywords internal
 UI_COLUMN_WIDTHS <- list(
@@ -31,10 +31,10 @@ UI_COLUMN_WIDTHS <- list(
   sidebar = c(3, 9)
 )
 
-#' Standard højder for UI komponenter
+#' Standard h\u00f8jder for UI komponenter
 #'
-#' CSS højde værdier til konsistent UI layout på tværs af komponenter.
-#' @format Named list med CSS højde strings
+#' CSS h\u00f8jde v\u00e6rdier til konsistent UI layout p\u00e5 tv\u00e6rs af komponenter.
+#' @format Named list med CSS h\u00f8jde strings
 #' @keywords internal
 UI_HEIGHTS <- list(
   logo = "40px",
@@ -82,28 +82,28 @@ UI_LAYOUT_PROPORTIONS <- list(
 
 #' Responsive font scaling configuration
 #'
-#' Styrer hvordan base_size skaleres baseret på viewport dimensioner.
+#' Styrer hvordan base_size skaleres baseret p\u00e5 viewport dimensioner.
 #'
 #' @details
 #' base_size beregnes som: max(min_size, min(max_size, viewport_diagonal / divisor))
 #' hvor viewport_diagonal = sqrt(width_px * height_px)
 #'
-#' GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width × height)) giver balanced
-#' scaling baseret på både bredde og højde. Dette sikrer at fonts skalerer
-#' intuitivt med den samlede plotstørrelse, ikke kun én dimension.
+#' GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width \u00d7 height)) giver balanced
+#' scaling baseret p\u00e5 b\u00e5de bredde og h\u00f8jde. Dette sikrer at fonts skalerer
+#' intuitivt med den samlede plotst\u00f8rrelse, ikke kun \u00e9n dimension.
 #'
 #' VIGTIG: Shiny's renderPlot() multiplicerer automatisk res med pixelratio,
-#' så vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
-#' visuel størrelse på tværs af standard og Retina displays.
+#' s\u00e5 vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
+#' visuel st\u00f8rrelse p\u00e5 tv\u00e6rs af standard og Retina displays.
 #'
-#' - divisor: Lavere værdi = større fonts (40 = ~40% større end 56)
+#' - divisor: Lavere v\u00e6rdi = st\u00f8rre fonts (40 = ~40% st\u00f8rre end 56)
 #' - min_size: Minimum font size uanset viewport
-#' - max_size: Maximum font size selv på store skærme
+#' - max_size: Maximum font size selv p\u00e5 store sk\u00e6rme
 #'
 #' Eksempler ved divisor = 56:
-#' - 700×500px viewport: diagonal = 836px → base_size = 14.9pt
-#' - 1000×800px viewport: diagonal = 894px → base_size = 16.0pt
-#' - 1400×900px viewport: diagonal = 1668px → base_size = 29.8pt
+#' - 700\u00d7500px viewport: diagonal = 836px \u2192 base_size = 14.9pt
+#' - 1000\u00d7800px viewport: diagonal = 894px \u2192 base_size = 16.0pt
+#' - 1400\u00d7900px viewport: diagonal = 1668px \u2192 base_size = 29.8pt
 #'
 #' @format Named list med scaling parametre
 #' @keywords internal
@@ -117,8 +117,8 @@ FONT_SCALING_CONFIG <- list(
 
 #' Viewport default dimensioner for plot rendering
 #'
-#' Standard viewport størrelse og DPI settings til konsistent plot rendering.
-#' Disse værdier bruges som fallback når viewport dimensioner ikke er tilgængelige.
+#' Standard viewport st\u00f8rrelse og DPI settings til konsistent plot rendering.
+#' Disse v\u00e6rdier bruges som fallback n\u00e5r viewport dimensioner ikke er tilg\u00e6ngelige.
 #'
 #' @details
 #' - width/height: Default pixels for plot rendering
@@ -146,6 +146,6 @@ UNIT_TYPE_LABELS <- list(
   "icu"  = "Intensiv Afdeling",
   "amb"  = "Ambulatorie",
   "akut" = "Akutmodtagelse",
-  "paed" = "Pædiatrisk Afdeling",
-  "gyn"  = "Gynækologi/Obstetrik"
+  "paed" = "P\u00e6diatrisk Afdeling",
+  "gyn"  = "Gyn\u00e6kologi/Obstetrik"
 )

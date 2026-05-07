@@ -4,7 +4,7 @@
 \alias{cache_result}
 \title{Cache Result}
 \usage{
-cache_result(cache_key, value, timeout_seconds)
+cache_result(cache_key, value, timeout_seconds, app_state = NULL)
 }
 \arguments{
 \item{cache_key}{Character string med cache key}

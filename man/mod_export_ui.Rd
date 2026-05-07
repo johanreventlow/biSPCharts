@@ -24,8 +24,8 @@ Layout:
 }
 }
 \seealso{
-Other export_modules: 
-\code{\link{mod_export_server}()}
+Other export_modules:
+\code{\link[=mod_export_server]{mod_export_server()}}
 }
 \concept{export_modules}
 \keyword{internal}

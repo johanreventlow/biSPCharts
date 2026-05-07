@@ -52,9 +52,9 @@ if (!is.null(preview_path)) {
 
 }
 \seealso{
-Other export_helpers: 
-\code{\link{extract_spc_statistics}()},
-\code{\link{get_hospital_name_for_export}()}
+Other export_helpers:
+\code{\link[=extract_spc_statistics]{extract_spc_statistics()}},
+\code{\link[=get_hospital_name_for_export]{get_hospital_name_for_export()}}
 }
 \concept{export_helpers}
 \keyword{internal}

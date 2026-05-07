@@ -622,11 +622,11 @@ parse_danish_dates <- function(date_strings, format) {
   # Preprocess strings for Danish month names
   processed_strings <- date_strings
 
-  # PERFORMANCE (#538): Spring måneds-substitution helt over hvis ingen alfabetiske
-  # tegn er til stede. Ren-numeriske datoer (15-03-2024, 2024-03-15) udgør den
+  # PERFORMANCE (#538): Spring m\u00e5neds-substitution helt over hvis ingen alfabetiske
+  # tegn er til stede. Ren-numeriske datoer (15-03-2024, 2024-03-15) udg\u00f8r den
   # almindelige autodetect-input og rammer 24 regex-substitutions per format-attempt
-  # uden behov. Kontrollér kun samplet (max 100 værdier) for hurtigere detection.
-  has_alpha <- any(grepl("[A-Za-zæøåÆØÅ]",
+  # uden behov. Kontroll\u00e9r kun samplet (max 100 v\u00e6rdier) for hurtigere detection.
+  has_alpha <- any(grepl("[A-Za-z\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]",
     head(processed_strings, 100L),
     perl = TRUE
   ))

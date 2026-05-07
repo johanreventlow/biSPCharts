@@ -4,7 +4,7 @@
 \alias{clear_data_signature_cache}
 \title{Clear Data Signature Cache}
 \usage{
-clear_data_signature_cache()
+clear_data_signature_cache(app_state = NULL)
 }
 \description{
 Clears the session-level signature cache.

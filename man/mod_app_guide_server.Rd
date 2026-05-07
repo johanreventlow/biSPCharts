@@ -4,14 +4,16 @@
 \alias{mod_app_guide_server}
 \title{App Guide Module Server}
 \usage{
-mod_app_guide_server(id, parent_session = NULL, previous_tab = NULL)
+mod_app_guide_server(id, parent_session = NULL, app_state = NULL)
 }
 \arguments{
 \item{id}{Module ID}
 
 \item{parent_session}{Shiny session. Parent session for navbar navigation.}
 
-\item{previous_tab}{ReactiveVal. Den forrige tab brugeren var på.}
+\item{app_state}{Centraliseret app state. Issue #532: tab-state læses fra
+app_state$navigation$previous_tab (tidligere passerede vi en separat
+reactiveVal).}
 }
 \description{
 Server logik for app-vejledningssiden. Håndterer tilbagenavigation

@@ -4,7 +4,7 @@
 \alias{generate_autodetect_cache_key_optimized}
 \title{Generate Auto-Detect Cache Key (Optimized)}
 \usage{
-generate_autodetect_cache_key_optimized(data)
+generate_autodetect_cache_key_optimized(data, app_state = NULL)
 }
 \arguments{
 \item{data}{Data for auto-detection}

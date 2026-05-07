@@ -46,7 +46,7 @@ register_viewport_observer <- function(
   emit,
   .scheduler = later::later
 ) {
-  # Observer 1: clientData → app_state. Tracks resize events. testServer's
+  # Observer 1: clientData -> app_state. Tracks resize events. testServer's
   # mockclientdata exercises this path.
   shiny::observe({
     width <- session$clientData[[paste0("output_", ns("spc_plot_actual"), "_width")]]
@@ -60,7 +60,7 @@ register_viewport_observer <- function(
     set_viewport_dims(app_state, width, height, emit)
   })
 
-  # Observer 2: JS ResizeObserver → flip readiness gate + write app_state.
+  # Observer 2: JS ResizeObserver -> flip readiness gate + write app_state.
   # ignoreInit = FALSE so the observer is wired before the JS event arrives
   # (initial NULL is handled by the early-return guard below).
   shiny::observeEvent(input$viewport_ready, ignoreInit = FALSE, {
@@ -110,7 +110,7 @@ register_viewport_observer <- function(
 
       log_warn(
         sprintf(
-          "viewport_ready JS event missing after %ss — using %s: %dx%d",
+          "viewport_ready JS event missing after %ss \u2014 using %s: %dx%d",
           VIEWPORT_READY_FALLBACK_SECS,
           if (have_dims) "clientData-derived dims" else "VIEWPORT_DEFAULTS",
           round(width), round(height)

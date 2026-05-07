@@ -565,8 +565,8 @@ test_that("build_spc_excel: Indstillinger-arket bevarer metadata-felter", {
 })
 
 # AI SUGGESTION HANDLER TESTS ================================================
-# Issue #590: Mock BFHllm-suggestion + verificer handle_ai_suggestion_result
-# routerer suggestion til UI korrekt.
+# Issue 590 verifies BFHllm suggestion routing into the UI via the
+# handle_ai_suggestion_result helper using a stubbed updateTextAreaInput.
 
 test_that("handle_ai_suggestion_result: ikke-NULL suggestion skriver til pdf_improvement", {
   skip_if_not_installed("shiny")

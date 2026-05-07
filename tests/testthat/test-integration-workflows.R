@@ -550,8 +550,8 @@ test_that("Multi-step flow: upload → detect → adjust → regenerate", {
   })
 })
 
-# INTEGRATION TEST: Error Recovery — Corrupt Upload -> Recover -> Clean Upload =
-# Issue #590: corrupt upload -> error -> ny upload -> state ren
+# INTEGRATION TEST: Error Recovery — Corrupt Upload -> Recover -> Clean Upload
+# Issue 590 covers corrupt upload chain into recovery and clean re-upload.
 
 test_that("Error recovery: corrupt upload -> error -> ny upload renser state", {
   skip_if_not_installed("shiny")
@@ -584,8 +584,9 @@ test_that("Error recovery: corrupt upload -> error -> ny upload renser state", {
     session$flushReact()
 
     # Recovery skal vaere logget
-    expect_true(!is.null(app_state$errors$last_recovery_time) ||
-      !is.null(app_state$errors))
+    has_recovery_state <- !is.null(app_state$errors$last_recovery_time) ||
+      !is.null(app_state$errors)
+    expect_true(has_recovery_state)
 
     # PHASE 3: Ny clean upload
     valid_data <- create_test_data()
@@ -595,8 +596,8 @@ test_that("Error recovery: corrupt upload -> error -> ny upload renser state", {
 
     # State er ren: fuld data, ingen residual fejl-context blokerer flow
     expect_equal(nrow(app_state$data$current_data), 10L)
-    expect_true(all(c("Dato", "Tæller", "Nævner") %in%
-      names(app_state$data$current_data)))
+    actual_cols <- names(app_state$data$current_data)
+    expect_true(all(c("Dato", "Tæller", "Nævner") %in% actual_cols))
 
     # data_updated event skal vaere fyret (signal at processing genoptog)
     expect_true(!is.null(app_state$events$data_updated))

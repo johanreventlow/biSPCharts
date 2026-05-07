@@ -59,8 +59,8 @@ test_that("Upload chain: data_updated emit triggerer autodetect via setup_event_
 
     # Data-state synkroniseret
     expect_equal(nrow(app_state$data$current_data), 10L)
-    expect_true(all(c("Dato", "Tæller", "Nævner") %in%
-      names(app_state$data$current_data)))
+    actual_cols <- names(app_state$data$current_data)
+    expect_true(all(c("Dato", "Tæller", "Nævner") %in% actual_cols))
 
     # Autodetect-system skal enten have koert eller signaleret aktivitet.
     # NB: testServer flush'er ej altid asynkrone autodetect-jobs synkront --
@@ -80,8 +80,9 @@ test_that("Upload chain: data_updated emit triggerer autodetect via setup_event_
     } else {
       # Hvis autodetect koerte: results skal indeholde forventede kolonner
       if (!is.null(autodetect_results)) {
-        expect_true(!is.null(autodetect_results$x_col) ||
-          !is.null(autodetect_results$y_col))
+        has_xy <- !is.null(autodetect_results$x_col) ||
+          !is.null(autodetect_results$y_col)
+        expect_true(has_xy)
       }
     }
   })
@@ -201,6 +202,7 @@ test_that("Paste-data: handle_paste_data populates app_state + emits data_update
     if (inherits(result, "error")) {
       # Hvis parse-API kraever andre args, dokumentér men fail ikke testen --
       # det er en API-drift-detektion, ikke en regression i denne change.
+      # SKIP-REASON: regression — handle_paste_data signatur kan drifte
       skip(paste("handle_paste_data signatur drift:", conditionMessage(result)))
     }
 

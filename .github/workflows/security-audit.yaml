@@ -1,0 +1,108 @@
+# Ugentlig sårbarhedsscanning af R-afhængigheder (fixes #591).
+#
+# Bruger oysteR til OSV-opslag mod installerede pakker (renv-låste versioner).
+# Ikke-blokerende: fund rapporteres i workflow-summary + opretter GitHub Issue
+# (advisory, blokerer ikke PRs).
+#
+# Kør manuelt: gh workflow run security-audit.yaml
+name: security-audit
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # mandag 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    name: dependency-vulnerability-scan
+
+    env:
+      GITHUB_PAT: ${{ secrets.BFH_ASSETS_PAT || secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: "FALSE"
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 1
+
+      - name: Install oysteR
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("oysteR", quietly = TRUE)) {
+            install.packages("oysteR", repos = "https://cloud.r-project.org")
+          }
+
+      - name: Scan for known vulnerabilities (oysteR)
+        id: oyster_scan
+        shell: Rscript {0}
+        run: |
+          pkgs <- tryCatch(
+            unique(renv::dependencies(quiet = TRUE)$Package),
+            error = function(e) installed.packages()[, "Package"]
+          )
+
+          audit <- tryCatch(
+            oysteR::audit_packages(pkgs),
+            error = function(e) {
+              message("oysteR scan fejlede: ", e$message)
+              NULL
+            }
+          )
+
+          if (!is.null(audit) && nrow(audit) > 0) {
+            vuln <- audit[isTRUE(audit$vulnerable), ]
+            if (nrow(vuln) > 0) {
+              writeLines("vulnerabilities_found=true", Sys.getenv("GITHUB_OUTPUT"))
+              message("=== SAARBARHEDER FUNDET (", nrow(vuln), ") ===")
+              print(vuln[, intersect(c("Package", "version", "id", "title"), names(vuln))])
+            } else {
+              writeLines("vulnerabilities_found=false", Sys.getenv("GITHUB_OUTPUT"))
+              message("Ingen kendte saarbarheder i ", length(pkgs), " pakke(r).")
+            }
+          } else {
+            writeLines("vulnerabilities_found=false", Sys.getenv("GITHUB_OUTPUT"))
+            message("Audit returnerede ingen resultater.")
+          }
+
+      - name: Aaben GitHub Issue ved fund (advisory)
+        if: steps.oyster_scan.outputs.vulnerabilities_found == 'true'
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          TITLE="[security-audit] Saarbare R-afhaengigheder fundet ($TODAY)"
+          BODY="oysteR fandt kendte CVE/OSV-match i installerede R-pakker.
+
+          Se workflow-loggen for detaljer: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          Anbefalede handlinger:
+          1. Tjek workflow-loggen for berørte pakker
+          2. Opdater via renv::update() + renv::snapshot()
+          3. Commit ny renv.lock
+
+          _Automatisk oprettet af security-audit.yaml_"
+
+          # Opret kun issue hvis ingen aaben issue med samme praefiks
+          EXISTING=$(gh issue list --state open --label security --json title --jq '.[].title' | grep -c '^\[security-audit\]' || true)
+          if [ "$EXISTING" -eq 0 ]; then
+            gh issue create \
+              --title "$TITLE" \
+              --body "$BODY" \
+              --label security
+          else
+            echo "Aaben security-audit issue eksisterer allerede — springer over."
+          fi

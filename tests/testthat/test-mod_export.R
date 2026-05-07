@@ -47,6 +47,13 @@ create_mock_app_state <- function() {
       plot_object = NULL,
       plot_ready = FALSE,
       last_valid_config = list(chart_type = "p")
+    ),
+
+    # Session state — TAB-GUARD (#644): export-reactives kraever
+    # active_tab=='eksporter' for at fyre. Tests af export-modulet
+    # forudsaetter at brugeren er paa eksporter-tab.
+    session = shiny::reactiveValues(
+      active_tab = "eksporter"
     )
   )
 
@@ -328,6 +335,51 @@ test_that("mod_export_server defensive checks: preview_ready aendres ved plot-st
           !is.null(app_state$visualization$plot_object)
       ),
       label = "preview_ready-logik TRUE naar plot er tilgaengeligt"
+    )
+  })
+})
+
+test_that("export-reactives respekterer active_tab tab-guard (#644)", {
+  # Verificerer at preview_ready returnerer FALSE/NULL naar active_tab
+  # ikke er 'eksporter'. Forhindrer at export_plot/pdf_export_plot/
+  # pdf_preview_image fyrer paa fremmed tab.
+  #
+  # Note: export_plot er debounced(500ms). session$elapse() avancerer
+  # debounce-timer i testServer-context.
+  app_state <- create_mock_app_state()
+  shiny::isolate(app_state$session$active_tab <- "analyser")
+
+  shiny::testServer(mod_export_server, args = list(app_state = app_state), {
+    session$flushReact()
+    session$elapse(600)
+    session$flushReact()
+
+    ready_off_export <- tryCatch(
+      session$returned$preview_ready(),
+      error = function(e) NULL
+    )
+    expect_true(
+      is.null(ready_off_export) || isFALSE(ready_off_export),
+      label = "preview_ready maa ej returnere TRUE naar active_tab != 'eksporter'"
+    )
+  })
+
+  # Verificer ogsaa for 'upload'-tab i ny session
+  app_state2 <- create_mock_app_state()
+  shiny::isolate(app_state2$session$active_tab <- "upload")
+
+  shiny::testServer(mod_export_server, args = list(app_state = app_state2), {
+    session$flushReact()
+    session$elapse(600)
+    session$flushReact()
+
+    ready_on_upload <- tryCatch(
+      session$returned$preview_ready(),
+      error = function(e) NULL
+    )
+    expect_true(
+      is.null(ready_on_upload) || isFALSE(ready_on_upload),
+      label = "preview_ready maa ej returnere TRUE naar active_tab='upload'"
     )
   })
 })

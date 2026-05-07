@@ -29,6 +29,13 @@
 register_data_lifecycle_events <- function(app_state, emit, input, output, session, ui_service, register_observer) {
   observers <- list()
 
+  # Issue #539: data_updated triggerer to observers her (cache-clear + y-axis-reset)
+  # plus auto-save observere i utils_server_session_helpers.R (data + settings, hver
+  # debounced af forskellige grunde, dokumenteret i samme fil omkring linje 247).
+  # Multiple observers er bevidst design — cache-clear (STATE_MANAGEMENT) skal køre
+  # før strategy-handler og y-axis-reset (LOWEST). Auto-save er debounced og rammer
+  # ikke samme reactive-flush.
+
   # Consolidated data update handler (REFACTORED: Using strategy pattern)
   observers$data_updated <- register_observer(
     "data_updated",

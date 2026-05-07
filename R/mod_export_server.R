@@ -52,6 +52,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     shiny::observeEvent(input$back_to_analysis,
       ignoreNULL = TRUE,
       ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
       {
         if (!is.null(parent_session)) {
           bslib::nav_select("main_navbar", selected = "analyser", session = parent_session)
@@ -252,7 +253,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         shiny::updateNumericInput(session, "png_width", value = as.integer(dims[1]))
         shiny::updateNumericInput(session, "png_height", value = as.integer(dims[2]))
       },
-      ignoreInit = TRUE
+      ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$UI_SYNC
     )
 
     # Saet dropdown til "Brugerdefineret" naar brugeren aendrer dimensioner manuelt
@@ -270,7 +272,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           shiny::updateSelectInput(session, "png_preset", selected = "custom")
         }
       },
-      ignoreInit = TRUE
+      ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$UI_SYNC
     )
 
     # PDF PREVIEW GENERATION ==================================================

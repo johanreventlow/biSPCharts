@@ -40,46 +40,61 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
     })
 
     # "Kom i gang" knap: vis navbar-trin og navigér til Upload
-    shiny::observeEvent(input$start_wizard, {
-      if (!is.null(parent_session)) {
-        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
-        bslib::nav_select("main_navbar", selected = "upload", session = parent_session)
+    shiny::observeEvent(input$start_wizard,
+      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+      {
+        if (!is.null(parent_session)) {
+          shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+          bslib::nav_select("main_navbar", selected = "upload", session = parent_session)
+        }
       }
-    })
+    )
 
     # Discoveryability-links: navigér til hjælpefanerne uden at aktivere wizard-nav
-    shiny::observeEvent(input$goto_app_guide, {
-      if (!is.null(parent_session)) {
-        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
-        bslib::nav_select("main_navbar", selected = "app_guide", session = parent_session)
+    shiny::observeEvent(input$goto_app_guide,
+      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+      {
+        if (!is.null(parent_session)) {
+          shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+          bslib::nav_select("main_navbar", selected = "app_guide", session = parent_session)
+        }
       }
-    })
+    )
 
-    shiny::observeEvent(input$goto_spc, {
-      if (!is.null(parent_session)) {
-        shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
-        bslib::nav_select("main_navbar", selected = "hjaelp", session = parent_session)
+    shiny::observeEvent(input$goto_spc,
+      priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+      {
+        if (!is.null(parent_session)) {
+          shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+          bslib::nav_select("main_navbar", selected = "hjaelp", session = parent_session)
+        }
       }
-    })
+    )
 
-    # Bruger vælger "Gendan session"
-    shiny::observeEvent(input$restore_saved_session, {
-      log_info("Bruger valgte at gendanne gemt session", .context = "SESSION_RESTORE")
-      if (!is.null(parent_session)) {
-        parent_session$sendCustomMessage("performSessionRestore", list())
+    # Bruger vælger "Gendan session" — STATE_MANAGEMENT da restore muterer state.
+    shiny::observeEvent(input$restore_saved_session,
+      priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+      {
+        log_info("Bruger valgte at gendanne gemt session", .context = "SESSION_RESTORE")
+        if (!is.null(parent_session)) {
+          parent_session$sendCustomMessage("performSessionRestore", list())
+        }
       }
-    })
+    )
 
-    # Bruger vælger "Start ny session"
-    shiny::observeEvent(input$discard_saved_session, {
-      log_info("Bruger valgte at kassere gemt session og starte ny", .context = "SESSION_RESTORE")
-      if (!is.null(parent_session)) {
-        clearDataLocally(parent_session)
-        parent_session$sendCustomMessage("discardPendingRestore", list())
+    # Bruger vælger "Start ny session" — STATE_MANAGEMENT da clear muterer state.
+    shiny::observeEvent(input$discard_saved_session,
+      priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+      {
+        log_info("Bruger valgte at kassere gemt session og starte ny", .context = "SESSION_RESTORE")
+        if (!is.null(parent_session)) {
+          clearDataLocally(parent_session)
+          parent_session$sendCustomMessage("discardPendingRestore", list())
+        }
+        if (!is.null(app_state)) {
+          set_session_peek_result(app_state, list(has_payload = FALSE))
+        }
       }
-      if (!is.null(app_state)) {
-        set_session_peek_result(app_state, list(has_payload = FALSE))
-      }
-    })
+    )
   })
 }

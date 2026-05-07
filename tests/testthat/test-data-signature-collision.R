@@ -1,8 +1,51 @@
 # test-data-signature-collision.R
-# Tests for hash-kollision-prevention i generate_shared_data_signature()
+# Regression-tests for hash-kollision-prevention i generate_shared_data_signature()
 #
-# Verificerer at middle-row-sample er inkluderet i data_ptr-nøglen,
-# så ændringer midt i datasættet opdages korrekt.
+# Issue #494: Sampling-baseret cache-key (first/middle/last row) gav kollisioner
+# for datasæt med identiske endepunkter men forskelle i anden række.
+# Fix: drop sampling-cache; beregn altid full xxhash64-digest.
+
+# --- Præcis repro fra Issue #494 ---
+
+test_that("sampling-collision repro (#494): data med forskel kun i række 2 giver forskellig signatur", {
+  # Datasæt der tidligere kolliderede: identiske first/middle/last rows,
+  # forskel i række 2 — udenfor 3-row-sampling med n=10 (mid=5, rows 1,5,10).
+  data1 <- data.frame(
+    Dato = as.Date("2024-01-01") + 0:9,
+    Vaerdi = 1:10,
+    Kommentar = c("a", rep(NA, 9))
+  )
+  data2 <- data1
+  data2$Kommentar <- c("a", "b", rep(NA, 8)) # forskel kun ved row 2
+
+  sig1 <- generate_shared_data_signature(data1, include_structure = FALSE)
+  sig2 <- generate_shared_data_signature(data2, include_structure = FALSE)
+
+  expect_false(
+    identical(sig1, sig2),
+    info = "Datasæt der kun adskiller sig i række 2 skal give forskellig signatur (Issue #494)"
+  )
+})
+
+test_that("sampling-collision repro (#494): include_structure = TRUE giver også forskellig signatur", {
+  data1 <- data.frame(
+    Dato = as.Date("2024-01-01") + 0:9,
+    Vaerdi = 1:10,
+    Kommentar = c("a", rep(NA, 9))
+  )
+  data2 <- data1
+  data2$Kommentar <- c("a", "b", rep(NA, 8))
+
+  sig1 <- generate_shared_data_signature(data1, include_structure = TRUE)
+  sig2 <- generate_shared_data_signature(data2, include_structure = TRUE)
+
+  expect_false(
+    identical(sig1, sig2),
+    info = "include_structure = TRUE skal også detektere forskel i række 2 (#494)"
+  )
+})
+
+# --- Eksisterende kollisions-tests ---
 
 test_that("generate_shared_data_signature detekterer ændring i midterste rækker", {
   # Datasæt med 7 rækker — ændring i række 4 (midten)
@@ -22,7 +65,7 @@ test_that("generate_shared_data_signature detekterer ændring i midterste række
   )
 })
 
-test_that("generate_shared_data_signature er stabil for identiske data (inkl. middle-row)", {
+test_that("generate_shared_data_signature er stabil for identiske data", {
   data <- data.frame(
     x = 1:10,
     y = c(5, 10, 15, 20, 25, 30, 35, 40, 45, 50)
@@ -56,8 +99,7 @@ test_that("generate_shared_data_signature detekterer ændring i sidste række", 
   expect_false(identical(sig1, sig2))
 })
 
-test_that("generate_shared_data_signature er konsistent med large dataset og middle-row", {
-  # 100 rækker — tilstrækkeligt til at test middle-row coverage
+test_that("generate_shared_data_signature er konsistent med large dataset", {
   set.seed(42)
   large_data <- data.frame(
     x = 1:100,

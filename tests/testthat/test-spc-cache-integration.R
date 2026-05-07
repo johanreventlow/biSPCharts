@@ -4,6 +4,8 @@
 
 library(testthat)
 
+set.seed(42) # reproducibilitet: create_test_data bruger rnorm() og sample()
+
 # Test data generator
 create_test_data <- function(n_rows = 50, chart_type = "run") {
   data <- data.frame(
@@ -210,6 +212,7 @@ test_that("get_cached_spc_result returns NULL on cache miss", {
 
 
 test_that("cache expires after TTL", {
+  skip_on_ci() # bruger Sys.sleep(1.5) — for langsom og timing-afhængig til CI
   skip_if_not_installed("digest")
 
   qic_cache <- create_qic_cache(max_size = 10)

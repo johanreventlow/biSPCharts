@@ -10,6 +10,8 @@
 #   - test-utils_qic_caching.R         — qicharts2-specifik cache
 #   - test-spc-cache-integration.R     — SPC pipeline cache integration
 
+set.seed(42) # reproducibilitet: create_cache_test_dataset bruger sample()
+
 clear_cache_if_available <- function(...) {
   if (exists("clear_performance_cache", mode = "function")) {
     clear_performance_cache(...)

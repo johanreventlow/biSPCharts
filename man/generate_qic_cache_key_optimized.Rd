@@ -7,46 +7,17 @@
 generate_qic_cache_key_optimized(data, params, app_state = NULL)
 }
 \arguments{
-\item{data}{Data for QIC calculation}
+\item{data}{Data til QIC-beregning}
 
-\item{params}{QIC parameters (chart type, columns, etc.)}
+\item{params}{QIC-parametre (chart type, kolonner, etc.)}
+
+\item{app_state}{Optional centralized app state}
 }
 \value{
 Character string cache key
 }
 \description{
-Creates cache key for QIC results using shared data signatures.
-Replaces redundant MD5 hashing with shared xxhash64 signatures.
-}
-\details{
-\subsection{Performance Improvement}{
-
-\strong{Before (H13):}
-\itemize{
-\item Data hashed with MD5 for QIC cache key
-\item Same data hashed again with xxhash64 for auto-detect
-\item Total: 2 full data hashes per workflow
-}
-
-\strong{After (H14):}
-\itemize{
-\item Data hashed once with xxhash64 (shared signature)
-\item Signature reused for QIC + auto-detect
-\item Total: 1 full data hash per workflow
-}
-
-\strong{Expected gain}: 30-50\% reduction in hashing overhead
-}
-}
-\examples{
-\dontrun{
-params <- list(
-  chart = "run",
-  x = "Dato",
-  y = "Værdi"
-)
-key <- generate_qic_cache_key_optimized(data, params)
-}
-
+Opretter cache-key for QIC-resultater via shared data signature.
+Erstatter redundant MD5-hashing med shared xxhash64-signaturer.
 }
 \keyword{internal}

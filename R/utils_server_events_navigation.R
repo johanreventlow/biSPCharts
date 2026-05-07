@@ -132,16 +132,6 @@ register_navigation_events <- function(app_state, emit, session, register_observ
             }
           )
         }
-        if (exists("clear_data_signature_cache") && is.function(clear_data_signature_cache)) {
-          safe_operation(
-            "Clear data-signature cache on session reset",
-            code = {
-              clear_data_signature_cache(app_state = app_state)
-              log_debug("Data-signature cache cleared due to session reset", .context = "CACHE_INVALIDATION")
-            }
-          )
-        }
-
         # Reset all state to initial values
         app_state$data$current_data <- NULL
         app_state$columns$auto_detect$in_progress <- FALSE

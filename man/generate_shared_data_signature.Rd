@@ -11,42 +11,50 @@ generate_shared_data_signature(
 )
 }
 \arguments{
-\item{data}{Data frame to generate signature for}
+\item{data}{Data frame der genereres signatur for}
 
-\item{include_structure}{Include structural metadata (nrow, ncol, names, types)}
+\item{include_structure}{Inkludér strukturelle metadata (nrow, ncol, names, types)}
+
+\item{app_state}{Optional centralized app state (ubrugt, bevaret for API-paritet)}
 }
 \value{
-Character string signature (xxhash64 digest)
+Character string signatur (xxhash64 digest)
 }
 \description{
-Creates a consistent signature for data that can be reused across
-multiple caching systems. Uses xxhash64 for speed and caches results.
+Opretter en konsistent signatur for data der kan genbruges på tværs af
+cache-systemer. Bruger xxhash64 for hastighed.
 }
 \details{
-\subsection{Performance Benefits}{
+\subsection{Korrekthed}{
+
+Beregner altid full xxhash64-digest af hele data-frame'en. Sampling-baseret
+cache-key (Issue #494) er fjernet da den kunne give kollisioner for datasæt
+med identiske end-point-rækker men forskelle i midten.
+}
+
+\subsection{Performance}{
 \itemize{
-\item \strong{Shared signatures}: Same data hashed once, reused in QIC + auto-detect
-\item \strong{Fast algorithm}: xxhash64 is 5-10x faster than MD5
-\item \strong{Session cache}: Identical data lookups avoid rehashing entirely
+\item \strong{Shared signatures}: Samme data hashés én gang, genbruges i QIC + auto-detect
+\item \strong{Fast algorithm}: xxhash64 er 5-10x hurtigere end MD5
 }
 }
 
 \subsection{When Signatures Match}{
 
-Two datasets have same signature if they have:
+To datasæt har samme signatur hvis de har:
 \itemize{
-\item Same number of rows and columns
-\item Same column names and types (if include_structure = TRUE)
-\item Identical data values
+\item Samme antal rækker og kolonner
+\item Samme kolonnenavne og typer (hvis include_structure = TRUE)
+\item Identiske dataværdier
 }
 }
 }
 \examples{
 \dontrun{
-# Generate signature
+# Generer signatur
 sig <- generate_shared_data_signature(my_data)
 
-# Reuse in different contexts
+# Genbrug i forskellige kontekster
 qic_key <- paste0("qic_", sig, "_", param_hash)
 autodetect_key <- paste0("autodetect_", sig)
 }

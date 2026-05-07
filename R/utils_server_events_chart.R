@@ -94,6 +94,19 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 }
 
 # ==============================================================================
+# MODULE-LEVEL HELPER
+# ==============================================================================
+
+#' Tjek om input-vaerdi er ikke-tom efter scalar-normalisering
+#'
+#' @param value Raa input-vaerdi
+#' @return Logical
+#' @noRd
+has_input_value <- function(value) {
+  nzchar(input_scalar(value, default = ""))
+}
+
+# ==============================================================================
 # OBSERVE_CHART_TYPE_INPUT
 # Etablerer observer paa input$chart_type.
 # Kalder sync_chart_type_to_state() (pure) + update_ui_for_chart_type() (UI).
@@ -109,10 +122,6 @@ register_chart_type_events <- function(app_state, emit, input, session, register
 #' @keywords internal
 #' @noRd
 observe_chart_type_input <- function(input, session, app_state, register_observer) {
-  has_input_value <- function(value) {
-    nzchar(input_scalar(value, default = ""))
-  }
-
   register_observer(
     "chart_type",
     shiny::observeEvent(input$chart_type,
@@ -142,7 +151,6 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
               input = input,
               session = session,
               app_state = app_state,
-              has_input_value = has_input_value,
               input_scalar = input_scalar
             )
           },
@@ -176,13 +184,12 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
 #' @param input Shiny input
 #' @param session Shiny session
 #' @param app_state Centraliseret app state
-#' @param has_input_value Helper-funktion
 #' @param input_scalar Helper-funktion
 #' @return NULL (side-effekter kun)
 #' @keywords internal
 #' @noRd
 update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
-                                     has_input_value, input_scalar) {
+                                     input_scalar) {
   qic_ct <- transition$chart_type
   enabled <- transition$requires_denominator
 
@@ -263,10 +270,6 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
 #' @keywords internal
 #' @noRd
 observe_y_axis_unit_input <- function(input, session, app_state, register_observer) {
-  has_input_value <- function(value) {
-    nzchar(input_scalar(value, default = ""))
-  }
-
   register_observer(
     "y_axis_unit",
     shiny::observeEvent(input$y_axis_unit,
@@ -371,10 +374,6 @@ observe_y_axis_unit_input <- function(input, session, app_state, register_observ
 #' @keywords internal
 #' @noRd
 observe_n_column_change <- function(input, session, app_state, register_observer) {
-  has_input_value <- function(value) {
-    nzchar(input_scalar(value, default = ""))
-  }
-
   register_observer(
     "n_column_change",
     shiny::observeEvent(input$n_column,

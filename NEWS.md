@@ -112,6 +112,12 @@
 
 ## Interne ændringer
 
+* Extraheret `has_input_value()`-helper i `utils_server_events_chart.R`
+  (eliminerer 3 duplicate closures). (#463)
+
+* Fjernet defensiv `cat()`-fallback i `utils_advanced_debug.R` —
+  `log_msg()` er altid tilgaengelig ved pakke-load. (#463)
+
 * Udvid integration-test-coverage for `mod_landing_server` click-handlere:
   `restore_saved_session`-klik sender `performSessionRestore` til
   `parent_session`, og `discard_saved_session`-klik sender

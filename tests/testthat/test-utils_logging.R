@@ -47,6 +47,7 @@ test_that("log_error accepterer details som liste", {
 # Secret-redaktion (#575) =====================================================
 
 test_that("log_info redakterer nøgle-navne der matcher secret-mønster", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
   output <- capture.output(
     log_info(
       "test",
@@ -63,6 +64,7 @@ test_that("log_info redakterer nøgle-navne der matcher secret-mønster", {
 })
 
 test_that("log_warn redakterer token-felt i details", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
   output <- capture.output(
     log_warn(
       "test",
@@ -78,6 +80,7 @@ test_that("log_warn redakterer token-felt i details", {
 })
 
 test_that("log_error redakterer password-felt i details", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
   output <- capture.output(
     log_error(
       "test",
@@ -91,6 +94,7 @@ test_that("log_error redakterer password-felt i details", {
 })
 
 test_that("log_info bevarer ikke-hemmelige felter uændrede", {
+  withr::local_envvar(SPC_LOG_LEVEL = "DEBUG")
   output <- capture.output(
     log_info(
       "test",

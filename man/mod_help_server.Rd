@@ -4,14 +4,16 @@
 \alias{mod_help_server}
 \title{Help Module Server}
 \usage{
-mod_help_server(id, parent_session = NULL, previous_tab = NULL)
+mod_help_server(id, parent_session = NULL, app_state = NULL)
 }
 \arguments{
 \item{id}{Module ID}
 
 \item{parent_session}{Shiny session. Parent session for navbar navigation.}
 
-\item{previous_tab}{ReactiveVal. Den forrige tab brugeren var på.}
+\item{app_state}{Centraliseret app state. Issue #532: tab-state læses fra
+app_state$navigation$previous_tab (tidligere passerede vi en separat
+reactiveVal).}
 }
 \description{
 Server logik for hjælpesiden. Håndterer tilbagenavigation

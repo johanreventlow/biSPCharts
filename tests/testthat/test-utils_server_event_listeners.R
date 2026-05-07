@@ -38,12 +38,6 @@ test_that("setup_event_listeners orchestrates modular registrars and cleanup", {
   )
 
   testthat::local_mocked_bindings(
-    observeEvent = function(eventExpr, handlerExpr, ...) {
-      make_fake_observer("main_navbar_manual", state)
-    },
-    .package = "shiny"
-  )
-  testthat::local_mocked_bindings(
     register_data_lifecycle_events = make_event_registrar("data", state),
     register_autodetect_events = make_event_registrar("autodetect", state),
     register_ui_sync_events = make_event_registrar("ui", state),
@@ -73,10 +67,13 @@ test_that("setup_event_listeners orchestrates modular registrars and cleanup", {
     state$calls,
     c("data", "autodetect", "ui", "navigation", "chart", "wizard", "paste")
   )
+  # Issue #536: main_navbar-observer er konsolideret til app_server_main.R,
+  # så `main_navbar_manual` skal IKKE længere findes i event_listeners-registry.
   expect_true(all(c(
     "data_observer", "autodetect_observer", "ui_observer",
-    "navigation_observer", "chart_observer", "main_navbar_manual"
+    "navigation_observer", "chart_observer"
   ) %in% names(registry)))
+  expect_false("main_navbar_manual" %in% names(registry))
   expect_true(is.function(ended_callback))
 
   ended_callback()

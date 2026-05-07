@@ -254,6 +254,7 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
     shiny::observeEvent(
       ai_task$result(),
       ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$DATA_PROCESSING,
       {
         suggestion <- ai_task$result()
 

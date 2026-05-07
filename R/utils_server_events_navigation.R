@@ -29,6 +29,31 @@
 register_navigation_events <- function(app_state, emit, session, register_observer) {
   observers <- list()
 
+  # Session-scoped debounce trigger for test_mode_ready (issue #533)
+  # Construct debounce reactive ONCE per session — not per observer firing,
+  # which would leak reactive objects.
+  test_mode_trigger <- shiny::reactiveVal(0L)
+  test_mode_debounce_ms <- shiny::isolate(app_state$test_mode$debounce_delay) %||% 500
+  debounced_test_mode <- shiny::debounce(
+    shiny::reactive({
+      test_mode_trigger()
+    }),
+    millis = test_mode_debounce_ms
+  )
+
+  observers$test_mode_debounced <- register_observer(
+    "test_mode_debounced",
+    shiny::observeEvent(debounced_test_mode(),
+      ignoreInit = TRUE,
+      priority = OBSERVER_PRIORITIES$AUTO_DETECT,
+      {
+        if (isTRUE(app_state$test_mode$race_prevention_active)) {
+          emit$test_mode_debounced_autodetect()
+        }
+      }
+    )
+  )
+
   # Navigation changed
   observers$navigation_changed <- register_observer(
     "navigation_changed",
@@ -97,13 +122,22 @@ register_navigation_events <- function(app_state, emit, session, register_observ
           )
         }
 
-        # Clear all caches on session reset
+        # Clear all caches on session reset (#529: pass app_state for session-scope)
         if (exists("clear_performance_cache") && is.function(clear_performance_cache)) {
           safe_operation(
             "Clear performance cache on session reset",
             code = {
-              clear_performance_cache()
+              clear_performance_cache(app_state = app_state)
               log_debug("Performance cache cleared due to session reset", .context = "CACHE_INVALIDATION")
+            }
+          )
+        }
+        if (exists("clear_data_signature_cache") && is.function(clear_data_signature_cache)) {
+          safe_operation(
+            "Clear data-signature cache on session reset",
+            code = {
+              clear_data_signature_cache(app_state = app_state)
+              log_debug("Data-signature cache cleared due to session reset", .context = "CACHE_INVALIDATION")
             }
           )
         }
@@ -137,18 +171,8 @@ register_navigation_events <- function(app_state, emit, session, register_observ
         data_available <- !is.null(app_state$data$current_data)
 
         if (data_available && !autodetect_completed) {
-          debounce_delay <- app_state$test_mode$debounce_delay %||% 500
-
-          debounced_test_mode_trigger <- shiny::debounce(
-            shiny::reactive({
-              if (app_state$test_mode$race_prevention_active) {
-                emit$test_mode_debounced_autodetect()
-              }
-            }),
-            millis = debounce_delay
-          )
-
-          debounced_test_mode_trigger()
+          # Trigger session-scoped debounce reactive (#533).
+          test_mode_trigger(shiny::isolate(test_mode_trigger()) + 1L)
         } else if (autodetect_completed) {
           emit$ui_sync_needed()
         }

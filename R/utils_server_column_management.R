@@ -44,40 +44,56 @@ setup_column_management <- function(input, output, session, app_state, emit) {
   log_debug_block("COLUMN_MGMT", "Setting up column management")
 
   # Auto-detekterings knap handler - koerer altid naar bruger trykker
-  shiny::observeEvent(input$auto_detect_columns, {
-    # FASE 3: Use event-driven manual trigger for consistency
-    safe_operation(
-      "Manual auto-detection trigger",
-      code = {
-        emit$manual_autodetect_button() # This triggers the event listener with frozen state bypass
-      },
-      fallback = NULL,
-      session = session,
-      show_user = TRUE,
-      error_type = "processing",
-      emit = emit,
-      app_state = app_state
-    )
-  })
+  # AUTO_DETECT-priority: kolonne-detection er central data-processing.
+  shiny::observeEvent(input$auto_detect_columns,
+    priority = OBSERVER_PRIORITIES$AUTO_DETECT,
+    {
+      safe_operation(
+        "Manual auto-detection trigger",
+        code = {
+          emit$manual_autodetect_button() # triggerer event-listener med frozen state-bypass
+        },
+        fallback = NULL,
+        session = session,
+        show_user = TRUE,
+        error_type = "processing",
+        emit = emit,
+        app_state = app_state
+      )
+    }
+  )
 
-  # Rediger kolonnenavne modal
-  shiny::observeEvent(input$edit_column_names, {
-    show_column_edit_modal(session, app_state)
-  })
+  # Rediger kolonnenavne modal — STATUS_UPDATES (UI-modal kun).
+  shiny::observeEvent(input$edit_column_names,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      show_column_edit_modal(session, app_state)
+    }
+  )
 
-  # Bekraeft kolonnenavn aendringer
-  shiny::observeEvent(input$confirm_column_names, {
-    handle_column_name_changes(input, session, app_state, emit)
-  })
+  # Bekraeft kolonnenavn aendringer — STATE_MANAGEMENT (muterer column-names).
+  shiny::observeEvent(input$confirm_column_names,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      handle_column_name_changes(input, session, app_state, emit)
+    }
+  )
 
-  # Tilfoej kolonne
-  shiny::observeEvent(input$add_column, {
-    show_add_column_modal()
-  })
+  # Tilfoej kolonne — STATUS_UPDATES (UI-modal kun).
+  shiny::observeEvent(input$add_column,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      show_add_column_modal()
+    }
+  )
 
-  shiny::observeEvent(input$confirm_add_col, {
-    handle_add_column(input, session, app_state, emit)
-  })
+  # STATE_MANAGEMENT: muterer current_data med ny kolonne.
+  shiny::observeEvent(input$confirm_add_col,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      handle_add_column(input, session, app_state, emit)
+    }
+  )
 
   # UNIFIED EVENT SYSTEM: No longer returning autodetect_trigger
   # Auto-detection is handled through emit$auto_detection_started() events
@@ -285,8 +301,9 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     )
   })
 
-  # Haandter excelR tabel aendringer
+  # Haandter excelR tabel aendringer — STATE_MANAGEMENT (muterer current_data).
   shiny::observeEvent(input$main_data_table,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
     {
       # Use unified state management
       updating_table_check <- app_state$data$updating_table
@@ -388,32 +405,35 @@ setup_data_table <- function(input, output, session, app_state, emit) {
     ignoreInit = TRUE
   )
 
-  # Tilfoej raekke
-  shiny::observeEvent(input$add_row, {
-    # UNIFIED EVENT SYSTEM: Direct access to current data
-    current_data_check <- app_state$data$current_data
-    shiny::req(current_data_check)
+  # Tilfoej raekke — STATE_MANAGEMENT (muterer current_data).
+  shiny::observeEvent(input$add_row,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      # UNIFIED EVENT SYSTEM: Direct access to current data
+      current_data_check <- app_state$data$current_data
+      shiny::req(current_data_check)
 
-    # Saet vedvarende flag for at forhindre auto-save interferens
-    # Use unified state management
-    set_table_op_in_progress(app_state, TRUE)
+      # Saet vedvarende flag for at forhindre auto-save interferens
+      # Use unified state management
+      set_table_op_in_progress(app_state, TRUE)
 
-    new_row <- current_data_check[1, ]
-    new_row[1, ] <- NA
+      new_row <- current_data_check[1, ]
+      new_row[1, ] <- NA
 
-    # Dual-state sync for compatibility during migration
-    current_data <- get_current_data(app_state)
-    set_current_data(app_state, rbind(current_data, new_row))
+      # Dual-state sync for compatibility during migration
+      current_data <- get_current_data(app_state)
+      set_current_data(app_state, rbind(current_data, new_row))
 
-    # Emit event to trigger downstream effects
-    emit$data_updated("column_changed")
+      # Emit event to trigger downstream effects
+      emit$data_updated("column_changed")
 
-    shiny::showNotification("Ny r\u00e6kke tilf\u00f8jet", type = "message")
+      shiny::showNotification("Ny r\u00e6kke tilf\u00f8jet", type = "message")
 
-    # Trigger event-driven cleanup instead of timing-based
-    # Use unified state management
-    set_table_op_cleanup_needed(app_state, TRUE)
-  })
+      # Trigger event-driven cleanup instead of timing-based
+      # Use unified state management
+      set_table_op_cleanup_needed(app_state, TRUE)
+    }
+  )
 
   # UNIFIED STATE: Table reset functionality moved to utils_server_management.R
   # Uses emit$session_reset() events and unified app_state management

@@ -2,6 +2,12 @@
 
 ## Nye features
 
+* **Eliminer dobbelt-render af analyse-graf efter data-upload (#610):**
+  Analyse-grafen rendres nu kun én gang efter upload. Tidligere udløste
+  Shiny's CSS-default container-størrelse (800×600) en syntetisk
+  cold-start-render før browseren havde målt det reelle viewport, hvilket
+  gav to separate beregninger med forskellige cache-keys per upload.
+
 * **Footnote-felt i PDF/PNG-eksport (#485):** Bruger kan nu tilføje
   klinisk attribution (datakilde, udtræksdato) i trin 3 (Eksport).
   Tekst sendes til BFHcharts Typst-template via `metadata$footer_content`

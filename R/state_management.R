@@ -263,7 +263,13 @@ create_app_state <- function() {
 
   # Navigation State - For eventReactive patterns
   app_state$navigation <- shiny::reactiveValues(
-    trigger = 0 # Counter for triggering navigation-dependent reactives
+    trigger = 0, # Counter for triggering navigation-dependent reactives
+
+    # Issue #532: current_tab/previous_tab konsolideret hertil fra ad-hoc
+    # reactiveVal i app_server_main.R. Bruges af help/app_guide-moduler til
+    # kontekstuel tilbagenavigation. Default "start" matcher landing-page.
+    current_tab = "start",
+    previous_tab = "start"
   )
 
   # Visualization State - Convert to reactiveValues for consistency
@@ -277,6 +283,11 @@ create_app_state <- function() {
       height = NULL,
       last_updated = NULL
     ),
+    # Issue #610: Cold-start gate. FALSE indtil first-layout signal modtages
+    # (browser ResizeObserver via input$viewport_ready, eller later::later
+    # fallback). spc_inputs_raw req()er paa denne for at undgaa syntetisk
+    # 800x600 cold-start render.
+    viewport_ready = FALSE,
     anhoej_results = list(
       # Initialize with default values instead of NULL to prevent "Beregner..." stuck state
       longest_run = NA_real_,
@@ -311,8 +322,13 @@ create_app_state <- function() {
   # Non-reactive cache objects for QIC results
   # Cache creation is delayed until first use to avoid dependency issues
   # M1: Performance counters moved to package environment (R/zzz.R) for proper isolation
+  # Issue #529: Session-scoped performance + data-signature caches
+  # Tidligere lå disse i .performance_cache + .data_signature_cache på package-niveau
+  # → cross-session contamination i multi-session Connect Cloud-deploy.
   app_state$cache <- list(
-    qic = NULL # Will be initialized lazily on first use
+    qic = NULL, # Will be initialized lazily on first use
+    performance = new.env(parent = emptyenv()),
+    data_signature = new.env(parent = emptyenv())
   )
 
   # Error State - Convert to reactiveValues for consistency

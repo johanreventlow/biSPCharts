@@ -19,5 +19,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Johan Reventlow \email{johan@reventlow.dk}
 
+Authors:
+\itemize{
+  \item Johan Reventlow \email{johan@reventlow.dk}
+}
+
 }
 \keyword{internal}

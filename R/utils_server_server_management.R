@@ -28,6 +28,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
   shiny::observeEvent(input$session_peek,
     ignoreNULL = TRUE,
     ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
     {
       peek <- input$session_peek
 
@@ -93,6 +94,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
   # Auto-gendan session data naar tilgaengelig (hvis aktiveret)
   shiny::observeEvent(input$auto_restore_data,
     ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
     {
       shiny::req(input$auto_restore_data)
 
@@ -346,15 +348,21 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
     once = TRUE
   )
 
-  # Clear saved handler
-  shiny::observeEvent(input$clear_saved, {
-    handle_clear_saved_request(input, session, app_state, emit, ui_service)
-  })
+  # Clear saved handler — STATUS_UPDATES (åbner confirm-modal).
+  shiny::observeEvent(input$clear_saved,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      handle_clear_saved_request(input, session, app_state, emit, ui_service)
+    }
+  )
 
-  # Confirm clear saved handler
-  shiny::observeEvent(input$confirm_clear_saved, {
-    handle_confirm_clear_saved(session, app_state, emit, ui_service)
-  })
+  # Confirm clear saved handler — STATE_MANAGEMENT (rydder localStorage + state).
+  shiny::observeEvent(input$confirm_clear_saved,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      handle_confirm_clear_saved(session, app_state, emit, ui_service)
+    }
+  )
 
   # NOTE: output$dataLoaded is now handled in server_helpers.R with smart logic
   # NOTE: manual_save, show_upload_modal og save_status_display observers

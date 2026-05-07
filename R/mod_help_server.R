@@ -8,11 +8,13 @@
 #'
 #' @param id Module ID
 #' @param parent_session Shiny session. Parent session for navbar navigation.
-#' @param previous_tab ReactiveVal. Den forrige tab brugeren var på.
+#' @param app_state Centraliseret app state. Issue #532: tab-state læses fra
+#'   app_state$navigation$previous_tab (tidligere passerede vi en separat
+#'   reactiveVal).
 #' @return NULL
 #' @keywords internal
-mod_help_server <- function(id, parent_session = NULL, previous_tab = NULL) {
+mod_help_server <- function(id, parent_session = NULL, app_state = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
-    setup_help_back_navigation(input, parent_session, previous_tab)
+    setup_help_back_navigation(input, parent_session, app_state)
   })
 }

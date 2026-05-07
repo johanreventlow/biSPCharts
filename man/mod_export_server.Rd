@@ -22,8 +22,8 @@ Server logik for eksport af SPC charts.
 Haandterer live preview og download af charts i PDF og PNG formater.
 }
 \seealso{
-Other export_modules: 
-\code{\link{mod_export_ui}()}
+Other export_modules:
+\code{\link[=mod_export_ui]{mod_export_ui()}}
 }
 \concept{export_modules}
 \keyword{internal}

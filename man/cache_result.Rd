@@ -4,7 +4,7 @@
 \alias{cache_result}
 \title{Cache Result}
 \usage{
-cache_result(cache_key, value, timeout_seconds)
+cache_result(cache_key, value, timeout_seconds, app_state = NULL)
 }
 \arguments{
 \item{cache_key}{Character string med cache key}
@@ -12,6 +12,9 @@ cache_result(cache_key, value, timeout_seconds)
 \item{value}{Value at cache}
 
 \item{timeout_seconds}{Timeout i sekunder}
+
+\item{app_state}{Optional app_state for centralized cache resolution.
+Default NULL bruger global cache env.}
 }
 \description{
 Gemmer result i cache med expiration time.

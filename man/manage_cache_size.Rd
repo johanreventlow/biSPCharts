@@ -4,7 +4,7 @@
 \alias{manage_cache_size}
 \title{Cache Management Functions}
 \usage{
-manage_cache_size(size_limit = NULL)
+manage_cache_size(size_limit = NULL, app_state = NULL)
 }
 \arguments{
 \item{size_limit}{Maximum antal cache entries der må eksistere

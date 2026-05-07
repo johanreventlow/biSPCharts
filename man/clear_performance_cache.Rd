@@ -4,7 +4,7 @@
 \alias{clear_performance_cache}
 \title{Clear Performance Cache}
 \usage{
-clear_performance_cache(pattern = NULL)
+clear_performance_cache(pattern = NULL, app_state = NULL)
 }
 \arguments{
 \item{pattern}{Optional regex pattern til at rydde specific keys}

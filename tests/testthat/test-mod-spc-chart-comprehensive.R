@@ -417,6 +417,9 @@ describe("Error Handling", {
         app_state = app_state
       ),
       {
+        # Issue #610: spc_inputs_raw er gated paa viewport_ready_signal.
+        # Send JS-event for at flippe signalet og lade pipelinen evaluere.
+        session$setInputs(viewport_ready = list(width = 800, height = 600, ts = 1))
         # session$elapse driver debounce-timers (input_change 150ms + file_select 500ms)
         session$flushReact()
         session$elapse(millis = 1500)

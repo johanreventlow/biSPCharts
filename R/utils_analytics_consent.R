@@ -61,6 +61,7 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
   session$sendCustomMessage("spc_set_consent_version", config$consent_version)
 
   shiny::observeEvent(input$analytics_consent,
+    priority = OBSERVER_PRIORITIES$LOGGING,
     {
       consent <- input$analytics_consent
 
@@ -122,6 +123,7 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
   )
 
   shiny::observeEvent(input$analytics_client_metadata,
+    priority = OBSERVER_PRIORITIES$LOGGING,
     {
       metadata <- format_analytics_metadata(input$analytics_client_metadata)
       if (!is.null(metadata)) {
@@ -136,6 +138,7 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
   )
 
   shiny::observeEvent(input$analytics_performance,
+    priority = OBSERVER_PRIORITIES$LOGGING,
     {
       perf <- input$analytics_performance
       if (!is.null(perf)) {

@@ -622,38 +622,49 @@ parse_danish_dates <- function(date_strings, format) {
   # Preprocess strings for Danish month names
   processed_strings <- date_strings
 
-  # Handle Danish month abbreviations (case insensitive)
-  danish_months <- c(
-    "jan", "feb", "mar", "apr", "maj", "jun",
-    "jul", "aug", "sep", "okt", "nov", "dec"
-  )
-  english_months <- c(
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  )
+  # PERFORMANCE (#538): Spring maaneds-substitution helt over hvis ingen alfabetiske
+  # tegn er til stede. Ren-numeriske datoer (15-03-2024, 2024-03-15) udgoer den
+  # almindelige autodetect-input og rammer 24 regex-substitutions per format-attempt
+  # uden behov. Kontroller kun samplet (max 100 vaerdier) for hurtigere detection.
+  has_alpha <- any(grepl("[A-Za-z\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5]",
+    head(processed_strings, 100L),
+    perl = TRUE
+  ))
 
-  # Handle Danish full month names
-  danish_month_full <- c(
-    "januar", "februar", "marts", "april", "maj", "juni",
-    "juli", "august", "september", "oktober", "november", "december"
-  )
-  english_month_full <- c(
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  )
-
-  # TIDYVERSE: Replace Danish months using purrr::reduce2 (eliminates mutable state)
-  # Combines abbreviations + full names in single functional operation
-  processed_strings <- purrr::reduce2(
-    .x = c(danish_months, danish_month_full),
-    .y = c(english_months, english_month_full),
-    .init = processed_strings,
-    .f = ~ stringr::str_replace_all(
-      ..1,
-      pattern = stringr::regex(paste0("\\b", ..2, "\\b"), ignore_case = TRUE),
-      replacement = ..3
+  if (has_alpha) {
+    # Handle Danish month abbreviations (case insensitive)
+    danish_months <- c(
+      "jan", "feb", "mar", "apr", "maj", "jun",
+      "jul", "aug", "sep", "okt", "nov", "dec"
     )
-  )
+    english_months <- c(
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    )
+
+    # Handle Danish full month names
+    danish_month_full <- c(
+      "januar", "februar", "marts", "april", "maj", "juni",
+      "juli", "august", "september", "oktober", "november", "december"
+    )
+    english_month_full <- c(
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    )
+
+    # TIDYVERSE: Replace Danish months using purrr::reduce2 (eliminates mutable state)
+    # Combines abbreviations + full names in single functional operation
+    processed_strings <- purrr::reduce2(
+      .x = c(danish_months, danish_month_full),
+      .y = c(english_months, english_month_full),
+      .init = processed_strings,
+      .f = ~ stringr::str_replace_all(
+        ..1,
+        pattern = stringr::regex(paste0("\\b", ..2, "\\b"), ignore_case = TRUE),
+        replacement = ..3
+      )
+    )
+  }
 
   # Use appropriate lubridate function with quiet parsing
   safe_operation(

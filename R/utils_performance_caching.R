@@ -7,10 +7,30 @@
 #' @name performance_caching
 NULL
 
-# Module-level cache environment - brugt som fallback når session ikke er tilgængelig.
-# BEMÆRK: Denne cache deles mellem sessions i samme R-process.
-# Session-scoped caching foretrækkes via session$userData$performance_cache.
+# Module-level cache environment - LEGACY fallback når app_state ej tilgængelig
+# (test-context, batch-jobs uden session). Issue #529: session-scoped cache via
+# app_state$cache$performance er den anbefalede vej i multi-session deploys.
 .performance_cache <- new.env(parent = emptyenv())
+
+#' Resolve performance cache environment
+#'
+#' Returnerer session-scoped cache fra app_state$cache$performance hvis sat,
+#' ellers module-level fallback. Issue #529: forhindrer cross-session
+#' contamination ved multi-session Connect Cloud-deploys.
+#'
+#' @param app_state Optional centralized app state. Hvis NULL: module-level cache.
+#'
+#' @return Environment til cache storage
+#' @keywords internal
+resolve_performance_cache <- function(app_state = NULL) {
+  if (!is.null(app_state) &&
+    !is.null(app_state$cache) &&
+    !is.null(app_state$cache$performance) &&
+    is.environment(app_state$cache$performance)) {
+    return(app_state$cache$performance)
+  }
+  .performance_cache
+}
 
 #' Generate Data-Based Cache Key
 #'
@@ -83,7 +103,7 @@ cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE)
   cache_key <- generate_data_cache_key(data, "autodetect", include_names = TRUE)
 
   if (!force_refresh) {
-    cached_result <- get_cached_result(cache_key)
+    cached_result <- get_cached_result(cache_key, app_state = app_state)
     if (!is.null(cached_result)) {
       log_debug(
         "Auto-detection cache hit",
@@ -109,7 +129,7 @@ cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE)
   computation_time <- as.numeric(Sys.time() - start_time)
 
   # Cache results for 30 minutes (auto-detection is expensive, longer cache reduces duplicates)
-  cache_result(cache_key, results, timeout_seconds = 1800)
+  cache_result(cache_key, results, timeout_seconds = 1800, app_state = app_state)
 
   log_info(
     "Auto-detection completed and cached",
@@ -140,7 +160,7 @@ cache_auto_detection_results <- function(data, app_state, force_refresh = FALSE)
 #' @return Invisible NULL
 #'
 #' @keywords internal
-manage_cache_size <- function(size_limit = NULL) {
+manage_cache_size <- function(size_limit = NULL, app_state = NULL) {
   if (is.null(size_limit)) {
     size_limit <- tryCatch(
       CACHE_CONFIG$size_limit_entries,
@@ -148,7 +168,8 @@ manage_cache_size <- function(size_limit = NULL) {
     )
   }
 
-  cache_keys <- ls(envir = .performance_cache)
+  cache_env <- resolve_performance_cache(app_state)
+  cache_keys <- ls(envir = cache_env)
   n_entries <- length(cache_keys)
 
   if (n_entries <= size_limit) {
@@ -157,7 +178,7 @@ manage_cache_size <- function(size_limit = NULL) {
 
   # Hent last_access-tidsstempel for alle entries (LRU-orden)
   access_times <- vapply(cache_keys, function(k) {
-    entry <- get(k, envir = .performance_cache)
+    entry <- get(k, envir = cache_env)
     if (!is.null(entry$last_access)) {
       as.numeric(entry$last_access)
     } else {
@@ -169,7 +190,7 @@ manage_cache_size <- function(size_limit = NULL) {
   n_to_remove <- n_entries - size_limit
   oldest_keys <- cache_keys[order(access_times)[seq_len(n_to_remove)]]
 
-  rm(list = oldest_keys, envir = .performance_cache)
+  rm(list = oldest_keys, envir = cache_env)
 
   log_debug(
     "LRU cache eviction gennemfort",
@@ -177,7 +198,7 @@ manage_cache_size <- function(size_limit = NULL) {
   )
   log_debug_kv(
     removed_count = n_to_remove,
-    remaining_count = length(ls(envir = .performance_cache)),
+    remaining_count = length(ls(envir = cache_env)),
     .context = "PERFORMANCE_CACHE"
   )
 
@@ -189,19 +210,23 @@ manage_cache_size <- function(size_limit = NULL) {
 #' Henter cached result hvis det eksisterer og ikke er expired.
 #'
 #' @param cache_key Character string med cache key
+#' @param app_state Optional app_state for centralized cache resolution.
+#'   Default NULL bruger global cache env.
 #'
 #' @return Cached result eller NULL hvis ikke fundet/expired
 #'
-get_cached_result <- function(cache_key) {
-  if (!exists(cache_key, envir = .performance_cache)) {
+get_cached_result <- function(cache_key, app_state = NULL) {
+  cache_env <- resolve_performance_cache(app_state)
+
+  if (!exists(cache_key, envir = cache_env)) {
     return(NULL)
   }
 
-  cached_entry <- get(cache_key, envir = .performance_cache)
+  cached_entry <- get(cache_key, envir = cache_env)
 
   # Check if expired
   if (Sys.time() > cached_entry$expires_at) {
-    rm(list = cache_key, envir = .performance_cache)
+    rm(list = cache_key, envir = cache_env)
     log_debug_kv(
       message = "Cache entry expired and removed",
       cache_key = cache_key,
@@ -212,7 +237,7 @@ get_cached_result <- function(cache_key) {
 
   # Update access time for LRU management
   cached_entry$last_access <- Sys.time()
-  assign(cache_key, cached_entry, envir = .performance_cache)
+  assign(cache_key, cached_entry, envir = cache_env)
 
   return(cached_entry)
 }
@@ -224,8 +249,11 @@ get_cached_result <- function(cache_key) {
 #' @param cache_key Character string med cache key
 #' @param value Value at cache
 #' @param timeout_seconds Timeout i sekunder
+#' @param app_state Optional app_state for centralized cache resolution.
+#'   Default NULL bruger global cache env.
 #'
-cache_result <- function(cache_key, value, timeout_seconds) {
+cache_result <- function(cache_key, value, timeout_seconds, app_state = NULL) {
+  cache_env <- resolve_performance_cache(app_state)
   cached_entry <- list(
     value = value,
     created_at = Sys.time(),
@@ -234,7 +262,7 @@ cache_result <- function(cache_key, value, timeout_seconds) {
     size_estimate = object.size(value)
   )
 
-  assign(cache_key, cached_entry, envir = .performance_cache)
+  assign(cache_key, cached_entry, envir = cache_env)
 }
 
 #' Clear Performance Cache
@@ -250,15 +278,16 @@ cache_result <- function(cache_key, value, timeout_seconds) {
 #' clear_performance_cache("autodetect_.*") # Clear kun autodetect cache
 #' }
 #' @keywords internal
-clear_performance_cache <- function(pattern = NULL) {
-  cache_keys <- ls(envir = .performance_cache)
+clear_performance_cache <- function(pattern = NULL, app_state = NULL) {
+  cache_env <- resolve_performance_cache(app_state)
+  cache_keys <- ls(envir = cache_env)
 
   if (!is.null(pattern)) {
     cache_keys <- cache_keys[grepl(pattern, cache_keys)]
   }
 
   if (length(cache_keys) > 0) {
-    rm(list = cache_keys, envir = .performance_cache)
+    rm(list = cache_keys, envir = cache_env)
 
     log_debug_kv(
       message = "Performance cache cleared",

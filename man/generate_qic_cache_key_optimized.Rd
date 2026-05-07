@@ -4,7 +4,7 @@
 \alias{generate_qic_cache_key_optimized}
 \title{Generate QIC Cache Key (Optimized)}
 \usage{
-generate_qic_cache_key_optimized(data, params)
+generate_qic_cache_key_optimized(data, params, app_state = NULL)
 }
 \arguments{
 \item{data}{Data for QIC calculation}

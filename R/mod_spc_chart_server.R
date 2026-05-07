@@ -61,7 +61,14 @@ visualizationModuleServer <- function(
     # Use caller-provided emit if available; fall back to local instance.
     # Both options wrap the same app_state$events, so no double-fire occurs.
     module_emit <- emit %||% create_emit_api(app_state)
-    register_viewport_observer(app_state, session, ns, module_emit)
+
+    register_viewport_observer(
+      app_state = app_state,
+      session = session,
+      input = input,
+      ns = ns,
+      emit = module_emit
+    )
 
     # Helper functions for app_state visualization management
     set_plot_state <- function(key, value) {
@@ -91,6 +98,7 @@ visualizationModuleServer <- function(
       chart_config = chart_config,
       session = session,
       ns = ns,
+      app_state = app_state,
       y_axis_unit_reactive = y_axis_unit_reactive,
       target_value_reactive = target_value_reactive,
       target_text_reactive = target_text_reactive,

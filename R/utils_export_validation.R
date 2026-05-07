@@ -341,7 +341,7 @@ validate_aspect_ratio <- function(width, height, warn_only = TRUE) {
 #'   \item Backslash (\\) -- escape-prefiks selv
 #'   \item Hash (#) -- function-call/raw-block
 #'   \item Dollar ($) -- math-mode
-#'   \item Backtick (\code{`}) -- raw-text
+#'   \item Backtick character -- raw-text
 #'   \item Asterisk (*) -- bold (#486)
 #'   \item Underscore (_) -- emphasis/italic (#486)
 #'   \item Square brackets (\code{[}, \code{]}) -- content-block (#486)

@@ -176,21 +176,27 @@ setup_wizard_gates <- function(input, output, app_state, session) {
   )
 
   # Tilbage-knap: Trin 2 -> Trin 1
-  shiny::observeEvent(input$back_to_upload, {
-    bslib::nav_select("main_navbar", selected = "upload", session = session)
-  })
+  shiny::observeEvent(input$back_to_upload,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      bslib::nav_select("main_navbar", selected = "upload", session = session)
+    }
+  )
 
   # Fortsaet-knap: Trin 2 -> Trin 3 (kun hvis plot er klar)
-  shiny::observeEvent(input$continue_to_export, {
-    if (!isTRUE(shiny::isolate(app_state$visualization$plot_ready))) {
-      shiny::showNotification(
-        "V\u00e6lg kolonner og generer et diagram f\u00f8rst",
-        type = "warning", duration = 3
-      )
-      return()
+  shiny::observeEvent(input$continue_to_export,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      if (!isTRUE(shiny::isolate(app_state$visualization$plot_ready))) {
+        shiny::showNotification(
+          "V\u00e6lg kolonner og generer et diagram f\u00f8rst",
+          type = "warning", duration = 3
+        )
+        return()
+      }
+      bslib::nav_select("main_navbar", selected = "eksporter", session = session)
     }
-    bslib::nav_select("main_navbar", selected = "eksporter", session = session)
-  })
+  )
 }
 
 #' Setup observers for paste data og sample data loading

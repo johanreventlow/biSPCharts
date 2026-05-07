@@ -129,7 +129,7 @@ mod_export_ui <- function(id) {
                 shiny::tags$p(class = "mb-1", shiny::tags$strong("1."), " V\u00e6lg format (PDF for rapporter, PNG for pr\u00e6sentationer)."),
                 shiny::tags$p(class = "mb-1", shiny::tags$strong("2."), " Skriv en kort titel der opsummerer hvad diagrammet viser."),
                 shiny::tags$p(class = "mb-1", shiny::tags$strong("3."), " Udfyld datadefinition og analyse af processen."),
-                shiny::tags$p(class = "mb-0", shiny::tags$strong("Tip:"), " Brug AI-funktionen til at generere et udkast til analyseteksten, og redig\u00e9r derefter.")
+                shiny::tags$p(class = "mb-0", shiny::tags$strong("4."), " Klik ", shiny::tags$em("Eksport\u00e9r"), " nederst til h\u00f8jre for at downloade rapporten som fil.")
               )
             )
           ),
@@ -429,10 +429,10 @@ mod_export_ui <- function(id) {
       shinyjs::disabled(
         shiny::downloadButton(
           "download_spc_file_step3",
-          "Gem kopi af data og indstillinger",
-          class = "btn-outline-secondary",
+          "Download kopi af data og indstillinger",
+          class = "btn-outline-secondary download-data-btn",
           style = "width: auto; min-width: 200px;",
-          title = "Gem kopi af data og indstillinger til Excel-fil"
+          title = "Download kopi af data og indstillinger til Excel-fil"
         )
       ),
       shiny::downloadButton(

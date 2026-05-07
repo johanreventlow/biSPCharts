@@ -382,7 +382,7 @@ create_app_state <- function() {
 #' @examples
 #' \dontrun{
 #' emit <- create_emit_api(app_state)
-#' emit$data_loaded() # Triggers shiny::observeEvent(app_state$events$data_loaded, ...)
+#' emit$data_updated(context = "file_upload") # Triggers observers on app_state$events$data_updated
 #' }
 #' @keywords internal
 #' @noRd
@@ -415,28 +415,6 @@ create_emit_api <- function(app_state) {
       })
     },
 
-    # SPRINT 4: Legacy compatibility functions — bevares for API stabilitet
-    # (#462). 0 R/-callers, men tests/test-event-system-emit.R + integration-
-    # workflows verificerer aliases'ne eksplicit.
-    data_loaded = function() {
-      shiny::isolate({
-        app_state$events$data_updated <- app_state$events$data_updated + 1L
-        app_state$last_data_update_context <- list(
-          context = "data_loaded",
-          timestamp = Sys.time()
-        )
-      })
-    },
-    data_changed = function() {
-      shiny::isolate({
-        app_state$events$data_updated <- app_state$events$data_updated + 1L
-        app_state$last_data_update_context <- list(
-          context = "data_changed",
-          timestamp = Sys.time()
-        )
-      })
-    },
-
     # Column detection events
     auto_detection_started = function() {
       shiny::isolate({
@@ -463,6 +441,7 @@ create_emit_api <- function(app_state) {
     },
 
     # Legacy UI event compatibility (map to consolidated events)
+    # Stadig brugt i utils_server_events_autodetect.R + utils_server_events_navigation.R (#462)
     ui_sync_needed = function() {
       shiny::isolate({
         app_state$events$ui_sync_requested <- app_state$events$ui_sync_requested + 1L

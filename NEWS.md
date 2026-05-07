@@ -1,3 +1,10 @@
+# biSPCharts (development)
+
+## Interne ændringer
+
+* Slettet 2 ubrugte emit-aliases (`data_loaded`, `data_changed`) fra `create_emit_api()`.
+  (`ui_sync_needed` og `OBSERVER_PRIORITIES`-aliases bevares — har aktive callers). (#462)
+
 # biSPCharts 0.3.3
 
 ## Nye features

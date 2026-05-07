@@ -112,6 +112,11 @@
 
 ## Interne ændringer
 
+* Udvid integration-test-coverage for `mod_landing_server` click-handlere:
+  `restore_saved_session`-klik sender `performSessionRestore` til
+  `parent_session`, og `discard_saved_session`-klik sender
+  `discardPendingRestore` + nulstiller `peek_result`. (#590)
+
 * Fjern legacy Typst-template-kopi: `inst/templates/typst/bfh-template/`
   (template + `.DS_Store`) og `bfh_horisonal.typ`-eksempel. BFHcharts ejer
   authoritative template og loader den via

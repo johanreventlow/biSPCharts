@@ -311,8 +311,13 @@ create_app_state <- function() {
   # Non-reactive cache objects for QIC results
   # Cache creation is delayed until first use to avoid dependency issues
   # M1: Performance counters moved to package environment (R/zzz.R) for proper isolation
+  # Issue #529: Session-scoped performance + data-signature caches
+  # Tidligere lå disse i .performance_cache + .data_signature_cache på package-niveau
+  # → cross-session contamination i multi-session Connect Cloud-deploy.
   app_state$cache <- list(
-    qic = NULL # Will be initialized lazily on first use
+    qic = NULL, # Will be initialized lazily on first use
+    performance = new.env(parent = emptyenv()),
+    data_signature = new.env(parent = emptyenv())
   )
 
   # Error State - Convert to reactiveValues for consistency

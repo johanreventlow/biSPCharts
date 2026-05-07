@@ -479,6 +479,26 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-integration-session-restore.R
+  audit_category: green
+  type: integration
+  handling: keep
+  reviewed: yes
+  rationale: 'Issue #590: testServer-baserede integration-tests for session-restore-flow
+    (peek_result -> restore-card render, single-render coalesce per fix-pattern #403).
+    Visuel verifikation deferred til shinytest2 nightly.'
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-07'
+- file: test-integration-upload-to-chart.R
+  audit_category: green
+  type: integration
+  handling: keep
+  reviewed: yes
+  rationale: 'Issue #590: testServer-baseret integration-suite for upload->autodetect->render
+    reactive chain via setup_event_listeners + emit$data_updated. Inkluderer paste-data
+    parse-flow.'
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-07'
 - file: test-integration-workflows.R
   audit_category: green
   type: integration
@@ -953,6 +973,16 @@ files:
   rationale: Green-partial med 3/14 fejl. Handling=fix-in-phase-3 baseret paa fail-ratio.
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-wizard-gate-integration.R
+  audit_category: green
+  type: integration
+  handling: keep
+  reviewed: yes
+  rationale: 'Issue #590: integration-tests for setup_wizard_gates med sendCustomMessage-capture
+    + bslib::nav_select/shinyjs-mocking. Verificerer #193 fix (auto-nav skip under
+    restoring_session).'
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-07'
 - file: test-wizard.R
   audit_category: green
   type: unit

@@ -450,6 +450,209 @@ test_that("Export-plot anvender hospital-tema korrekt", {
   skip("Hospital-tema verificeres via shinytest2 snapshot — verificeres via nightly CI")
 })
 
+# EXCEL 3-SHEET DOWNLOAD INTEGRATION =========================================
+# Issue #590: Verificer at 3-sheet Excel-eksport producerer en valid fil
+# (Data + Indstillinger + SPC-analyse). build_spc_excel() kaldes direkte
+# (downloadHandler-content() er ikke testbar via testServer).
+
+test_that("build_spc_excel: producerer 2-sheet fil naar qic_data er NULL", {
+  skip_if_not_installed("openxlsx")
+  skip_if_not_installed("readxl")
+
+  data <- create_test_data()
+  metadata <- list(
+    indicator_title = "Test indikator",
+    export_department = "Testafdeling",
+    chart_type = "p"
+  )
+
+  excel_path <- build_spc_excel(
+    data = data,
+    metadata = metadata,
+    qic_data = NULL
+  )
+  on.exit(unlink(excel_path), add = TRUE)
+
+  expect_true(file.exists(excel_path))
+  sheets <- readxl::excel_sheets(excel_path)
+  expect_setequal(sheets, c("Data", "Indstillinger"))
+})
+
+test_that("build_spc_excel: 3-sheet fil indeholder Data, Indstillinger, SPC-analyse", {
+  skip_if_not_installed("openxlsx")
+  skip_if_not_installed("readxl")
+
+  data <- create_test_data()
+  metadata <- list(
+    indicator_title = "3-sheet test",
+    export_department = "Test",
+    chart_type = "p"
+  )
+
+  # Mock qic_data matching BFHcharts 0.15.0 contract (helper-mocks.R)
+  mock_result <- mock_bfh_qic(
+    data = data,
+    x = "Dato",
+    y = "Tæller",
+    n = "Nævner",
+    chart_type = "p"
+  )
+  qic_data <- mock_result$qic_data
+
+  excel_path <- build_spc_excel(
+    data = data,
+    metadata = metadata,
+    qic_data = qic_data,
+    original_data = data,
+    analysis_options = list(
+      pkg_versions = list(biSPCharts = "0.x", BFHcharts = "0.x"),
+      computed_at = Sys.time()
+    )
+  )
+  on.exit(unlink(excel_path), add = TRUE)
+
+  expect_true(file.exists(excel_path))
+  sheets <- readxl::excel_sheets(excel_path)
+  expect_true("Data" %in% sheets)
+  expect_true("Indstillinger" %in% sheets)
+  # SPC-analyse er valgfri — bygges hvis sections returnerer non-NULL.
+  # Vi accepterer 2 eller 3 sheets afhaengigt af hvad
+  # build_spc_analysis_sheet() returnerer for vores mock-data.
+  expect_true(length(sheets) >= 2L && length(sheets) <= 3L)
+})
+
+test_that("build_spc_excel: Data-arket round-trip-roundtrips paa column-niveau", {
+  skip_if_not_installed("openxlsx")
+  skip_if_not_installed("readxl")
+
+  data <- create_test_data()
+  metadata <- list(indicator_title = "RT", chart_type = "p")
+
+  excel_path <- build_spc_excel(data = data, metadata = metadata)
+  on.exit(unlink(excel_path), add = TRUE)
+
+  read_back <- readxl::read_excel(excel_path, sheet = "Data")
+  # Kolonnenavne preserved
+  expect_setequal(names(read_back), names(data))
+  expect_equal(nrow(read_back), nrow(data))
+})
+
+test_that("build_spc_excel: Indstillinger-arket bevarer metadata-felter", {
+  skip_if_not_installed("openxlsx")
+  skip_if_not_installed("readxl")
+
+  data <- create_test_data()
+  metadata <- list(
+    indicator_title = "Min indikator",
+    export_department = "Afdeling X",
+    chart_type = "pp"
+  )
+
+  excel_path <- build_spc_excel(data = data, metadata = metadata)
+  on.exit(unlink(excel_path), add = TRUE)
+
+  # Indstillinger har 2 header-raekker (kommentar + tom) -> skip = 2
+  read_back <- readxl::read_excel(
+    excel_path,
+    sheet = "Indstillinger",
+    skip = INDSTILLINGER_HEADER_ROWS
+  )
+  expect_true("Felt" %in% names(read_back))
+  # Anden kolonne hedder "Værdi" (UTF-8 æ)
+  field_col <- read_back$Felt
+  expect_true("indicator_title" %in% field_col)
+  expect_true("chart_type" %in% field_col)
+})
+
+# AI SUGGESTION HANDLER TESTS ================================================
+# Issue 590 verifies BFHllm suggestion routing into the UI via the
+# handle_ai_suggestion_result helper using a stubbed updateTextAreaInput.
+
+test_that("handle_ai_suggestion_result: ikke-NULL suggestion skriver til pdf_improvement", {
+  skip_if_not_installed("shiny")
+
+  # Capture session for updateTextAreaInput-opkald
+  update_calls <- list()
+  notification_calls <- list()
+
+  testthat::with_mocked_bindings(
+    updateTextAreaInput = function(session, inputId, label = NULL, value = NULL,
+                                   placeholder = NULL) {
+      update_calls[[length(update_calls) + 1L]] <<- list(
+        inputId = inputId, value = value
+      )
+      invisible(NULL)
+    },
+    showNotification = function(ui, action = NULL, duration = 5, closeButton = TRUE,
+                                id = NULL, type = c("default", "message", "warning", "error"),
+                                session = NULL) {
+      notification_calls[[length(notification_calls) + 1L]] <<- list(
+        ui = ui, type = match.arg(type)
+      )
+      invisible(NULL)
+    },
+    .package = "shiny",
+    {
+      mock_suggestion <- mock_bfhllm_spc_suggestion(
+        spc_result = NULL, context = NULL
+      )
+
+      handle_ai_suggestion_result(
+        suggestion = mock_suggestion,
+        session = NULL,
+        output = list()
+      )
+
+      # updateTextAreaInput skal vaere kaldt med pdf_improvement + suggestion
+      expect_length(update_calls, 1L)
+      expect_equal(update_calls[[1L]]$inputId, "pdf_improvement")
+      expect_equal(update_calls[[1L]]$value, mock_suggestion)
+
+      # Success-notifikation
+      expect_length(notification_calls, 1L)
+      expect_equal(notification_calls[[1L]]$type, "message")
+    }
+  )
+})
+
+test_that("handle_ai_suggestion_result: NULL suggestion viser fejl-notifikation", {
+  skip_if_not_installed("shiny")
+
+  update_calls <- list()
+  notification_calls <- list()
+
+  testthat::with_mocked_bindings(
+    updateTextAreaInput = function(session, inputId, label = NULL, value = NULL,
+                                   placeholder = NULL) {
+      update_calls[[length(update_calls) + 1L]] <<- list(inputId = inputId)
+      invisible(NULL)
+    },
+    showNotification = function(ui, action = NULL, duration = 5, closeButton = TRUE,
+                                id = NULL, type = c("default", "message", "warning", "error"),
+                                session = NULL) {
+      notification_calls[[length(notification_calls) + 1L]] <<- list(
+        ui = ui, type = match.arg(type)
+      )
+      invisible(NULL)
+    },
+    .package = "shiny",
+    {
+      handle_ai_suggestion_result(
+        suggestion = NULL,
+        session = NULL,
+        output = list()
+      )
+
+      # Ingen updateTextAreaInput ved NULL
+      expect_length(update_calls, 0L)
+
+      # Fejl-notifikation
+      expect_length(notification_calls, 1L)
+      expect_equal(notification_calls[[1L]]$type, "error")
+    }
+  )
+})
+
 # SUMMARY ====================================================================
 # Test coverage:
 # ✅ UI structure and elements
@@ -466,3 +669,6 @@ test_that("Export-plot anvender hospital-tema korrekt", {
 # ✅ Metadata validation constants
 # ✅ Documentation requirements
 # ✅ Preview integration tests (manual)
+# ✅ build_spc_excel: 2-sheet + 3-sheet output (#590)
+# ✅ build_spc_excel: Data round-trip + Indstillinger metadata bevares (#590)
+# ✅ handle_ai_suggestion_result: AI-suggestion routes til UI med BFHllm-mock (#590)

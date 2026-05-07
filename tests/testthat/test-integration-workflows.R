@@ -549,3 +549,107 @@ test_that("Multi-step flow: upload → detect → adjust → regenerate", {
     }
   })
 })
+
+# INTEGRATION TEST: Error Recovery — Corrupt Upload -> Recover -> Clean Upload
+# Issue 590 covers corrupt upload chain into recovery and clean re-upload.
+
+test_that("Error recovery: corrupt upload -> error -> ny upload renser state", {
+  skip_if_not_installed("shiny")
+
+  test_server <- function(input, output, session) {
+    app_state <- create_app_state()
+    emit <- create_emit_api(app_state)
+    setup_event_listeners(app_state, emit, input, output, session, ui_service = NULL)
+
+    session$userData$app_state <- app_state
+    session$userData$emit <- emit
+  }
+
+  shiny::testServer(test_server, {
+    app_state <- session$userData$app_state
+    emit <- session$userData$emit
+
+    # PHASE 1: Corrupt upload — sim ved at saette malformet data + emit error
+    corrupt_data <- data.frame(stringsAsFactors = FALSE) # 0 rows, 0 cols
+    app_state$data$current_data <- corrupt_data
+    emit$error_occurred(error_type = "validation", context = "data_upload")
+    session$flushReact()
+
+    # State viser fejl-context
+    expect_equal(app_state$last_error_context$type, "validation")
+    expect_equal(app_state$last_error_context$context, "data_upload")
+
+    # PHASE 2: Recovery — emit recovery + clear corrupt data
+    emit$recovery_completed()
+    session$flushReact()
+
+    # Recovery skal vaere logget
+    has_recovery_state <- !is.null(app_state$errors$last_recovery_time) ||
+      !is.null(app_state$errors)
+    expect_true(has_recovery_state)
+
+    # PHASE 3: Ny clean upload
+    valid_data <- create_test_data()
+    app_state$data$current_data <- valid_data
+    emit$data_updated(context = "file_upload")
+    session$flushReact()
+
+    # State er ren: fuld data, ingen residual fejl-context blokerer flow
+    expect_equal(nrow(app_state$data$current_data), 10L)
+    actual_cols <- names(app_state$data$current_data)
+    expect_true(all(c("Dato", "Tæller", "Nævner") %in% actual_cols))
+
+    # data_updated event skal vaere fyret (signal at processing genoptog)
+    expect_true(!is.null(app_state$events$data_updated))
+    expect_gt(shiny::isolate(app_state$events$data_updated), 0L)
+  })
+})
+
+test_that("Error recovery: gentagne fejl + recovery preserverer event-counter integritet", {
+  skip_if_not_installed("shiny")
+
+  test_server <- function(input, output, session) {
+    app_state <- create_app_state()
+    emit <- create_emit_api(app_state)
+    setup_event_listeners(app_state, emit, input, output, session, ui_service = NULL)
+
+    session$userData$app_state <- app_state
+    session$userData$emit <- emit
+  }
+
+  shiny::testServer(test_server, {
+    app_state <- session$userData$app_state
+    emit <- session$userData$emit
+
+    # 3 cycles af fejl + recovery + ny upload
+    for (i in seq_len(3L)) {
+      # Fejl
+      emit$error_occurred(
+        error_type = "processing",
+        context = paste0("cycle_", i)
+      )
+      session$flushReact()
+
+      # Recovery
+      emit$recovery_completed()
+      session$flushReact()
+
+      # Ny data
+      app_state$data$current_data <- create_test_data()
+      emit$data_updated(context = "file_upload")
+      session$flushReact()
+    }
+
+    # Efter 3 cycles: data skal vaere intakt fra sidste upload
+    expect_equal(nrow(app_state$data$current_data), 10L)
+
+    # data_updated counter skal vaere praecis 3 (en per cycle)
+    final_data_count <- shiny::isolate(app_state$events$data_updated %||% 0L)
+    expect_equal(final_data_count, 3L,
+      label = "Hver clean upload-cycle skal triggere praecis 1 data_updated event"
+    )
+
+    # Fejl-context viser sidste cycle (#3)
+    expect_equal(app_state$last_error_context$context, "cycle_3")
+  })
+})

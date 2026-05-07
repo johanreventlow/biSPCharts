@@ -180,6 +180,21 @@ compute_spc_results_bfh <- function(
 
   cached <- read_spc_cache(cache_key, app_state)
   if (!is.null(cached)) {
+    # Issue #647: Eksplicit cache_source-flag i INFO-log saa cache-hits
+    # synes ved INFO-level (tidligere kun DEBUG). Letter perf-diagnose
+    # uden at kraeve SPC_LOG_LEVEL=DEBUG.
+    log_info(
+      message = "SPC computation served from cache",
+      .context = "BFH_SERVICE",
+      details = list(
+        chart_type = req$chart_type,
+        n_points = nrow(cached$qic_data),
+        signals_detected = sum(cached$qic_data$signal, na.rm = TRUE),
+        has_notes = !is.null(notes_column),
+        cache_source = "hit",
+        cache_stored = TRUE
+      )
+    )
     return(cached)
   }
 
@@ -189,7 +204,7 @@ compute_spc_results_bfh <- function(
   standardized <- execute_bfh_request(bfh_params, prepared)
   standardized <- decorate_plot_for_display(standardized, prepared)
 
-  write_spc_cache(cache_key, standardized, app_state)
+  cache_stored <- write_spc_cache(cache_key, standardized, app_state)
 
   log_info(
     message = "SPC computation completed successfully",
@@ -199,7 +214,12 @@ compute_spc_results_bfh <- function(
       n_points = nrow(standardized$qic_data),
       signals_detected = sum(standardized$qic_data$signal, na.rm = TRUE),
       has_notes = !is.null(notes_column),
-      cached = !is.null(cache_key)
+      # Issue #647: split tidligere `cached`-flag (post-store-flag, forvirrende)
+      # i to eksplicitte felter:
+      #   cache_source = "miss" → resultat er fersk-beregnet
+      #   cache_stored = TRUE   → resultat er lagt i cache til fremtidig brug
+      cache_source = "miss",
+      cache_stored = isTRUE(cache_stored)
     )
   )
 
@@ -269,10 +289,12 @@ read_spc_cache <- function(cache_key, app_state) {
         return(NULL)
       }
       result <- get_cached_spc_result(cache_key, qic_cache)
+      # Issue #647: hejs cache-status fra DEBUG til INFO saa hit/miss-ratio
+      # synes uden at kraeve SPC_LOG_LEVEL=DEBUG.
       if (!is.null(result)) {
-        log_debug(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+        log_info(paste("Cache hit:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
       } else {
-        log_debug(paste("Cache miss:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
+        log_info(paste("Cache miss:", substr(cache_key, 1, 40), "..."), .context = "BFH_SERVICE")
       }
       result
     },
@@ -286,28 +308,33 @@ read_spc_cache <- function(cache_key, app_state) {
 
 #' Gem SPC-resultat i cache
 #'
+#' @return Logical. TRUE hvis resultatet blev gemt i cachen, FALSE ellers.
+#'   Issue #647: returneres til facade saa cache_stored-flag er korrekt
+#'   i INFO-log uden at gaette paa cache-state.
 #' @keywords internal
 write_spc_cache <- function(cache_key, result, app_state) {
   if (is.null(cache_key) || is.null(app_state)) {
-    return(invisible(NULL))
+    return(FALSE)
   }
   tryCatch(
     {
       qic_cache <- get_or_init_qic_cache(app_state)
-      if (!is.null(qic_cache)) {
-        # M2 (#456): single source of truth — CACHE_CONFIG$default_timeout_seconds
-        # er altid initialiseret i config_system_config.R, så %||%-fallback til
-        # 3600 maskerede tidligere divergens mellem konfigureret 300s og brugt 3600s.
-        cache_ttl <- CACHE_CONFIG$default_timeout_seconds
-        cache_spc_result(cache_key, result, qic_cache, ttl = cache_ttl)
-        log_debug(paste("Result cached with TTL:", cache_ttl, "seconds"), .context = "BFH_SERVICE")
+      if (is.null(qic_cache)) {
+        return(FALSE)
       }
+      # M2 (#456): single source of truth — CACHE_CONFIG$default_timeout_seconds
+      # er altid initialiseret i config_system_config.R, så %||%-fallback til
+      # 3600 maskerede tidligere divergens mellem konfigureret 300s og brugt 3600s.
+      cache_ttl <- CACHE_CONFIG$default_timeout_seconds
+      stored <- cache_spc_result(cache_key, result, qic_cache, ttl = cache_ttl)
+      log_debug(paste("Result cached with TTL:", cache_ttl, "seconds"), .context = "BFH_SERVICE")
+      isTRUE(stored)
     },
     error = function(e) {
       log_warn(paste("Cache storage failed:", e$message), .context = "BFH_SERVICE")
+      FALSE
     }
   )
-  invisible(NULL)
 }
 
 

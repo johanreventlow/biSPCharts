@@ -67,6 +67,12 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Issue #62: Cache isolated from analysis context
     # Debounced to prevent excessive re-rendering when user types metadata
     export_plot <- shiny::reactive({
+      # TAB-GUARD (Issue #644): hejs guard fra renderPlot til selve reactive.
+      # Tidligere fyrede export_plot paa fremmed tab fordi register_analysis_autogen
+      # observerede reactive paa tvaers af tab-skift. Reactive-niveau-guard
+      # eliminerer Typst-render + BFH-compute paa upload/analyser-tab.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       chart_type <- resolve_export_chart_type(app_state)
 
       # Single req() call for all required dependencies
@@ -122,6 +128,9 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Issue #65: Use shared helper to reduce code duplication
     # Issue #67: Helper is undebounced; reactive debounces for preview performance
     pdf_export_plot <- shiny::reactive({
+      # TAB-GUARD (Issue #644): kun beregn pdf_export_plot paa eksporter-tab.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       shiny::req(
         app_state,
         app_state$data$current_data,
@@ -287,6 +296,11 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     debounced_footnote <- shiny::debounce(shiny::reactive(input$export_footnote %||% ""), millis = 1000)
 
     pdf_preview_image <- shiny::reactive({
+      # TAB-GUARD (Issue #644): Typst→PNG-render er dyr (~2s) og maa ej koere
+      # mens brugeren er paa upload/analyser-tab. Tidligere lakage skyldtes at
+      # output$pdf_preview kun tab-guardede output-niveauet, ikke reactive-bodyen.
+      shiny::req(app_state$session$active_tab == "eksporter")
+
       # Only generate for PDF format
       format <- input$export_format %||% "pdf"
       if (format != "pdf") {

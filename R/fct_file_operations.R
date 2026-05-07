@@ -136,139 +136,144 @@ validate_safe_file_path <- function(uploaded_path) {
 setup_file_upload <- function(input, output, session, app_state, emit, ui_service = NULL) {
   # Unified state: App state is always available
 
-  # File upload handler
-  shiny::observeEvent(input$data_file, ignoreInit = TRUE, {
-    # RATE LIMITING: Prevent DoS via rapid uploads
-    # Uses RATE_LIMITS$file_upload_seconds for centralized security configuration
-    last_upload_time <- shiny::isolate(app_state$session$last_upload_time)
-    if (!is.null(last_upload_time)) {
-      time_since_upload <- as.numeric(difftime(Sys.time(), last_upload_time, units = "secs"))
-      min_upload_interval <- RATE_LIMITS$file_upload_seconds
+  # File upload handler — STATE_MANAGEMENT da upload muterer current_data + triggerer
+  # autodetect og persistence (#535).
+  shiny::observeEvent(input$data_file,
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      # RATE LIMITING: Prevent DoS via rapid uploads
+      # Uses RATE_LIMITS$file_upload_seconds for centralized security configuration
+      last_upload_time <- shiny::isolate(app_state$session$last_upload_time)
+      if (!is.null(last_upload_time)) {
+        time_since_upload <- as.numeric(difftime(Sys.time(), last_upload_time, units = "secs"))
+        min_upload_interval <- RATE_LIMITS$file_upload_seconds
 
-      if (time_since_upload < min_upload_interval) {
-        shiny::showNotification(
-          "Vent venligst et \u00f8jeblik, f\u00f8r du uploader en ny fil.",
-          type = "warning",
-          duration = 3
+        if (time_since_upload < min_upload_interval) {
+          shiny::showNotification(
+            "Vent venligst et \u00f8jeblik, f\u00f8r du uploader en ny fil.",
+            type = "warning",
+            duration = 3
+          )
+          log_warn(
+            paste("Upload rate limit triggered - last upload", round(time_since_upload, 1), "seconds ago"),
+            .context = "FILE_UPLOAD_SECURITY",
+            details = list(session_id = sanitize_session_token(session$token))
+          )
+          return()
+        }
+      }
+
+      shiny::req(input$data_file)
+
+      # Luk upload-modal automatisk naar fil er valgt (#167)
+      shiny::removeModal()
+
+      # Start workflow tracer for file upload
+      # SPRINT 1 SECURITY FIX: Sanitize session token before logging
+      upload_tracer <- debug_workflow_tracer("file_upload_workflow", app_state, sanitize_session_token(session$token))
+      upload_tracer$step("upload_initiated")
+
+
+      log_info("File upload started",
+        .context = "FILE_UPLOAD_FLOW",
+        details = list(
+          filename = input$data_file$name,
+          size_bytes = input$data_file$size,
+          file_type = input$data_file$type
         )
-        log_warn(
-          paste("Upload rate limit triggered - last upload", round(time_since_upload, 1), "seconds ago"),
-          .context = "FILE_UPLOAD_SECURITY",
-          details = list(session_id = sanitize_session_token(session$token))
+      )
+
+      upload_tracer$step("file_validation")
+
+      # ENHANCED FILE VALIDATION
+      # SPRINT 1 SECURITY FIX: Sanitize session token before logging
+      validation_result <- validate_uploaded_file(input$data_file, sanitize_session_token(session$token))
+      if (!validation_result$valid) {
+        upload_tracer$complete("file_validation_failed")
+        log_error("File validation failed",
+          .context = "ERROR_HANDLING",
+          details = list(
+            validation_errors = validation_result$errors,
+            filename = input$data_file$name
+          )
+        )
+
+        shiny::showNotification(
+          paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
+          type = "error",
+          duration = 8
         )
         return()
       }
-    }
 
-    shiny::req(input$data_file)
+      upload_tracer$step("file_validation_complete")
 
-    # Luk upload-modal automatisk naar fil er valgt (#167)
-    shiny::removeModal()
+      # Show loading indicator (replaced waiter with simple logging)
 
-    # Start workflow tracer for file upload
-    # SPRINT 1 SECURITY FIX: Sanitize session token before logging
-    upload_tracer <- debug_workflow_tracer("file_upload_workflow", app_state, sanitize_session_token(session$token))
-    upload_tracer$step("upload_initiated")
-
-
-    log_info("File upload started",
-      .context = "FILE_UPLOAD_FLOW",
-      details = list(
-        filename = input$data_file$name,
-        size_bytes = input$data_file$size,
-        file_type = input$data_file$type
-      )
-    )
-
-    upload_tracer$step("file_validation")
-
-    # ENHANCED FILE VALIDATION
-    # SPRINT 1 SECURITY FIX: Sanitize session token before logging
-    validation_result <- validate_uploaded_file(input$data_file, sanitize_session_token(session$token))
-    if (!validation_result$valid) {
-      upload_tracer$complete("file_validation_failed")
-      log_error("File validation failed",
-        .context = "ERROR_HANDLING",
-        details = list(
-          validation_errors = validation_result$errors,
-          filename = input$data_file$name
-        )
+      # Close upload modal automatically
+      on.exit(
+        {
+          shiny::removeModal()
+        },
+        add = TRUE
       )
 
-      shiny::showNotification(
-        paste("Filvalidering fejlede:", paste(validation_result$errors, collapse = "; ")),
-        type = "error",
-        duration = 8
+      upload_tracer$step("state_management_setup")
+
+      # Unified state assignment only - Set table updating flag
+      set_table_updating(app_state, TRUE)
+
+      log_debug("File upload state flags set", .context = "FILE_UPLOAD_FLOW")
+      on.exit(
+        {
+          # Unified state assignment only - Clear table updating flag
+          set_table_updating(app_state, FALSE)
+        },
+        add = TRUE
       )
-      return()
+
+      # Enhanced path traversal protection
+      file_path <- validate_safe_file_path(input$data_file$datapath)
+
+      file_ext <- tools::file_ext(input$data_file$name)
+
+
+      if (file.exists(file_path)) {
+        file_info <- file.info(file_path)
+      }
+
+      safe_operation(
+        operation_name = "Fil upload processing",
+        code = {
+          upload_tracer$step("file_processing_started")
+
+          if (file_ext %in% c("xlsx", "xls")) {
+            log_info("Starting Excel file processing", .context = "FILE_UPLOAD_FLOW")
+            handle_excel_upload(file_path, session, app_state, emit, ui_service)
+            upload_tracer$step("excel_processing_complete")
+          } else {
+            log_info("Starting CSV file processing", .context = "FILE_UPLOAD_FLOW")
+            # SPRINT 1 SECURITY FIX: Sanitize token passed to handle_csv_upload
+            handle_csv_upload(file_path, app_state, sanitize_session_token(session$token), emit)
+            upload_tracer$step("csv_processing_complete")
+          }
+
+          # Complete workflow tracing
+          upload_tracer$complete("file_upload_workflow_complete")
+          log_info("File upload workflow completed successfully", .context = "FILE_UPLOAD_FLOW")
+
+          # Update rate limiting timestamp after successful upload
+          set_last_upload_time(app_state)
+        },
+        error_type = "network",
+        emit = emit,
+        app_state = app_state,
+        session = session,
+        show_user = TRUE
+      )
     }
-
-    upload_tracer$step("file_validation_complete")
-
-    # Show loading indicator (replaced waiter with simple logging)
-
-    # Close upload modal automatically
-    on.exit(
-      {
-        shiny::removeModal()
-      },
-      add = TRUE
-    )
-
-    upload_tracer$step("state_management_setup")
-
-    # Unified state assignment only - Set table updating flag
-    set_table_updating(app_state, TRUE)
-
-    log_debug("File upload state flags set", .context = "FILE_UPLOAD_FLOW")
-    on.exit(
-      {
-        # Unified state assignment only - Clear table updating flag
-        set_table_updating(app_state, FALSE)
-      },
-      add = TRUE
-    )
-
-    # Enhanced path traversal protection
-    file_path <- validate_safe_file_path(input$data_file$datapath)
-
-    file_ext <- tools::file_ext(input$data_file$name)
-
-
-    if (file.exists(file_path)) {
-      file_info <- file.info(file_path)
-    }
-
-    safe_operation(
-      operation_name = "Fil upload processing",
-      code = {
-        upload_tracer$step("file_processing_started")
-
-        if (file_ext %in% c("xlsx", "xls")) {
-          log_info("Starting Excel file processing", .context = "FILE_UPLOAD_FLOW")
-          handle_excel_upload(file_path, session, app_state, emit, ui_service)
-          upload_tracer$step("excel_processing_complete")
-        } else {
-          log_info("Starting CSV file processing", .context = "FILE_UPLOAD_FLOW")
-          # SPRINT 1 SECURITY FIX: Sanitize token passed to handle_csv_upload
-          handle_csv_upload(file_path, app_state, sanitize_session_token(session$token), emit)
-          upload_tracer$step("csv_processing_complete")
-        }
-
-        # Complete workflow tracing
-        upload_tracer$complete("file_upload_workflow_complete")
-        log_info("File upload workflow completed successfully", .context = "FILE_UPLOAD_FLOW")
-
-        # Update rate limiting timestamp after successful upload
-        set_last_upload_time(app_state)
-      },
-      error_type = "network",
-      emit = emit,
-      app_state = app_state,
-      session = session,
-      show_user = TRUE
-    )
-  })
+  )
 
   # UNIFIED EVENT SYSTEM: Auto-detection is now handled by data_loaded events
   # The event system automatically triggers auto-detection when new data is loaded

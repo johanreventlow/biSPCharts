@@ -108,13 +108,16 @@ help_back_link <- function(ns) {
 #' @param previous_tab ReactiveVal med den forrige tab
 #' @noRd
 setup_help_back_navigation <- function(input, parent_session, previous_tab) {
-  shiny::observeEvent(input$go_back, {
-    if (!is.null(parent_session) && !is.null(previous_tab)) {
-      dest <- previous_tab()
-      if (dest == "start") {
-        shinyjs::runjs("document.body.classList.remove('wizard-nav-active');")
+  shiny::observeEvent(input$go_back,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      if (!is.null(parent_session) && !is.null(previous_tab)) {
+        dest <- previous_tab()
+        if (dest == "start") {
+          shinyjs::runjs("document.body.classList.remove('wizard-nav-active');")
+        }
+        bslib::nav_select("main_navbar", selected = dest, session = parent_session)
       }
-      bslib::nav_select("main_navbar", selected = dest, session = parent_session)
     }
-  })
+  )
 }

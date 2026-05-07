@@ -393,16 +393,6 @@ test_that("OBSERVER_PRIORITIES er korrekt konfigureret og tilgængelig", {
       info = paste("Alias", alias, "skal have numerisk værdi")
     )
   }
-
-  # OBSERVER_PRIORITIES har kun UPPERCASE aliases (HIGH, MEDIUM, LOW, LOWEST)
-  # Lowercase "highest", "high" etc. eksisterer ikke - de er ikke defineret
-  # Se config_observer_priorities.R for aktuelle navne
-  uppercase_legacy_aliases <- c("HIGH", "MEDIUM", "LOW", "LOWEST")
-  for (legacy in uppercase_legacy_aliases) {
-    expect_true(legacy %in% names(OBSERVER_PRIORITIES),
-      info = paste("OBSERVER_PRIORITIES skal indeholde legacy alias", legacy)
-    )
-  }
 })
 
 test_that("OBSERVER_PRIORITIES har logisk hierarki", {

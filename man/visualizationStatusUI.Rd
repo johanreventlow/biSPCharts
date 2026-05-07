@@ -17,8 +17,8 @@ Separeret fra plot UI for bedre modularitet.
 Håndterer value boxes og SPC metrics visning.
 }
 \seealso{
-Other visualization_modules: 
-\code{\link{visualizationModuleUI}()}
+Other visualization_modules:
+\code{\link[=visualizationModuleUI]{visualizationModuleUI()}}
 }
 \concept{visualization_modules}
 \keyword{internal}

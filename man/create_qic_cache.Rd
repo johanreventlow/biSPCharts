@@ -4,7 +4,7 @@
 \alias{create_qic_cache}
 \title{Create QIC Result Cache}
 \usage{
-create_qic_cache(max_size = 50)
+create_qic_cache(max_size = 100)
 }
 \arguments{
 \item{max_size}{Maximum number of cache entries (default: 50)}

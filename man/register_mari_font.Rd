@@ -22,8 +22,8 @@ Fonten er proprietaer (Region Hovedstaden) og distribueres ikke i
 public packages -- BFHchartsAssets er privat (kræver GITHUB_PAT).
 }
 \seealso{
-Other font_registration: 
-\code{\link{register_roboto_font}()}
+Other font_registration:
+\code{\link[=register_roboto_font]{register_roboto_font()}}
 }
 \concept{font_registration}
 \keyword{internal}

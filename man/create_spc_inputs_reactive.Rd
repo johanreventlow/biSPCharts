@@ -9,6 +9,7 @@ create_spc_inputs_reactive(
   chart_config,
   session,
   ns,
+  app_state,
   y_axis_unit_reactive = NULL,
   target_value_reactive = NULL,
   target_text_reactive = NULL,
@@ -24,9 +25,12 @@ create_spc_inputs_reactive(
 
 \item{chart_config}{Debounced reactive returning chart configuration}
 
-\item{session}{Shiny session object (for clientData access)}
+\item{session}{Shiny session object (used for \code{clientData$pixelratio})}
 
 \item{ns}{Namespace function for input IDs}
+
+\item{app_state}{Reactive values object — source of viewport_dims +
+viewport_ready gate}
 
 \item{y_axis_unit_reactive}{Reactive expression for Y-axis unit (optional)}
 
@@ -63,13 +67,8 @@ to BFHcharts API parameters, handles chart type-specific configuration,
 and includes viewport dimensions for responsive font scaling.
 }
 \details{
-Complex parameter mapping includes:
-\itemize{
-\item Chart type-specific validation (e.g., run charts with count mode clear n_col)
-\item Viewport dimension capture for responsive font scaling
-\item Responsive base font size calculation using geometric mean of viewport
-\item Debug logging of configuration state transitions
-\item Handling of optional parameters with fallback values
-}
+Viewport is read from \code{app_state$visualization$viewport_dims} and gated
+on \code{app_state$visualization$viewport_ready} so cold-start evaluation
+waits for a real browser layout measurement.
 }
 \keyword{internal}

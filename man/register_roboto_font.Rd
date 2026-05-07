@@ -33,8 +33,8 @@ register_roboto_font()
 
 }
 \seealso{
-Other font_registration: 
-\code{\link{register_mari_font}()}
+Other font_registration:
+\code{\link[=register_mari_font]{register_mari_font()}}
 }
 \concept{font_registration}
 \keyword{internal}

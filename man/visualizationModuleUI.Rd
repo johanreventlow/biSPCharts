@@ -17,8 +17,8 @@ Håndterer selve plot visningen uden status elementer.
 Status elementer er separeret i visualizationStatusUI for modularitet.
 }
 \seealso{
-Other visualization_modules: 
-\code{\link{visualizationStatusUI}()}
+Other visualization_modules:
+\code{\link[=visualizationStatusUI]{visualizationStatusUI()}}
 }
 \concept{visualization_modules}
 \keyword{internal}

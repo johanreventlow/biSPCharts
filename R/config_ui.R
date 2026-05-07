@@ -1,9 +1,9 @@
 # ==============================================================================
 # CONFIG_UI.R
 # ==============================================================================
-# FORMÅL: UI layout constants, CSS styles og responsive font scaling configuration.
+# FORMAaL: UI layout constants, CSS styles og responsive font scaling configuration.
 #         Centraliserer alle UI-relaterede dimensioner og styling for konsistent
-#         appearance på tværs af komponenter.
+#         appearance paa tvaers af komponenter.
 #
 # ANVENDES AF:
 #   - UI rendering (column widths, heights, styles)
@@ -21,7 +21,7 @@
 
 #' Standard kolonne bredder for UI
 #'
-#' Prædefinerede kolonne bredde kombinationer til bslib layout systemer.
+#' Praedefinerede kolonne bredde kombinationer til bslib layout systemer.
 #' @format Named list med numeriske vektorer for kolonne bredder
 #' @keywords internal
 UI_COLUMN_WIDTHS <- list(
@@ -31,10 +31,10 @@ UI_COLUMN_WIDTHS <- list(
   sidebar = c(3, 9)
 )
 
-#' Standard højder for UI komponenter
+#' Standard hoejder for UI komponenter
 #'
-#' CSS højde værdier til konsistent UI layout på tværs af komponenter.
-#' @format Named list med CSS højde strings
+#' CSS hoejde vaerdier til konsistent UI layout paa tvaers af komponenter.
+#' @format Named list med CSS hoejde strings
 #' @keywords internal
 UI_HEIGHTS <- list(
   logo = "40px",
@@ -82,28 +82,28 @@ UI_LAYOUT_PROPORTIONS <- list(
 
 #' Responsive font scaling configuration
 #'
-#' Styrer hvordan base_size skaleres baseret på viewport dimensioner.
+#' Styrer hvordan base_size skaleres baseret paa viewport dimensioner.
 #'
 #' @details
 #' base_size beregnes som: max(min_size, min(max_size, viewport_diagonal / divisor))
 #' hvor viewport_diagonal = sqrt(width_px * height_px)
 #'
-#' GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width × height)) giver balanced
-#' scaling baseret på både bredde og højde. Dette sikrer at fonts skalerer
-#' intuitivt med den samlede plotstørrelse, ikke kun én dimension.
+#' GEOMETRIC MEAN APPROACH: Geometric mean (sqrt(width x height)) giver balanced
+#' scaling baseret paa baade bredde og hoejde. Dette sikrer at fonts skalerer
+#' intuitivt med den samlede plotstoerrelse, ikke kun en dimension.
 #'
 #' VIGTIG: Shiny's renderPlot() multiplicerer automatisk res med pixelratio,
-#' så vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
-#' visuel størrelse på tværs af standard og Retina displays.
+#' saa vi skal IKKE dividere base_size med pixelratio. Dette sikrer konsistent
+#' visuel stoerrelse paa tvaers af standard og Retina displays.
 #'
-#' - divisor: Lavere værdi = større fonts (40 = ~40% større end 56)
+#' - divisor: Lavere vaerdi = stoerre fonts (40 = ~40% stoerre end 56)
 #' - min_size: Minimum font size uanset viewport
-#' - max_size: Maximum font size selv på store skærme
+#' - max_size: Maximum font size selv paa store skaerme
 #'
 #' Eksempler ved divisor = 56:
-#' - 700×500px viewport: diagonal = 836px → base_size = 14.9pt
-#' - 1000×800px viewport: diagonal = 894px → base_size = 16.0pt
-#' - 1400×900px viewport: diagonal = 1668px → base_size = 29.8pt
+#' - 700x500px viewport: diagonal = 836px -> base_size = 14.9pt
+#' - 1000x800px viewport: diagonal = 894px -> base_size = 16.0pt
+#' - 1400x900px viewport: diagonal = 1668px -> base_size = 29.8pt
 #'
 #' @format Named list med scaling parametre
 #' @keywords internal
@@ -117,8 +117,8 @@ FONT_SCALING_CONFIG <- list(
 
 #' Viewport default dimensioner for plot rendering
 #'
-#' Standard viewport størrelse og DPI settings til konsistent plot rendering.
-#' Disse værdier bruges som fallback når viewport dimensioner ikke er tilgængelige.
+#' Standard viewport stoerrelse og DPI settings til konsistent plot rendering.
+#' Disse vaerdier bruges som fallback naar viewport dimensioner ikke er tilgaengelige.
 #'
 #' @details
 #' - width/height: Default pixels for plot rendering
@@ -146,6 +146,6 @@ UNIT_TYPE_LABELS <- list(
   "icu"  = "Intensiv Afdeling",
   "amb"  = "Ambulatorie",
   "akut" = "Akutmodtagelse",
-  "paed" = "Pædiatrisk Afdeling",
-  "gyn"  = "Gynækologi/Obstetrik"
+  "paed" = "P\u00e6diatrisk Afdeling",
+  "gyn"  = "Gyn\u00e6kologi/Obstetrik"
 )

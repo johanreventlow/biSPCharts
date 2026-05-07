@@ -20,9 +20,9 @@ hospital <- get_hospital_name_for_export()
 
 }
 \seealso{
-Other export_helpers: 
-\code{\link{extract_spc_statistics}()},
-\code{\link{generate_pdf_preview}()}
+Other export_helpers:
+\code{\link[=extract_spc_statistics]{extract_spc_statistics()}},
+\code{\link[=generate_pdf_preview]{generate_pdf_preview()}}
 }
 \concept{export_helpers}
 \keyword{internal}

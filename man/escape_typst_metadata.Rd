@@ -14,8 +14,24 @@ Vectors behandles per element.}
 Escaped character, eller value uaendret hvis NULL/non-character.
 }
 \description{
-Escapes Typst-markup characters: #, $, backtick, backslash.
-Defense-in-depth -- BFHcharts forventes ogsaa at escape, men app-laget
-tilfoejer ekstra beskyttelse mod markup-injection.
+Escapes Typst-markup characters for at undgaa at user-input fortolkes som
+Typst-markup ved indsaettelse i template. Defense-in-depth -- BFHcharts
+forventes ogsaa at escape, men app-laget tilfoejer ekstra beskyttelse
+mod markup-injection.
+}
+\details{
+Escaped tegn (jf. Typst-syntaks):
+\itemize{
+\item Backslash (\\) -- escape-prefiks selv
+\item Hash (#) -- function-call/raw-block
+\item Dollar ($) -- math-mode
+\item Backtick character -- raw-text
+\item Asterisk (*) -- bold (#486)
+\item Underscore (_) -- emphasis/italic (#486)
+\item Square brackets (\code{[}, \code{]}) -- content-block (#486)
+\item Angle brackets (\code{<}, \code{>}) -- label/syntax (#486)
+\item At-sign (@) -- reference (#486)
+\item Line-leading =, -, +, / -- heading/list-markers (#486)
+}
 }
 \keyword{internal}

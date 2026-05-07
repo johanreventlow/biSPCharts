@@ -4,7 +4,7 @@
 \alias{get_cached_result}
 \title{Get Cached Result}
 \usage{
-get_cached_result(cache_key)
+get_cached_result(cache_key, app_state = NULL)
 }
 \arguments{
 \item{cache_key}{Character string med cache key}

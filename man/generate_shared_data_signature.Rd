@@ -4,7 +4,11 @@
 \alias{generate_shared_data_signature}
 \title{Generate Data Signature (Shared)}
 \usage{
-generate_shared_data_signature(data, include_structure = TRUE)
+generate_shared_data_signature(
+  data,
+  include_structure = TRUE,
+  app_state = NULL
+)
 }
 \arguments{
 \item{data}{Data frame to generate signature for}

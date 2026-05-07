@@ -4,40 +4,45 @@
 \alias{register_viewport_observer}
 \title{Register Viewport Dimension Observer}
 \usage{
-register_viewport_observer(app_state, session, ns, emit)
+register_viewport_observer(
+  app_state,
+  session,
+  input,
+  ns,
+  emit,
+  .scheduler = later::later
+)
 }
 \arguments{
 \item{app_state}{Reactive values object containing visualization state}
 
 \item{session}{Shiny session object (for clientData access)}
 
+\item{input}{Shiny input object (provides \code{viewport_ready} from JS)}
+
 \item{ns}{Namespace function for output IDs}
 
 \item{emit}{Emit API object from \code{create_emit_api(app_state)}, created once
 outside the observer to avoid recreating it on every reactive invalidation.}
+
+\item{.scheduler}{Function with signature \verb{function(callback, delay)} used
+to schedule the fallback timeout. Default \code{later::later}. Tests may
+inject a synchronous scheduler for deterministic execution.}
 }
 \value{
 NULL (side effect: registers observer with Shiny)
 }
 \description{
-Sets up an observer that tracks viewport (plot container) dimensions from
-Shiny's clientData and updates the centralized app_state. This ensures
-responsive font scaling uses actual browser dimensions, not defaults.
+Tracks viewport (plot container) dimensions and gates SPC analysis
+cold-start render on a real browser layout measurement.
 }
 \details{
-Viewport observer flow:
-\enumerate{
-\item Reads session clientData for output dimensions
-\item Validates dimensions are non-null and greater than 100px
-\item Updates app_state visualization with viewport dimensions
-\item Emits viewport_changed event for downstream reactives
-}
-
-Critical for:
-\itemize{
-\item Responsive font scaling (base_size calculation uses viewport diagonal)
-\item Cache key generation (includes viewport dimensions)
-\item Label placement accuracy (requires accurate device dimensions)
-}
+Why both clientData and JS event: \code{session$clientData} reports the
+CSS-default 800x600 immediately at startup, before the browser has
+measured layout. The JS \code{ResizeObserver}
+(\code{inst/app/www/viewport-ready.js}) fires \code{input$viewport_ready} only
+once a real layout (>100x100 px) is measured, allowing
+\code{spc_inputs_raw} to gate cold-start evaluation on
+\code{app_state$visualization$viewport_ready}.
 }
 \keyword{internal}

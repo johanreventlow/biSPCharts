@@ -4,7 +4,7 @@
 \alias{get_data_signature_cache_stats}
 \title{Get Data Signature Cache Stats}
 \usage{
-get_data_signature_cache_stats()
+get_data_signature_cache_stats(app_state = NULL)
 }
 \value{
 List with cache statistics

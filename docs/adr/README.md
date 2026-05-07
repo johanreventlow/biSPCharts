@@ -143,6 +143,10 @@ ADRs er **immutable** efter accept:
 |-----|-------|--------|------|
 | [ADR-001](./ADR-001-pure-bfhcharts-workflow.md) | Pure BFHcharts Workflow for SPC Calculation | Accepted | 2025-10-10 |
 | [ADR-002](./ADR-002-ui-sync-throttle-250ms.md) | UI Sync Throttle 250ms | Accepted | 2025-10-10 |
+| [ADR-003](./ADR-003-unified-event-architecture.md) | Unified Event Architecture | Accepted (retroaktiv) | 2026-05-07 |
+| [ADR-004](./ADR-004-hierarchical-app-state.md) | Hierarchical app_state with reactiveValues | Accepted (retroaktiv) | 2026-05-07 |
+| [ADR-005](./ADR-005-session-persistence-localstorage.md) | Session Persistence via Browser localStorage | Accepted (retroaktiv) | 2026-05-07 |
+| [ADR-006](./ADR-006-hybrid-anti-race-strategy.md) | Hybrid Anti-Race Strategy (5-Layer) | Accepted (retroaktiv) | 2026-05-07 |
 | [ADR-014](./ADR-014-deprecate-optimized-event-pipeline.md) | Deprecate Optimized Event Pipeline | Accepted | — |
 | [ADR-015](./ADR-015-bfhchart-migrering.md) | BFHcharts Migration (Hybrid Architecture) | Accepted | — |
 | [ADR-016](./ADR-016-gemini-integration.md) | Gemini AI Integration | Accepted | — |
@@ -150,23 +154,20 @@ ADRs er **immutable** efter accept:
 | [ADR-018](./ADR-018-minimal-public-api-surface.md) | Minimal Public API Surface | Accepted | — |
 | [ADR-019](./ADR-019-production-entrypoint-and-pkgload-boundary.md) | Production Entrypoint and pkgload Boundary | Accepted | — |
 
-### Nummereringsgap: ADR-003..ADR-013
+### Nummereringsgap: ADR-007..ADR-013
 
-ADR-numrene 003-013 er **ikke allokerede**. Følgende load-bearing
-arkitektoniske beslutninger bør retroaktivt dokumenteres som ADRs (se
-issue #531 — udskudt arbejde):
+ADR-numrene 007-013 er **ikke allokerede** og forbliver reserveret.
+De fire mest load-bearing retroaktive beslutninger er nu dokumenteret
+som ADR-003..ADR-006 (issue #531):
 
-- Unified event-architecture (event-bus + emit + prioriterede observers)
-- Centraliseret app_state-design + hierarkisk reactiveValues-struktur
-- Session-persistence via localStorage (issue #193)
-- Hybrid Anti-Race Strategy (5-lags race-prevention)
+- ADR-003 — Unified Event Architecture (event-bus + emit + prioriterede observers)
+- ADR-004 — Hierarchical app_state med reactiveValues
+- ADR-005 — Session Persistence via Browser localStorage (issue #193)
+- ADR-006 — Hybrid Anti-Race Strategy (5-Layer race-prevention)
 
-Indtil ADRs er skrevet, refererer CLAUDE.md (sektion 2) til den primære
-kode-implementation: `R/utils_server_event_listeners.R`,
-`R/state_management.R`, `R/utils_local_storage.R`.
-
-Nye ADRs efter denne note bør fortsætte fra ADR-020+ for at undgå
-forvirring med det dokumenterede gap.
+Hvis yderligere historiske beslutninger identificeres, kan de tildeles
+numre i 007-013-spannet. Nye fremad-rettede ADRs nummereres fra ADR-020+
+for at bevare visuel adskillelse fra det reserverede gap.
 
 ## Søgning i ADRs
 
@@ -209,4 +210,4 @@ Se ADR-002 for rationale og performance gains.
 ---
 
 **Maintained by**: biSPCharts Development Team
-**Last updated**: 2025-10-10
+**Last updated**: 2026-05-07

@@ -34,6 +34,12 @@
 
 ## Bug fixes
 
+* **Cache-key kollision i `generate_shared_data_signature()`:** Cache-nøglen
+  baserede sig på sampling af first/middle/last row, hvilket kunne give
+  kollision for datasæt med identiske endepunkter men forskelle i mellemliggende
+  rækker (fx kun i anden række af 10). Beregner nu altid full xxhash64-digest
+  af hele data-frame'en — eliminerer kollisionsrisikoen helt. (#494)
+
 * **PDF-eksport: forkert Mari-variant (Heavy) i body-tekst.** Typst's
   font-matcher valgte `Mari-Heavy.otf` til `set text(font: "Mari")`-render
   i stedet for `Mari-Book.otf`. Root cause: BFHchartsAssets v0.1.0 leverer

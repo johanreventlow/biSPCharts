@@ -263,7 +263,13 @@ create_app_state <- function() {
 
   # Navigation State - For eventReactive patterns
   app_state$navigation <- shiny::reactiveValues(
-    trigger = 0 # Counter for triggering navigation-dependent reactives
+    trigger = 0, # Counter for triggering navigation-dependent reactives
+
+    # Issue #532: current_tab/previous_tab konsolideret hertil fra ad-hoc
+    # reactiveVal i app_server_main.R. Bruges af help/app_guide-moduler til
+    # kontekstuel tilbagenavigation. Default "start" matcher landing-page.
+    current_tab = "start",
+    previous_tab = "start"
   )
 
   # Visualization State - Convert to reactiveValues for consistency

@@ -105,14 +105,19 @@ help_back_link <- function(ns) {
 #'
 #' @param input Shiny input
 #' @param parent_session Parent session for navbar navigation
-#' @param previous_tab ReactiveVal med den forrige tab
+#' @param app_state Centraliseret app state. Issue #532: previous_tab læses
+#'   nu fra app_state$navigation$previous_tab i stedet for separat reactiveVal.
 #' @noRd
-setup_help_back_navigation <- function(input, parent_session, previous_tab) {
+setup_help_back_navigation <- function(input, parent_session, app_state) {
   shiny::observeEvent(input$go_back,
     priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
     {
-      if (!is.null(parent_session) && !is.null(previous_tab)) {
-        dest <- previous_tab()
+      if (!is.null(parent_session) && !is.null(app_state) &&
+        !is.null(app_state$navigation)) {
+        dest <- app_state$navigation$previous_tab
+        if (is.null(dest) || !nzchar(dest)) {
+          dest <- "start"
+        }
         if (dest == "start") {
           shinyjs::runjs("document.body.classList.remove('wizard-nav-active');")
         }

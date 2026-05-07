@@ -29,6 +29,9 @@
 register_navigation_events <- function(app_state, emit, session, register_observer) {
   observers <- list()
 
+  # ADR-004 exception: test_mode_trigger er bevidst session-scoped reactiveVal —
+  # feeder til shiny::debounce(), SKAL konstrueres én gang pr. session.
+  # Migration til app_state ville stadig kræve lokal konstruktion; ingen gevinst.
   # Session-scoped debounce trigger for test_mode_ready (issue #533)
   # Construct debounce reactive ONCE per session — not per observer firing,
   # which would leak reactive objects.

@@ -322,13 +322,12 @@ create_app_state <- function() {
   # Non-reactive cache objects for QIC results
   # Cache creation is delayed until first use to avoid dependency issues
   # M1: Performance counters moved to package environment (R/zzz.R) for proper isolation
-  # Issue #529: Session-scoped performance + data-signature caches
-  # Tidligere lå disse i .performance_cache + .data_signature_cache på package-niveau
-  # → cross-session contamination i multi-session Connect Cloud-deploy.
+  # Issue #529: Session-scoped performance cache.
+  # Note: data_signature cache fjernet i #494 — generate_shared_data_signature()
+  # beregner altid full digest direkte (ingen sampling-cache).
   app_state$cache <- list(
     qic = NULL, # Will be initialized lazily on first use
-    performance = new.env(parent = emptyenv()),
-    data_signature = new.env(parent = emptyenv())
+    performance = new.env(parent = emptyenv())
   )
 
   # Error State - Convert to reactiveValues for consistency
@@ -382,7 +381,7 @@ create_app_state <- function() {
 #' @examples
 #' \dontrun{
 #' emit <- create_emit_api(app_state)
-#' emit$data_loaded() # Triggers shiny::observeEvent(app_state$events$data_loaded, ...)
+#' emit$data_updated(context = "file_upload") # Triggers observers on app_state$events$data_updated
 #' }
 #' @keywords internal
 #' @noRd
@@ -415,28 +414,6 @@ create_emit_api <- function(app_state) {
       })
     },
 
-    # SPRINT 4: Legacy compatibility functions — bevares for API stabilitet
-    # (#462). 0 R/-callers, men tests/test-event-system-emit.R + integration-
-    # workflows verificerer aliases'ne eksplicit.
-    data_loaded = function() {
-      shiny::isolate({
-        app_state$events$data_updated <- app_state$events$data_updated + 1L
-        app_state$last_data_update_context <- list(
-          context = "data_loaded",
-          timestamp = Sys.time()
-        )
-      })
-    },
-    data_changed = function() {
-      shiny::isolate({
-        app_state$events$data_updated <- app_state$events$data_updated + 1L
-        app_state$last_data_update_context <- list(
-          context = "data_changed",
-          timestamp = Sys.time()
-        )
-      })
-    },
-
     # Column detection events
     auto_detection_started = function() {
       shiny::isolate({
@@ -463,6 +440,7 @@ create_emit_api <- function(app_state) {
     },
 
     # Legacy UI event compatibility (map to consolidated events)
+    # Stadig brugt i utils_server_events_autodetect.R + utils_server_events_navigation.R (#462)
     ui_sync_needed = function() {
       shiny::isolate({
         app_state$events$ui_sync_requested <- app_state$events$ui_sync_requested + 1L

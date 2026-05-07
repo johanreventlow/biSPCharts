@@ -36,7 +36,7 @@
 #' - CLEANUP (200): Cleanup operations
 #' - LOGGING (100): Monitoring og logging
 #'
-#' Compatibility aliases: HIGH, MEDIUM, LOW, LOWEST
+#' Compatibility aliases (legacy, stadig brugt): HIGH, MEDIUM, LOW, LOWEST
 #'
 #' @examples
 #' \dontrun{
@@ -62,9 +62,10 @@ OBSERVER_PRIORITIES <- list(
   CLEANUP = 200, # Cleanup operations
   LOGGING = 100, # Monitoring and logging
 
-  # NB (#462): legacy aliases er aktivt brugt 6+ steder (mod_export_ai,
-  # utils_server_events_navigation, utils_server_events_data, ...).
-  # Behold indtil opfølgnings-PR hvor alle callers migreres samlet.
+  # Legacy aliases — stadig brugt i utils_server_event_listeners.R,
+  # utils_server_events_navigation.R, utils_server_events_data.R,
+  # utils_server_initialization.R, mod_export_ai.R, utils_server_column_input.R.
+  # Bevar indtil alle callers er migreret til kanoniske navne. (#462)
   HIGH = 2000, # Maps to STATE_MANAGEMENT
   MEDIUM = 1250, # Maps to DATA_PROCESSING
   LOW = 750, # Maps to UI_SYNC

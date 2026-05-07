@@ -7,16 +7,18 @@
 generate_autodetect_cache_key_optimized(data, app_state = NULL)
 }
 \arguments{
-\item{data}{Data for auto-detection}
+\item{data}{Data til auto-detect}
+
+\item{app_state}{Optional centralized app state}
 }
 \value{
 Character string cache key
 }
 \description{
-Creates cache key for auto-detection results using shared signatures.
+Opretter cache-key for auto-detect-resultater via shared signaturer.
 }
 \details{
-Uses same shared signature as QIC cache, ensuring consistency and
-avoiding redundant hashing when both systems cache same data.
+Bruger samme shared signatur som QIC-cache, sikrer konsistens og undgår
+redundant hashing når begge systemer cacher samme data.
 }
 \keyword{internal}

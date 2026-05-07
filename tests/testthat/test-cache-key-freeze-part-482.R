@@ -71,10 +71,9 @@ test_that("generate_spc_cache_key differentierer paa cl_column", {
 })
 
 test_that("generate_spc_cache_key differentierer paa kommentar_column-data", {
-  # NOTE: data ses kun via 3-row-sampling i generate_shared_data_signature
-  # (first/middle/last); aendringer skal ramme et af disse positioner for at
-  # trigge cache-miss. Separat hash-collision-bug i 3-row sampling er kendt
-  # — dette test verificerer kun at kommentar_column inkluderes i data-subsettet.
+  # NOTE: generate_shared_data_signature beregner nu altid full xxhash64-digest
+  # (sampling-cache fjernet i #494). Ændringer i enhver række giver cache-miss.
+  # Dette test verificerer at kommentar_column inkluderes i data-hashen.
   data1 <- data.frame(
     Dato = as.Date("2024-01-01") + 0:9,
     Vaerdi = c(10, 12, 11, 14, 13, 15, 11, 12, 14, 13),

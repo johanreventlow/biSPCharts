@@ -18,23 +18,6 @@ create_emit_test_server <- function() {
   }
 }
 
-test_that("emit data_loaded kan trigges uden aktivt reactive domain", {
-  skip_if_not_installed("shiny")
-
-  shiny::testServer(create_emit_test_server(), {
-    emit <- session$userData$emit
-    get_event_value <- session$userData$get_event_value
-
-    expect_type(emit, "list")
-    expect_true("data_loaded" %in% names(emit))
-    expect_true(is.function(emit$data_loaded))
-
-    expect_error(emit$data_loaded(), NA)
-    # emit$data_loaded() konsoliderer til data_updated (ikke data_loaded separat)
-    expect_equal(get_event_value("data_updated"), 1L)
-  })
-})
-
 # FASE 2.1: CONSOLIDATED ERROR EVENT TESTS =====================================
 
 test_that("Consolidated error events work correctly", {
@@ -165,37 +148,6 @@ test_that("Consolidated data events work correctly", {
     emit$data_updated(context = "user_modification")
     expect_equal(get_event_value("data_updated"), 2L)
     expect_equal(app_state$last_data_update_context$context, "user_modification")
-  })
-})
-
-test_that("Legacy data functions fire consolidated event", {
-  skip_if_not_installed("shiny")
-
-  shiny::testServer(create_emit_test_server(), {
-    emit <- session$userData$emit
-    get_event_value <- session$userData$get_event_value
-    app_state <- session$userData$app_state
-
-    initial_data_updated <- get_event_value("data_updated")
-    initial_data_loaded <- get_event_value("data_loaded")
-
-    # Test legacy data_loaded
-    emit$data_loaded()
-
-    # emit$data_loaded() fires data_updated (konsolideret) — data_loaded forbliver 0
-    expect_equal(get_event_value("data_updated"), initial_data_updated + 1L)
-    # Context gemmes som "data_loaded" (ikke "legacy_data_loaded")
-    expect_equal(app_state$last_data_update_context$context, "data_loaded")
-
-    # Test legacy data_changed
-    initial_data_updated <- get_event_value("data_updated")
-
-    emit$data_changed()
-
-    # emit$data_changed() fires data_updated (konsolideret) — data_changed forbliver 0
-    expect_equal(get_event_value("data_updated"), initial_data_updated + 1L)
-    # Context gemmes som "data_changed" (ikke "legacy_data_changed")
-    expect_equal(app_state$last_data_update_context$context, "data_changed")
   })
 })
 

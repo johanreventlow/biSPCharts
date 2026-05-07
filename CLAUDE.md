@@ -59,7 +59,7 @@ observeEvent(app_state$events$data_updated,
 })
 ```
 
-**Filer:** `global.R` (events), `R/utils_event_system.R` (`setup_event_listeners()`),
+**Filer:** `global.R` (events), `R/utils_server_event_listeners.R` (`setup_event_listeners()`),
 emit API via `create_emit_api()`.
 
 ### App State Structure

@@ -8,10 +8,10 @@
 # ANVENDES AF:
 #   - Alle observeEvent() calls med priority parameter
 #   - Race condition prevention system
-#   - Event-bus listeners i utils_event_system.R
+#   - Event-bus listeners i utils_server_event_listeners.R
 #
 # RELATERET:
-#   - utils_event_system.R - Event listener setup
+#   - utils_server_event_listeners.R - Event listener setup
 #   - CLAUDE.md Section 3.1.1 - Race Condition Prevention
 #   - See: docs/CONFIGURATION.md for complete guide
 # ==============================================================================

@@ -64,30 +64,28 @@ create_spc_results_reactive <- function(
       inputs$config$n_col %||% "NULL"
     )
 
-    # M11: Context-aware cache key for plot isolation
-    # Issue #62: Separate cache per context to prevent dimension bleeding
-    # Issue #610: Single source of truth — vp dims fra inputs (sat via
-    # viewport_ready event), ikke get_viewport_dims(app_state). Dette
-    # forhindrer split-brain mellem cache-key og BFHcharts-kald.
-    plot_context <- "analysis" # Analyse-side always uses "analysis" context
+    # Cache key: viewport dims must come from inputs (single source) — NOT
+    # get_viewport_dims(app_state) — to stay consistent with the BFHcharts
+    # call below. target_text is included so operator-only edits invalidate.
+    plot_context <- "analysis"
 
     cache_key <- digest::digest(
       list(
-        plot_context, # NEW: Context identifier for cache isolation
+        plot_context,
         inputs$data_hash,
         inputs$chart_type,
         config_key,
         inputs$target_value,
-        inputs$target_text, # CRITICAL: Include target_text for operator invalidation
+        inputs$target_text,
         inputs$centerline_value,
         inputs$skift_hash,
         inputs$frys_hash,
         inputs$title,
         inputs$y_axis_unit,
         inputs$kommentar_column,
-        inputs$base_size, # FIX: Invalider cache ved breddeaendring/fuldskaerm
-        inputs$viewport_width_px, # Issue #610: from inputs (single source)
-        inputs$viewport_height_px # Issue #610: from inputs (single source)
+        inputs$base_size,
+        inputs$viewport_width_px,
+        inputs$viewport_height_px
       ),
       algo = "xxhash64"
     )
@@ -145,9 +143,6 @@ create_spc_results_reactive <- function(
     computation <- safe_operation(
       "Generate SPC plot",
       code = {
-        # Issue #610: Viewport dims fra inputs (single source) — ikke
-        # get_viewport_dims(app_state) som ville aabne for split-brain.
-
         # SPRINT 4: Pass QIC cache for performance optimization
         qic_cache <- if (!is.null(app_state) && !is.null(app_state$cache)) {
           get_or_init_qic_cache(app_state)
@@ -301,20 +296,16 @@ create_spc_results_reactive <- function(
   }) |>
     shiny::bindCache({
       inputs <- spc_inputs_reactive()
-      # M11: Context-aware cache binding
-      # Issue #62: Include context and viewport dimensions for cache isolation
-      # Issue #610: vp dims fra inputs (single source) — sammen med cache-key
-      # i reactive body for at undgaa split-brain.
       plot_context <- "analysis"
 
       list(
         "spc_results",
-        plot_context, # NEW: Context identifier ensures separate cache per context
+        plot_context,
         inputs$data_hash,
         inputs$chart_type,
         paste0(inputs$config$x_col %||% "NULL", "|", inputs$config$y_col %||% "NULL", "|", inputs$config$n_col %||% "NULL"),
         inputs$target_value,
-        inputs$target_text, # CRITICAL: Include target_text for operator invalidation
+        inputs$target_text,
         inputs$centerline_value,
         inputs$skift_hash,
         inputs$frys_hash,

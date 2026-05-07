@@ -57,22 +57,16 @@ create_data_ready_reactive <- function(module_data_reactive) {
 #' to BFHcharts API parameters, handles chart type-specific configuration,
 #' and includes viewport dimensions for responsive font scaling.
 #'
-#' Issue #610: Viewport dimensions are now read from centralized
-#' `app_state$visualization$viewport_dims` (populated by the
-#' `input$viewport_ready` JS event in `register_viewport_observer`),
-#' not directly from `session$clientData`. This ensures `spc_inputs`
-#' is the single source of truth for viewport across compute + cache,
-#' eliminating the synthetic 800x600 cold-start render.
+#' Viewport is read from `app_state$visualization$viewport_dims` and gated
+#' on `app_state$visualization$viewport_ready` so cold-start evaluation
+#' waits for a real browser layout measurement.
 #'
 #' @param data_ready_reactive Reactive expression returning validated data
 #' @param chart_config Debounced reactive returning chart configuration
-#' @param session Shiny session object (retained for backward compat — unused
-#'   for viewport reads after Issue #610)
-#' @param ns Namespace function for input IDs (retained for backward compat)
-#' @param app_state Reactive values object — viewport_dims source of truth
-#' @param viewport_ready_signal `reactiveVal(FALSE)` from
-#'   `register_viewport_observer`, gates cold-start evaluation on real
-#'   browser layout measurement
+#' @param session Shiny session object (used for `clientData$pixelratio`)
+#' @param ns Namespace function for input IDs
+#' @param app_state Reactive values object — source of viewport_dims +
+#'   viewport_ready gate
 #' @param y_axis_unit_reactive Reactive expression for Y-axis unit (optional)
 #' @param target_value_reactive Reactive expression for target value (optional)
 #' @param target_text_reactive Reactive expression for target text (optional)
@@ -92,14 +86,6 @@ create_data_ready_reactive <- function(module_data_reactive) {
 #'   - title, y_axis_unit, kommentar_column
 #'   - base_size, viewport_width_px, viewport_height_px, viewport_ready
 #'
-#' @details
-#' Complex parameter mapping includes:
-#' - Chart type-specific validation (e.g., run charts with count mode clear n_col)
-#' - Viewport dimension capture for responsive font scaling
-#' - Responsive base font size calculation using geometric mean of viewport
-#' - Debug logging of configuration state transitions
-#' - Handling of optional parameters with fallback values
-#'
 #' @keywords internal
 create_spc_inputs_reactive <- function(
   data_ready_reactive,
@@ -107,7 +93,6 @@ create_spc_inputs_reactive <- function(
   session,
   ns,
   app_state,
-  viewport_ready_signal,
   y_axis_unit_reactive = NULL,
   target_value_reactive = NULL,
   target_text_reactive = NULL,
@@ -171,16 +156,10 @@ create_spc_inputs_reactive <- function(
     kommentar_value <- if (!is.null(kommentar_column_reactive)) kommentar_column_reactive() else NULL
     target_text_value <- if (!is.null(target_text_reactive)) target_text_reactive() else NULL
 
-    # VIEWPORT DIMENSIONS — Issue #610:
-    # Kraev viewport_ready_signal foer cold-start kan fortsaette. Signal
-    # flippes TRUE af enten (a) JS ResizeObserver via input$viewport_ready,
-    # eller (b) 2-sekunders timeout-fallback i register_viewport_observer.
-    # Dette eliminerer det syntetiske 800x600 cold-start render.
-    shiny::req(viewport_ready_signal())
+    # Gate cold-start on real browser layout (#610) — flipped by JS
+    # ResizeObserver event or later::later fallback in register_viewport_observer.
+    shiny::req(isTRUE(app_state$visualization$viewport_ready))
 
-    # Single source of truth: laes vp-dims fra centraliseret app_state
-    # (sat af register_viewport_observer). Tidligere blev clientData laest
-    # direkte her, samtidig med at compute.R laeste fra app_state — split-brain.
     vp_dims <- get_viewport_dims(app_state)
     width_px <- vp_dims$width
     height_px <- vp_dims$height
@@ -205,8 +184,6 @@ create_spc_inputs_reactive <- function(
     # GEOMETRIC MEAN APPROACH: sqrt(width_px * height_px) giver balanced scaling
     # baseret paa baade bredde og hoejde. Dette sikrer at fonts skalerer intuitivt
     # med den samlede plotstoerrelse, ikke kun en dimension.
-    # pixelratio bevares fra clientData — uafhaengigt af viewport-dimensioner
-    # og rapporteres korrekt af Shiny ved session-init.
     pixelratio <- session$clientData$pixelratio %||% 1
     viewport_diagonal <- sqrt(width_px * height_px)
     base_size <- max(

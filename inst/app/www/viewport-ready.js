@@ -67,15 +67,16 @@
     }
 
     var fired = false;
+    var fallbackTimer = null;
     var observer = new ResizeObserver(function (entries) {
       if (fired) return;
       for (var i = 0; i < entries.length; i++) {
-        var entry = entries[i];
-        var box = entry.contentRect;
+        var box = entries[i].contentRect;
         if (box.width > MIN_DIM_PX && box.height > MIN_DIM_PX) {
           if (sendReady(box.width, box.height)) {
             fired = true;
             observer.disconnect();
+            if (fallbackTimer !== null) clearTimeout(fallbackTimer);
             break;
           }
         }
@@ -85,9 +86,9 @@
     observer.observe(el);
 
     // Belt-and-suspenders: if the observer hasn't fired within 1500 ms
-    // (e.g., element hidden behind tab), measure synchronously and send
-    // best-effort. Server-side timeout (2 s) is the ultimate fallback.
-    setTimeout(function () {
+    // (e.g., element hidden behind tab), measure synchronously. Server-side
+    // timeout (2 s) is the ultimate fallback.
+    fallbackTimer = setTimeout(function () {
       if (fired) return;
       var rect = el.getBoundingClientRect();
       if (rect.width > MIN_DIM_PX && rect.height > MIN_DIM_PX) {

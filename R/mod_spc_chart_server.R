@@ -62,20 +62,12 @@ visualizationModuleServer <- function(
     # Both options wrap the same app_state$events, so no double-fire occurs.
     module_emit <- emit %||% create_emit_api(app_state)
 
-    # Issue #610: Gate cold-start render on real browser layout.
-    # JS ResizeObserver (inst/app/www/viewport-ready.js) fires
-    # input$viewport_ready when #visualization-spc_plot_actual has a real
-    # measurement. The observer below mirrors that into app_state and
-    # flips this signal TRUE; spc_inputs_raw req()s on it.
-    viewport_ready_signal <- shiny::reactiveVal(FALSE)
-
     register_viewport_observer(
       app_state = app_state,
       session = session,
       input = input,
       ns = ns,
-      emit = module_emit,
-      viewport_ready_signal = viewport_ready_signal
+      emit = module_emit
     )
 
     # Helper functions for app_state visualization management
@@ -107,7 +99,6 @@ visualizationModuleServer <- function(
       session = session,
       ns = ns,
       app_state = app_state,
-      viewport_ready_signal = viewport_ready_signal,
       y_axis_unit_reactive = y_axis_unit_reactive,
       target_value_reactive = target_value_reactive,
       target_text_reactive = target_text_reactive,

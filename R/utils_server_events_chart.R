@@ -89,30 +89,6 @@ register_chart_type_events <- function(app_state, emit, input, session, register
     input, session, app_state, register_observer
   )
 
-  # Passiv timing-monitor
-  if (!is.null(app_state$ui)) {
-    observers$timing_monitor <- register_observer(
-      "timing_monitor",
-      shiny::observeEvent(app_state$ui$last_programmatic_update,
-        ignoreInit = TRUE,
-        priority = OBSERVER_PRIORITIES$LOWEST,
-        {
-          current_time <- Sys.time()
-          last_update <- shiny::isolate(app_state$ui$last_programmatic_update)
-
-          if (!is.null(last_update)) {
-            freeze_state <- shiny::isolate(app_state$columns$auto_detect$frozen_until_next_trigger) %||% FALSE
-
-            autodetect_in_progress <- if (!is.null(app_state$columns)) {
-              shiny::isolate(app_state$columns$auto_detect$in_progress) %||% FALSE
-            } else {
-              FALSE
-            }
-          }
-        }
-      )
-    )
-  }
 
   observers
 }
@@ -175,6 +151,9 @@ observe_chart_type_input <- function(input, session, app_state, register_observe
           error_type = "processing"
         )
       },
+      # ignoreInit = FALSE er bevidst: observer skal køre ved session-start
+      # for at initialisere UI korrekt baseret på default/restored chart_type.
+      # Session-restore guard (linje 126) forhindrer race condition.
       ignoreInit = FALSE,
       priority = OBSERVER_PRIORITIES$UI_SYNC
     )

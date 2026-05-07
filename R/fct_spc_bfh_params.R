@@ -304,11 +304,11 @@ map_to_bfh_params <- function(
     operation_name = "BFHchart parameter mapping",
     code = {
       # 1. .original_row_id allerede injiceret foer safe_operation (se trin 0 ovenfor).
-      # 1b. WORKAROUND (M8 #462): BFHcharts rejects Danish characters (æøå)
-      # i column names — biSPCharts ASCII-translit'er navnene før kald +
-      # rev-mapper output for at bevare brugerens originale navne i UI.
-      # FOLLOW-UP: åbn issue i BFHcharts for native Danish-character-support
-      # i column-name-validator, og fjern denne workaround når levereret.
+      # 1b. WORKAROUND: BFHcharts rejects Danish characters (æøå) i column
+      # names — biSPCharts ASCII-translit'er navnene før kald + rev-mapper
+      # output for at bevare brugerens originale navne i UI.
+      # FOLLOW-UP: BFHcharts#327 — fjern workaround når upstream leverer
+      # native Danish-character-support i column-name-validator.
       build_bfh_params_core(
         data = data,
         col_mapping = col_mapping,

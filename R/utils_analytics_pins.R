@@ -133,7 +133,7 @@ rotate_log_files <- function(log_directory,
       tryCatch(
         {
           con <- gzfile(paste0(f, ".gz"), "wb")
-          writeLines(readLines(f), con)
+          writeLines(readLines(f, encoding = "UTF-8"), con)
           close(con)
           unlink(f)
         },

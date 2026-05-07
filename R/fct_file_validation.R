@@ -29,10 +29,10 @@ check_row_count_csv <- function(file_info) {
   }
   row_error <- tryCatch(
     {
-      con <- file(file_info$datapath, "r")
+      con <- file(file_info$datapath, "r", encoding = "UTF-8")
       on.exit(close(con), add = TRUE)
       max_lines <- get_max_upload_line_count()
-      lines <- readLines(con, n = max_lines + 1L, warn = FALSE)
+      lines <- readLines(con, n = max_lines + 1L, warn = FALSE, encoding = "UTF-8")
       line_count <- length(lines)
       if (line_count > get_upload_warning_row_count()) {
         log_warn("Large row count detected - performance risk",

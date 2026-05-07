@@ -3,14 +3,32 @@
 # Centralized data signature generation to reduce redundant hashing
 # Sprint 4 Fase 3 - Performance optimization
 
-#' Data Signature Cache
+#' Data Signature Cache (LEGACY fallback)
 #'
-#' Session-level cache for data signatures to avoid rehashing same data.
-#' Signatures are stored in memory during session and reused across
-#' different caching systems (QIC cache, auto-detect cache, etc.)
+#' Module-level cache. Issue #529: brug session-scoped cache via
+#' app_state$cache$data_signature i multi-session deploys for at undgå
+#' cross-session contamination.
 #'
 #' @keywords internal
 .data_signature_cache <- new.env(parent = emptyenv())
+
+#' Resolve data-signature cache environment
+#'
+#' Returnerer session-scoped cache fra app_state$cache$data_signature hvis
+#' sat, ellers module-level fallback. Issue #529.
+#'
+#' @param app_state Optional centralized app state.
+#' @return Environment til signature cache
+#' @keywords internal
+resolve_data_signature_cache <- function(app_state = NULL) {
+  if (!is.null(app_state) &&
+    !is.null(app_state$cache) &&
+    !is.null(app_state$cache$data_signature) &&
+    is.environment(app_state$cache$data_signature)) {
+    return(app_state$cache$data_signature)
+  }
+  .data_signature_cache
+}
 
 #' Generate Data Signature (Shared)
 #'
@@ -47,11 +65,13 @@
 #' }
 #'
 #' @keywords internal
-generate_shared_data_signature <- function(data, include_structure = TRUE) {
+generate_shared_data_signature <- function(data, include_structure = TRUE, app_state = NULL) {
   # Handle NULL/empty data
   if (is.null(data) || nrow(data) == 0) {
     return("empty_data")
   }
+
+  cache_env <- resolve_data_signature_cache(app_state)
 
   # Content-based lookup key (stabil på tværs af GC og sessions)
   # Bruger struktur + sample af data for hurtig identifikation.
@@ -70,8 +90,8 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
   ), algo = "xxhash64")
 
   # Check if signature already cached
-  if (exists(data_ptr, envir = .data_signature_cache)) {
-    cached_sig <- get(data_ptr, envir = .data_signature_cache)
+  if (exists(data_ptr, envir = cache_env)) {
+    cached_sig <- get(data_ptr, envir = cache_env)
     return(cached_sig$signature)
   }
 
@@ -95,19 +115,19 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
     signature = signature,
     timestamp = Sys.time(),
     include_structure = include_structure
-  ), envir = .data_signature_cache)
+  ), envir = cache_env)
 
   # Clean old cache entries if too large (keep last 100)
-  cache_size <- length(ls(envir = .data_signature_cache))
+  cache_size <- length(ls(envir = cache_env))
   if (cache_size > 100) {
     # Remove oldest 20 entries
-    cache_keys <- ls(envir = .data_signature_cache)
+    cache_keys <- ls(envir = cache_env)
     cache_times <- vapply(cache_keys, function(k) {
-      entry <- get(k, envir = .data_signature_cache)
+      entry <- get(k, envir = cache_env)
       as.numeric(entry$timestamp)
     }, numeric(1L))
     oldest_keys <- cache_keys[order(cache_times)][1:20]
-    rm(list = oldest_keys, envir = .data_signature_cache)
+    rm(list = oldest_keys, envir = cache_env)
   }
 
   return(signature)
@@ -149,9 +169,9 @@ generate_shared_data_signature <- function(data, include_structure = TRUE) {
 #' }
 #'
 #' @keywords internal
-generate_qic_cache_key_optimized <- function(data, params) {
+generate_qic_cache_key_optimized <- function(data, params, app_state = NULL) {
   # Use shared signature instead of rehashing
-  data_signature <- generate_shared_data_signature(data, include_structure = FALSE)
+  data_signature <- generate_shared_data_signature(data, include_structure = FALSE, app_state = app_state)
 
   # Hash parameters (lightweight)
   param_digest <- digest::digest(params, algo = "xxhash64")
@@ -172,9 +192,9 @@ generate_qic_cache_key_optimized <- function(data, params) {
 #' avoiding redundant hashing when both systems cache same data.
 #'
 #' @keywords internal
-generate_autodetect_cache_key_optimized <- function(data) {
+generate_autodetect_cache_key_optimized <- function(data, app_state = NULL) {
   # Use shared signature with structure info
-  data_signature <- generate_shared_data_signature(data, include_structure = TRUE)
+  data_signature <- generate_shared_data_signature(data, include_structure = TRUE, app_state = app_state)
 
   paste0("autodetect_", data_signature)
 }
@@ -185,8 +205,9 @@ generate_autodetect_cache_key_optimized <- function(data) {
 #' Typically called on session end or when memory needs to be freed.
 #'
 #' @keywords internal
-clear_data_signature_cache <- function() {
-  rm(list = ls(envir = .data_signature_cache), envir = .data_signature_cache)
+clear_data_signature_cache <- function(app_state = NULL) {
+  cache_env <- resolve_data_signature_cache(app_state)
+  rm(list = ls(envir = cache_env), envir = cache_env)
   log_debug("Data signature cache cleared", .context = "DATA_SIGNATURE")
 }
 
@@ -197,8 +218,9 @@ clear_data_signature_cache <- function() {
 #' @return List with cache statistics
 #'
 #' @keywords internal
-get_data_signature_cache_stats <- function() {
-  cache_keys <- ls(envir = .data_signature_cache)
+get_data_signature_cache_stats <- function(app_state = NULL) {
+  cache_env <- resolve_data_signature_cache(app_state)
+  cache_keys <- ls(envir = cache_env)
 
   if (length(cache_keys) == 0) {
     return(list(
@@ -210,7 +232,7 @@ get_data_signature_cache_stats <- function() {
 
   # vapply med POSIXct som returntype bevarer klassen (sapply stripper den)
   cache_times <- do.call(c, lapply(cache_keys, function(k) {
-    entry <- get(k, envir = .data_signature_cache)
+    entry <- get(k, envir = cache_env)
     entry$timestamp
   }))
 

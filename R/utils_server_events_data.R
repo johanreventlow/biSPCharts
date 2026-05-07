@@ -48,12 +48,12 @@ register_data_lifecycle_events <- function(app_state, emit, input, output, sessi
         # SPRINT 4: Smart QIC cache invalidation (context-aware)
         invalidate_qic_cache_smart(app_state, update_context)
 
-        # Legacy performance cache clearing
+        # Legacy performance cache clearing (#529: pass app_state for session-scope)
         if (exists("clear_performance_cache") && is.function(clear_performance_cache)) {
           safe_operation(
             "Clear performance cache on data update",
             code = {
-              clear_performance_cache()
+              clear_performance_cache(app_state = app_state)
               log_debug("Performance cache cleared due to data update", .context = "CACHE_INVALIDATION")
             },
             fallback = function(e) {

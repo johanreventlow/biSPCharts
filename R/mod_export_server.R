@@ -49,11 +49,15 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     )
 
     # Tilbage-knap: Trin 3 -> Trin 2
-    shiny::observeEvent(input$back_to_analysis, {
-      if (!is.null(parent_session)) {
-        bslib::nav_select("main_navbar", selected = "analyser", session = parent_session)
+    shiny::observeEvent(input$back_to_analysis,
+      ignoreNULL = TRUE,
+      ignoreInit = TRUE,
+      {
+        if (!is.null(parent_session)) {
+          bslib::nav_select("main_navbar", selected = "analyser", session = parent_session)
+        }
       }
-    })
+    )
 
     # PREVIEW GENERATION ======================================================
 

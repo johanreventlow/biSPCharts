@@ -27,6 +27,7 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
   # observer -- den trigges nu via performSessionRestore custom message.
   shiny::observeEvent(input$session_peek,
     ignoreNULL = TRUE,
+    ignoreInit = TRUE,
     {
       peek <- input$session_peek
 

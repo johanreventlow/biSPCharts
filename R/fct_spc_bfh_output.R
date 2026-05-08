@@ -43,14 +43,13 @@ transform_bfh_output <- function(
         stop("bfh_result must be a bfh_qic_result object from BFHcharts::bfh_qic()")
       }
 
-      # 2. Extract components from bfh_qic_result object
+      # 2. Extract components from bfh_qic_result object.
       # Structure: list(plot = ggplot, qic_data = tibble, summary = list, config = list)
-      # Use get_plot() for S3 objects, direct access for plain lists
-      plot_object <- if (BFHcharts::is_bfh_qic_result(bfh_result)) {
-        BFHcharts::get_plot(bfh_result)
-      } else {
-        bfh_result$plot
-      }
+      # NOTE: BFHcharts 0.16.1 omdoebte get_plot() -> bfh_get_plot() for at undgaa
+      # namespace-collision med ggplot2/plotly. Per BFHcharts NEWS er direkte
+      # $plot-tilgang ogsaa godkendt migration — undgaar API-version-afhaengighed
+      # og virker baade med ny og gammel BFHcharts (samt mock-objects i tests).
+      plot_object <- bfh_result$plot
       qic_data <- bfh_result$qic_data
 
       log_debug(

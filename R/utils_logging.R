@@ -437,10 +437,11 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
 
-  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
-  if (!.should_log_context(context)) {
-    return(invisible(NULL))
-  }
+  # NOTE: WARN-niveau er bevidst eksempt fra spc.debug.context-filtret.
+  # Filtret er en debug-noise-control mekanisme; warnings repraesenterer
+  # potentielle problemer der altid skal synes (uanset hvilke debug-contexts
+  # der er aktive). Fjernet 2026-05-08: tidligere skjulte filtret
+  # diagnostiske warnings fra contexts der ikke var i allowlisten.
 
   # If details are provided, format them as structured data
   if (!is.null(details)) {
@@ -489,10 +490,12 @@ log_error <- function(message = NULL, component = NULL, .context = NULL, details
   # Support both component and .context for consistency with log_debug
   context <- .context %||% component
 
-  # Kontekst-filtrering: Check hvis spc.debug.context option er sat
-  if (!.should_log_context(context)) {
-    return(invisible(NULL))
-  }
+  # NOTE: ERROR-niveau er bevidst eksempt fra spc.debug.context-filtret.
+  # Filtret er en debug-noise-control mekanisme; errors repraesenterer
+  # reelle fejl der altid skal synes (uanset hvilke debug-contexts der er
+  # aktive). Fjernet 2026-05-08: tidligere skjulte filtret kritiske fejl
+  # fra contexts som SPC_PIPELINE der ikke var i allowlisten, hvilket gjorde
+  # diagnostik umulig naar plot ikke kunne genereres.
 
   msg <- if (inherits(message, "condition")) conditionMessage(message) else message
 

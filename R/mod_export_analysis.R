@@ -7,7 +7,7 @@
 #          Handles automatic text generation for PDF export with user edit detection.
 #
 # Extracted from: mod_export_server.R (Phase 2b refactoring)
-# Depends on: export_plot reactive (from mod_export_server.R)
+# Depends on: pdf_export_plot reactive (from mod_export_server.R)
 #            input$export_format, input$pdf_improvement, input$pdf_description
 # ==============================================================================
 
@@ -19,24 +19,30 @@
 #' @param session Shiny session object
 #' @param input Input object containing UI inputs
 #' @param output Output object for rendering
-#' @param export_plot Reactive expression returning SPC plot result
+#' @param pdf_export_plot Reactive expression returning PDF-context SPC plot
+#'   result. Codex peer-review 2026-05-08 (#EH0): tidligere modtog observeren
+#'   `export_plot` (PNG-context "export_preview") selv paa PDF-mode, hvilket
+#'   trigger en uafhaengig generateSPCPlot()-koersel for PNG-context kun for
+#'   at hente bfh_qic_result. Skift til pdf_export_plot eliminerer dobbelt-
+#'   generering, da PDF-preview alligevel evaluerer samme reactive (cache-hit
+#'   paa anden eval).
 #' @param app_state Reactive values object containing column mappings
 #'
 #' @return NULL (side effect: registers observers with Shiny)
 #'
 #' @keywords internal
-register_analysis_autogen <- function(session, input, output, export_plot, app_state) {
+register_analysis_autogen <- function(session, input, output, pdf_export_plot, app_state) {
   # Sidst auto-genererede tekst læses/skrives via app_state$ui$last_auto_analysis
   # (migreret fra reactiveVal, ADR-004 — tracking-state hører i centralt app_state).
 
   # Auto-generer analysetekst når SPC-resultat er tilgængeligt.
   # Bruger observe() (ikke observeEvent) saa tab-guard evalueres FØR
-  # export_plot() -- observeEvent evaluerer altid trigger-udtrykket
+  # pdf_export_plot() -- observeEvent evaluerer altid trigger-udtrykket
   # hvilket kalder generateSPCPlot() som side-effekt (Issue #394).
   shiny::observe(
     {
       # TAB-GUARD (Issue #394): Afbryd straks hvis brugeren IKKE er paa
-      # eksporter-tab. req() forhindrer at export_plot() evalueres paa
+      # eksporter-tab. req() forhindrer at pdf_export_plot() evalueres paa
       # andre tabs og sparer CPU + Typst PDF-render i baggrunden.
       shiny::req(app_state$session$active_tab == "eksporter")
 
@@ -49,7 +55,11 @@ register_analysis_autogen <- function(session, input, output, export_plot, app_s
         return()
       }
 
-      result <- export_plot()
+      # #EH0 (Codex 2026-05-08): pdf_export_plot bruger context "export_pdf"
+      # som matcher PDF-preview, saa observeren genbruger samme cache.
+      # Tidligere kald til export_plot() (context "export_preview") forarsagede
+      # parallel generateSPCPlot()-koersel udelukkende for at hente bfh_qic_result.
+      result <- pdf_export_plot()
       if (is.null(result) || is.null(result$bfh_qic_result)) {
         return()
       }

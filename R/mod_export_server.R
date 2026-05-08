@@ -473,7 +473,12 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Placeret efter reactive-definitioner for at undgaa forward references
 
     # Analysis auto-generation (mod_export_analysis.R)
-    register_analysis_autogen(session, input, output, export_plot, app_state)
+    # #EH0 (Codex 2026-05-08): pass pdf_export_plot (PDF-context) i stedet for
+    # export_plot (PNG-context). Auto-gen bruges kun paa PDF-mode (format-guard
+    # i mod_export_analysis.R), og pdf_export_plot deler cache-key med
+    # PDF-preview, saa observer-evaluering bliver cache-hit i stedet for ekstra
+    # generateSPCPlot()-koersel.
+    register_analysis_autogen(session, input, output, pdf_export_plot, app_state)
 
     # AI suggestion integration (mod_export_ai.R)
     register_ai_button_state(session, input, output, app_state)

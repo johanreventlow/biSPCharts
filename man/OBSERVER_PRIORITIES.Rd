@@ -27,7 +27,7 @@ Hierarki (højere tal = højere prioritet):
 \item LOGGING (100): Monitoring og logging
 }
 
-Compatibility aliases: HIGH, MEDIUM, LOW, LOWEST
+Compatibility aliases (legacy, stadig brugt): HIGH, MEDIUM, LOW, LOWEST
 }
 \examples{
 \dontrun{

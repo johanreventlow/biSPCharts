@@ -175,8 +175,20 @@ generate_pdf_export <- function(input, app_state, file) {
     inject_assets = inject_template_assets
   )
 
+  # M3 (Cycle A 2026-05-09): Tjek baade return-value, fil-eksistens OG fil-stoerrelse.
+  # Tidligere check (is.null OR !file.exists) gik glip af korrupt/incomplete PDF
+  # hvor BFHcharts retunerer non-NULL men Typst-render fejlede partway. Brugeren
+  # ville se success-message med tom/incomplete fil. Minimum-PDF-stoerrelse er
+  # >1KB (header + nogle bytes), saa fil <512 bytes er garanteret korrupt.
   if (is.null(result) || !file.exists(file)) {
     stop("PDF generation failed - file not created")
+  }
+  pdf_size <- file.info(file)$size
+  if (is.na(pdf_size) || pdf_size < 512) {
+    stop(sprintf(
+      "PDF generation failed - file appears incomplete (%d bytes, expected >512)",
+      pdf_size %||% 0L
+    ))
   }
 
   shiny::showNotification("PDF genereret og downloadet", type = "message", duration = 3)

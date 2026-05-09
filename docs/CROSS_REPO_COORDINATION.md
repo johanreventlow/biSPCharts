@@ -1745,8 +1745,45 @@ remotes::install_github("user/BFHcharts@v0.3.0")
 
 ---
 
+## Common API-Migration-Pitfalls
+
+### Dev-tree vs installeret pakke kan have forskellig API
+
+Real lesson fra Cycle A cross-repo wrapper-review (2026-05-09):
+
+`dev/run_dev.R` loader sibling-pakker via `devtools::load_all()` fra source-tree.
+Source-tree's `NEWS.md` kan dokumentere "(development)" breaking changes der
+**ikke** er i installeret tagged release. Eksempel:
+
+- BFHcharts 0.16.1 (installeret tagged): `get_plot()` exported, `bfh_get_plot()` IKKE
+- BFHcharts 0.16.1 (dev-tree, NEWS markeret "(development)"): `bfh_get_plot()` exported
+
+**Symptom:** Bruger med dev-loaded sibling ser ny API; CI eller production med
+installeret pakke ser gammel API. Tests grønne lokalt, fejler på CI/prod.
+
+**Fix-pattern:**
+1. Når sibling renamer public function → bump MINOR/MAJOR (ej blot "(development)")
+2. Downstream-kald: foretrukket fallback-strategi i prioriteret rækkefølge:
+   - Direkte struct-access (`result$plot`) hvis tilgaengeligt
+   - S3-method-dispatch hvis stable API
+   - Conditional fallback med version-check kun hvis nødvendigt
+3. Dokumenter i NEWS.md hvilken release-tag indeholder API-skift (ej "(development)")
+
+### Class-rename-fragility
+
+S3-dispatch på sibling-pakke-class (fx `bfh_qic_result`) er sårbar mod upstream
+class-rename. Silent fallback til default method giver forkert struktur uden
+kompileringsfejl. Mitigation:
+
+- Tilføj inline-kommentar ved S3-dispatch-call-sites
+- Class-rename SHALL bumpe sibling MAJOR-version (post-1.0)
+- Pre-1.0: dokumenter eksplicit i NEWS + koordiner downstream-PR
+
+---
+
 **Document History:**
 - **v1.0.0** (2025-10-17): Initial version
+- **v1.1.0** (2026-05-09): Tilfoejet "Common API-Migration-Pitfalls" baseret paa Cycle A cross-repo wrapper-review
 - **Next review:** 2026-01-17 (quarterly)
 
 **Feedback:**

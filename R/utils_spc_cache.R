@@ -172,6 +172,12 @@ generate_spc_cache_key <- function(data, config) {
         target_value = config$target_value,
         centerline_value = config$centerline_value,
         y_axis_unit = config$y_axis_unit,
+        # Codex peer-review 2026-05-08 (#H3): target_text og chart_title bruges
+        # i BFH-kald (fct_spc_execute.R:84,86) men manglede i config_signature.
+        # Konsekvens: cache returnerede plot med stale labels naar bruger
+        # aendrede target-tekst eller chart-titel.
+        target_text = config$target_text,
+        chart_title = config$chart_title,
         multiply_by = config$multiply_by %||% 1,
         # CRITICAL: Include viewport dimensions for context-aware caching
         # Different plot contexts (analysis, export_preview, export_pdf) have

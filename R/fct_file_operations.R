@@ -360,8 +360,11 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     apply_state_transition(app_state, transition_upload_to_ready(parsed))
     set_current_data(app_state, parsed$data)
 
+    # Cycle B M2 (Codex 2026-05-09): Slet direct emit$navigation_changed \u2014
+    # data_updated cascade fyrer navigation_changed via auto_detection_completed
+    # \u2192 ui_sync_completed. Direct emit forarsagede pre-autodetect render med
+    # stale columns + andet render efter UI-sync (visible glitch).
     emit$data_updated("file_loaded")
-    emit$navigation_changed()
 
     besked <- paste0(
       "Data indl\u00e6st: ", nrow(parsed$data), " r\u00e6kker \u2014 ",
@@ -372,8 +375,8 @@ handle_excel_upload <- function(file_path, session, app_state, emit, ui_service 
     apply_state_transition(app_state, transition_upload_to_ready(parsed))
     set_current_data(app_state, parsed$data)
 
+    # Cycle B M2: same fix som ovenfor
     emit$data_updated("file_loaded")
-    emit$navigation_changed()
 
     besked <- NULL # notify_upload_success vises nedenfor
   }
@@ -489,8 +492,9 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
   set_current_data(app_state, parsed$data)
 
   # Emit unified data_updated event (replaces legacy data_loaded)
+  # Cycle B M2 (Codex 2026-05-09): direct navigation_changed slettet —
+  # cascade fyrer den via ui_sync_completed.
   emit$data_updated(context = "session_file_loaded")
-  emit$navigation_changed()
 
   log_info("Data loaded event emitted successfully",
     .context = "FILE_UPLOAD_FLOW",
@@ -624,8 +628,9 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   set_current_data(app_state, parsed_from_paste$data)
 
   # Emit events
+  # Cycle B M2 (Codex 2026-05-09): direct navigation_changed slettet —
+  # cascade fyrer den via ui_sync_completed.
   emit$data_updated(context = "paste_data")
-  emit$navigation_changed()
 
   notify_upload_success("Indsatte data", data)
 

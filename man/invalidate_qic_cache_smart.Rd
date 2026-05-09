@@ -26,6 +26,10 @@ cosmetic changes (comments) preserve cache for performance.
 \item \code{column_removed}: Data structure changed
 \item \code{load}: Initial data load
 \item \code{new}: New data created
+\item \code{paste_data}: Data pasted via clipboard
+\item \code{session_file_loaded}: Session-file restore via upload
+\item \code{new_session}: Fresh session start
+\item \code{session_restore}: localStorage-restore (cache er tom, full clear no-op-safe)
 }
 
 \strong{Selective Invalidation} (data value changes):

@@ -1064,6 +1064,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-04'
   rationale: Regression-test for #482 cache-key freeze/part/cl/notes — tilfoejet manuelt.
+- file: test-cache-key-target-text-chart-title.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Regression-test for #H3 cache-key target_text + chart_title — tilfoejet manuelt.
 - file: test-llm-context-truncation-489.R
   audit_category: post-audit
   type: unit
@@ -1423,7 +1431,22 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
-  rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-branding-policy.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle A H2 reconciled (2026-05-09) regression-tests for branding-policy boot-validation.
+- file: test-bfhllm-config-injection.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle A reconciled (Codex 2026-05-09) regression-tests for #H1+#H1-NEW BFHllm config-injection.
 - file: test-utils-server-paste-data.R
   audit_category: post-audit
   type: unit
@@ -1448,3 +1471,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-07'
   rationale: Tilfoejet manuelt — fil oprettet ifm. Issue #610 (viewport_ready signal).
+- file: test-navigation-no-double-emit.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle B M2 (Codex 2026-05-09) regression-test mod double-emit navigation_changed fra file-load-paths.

@@ -8,8 +8,14 @@
 
 #' Get AI Configuration from golem-config.yml
 #'
-#' Reads AI configuration settings from golem-config.yml.
-#' Returns default values if config section is missing.
+#' Reads AI configuration from active golem-config profile via `get_golem_config()`.
+#' Returns sensible defaults if config section is missing.
+#'
+#' Cycle A reconciled (Codex 2026-05-09): tidligere brugte denne funktion
+#' `golem::get_golem_options("ai")` som kun læser runtime-options sat ved
+#' `run_app(options = ...)`. Det betyder at YAML-profile-overrides (dev/prod)
+#' blev ignoreret. Skift til `get_golem_config("ai")` matcher
+#' `get_session_config()`-mønsteret og sikrer YAML er single source of truth.
 #'
 #' @return Named list with AI configuration:
 #'   - model: LLM model identifier
@@ -19,19 +25,28 @@
 #'
 #' @keywords internal
 get_ai_config <- function() {
-  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
+  # NB: Brug get_golem_config (lokal wrapper, læser YAML via config::get)
+  # i stedet for golem::get_golem_options (som læser runtime-options).
+  # Dette sikrer profile-specifikke overrides (dev/prod) respekteres.
+  # Silent-fail korrekt: get_golem_config kan mangle i tests; falder tilbage til defaults
   ai_config <- tryCatch(
     {
-      golem::get_golem_options("ai")
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("ai")
+      } else {
+        NULL
+      }
     },
     error = function(e) NULL # nolint: swallowed_error_linter
   )
 
-  # Default values
+  # Default values.
+  # NB (Cycle A 2026-05-09): model droppes som default — biSPCharts foelger
+  # BFHllm's default (Gemini 3.1 Flash-Lite). Hvis golem-config har eksplicit
+  # `model:`, override'es BFHllm-default.
   defaults <- list(
     enabled = TRUE,
     provider = "gemini",
-    model = "gemini-2.5-flash-lite",
     timeout_seconds = 10,
     max_response_chars = 350,
     cache_ttl_seconds = 3600
@@ -91,8 +106,12 @@ get_session_config <- function() {
 
 #' Get RAG Configuration from golem-config.yml
 #'
-#' Reads RAG configuration settings from golem-config.yml.
-#' Returns default values if config section is missing.
+#' Reads RAG configuration from active golem-config profile via `get_golem_config()`.
+#' Returns sensible defaults if config section is missing.
+#'
+#' Cycle A reconciled (Codex 2026-05-09): samme refactor som `get_ai_config()` —
+#' skift fra `golem::get_golem_options("ai")` til `get_golem_config("ai")` for
+#' at respektere profile-specifikke YAML-overrides.
 #'
 #' @return Named list with RAG configuration:
 #'   - enabled: Whether RAG is enabled
@@ -101,10 +120,15 @@ get_session_config <- function() {
 #'
 #' @keywords internal
 get_rag_config <- function() {
-  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
+  # NB: Brug get_golem_config (lokal wrapper, læser YAML via config::get).
+  # Silent-fail korrekt: get_golem_config kan mangle i tests; falder tilbage til defaults
   ai_config <- tryCatch(
     {
-      golem::get_golem_options("ai")
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("ai")
+      } else {
+        NULL
+      }
     },
     error = function(e) NULL # nolint: swallowed_error_linter
   )
@@ -165,18 +189,28 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
     ai_config <- get_ai_config()
   }
 
-  # Configure BFHllm with biSPCharts settings
-  BFHllm::bfhllm_configure(
-    provider = "gemini", # biSPCharts uses Gemini
-    model = ai_config$model,
-    timeout_seconds = ai_config$timeout_seconds,
-    max_response_chars = ai_config$max_response_chars
-  )
+  # Configure BFHllm with biSPCharts settings.
+  # NB (Cycle A 2026-05-09): model droppes som default-override — biSPCharts
+  # foelger BFHllm's egen default (Gemini 3.1 Flash-Lite). Hvis bruger har
+  # sat eksplicit `model:` i golem-config.yml, override'es BFHllm's default.
+  # Pass kun ej-NULL felter for at undgaa at sende NULL-model som BFHllm
+  # tolker som "reset til default".
+  configure_args <- list(provider = "gemini")
+  if (!is.null(ai_config$model)) {
+    configure_args$model <- ai_config$model
+  }
+  if (!is.null(ai_config$timeout_seconds)) {
+    configure_args$timeout_seconds <- ai_config$timeout_seconds
+  }
+  if (!is.null(ai_config$max_response_chars)) {
+    configure_args$max_response_chars <- ai_config$max_response_chars
+  }
+  do.call(BFHllm::bfhllm_configure, configure_args)
 
   log_info("BFHllm initialized",
     .context = "AI_SETUP",
     details = list(
-      model = ai_config$model,
+      model = ai_config$model %||% "BFHllm-default",
       timeout = ai_config$timeout_seconds,
       max_chars = ai_config$max_response_chars
     )

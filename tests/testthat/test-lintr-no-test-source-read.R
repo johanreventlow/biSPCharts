@@ -7,8 +7,11 @@
 
 linter_path <- testthat::test_path("..", "..", "dev", "lintr_no_test_source_read.R")
 
-# Kun koer hvis linter-fil eksisterer (skipper i installeret pakke)
+# Skip-betingelser:
+#  - linter-fil mangler (R CMD check installeret-tree har ej dev/-mappen)
+#  - lintr-pakken ikke installeret (lintr er kun dev-dep, ej i CI-Imports)
 skip_if_no_linter <- function() {
+  testthat::skip_if_not_installed("lintr")
   testthat::skip_if_not(file.exists(linter_path), "linter-fil ej fundet (R CMD check installeret-tree)")
 }
 

@@ -139,7 +139,9 @@ test_that("BFHcharts to-trins workflow: bfh_qic + get_plot", {
   expect_true(inherits(bfh_result, "bfh_qic_result"))
 
   # Trin 2: Udtraek ggplot
-  plot <- BFHcharts::get_plot(bfh_result)
+  # BFHcharts 0.16.1: get_plot() omdoebt -> bfh_get_plot(); direkte $plot
+  # er ogsaa godkendt migration per BFHcharts NEWS, og er stable accross versioner.
+  plot <- bfh_result$plot
   expect_s3_class(plot, "ggplot")
 })
 

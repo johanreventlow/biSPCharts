@@ -1,14 +1,26 @@
 linters: local({
-    # Source custom seed_rng_linter — §3.2 af
-    # harden-test-suite-regression-gate openspec change.
-    linter_path <- file.path(getwd(), "dev", "lintr_seed_rng.R")
+    # Source custom linters
     custom <- list()
-    if (file.exists(linter_path)) {
+    # seed_rng_linter - section 3.2 af harden-test-suite-regression-gate
+    seed_rng_path <- file.path(getwd(), "dev", "lintr_seed_rng.R")
+    if (file.exists(seed_rng_path)) {
       tryCatch({
-        sys.source(linter_path, envir = environment())
+        sys.source(seed_rng_path, envir = environment())
         custom$seed_rng_linter <- seed_rng_linter()
       }, error = function(e) {
         message("Kunne ikke source dev/lintr_seed_rng.R: ", e$message)
+      })
+    }
+    # no_test_source_read_linter - Cycle F H2 + M3 (Codex 2026-05-09)
+    # Forhindrer recurrence af readLines(test_path(...))-pattern der
+    # virker i devtools::test() men fejler/skipper i R CMD check.
+    no_test_read_path <- file.path(getwd(), "dev", "lintr_no_test_source_read.R")
+    if (file.exists(no_test_read_path)) {
+      tryCatch({
+        sys.source(no_test_read_path, envir = environment())
+        custom$no_test_source_read_linter <- no_test_source_read_linter()
+      }, error = function(e) {
+        message("Kunne ikke source dev/lintr_no_test_source_read.R: ", e$message)
       })
     }
     do.call(lintr::linters_with_defaults, c(

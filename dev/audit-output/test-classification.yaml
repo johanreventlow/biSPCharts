@@ -1448,3 +1448,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-07'
   rationale: Tilfoejet manuelt — fil oprettet ifm. Issue #610 (viewport_ready signal).
+- file: test-flush-session-save-on-exit.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle B M7 (Codex 2026-05-09) regression-test for save_session_on_exit final-flush.

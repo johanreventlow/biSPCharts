@@ -176,6 +176,73 @@ activate_session_timeout_from_config <- function(input, session,
   invisible(timeout_handle)
 }
 
+#' Flush session-save ved session-end (Cycle B M7)
+#'
+#' Naar `golem-config.yml` har `session.save_session_on_exit: TRUE` flush'es
+#' eventuelle ikke-saved data + metadata ved session-end. Loeser
+#' "persistence contract violation" hvor production-config lovede exit-save
+#' men intet kald implementerede det. Tab-luk inden for 2s/1s debounce-vindue
+#' ville miste sidste edits.
+#'
+#' Kaldes fra `session$onSessionEnded()` FOER observer-cleanup deaktiverer
+#' state-access. Idempotent: respekterer auto_save_enabled-flag og
+#' restoring_session-guard.
+#'
+#' @param session Shiny session
+#' @param input Shiny input (til collect_metadata)
+#' @param app_state Centraliseret app state
+#' @return invisible(NULL)
+#' @keywords internal
+flush_session_save_on_exit <- function(session, input, app_state) {
+  safe_operation(
+    "Final session-save on exit",
+    code = {
+      # Config-gate: kun flush hvis policy aktiv
+      session_config <- get_session_config()
+      if (!isTRUE(session_config$save_session_on_exit)) {
+        return(invisible(NULL))
+      }
+
+      # Guard: respekter auto_save_enabled (samme som debounced auto-save)
+      auto_save_on <- shiny::isolate(state_flag(app_state$session$auto_save_enabled))
+      if (!isTRUE(auto_save_on)) {
+        return(invisible(NULL))
+      }
+
+      # Guard: skip hvis restore stadig kører (forhindrer overskriv af
+      # restored-but-ikke-aendret state med tom payload)
+      if (isTRUE(shiny::isolate(state_flag(app_state$session$restoring_session)))) {
+        log_info(
+          "flush_session_save_on_exit: springer over (restoring_session)",
+          .context = "AUTO_SAVE"
+        )
+        return(invisible(NULL))
+      }
+
+      current_data <- shiny::isolate(app_state$data$current_data)
+      if (is.null(current_data) || nrow(current_data) == 0L) {
+        return(invisible(NULL))
+      }
+
+      metadata <- shiny::isolate(collect_metadata(input, app_state = app_state))
+
+      log_info(
+        sprintf(
+          "flush_session_save_on_exit: saving %d rows x %d cols",
+          nrow(current_data), ncol(current_data)
+        ),
+        .context = "AUTO_SAVE"
+      )
+
+      autoSaveAppState(session, current_data, metadata, app_state = app_state)
+    },
+    fallback = NULL,
+    error_type = "processing"
+  )
+
+  invisible(NULL)
+}
+
 # Dependencies ----------------------------------------------------------------
 
 ## Hovedfunktion for hjaelper

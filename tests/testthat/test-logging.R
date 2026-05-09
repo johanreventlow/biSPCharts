@@ -220,6 +220,45 @@ test_that("logging functions support .context parameter for backward compatibili
     is.function(log_warn) && is.function(log_error))
 })
 
+test_that("log_warn og log_error bypasser spc.debug.context-filtret", {
+  # Regression: Foer 2026-05-08 filtrerede log_warn/log_error context via
+  # spc.debug.context-allowlist, hvilket skjulte kritiske fejl i pipelines
+  # som ikke var i den aktive debug-allowlist (eksempel: SPC_PIPELINE-fejl
+  # blev sluppet stille naar bruger kun haavde BFH_SERVICE i context-filter).
+  require_internal("log_warn", mode = "function")
+  require_internal("log_error", mode = "function")
+
+  old_opt <- getOption("spc.debug.context")
+  on.exit(options(spc.debug.context = old_opt), add = TRUE)
+
+  # Saet et restriktivt context-filter der EKSPLICIT udelukker test-context
+  options(spc.debug.context = c("ONLY_THIS_CONTEXT_IS_ALLOWED"))
+
+  # log_msg bruger cat() -> stdout (ej message()/stderr), saa capture default
+  warn_output <- capture.output(
+    log_warn("warn skal synes", .context = "BLOCKED_CONTEXT")
+  )
+  err_output <- capture.output(
+    log_error("error skal synes", .context = "BLOCKED_CONTEXT")
+  )
+
+  # log_warn/log_error skal omgaa filtret og logge alligevel
+  expect_true(any(grepl("warn skal synes", warn_output, fixed = TRUE)),
+    info = paste("log_warn output:", paste(warn_output, collapse = "|"))
+  )
+  expect_true(any(grepl("error skal synes", err_output, fixed = TRUE)),
+    info = paste("log_error output:", paste(err_output, collapse = "|"))
+  )
+
+  # log_debug skal stadig respektere filtret (sanity check)
+  debug_output <- capture.output(
+    log_debug("debug skal IKKE synes", .context = "BLOCKED_CONTEXT")
+  )
+  expect_false(any(grepl("debug skal IKKE synes", debug_output, fixed = TRUE)),
+    info = paste("log_debug output:", paste(debug_output, collapse = "|"))
+  )
+})
+
 test_that("logging functions support component parameter for new style", {
   require_internal("log_info", mode = "function")
   require_internal("log_debug", mode = "function")

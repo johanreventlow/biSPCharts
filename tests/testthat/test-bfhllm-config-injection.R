@@ -117,13 +117,12 @@ test_that("initialize_bfhllm() respekterer model-override hvis sat eksplicit", {
 })
 
 test_that("run_app() kalder initialize_bfhllm() i startup-flow", {
-  # Statisk verifikation af source-kode (vi vil ikke køre run_app() i test)
-  app_run_source <- readLines(testthat::test_path("..", "..", "R", "app_run.R"))
-  init_call_present <- any(grepl(
-    "initialize_bfhllm\\(get_ai_config\\(\\)\\)",
-    app_run_source
-  ))
-  expect_true(init_call_present,
+  # Funktionel introspection via deparse(body()) — virker baade i devtools::test
+  # OG R CMD check (modsat readLines() der kraever source-tree adgang).
+  require_internal("run_app", mode = "function")
+  body_text <- paste(deparse(body(run_app)), collapse = "\n")
+  expect_true(
+    grepl("initialize_bfhllm\\s*\\(\\s*get_ai_config\\s*\\(\\s*\\)\\s*\\)", body_text),
     info = paste(
       "run_app() skal kalde initialize_bfhllm(get_ai_config()) i startup.",
       "Hvis denne test fejler er Cycle A H1-fix blevet fjernet."
@@ -132,33 +131,18 @@ test_that("run_app() kalder initialize_bfhllm() i startup-flow", {
 })
 
 test_that("get_ai_config() bruger get_golem_config (ej get_golem_options)", {
-  # Statisk verifikation: source skal indeholde get_golem_config-kald
-  source_lines <- readLines(testthat::test_path("..", "..", "R", "utils_bfhllm_integration.R"))
+  # Funktionel introspection: tjek body() af get_ai_config
+  require_internal("get_ai_config", mode = "function")
+  body_text <- paste(deparse(body(get_ai_config)), collapse = "\n")
 
-  in_get_ai_config <- FALSE
-  uses_golem_config <- FALSE
-  uses_get_golem_options <- FALSE
-
-  for (line in source_lines) {
-    if (grepl("^get_ai_config <- function", line)) {
-      in_get_ai_config <- TRUE
-      next
-    }
-    if (in_get_ai_config) {
-      if (grepl("^get_rag_config <- function", line)) {
-        in_get_ai_config <- FALSE
-      }
-      # Strip comments foer match-check (kommentarer maa naevne legacy-pattern)
-      code_only <- sub("\\s*#.*$", "", line)
-      if (grepl("get_golem_config\\(", code_only)) uses_golem_config <- TRUE
-      if (grepl("golem::get_golem_options\\(", code_only)) uses_get_golem_options <- TRUE
-    }
-  }
-
-  expect_true(uses_golem_config,
+  expect_true(
+    grepl("get_golem_config\\s*\\(", body_text),
     info = "get_ai_config skal bruge get_golem_config (YAML-baseret)"
   )
-  expect_false(uses_get_golem_options,
+  # Bemaerk: kommentarer i body() bevares IKKE i deparse(body()) saa false-positive
+  # paa kommentar-mention af legacy-pattern er udelukket. Kun reel function-call.
+  expect_false(
+    grepl("golem::get_golem_options\\s*\\(", body_text),
     info = paste(
       "get_ai_config maa IKKE bruge golem::get_golem_options.",
       "Cycle A H1-NEW: kun get_golem_config respekterer YAML-profile-overrides."

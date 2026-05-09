@@ -227,10 +227,12 @@ mod_export_ui <- function(id) {
                 " Auto-genereret analyse \u2014 rediger for at tilpasse"
               ),
             ),
-            # AI Suggestion Button -- midlertidigt skjult, genaktiveres senere
-            # Funktionaliteten er intakt i mod_export_server.R og fct_ai_improvement_suggestions.R
+            # AI Suggestion Button.
+            # Cycle G H_NEW (2026-05-09): Synlighed styres af golem-config
+            # ai.enabled-flag via register_ai_button_state() (mod_export_ai.R).
+            # Production har enabled=false -> shinyjs::hide() ved boot.
+            # Erstatter tidligere fragile CSS display:none-hide.
             shiny::div(
-              style = "display: none;",
               shiny::actionButton(
                 ns("ai_generate_suggestion"),
                 label = "Gener\u00e9r forslag med AI",

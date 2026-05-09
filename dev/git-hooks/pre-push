@@ -244,7 +244,11 @@ for (f in quick_files) {
 }
 cat("✓ Hurtig pre-push bestået\n")
 REOF
-  TEST_EXIT=$?
+  # NB: ingen TEST_EXIT-check noedvendig — `set -euo pipefail` (linje 30)
+  # aborter shell oejeblikkeligt hvis Rscript exiter non-zero.
+  # Cycle F H4 (2026-05-09): tidligere TEST_EXIT=$?-check var dead code
+  # under set -e. Hvis set -e fjernes senere, skal hver Rscript-blok
+  # eksplicit propagere exit-status (set +e; ...; rc=$?; set -e).
 else
   echo "[3/4] Kører fuld testthat-suite (kan tage 5-10 min) ..."
   Rscript - <<'REOF'
@@ -263,7 +267,6 @@ if (fails > 0 || errs > 0) {
 }
 cat("✓ Alle tests grønne\n")
 REOF
-  TEST_EXIT=$?
 
   # --- Step 4 (full only): R CMD check --as-cran ---
   echo ""
@@ -286,12 +289,6 @@ REOF
     echo "✗ R CMD check fejlede — push blokeret"
     exit 1
   }
-fi
-
-if [ "$TEST_EXIT" -ne 0 ]; then
-  echo ""
-  echo "✗ Tests fejlede — push blokeret"
-  exit 1
 fi
 
 # --- Timing + done ---

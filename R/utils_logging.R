@@ -415,7 +415,10 @@ log_info <- function(message = NULL, component = NULL, .context = NULL, details 
 #' Convenience-funktion til logging af WARN-beskeder.
 #'
 #' **Kontekst-filtrering:**
-#' Understoetter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#' WARN-niveau er BEVIDST eksempt fra `spc.debug.context`-filtret (PR #662,
+#' 2026-05-08). Filtret er en debug-noise-control mekanisme; warnings
+#' repraesenterer potentielle problemer der altid skal synes uafhaengigt
+#' af aktive debug-contexts.
 #'
 #' @param message Besked der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"DATA_VALIDATION"`) - legacy parameter
@@ -467,7 +470,11 @@ log_warn <- function(message = NULL, component = NULL, .context = NULL, details 
 #' `condition` direkte (beskeden udtraekkes med `conditionMessage()`).
 #'
 #' **Kontekst-filtrering:**
-#' Understoetter samme kontekst-filtrering som `log_debug()` via `spc.debug.context` option.
+#' ERROR-niveau er BEVIDST eksempt fra `spc.debug.context`-filtret (PR #662,
+#' 2026-05-08). Filtret er en debug-noise-control mekanisme; errors
+#' repraesenterer reelle fejl der altid skal synes uafhaengigt af aktive
+#' debug-contexts. Tidligere skjulte filtret kritiske fejl fra contexts
+#' som SPC_PIPELINE der ikke var i allowlisten -> diagnostik blev umulig.
 #'
 #' @param message Besked eller condition der skal logges
 #' @param component Valgfri komponent-tag (f.eks. `"ERROR_HANDLING"`) - legacy parameter

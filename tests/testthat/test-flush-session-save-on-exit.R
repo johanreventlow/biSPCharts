@@ -6,19 +6,20 @@ test_that("flush_session_save_on_exit eksisterer som funktion", {
   expect_true(exists("flush_session_save_on_exit", mode = "function"))
 })
 
-test_that("flush_session_save_on_exit kaldes fra app_server_main session-end", {
-  # Funktionel introspection: tjek at session-end handler kalder funktionen
-  app_server_main_source <- readLines(
-    testthat::test_path("..", "..", "R", "app_server_main.R")
+test_that("flush_session_save_on_exit kaldes fra main_app_server session-end", {
+  # Funktionel introspection via deparse(body()) — virker baade i devtools::test
+  # OG R CMD check (modsat readLines() der kraever source-tree adgang).
+  # Cycle B post-merge fix (samme pattern som #669 H1+H1-NEW tests).
+  require_internal("main_app_server", mode = "function")
+  body_text <- paste(deparse(body(main_app_server)), collapse = "\n")
+  flush_call_present <- grepl(
+    "flush_session_save_on_exit\\s*\\(\\s*session\\s*,\\s*input\\s*,\\s*app_state\\s*\\)",
+    body_text
   )
-  flush_call_present <- any(grepl(
-    "flush_session_save_on_exit\\(session, input, app_state\\)",
-    app_server_main_source
-  ))
   expect_true(
     flush_call_present,
     info = paste(
-      "app_server_main.R skal kalde flush_session_save_on_exit() i",
+      "main_app_server() skal kalde flush_session_save_on_exit() i",
       "session$onSessionEnded() handler. Hvis denne test fejler er",
       "Cycle B M7-fix blevet fjernet og persistence-contract brudt igen."
     )

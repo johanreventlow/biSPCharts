@@ -336,6 +336,23 @@ run_app <- function(port = NULL,
   # silent broken config der foerst manifesterer sig under load.
   validate_configuration()
 
+  # Cycle A reconciled (Codex 2026-05-09): Inject biSPCharts AI-config i BFHllm.
+  # Tidligere var initialize_bfhllm() defineret men aldrig kaldt -> BFHllm
+  # brugte ellmer-defaults (gemini-3.1-flash-lite-preview, timeout 120s) i stedet
+  # for biSPCharts config (gemini-2.5-flash-lite, timeout 10s/15s).
+  # Wrap i tryCatch saa missing BFHllm ej crasher app (graceful degradation).
+  tryCatch(
+    {
+      initialize_bfhllm(get_ai_config())
+    },
+    error = function(e) {
+      log_warn(
+        sprintf("BFHllm config injection fejlede: %s", e$message),
+        .context = "AI_SETUP"
+      )
+    }
+  )
+
   # Merge passed options directly (no feature flags needed - pure BFHcharts)
   merged_options <- options
 

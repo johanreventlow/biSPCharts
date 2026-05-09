@@ -1423,7 +1423,14 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
-  rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
+- file: test-branding-policy.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle A H2 reconciled (2026-05-09) regression-tests for branding-policy boot-validation.
 - file: test-utils-server-paste-data.R
   audit_category: post-audit
   type: unit

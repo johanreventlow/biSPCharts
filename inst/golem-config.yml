@@ -287,6 +287,14 @@ production:
       n_results: 3                  # Balance between context and performance
       method: "hybrid"              # Optimal search accuracy
 
+  # Branding policy (Cycle A H2 reconciled 2026-05-09)
+  # Hard-fail boot hvis BFHchartsAssets mangler i production. Hospitals forventer
+  # brandet PDF/PNG-output (logos + Mari-fonts). Soft-fail i dev tilladt for at
+  # CI uden GITHUB_PAT kan koere tests, men prod-deploy uden assets giver
+  # degraded UI uden synligt signal.
+  branding:
+    require_branded_assets: true    # Boot fejler hvis BFHchartsAssets mangler
+
 
 # TESTING CONFIGURATION ======================================================
 # Optimized for controlled test conditions and reproducibility

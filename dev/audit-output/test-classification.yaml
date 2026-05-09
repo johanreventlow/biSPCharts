@@ -1478,7 +1478,15 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-05-09'
-  rationale: Cycle B M2 (Codex 2026-05-09) regression-test mod double-emit navigation_changed fra file-load-paths.
+  rationale: Cycle B M2 + Cycle F M3 (Codex 2026-05-09) regression-test mod double-emit navigation_changed fra file-load-paths. Cycle F konverterede fra readLines(test_path()) til body()-introspection (silent-skip-bug i R CMD check).
+- file: test-lintr-no-test-source-read.R
+  audit_category: post-audit
+  type: policy-guard
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle F H2 (Codex 2026-05-09) unit-test af custom lintr-regel der detekterer source-tree-reads i tests. Forhindrer recurrence af readLines(test_path("..", ...))-pattern.
 - file: test-flush-session-save-on-exit.R
   audit_category: post-audit
   type: unit
@@ -1487,3 +1495,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-09'
   rationale: Cycle B M7 (Codex 2026-05-09) regression-test for save_session_on_exit final-flush.
+- file: test-classify-tests-merge.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle F H3 (Codex 2026-05-09) unit-tests for has_value()-baseret merge_with_existing der bevarer manuelle felter ogsaa for unreviewed entries. Forhindrer silent overskrivning af rationale/merge_with/handling.

@@ -65,13 +65,46 @@ if [ "${SKIP_NONASCII:-0}" != "1" ]; then
 fi
 
 # --- Step 0.6: Manifest-sync warning (fix-patterns: manifest-stale) ---
-# Hvis DESCRIPTION staged uden manifest.json: warn (ikke blokerende — pre-push
-# blokerer hvis stadig stale). Bypass automatisk hvis manifest.json staged.
+# Hvis DESCRIPTION staged med pakke-aendringer uden manifest.json: warn
+# (ikke blokerende — pre-push blokerer hvis stadig stale).
+#
+# Cycle F H1 (2026-05-09): Tidligere brugte vi grep mod stanza-overskrifter
+# som missede tilfoejelser under eksisterende stanza. Nu DCF-parse mod HEAD.
 desc_staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^DESCRIPTION$' || true)
 manifest_staged=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^manifest\.json$' || true)
 if [ -n "$desc_staged" ] && [ -z "$manifest_staged" ]; then
-  imports_changed=$(git diff --cached -- DESCRIPTION | grep -E '^[+-]\s*(Imports|Remotes|Depends):' || true)
-  if [ -n "$imports_changed" ]; then
+  TMP_HEAD_DESC=$(mktemp -t bispc_desc_head.XXXXXX)
+  TMP_STAGED_DESC=$(mktemp -t bispc_desc_staged.XXXXXX)
+  # shellcheck disable=SC2064
+  trap "rm -f '$TMP_HEAD_DESC' '$TMP_STAGED_DESC'" EXIT INT TERM
+
+  git show HEAD:DESCRIPTION > "$TMP_HEAD_DESC" 2>/dev/null || true
+  git show :DESCRIPTION > "$TMP_STAGED_DESC" 2>/dev/null || true
+
+  pkg_changed=$(Rscript - "$TMP_HEAD_DESC" "$TMP_STAGED_DESC" <<'REOF' 2>/dev/null
+args <- commandArgs(TRUE)
+normalize_pkg_fields <- function(path) {
+  if (!file.exists(path) || file.info(path)$size == 0) return("")
+  d <- tryCatch(
+    read.dcf(path, fields = c("Imports", "Remotes", "Depends")),
+    error = function(e) NULL
+  )
+  if (is.null(d) || nrow(d) == 0) return("")
+  vals <- as.character(d[1, ])
+  vals[is.na(vals)] <- ""
+  norm <- vapply(vals, function(v) {
+    if (!nzchar(v)) return("")
+    items <- trimws(strsplit(v, ",")[[1]])
+    items <- items[nzchar(items)]
+    paste(sort(items), collapse = ",")
+  }, character(1))
+  paste(norm, collapse = "||")
+}
+cat(if (identical(normalize_pkg_fields(args[1]), normalize_pkg_fields(args[2]))) "0" else "1")
+REOF
+)
+
+  if [ "$pkg_changed" = "1" ]; then
     echo ""
     echo "⚠ DESCRIPTION:Imports/Remotes/Depends aendret men manifest.json IKKE staged"
     echo "  Connect Cloud-deploy vil fejle hvis manifest ude af sync."

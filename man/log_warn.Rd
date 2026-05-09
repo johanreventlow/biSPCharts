@@ -23,7 +23,10 @@ Convenience-funktion til logging af WARN-beskeder.
 }
 \details{
 \strong{Kontekst-filtrering:}
-Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
+WARN-niveau er BEVIDST eksempt fra \code{spc.debug.context}-filtret (PR #662,
+2026-05-08). Filtret er en debug-noise-control mekanisme; warnings
+repraesenterer potentielle problemer der altid skal synes uafhaengigt
+af aktive debug-contexts.
 }
 \examples{
 \dontrun{

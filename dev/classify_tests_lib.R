@@ -142,7 +142,44 @@ read_manifest <- function(path) {
   yaml::read_yaml(path)
 }
 
-#' Merge auto-klassifikation med eksisterende manifest, bevarer reviewed: true.
+#' Tjek om en field har en meningsfuld vaerdi (ikke NULL/empty/NA-only).
+#'
+#' Haandterer:
+#'   - NULL                      -> FALSE
+#'   - length 0                  -> FALSE
+#'   - scalar string, tom        -> FALSE
+#'   - scalar string, non-tom    -> TRUE
+#'   - vector af strings         -> TRUE hvis ENHVER ej-NA + non-tom
+#'   - liste                     -> TRUE hvis ENHVER element er meningsfuld
+#'
+#' Cycle F H3 (Codex 2026-05-09): erstatter naiv `is.character(x) && nzchar(x)`
+#' der fejler paa multi-item character-vektorer (R-fejl: "the condition has
+#' length > 1") og missede YAML-list-felter som merge_with.
+has_value <- function(x) {
+  if (is.null(x)) return(FALSE)
+  if (length(x) == 0) return(FALSE)
+  if (is.character(x)) {
+    return(any(!is.na(x) & nzchar(x)))
+  }
+  if (is.list(x)) {
+    return(any(vapply(x, has_value, logical(1))))
+  }
+  # Numeric/logical: ej-NA = meningsfuld
+  any(!is.na(x))
+}
+
+#' Merge auto-klassifikation med eksisterende manifest.
+#'
+#' Cycle F H3 (Codex 2026-05-09): field-level merge der bevarer manuelt-tilfoejede
+#' felter (rationale, merge_with, reviewer, reviewed_date, handling) uafhaengigt
+#' af `reviewed`-flag. Tidligere implementation overskrev silent alt eksisterende
+#' arbejde paa entries hvor `reviewed != TRUE`.
+#'
+#' Strategy:
+#'   - Eksisterende entry findes ej     -> brug auto
+#'   - Eksisterende entry findes        -> merge field-by-field via has_value()
+#'   - audit_category synces altid fra auto (kommer fra audit-data, ej manual)
+#'   - reviewed-flag bevares fra existing
 merge_with_existing <- function(auto_entries, existing_manifest) {
   if (is.null(existing_manifest) || is.null(existing_manifest$files)) {
     return(auto_entries)
@@ -153,14 +190,25 @@ merge_with_existing <- function(auto_entries, existing_manifest) {
     vapply(existing_manifest$files, `[[`, character(1), "file")
   )
 
+  preservable_fields <- c(
+    "rationale", "merge_with", "reviewer",
+    "reviewed_date", "handling"
+  )
+
   lapply(auto_entries, function(auto) {
     existing <- existing_by_file[[auto$file]]
-    if (is.null(existing) || !isTRUE(existing$reviewed)) {
+    if (is.null(existing)) {
       return(auto)
     }
-    # Bevar existing, men sync audit_category fra auto
-    existing$audit_category <- auto$audit_category
-    existing
+    merged <- auto
+    for (field in preservable_fields) {
+      if (has_value(existing[[field]])) {
+        merged[[field]] <- existing[[field]]
+      }
+    }
+    # reviewed-flag bevares fra existing (kan vaere TRUE eller FALSE/NULL)
+    merged$reviewed <- isTRUE(existing$reviewed)
+    merged
   })
 }
 

@@ -259,6 +259,12 @@ build_cache_key <- function(data, chart_type, x_var, y_var, n_var,
         target_value = extra_params$target_value,
         centerline_value = extra_params$centerline_value,
         y_axis_unit = extra_params$y_axis_unit,
+        # Codex peer-review 2026-05-08 (#H3): target_text og chart_title bruges
+        # i BFH-kald (fct_spc_execute.R:84,86) men manglede i cache-keyen.
+        # Konsekvens: cache returnerede plot med stale labels naar bruger
+        # aendrede target-tekst eller chart-titel.
+        target_text = extra_params$target_text,
+        chart_title = extra_params$chart_title,
         multiply_by = multiply,
         # Viewport dimensions inkluderes: ellers ville plots fra export (andre dims)
         # fejlagtigt genbruges fra analysis-cache eller omvendt.

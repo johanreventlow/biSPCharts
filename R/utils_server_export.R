@@ -345,6 +345,10 @@ generate_pdf_preview <- function(bfh_qic_result,
           #    os til bfh_extract_spc_stats.bfh_qic_result(), som udfylder
           #    outliers_actual (seneste part, total) til tabellen. Uden dette kald
           #    ville tabellen "OBS. UDEN FOR KONTROLGRAeNSE" vaere tom i preview.
+          # M2 (Cycle A 2026-05-09): S3-dispatch afhaenger af class-name `bfh_qic_result`.
+          # Hvis BFHcharts omdoeber class -> silent fallback til default method ->
+          # forkert struktur returneres. Class-rename fanges ej af tests; manuel
+          # verifikation kraevet ved BFHcharts breaking changes.
           spc_stats <- BFHcharts::bfh_extract_spc_stats(bfh_qic_result)
 
           # 3. Merge metadata with chart title

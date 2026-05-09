@@ -91,7 +91,8 @@ test_that("get_ai_config returnerer sensible defaults", {
   config <- get_ai_config()
 
   expect_true(is.list(config))
-  expect_true("model" %in% names(config))
+  # NB (Cycle A 2026-05-09): model droppes som default-key — biSPCharts foelger
+  # BFHllm's default. Kun timeout/max_chars/enabled forventes i defaults.
   expect_true("timeout_seconds" %in% names(config))
   expect_true("max_response_chars" %in% names(config))
   expect_true("enabled" %in% names(config))

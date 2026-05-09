@@ -6,6 +6,11 @@
 \usage{
 write_spc_cache(cache_key, result, app_state)
 }
+\value{
+Logical. TRUE hvis resultatet blev gemt i cachen, FALSE ellers.
+Issue #647: returneres til facade saa cache_stored-flag er korrekt
+i INFO-log uden at gaette paa cache-state.
+}
 \description{
 Gem SPC-resultat i cache
 }

@@ -24,7 +24,11 @@ Convenience-funktion til logging af ERROR-beskeder. Accepterer ogsaa en
 }
 \details{
 \strong{Kontekst-filtrering:}
-Understoetter samme kontekst-filtrering som \code{log_debug()} via \code{spc.debug.context} option.
+ERROR-niveau er BEVIDST eksempt fra \code{spc.debug.context}-filtret (PR #662,
+2026-05-08). Filtret er en debug-noise-control mekanisme; errors
+repraesenterer reelle fejl der altid skal synes uafhaengigt af aktive
+debug-contexts. Tidligere skjulte filtret kritiske fejl fra contexts
+som SPC_PIPELINE der ikke var i allowlisten -> diagnostik blev umulig.
 }
 \examples{
 \dontrun{

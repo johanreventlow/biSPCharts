@@ -15,7 +15,12 @@ Named list with RAG configuration:
 }
 }
 \description{
-Reads RAG configuration settings from golem-config.yml.
-Returns default values if config section is missing.
+Reads RAG configuration from active golem-config profile via \code{get_golem_config()}.
+Returns sensible defaults if config section is missing.
+}
+\details{
+Cycle A reconciled (Codex 2026-05-09): samme refactor som \code{get_ai_config()} —
+skift fra \code{golem::get_golem_options("ai")} til \code{get_golem_config("ai")} for
+at respektere profile-specifikke YAML-overrides.
 }
 \keyword{internal}

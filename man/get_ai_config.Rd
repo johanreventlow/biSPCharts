@@ -16,7 +16,14 @@ Named list with AI configuration:
 }
 }
 \description{
-Reads AI configuration settings from golem-config.yml.
-Returns default values if config section is missing.
+Reads AI configuration from active golem-config profile via \code{get_golem_config()}.
+Returns sensible defaults if config section is missing.
+}
+\details{
+Cycle A reconciled (Codex 2026-05-09): tidligere brugte denne funktion
+\code{golem::get_golem_options("ai")} som kun læser runtime-options sat ved
+\code{run_app(options = ...)}. Det betyder at YAML-profile-overrides (dev/prod)
+blev ignoreret. Skift til \code{get_golem_config("ai")} matcher
+\code{get_session_config()}-mønsteret og sikrer YAML er single source of truth.
 }
 \keyword{internal}

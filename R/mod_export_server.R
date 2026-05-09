@@ -75,6 +75,14 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       shiny::reactive(input$export_department %||% ""),
       millis = DEBOUNCE_DELAYS$metadata_input
     )
+    # #EM1 (Codex 2026-05-08): debounced_footnote bruges af baade PNG-preview
+    # (output$export_preview) og PDF-preview (pdf_preview_image). Flyttet op
+    # i scope saa PNG-renderPlot ikke laeser input$export_footnote direkte
+    # (per-keystroke re-render) men i stedet venter paa debounced reactive.
+    debounced_footnote <- shiny::debounce(
+      shiny::reactive(input$export_footnote %||% ""),
+      millis = DEBOUNCE_DELAYS$metadata_input
+    )
 
     # Export plot reactive - regenerates plot with export-specific dimensions
     # Issue #61: Separate plot generation with context "export_preview" (800x450px)
@@ -211,15 +219,19 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
           )
         }
 
-        # Tilfoej subtitle (hospital + afdeling) og margin til PNG preview
+        # Tilfoej subtitle (hospital + afdeling) og margin til PNG preview.
+        # #EM1 (Codex 2026-05-08): laes debounced reactives i stedet for
+        # input$ direkte. Tidligere udloeste hver keystroke i department/
+        # footnote en fuld renderPlot-cyklus (~100ms). Nu venter renderPlot
+        # paa metadata_input-debounce (1500ms) som dept/title.
         plot <- spc_result$plot
 
-        dept_text <- trimws(input$export_department %||% "")
+        dept_text <- trimws(debounced_dept())
         if (nchar(dept_text) > 0) {
           plot <- plot + ggplot2::labs(subtitle = dept_text)
         }
 
-        footnote_text <- trimws(input$export_footnote %||% "")
+        footnote_text <- trimws(debounced_footnote())
         if (nchar(footnote_text) > 0) {
           plot <- plot + ggplot2::labs(caption = footnote_text)
         }
@@ -319,10 +331,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       shiny::reactive(input$export_hospital %||% ""),
       millis = DEBOUNCE_DELAYS$metadata_input
     )
-    debounced_footnote <- shiny::debounce(
-      shiny::reactive(input$export_footnote %||% ""),
-      millis = DEBOUNCE_DELAYS$metadata_input
-    )
+    # NOTE: debounced_footnote er flyttet til top-of-server-scope (#EM1) saa
+    # PNG-preview kan dele samme debouncer. Definition: se efter debounced_dept.
 
     pdf_preview_image <- shiny::reactive({
       # TAB-GUARD (Issue #644): Typst→PNG-render er dyr (~2s) og maa ej koere
@@ -473,7 +483,12 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Placeret efter reactive-definitioner for at undgaa forward references
 
     # Analysis auto-generation (mod_export_analysis.R)
-    register_analysis_autogen(session, input, output, export_plot, app_state)
+    # #EH0 (Codex 2026-05-08): pass pdf_export_plot (PDF-context) i stedet for
+    # export_plot (PNG-context). Auto-gen bruges kun paa PDF-mode (format-guard
+    # i mod_export_analysis.R), og pdf_export_plot deler cache-key med
+    # PDF-preview, saa observer-evaluering bliver cache-hit i stedet for ekstra
+    # generateSPCPlot()-koersel.
+    register_analysis_autogen(session, input, output, pdf_export_plot, app_state)
 
     # AI suggestion integration (mod_export_ai.R)
     register_ai_button_state(session, input, output, app_state)

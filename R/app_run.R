@@ -208,6 +208,52 @@ validate_configuration <- function() {
   invisible(TRUE)
 }
 
+#' Validate branding-policy ved boot (Cycle A H2 reconciled 2026-05-09)
+#'
+#' Tjekker `branding.require_branded_assets`-flag i aktiv golem-config-profile.
+#' Hvis TRUE og `BFHchartsAssets`-pakken mangler -> hard-fail boot.
+#'
+#' Production-profile har default `require_branded_assets: true` saa
+#' Connect Cloud-deploy uden GITHUB_PAT fanges fail-loud i stedet for at
+#' degradere silent til ubrandet UI. Dev/test-profiler har default
+#' `require_branded_assets: false` saa CI uden assets kan koere tests.
+#'
+#' @return invisible(TRUE) ved success; signalerer `bisp_config_error` ellers.
+#' @keywords internal
+validate_branding_policy <- function() {
+  branding_config <- tryCatch(
+    {
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("branding")
+      } else {
+        NULL
+      }
+    },
+    error = function(e) NULL # nolint: swallowed_error_linter
+  )
+
+  require_assets <- isTRUE(branding_config$require_branded_assets)
+
+  if (!require_assets) {
+    return(invisible(TRUE))
+  }
+
+  if (!requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    rlang::abort(
+      message = paste0(
+        "BFHchartsAssets-pakken mangler men branding.require_branded_assets=true. ",
+        "Production-deploy kraever proprietaere fonts/logoer. ",
+        "Installer BFHchartsAssets via GITHUB_PAT eller saet ",
+        "branding.require_branded_assets=false hvis ubrandet UI er acceptabelt."
+      ),
+      class = c("bisp_config_error", "error", "condition"),
+      details = list(missing_pkg = "BFHchartsAssets", policy = "require_branded_assets")
+    )
+  }
+
+  invisible(TRUE)
+}
+
 #' Initialize startup performance optimizations
 #'
 #' Initialize startup cache and lazy loading systems at run_app() level.
@@ -336,10 +382,13 @@ run_app <- function(port = NULL,
   # silent broken config der foerst manifesterer sig under load.
   validate_configuration()
 
+  # Cycle A H2 reconciled (2026-05-09): branding-policy validation.
+  # Production hard-fail hvis BFHchartsAssets mangler (require_branded_assets=true).
+  validate_branding_policy()
+
   # Cycle A reconciled (Codex 2026-05-09): Inject biSPCharts AI-config i BFHllm.
   # Tidligere var initialize_bfhllm() defineret men aldrig kaldt -> BFHllm
-  # brugte ellmer-defaults (gemini-3.1-flash-lite-preview, timeout 120s) i stedet
-  # for biSPCharts config (gemini-2.5-flash-lite, timeout 10s/15s).
+  # brugte sine egne defaults i stedet for biSPCharts config.
   # Wrap i tryCatch saa missing BFHllm ej crasher app (graceful degradation).
   tryCatch(
     {

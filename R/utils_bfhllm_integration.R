@@ -8,8 +8,14 @@
 
 #' Get AI Configuration from golem-config.yml
 #'
-#' Reads AI configuration settings from golem-config.yml.
-#' Returns default values if config section is missing.
+#' Reads AI configuration from active golem-config profile via `get_golem_config()`.
+#' Returns sensible defaults if config section is missing.
+#'
+#' Cycle A reconciled (Codex 2026-05-09): tidligere brugte denne funktion
+#' `golem::get_golem_options("ai")` som kun læser runtime-options sat ved
+#' `run_app(options = ...)`. Det betyder at YAML-profile-overrides (dev/prod)
+#' blev ignoreret. Skift til `get_golem_config("ai")` matcher
+#' `get_session_config()`-mønsteret og sikrer YAML er single source of truth.
 #'
 #' @return Named list with AI configuration:
 #'   - model: LLM model identifier
@@ -19,10 +25,17 @@
 #'
 #' @keywords internal
 get_ai_config <- function() {
-  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
+  # NB: Brug get_golem_config (lokal wrapper, læser YAML via config::get)
+  # i stedet for golem::get_golem_options (som læser runtime-options).
+  # Dette sikrer profile-specifikke overrides (dev/prod) respekteres.
+  # Silent-fail korrekt: get_golem_config kan mangle i tests; falder tilbage til defaults
   ai_config <- tryCatch(
     {
-      golem::get_golem_options("ai")
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("ai")
+      } else {
+        NULL
+      }
     },
     error = function(e) NULL # nolint: swallowed_error_linter
   )
@@ -91,8 +104,12 @@ get_session_config <- function() {
 
 #' Get RAG Configuration from golem-config.yml
 #'
-#' Reads RAG configuration settings from golem-config.yml.
-#' Returns default values if config section is missing.
+#' Reads RAG configuration from active golem-config profile via `get_golem_config()`.
+#' Returns sensible defaults if config section is missing.
+#'
+#' Cycle A reconciled (Codex 2026-05-09): samme refactor som `get_ai_config()` —
+#' skift fra `golem::get_golem_options("ai")` til `get_golem_config("ai")` for
+#' at respektere profile-specifikke YAML-overrides.
 #'
 #' @return Named list with RAG configuration:
 #'   - enabled: Whether RAG is enabled
@@ -101,10 +118,15 @@ get_session_config <- function() {
 #'
 #' @keywords internal
 get_rag_config <- function() {
-  # Silent-fail korrekt: golem-config er ikke tilgængelig i tests eller standalone-kørsel
+  # NB: Brug get_golem_config (lokal wrapper, læser YAML via config::get).
+  # Silent-fail korrekt: get_golem_config kan mangle i tests; falder tilbage til defaults
   ai_config <- tryCatch(
     {
-      golem::get_golem_options("ai")
+      if (exists("get_golem_config", mode = "function")) {
+        get_golem_config("ai")
+      } else {
+        NULL
+      }
     },
     error = function(e) NULL # nolint: swallowed_error_linter
   )

@@ -9,7 +9,7 @@ biSPCharts SHALL kalde `initialize_bfhllm(get_ai_config())` under app-startup (e
 - **GIVEN** app startes med `GOLEM_CONFIG_ACTIVE=production`
 - **WHEN** `run_app()` har gennemført startup
 - **THEN** `BFHllm::bfhllm_get_config()$timeout_seconds` returnerer `10` (prod-profile-værdi)
-- **AND** `BFHllm::bfhllm_get_config()$model` returnerer `gemini-2.5-flash-lite`
+- **AND** `BFHllm::bfhllm_get_config()$model` følger BFHllm's default (Gemini 3.1 Flash-Lite — biSPCharts override'er ej model med mindre eksplicit `model:` er sat i golem-config.yml)
 
 #### Scenario: Development-startup applier dev-overrides
 

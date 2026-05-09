@@ -46,8 +46,10 @@ test_that("get_ai_config() falder tilbage til defaults uden golem-context", {
     expect_true(!is.null(config$timeout_seconds),
       info = "skal returnere defaults, ej crash"
     )
-    expect_true(!is.null(config$model),
-      info = "model-key skal eksistere i defaults"
+    # NB (Cycle A 2026-05-09): model er bevidst NULL i defaults — biSPCharts
+    # foelger BFHllm's default. Verificer at provider-key er sat (fallback-marker).
+    expect_equal(config$provider, "gemini",
+      info = "provider-key skal eksistere i defaults som fallback-marker"
     )
   })
 })
@@ -80,15 +82,38 @@ test_that("initialize_bfhllm() applier config til BFHllm når tilgængelig", {
     # Apply config
     initialize_bfhllm(config)
 
-    # Verificer at BFHllm modtog konfigurationen
+    # Verificer at BFHllm modtog timeout (model droppes som default-override)
     bfhllm_config <- BFHllm::bfhllm_get_config()
     expect_equal(bfhllm_config$timeout_seconds, config$timeout_seconds,
       info = "BFHllm timeout skal matche biSPCharts config"
     )
-    expect_equal(bfhllm_config$model, config$model,
-      info = "BFHllm model skal matche biSPCharts config"
-    )
+    # NB (Cycle A 2026-05-09): model droppes som default-override i biSPCharts.
+    # BFHllm bruger sin egen default (Gemini 3.1 Flash-Lite). Hvis golem-config
+    # IKKE har eksplicit `model:`, forventer vi at BFHllm-default bruges.
+    if (is.null(config$model)) {
+      expect_true(!is.null(bfhllm_config$model),
+        info = "BFHllm skal bruge sin egen default-model naar biSPCharts ej override'er"
+      )
+    } else {
+      expect_equal(bfhllm_config$model, config$model,
+        info = "Eksplicit model i config skal override BFHllm-default"
+      )
+    }
   })
+})
+
+test_that("initialize_bfhllm() respekterer model-override hvis sat eksplicit", {
+  skip_if_not_installed("BFHllm")
+  custom_config <- list(
+    model = "gemini-2.0-flash",
+    timeout_seconds = 30,
+    max_response_chars = 500
+  )
+  initialize_bfhllm(custom_config)
+  bfhllm_config <- BFHllm::bfhllm_get_config()
+  expect_equal(bfhllm_config$model, "gemini-2.0-flash",
+    info = "Eksplicit model SHALL override BFHllm-default"
+  )
 })
 
 test_that("run_app() kalder initialize_bfhllm() i startup-flow", {

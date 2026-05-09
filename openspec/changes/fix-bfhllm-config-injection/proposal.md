@@ -35,10 +35,10 @@ Cycle A cross-repo wrapper-review (docs/reviews/01-cross-repo-wrappers.md) ident
 
 - **Behavioral impact:**
   - PRODUKTION: AI-timeout reduceres fra 120s (BFHllm-default) til 10s (config) — bruger får hurtigere fejl-feedback
-  - PRODUKTION: AI-model skifter fra `gemini-3.1-flash-lite-preview` til `gemini-2.5-flash-lite` (cost/quality-implikation — verificer med stakeholder)
+  - PRODUKTION + DEV: AI-model uændret (følger BFHllm's default Gemini 3.1 Flash-Lite). model-felt droppet fra biSPCharts-config 2026-05-09 — biSPCharts følger sibling-pakkens model-default automatisk
   - DEVELOPMENT: AI-timeout reduceres fra 120s til 15s
 
-- **Risk:** model-skift kan ændre AI-output-kvalitet. Anbefales: kør et før/efter sample af AI-suggestions for at validere kvalitets-paritet før prod-deploy.
+- **Risk:** Lav. Timeout-reduktion er konservativ ændring (fejl-feedback hurtigere). Model uændret.
 
 ## Related
 

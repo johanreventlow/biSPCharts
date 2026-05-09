@@ -40,11 +40,13 @@ get_ai_config <- function() {
     error = function(e) NULL # nolint: swallowed_error_linter
   )
 
-  # Default values
+  # Default values.
+  # NB (Cycle A 2026-05-09): model droppes som default — biSPCharts foelger
+  # BFHllm's default (Gemini 3.1 Flash-Lite). Hvis golem-config har eksplicit
+  # `model:`, override'es BFHllm-default.
   defaults <- list(
     enabled = TRUE,
     provider = "gemini",
-    model = "gemini-2.5-flash-lite",
     timeout_seconds = 10,
     max_response_chars = 350,
     cache_ttl_seconds = 3600
@@ -187,18 +189,28 @@ initialize_bfhllm <- function(ai_config = NULL, rag_config = NULL) {
     ai_config <- get_ai_config()
   }
 
-  # Configure BFHllm with biSPCharts settings
-  BFHllm::bfhllm_configure(
-    provider = "gemini", # biSPCharts uses Gemini
-    model = ai_config$model,
-    timeout_seconds = ai_config$timeout_seconds,
-    max_response_chars = ai_config$max_response_chars
-  )
+  # Configure BFHllm with biSPCharts settings.
+  # NB (Cycle A 2026-05-09): model droppes som default-override — biSPCharts
+  # foelger BFHllm's egen default (Gemini 3.1 Flash-Lite). Hvis bruger har
+  # sat eksplicit `model:` i golem-config.yml, override'es BFHllm's default.
+  # Pass kun ej-NULL felter for at undgaa at sende NULL-model som BFHllm
+  # tolker som "reset til default".
+  configure_args <- list(provider = "gemini")
+  if (!is.null(ai_config$model)) {
+    configure_args$model <- ai_config$model
+  }
+  if (!is.null(ai_config$timeout_seconds)) {
+    configure_args$timeout_seconds <- ai_config$timeout_seconds
+  }
+  if (!is.null(ai_config$max_response_chars)) {
+    configure_args$max_response_chars <- ai_config$max_response_chars
+  }
+  do.call(BFHllm::bfhllm_configure, configure_args)
 
   log_info("BFHllm initialized",
     .context = "AI_SETUP",
     details = list(
-      model = ai_config$model,
+      model = ai_config$model %||% "BFHllm-default",
       timeout = ai_config$timeout_seconds,
       max_chars = ai_config$max_response_chars
     )

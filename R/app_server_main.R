@@ -302,6 +302,18 @@ main_app_server <- function(input, output, session) {
     session_debugger$event("session_cleanup_started")
     log_debug("Session cleanup initiated", .context = "SESSION_LIFECYCLE")
 
+    # Cycle B M7 (Codex 2026-05-09): Final-flush FOER observer-cleanup
+    # deaktiverer state-access. Lukker "persistence contract violation"
+    # hvor production-config lovede save_session_on_exit=true men intet
+    # kald implementerede det. Tab-luk inden for 2s/1s debounce-vindue
+    # mistede tidligere sidste edits.
+    safe_operation(
+      "flush_session_save_on_exit",
+      code = flush_session_save_on_exit(session, input, app_state),
+      fallback = NULL,
+      error_type = "processing"
+    )
+
     # Stop background tasks immediately
     if (!is.null(app_state$infrastructure)) {
       app_state$infrastructure$session_active <- FALSE

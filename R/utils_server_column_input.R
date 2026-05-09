@@ -113,21 +113,10 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   # ============================================================================
   # STEP 4: EVENT EMISSION (BATCHED)
   # ============================================================================
-
-  if (exists("column_choices_changed", envir = as.environment(emit))) {
-    if (exists("schedule_batched_update", mode = "function")) {
-      schedule_batched_update(
-        update_fn = function() {
-          emit$column_choices_changed()
-        },
-        delay_ms = 50,
-        app_state = app_state,
-        batch_key = "column_choices"
-      )
-    } else {
-      emit$column_choices_changed()
-    }
-  }
+  # Cycle B M1 (Codex 2026-05-09): column_choices_changed-emit fjernet helt
+  # — det blev emit'et men aldrig observeret. Plot-update kommer via direkte
+  # input$<column>-observers + spc_inputs-debounce-cascade i mod_spc_chart.
+  # Tidligere batched-emit var dead code med 50ms timer-overhead per kald.
 
   invisible(NULL)
 }

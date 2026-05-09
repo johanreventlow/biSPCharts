@@ -74,7 +74,8 @@ create_app_state <- function() {
     # UI SYNKRONISERING (CONSOLIDATED) -------------------------------------
     ui_sync_requested = 0L, # Consolidates: ui_sync_needed + ui_update_needed + form_update_needed
     ui_sync_completed = 0L, # Remains: completion tracking
-    column_choices_changed = 0L,
+    # Cycle B M1 (Codex 2026-05-09): column_choices_changed slettet — emit'et men
+    # aldrig observeret. Verificeret med rg-grep + Codex peer-review.
     navigation_changed = 0L,
 
     # SESSION LIVSCYKLUS ---------------------------------------------------
@@ -560,10 +561,11 @@ create_emit_api <- function(app_state) {
         app_state$events$ui_sync_requested <- app_state$events$ui_sync_requested + 1L
       })
     },
+    # Cycle B M1 (Codex 2026-05-09): column_choices_changed-emit slettet —
+    # emit'et men aldrig observeret. Bevarer NULL-stub for backward-compat
+    # i kald-sites; fjern alle kald i fremtidig PR.
     column_choices_changed = function() {
-      shiny::isolate({
-        app_state$events$column_choices_changed <- app_state$events$column_choices_changed + 1L
-      })
+      invisible(NULL)
     },
     form_reset_needed = function() {
       shiny::isolate({

@@ -4,7 +4,7 @@
 \alias{register_analysis_autogen}
 \title{Register Analysis Auto-Generation Observers}
 \usage{
-register_analysis_autogen(session, input, output, export_plot, app_state)
+register_analysis_autogen(session, input, output, pdf_export_plot, app_state)
 }
 \arguments{
 \item{session}{Shiny session object}
@@ -13,7 +13,13 @@ register_analysis_autogen(session, input, output, export_plot, app_state)
 
 \item{output}{Output object for rendering}
 
-\item{export_plot}{Reactive expression returning SPC plot result}
+\item{pdf_export_plot}{Reactive expression returning PDF-context SPC plot
+result. Codex peer-review 2026-05-08 (#EH0): tidligere modtog observeren
+\code{export_plot} (PNG-context "export_preview") selv paa PDF-mode, hvilket
+trigger en uafhaengig generateSPCPlot()-koersel for PNG-context kun for
+at hente bfh_qic_result. Skift til pdf_export_plot eliminerer dobbelt-
+generering, da PDF-preview alligevel evaluerer samme reactive (cache-hit
+paa anden eval).}
 
 \item{app_state}{Reactive values object containing column mappings}
 }

@@ -53,8 +53,11 @@ test_that("normalize_column_input handles vector with multiple elements", {
 # UNIT TESTS: handle_column_input()
 # ============================================================================
 
-test_that("handle_column_input emits event for user input", {
-  # Setup mock app_state
+test_that("handle_column_input updates state + cache for user input", {
+  # Cycle B M1 (Codex 2026-05-09): column_choices_changed-emit fjernet helt
+  # da det aldrig blev observeret. Test verificerer nu kun state + cache update;
+  # plot-update kommer via direkte input$<column>-observer + spc_inputs-cascade,
+  # ej via dette emit.
   app_state <- new.env()
   app_state$ui <- list(
     performance_metrics = reactiveValues(tokens_consumed = 0L)
@@ -62,14 +65,8 @@ test_that("handle_column_input emits event for user input", {
   app_state$columns <- reactiveValues(mappings = reactiveValues())
   app_state$ui_cache <- list()
 
-  # NO programmatic token (simulates user input)
-
-  # Mock emit API
+  # Mock emit API (handler skal ej fejle uden column_choices_changed-key)
   emit <- new.env()
-  emit_called <- FALSE
-  emit$column_choices_changed <- function() {
-    emit_called <<- TRUE
-  }
 
   # Call handler
   isolate(handle_column_input("x_column", "dato", app_state, emit))
@@ -79,17 +76,6 @@ test_that("handle_column_input emits event for user input", {
 
   # Verify cache updated
   expect_identical(app_state$ui_cache$x_column_input, "dato")
-
-  # Verify event emission for user input.
-  # NOTE: handle_column_input bruger schedule_batched_update() når den
-  # er tilgængelig — batched emission sker 50ms senere, ikke synkront.
-  # Derfor testes kun at emit-callbacket er stillet i kø (ikke kaldt).
-  # Direct emission verificeres i integration tests.
-  skip_if(
-    exists("schedule_batched_update", mode = "function"),
-    "Event emission er batched via schedule_batched_update (50ms delay) — kan ikke verificeres synkront i unit test"
-  )
-  expect_true(emit_called)
 })
 
 test_that("handle_column_input normalizes input value", {

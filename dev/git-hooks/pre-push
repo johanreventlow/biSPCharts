@@ -131,14 +131,54 @@ echo "✓ Swallowed error check OK"
 # Hvis DESCRIPTION:Imports/Remotes/Depends ændret siden remote uden tilsvarende
 # manifest.json-update -> Connect Cloud deploy fejler.
 # Bypass: SKIP_MANIFEST_SYNC=1 git push
+#
+# Cycle F H1 (2026-05-09): Tidligere brugte vi grep mod stanza-overskrifter
+# (`^[+-]\s*(Imports|Remotes|Depends):`) som KUN fangede ændringer på selve
+# header-linjen. Tilføjelse af nyt pakke-navn under eksisterende stanza
+# matched IKKE -> primær use-case (ny dependency uden manifest-regen) gik
+# silent. Nu: DCF-parse + normalisér pakke-listen, sammenlign REMOTE_BASE
+# vs HEAD. Robust mod whitespace, kommentar-tilføjelser, rækkefølge.
 echo ""
 echo "[1c/4] Validerer rsconnect manifest.json sync mod DESCRIPTION ..."
 if [ "${SKIP_MANIFEST_SYNC:-0}" != "1" ]; then
   REMOTE_BASE=$(git rev-parse "@{u}" 2>/dev/null || git rev-parse "origin/develop" 2>/dev/null || echo "")
   if [ -n "$REMOTE_BASE" ]; then
-    DESC_DIFF=$(git diff "$REMOTE_BASE"...HEAD -- DESCRIPTION | grep -E '^[+-]\s*(Imports|Remotes|Depends):' || true)
+    TMP_BASE_DESC=$(mktemp -t bispc_desc_base.XXXXXX)
+    TMP_HEAD_DESC=$(mktemp -t bispc_desc_head.XXXXXX)
+    # shellcheck disable=SC2064
+    trap "rm -f '$TMP_BASE_DESC' '$TMP_HEAD_DESC'" EXIT INT TERM
+
+    git show "$REMOTE_BASE:DESCRIPTION" > "$TMP_BASE_DESC" 2>/dev/null || true
+    cp DESCRIPTION "$TMP_HEAD_DESC" 2>/dev/null || true
+
+    DESC_PKG_CHANGED=$(Rscript - "$TMP_BASE_DESC" "$TMP_HEAD_DESC" <<'REOF' 2>/dev/null
+args <- commandArgs(TRUE)
+normalize_pkg_fields <- function(path) {
+  if (!file.exists(path) || file.info(path)$size == 0) return("")
+  d <- tryCatch(
+    read.dcf(path, fields = c("Imports", "Remotes", "Depends")),
+    error = function(e) NULL
+  )
+  if (is.null(d) || nrow(d) == 0) return("")
+  vals <- as.character(d[1, ])
+  vals[is.na(vals)] <- ""
+  norm <- vapply(vals, function(v) {
+    if (!nzchar(v)) return("")
+    items <- trimws(strsplit(v, ",")[[1]])
+    items <- items[nzchar(items)]
+    paste(sort(items), collapse = ",")
+  }, character(1))
+  paste(norm, collapse = "||")
+}
+base_norm <- normalize_pkg_fields(args[1])
+head_norm <- normalize_pkg_fields(args[2])
+cat(if (identical(base_norm, head_norm)) "0" else "1")
+REOF
+)
+
     MANIFEST_DIFF=$(git diff "$REMOTE_BASE"...HEAD -- manifest.json || true)
-    if [ -n "$DESC_DIFF" ] && [ -z "$MANIFEST_DIFF" ]; then
+
+    if [ "$DESC_PKG_CHANGED" = "1" ] && [ -z "$MANIFEST_DIFF" ]; then
       echo ""
       echo "✗ DESCRIPTION:Imports/Remotes/Depends ændret men manifest.json uændret"
       echo "  Connect Cloud-deploy vil fejle (recurrence=4 i fix-patterns.jsonl)"

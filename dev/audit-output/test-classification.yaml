@@ -1439,6 +1439,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-09'
   rationale: Cycle A H2 reconciled (2026-05-09) regression-tests for branding-policy boot-validation.
+- file: test-bfhllm-config-injection.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle A reconciled (Codex 2026-05-09) regression-tests for #H1+#H1-NEW BFHllm config-injection.
 - file: test-utils-server-paste-data.R
   audit_category: post-audit
   type: unit

@@ -386,6 +386,22 @@ run_app <- function(port = NULL,
   # Production hard-fail hvis BFHchartsAssets mangler (require_branded_assets=true).
   validate_branding_policy()
 
+  # Cycle A reconciled (Codex 2026-05-09): Inject biSPCharts AI-config i BFHllm.
+  # Tidligere var initialize_bfhllm() defineret men aldrig kaldt -> BFHllm
+  # brugte sine egne defaults i stedet for biSPCharts config.
+  # Wrap i tryCatch saa missing BFHllm ej crasher app (graceful degradation).
+  tryCatch(
+    {
+      initialize_bfhllm(get_ai_config())
+    },
+    error = function(e) {
+      log_warn(
+        sprintf("BFHllm config injection fejlede: %s", e$message),
+        .context = "AI_SETUP"
+      )
+    }
+  )
+
   # Merge passed options directly (no feature flags needed - pure BFHcharts)
   merged_options <- options
 

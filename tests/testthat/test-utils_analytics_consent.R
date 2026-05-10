@@ -41,3 +41,43 @@ test_that("format_analytics_metadata() haandterer NULL input", {
   result <- format_analytics_metadata(NULL)
   expect_null(result)
 })
+
+# is_persistence_allowed() — gate for localStorage app-state-persistens
+# Binær consent-model: persistens kræver eksplicit samtykke (consent = TRUE).
+# Anvendes af saveDataLocally / loadDataLocally / autoSaveAppState.
+
+test_that("is_persistence_allowed() returnerer FALSE naar consent mangler", {
+  fake_input <- list(analytics_consent = NULL)
+  expect_false(is_persistence_allowed(fake_input))
+})
+
+test_that("is_persistence_allowed() returnerer FALSE naar consent eksplicit afvist", {
+  fake_input <- list(analytics_consent = FALSE)
+  expect_false(is_persistence_allowed(fake_input))
+})
+
+test_that("is_persistence_allowed() returnerer TRUE naar consent givet", {
+  fake_input <- list(analytics_consent = TRUE)
+  expect_true(is_persistence_allowed(fake_input))
+})
+
+test_that("is_persistence_allowed() respekterer analytics-feature-flag", {
+  fake_input <- list(analytics_consent = TRUE)
+  withr::with_options(
+    list(spc.analytics.enabled = FALSE),
+    # Persistens er IKKE bundet til shinylogs-flaget — det er en separat
+    # GDPR-kategori. Selv hvis analytics er disabled på system-niveau,
+    # skal user-consent stadig respekteres for persistens.
+    expect_true(is_persistence_allowed(fake_input))
+  )
+})
+
+test_that("is_persistence_allowed() haandterer manglende input-felt", {
+  fake_input <- list()
+  expect_false(is_persistence_allowed(fake_input))
+})
+
+test_that("is_persistence_allowed() er robust ved NA-værdi", {
+  fake_input <- list(analytics_consent = NA)
+  expect_false(is_persistence_allowed(fake_input))
+})

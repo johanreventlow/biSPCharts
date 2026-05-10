@@ -19,6 +19,40 @@ should_track_analytics <- function(consent = NULL) {
   TRUE
 }
 
+#' Tjek om localStorage-app-state-persistens er tilladt
+#'
+#' GDPR-binær consent-model: brugerens valg i cookie-modal gater alle
+#' ikke-strengt-nødvendige features, inklusive auto-save af data + indstillinger.
+#' Persistens er IKKE bundet til analytics-feature-flag (forskellig
+#' GDPR-kategori — funktionel vs. statistik), kun til bruger-samtykket.
+#'
+#' Anvendes af saveDataLocally / loadDataLocally / autoSaveAppState
+#' som forhåndskontrol før localStorage-roundtrip startes.
+#'
+#' @param input Shiny input-objekt (typisk session$input). Forventes at
+#'   indeholde `analytics_consent` boolean sat af cookie-consent.js
+#'   via Shiny.setInputValue.
+#' @return Logical — TRUE hvis bruger har givet consent, ellers FALSE.
+#'   Robust over for NULL/NA/manglende felt — defaulter til FALSE
+#'   (fail-closed, GDPR-konservativt).
+#' @export
+is_persistence_allowed <- function(input) {
+  # Læs reactive input value via isolate() — vi vil ikke skabe reactive
+  # afhængighed på consent-flaget i kald-stedet (typisk en observer der
+  # allerede har en anden trigger som debounced data-change).
+  consent <- tryCatch(
+    shiny::isolate(input$analytics_consent),
+    error = function(e) NULL
+  )
+  if (is.null(consent) || length(consent) == 0L) {
+    return(FALSE)
+  }
+  if (anyNA(consent)) {
+    return(FALSE)
+  }
+  isTRUE(consent[[1]])
+}
+
 #' Formatér client metadata fra JavaScript
 #'
 #' Konverterer raa metadata fra JS til struktureret R-format.

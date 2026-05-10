@@ -1495,6 +1495,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-09'
   rationale: Cycle B M7 (Codex 2026-05-09) regression-test for save_session_on_exit final-flush.
+- file: test-ai-feature-flag-enforcement.R
+  audit_category: post-audit
+  type: policy-guard
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-09'
+  rationale: Cycle G H_NEW (Codex 2026-05-09) regression-tests for explicit ai.enabled-flag enforcement i alle AI-egress-paths. Verificerer get_ai_config/get_rag_config fail-closed defaults, button-state hide, handler-guard, production-config kill-switch.
 - file: test-classify-tests-merge.R
   audit_category: post-audit
   type: unit

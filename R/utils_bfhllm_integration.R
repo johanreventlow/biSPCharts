@@ -42,10 +42,12 @@ get_ai_config <- function() {
 
   # Default values.
   # NB (Cycle A 2026-05-09): model droppes som default — biSPCharts foelger
-  # BFHllm's default (Gemini 3.1 Flash-Lite). Hvis golem-config har eksplicit
-  # `model:`, override'es BFHllm-default.
+  # BFHllm's default (Gemini 3.1 Flash-Lite).
+  # NB (Cycle G H_NEW 2026-05-09): enabled defaults til FALSE (fail-closed).
+  # YAML-profile-overrides aktiverer eksplicit (fx development: enabled=true).
+  # Production har enabled=false (AI bevidst hidden foreloebig).
   defaults <- list(
-    enabled = TRUE,
+    enabled = FALSE,
     provider = "gemini",
     timeout_seconds = 10,
     max_response_chars = 350,
@@ -134,8 +136,10 @@ get_rag_config <- function() {
   )
 
   # Default values
+  # NB (Cycle G H_NEW 2026-05-09): enabled defaults til FALSE (fail-closed).
+  # RAG aktiveres kun naar AI er aktiveret (rag uden ai er meningsloest).
   defaults <- list(
-    enabled = TRUE,
+    enabled = FALSE,
     n_results = 3,
     method = "hybrid"
   )

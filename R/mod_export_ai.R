@@ -35,8 +35,21 @@ register_ai_button_state <- function(session, input, output, app_state) {
     app_state$session$bfhllm_available
   }
 
-  # Manage AI button state based on data and API key availability
+  # Manage AI button state based on enabled-flag, data, and API key availability
   shiny::observe({
+    # Cycle G H_NEW (2026-05-09): Check eksplicit ai.enabled flag FOERST.
+    # Hvis disabled i golem-config: skip alle subsequent checks + behold
+    # button hidden. Forhindrer fragile reliance paa CSS-display:none alene.
+    ai_enabled <- isTRUE(get_ai_config()$enabled)
+    if (!ai_enabled) {
+      shinyjs::hide("ai_generate_suggestion")
+      log_debug(
+        .context = "EXPORT_MODULE",
+        message = "AI button hidden: ai.enabled=false in golem-config"
+      )
+      return(invisible(NULL))
+    }
+
     # Check prerequisites
     has_data <- !is.null(app_state$data$current_data) &&
       nrow(app_state$data$current_data) > 0
@@ -47,10 +60,11 @@ register_ai_button_state <- function(session, input, output, app_state) {
     # Validate BFHllm API setup (cached per session)
     api_ready <- get_bfhllm_available()
 
-    # Button enabled only when both prerequisites met
+    # Button enabled only when all prerequisites met
     can_use_ai <- has_spc_data && api_ready
 
-    # Toggle button state
+    # Show + toggle button state
+    shinyjs::show("ai_generate_suggestion")
     shinyjs::toggleState("ai_generate_suggestion", can_use_ai)
 
     # Update tooltip based on state
@@ -145,6 +159,13 @@ register_ai_suggestion_handler <- function(session, input, output, app_state) {
   # ---- Klik-handler -----------------------------------------------------------
   shiny::observeEvent(input$ai_generate_suggestion,
     {
+      # Cycle G H_NEW (2026-05-09): Defense-in-depth \u2014 afvis AI-kald hvis
+      # ai.enabled=false. Selv hvis nogen omgaar UI-hide (devtools-edit /
+      # custom JS), blokerer denne req() server-side egress.
+      shiny::req(isTRUE(get_ai_config()$enabled),
+        cancelOutput = TRUE
+      )
+
       # Valider foruds\u00e6tninger
       shiny::req(
         app_state$data$current_data,

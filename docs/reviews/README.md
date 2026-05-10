@@ -116,11 +116,34 @@ Lav-finding cycle som forventet ("Stable pipeline" per CLAUDE.md). 1 MEDIUM (H1 
 
 28. **Empty cycle er valid outcome under kalibreret threat-model.** Memory-baseret threat-model + tidligere dismissed-decisions giver review-agent klar grænse for hvad der er deploy-blokerende. Skip ej-blokerende defensive-fund. Forhindrer cycle-pressure-til-at-fabrikere-findings.
 
+### Maturity audit — Production-readiness for hospital-deployment (2026-05-10)
+
+**Final verdict (post-bruger-recalibrering):** **✅ PRODUCTION-READY** efter MUST-FIX 2 addresseret i denne PR. Output: [09-maturity-audit.md](09-maturity-audit.md).
+
+**Trinvis verdict-evolution:**
+1. Initial Claude draft: PRODUCTION-READY (prematur — peer-review-laundering)
+2. Post-Codex reconcile: IKKE PRODUCTION-READY (2 hard blockers identificeret)
+3. Post-bruger-recalibrering: PRODUCTION-READY (MUST-FIX 1 dropped — Connect Cloud-scaling abstraherer concurrent-handling; MUST-FIX 2 addresseret i denne PR)
+
+**MUST-FIX 1 (DROPPED):** Concurrent-session load-test — bruger argumenterede korrekt at Connect Cloud-abonnement abstraherer scaling. App'ens job = god per-session resource-bound (ALLEREDE verified i cycles A-H). Codex's anbefaling teknisk korrekt observation men praktisk irrelevant for Connect-deployment.
+
+**MUST-FIX 2 (ADDRESSED):** manifest.json forurenet med 6 .DS_Store-entries fra inst/ — fixed via DS_Store-cleanup, `.Rbuildignore`-pattern udvidet til nested, manifest regenereret fra clean state, denylist-validator tilføjet i `dev/validate_connect_manifest.R`.
+
+**Læringer:**
+
+29. **Maturity-reviews der bruger ord som 'PRODUCTION-READY' KRÆVER eksplicit verified-empirical-evidence per pillar.** Capacity-readiness UDEN concurrent-test = peer-review-laundering når target ≥50 users. Single-session metrics (startup-time) ekstrapolerer IKKE til multi-session capacity. Skill (`/dual-review-cycle`) virkede som designet — Codex fanget exactly det den var designet til.
+
+30. **Production-readiness-verdicts skal kalibreres for deploy-target-arkitektur.** Connect Cloud abstraherer concerns (concurrent-handling, process-pooling, load-balancing) som ville være kritiske for self-hosted Shiny-server. Codex (uden Connect-deploy-context) overdrev capacity-risiko. Bruger-recalibrering essentiel for korrekt verdict.
+
+31. **Manifest-pollution gates skal være explicit denylist, ej kun ref-validation.** Pre-existing validator tjekkede kun GitHub-package-refs vs DESCRIPTION. Det fanget IKKE Finder-artefakter (.DS_Store), local config (.claude/), runtime logs, eller R CMD check output. Denylist-validator i `validate_connect_manifest.R` lukker dette gap.
+
 ---
 
-## Program-status: KOMPLET
+## Program-status: KOMPLET (review-cycles A-H + maturity-audit)
 
-Alle 8 cycles (A, B, C, D, E, F, G, H) gennemført 2026-05-09 til 2026-05-10. **27 PRs merged + 5 deferred findings dokumenteret** (Cycle G H0/H3/H2 til AI-roll-out, Cycle C H2 til shared-disk-flow, Cycle E EM2 perf-wart). Hver cycle dual-reviewed (Claude + Codex) med dokumenteret reconcile-pattern. 28 læringer indfanget for fremtidige reviews.
+Alle 8 cycles (A, B, C, D, E, F, G, H) gennemført 2026-05-09 til 2026-05-10. **27 PRs merged + 5 deferred findings dokumenteret** (Cycle G H0/H3/H2 til AI-roll-out, Cycle C H2 til shared-disk-flow, Cycle E EM2 perf-wart). Hver cycle dual-reviewed (Claude + Codex) med dokumenteret reconcile-pattern. **29 læringer** indfanget for fremtidige reviews.
+
+**Maturity-audit (post-program 2026-05-10):** App er IKKE production-ready uden 2 must-fix items (load-test + manifest-cleanup, ~1 uge arbejde). Pilot/conditional-ready dog. Roadmap til v1.0 dokumenteret i [09-maturity-audit.md](09-maturity-audit.md).
 
 ## Process-konstanter
 

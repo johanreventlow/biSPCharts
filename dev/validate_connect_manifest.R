@@ -85,6 +85,30 @@ main <- function() {
   checked <- character(0)
   semver_tag_pattern <- "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
 
+  # Cycle 9 (maturity-audit Codex 2026-05-10): Forbidden file-pattern denylist.
+  # release-tarball-audit forbyder allerede .DS_Store i tarball, men dette gate
+  # validerer manifest.json ej forurenes med Finder/IDE-artefakter der bryder
+  # deploy-reproducibility.
+  forbidden_patterns <- list(
+    list(pattern = "\\.DS_Store$", reason = "macOS Finder-artefakt"),
+    list(pattern = "^\\.claude/", reason = "Claude-config (lokal-only)"),
+    list(pattern = "^logs/", reason = "Runtime logs (rotation handled by Connect)"),
+    list(pattern = "^\\.\\.Rcheck/", reason = "R CMD check output (build-artefakt)"),
+    list(pattern = "\\.backup$", reason = "Backup-fil (lokal-only)")
+  )
+
+  manifest_files <- if (is.null(manifest$files)) character(0) else names(manifest$files)
+  for (pattern_def in forbidden_patterns) {
+    matches <- grep(pattern_def$pattern, manifest_files, value = TRUE, perl = TRUE)
+    if (length(matches) > 0) {
+      failures <- c(failures, sprintf(
+        "Forbidden file(s) i manifest (%s): %s",
+        pattern_def$reason,
+        paste(matches, collapse = ", ")
+      ))
+    }
+  }
+
   for (i in seq_len(nrow(remotes))) {
     remote <- remotes[i, ]
     pkg_desc <- manifest_package(manifest, remote$package)

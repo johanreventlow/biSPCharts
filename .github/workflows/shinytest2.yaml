@@ -23,6 +23,7 @@ jobs:
       PKG_SYSREQS: "FALSE"
       CI_SKIP_SHINYTEST2: "false"
       RUN_SHINYTEST2: "1"
+      NOT_CRAN: "true"
       GOOGLE_API_KEY: ""
       GEMINI_API_KEY: ""
 
@@ -63,12 +64,12 @@ jobs:
         run: R CMD INSTALL .
         shell: bash
 
-      - name: Run shinytest2 visual tests
+      - name: Run shinytest2 and E2E workflow tests
         id: shinytest2
         run: |
           testthat::test_dir(
             "tests/testthat",
-            filter = "shinytest2|bfh-module-integration",
+            filter = "shinytest2|bfh-module-integration|e2e-workflows",
             reporter = "summary",
             stop_on_failure = TRUE
           )

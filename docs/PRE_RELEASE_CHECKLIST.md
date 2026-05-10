@@ -4,12 +4,34 @@ Køres før hvert release-tag (`vX.Y.Z`) — alle punkter SKAL bekræftes.
 
 ## 1. Kode og tests
 
+```bash
+# Unit tests
+Rscript -e "devtools::test()"
+
+# Tarball build + check
+R CMD build . --no-manual
+R CMD check biSPCharts_*.tar.gz --no-manual --as-cran
+
+# Tarball-audit (ingen skjulte filer i tarball)
+tar -tzf biSPCharts_*.tar.gz | grep -E '(\.claude|\.worktrees|\.DS_Store|\.Rcheck|Rplots\.pdf|\.backup)'
+
+# Connect manifest-validering
+Rscript dev/validate_connect_manifest.R manifest.json
+
+# Test-classification manifest-validering
+Rscript dev/classify_tests.R --validate
+
+# Skip-audit (ingen uventede TODO-skips)
+Rscript dev/audit_test_skips.R
+```
+
 - [ ] `devtools::test()` grøn (0 FAIL, 0 ERR)
-- [ ] `devtools::check()` ren — 0 ERRORs, 0 WARNINGs
-- [ ] Tarball-check: `R CMD build --no-manual . && R CMD check --as-cran --no-manual biSPCharts_*.tar.gz` — 0 WARNINGs
-- [ ] Tarball-audit: `tar -tzf biSPCharts_*.tar.gz | grep -E '(\.claude|\.worktrees|\.DS_Store|\.\.Rcheck|Rplots\.pdf|\.backup)'` — ingen output
-- [ ] Skip-inventory: `Rscript dev/audit_test_skips.R` — ingen uventede TODO-skips tilføjet
-- [ ] Manuelle smoke-tests: app starter, upload virker, chart renderes
+- [ ] `R CMD check --as-cran` — 0 ERRORs, 0 WARNINGs (NOTEs: se §6)
+- [ ] Tarball-audit returnerer ingen output
+- [ ] Connect manifest OK
+- [ ] Test-classification manifest OK
+- [ ] Skip-audit: ingen uventede TODO-skips tilføjet
+- [ ] E2E/shinytest2 workflow kørt manuelt: `gh workflow run shinytest2.yaml` — grøn
 
 ## 2. DESCRIPTION og versioning
 
@@ -64,8 +86,8 @@ Følgende NOTEs er kendte og accepterede:
 - [ ] `testthat` — grøn
 - [ ] `skip-inventory` — grøn (ingen uventede TODO-stigninger)
 - [ ] `validate-manifest` — grøn (test-classification + Connect manifest-sync)
-- [ ] `shinytest2` nightly — se seneste nightly run for visuel regression
+- [ ] `shinytest2` — kør manuelt som pre-release gate: `gh workflow run shinytest2.yaml` (nightly + on-demand; inkluderer nu e2e-workflows-filter)
 
 ---
 
-*Sidst opdateret: 2026-04-25 (harden-ci-quality-gates #315)*
+*Sidst opdateret: 2026-05-10 (production-readiness: konkrete gates + shinytest2 e2e-integration)*

@@ -58,8 +58,6 @@ collect_anhoej <- function(v) {
 # - crossings_signal = TRUE   ← korrekt
 # - anhoej_signal    = TRUE (i derive_anhoej_results, men bygget paa forkert runs_signal)
 test_that("crossing-only data triggers crossings_signal but NOT runs_signal (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed (verificerer korrekt adfaerd efter fix)")
-
   v <- c(rep(10, 5), rep(20, 5), rep(10, 5), rep(20, 5))
   data <- collect_anhoej(v)
 
@@ -94,15 +92,13 @@ test_that("crossing-only data triggers crossings_signal but NOT runs_signal (#46
 # Scenario 2: RUNS-VIOLATION (lange ensartede runs)
 # ============================================================================
 # Data: 1:15 efterfulgt af 14:1 (29 punkter)
-# - longest.run = 14 (lang, runs-violation: 14 > 8 max)
+# - longest.run = 13 (lang, runs-violation: 13 > 8 max; qicharts2-verificeret)
 # - runs.signal = TRUE
 test_that("long-run data triggers runs_signal correctly (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed")
-
   v <- c(1:15, 14:1)
   data <- collect_anhoej(v)
 
-  expect_equal(unique(data$qic$longest.run), 14)
+  expect_equal(unique(data$qic$longest.run), 13)
   expect_true(unique(data$qic$longest.run) > unique(data$qic$longest.run.max),
     info = "Skal vaere runs-violation"
   )
@@ -147,8 +143,6 @@ test_that("stable random process triggers no Anhoej signals (#468 control)", {
 # - longest.run = 10 (lang, > 7 max)
 # - n.crossings = 1  (faa, < 6 min)
 test_that("data with both violations reports both signals separately (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed")
-
   v <- c(rep(5, 10), rep(15, 10))
   data <- collect_anhoej(v)
 
@@ -178,8 +172,6 @@ test_that("data with both violations reports both signals separately (#468)", {
 # Eksisterende test test-derive-anhoej-results.R:427-448 haevder forkert at
 # 8 == 8 udloeser runs-signal. Den test skal opdateres som del af #468.
 test_that("boundary longest.run == max does NOT trigger runs_signal (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed")
-
   qic_data <- tibble::tibble(
     x = 1:10,
     y = 1:10,
@@ -208,9 +200,11 @@ test_that("boundary longest.run == max does NOT trigger runs_signal (#468)", {
 # ============================================================================
 # Med faa datapunkter kan qicharts2 ikke beregne forventede thresholds.
 # biSPCharts skal degradere gracefully (ingen falske signaler).
+#
+# Semantik: extract returnerer FALSE (ingen positiv signal), derive returnerer
+# NA (kan ikke vurderes) — begge er korrekte, men fra hver sin kontrakt.
+# NA != FALSE klinisk: NA = "utilstrækkelige data", FALSE = "stabil proces".
 test_that("NA in longest.run.max triggers no runs_signal (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed")
-
   qic_data <- tibble::tibble(
     x = 1:5,
     y = 1:5,
@@ -225,12 +219,18 @@ test_that("NA in longest.run.max triggers no runs_signal (#468)", {
   e <- extract_anhoej_metadata(qic_data)
   d <- derive_anhoej_results(qic_data)
 
-  expect_false(e$runs_signal, info = "extract: NA-threshold -> ingen signal")
-  expect_false(e$crossings_signal, info = "extract: NA-threshold -> ingen signal")
+  # extract returnerer FALSE ved NA-threshold (ingen positiv falsk-signal)
+  expect_false(e$runs_signal, info = "extract: NA-threshold -> ingen runs-signal")
+  expect_false(e$crossings_signal, info = "extract: NA-threshold -> ingen positiv crossings-signal")
 
-  expect_false(d$runs_signal, info = "derive: NA-threshold -> ingen signal")
-  expect_false(d$crossings_signal, info = "derive: NA-threshold -> ingen signal")
-  expect_false(d$anhoej_signal)
+  # derive returnerer NA (utilstrækkelige data — klinisk relevant sondring)
+  expect_false(d$runs_signal, info = "derive: NA runs-threshold -> ingen runs-signal")
+  expect_true(is.na(d$crossings_signal),
+    info = "derive: NA crossings-threshold -> NA (kan ikke vurderes, ikke FALSE)"
+  )
+  expect_true(is.na(d$anhoej_signal),
+    info = "derive: anhoej_signal = runs_signal || NA = NA"
+  )
 })
 
 # ============================================================================
@@ -240,8 +240,6 @@ test_that("NA in longest.run.max triggers no runs_signal (#468)", {
 # er fuldstaendig — `lr` kan ogsaa vaere NA. Korrekt:
 # `!is.na(lr) && !is.na(lr_max) && lr > lr_max`
 test_that("NA in longest.run itself triggers no runs_signal (#468)", {
-  skip("Bug #468 - reaktiver naar fix landed")
-
   qic_data <- tibble::tibble(
     x = 1:5,
     y = 1:5,
@@ -267,7 +265,10 @@ test_that("NA in longest.run itself triggers no runs_signal (#468)", {
 # direkte som "Runs-signal" rows. Aggregate-fix i derivation-funktioner daekker
 # IKKE per-row Section D. Fix skal beregne row-level runs/crossings separat.
 test_that("Excel Section D row-level signals separate runs vs crossings (#468)", {
-  skip("Bug #468 Section D - separat scope-item, kraever Excel-pipeline fix")
+  # SKIP-REASON: permanent - Excel Section D row-level separation er separat scope fra
+  # #468 aggregate-fix. Kræver design-beslutning om row-level runs/crossings-split
+  # i fct_spc_excel_analysis.R:404-450.
+  skip("Excel Section D: separat scope fra #468 aggregate-fix (se kommentar ovenfor)")
   # Detail-kontrakt at definere naar Section D-fix designes:
   # - "Runs-signal"-row: TRUE kun hvis longest.run > longest.run.max
   # - "Crossings-signal"-row: TRUE kun hvis n.crossings < n.crossings.min

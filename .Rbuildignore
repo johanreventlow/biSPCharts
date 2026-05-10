@@ -31,3 +31,5 @@
 ^todo$
 ^updates$
 ^tests/manual$
+^tests/testthat/logs$
+^tests/testthat/Rplots\.pdf$

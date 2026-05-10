@@ -22,7 +22,7 @@
 ^\.Renviron\.example$
 ^app\.R$
 ^manifest\.json$
-^\.DS_Store$
+\.DS_Store$
 ^\.\.Rcheck$
 ^Rplots\.pdf$
 \.backup$

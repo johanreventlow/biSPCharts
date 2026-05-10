@@ -200,6 +200,10 @@ test_that("boundary longest.run == max does NOT trigger runs_signal (#468)", {
 # ============================================================================
 # Med faa datapunkter kan qicharts2 ikke beregne forventede thresholds.
 # biSPCharts skal degradere gracefully (ingen falske signaler).
+#
+# Semantik: extract returnerer FALSE (ingen positiv signal), derive returnerer
+# NA (kan ikke vurderes) — begge er korrekte, men fra hver sin kontrakt.
+# NA != FALSE klinisk: NA = "utilstrækkelige data", FALSE = "stabil proces".
 test_that("NA in longest.run.max triggers no runs_signal (#468)", {
   qic_data <- tibble::tibble(
     x = 1:5,
@@ -215,12 +219,18 @@ test_that("NA in longest.run.max triggers no runs_signal (#468)", {
   e <- extract_anhoej_metadata(qic_data)
   d <- derive_anhoej_results(qic_data)
 
-  expect_false(e$runs_signal, info = "extract: NA-threshold -> ingen signal")
-  expect_false(e$crossings_signal, info = "extract: NA-threshold -> ingen signal")
+  # extract returnerer FALSE ved NA-threshold (ingen positiv falsk-signal)
+  expect_false(e$runs_signal, info = "extract: NA-threshold -> ingen runs-signal")
+  expect_false(e$crossings_signal, info = "extract: NA-threshold -> ingen positiv crossings-signal")
 
-  expect_false(d$runs_signal, info = "derive: NA-threshold -> ingen signal")
-  expect_false(d$crossings_signal, info = "derive: NA-threshold -> ingen signal")
-  expect_false(d$anhoej_signal)
+  # derive returnerer NA (utilstrækkelige data — klinisk relevant sondring)
+  expect_false(d$runs_signal, info = "derive: NA runs-threshold -> ingen runs-signal")
+  expect_true(is.na(d$crossings_signal),
+    info = "derive: NA crossings-threshold -> NA (kan ikke vurderes, ikke FALSE)"
+  )
+  expect_true(is.na(d$anhoej_signal),
+    info = "derive: anhoej_signal = runs_signal || NA = NA"
+  )
 })
 
 # ============================================================================

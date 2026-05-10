@@ -41,18 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemotePkgRef": "johanreventlow/BFHcharts",
-        "RemoteRef": "HEAD",
+        "RemoteRef": "v0.17.1",
         "RemoteSha": "dba82fce483e7ffc264b450119edf6e4aa2bca6f",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "HEAD",
+        "GithubRef": "v0.17.1",
         "GithubSHA1": "dba82fce483e7ffc264b450119edf6e4aa2bca6f",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 21:32:24 UTC; johanreventlow",
+        "Packaged": "2026-05-10 21:50:27 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 21:32:25 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 21:50:28 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -82,10 +81,10 @@
         "GithubRef": "v0.1.0",
         "GithubSHA1": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 11:23:50 UTC; johanreventlow",
+        "Packaged": "2026-05-10 21:50:48 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 11:23:51 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 21:50:49 UTC; unix"
       }
     },
     "BFHllm": {
@@ -111,18 +110,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHllm",
         "RemoteUsername": "johanreventlow",
-        "RemotePkgRef": "johanreventlow/BFHllm",
-        "RemoteRef": "HEAD",
+        "RemoteRef": "v0.2.0",
         "RemoteSha": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "GithubRepo": "BFHllm",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "HEAD",
+        "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 10:33:45 UTC; johanreventlow",
+        "Packaged": "2026-05-10 21:50:43 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 10:33:46 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 21:50:43 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -147,18 +145,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHtheme",
         "RemoteUsername": "johanreventlow",
-        "RemotePkgRef": "johanreventlow/BFHtheme",
-        "RemoteRef": "HEAD",
+        "RemoteRef": "v0.5.0",
         "RemoteSha": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "GithubRepo": "BFHtheme",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "HEAD",
+        "GithubRef": "v0.5.0",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-04-26 20:38:05 UTC; johanreventlow",
+        "Packaged": "2026-05-10 21:50:36 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-04-26 20:38:06 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 21:50:36 UTC; unix"
       }
     },
     "BH": {
@@ -4805,7 +4802,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "58a90270f4332bb8cd0748918b6b9697"
+      "checksum": "ca4035d7070c54291076e71d65bc125c"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "a026dd823c74ace114c7e892922b683c"
@@ -4926,9 +4923,6 @@
     },
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
-    },
-    "manifest.json": {
-      "checksum": "555ccf2bdb2caeefd0d310552b442e55"
     },
     "NAMESPACE": {
       "checksum": "439e70a1c8604f2ab78314d57d54868a"

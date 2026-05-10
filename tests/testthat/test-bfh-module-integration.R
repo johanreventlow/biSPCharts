@@ -1,5 +1,11 @@
-# Shinytest2 snapshot tests for BFHchart module integration
-# Tests visual output of all supported chart types with BFHchart backend
+# Shinytest2 integration tests for BFHchart-modulet.
+#
+# Tests at appen renderer SPC-charts efter et komplet upload + chart-config
+# user-flow. Visuelle screenshot-snapshots er BEVIDST udeladt: de kræver
+# CI-genereret baseline (Linux fonts ≠ Mac fonts), markeres som "first-time"
+# failure ved fresh kørsel, og er per CLAUDE.md "miljøfølsomme — opt-in".
+# I stedet asserter testene state-output (plot_ready, anhoej_results,
+# spc_plot_actual non-NULL) som er deterministiske på tværs af miljøer.
 
 library(testthat)
 
@@ -20,13 +26,12 @@ skip_bfh_shinytest2 <- function() {
 bfh_plot_output <- "visualization-spc_plot_actual"
 bfh_plot_ready_output <- "visualization-plot_ready"
 bfh_anhoej_output <- "visualization-anhoej_results"
-bfh_plot_selector <- paste0("#", bfh_plot_output)
 
 is_shiny_true <- function(value) {
   isTRUE(value) || identical(value, "true") || identical(value, "TRUE")
 }
 
-wait_for_bfh_plot_ready <- function(app, timeout = 15000) {
+wait_for_bfh_plot_ready <- function(app, timeout = 20000) {
   deadline <- Sys.time() + timeout / 1000
   repeat {
     app$wait_for_idle(timeout = 1000)
@@ -47,18 +52,15 @@ wait_for_bfh_plot_ready <- function(app, timeout = 15000) {
 expect_bfh_plot_ready <- function(app) {
   ready <- wait_for_bfh_plot_ready(app)
   if (!ready) {
-    stop(
-      paste0(
-        bfh_plot_ready_output,
-        " blev ikke TRUE før BFH shinytest2-screenshot"
-      ),
-      call. = FALSE
-    )
+    fail(paste0(
+      bfh_plot_ready_output,
+      " blev ikke TRUE inden timeout — BFHchart-modulet renderede ikke chart"
+    ))
   }
   expect_true(ready)
 }
 
-# Test fixtures helper
+# Test fixture: byg test-CSV med kolonner appen genkender via auto-detekt.
 create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
   set.seed(seed)
 
@@ -67,7 +69,6 @@ create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
     Vaerdi = rnorm(n_rows, mean = 100, sd = 15)
   )
 
-  # Add denominator for ratio charts
   if (chart_type %in% c("p", "c", "u")) {
     base_data$Naevner <- sample(50:200, n_rows, replace = TRUE)
   }
@@ -75,7 +76,6 @@ create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
   base_data
 }
 
-# Helper to get app driver
 get_app_driver <- function(name) {
   shinytest2::AppDriver$new(
     app_dir = test_path("../.."),
@@ -86,61 +86,60 @@ get_app_driver <- function(name) {
   )
 }
 
-# Helper to upload CSV via current upload input id
+# Upload CSV via det skjulte direct_file_upload-fileInput.
+# wizard_gates.R navigerer automatisk til "analyser"-tab når data_updated
+# fyrer, så vi behøver ikke selv kalde nav_select. load_paste_data-knappen
+# er IRRELEVANT her — den hører til paste-tekst-flowet.
 upload_test_data <- function(app, csv_path) {
+  app$wait_for_idle(timeout = 5000)
   app$upload_file(direct_file_upload = csv_path)
-  app$wait_for_idle(timeout = 5000)
-  app$click("load_paste_data")
-  app$wait_for_idle(timeout = 5000)
+  app$wait_for_idle(timeout = 8000)
+}
+
+# Åbn kolonne-mapping-modal og sæt kolonne-inputs. Inputs lever KUN i
+# DOM mens modal er åben (show_column_mapping_modal i utils_server_column_management.R),
+# men reaktive værdier persisterer på server-side efter modal lukkes.
+# Vi lader modal stå åben — testene asserter server-state via get_value(),
+# ej screenshots, så modal-overlay er irrelevant.
+configure_columns <- function(app, ...) {
+  inputs <- list(...)
+  app$click("open_column_mapping_modal")
+  app$wait_for_idle(timeout = 3000)
+  do.call(app$set_inputs, inputs)
+  app$wait_for_idle(timeout = 3000)
 }
 
 # ==============================================================================
-# Test: Run Chart with BFHchart Backend
+# Test: Run Chart
 # ==============================================================================
 
-test_that("BFHchart module: Run chart renders correctly with BFHchart backend", {
+test_that("BFHchart module: Run chart renderer korrekt", {
   skip_bfh_shinytest2()
 
-  # Create test data
   test_data <- create_test_csv("run")
   temp_csv <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
-  # Launch app
   app <- get_app_driver("bfh-run-chart")
-
-  # Upload test data
   upload_test_data(app, temp_csv)
 
-  # Configure chart
-  app$set_inputs(
-    chart_type = "Run",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app, x_column = "Dato", y_column = "Vaerdi")
+  app$set_inputs(chart_type = "run")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  # Snapshot visual output
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-run-chart",
-    threshold = 0.1 # Allow 10% pixel diff for anti-aliasing
-  )
-
-  # Verify plot rendered (check values)
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_anhoej_output)))
 
-  # Cleanup
   app$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: I Chart with BFHchart Backend
+# Test: I Chart
 # ==============================================================================
 
-test_that("BFHchart module: I chart renders correctly", {
+test_that("BFHchart module: I chart renderer korrekt", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("i")
@@ -148,34 +147,25 @@ test_that("BFHchart module: I chart renders correctly", {
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-i-chart")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "I",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app, x_column = "Dato", y_column = "Vaerdi")
+  app$set_inputs(chart_type = "i")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-i-chart",
-    threshold = 0.1
-  )
-
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_anhoej_output)))
 
   app$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: P Chart with BFHchart Backend (ratio chart with denominator)
+# Test: P Chart (ratio chart med nævner)
 # ==============================================================================
 
-test_that("BFHchart module: P chart renders correctly with denominator", {
+test_that("BFHchart module: P chart renderer korrekt med nævner", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("p")
@@ -183,35 +173,30 @@ test_that("BFHchart module: P chart renders correctly with denominator", {
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-p-chart")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "P",
+  configure_columns(
+    app,
     x_column = "Dato",
     y_column = "Vaerdi",
     n_column = "Naevner"
   )
+  app$set_inputs(chart_type = "p", y_axis_unit = "percent")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-p-chart",
-    threshold = 0.1
-  )
-
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_anhoej_output)))
 
   app$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: C Chart with BFHchart Backend (count data)
+# Test: C Chart (count data)
 # ==============================================================================
 
-test_that("BFHchart module: C chart renders correctly with count data", {
+test_that("BFHchart module: C chart renderer korrekt med tællingsdata", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("c")
@@ -219,34 +204,25 @@ test_that("BFHchart module: C chart renders correctly with count data", {
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-c-chart")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "C",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app, x_column = "Dato", y_column = "Vaerdi")
+  app$set_inputs(chart_type = "c")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-c-chart",
-    threshold = 0.1
-  )
-
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_anhoej_output)))
 
   app$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: U Chart with BFHchart Backend (rate data with variable denominator)
+# Test: U Chart (rate data med variabel nævner)
 # ==============================================================================
 
-test_that("BFHchart module: U chart renders correctly with variable denominator", {
+test_that("BFHchart module: U chart renderer korrekt med variabel nævner", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("u")
@@ -254,23 +230,50 @@ test_that("BFHchart module: U chart renders correctly with variable denominator"
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-u-chart")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "U",
+  configure_columns(
+    app,
     x_column = "Dato",
     y_column = "Vaerdi",
     n_column = "Naevner"
   )
+  app$set_inputs(chart_type = "u", y_axis_unit = "rate")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-u-chart",
-    threshold = 0.1
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
+  expect_true(!is.null(app$get_value(output = bfh_anhoej_output)))
+
+  app$stop()
+  unlink(temp_csv)
+})
+
+# ==============================================================================
+# Test: Freeze period
+# ==============================================================================
+
+test_that("BFHchart module: Freeze period renderer korrekt", {
+  skip_bfh_shinytest2()
+
+  test_data <- create_test_csv("run")
+  test_data$Fryz <- c(rep(0, 30), rep(1, 20))
+
+  temp_csv <- tempfile(fileext = ".csv")
+  write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
+
+  app <- get_app_driver("bfh-freeze-test")
+  upload_test_data(app, temp_csv)
+
+  configure_columns(
+    app,
+    x_column = "Dato",
+    y_column = "Vaerdi",
+    frys_column = "Fryz"
   )
+  app$set_inputs(chart_type = "run")
+  app$wait_for_idle(timeout = 5000)
+  expect_bfh_plot_ready(app)
 
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
@@ -279,46 +282,10 @@ test_that("BFHchart module: U chart renders correctly with variable denominator"
 })
 
 # ==============================================================================
-# Test: Freeze Period with BFHchart Backend
+# Test: Kommentarer
 # ==============================================================================
 
-test_that("BFHchart module: Freeze period renders correctly", {
-  skip_bfh_shinytest2()
-
-  test_data <- create_test_csv("run")
-  test_data$Fryz <- c(rep(0, 30), rep(1, 20)) # Last 20 points frozen
-
-  temp_csv <- tempfile(fileext = ".csv")
-  write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
-
-  app <- get_app_driver("bfh-freeze-test")
-
-  upload_test_data(app, temp_csv)
-
-  app$set_inputs(
-    chart_type = "Run",
-    x_column = "Dato",
-    y_column = "Vaerdi",
-    frys_column = "Fryz"
-  )
-  app$wait_for_idle(timeout = 5000)
-  expect_bfh_plot_ready(app)
-
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-freeze-period",
-    threshold = 0.1
-  )
-
-  app$stop()
-  unlink(temp_csv)
-})
-
-# ==============================================================================
-# Test: Comments/Notes with BFHchart Backend
-# ==============================================================================
-
-test_that("BFHchart module: Comments render correctly with BFHchart", {
+test_that("BFHchart module: Kommentarer renderer korrekt", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
@@ -331,86 +298,68 @@ test_that("BFHchart module: Comments render correctly with BFHchart", {
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-comments-test")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "Run",
+  configure_columns(
+    app,
     x_column = "Dato",
     y_column = "Vaerdi",
     kommentar_column = "Kommentar"
   )
+  app$set_inputs(chart_type = "run")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  app$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-comments",
-    threshold = 0.1
-  )
+  expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
 
   app$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: Visual Regression Detection - No breaking changes
+# Test: Konsistent state-output på tværs af gentagne kørsler
 # ==============================================================================
 
-test_that("BFHchart module: Visual output consistent across runs", {
+test_that("BFHchart module: Output konsistent på tværs af gentagne kørsler", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
   temp_csv <- tempfile(fileext = ".csv")
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
-  # First run
+  # Første kørsel
   app1 <- get_app_driver("bfh-regression-1")
   upload_test_data(app1, temp_csv)
-  app1$set_inputs(
-    chart_type = "Run",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app1, x_column = "Dato", y_column = "Vaerdi")
+  app1$set_inputs(chart_type = "run")
   app1$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app1)
 
-  # Capture first screenshot
-  app1$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-regression-baseline",
-    threshold = 0.1
-  )
-
+  anhoej1 <- app1$get_value(output = bfh_anhoej_output)
+  expect_true(!is.null(anhoej1))
   app1$stop()
 
-  # Second run (should match)
+  # Anden kørsel skal give identisk Anhøj-resultat (deterministisk seed)
   app2 <- get_app_driver("bfh-regression-2")
   upload_test_data(app2, temp_csv)
-  app2$set_inputs(
-    chart_type = "Run",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app2, x_column = "Dato", y_column = "Vaerdi")
+  app2$set_inputs(chart_type = "run")
   app2$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app2)
 
-  # Capture second screenshot (should match baseline)
-  app2$expect_screenshot(
-    selector = bfh_plot_selector,
-    name = "bfh-regression-check",
-    threshold = 0.1
-  )
+  anhoej2 <- app2$get_value(output = bfh_anhoej_output)
+  expect_true(!is.null(anhoej2))
+  expect_equal(anhoej1, anhoej2)
 
   app2$stop()
   unlink(temp_csv)
 })
 
 # ==============================================================================
-# Test: Module Output Structure
+# Test: Output struktur
 # ==============================================================================
 
-test_that("BFHchart module: Output structure is correct", {
+test_that("BFHchart module: Output struktur er korrekt", {
   skip_bfh_shinytest2()
 
   test_data <- create_test_csv("run")
@@ -418,22 +367,16 @@ test_that("BFHchart module: Output structure is correct", {
   write.csv(test_data, temp_csv, row.names = FALSE, quote = FALSE)
 
   app <- get_app_driver("bfh-output-structure")
-
   upload_test_data(app, temp_csv)
 
-  app$set_inputs(
-    chart_type = "Run",
-    x_column = "Dato",
-    y_column = "Vaerdi"
-  )
+  configure_columns(app, x_column = "Dato", y_column = "Vaerdi")
+  app$set_inputs(chart_type = "run")
   app$wait_for_idle(timeout = 5000)
   expect_bfh_plot_ready(app)
 
-  # Check outputs exist
   expect_true(is_shiny_true(app$get_value(output = bfh_plot_ready_output)))
   expect_true(!is.null(app$get_value(output = bfh_plot_output)))
 
-  # Check Anhøj results exist
   anhoej <- app$get_value(output = bfh_anhoej_output)
   expect_true(!is.null(anhoej))
 

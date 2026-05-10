@@ -1535,3 +1535,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle E NEW3 (Codex 2026-05-10) regression-tests for byte-aware filename-cap. Verificerer 255-byte cap respekteres for ASCII + danske multi-byte chars (Codex empirisk afsloerede 240 ae = 480 bytes -> nchar() default counts chars ej bytes).
+- file: test-is-column-numeric-danish-aware.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle D H1 (Codex 2026-05-10) regression-tests for danish-aware is_column_numeric(). Verificerer at danske komma-decimaler ('12,5') accepteres som numeric. Pre-fix afviste disse -> falsk Y-axis-fejl efter localStorage-roundtrip.

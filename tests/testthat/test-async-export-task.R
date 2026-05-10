@@ -64,3 +64,20 @@ test_that("validate_ai_prerequisites returnerer FALSE når has_spc_data er FALSE
 test_that("validate_ai_prerequisites returnerer TRUE når begge er TRUE", {
   expect_true(validate_ai_prerequisites(has_spc_data = TRUE, api_available = TRUE))
 })
+
+test_that("shiny::ExtendedTask eksisterer og har $new (forudsætning for make_ai_extended_task)", {
+  skip_if_not_installed("shiny")
+  # R6ClassGenerator er ikke en "function" — exists(..., mode="function") er forkert.
+  expect_true(
+    exists("ExtendedTask", where = asNamespace("shiny"), inherits = FALSE),
+    info = "ExtendedTask skal eksistere i shiny-namespace"
+  )
+  expect_true(
+    is.function(shiny::ExtendedTask$new),
+    info = "ExtendedTask skal have $new-metode (R6ClassGenerator)"
+  )
+  expect_false(
+    exists("ExtendedTask", where = asNamespace("shiny"), mode = "function"),
+    info = "mode='function' er forkert for R6ClassGenerator — regression-guard mod gammel check"
+  )
+})

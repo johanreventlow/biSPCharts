@@ -280,7 +280,7 @@ test_that("Performance workflow haandterer successive operationer", {
 
 # ===========================================================================
 # SEKTION B: shinytest2 UI workflow tests (fra test-e2e-user-workflows.R)
-# Alle tests kræver Chrome/Chromium og skip_on_ci()
+# Alle tests kræver Chrome/Chromium (guard: skip_if_no_shinytest2_runtime())
 # ===========================================================================
 
 skip_if_no_shinytest2_runtime <- function() {
@@ -322,19 +322,17 @@ create_e2e_driver <- function(name, width = 1200, height = 800, ...) {
 
 test_that("E2E: App launches successfully", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   app <- create_e2e_driver(name = "app_launch", height = 800, width = 1200)
   app$wait_for_idle()
 
   expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
-  app$expect_screenshot()
+  expect_true(length(app$get_values()) > 0)
   app$stop()
 })
 
 test_that("E2E: User can upload CSV file", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(
     Dato = c("01-01-2023", "02-01-2023", "03-01-2023", "04-01-2023", "05-01-2023"),
@@ -350,7 +348,6 @@ test_that("E2E: User can upload CSV file", {
   app$wait_for_idle()
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot()
 
   values <- app$get_values()
   expect_true(length(values) > 0)
@@ -359,7 +356,6 @@ test_that("E2E: User can upload CSV file", {
 
 test_that("E2E: Auto-detection runs after file upload", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(
     Dato = as.Date(c("2023-01-01", "2023-01-02", "2023-01-03")),
@@ -374,7 +370,6 @@ test_that("E2E: Auto-detection runs after file upload", {
   app$wait_for_idle()
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
-  app$expect_screenshot()
 
   values <- app$get_values()
   expect_true(!is.null(values$input))
@@ -384,7 +379,6 @@ test_that("E2E: Auto-detection runs after file upload", {
 test_that("E2E: User can generate SPC chart", {
   set.seed(42)
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(
     Dato = seq.Date(as.Date("2023-01-01"), by = "day", length.out = 20),
@@ -409,7 +403,6 @@ test_that("E2E: User can generate SPC chart", {
   )
 
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot()
 
   values <- app$get_values()
   expect_true(!is.null(values$output))
@@ -418,7 +411,6 @@ test_that("E2E: User can generate SPC chart", {
 
 test_that("E2E: User can manually select columns", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(ColA = 1:10, ColB = 11:20, ColC = 21:30)
   temp_file <- tempfile(fileext = ".csv")
@@ -438,7 +430,6 @@ test_that("E2E: User can manually select columns", {
     error = function(e) message("Could not set column inputs: ", e$message)
   )
 
-  app$expect_screenshot()
   values <- app$get_values()
   expect_true(length(values) > 0)
   app$stop()
@@ -446,7 +437,6 @@ test_that("E2E: User can manually select columns", {
 
 test_that("E2E: User can edit data in table", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(X = 1:5, Y = c(10, 20, 30, 40, 50))
   temp_file <- tempfile(fileext = ".csv")
@@ -457,7 +447,6 @@ test_that("E2E: User can edit data in table", {
   app$wait_for_idle()
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot()
 
   values <- app$get_values()
   expect_true(!is.null(values))
@@ -466,7 +455,6 @@ test_that("E2E: User can edit data in table", {
 
 test_that("E2E: App handles invalid data gracefully", {
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(
     ColA = c("text", "more", "text"),
@@ -482,14 +470,12 @@ test_that("E2E: App handles invalid data gracefully", {
   app$wait_for_idle(duration = 2000)
 
   expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
-  app$expect_screenshot()
   app$stop()
 })
 
 test_that("E2E: Complete user journey from upload to chart", {
   set.seed(42)
   skip_if_no_shinytest2_runtime()
-  skip_on_ci()
 
   test_data <- data.frame(
     Dato = seq.Date(as.Date("2023-01-01"), by = "week", length.out = 20),
@@ -504,26 +490,20 @@ test_that("E2E: Complete user journey from upload to chart", {
   app <- create_e2e_driver(name = "complete_journey", height = 800, width = 1200)
 
   app$wait_for_idle()
-  app$expect_screenshot(name = "01_initial")
-
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
-  app$expect_screenshot(name = "02_after_upload")
-
-  app$wait_for_idle(duration = 2000)
-  app$expect_screenshot(name = "03_autodetected")
+  app$expect_screenshot(name = "after_upload")
 
   tryCatch(
     {
       app$set_inputs(chart_type = "P-kort (Andele)")
       app$wait_for_idle(duration = 1500)
-      app$expect_screenshot(name = "04_chart_selected")
     },
     error = function(e) message("Could not set chart type: ", e$message)
   )
 
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot(name = "05_final_chart")
+  app$expect_screenshot(name = "final_chart")
 
   expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
 

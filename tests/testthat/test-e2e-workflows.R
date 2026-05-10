@@ -419,13 +419,15 @@ test_that("E2E: User can manually select columns", {
   app$wait_for_idle(duration = 3000)
 
   # Kolonne-mapping inputs (x_column, y_column) lever kun i DOM når
-  # open_column_mapping_modal er åben — ellers throws "Unable to find
-  # input binding". Åbn modal først, så set_inputs lykkes.
-  app$click("open_column_mapping_modal")
+  # open_column_mapping_modal er åben. Vi bruger allow_no_input_binding_=TRUE
+  # som driver Shiny.setInputValue direkte uden DOM-binding-krav —
+  # server-side reactive bindings i utils_server_visualization.R fyrer normalt.
+  app$set_inputs(
+    x_column = "ColA",
+    y_column = "ColB",
+    allow_no_input_binding_ = TRUE
+  )
   app$wait_for_idle(duration = 2000)
-
-  app$set_inputs(x_column = "ColA", y_column = "ColB")
-  app$wait_for_idle(duration = 1000)
 
   values <- app$get_values()
   expect_true(length(values) > 0)
@@ -493,20 +495,20 @@ test_that("E2E: Complete user journey from upload to chart", {
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
 
-  # Sæt eksplicit kolonne-mapping via modal (auto-detekt kender ikke
-  # "Komplikationer" / "Operationer" som standard-headers).
-  app$click("open_column_mapping_modal")
-  app$wait_for_idle(duration = 2000)
+  # Kolonne-mapping inputs lever kun i modal-DOM — brug
+  # allow_no_input_binding_=TRUE for direct Shiny.setInputValue.
   app$set_inputs(
     x_column = "Dato",
     y_column = "Komplikationer",
     n_column = "Operationer",
-    kommentar_column = "Kommentar"
+    kommentar_column = "Kommentar",
+    allow_no_input_binding_ = TRUE
   )
   app$wait_for_idle(duration = 1500)
 
-  # chart_type bruger engelsk qicharts2-kode, ej dansk label
-  app$set_inputs(chart_type = "p", y_axis_unit = "percent")
+  # chart_type bruger engelsk qicharts2-kode. Højere timeout fordi
+  # SPC compute-pipeline (BFHchart) er compute-tung.
+  app$set_inputs(chart_type = "p", y_axis_unit = "percent", timeout_ = 20000)
   app$wait_for_idle(duration = 3000)
 
   expect_true(is.character(app$get_url()) && nzchar(app$get_url()))

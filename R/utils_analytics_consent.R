@@ -40,9 +40,13 @@ is_persistence_allowed <- function(input) {
   # Læs reactive input value via isolate() — vi vil ikke skabe reactive
   # afhængighed på consent-flaget i kald-stedet (typisk en observer der
   # allerede har en anden trigger som debounced data-change).
+  # Fail-closed: ved enhver fejl returnerer vi FALSE (GDPR-konservativt).
+  # Bevidst stille fejl-håndtering: input kan være NULL i tests + initialisering
+  # før Shiny har bundet inputs. Logging af hvert kald ville støje urimeligt
+  # da gaten kaldes ved hver auto-save-tick (debounced 2s).
   consent <- tryCatch(
     shiny::isolate(input$analytics_consent),
-    error = function(e) NULL
+    error = function(e) NULL # nolint: swallowed_error_linter
   )
   if (is.null(consent) || length(consent) == 0L) {
     return(FALSE)

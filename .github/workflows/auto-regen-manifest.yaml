@@ -103,10 +103,10 @@ jobs:
       - name: Pre-install system deps (source-pkg dev headers + chromium workaround)
         if: steps.check.outputs.deps_changed == 'true'
         run: |
-          sudo apt-get install -y \\
-            libcurl4-openssl-dev libssl-dev libuv1-dev libgit2-dev \\
-            zlib1g-dev libicu-dev libpng-dev libjpeg-dev \\
-            libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \\
+          sudo apt-get install -y \
+            libcurl4-openssl-dev libssl-dev libuv1-dev libgit2-dev \
+            zlib1g-dev libicu-dev libpng-dev libjpeg-dev \
+            libfontconfig1-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev \
             libxml2-dev libx11-dev cmake
           sudo apt-get install -y chromium-browser || sudo snap install chromium || true
 

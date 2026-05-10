@@ -1,16 +1,30 @@
 // cookie-consent.js
-// GDPR cookie consent banner og analytics metadata indsamling
-// Bruger spc_app_ prefix (eksisterende localStorage-moenster fra local-storage.js)
+// GDPR-compliant samtykke-modal: hård blocking modal med binær valg
+// (Acceptér alle / Kun nødvendige). Pre-app overlay før Shiny renderer.
+//
+// Storage v2: JSON-objekt under spc_app_consent (erstatter v1's 4 separate keys).
+// Migration fra v1 håndteres i milestone JS-2.
+//
+// Globale flags eksponeret for andre scripts:
+//   window._spcConsentDecided  — true når valg er truffet (modal eller load)
+//   window._spcConsentGranted  — true/false efter valg
+//   document event 'spc:consent-decided' — dispatched efter valg
 
 (function() {
   'use strict';
 
-  var KEYS = {
-    consent: 'spc_app_analytics_consent',
-    version: 'spc_app_consent_version',
-    timestamp: 'spc_app_consent_timestamp',
-    visitorId: 'spc_app_visitor_id'
-  };
+  var STORAGE_KEY = 'spc_app_consent';
+  var SCHEMA_VERSION = 2;
+  // Default consent_version skal matche R-side (config_analytics.R).
+  // R sender autoritativ version via spc_set_consent_version efter
+  // session-init, men vi bruger default ved DOMContentLoaded for
+  // pre-app gating før WebSocket er klar.
+  var DEFAULT_CONSENT_VERSION = 1;
+  var DEFAULT_MAX_AGE_DAYS = 365;
+
+  // Default: ej besluttet
+  window._spcConsentDecided = false;
+  window._spcConsentGranted = undefined;
 
   function generateUUID() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -23,52 +37,54 @@
     });
   }
 
-  function getConsentStatus() {
+  function readConsent() {
     try {
-      var consent = localStorage.getItem(KEYS.consent);
-      var version = localStorage.getItem(KEYS.version);
-      var timestamp = localStorage.getItem(KEYS.timestamp);
-      if (consent === null || version === null || timestamp === null) return null;
-      return {
-        consented: consent === 'true',
-        version: parseInt(version, 10),
-        timestamp: timestamp
-      };
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      if (parsed.schema_version !== SCHEMA_VERSION) return null;
+      return parsed;
     } catch (e) {
       return null;
     }
   }
 
-  function isConsentValid(status, requiredVersion, maxAgeDays) {
-    if (!status) return false;
-    if (status.version !== requiredVersion) return false;
-    var ageDays = (new Date() - new Date(status.timestamp)) / (1000 * 60 * 60 * 24);
+  function isConsentValid(record, requiredVersion, maxAgeDays) {
+    if (!record) return false;
+    if (record.consent_version !== requiredVersion) return false;
+    var savedAt = new Date(record.timestamp).getTime();
+    if (isNaN(savedAt)) return false;
+    var ageDays = (Date.now() - savedAt) / (1000 * 60 * 60 * 24);
     if (ageDays > maxAgeDays) return false;
     return true;
   }
 
-  function saveConsent(accepted, consentVersion) {
+  function saveConsent(consented, consentVersion) {
     try {
-      localStorage.setItem(KEYS.consent, accepted ? 'true' : 'false');
-      localStorage.setItem(KEYS.version, String(consentVersion));
-      localStorage.setItem(KEYS.timestamp, new Date().toISOString());
-      if (accepted && !localStorage.getItem(KEYS.visitorId)) {
-        localStorage.setItem(KEYS.visitorId, generateUUID());
+      var existing = readConsent();
+      var visitorId = (existing && existing.visitor_id) || null;
+      if (consented && !visitorId) {
+        visitorId = generateUUID();
       }
+      var record = {
+        schema_version: SCHEMA_VERSION,
+        consent_version: consentVersion,
+        timestamp: new Date().toISOString(),
+        consented: !!consented,
+        visitor_id: consented ? visitorId : null
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
       return true;
     } catch (e) {
+      console.error('[SPC] saveConsent failed:', e);
       return false;
     }
   }
 
-  function getVisitorId() {
-    try { return localStorage.getItem(KEYS.visitorId); }
-    catch (e) { return null; }
-  }
-
-  function getClientMetadata() {
+  function getClientMetadata(record) {
     return {
-      visitor_id: getVisitorId(),
+      visitor_id: record && record.visitor_id ? record.visitor_id : null,
       user_agent: navigator.userAgent,
       screen_width: screen.width,
       screen_height: screen.height,
@@ -82,80 +98,164 @@
     };
   }
 
-  function notifyShiny(consented) {
+  function notifyShiny(consented, record) {
     if (typeof Shiny === 'undefined' || !Shiny.setInputValue) {
-      $(document).on('shiny:connected', function() { notifyShiny(consented); });
+      // Shiny ej klar endnu — vent på connect
+      $(document).on('shiny:connected', function() { notifyShiny(consented, record); });
       return;
     }
     Shiny.setInputValue('analytics_consent', consented, {priority: 'event'});
     if (consented) {
-      Shiny.setInputValue('analytics_client_metadata', getClientMetadata(), {priority: 'event'});
+      Shiny.setInputValue('analytics_client_metadata', getClientMetadata(record),
+        {priority: 'event'});
     }
   }
 
-  // Build banner with safe DOM methods (no innerHTML — XSS prevention)
-  function showBanner(consentVersion) {
-    var banner = document.createElement('div');
-    banner.className = 'spc-cookie-banner';
-    banner.id = 'spc-cookie-banner';
-    banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Cookie samtykke');
+  function dispatchDecidedEvent(granted) {
+    window._spcConsentDecided = true;
+    window._spcConsentGranted = !!granted;
+    try {
+      var ev = new CustomEvent('spc:consent-decided', {
+        detail: {granted: !!granted}
+      });
+      document.dispatchEvent(ev);
+    } catch (e) {
+      // CustomEvent ej understøttet (extremely old browser) — ignorer
+    }
+  }
 
-    var textDiv = document.createElement('div');
-    textDiv.className = 'spc-cookie-banner__text';
-    textDiv.textContent = 'Denne app indsamler anonymiseret brugsstatistik for at forbedre kvaliteten.';
+  function dimAppRoot() {
+    if (!document.body) return;
+    document.body.classList.add('spc-app-dimmed');
+  }
 
-    var buttonsDiv = document.createElement('div');
-    buttonsDiv.className = 'spc-cookie-banner__buttons';
+  function undimAppRoot() {
+    if (!document.body) return;
+    document.body.classList.remove('spc-app-dimmed');
+  }
 
-    var rejectBtn = document.createElement('button');
-    rejectBtn.className = 'spc-cookie-banner__btn spc-cookie-banner__btn--reject';
-    rejectBtn.textContent = 'Afvis';
+  function buildModal(consentVersion) {
+    var backdrop = document.createElement('div');
+    backdrop.className = 'spc-cookie-modal__backdrop';
+    backdrop.id = 'spc-cookie-modal-backdrop';
+
+    var modal = document.createElement('div');
+    modal.className = 'spc-cookie-modal';
+    modal.id = 'spc-cookie-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'spc-cookie-modal-title');
+    modal.setAttribute('aria-describedby', 'spc-cookie-modal-body');
+
+    var title = document.createElement('h2');
+    title.id = 'spc-cookie-modal-title';
+    title.className = 'spc-cookie-modal__title';
+    title.textContent = 'Cookies og lokal lagring';
+
+    var body = document.createElement('div');
+    body.id = 'spc-cookie-modal-body';
+    body.className = 'spc-cookie-modal__body';
+    body.textContent = 'Denne app kan gemme dit arbejde lokalt i din browser ' +
+      '(data + indstillinger), så du kan fortsætte hvor du slap efter ' +
+      'genindlæsning. Vi indsamler også anonymiseret brugsstatistik for ' +
+      'at forbedre kvaliteten.';
+
+    var buttons = document.createElement('div');
+    buttons.className = 'spc-cookie-modal__buttons';
 
     var acceptBtn = document.createElement('button');
-    acceptBtn.className = 'spc-cookie-banner__btn spc-cookie-banner__btn--accept';
-    acceptBtn.textContent = 'Accept\u00e9r';
+    acceptBtn.type = 'button';
+    acceptBtn.className = 'spc-cookie-modal__btn spc-cookie-modal__btn--accept';
+    acceptBtn.textContent = 'Acceptér alle';
 
-    buttonsDiv.appendChild(rejectBtn);
-    buttonsDiv.appendChild(acceptBtn);
-    banner.appendChild(textDiv);
-    banner.appendChild(buttonsDiv);
-    document.body.appendChild(banner);
+    var rejectBtn = document.createElement('button');
+    rejectBtn.type = 'button';
+    rejectBtn.className = 'spc-cookie-modal__btn spc-cookie-modal__btn--reject';
+    rejectBtn.textContent = 'Kun nødvendige';
 
-    acceptBtn.addEventListener('click', function() {
-      saveConsent(true, consentVersion);
-      banner.classList.add('spc-cookie-banner--hidden');
-      notifyShiny(true);
-    });
+    buttons.appendChild(acceptBtn);
+    buttons.appendChild(rejectBtn);
+    modal.appendChild(title);
+    modal.appendChild(body);
+    modal.appendChild(buttons);
 
-    rejectBtn.addEventListener('click', function() {
-      saveConsent(false, consentVersion);
-      banner.classList.add('spc-cookie-banner--hidden');
-      notifyShiny(false);
-    });
+    document.body.appendChild(backdrop);
+    document.body.appendChild(modal);
+
+    function decide(granted) {
+      saveConsent(granted, consentVersion);
+      undimAppRoot();
+      var existing = document.getElementById('spc-cookie-modal');
+      var existingBackdrop = document.getElementById('spc-cookie-modal-backdrop');
+      if (existing) existing.remove();
+      if (existingBackdrop) existingBackdrop.remove();
+      dispatchDecidedEvent(granted);
+      notifyShiny(granted, readConsent());
+    }
+
+    acceptBtn.addEventListener('click', function() { decide(true); });
+    rejectBtn.addEventListener('click', function() { decide(false); });
   }
 
+  // Pre-app dim ved DOMContentLoaded (før Shiny renderer)
+  function preAppGate(consentVersion, maxAgeDays) {
+    var record = readConsent();
+    if (isConsentValid(record, consentVersion, maxAgeDays)) {
+      // Eksisterende valid samtykke — load uden modal
+      dispatchDecidedEvent(record.consented);
+      notifyShiny(record.consented, record);
+      return;
+    }
+    // Ej valid samtykke — dim app + vis modal
+    dimAppRoot();
+    buildModal(consentVersion);
+  }
+
+  // Public API: footer-link genåbner samtykke-valg
   window.spcShowCookieSettings = function() {
     try {
-      localStorage.removeItem(KEYS.consent);
-      localStorage.removeItem(KEYS.version);
-      localStorage.removeItem(KEYS.timestamp);
+      localStorage.removeItem(STORAGE_KEY);
     } catch (e) { /* ignore */ }
-    var existing = document.getElementById('spc-cookie-banner');
+    var existing = document.getElementById('spc-cookie-modal');
+    var existingBackdrop = document.getElementById('spc-cookie-modal-backdrop');
     if (existing) existing.remove();
-    showBanner(window._spcConsentVersion || 1);
+    if (existingBackdrop) existingBackdrop.remove();
+    window._spcConsentDecided = false;
+    window._spcConsentGranted = undefined;
+    dimAppRoot();
+    buildModal(window._spcConsentVersion || DEFAULT_CONSENT_VERSION);
   };
 
-  window._spcConsentVersion = 1;
+  // Default config — overskrives når R sender spc_set_consent_version
+  window._spcConsentVersion = DEFAULT_CONSENT_VERSION;
+  window._spcConsentMaxAgeDays = DEFAULT_MAX_AGE_DAYS;
 
-  Shiny.addCustomMessageHandler('spc_set_consent_version', function(version) {
-    window._spcConsentVersion = version;
-    var status = getConsentStatus();
-    if (isConsentValid(status, version, 365)) {
-      notifyShiny(status.consented);
-    } else {
-      showBanner(version);
-    }
-  });
+  // Pre-app gate kører ASAP ved DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      preAppGate(window._spcConsentVersion, window._spcConsentMaxAgeDays);
+    });
+  } else {
+    preAppGate(window._spcConsentVersion, window._spcConsentMaxAgeDays);
+  }
+
+  // R sender consent_version efter session-init — for re-validation
+  // (hvis version bumped siden DOMContentLoaded).
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('spc_set_consent_version', function(version) {
+      window._spcConsentVersion = version;
+      // Hvis modal allerede vist, lad bruger fortsætte — ej re-render.
+      // Hvis besluttet med valid samtykke: re-validér mod ny version.
+      if (window._spcConsentDecided) {
+        var record = readConsent();
+        if (!isConsentValid(record, version, window._spcConsentMaxAgeDays)) {
+          // Ny version forældede samtykke — vis modal igen
+          window._spcConsentDecided = false;
+          dimAppRoot();
+          buildModal(version);
+        }
+      }
+    });
+  }
 
 })();

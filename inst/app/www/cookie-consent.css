@@ -1,15 +1,18 @@
 /* Cookie consent modal — GDPR-compliant hård blocking modal med
    binær valg (Acceptér alle / Kun nødvendige). Erstatter v1-banner. */
 
-/* Backdrop: dækker viewport, blokerer interaktion med app bag modal */
+/* Backdrop: dækker viewport, blokerer interaktion med app bag modal.
+   pointer-events: auto overrider .spc-app-dimmed kaskade på body. */
 .spc-cookie-modal__backdrop {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 9998;
+  pointer-events: auto;
 }
 
-/* Modal-card: centreret, max-width for læsbarhed */
+/* Modal-card: centreret, max-width for læsbarhed.
+   pointer-events: auto overrider .spc-app-dimmed kaskade på body. */
 .spc-cookie-modal {
   position: fixed;
   top: 50%;
@@ -26,6 +29,8 @@
   font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
+  pointer-events: auto;
+  user-select: auto;
 }
 
 .spc-cookie-modal__title {

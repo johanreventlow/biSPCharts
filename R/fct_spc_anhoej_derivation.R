@@ -92,8 +92,9 @@ derive_anhoej_results <- function(qic_data, show_phases = FALSE) {
     n_cross_min <- safe_max(data$n.crossings.min)
     if (is.na(n_cross_min)) {
       # n.crossings.min = NA: qicharts2 kan ikke beregne kryds-tærsklen (typisk n < 12).
-      # Returner NA -- "Utilstrækkelige data", ikke FALSE (falsk "Stabil proces").
-      NA
+      # Returner FALSE — "utilstrækkelige data"-besked håndteres via n_crossings_min-feltet
+      # i interpret_anhoej_signal_da(), som checker det felt direkte, uafhængigt af dette flag.
+      FALSE
     } else if (is.na(n_cross)) {
       # Tærsklen kendes men observeret antal kryds mangler -- kan ikke afgøre signal.
       FALSE

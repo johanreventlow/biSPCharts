@@ -63,12 +63,12 @@ jobs:
         run: R CMD INSTALL .
         shell: bash
 
-      - name: Run shinytest2 visual tests
+      - name: Run shinytest2 and E2E workflow tests
         id: shinytest2
         run: |
           testthat::test_dir(
             "tests/testthat",
-            filter = "shinytest2|bfh-module-integration",
+            filter = "shinytest2|bfh-module-integration|e2e-workflows",
             reporter = "summary",
             stop_on_failure = TRUE
           )

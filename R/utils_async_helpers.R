@@ -89,8 +89,10 @@ make_ai_extended_task <- function(
   get_analysis_metadata,
   max_chars = 375L
 ) {
-  # ExtendedTask kraever shiny >= 1.8.0
-  if (!exists("ExtendedTask", where = asNamespace("shiny"), mode = "function")) {
+  # ExtendedTask er en R6ClassGenerator (ikke en function) — mode="function" er forkert.
+  # Korrekt check: eksisterer i shiny-namespace + har $new-metode.
+  if (!exists("ExtendedTask", where = asNamespace("shiny"), inherits = FALSE) ||
+    !is.function(shiny::ExtendedTask$new)) {
     log_warn(
       "shiny::ExtendedTask ikke tilg\u00e6ngeligt (kr\u00e6ver shiny >= 1.8.0). Bruger synkron fallback.",
       .context = "ASYNC_HELPERS"

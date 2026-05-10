@@ -279,7 +279,8 @@ get_hospital_name_for_export <- function() {
 #' @keywords internal
 generate_pdf_preview <- function(bfh_qic_result,
                                  metadata,
-                                 dpi = 150) {
+                                 dpi = 150,
+                                 preview_path = NULL) {
   # Valid\u00e9r dpi inden safe_operation -- kaster export_input_error ved ugyldig vaerdi
   validate_export_dpi(dpi)
 
@@ -393,8 +394,13 @@ generate_pdf_preview <- function(bfh_qic_result,
           # uden at vi ville vide hvad der faktisk skete.
           assets_injected <- isTRUE(inject_template_assets(file.path(temp_dir, "bfh-template")))
 
-          # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
-          temp_png <- tempfile(fileext = ".png")
+          # 5. Compile Typst directly to PNG (more efficient than PDF->PNG).
+          # Cycle E NEW1 (Codex 2026-05-10): brug preview_path hvis caller
+          # leverer den (typisk session-scoped sti der overskrives per render).
+          # Falder tilbage til tempfile() for bagudkompatibilitet — men dette
+          # akkumulerer PNGs paa Connect-long-sessions; foretraek eksplicit
+          # path naar muligt.
+          temp_png <- preview_path %||% tempfile(fileext = ".png")
 
           # Use quarto typst compile with PNG format.
           # --ignore-system-fonts: undgaar at Typst picker system-Mari-varianter

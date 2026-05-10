@@ -51,6 +51,32 @@ setup_session_cleanup <- function(session, app_state = NULL, observers = NULL) {
       }
     }
 
+    # Cycle E NEW1 (Codex 2026-05-10): cleanup tempdir-PNG-akkumulation.
+    # Defense-in-depth — explicit preview_path-fix i mod_export_server.R
+    # holder filerne under én sti, men hvis legacy tempfile()-callers (eller
+    # tests) lægger PNGs udenfor, fanger denne pattern dem.
+    safe_operation(
+      "Cleanup PDF preview temp PNGs",
+      code = {
+        png_files <- list.files(
+          tempdir(),
+          pattern = "^bfh_preview_",
+          full.names = TRUE
+        )
+        if (length(png_files) > 0) {
+          unlink(png_files, recursive = FALSE, force = TRUE)
+          log_debug(
+            sprintf("Cleaned up %d temp PNG file(s)", length(png_files)),
+            .context = "MEMORY_MGMT"
+          )
+        }
+      },
+      fallback = function(e) {
+        log_warn(paste("Temp PNG cleanup failed:", e$message), "MEMORY_MGMT")
+      },
+      error_type = "processing"
+    )
+
     # Force garbage collection
     gc(verbose = FALSE)
 

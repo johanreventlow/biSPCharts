@@ -8,6 +8,11 @@
 
 #' Tjek om en kolonne primaert indeholder numeriske vaerdier
 #'
+#' Cycle D H1 (Codex 2026-05-10): bruger parse_danish_number() i stedet
+#' for as.numeric() for at acceptere danske decimal-strings ("12,5", "0,73").
+#' Tidligere afviste karakter-kolonner med komma-decimaler -> falsk Y-axis-
+#' fejl efter localStorage-roundtrip eller Excel-til-text-konvertering.
+#'
 #' @param col Vector. Kolonne at tjekke.
 #' @param threshold Numeric. Andel non-NA vaerdier der skal vaere numeriske (0-1).
 #' @return Logical. TRUE hvis kolonnen er numerisk nok.
@@ -20,7 +25,8 @@ is_column_numeric <- function(col, threshold = 0.5) {
   if (length(non_na) == 0) {
     return(TRUE)
   }
-  parsed <- suppressWarnings(as.numeric(as.character(non_na)))
+  # Danish-aware parsing: accepterer "12,5" og "12.5" som numerisk
+  parsed <- parse_danish_number(as.character(non_na))
   sum(!is.na(parsed)) / length(non_na) >= threshold
 }
 

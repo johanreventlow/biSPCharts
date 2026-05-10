@@ -159,6 +159,7 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
               app_name = "SPC_Analysis_Tool"
             )
             session$sendCustomMessage("spc_start_analytics", list())
+            session$userData$analytics_started <- TRUE
             log_info("Analytics tracking aktiveret efter consent",
               .context = LOG_CONTEXTS$analytics$consent
             )
@@ -170,6 +171,13 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
             # Silent-fail korrekt: session$token kan mangle før session er initialiseret
             session_token <- tryCatch(session$token, error = function(e) NULL) # nolint: swallowed_error_linter
             session$onSessionEnded(function() {
+              if (isTRUE(session$userData$analytics_revoked)) {
+                log_info(
+                  "Analytics-aggregering sprunget over — samtykke tilbagetrukket i sessionen",
+                  .context = LOG_CONTEXTS$analytics$pins
+                )
+                return()
+              }
               safe_operation(
                 "Aggregate analytics on session end",
                 code = {
@@ -226,6 +234,33 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
             )
           },
           error_type = "processing"
+        )
+      }
+    },
+    ignoreNULL = TRUE
+  )
+
+  # Withdrawal-observer: fanger consent TRUE→FALSE transition EFTER shinylogs
+  # allerede er startet. once=TRUE-observeren ovenfor er destrueret efter
+  # første fyring — denne continuous observer gater på analytics_started-flag.
+  # Stopper klient-side analytics via spc_stop_analytics + gater
+  # log-aggregeringen ved session-afslutning (via analytics_revoked-flag).
+  shiny::observeEvent(input$analytics_consent,
+    priority = OBSERVER_PRIORITIES$LOGGING,
+    {
+      consent <- input$analytics_consent
+      if (!isTRUE(consent) && isTRUE(session$userData$analytics_started) &&
+        !isTRUE(session$userData$analytics_revoked)) {
+        session$userData$analytics_revoked <- TRUE
+        session$sendCustomMessage("spc_stop_analytics", list())
+        log_info(
+          paste0(
+            "Analytics tracking stoppet efter samtykke-tilbagetrækning. ",
+            "Klient-side metrics stoppet straks. ",
+            "Server-side shinylogs-session kan ikke stoppes midt i session — ",
+            "log-aggregering sprunget over ved session-afslutning."
+          ),
+          .context = LOG_CONTEXTS$analytics$consent
         )
       }
     },

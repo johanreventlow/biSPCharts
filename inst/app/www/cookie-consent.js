@@ -266,10 +266,11 @@
     var body = document.createElement('div');
     body.id = 'spc-cookie-modal-body';
     body.className = 'spc-cookie-modal__body';
-    body.textContent = 'Denne app kan gemme dit arbejde lokalt i din browser ' +
-      '(data + indstillinger), så du kan fortsætte hvor du slap efter ' +
-      'genindlæsning. Vi indsamler også anonymiseret brugsstatistik for ' +
-      'at forbedre kvaliteten.';
+    body.textContent = 'For at give dig den bedste oplevelse gemmer ' +
+      'biSPCharts dit arbejde (uploadede data + indstillinger) lokalt ' +
+      'i din browser, så du kan fortsætte hvor du slap. Derudover måler ' +
+      'vi hvordan appen bruges — uden personidentifikation — for at ' +
+      'kunne forbedre den.';
 
     // Advarselsblok: vises når brugeren har eksisterende gemt session
     // som vil blive slettet ved valg af "Kun nødvendige".

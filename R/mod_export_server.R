@@ -400,6 +400,15 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       safe_operation(
         operation_name = "Generate PDF preview PNG",
         code = {
+          # Cycle E NEW1 (Codex 2026-05-10): brug session-scoped PNG-sti der
+          # overskrives per render i stedet for tempfile() der akkumulerer.
+          # Per Connect-long-session kan tempfile()-pattern lagre 100MB+ pga.
+          # ~40 previews/min worst case under typing.
+          session_preview_path <- file.path(
+            tempdir(),
+            paste0("bfh_preview_session_", session$token, ".png")
+          )
+
           preview_path <- shiny::withProgress(
             message = "Genererer preview...",
             value = 0.5,
@@ -407,7 +416,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
               generate_pdf_preview(
                 bfh_qic_result = pdf_result$bfh_qic_result,
                 metadata = metadata,
-                dpi = 150
+                dpi = 150,
+                preview_path = session_preview_path
               )
             }
           )

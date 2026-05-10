@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.17.0",
+        "Version": "0.17.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -33,7 +33,7 @@
         "BugReports": "https://github.com/johanreventlow/BFHcharts/issues",
         "Depends": "R (>= 4.1.0)",
         "Imports": "BFHtheme (>= 0.5.0), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
-        "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, BFHllm, knitr, rmarkdown",
+        "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, knitr, rmarkdown",
         "VignetteBuilder": "knitr",
         "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
         "Config/testthat/edition": "3",
@@ -41,17 +41,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.17.0",
-        "RemoteSha": "c49452b1a2350afb4ab04bd13b30ade896814852",
+        "RemotePkgRef": "johanreventlow/BFHcharts",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "dba82fce483e7ffc264b450119edf6e4aa2bca6f",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.17.0",
-        "GithubSHA1": "c49452b1a2350afb4ab04bd13b30ade896814852",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "dba82fce483e7ffc264b450119edf6e4aa2bca6f",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 11:23:25 UTC; johanreventlow",
+        "Packaged": "2026-05-10 21:32:24 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 11:23:26 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 21:32:25 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -110,17 +111,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHllm",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.2.0",
+        "RemotePkgRef": "johanreventlow/BFHllm",
+        "RemoteRef": "HEAD",
         "RemoteSha": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "GithubRepo": "BFHllm",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.2.0",
+        "GithubRef": "HEAD",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 11:23:43 UTC; johanreventlow",
+        "Packaged": "2026-05-10 10:33:45 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 11:23:44 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 10:33:46 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -145,17 +147,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHtheme",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.5.0",
+        "RemotePkgRef": "johanreventlow/BFHtheme",
+        "RemoteRef": "HEAD",
         "RemoteSha": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "GithubRepo": "BFHtheme",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.5.0",
+        "GithubRef": "HEAD",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-10 11:23:34 UTC; johanreventlow",
+        "Packaged": "2026-04-26 20:38:05 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-10 11:23:34 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-04-26 20:38:06 UTC; unix"
       }
     },
     "BH": {
@@ -804,7 +807,13 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2024-03-25 13:30:06 UTC",
-        "Built": "R 4.5.0; ; 2025-04-01 11:57:59 UTC; unix"
+        "Built": "R 4.5.0; ; 2025-04-01 11:57:59 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "callr",
+        "RemoteRef": "callr",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemotePkgPlatform": "aarch64-apple-darwin20",
+        "RemoteSha": "3.7.6"
       }
     },
     "cellranger": {
@@ -1220,7 +1229,13 @@
         "Author": "Gábor Csárdi [aut, cre],\n  Kirill Müller [aut],\n  Jim Hester [aut],\n  Maëlle Salmon [ctb] (<https://orcid.org/0000-0002-2815-0399>),\n  Posit Software, PBC [cph, fnd]",
         "Repository": "CRAN",
         "Date/Publication": "2023-12-10 11:40:08 UTC",
-        "Built": "R 4.5.0; ; 2025-03-31 21:55:26 UTC; unix"
+        "Built": "R 4.5.0; ; 2025-03-31 21:55:26 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "desc",
+        "RemoteRef": "desc",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemotePkgPlatform": "aarch64-apple-darwin20",
+        "RemoteSha": "1.4.3"
       }
     },
     "digest": {
@@ -1532,41 +1547,6 @@
         "RemoteRepos": "https://cran.rstudio.com/",
         "RemotePkgPlatform": "aarch64-apple-darwin20",
         "RemoteSha": "0.5.3"
-      }
-    },
-    "forcats": {
-      "Source": "CRAN",
-      "Repository": "https://cloud.r-project.org",
-      "description": {
-        "Package": "forcats",
-        "Title": "Tools for Working with Categorical Variables (Factors)",
-        "Version": "1.0.1",
-        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
-        "Description": "Helpers for reordering factor levels (including moving\n    specified levels to front, ordering by first appearance, reversing,\n    and randomly shuffling), and tools for modifying factor levels\n    (including collapsing rare levels into other, 'anonymising', and\n    manually 'recoding').",
-        "License": "MIT + file LICENSE",
-        "URL": "https://forcats.tidyverse.org/,\nhttps://github.com/tidyverse/forcats",
-        "BugReports": "https://github.com/tidyverse/forcats/issues",
-        "Depends": "R (>= 4.1)",
-        "Imports": "cli (>= 3.4.0), glue, lifecycle, magrittr, rlang (>= 1.0.0),\ntibble",
-        "Suggests": "covr, dplyr, ggplot2, knitr, readr, rmarkdown, testthat (>=\n3.0.0), withr",
-        "VignetteBuilder": "knitr",
-        "Config/Needs/website": "tidyverse/tidytemplate",
-        "Config/testthat/edition": "3",
-        "Encoding": "UTF-8",
-        "LazyData": "true",
-        "RoxygenNote": "7.3.3",
-        "NeedsCompilation": "no",
-        "Packaged": "2025-09-24 17:08:21 UTC; hadleywickham",
-        "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
-        "Maintainer": "Hadley Wickham <hadley@posit.co>",
-        "Repository": "CRAN",
-        "Date/Publication": "2025-09-25 05:10:20 UTC",
-        "Built": "R 4.5.0; ; 2025-09-25 06:28:37 UTC; unix",
-        "RemoteType": "standard",
-        "RemotePkgRef": "forcats",
-        "RemoteRef": "forcats",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "1.0.1"
       }
     },
     "fs": {
@@ -2993,7 +2973,13 @@
         "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
         "Repository": "CRAN",
         "Date/Publication": "2025-05-26 14:10:06 UTC",
-        "Built": "R 4.5.0; ; 2025-05-26 15:14:03 UTC; unix"
+        "Built": "R 4.5.0; ; 2025-05-26 15:14:03 UTC; unix",
+        "RemoteType": "standard",
+        "RemotePkgRef": "pkgbuild",
+        "RemoteRef": "pkgbuild",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemotePkgPlatform": "aarch64-apple-darwin20",
+        "RemoteSha": "1.4.8"
       }
     },
     "pkgconfig": {
@@ -4819,7 +4805,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "41839f48dfbf43aa8e92097c75c97903"
+      "checksum": "58a90270f4332bb8cd0748918b6b9697"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "a026dd823c74ace114c7e892922b683c"
@@ -4941,6 +4927,9 @@
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
     },
+    "manifest.json": {
+      "checksum": "555ccf2bdb2caeefd0d310552b442e55"
+    },
     "NAMESPACE": {
       "checksum": "439e70a1c8604f2ab78314d57d54868a"
     },
@@ -5035,7 +5024,7 @@
       "checksum": "8c948faa3d99bef6f8c08837611101a0"
     },
     "R/fct_spc_anhoej_derivation.R": {
-      "checksum": "588180b41be0da384fae3810bf4a9ea9"
+      "checksum": "6d56eb21965ae4ed0350e23260f5e6cd"
     },
     "R/fct_spc_bfh_facade.R": {
       "checksum": "62660b423cdaea636ed3fb237ee84641"
@@ -5161,7 +5150,7 @@
       "checksum": "0da716b6a4b805c42d3477ad8f582127"
     },
     "R/utils_async_helpers.R": {
-      "checksum": "20dc2316276d51a6d9105dcf73bd6147"
+      "checksum": "a0c17f34f885b2ae8fd605331d2066ce"
     },
     "R/utils_bfhllm_integration.R": {
       "checksum": "3ac2436241b437d29a0126fc7235a568"

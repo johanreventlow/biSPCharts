@@ -207,11 +207,16 @@ validate_excel_file <- function(file_path) {
         safe_operation(
           "Validate biSPCharts Indstillinger sheet",
           code = {
+            # Cycle C H3 (Codex 2026-05-10): brug col_names = TRUE for parity
+            # med parser (R/fct_spc_file_save_load.R:218-227). Tidligere
+            # col_names = c("key","value") tolkede headeren som data -> et
+            # ark med kun header passerede validator. Nu fanges korrupte
+            # ark tidligt per intentionen i kommentar paa linje 189-191.
             settings <- readxl::read_excel(
               file_path,
               sheet = "Indstillinger",
               skip = INDSTILLINGER_HEADER_ROWS,
-              col_names = c("key", "value")
+              col_names = TRUE
             )
             if (ncol(settings) == 0 || nrow(settings) == 0) {
               errors <- c(errors, "Indstillinger-ark er tomt eller ugyldigt")

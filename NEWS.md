@@ -1,5 +1,19 @@
 # biSPCharts (development)
 
+## Dependency updates
+
+* **Bump BFHcharts til v0.17.0** (`Imports` lower-bound + `Remotes`).
+  Henter y-akse-padding-fix (12.5% expansion top + bund) der løser
+  klipping af boundary-target-labels (fx `<1%`-udviklingsmål) ved
+  nederste plot-kant. Også indeholdt: `bfh_get_plot()`-rename
+  (biSPCharts brugte ikke `get_plot()`, ingen migration nødvendig)
+  + native Unicode-tegn i kolonnenavne. Se BFHcharts NEWS for
+  detaljer. (BFHcharts #337, refs biSPCharts SPC-44-rapport)
+* **Bump BFHllm til v0.2.0** (`Suggests` lower-bound + `Remotes`).
+  Auto-bumpet af `dev/publish_prepare.R` da seneste tag var fremad
+  for DESCRIPTION-pinning. Se BFHllm NEWS for ændringer.
+* `manifest.json` regenereret for Connect Cloud-parity.
+
 ## Interne ændringer
 
 * Slettet 2 ubrugte emit-aliases (`data_loaded`, `data_changed`) fra `create_emit_api()`.

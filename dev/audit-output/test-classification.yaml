@@ -1511,3 +1511,27 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-09'
   rationale: Cycle F H3 (Codex 2026-05-09) unit-tests for has_value()-baseret merge_with_existing der bevarer manuelle felter ogsaa for unreviewed entries. Forhindrer silent overskrivning af rationale/merge_with/handling.
+- file: test-pdf-preview-temp-png.R
+  audit_category: post-audit
+  type: policy-guard
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle E NEW1 (Codex 2026-05-10) regression-tests for temp-PNG-akkumulation-fix. Verificerer preview_path-parameter, session-scoped sti via session$token, og setup_session_cleanup unlinker bfh_preview_*-pattern.
+- file: test-pdf-preview-temp-dir-cleanup.R
+  audit_category: post-audit
+  type: policy-guard
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle E NEW2 (Codex 2026-05-10) regression-tests for on.exit-baseret temp_dir-cleanup i generate_pdf_preview. Verificerer on.exit foer ggsave/system2-kald + ej double-cleanup.
+- file: test-export-filename-byte-cap.R
+  audit_category: post-audit
+  type: policy-guard
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle E NEW3 (Codex 2026-05-10) regression-tests for byte-aware filename-cap. Verificerer 255-byte cap respekteres for ASCII + danske multi-byte chars (Codex empirisk afsloerede 240 ae = 480 bytes -> nchar() default counts chars ej bytes).

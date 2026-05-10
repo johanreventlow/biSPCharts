@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.16.1",
+        "Version": "0.17.0",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -41,17 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.16.1",
-        "RemoteSha": "940b18c7e695d8ca0f05f7471dca2e99c6cecf5e",
+        "RemoteRef": "v0.17.0",
+        "RemoteSha": "c49452b1a2350afb4ab04bd13b30ade896814852",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.16.1",
-        "GithubSHA1": "940b18c7e695d8ca0f05f7471dca2e99c6cecf5e",
+        "GithubRef": "v0.17.0",
+        "GithubSHA1": "c49452b1a2350afb4ab04bd13b30ade896814852",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-07 14:15:02 UTC; johanreventlow",
+        "Packaged": "2026-05-10 05:45:19 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-07 14:15:03 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 05:45:20 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.0",
         "GithubSHA1": "75bf0d6ecba3065f4ab730db7eb5eacfed69ac2d",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-07 14:15:23 UTC; johanreventlow",
+        "Packaged": "2026-05-10 05:45:41 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-07 14:15:24 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 05:45:42 UTC; unix"
       }
     },
     "BFHllm": {
@@ -93,7 +93,7 @@
       "description": {
         "Package": "BFHllm",
         "Title": "LLM Integration Framework for BFH Packages",
-        "Version": "0.1.1",
+        "Version": "0.2.0",
         "Authors@R": "\n    person(\"Johan\", \"Reventlow\", , \"johan.reventlow@regionh.dk\", role = c(\"aut\", \"cre\"))",
         "Description": "AI-driven insights and text generation for healthcare quality\n    improvement. Provides LLM chat interface, RAG (Retrieval Augmented\n    Generation) integration with knowledge stores, and SPC-specific\n    improvement suggestions. Designed for standalone use with BFHcharts\n    or integration in Shiny applications.",
         "License": "MIT + file LICENSE",
@@ -104,22 +104,23 @@
         "RoxygenNote": "7.3.3",
         "Imports": "ellmer (>= 0.4.0), ragnar (>= 0.1.0), digest, jsonlite, yaml",
         "Suggests": "testthat (>= 3.0.0), shiny (>= 1.7.0), mockery, withr,\nBFHcharts (>= 0.4.0)",
+        "Remotes": "johanreventlow/BFHcharts",
         "Config/testthat/edition": "3",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHllm",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.1.1",
-        "RemoteSha": "cb7191bf4f4c5f625f982cfbd2db5cd416d9d541",
+        "RemoteRef": "v0.2.0",
+        "RemoteSha": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "GithubRepo": "BFHllm",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.1.1",
-        "GithubSHA1": "cb7191bf4f4c5f625f982cfbd2db5cd416d9d541",
+        "GithubRef": "v0.2.0",
+        "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-07 14:15:17 UTC; johanreventlow",
+        "Packaged": "2026-05-10 05:45:35 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-07 14:15:18 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 05:45:35 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -151,10 +152,10 @@
         "GithubRef": "v0.5.0",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-07 14:15:10 UTC; johanreventlow",
+        "Packaged": "2026-05-10 05:45:28 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-07 14:15:11 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-10 05:45:28 UTC; unix"
       }
     },
     "BH": {
@@ -4517,16 +4518,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "cdfc1a58c66104bd0113fe7e6d28af2d"
-    },
-    "inst/.DS_Store": {
-      "checksum": "4cc330613d67dba9392c83fee5b5fa20"
-    },
-    "inst/app/.DS_Store": {
-      "checksum": "2ef7bf572600a7773d2827b287483676"
-    },
-    "inst/app/www/.DS_Store": {
-      "checksum": "194577a7e20bdcc7afbb718f502c134c"
+      "checksum": "41839f48dfbf43aa8e92097c75c97903"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "a026dd823c74ace114c7e892922b683c"
@@ -4584,9 +4576,6 @@
     },
     "inst/config/brand.yml": {
       "checksum": "8097b52693ae309bf2bd587bb6a487b9"
-    },
-    "inst/extdata/.DS_Store": {
-      "checksum": "d26245ecf75bf61cab90625f08740bc9"
     },
     "inst/extdata/sample_c.csv": {
       "checksum": "754d8d80b545bf90842892c40fedea44"
@@ -4646,13 +4635,7 @@
       "checksum": "c9436ead5ef4f265e585d9e4c27db08f"
     },
     "inst/golem-config.yml": {
-      "checksum": "24e3cc096d617dbe4695f5d9816f44da"
-    },
-    "inst/templates/.DS_Store": {
-      "checksum": "4fd0a82841a8750324465dd66a524f76"
-    },
-    "inst/templates/typst/.DS_Store": {
-      "checksum": "451d635b583a95cd5cb92807f9f4a28c"
+      "checksum": "4ddf79db3b7970e53e5ffcdcd7e42beb"
     },
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
@@ -4664,13 +4647,13 @@
       "checksum": "923f453cac3cedeb4e61705aa623f904"
     },
     "R/app_run.R": {
-      "checksum": "3d7a78c105c29776c673570fd44de6e8"
+      "checksum": "1378705b6faf3c5eb37ad6694f9c351b"
     },
     "R/app_runtime_config.R": {
       "checksum": "d85bbd8c1967f0d78e01081616a4e723"
     },
     "R/app_server_main.R": {
-      "checksum": "08511e870c32391c1bb330c2d3bc6044"
+      "checksum": "296bb4d5d237213fea192bcad1383972"
     },
     "R/app_server.R": {
       "checksum": "c97a964c3c2b954be459b38cc6fef0e4"
@@ -4694,13 +4677,13 @@
       "checksum": "0bd4e036225cbdd244a178255a031dba"
     },
     "R/config_observer_priorities.R": {
-      "checksum": "475c1a95d399f5e87b2fc9b8554c665f"
+      "checksum": "16f518420ec7b65cd73a812633e7fdef"
     },
     "R/config_performance_getters.R": {
       "checksum": "fe8ecc8838a34f5f209d3b4bd3b8477b"
     },
     "R/config_plot_contexts.R": {
-      "checksum": "02ff22450ff7feea951d103c39534752"
+      "checksum": "0d896f77a7c0f726de856af20c4020e6"
     },
     "R/config_sample_data.R": {
       "checksum": "d504bdd5333920af1fbcede491110837"
@@ -4709,7 +4692,7 @@
       "checksum": "0d6f652d8227943b71624ea7abf5dc7c"
     },
     "R/config_system_config.R": {
-      "checksum": "c7d0f0e9c8619ac7b1075bc7d84d05a6"
+      "checksum": "7b615d801bba01f16b5659f654c5e9b7"
     },
     "R/config_ui_getters.R": {
       "checksum": "dfa25d660497e624791243e9e23bd5b0"
@@ -4742,25 +4725,25 @@
       "checksum": "d4d7e0569dc318ba62f75738d391238b"
     },
     "R/fct_file_operations.R": {
-      "checksum": "6a990e83c49832a725b407b65b9058c5"
+      "checksum": "1dbbae8daf4758e8ca40170ed4777810"
     },
     "R/fct_file_parse_pure.R": {
       "checksum": "43244a6ddbb720c7c5a42e4fbe2b8a42"
     },
     "R/fct_file_validation.R": {
-      "checksum": "8444349aee2a1371b41f1e45c67ce364"
+      "checksum": "fef0b30a6b24aecd9e3666b2d0fc10ed"
     },
     "R/fct_spc_anhoej_derivation.R": {
       "checksum": "588180b41be0da384fae3810bf4a9ea9"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "4b35eca5a748775cfcb0122978b452f2"
+      "checksum": "62660b423cdaea636ed3fb237ee84641"
     },
     "R/fct_spc_bfh_invocation.R": {
       "checksum": "978891350f004118ba898c2a7356f00a"
     },
     "R/fct_spc_bfh_output.R": {
-      "checksum": "47be1525fe9ef1091929b9981e69ba5b"
+      "checksum": "06d9b6808569487628fd8370b556bfdc"
     },
     "R/fct_spc_bfh_params.R": {
       "checksum": "2183c1774f959d083607ad36eca3417f"
@@ -4808,19 +4791,19 @@
       "checksum": "7ec50160555333284a2e4a183a4c728a"
     },
     "R/mod_export_ai.R": {
-      "checksum": "97e91074815bc8e01fbcc5d639926cfd"
+      "checksum": "5942f0f35ff24bed6273f3443e6245e1"
     },
     "R/mod_export_analysis.R": {
-      "checksum": "848f2d392b0354ec9283ca8d2fafc37a"
+      "checksum": "b937246ee3a4e2e3bda63c09f23a108d"
     },
     "R/mod_export_download.R": {
-      "checksum": "f4fccc3e71639f6e7b24e328aab59cdb"
+      "checksum": "91761c59d3f984b8dd6f6a5b81635717"
     },
     "R/mod_export_server.R": {
-      "checksum": "2e90ff0b452e42e241a8d076c2ec4ee4"
+      "checksum": "67dbc56ef35e3e3a12300a52b84253e6"
     },
     "R/mod_export_ui.R": {
-      "checksum": "6dbe5d2ec61a5f03d73e6d22ccac92dc"
+      "checksum": "2ef63aa67dba7db380d8d367747b3019"
     },
     "R/mod_help_server.R": {
       "checksum": "1dbd9afb732efdf03222ebab03e29762"
@@ -4844,7 +4827,7 @@
       "checksum": "13f3f51c00dd93e1a06fd4ac82294454"
     },
     "R/mod_spc_chart_observers.R": {
-      "checksum": "992236e0ca45ca2b20856b42d0b85679"
+      "checksum": "4d6320e958a8d35e0818501e7dfd098c"
     },
     "R/mod_spc_chart_server.R": {
       "checksum": "f87a31fa7befb4d5f3a029e11a5708a7"
@@ -4859,10 +4842,10 @@
       "checksum": "f4f19053aeee0722067869808f5dd8a5"
     },
     "R/state_management.R": {
-      "checksum": "28b357e9c8707100705ed7f0e39c055d"
+      "checksum": "1e6cdcb214ebeffd4c28a5d5b62b417d"
     },
     "R/utils_advanced_debug.R": {
-      "checksum": "fa3783d33465da1ab79f76440a087784"
+      "checksum": "bb69b58ed176374775a59c5afd142de0"
     },
     "R/utils_analytics_consent.R": {
       "checksum": "ec208169c14bb1c105ec15e6b5d602f0"
@@ -4871,7 +4854,7 @@
       "checksum": "e3d41ac7edf185ef93f87887507ac3e1"
     },
     "R/utils_analytics_pins.R": {
-      "checksum": "44fa7efcfde914dc406d4c430c5e5014"
+      "checksum": "a7200234c572e89e97268f3045b13f88"
     },
     "R/utils_anhoej_results.R": {
       "checksum": "0da716b6a4b805c42d3477ad8f582127"
@@ -4880,7 +4863,7 @@
       "checksum": "20dc2316276d51a6d9105dcf73bd6147"
     },
     "R/utils_bfhllm_integration.R": {
-      "checksum": "081da2c91f853dc2a624ba3bdfaee51b"
+      "checksum": "3ac2436241b437d29a0126fc7235a568"
     },
     "R/utils_cache_generators.R": {
       "checksum": "9ddd22e6cb24b986659758b4ab0143b7"
@@ -4892,7 +4875,7 @@
       "checksum": "4218c995e85e0b7b93c3159834d06d18"
     },
     "R/utils_data_signatures.R": {
-      "checksum": "7d17ab58caf7c4c49b9a85d950e32b1e"
+      "checksum": "76f5ac82424b25ff0024981aad12da84"
     },
     "R/utils_error_handling.R": {
       "checksum": "1ec34acbdce034bed3641c48b83f9d52"
@@ -4925,10 +4908,10 @@
       "checksum": "be1cf2da615d708f873e68caa27150d4"
     },
     "R/utils_local_storage.R": {
-      "checksum": "4ffc67ddb7207feef3e857c7ab970a48"
+      "checksum": "1eabcd912f566d769541ce905e60d217"
     },
     "R/utils_logging.R": {
-      "checksum": "2349032f0bdbd77091bfb655601148fe"
+      "checksum": "29006c6add3022c86c8cdfc7b26b396f"
     },
     "R/utils_memory_management.R": {
       "checksum": "fef64990d40dfab37fb6413d6bc646f1"
@@ -4946,16 +4929,16 @@
       "checksum": "c15416ac539ae371a01a932bd223d097"
     },
     "R/utils_qic_cache_invalidation.R": {
-      "checksum": "929edf87f85733250f962a4405b90958"
+      "checksum": "f7ed7adde968e2c3004e47693d339ac1"
     },
     "R/utils_qic_caching.R": {
       "checksum": "d6ccb5cd13dd74994ca9aad30833cb1e"
     },
     "R/utils_server_column_input.R": {
-      "checksum": "24b23b29de7651b16592c7820a5da31f"
+      "checksum": "cc32978e2f61931e642171f5eac6c26e"
     },
     "R/utils_server_column_management.R": {
-      "checksum": "38e836d38bc907b2a2eb34b8b88f5c19"
+      "checksum": "1867833208a01e4b9d23d9bbd906cb74"
     },
     "R/utils_server_event_listeners.R": {
       "checksum": "f530e100ef65f0a998d43a295bfcd5f1"
@@ -4964,19 +4947,19 @@
       "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "2e5ffce268b071c340f3d15b9c164531"
+      "checksum": "62779278f8225ae509776f8a3db9f0d0"
     },
     "R/utils_server_events_data.R": {
       "checksum": "ddbbb46f800c8e25322ee6f4dc3e13c9"
     },
     "R/utils_server_events_navigation.R": {
-      "checksum": "ad964c692e922bbdce6ce56becfcbb46"
+      "checksum": "275c5b76863dbf206e7147c0b5233e7e"
     },
     "R/utils_server_events_ui.R": {
       "checksum": "af9e37a623e61ce3043091ea00d7548a"
     },
     "R/utils_server_export.R": {
-      "checksum": "991440d4f55c3c555d7f717968a0a8a1"
+      "checksum": "111f98e7febf20bf1c6c7ece4396baae"
     },
     "R/utils_server_initialization.R": {
       "checksum": "5b48b9f3f54dca6ac36f0cfa683c036a"
@@ -4991,7 +4974,7 @@
       "checksum": "f77a099c5bb00f8c3267b3df80b7a318"
     },
     "R/utils_server_session_helpers.R": {
-      "checksum": "b7900783949d0661941e18427703b670"
+      "checksum": "ccdbad93843066c9ce73a7630146d6ab"
     },
     "R/utils_server_session_persistence.R": {
       "checksum": "29e54bbb3df84175c5df750add58303c"
@@ -5003,13 +4986,13 @@
       "checksum": "5e80e16a93b1893ede45fe40d4d72d8f"
     },
     "R/utils_server_wizard_gates.R": {
-      "checksum": "33949e81843bb5681ddf99eaff9229ce"
+      "checksum": "b6a9a412130fb11f65518035589d9020"
     },
     "R/utils_shinylogs_config.R": {
       "checksum": "a1670ba5e7b8fc62b9a767f9562a02c2"
     },
     "R/utils_spc_cache.R": {
-      "checksum": "7378e8e9913b74ba17dd967584db982b"
+      "checksum": "549546205e45f9d7d76d4d5113bfbbde"
     },
     "R/utils_spc_chart_ui_helpers.R": {
       "checksum": "5cf348dcb531651a6772b3cd81ab1ef7"
@@ -5033,7 +5016,7 @@
       "checksum": "2a89e70626500a1b8267ecb603047ff5"
     },
     "R/utils_ui_app_layout.R": {
-      "checksum": "bfc908a32a38ceb3163b23f488ebbee1"
+      "checksum": "464aee353b31e4cf222dc413c95e524c"
     },
     "R/utils_ui_column_sync.R": {
       "checksum": "cfb8a0e40df0094e786ba865c1caef30"

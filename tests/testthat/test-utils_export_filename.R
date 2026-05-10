@@ -321,15 +321,22 @@ test_that("sanitize_filename handles numeric strings", {
   expect_equal(result, "12345")
 })
 
-test_that("generate_export_filename handles very long title", {
+test_that("generate_export_filename truncates very long title til byte-cap", {
+  # Cycle E NEW3 (Codex 2026-05-10): byte-aware truncation cap'er filenames
+  # ved 250 bytes (konservativ buffer under NTFS/ext4 255-byte limit).
+  # Tidligere version havde ingen cap; test forventede fuld pass-through.
   long_title <- paste(rep("A", 300), collapse = "")
   result <- generate_export_filename(
     format = "pdf",
     title = long_title
   )
 
-  # Should include long title without truncation
-  expect_match(result, paste(rep("A", 300), collapse = ""))
+  # Filename skal respektere 255-byte cap (incl. extension)
+  expect_lte(nchar(result, type = "bytes"), 255L)
+
+  # Skal stadig indeholde substantielt antal A'er + bevare extension
+  expect_match(result, "A{200,}")
+  expect_match(result, "\\.pdf$")
 })
 
 test_that("sanitize_filename handles Unicode characters", {

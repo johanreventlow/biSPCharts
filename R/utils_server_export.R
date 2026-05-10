@@ -279,7 +279,8 @@ get_hospital_name_for_export <- function() {
 #' @keywords internal
 generate_pdf_preview <- function(bfh_qic_result,
                                  metadata,
-                                 dpi = 150) {
+                                 dpi = 150,
+                                 preview_path = NULL) {
   # Valid\u00e9r dpi inden safe_operation -- kaster export_input_error ved ugyldig vaerdi
   validate_export_dpi(dpi)
 
@@ -314,6 +315,14 @@ generate_pdf_preview <- function(bfh_qic_result,
           # Create temp directory for Typst compilation
           temp_dir <- tempfile("bfh_preview_")
           dir.create(temp_dir, recursive = TRUE)
+
+          # Cycle E NEW2 (Codex 2026-05-10): exception-safe cleanup.
+          # Tidligere unlink-kald paa linje ~417 sprunges over hvis ggsave/
+          # bfh_extract_spc_stats/bfh_create_typst_document/inject_template_
+          # assets/system2(quarto) throws -> safe_operation fallback uden
+          # cleanup -> tempdir-leak per failed preview. on.exit garantor
+          # cleanup uanset exit-path.
+          on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
 
           log_debug(
             component = "[EXPORT]",
@@ -385,8 +394,13 @@ generate_pdf_preview <- function(bfh_qic_result,
           # uden at vi ville vide hvad der faktisk skete.
           assets_injected <- isTRUE(inject_template_assets(file.path(temp_dir, "bfh-template")))
 
-          # 5. Compile Typst directly to PNG (more efficient than PDF->PNG)
-          temp_png <- tempfile(fileext = ".png")
+          # 5. Compile Typst directly to PNG (more efficient than PDF->PNG).
+          # Cycle E NEW1 (Codex 2026-05-10): brug preview_path hvis caller
+          # leverer den (typisk session-scoped sti der overskrives per render).
+          # Falder tilbage til tempfile() for bagudkompatibilitet — men dette
+          # akkumulerer PNGs paa Connect-long-sessions; foretraek eksplicit
+          # path naar muligt.
+          temp_png <- preview_path %||% tempfile(fileext = ".png")
 
           # Use quarto typst compile with PNG format.
           # --ignore-system-fonts: undgaar at Typst picker system-Mari-varianter
@@ -413,8 +427,8 @@ generate_pdf_preview <- function(bfh_qic_result,
             stderr = TRUE
           )
 
-          # Cleanup temp directory
-          unlink(temp_dir, recursive = TRUE)
+          # Cleanup temp directory haandteres af on.exit ovenfor (NEW2);
+          # explicit unlink her er fjernet for at undgaa double-cleanup.
 
           # Check exit status and validate PNG
           exit_status <- attr(compile_result, "status")

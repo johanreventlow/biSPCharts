@@ -189,17 +189,61 @@
     }
   }
 
+  // Inert-tracking: bevar liste over body-children vi har sat inert på,
+  // så vi kun fjerner inert på dem (og ej forstyrrer noget vi ej satte).
+  var _inertedNodes = [];
+
+  function inertAppRoot() {
+    if (!document.body) return;
+    if (_inertedNodes.length > 0) return; // Allerede inert
+    var children = document.body.children;
+    for (var i = 0; i < children.length; i++) {
+      var node = children[i];
+      // Ej inert vores egen modal/backdrop (added efter denne kald)
+      if (node.id === 'spc-cookie-modal' ||
+          node.id === 'spc-cookie-modal-backdrop') {
+        continue;
+      }
+      // Ej inert script-tags eller noscript
+      var tag = node.tagName ? node.tagName.toLowerCase() : '';
+      if (tag === 'script' || tag === 'noscript') continue;
+      // Ej inert hvis allerede inert (preservér oprindelig state)
+      if (node.hasAttribute('inert')) continue;
+      node.setAttribute('inert', '');
+      _inertedNodes.push(node);
+    }
+  }
+
+  function uninertAppRoot() {
+    for (var i = 0; i < _inertedNodes.length; i++) {
+      _inertedNodes[i].removeAttribute('inert');
+    }
+    _inertedNodes = [];
+  }
+
   function dimAppRoot() {
     if (!document.body) return;
     document.body.classList.add('spc-app-dimmed');
+    inertAppRoot();
   }
 
   function undimAppRoot() {
     if (!document.body) return;
     document.body.classList.remove('spc-app-dimmed');
+    uninertAppRoot();
+  }
+
+  function hasExistingAppState() {
+    try {
+      return localStorage.getItem('spc_app_current_session') !== null;
+    } catch (e) {
+      return false;
+    }
   }
 
   function buildModal(consentVersion) {
+    var hasExistingData = hasExistingAppState();
+
     var backdrop = document.createElement('div');
     backdrop.className = 'spc-cookie-modal__backdrop';
     backdrop.id = 'spc-cookie-modal-backdrop';
@@ -225,6 +269,18 @@
       'genindlæsning. Vi indsamler også anonymiseret brugsstatistik for ' +
       'at forbedre kvaliteten.';
 
+    // Advarselsblok: vises når brugeren har eksisterende gemt session
+    // som vil blive slettet ved valg af "Kun nødvendige".
+    var warning = null;
+    if (hasExistingData) {
+      warning = document.createElement('div');
+      warning.className = 'spc-cookie-modal__warning';
+      warning.setAttribute('role', 'alert');
+      warning.textContent = '⚠ Du har en gemt session fra tidligere. ' +
+        'Vælger du "Kun nødvendige", slettes den straks. Brug ' +
+        'Download-knappen i appen for at gemme manuelt før du afviser.';
+    }
+
     var buttons = document.createElement('div');
     buttons.className = 'spc-cookie-modal__buttons';
 
@@ -242,10 +298,18 @@
     buttons.appendChild(rejectBtn);
     modal.appendChild(title);
     modal.appendChild(body);
+    if (warning) modal.appendChild(warning);
     modal.appendChild(buttons);
 
     document.body.appendChild(backdrop);
     document.body.appendChild(modal);
+
+    // Autofocus på Acceptér alle (non-destruktivt valg). GDPR-equal-prominence
+    // sikret via styling — ingen visuel forskel der nudger.
+    // Defer to next tick for at lade browser stabilisere DOM.
+    setTimeout(function() {
+      try { acceptBtn.focus(); } catch (e) { /* ignore */ }
+    }, 0);
 
     function decide(granted) {
       saveConsent(granted, consentVersion);

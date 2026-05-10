@@ -36,7 +36,20 @@
 }
 
 .spc-cookie-modal__body {
+  margin-bottom: 16px;
+}
+
+/* Advarselsblok: vises kun når existing app-state vil slettes ved
+   valg af "Kun nødvendige". Visuelt distinkt med warning-farver. */
+.spc-cookie-modal__warning {
   margin-bottom: 20px;
+  padding: 12px 14px;
+  background-color: #fef3c7;
+  border-left: 4px solid #d97706;
+  color: #78350f;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* Knapper: equal-prominence (samme størrelse, samme visuelle vægt).

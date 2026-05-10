@@ -24,11 +24,11 @@ Systematisk dual-review-program: Claude (Sonnet/Opus) + Codex (GPT-5) kalibrerer
 | 1 | A | Cross-repo wrappers (BFH*-integration) | ✅ Komplet 2026-05-09 | [01-cross-repo-wrappers.md](01-cross-repo-wrappers.md) → PR #664 + #666 |
 | 2 | B | Reactive state + persistence (#1+#3 merged) | ✅ Komplet 2026-05-09 | [02-reactive-state-persistence.md](02-reactive-state-persistence.md) → PR #671, #672, #673 + OpenSpec proposal `multi-tab-conflict-detection` |
 | 6 | F | Observability + quality gates (#7+#10 merged) | ✅ Komplet 2026-05-09 | [03-observability-gates.md](03-observability-gates.md) → PR #676 (DCF-parse), #677 (lintr+M3), #678 (has_value), #679 (cleanup+Rd-regen) |
+| 7 | G | AI/RAG integration | ✅ Komplet 2026-05-10 | [04-ai-rag.md](04-ai-rag.md) → PR #683 (H_NEW eksplicit feature-flag); H0/H3/H2 deferred til AI-roll-out |
 | **CHECKPOINT** | — | Re-vurder rækkefølge | — | — |
 | 3 | C | Excel I/O (round-trip + multi-sheet) | Pending | — |
 | 4 | D | Data validering + dansk parsing | Pending | — |
-| 5 | E | Export pipeline correctness + security | Pending | — |
-| 7 | G | AI/RAG integration | Pending | — |
+| 5 | E | Export pipeline correctness + security | Pending — perf-findings EH0/EM1/EM2 fra Cycle A endnu ej impl | — |
 | 8 | H | Security boundaries (kalibreret threat-model) | Pending | — |
 
 ## Læringer (opdateres per cycle)
@@ -84,6 +84,20 @@ Efter merge af #664 + #666 blev develop-CI rød. To hotfix-PRs (#668 + #669) kr�
 20. **Documenterede memory-mønstre er ikke nok uden maskinelle gates.** Cycle B introducerede `test-navigation-no-double-emit.R` MED kendskab til readLines-pattern fra PR #669 to timer tidligere. Manuel disciplin failer; lintr-regel ville have blokeret commit. **Procedure-fix:** for gentagne fejl-mønstre, byg automation (lintr/pre-commit-grep/CI-gate) i stedet for at stole på memory + reviews.
 
 21. **Rd-regen drift akkumulerer over cycles.** Cycle F's `devtools::document()` regen'de 5 Rd-filer der havde været stale siden Cycle A+B. Memory-pattern (`feedback_post_merge_ci_gotchas.md` punkt 1) forhindrer ikke drift når flere cycles arbejder parallelt. **Tilføj** til pre-commit: hvis R-fil med roxygen-kommentar staged uden samtidig Rd-fil → blokér eller advarsel.
+
+### Cycle G (2026-05-10)
+
+22. **Bruger-kontekst overrides Codex-severity-claim.** Codex flagged H0 (data_consent missing) som CRITICAL "production AI broken end-to-end". Bruger informerede om hidden UI → severity downgraded til HIGH-blocking-for-re-enable. Empirisk verifikation i UI-koden bekræftede `style="display: none;"` med kommentar "midlertidigt skjult". **Procedure-fix:** spørg om feature-state FØR markering som CRITICAL; tjek UI for hide-modes.
+
+23. **Facade-route kan bypasse audit-boundary.** Min H3-foreslåede facade-route via `generate_improvement_suggestion()` ville have skipped BFHcharts' audit-emission der sker INDE I `bfh_generate_analysis()` AFTER consent-validering. Codex fanget via call-graph-trace. **Lesson:** før refactor til "centralized helper"-pattern, verificer at helper bevarer ALL upstream-contracts (audit, validation, observability).
+
+24. **Default-flag-fix giver false confidence hvis ej enforced.** Min H7-foreslåede 2-linje default-skift fra `enabled = TRUE` til `FALSE` ville have set ud som fail-closed-implementation, men `ai_config$enabled` checkes IKKE i nogen AI-egress-path. Codex fanget. **Lesson:** før config-default-fix, grep efter actual enforcement-points (`grep "config\\$enabled" R/`).
+
+25. **Config-key-shapes mellem pakker kræver eksplicit adapter.** biSPCharts YAML bruger `max_requests_per_minute`, BFHllm forventer `rpm`. Naive forwarding via `do.call(BFHllm::bfhllm_configure, ...)` ville silent-ignore unknown keys. **Lesson:** cross-package-config kræver explicit-mapping + integration-test der inspicerer downstream-config-state via `BFHllm::bfhllm_get_config()`.
+
+26. **"Hidden via CSS" er fragile feature-toggle.** display:none + missing API-key + missing consent = 3-lags by-accident-disable. Bryde 1 lag → re-enable. Eksplicit feature-flag i config + enforcement-check i alle paths = robust single-source-of-truth. Anti-pattern dokumenteret som H_NEW i Cycle G.
+
+27. **Worktree-aware branching: tjek `git branch --show-current` FØR `git add`.** Cycle G impl: jeg `git add`-staged ændringer på master fordi jeg gennemførte editing i main-repo i stedet for worktree. Pre-commit blocked direkte master-commit. Måtte stash → switch-til-feature-branch-i-worktree → pop. **Procedure-fix:** start hver implementation-cycle med `cd <worktree> && git branch --show-current` confirm.
 
 ## Process-konstanter
 

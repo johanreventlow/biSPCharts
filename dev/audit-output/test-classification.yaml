@@ -1535,3 +1535,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle E NEW3 (Codex 2026-05-10) regression-tests for byte-aware filename-cap. Verificerer 255-byte cap respekteres for ASCII + danske multi-byte chars (Codex empirisk afsloerede 240 ae = 480 bytes -> nchar() default counts chars ej bytes).
+- file: test-detect-csv-encoding.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle D H2 (Codex 2026-05-10) regression-tests for detect_csv_encoding helper + handle_csv_upload latin1-fallback. Verificerer UTF-8/latin1-detection paa CSV-filer + at upload-flow bruger detected encoding i parse_file-call.

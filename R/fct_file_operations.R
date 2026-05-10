@@ -25,6 +25,33 @@ read_csv_detect_encoding <- function(file_path) {
   text
 }
 
+#' Detekter CSV file encoding via UTF-8 validity heuristik
+#'
+#' Cycle D H2 (Codex 2026-05-10): siden read_csv_detect_encoding() returnerer
+#' character-vektor (lines), introduceres separat helper der returnerer kun
+#' encoding-string. Bruges af parse_file()/parse_csv_file() til at undgaa
+#' UTF-8-only-default som rammer dansk Excel/Windows-eksport.
+#'
+#' Asymmetri-fix: paste-flow brugte allerede read_csv_detect_encoding() med
+#' fallback. Upload-flow brugte parse_file() uden encoding_hints -> defaulter
+#' til UTF-8 -> mojibake i danske headers.
+#'
+#' @param file_path Sti til CSV-fil
+#' @return Character: "UTF-8" eller "latin1" baseret paa validity-tjek.
+#'   Bruges direkte i parse_file(file_path, encoding_hints = list(encoding = ...)).
+#' @keywords internal
+#' @noRd
+detect_csv_encoding <- function(file_path) {
+  text <- tryCatch(
+    readLines(file_path, warn = FALSE, encoding = "UTF-8", n = 200L),
+    error = function(e) character(0) # nolint: swallowed_error_linter
+  )
+  if (length(text) > 0 && !all(validEnc(text))) {
+    return("latin1")
+  }
+  "UTF-8"
+}
+
 #' Upload-successnotifikation med kolonnenavne
 #' @param source_label Kildelabel (fx "CSV", "Excel", "Indsatte data")
 #' @param data Data frame der blev indlaest
@@ -438,9 +465,24 @@ handle_csv_upload <- function(file_path, app_state, session_id = NULL, emit = NU
     details = list(file_path = file_path)
   )
 
+  # Cycle D H2 (Codex 2026-05-10): detekter encoding foer parse_file() for
+  # at undgaa UTF-8-only-default. Dansk Excel/Windows-eksport = Windows-1252;
+  # uden fallback giver det mojibake i \u00e6\u00f8\u00e5-headers.
+  detected_encoding <- detect_csv_encoding(file_path)
+  if (detected_encoding != "UTF-8") {
+    log_info(
+      sprintf("CSV non-UTF-8 detected: encoding=%s", detected_encoding),
+      .context = "FILE_UPLOAD"
+    )
+  }
+
   # Brug parse_file() til pure parsing \u2014 ingen app_state-mutation her
   parsed <- tryCatch(
-    parse_file(file_path, format = "csv"),
+    parse_file(
+      file_path,
+      format = "csv",
+      encoding_hints = list(encoding = detected_encoding)
+    ),
     error = function(e) {
       log_error(
         paste("CSV-parsing fejlede:", e$message),

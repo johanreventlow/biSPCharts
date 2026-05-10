@@ -120,6 +120,20 @@ setup_wizard_gates <- function(input, output, app_state, session) {
         # Hvis kaldet fejler eller returnerer NULL, springes SPC-analyse-arket
         # over (build_spc_excel() haandterer NULL graciously).
         qic_data <- NULL
+
+        # Cycle C H1 (Codex 2026-05-10): ekstraher freeze_position fra data
+        # + metadata$frys_column saa SPC-analyse-arket Sektion A 'Frozen til
+        # raekke' populeres per spec. extract_freeze_position returnerer NULL
+        # hvis ingen frys_column eller ingen markeringer findes — gracefully
+        # haandteret af build_spc_analysis_sheet.
+        # NB: phase_names er IKKE sat (Codex anbefaling): qic_data$part er
+        # auto-genereret integer-IDs, ej user-labels. Implementer kun naar
+        # eksplicit label-source-kontrakt eksisterer.
+        freeze_position <- tryCatch(
+          extract_freeze_position(data, metadata$frys_column),
+          error = function(e) NULL # nolint: swallowed_error_linter
+        )
+
         analysis_options <- list(
           pkg_versions = list(
             biSPCharts = tryCatch(as.character(utils::packageVersion("biSPCharts")),
@@ -129,7 +143,8 @@ setup_wizard_gates <- function(input, output, app_state, session) {
               error = function(e) ""
             )
           ),
-          computed_at = Sys.time()
+          computed_at = Sys.time(),
+          freeze_position = freeze_position
         )
         spc_for_export <- tryCatch(
           build_export_plot(

@@ -1567,3 +1567,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle D H3 (Codex 2026-05-10) regression-tests for admission-specifik heuristik i handle_paste_data. Verificerer pure prose afvises, normal numeric tilllades, sparse 1/5 numeric col tilllades (Codex bekymring), single-value afvises som noise.
+- file: test-spc-excel-freeze-position.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle C H1 (Codex 2026-05-10) regression-tests for freeze_position extraction i SPC-analyse-arket. Verificerer setup_wizard_gates kalder extract_freeze_position + analysis_options inkluderer feltet. Phase_names skipped per Codex (qic_data$part = integer-IDs ej user-labels).

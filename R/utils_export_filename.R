@@ -88,6 +88,19 @@ generate_export_filename <- function(format, title = "", department = "") {
     ".pdf" # default fallback
   )
 
+  # Cycle E NEW3 (Codex 2026-05-10): byte-aware truncation.
+  # NTFS/ext4 cap = 255 bytes. Title (max 200) + dept (max 250) + prefix +
+  # extension kan i teorien naa ~460 chars. Med danske karakter (UTF-8
+  # multi-byte: aeoeaaAeOeAa = 2 bytes/stk) kan 240 chars = 480 bytes.
+  # Loop char-for-char til byte-cap respekteres for at undgaa split af
+  # multi-byte code points. Reserver 5 bytes for kort buffer + extension.
+  base_name <- enc2utf8(base_name)
+  extension_bytes <- nchar(extension, type = "bytes")
+  max_base_bytes <- 250L - extension_bytes # konservativ buffer under 255
+  while (nchar(base_name, type = "bytes") > max_base_bytes && nchar(base_name) > 0) {
+    base_name <- substr(base_name, 1, nchar(base_name) - 1)
+  }
+
   # Combine base name and extension
   filename <- paste0(base_name, extension)
 

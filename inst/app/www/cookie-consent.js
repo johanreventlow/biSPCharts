@@ -37,10 +37,75 @@
     });
   }
 
+  // Legacy v1 keys (4 separate items). Bevares uændret indtil migration
+  // har kørt successful — defensive against partial-migration crashes.
+  var LEGACY_KEYS = {
+    consent: 'spc_app_analytics_consent',
+    version: 'spc_app_consent_version',
+    timestamp: 'spc_app_consent_timestamp',
+    visitorId: 'spc_app_visitor_id'
+  };
+
+  function readLegacyConsent() {
+    try {
+      var consent = localStorage.getItem(LEGACY_KEYS.consent);
+      var version = localStorage.getItem(LEGACY_KEYS.version);
+      var timestamp = localStorage.getItem(LEGACY_KEYS.timestamp);
+      if (consent === null || version === null || timestamp === null) {
+        return null;
+      }
+      return {
+        consented: consent === 'true',
+        consent_version: parseInt(version, 10),
+        timestamp: timestamp,
+        visitor_id: localStorage.getItem(LEGACY_KEYS.visitorId) || null
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function migrateLegacyConsent() {
+    var legacy = readLegacyConsent();
+    if (!legacy) return null;
+
+    // Konstruér v2-record. Bemærk: vi forlader ikke valid-tjek til
+    // isConsentValid() — migration mappet bevares 1:1, og caller
+    // bestemmer derefter om det er stadig gyldigt mod nuværende version.
+    var record = {
+      schema_version: SCHEMA_VERSION,
+      consent_version: legacy.consent_version,
+      timestamp: legacy.timestamp,
+      consented: !!legacy.consented,
+      visitor_id: legacy.consented ? legacy.visitor_id : null
+    };
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+      // Slet legacy-keys først efter v2-skrivning er bekræftet
+      localStorage.removeItem(LEGACY_KEYS.consent);
+      localStorage.removeItem(LEGACY_KEYS.version);
+      localStorage.removeItem(LEGACY_KEYS.timestamp);
+      // visitor_id bevares som legacy backup hvis bruger har consent=true,
+      // ellers slet (vi ønsker ikke residual identifikator efter reject)
+      if (!legacy.consented) {
+        localStorage.removeItem(LEGACY_KEYS.visitorId);
+      }
+      console.info('[SPC] Migrated v1→v2 consent schema');
+      return record;
+    } catch (e) {
+      console.warn('[SPC] Migration v1→v2 failed:', e);
+      return null;
+    }
+  }
+
   function readConsent() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
+      if (!raw) {
+        // V2 record findes ej — forsøg legacy-migration
+        return migrateLegacyConsent();
+      }
       var parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') return null;
       if (parsed.schema_version !== SCHEMA_VERSION) return null;

@@ -25,11 +25,10 @@ Systematisk dual-review-program: Claude (Sonnet/Opus) + Codex (GPT-5) kalibrerer
 | 2 | B | Reactive state + persistence (#1+#3 merged) | ✅ Komplet 2026-05-09 | [02-reactive-state-persistence.md](02-reactive-state-persistence.md) → PR #671, #672, #673 + OpenSpec proposal `multi-tab-conflict-detection` |
 | 6 | F | Observability + quality gates (#7+#10 merged) | ✅ Komplet 2026-05-09 | [03-observability-gates.md](03-observability-gates.md) → PR #676 (DCF-parse), #677 (lintr+M3), #678 (has_value), #679 (cleanup+Rd-regen) |
 | 7 | G | AI/RAG integration | ✅ Komplet 2026-05-10 | [04-ai-rag.md](04-ai-rag.md) → PR #683 (H_NEW eksplicit feature-flag); H0/H3/H2 deferred til AI-roll-out |
-| **CHECKPOINT** | — | Re-vurder rækkefølge | — | — |
-| 3 | C | Excel I/O (round-trip + multi-sheet) | Pending | — |
-| 4 | D | Data validering + dansk parsing | Pending | — |
-| 5 | E | Export pipeline correctness + security | Pending — perf-findings EH0/EM1/EM2 fra Cycle A endnu ej impl | — |
-| 8 | H | Security boundaries (kalibreret threat-model) | Pending | — |
+| 5 | E | Export pipeline correctness + security | ✅ Komplet 2026-05-10 | [05-export-pipeline.md](05-export-pipeline.md) → PR #686 (NEW1 temp-PNG), #687 (NEW2 on.exit), #688 (NEW3 byte-cap); 3/4 Cycle A perf-findings verified-fixed since |
+| 4 | D | Data validering + dansk parsing | ✅ Komplet 2026-05-10 | [06-data-validation.md](06-data-validation.md) → PR #692 (H1 danish-aware), #693 (H2 latin1), #694 (H3 admission), #695 (M1 thousand-sep), #697 (L1 encoding-arg) |
+| 3 | C | Excel I/O (round-trip + multi-sheet) | ✅ Komplet 2026-05-10 | [07-excel-io.md](07-excel-io.md) → PR #698 (H1 freeze_position), #699 (H3 validator-parity); H2 deferred per threat-model |
+| 8 | H | Security boundaries (kalibreret threat-model) | ✅ Komplet 2026-05-10 | [08-security.md](08-security.md) → 0 findings (forventet under kalibreret threat-model) |
 
 ## Læringer (opdateres per cycle)
 
@@ -98,6 +97,30 @@ Efter merge af #664 + #666 blev develop-CI rød. To hotfix-PRs (#668 + #669) kr�
 26. **"Hidden via CSS" er fragile feature-toggle.** display:none + missing API-key + missing consent = 3-lags by-accident-disable. Bryde 1 lag → re-enable. Eksplicit feature-flag i config + enforcement-check i alle paths = robust single-source-of-truth. Anti-pattern dokumenteret som H_NEW i Cycle G.
 
 27. **Worktree-aware branching: tjek `git branch --show-current` FØR `git add`.** Cycle G impl: jeg `git add`-staged ændringer på master fordi jeg gennemførte editing i main-repo i stedet for worktree. Pre-commit blocked direkte master-commit. Måtte stash → switch-til-feature-branch-i-worktree → pop. **Procedure-fix:** start hver implementation-cycle med `cd <worktree> && git branch --show-current` confirm.
+
+### Cycle E (2026-05-10)
+
+Cycle A pre-existing fund (EH0/EM1/EM3) verified-FIXED siden cycle A-review (perf-cycle gjorde det). Kun EM2 stadig present men downgraded MEDIUM→LOW efter empirisk verifikation. Nye fund: 1 MEDIUM (NEW1 temp-PNG-akkumulation, Codex empirisk simuleret 1000-fil-akkumulation) + 3 LOW. Codex reddede 2 fix-recipes fra runtime-broken (NEW1 session$token ej i scope) og UTF-8-byte-trap (NEW3 nchar-default-bug — 240 `æ` = 480 bytes).
+
+### Cycle D (2026-05-10)
+
+3 HIGH (clinical-data-fidelity-impact) + 1 MEDIUM + 1 LOW. **3/4 fix-recipes recalibreret af Codex** — H2 (read_csv_detect_encoding returns char-vector ej objekt), M1 (silent-corruption af engelsk point-decimal `1.234`), H3 (threshold=0.5 ville reject sparse clinical-paste). H1 confirmed empirisk-uafhængigt (`is_column_numeric(c("12,5","0,73","3,14"))` → FALSE). Læring: Y-axis-quality-heuristik ≠ paste-admission-heuristik — genbrug af samme funktion til to formål er anti-pattern.
+
+### Cycle C (2026-05-10)
+
+Lav-finding cycle som forventet ("Stable pipeline" per CLAUDE.md). 1 MEDIUM (H1 spec-divergens — `analysis_options` mangler `freeze_position` for SPC-analyse-arket) + 2 LOW (defensive). Codex reddede 2 fix-recipes: H1 phase_names ville skrive integer part-IDs som user-labels (`qic_data$part` er auto-genereret integer, ej user-labels); H2 `startsWith(names, c(...))` er pairwise-recycled = length-mismatch-error.
+
+### Cycle H (2026-05-10)
+
+**Empty cycle — 0 findings.** Forventet outcome under kalibreret threat-model (kvalitetsdata, ej PHI). Tidligere security-reviews (2026-05-07) har dismissed alle PHI-grade findings. Verified safeguards aktive (sanitize_filename, validate_safe_file_path, RATE_LIMITS, escape_typst_metadata, redact_secrets, sanitize_session_token).
+
+28. **Empty cycle er valid outcome under kalibreret threat-model.** Memory-baseret threat-model + tidligere dismissed-decisions giver review-agent klar grænse for hvad der er deploy-blokerende. Skip ej-blokerende defensive-fund. Forhindrer cycle-pressure-til-at-fabrikere-findings.
+
+---
+
+## Program-status: KOMPLET
+
+Alle 8 cycles (A, B, C, D, E, F, G, H) gennemført 2026-05-09 til 2026-05-10. **27 PRs merged + 5 deferred findings dokumenteret** (Cycle G H0/H3/H2 til AI-roll-out, Cycle C H2 til shared-disk-flow, Cycle E EM2 perf-wart). Hver cycle dual-reviewed (Claude + Codex) med dokumenteret reconcile-pattern. 28 læringer indfanget for fremtidige reviews.
 
 ## Process-konstanter
 

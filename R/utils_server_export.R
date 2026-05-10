@@ -315,6 +315,14 @@ generate_pdf_preview <- function(bfh_qic_result,
           temp_dir <- tempfile("bfh_preview_")
           dir.create(temp_dir, recursive = TRUE)
 
+          # Cycle E NEW2 (Codex 2026-05-10): exception-safe cleanup.
+          # Tidligere unlink-kald paa linje ~417 sprunges over hvis ggsave/
+          # bfh_extract_spc_stats/bfh_create_typst_document/inject_template_
+          # assets/system2(quarto) throws -> safe_operation fallback uden
+          # cleanup -> tempdir-leak per failed preview. on.exit garantor
+          # cleanup uanset exit-path.
+          on.exit(unlink(temp_dir, recursive = TRUE), add = TRUE)
+
           log_debug(
             component = "[EXPORT]",
             message = "Genererer PDF preview via Typst PNG",
@@ -413,8 +421,8 @@ generate_pdf_preview <- function(bfh_qic_result,
             stderr = TRUE
           )
 
-          # Cleanup temp directory
-          unlink(temp_dir, recursive = TRUE)
+          # Cleanup temp directory haandteres af on.exit ovenfor (NEW2);
+          # explicit unlink her er fjernet for at undgaa double-cleanup.
 
           # Check exit status and validate PNG
           exit_status <- attr(compile_result, "status")

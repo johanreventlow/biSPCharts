@@ -55,18 +55,11 @@ Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
 // aktivt vælger "Gendan session" via performSessionRestore custom message.
 // Issue #193 / brugerstyret restore.
 //
-// State-machine: peek udløses først når BÅDE Shiny er klar OG bruger har
-// truffet consent-valg (eller eksisterende valid samtykke er loaded).
-// Forhindrer race hvor sessioninitialized fyrer før modal-valg, så peek
-// ville se window._spcConsentGranted === undefined og returnere null.
-var _spcPeekState = {shinyReady: false, consentDecided: false, peeked: false};
-
-function _spcAttemptPeek() {
-  if (!_spcPeekState.shinyReady || !_spcPeekState.consentDecided) return;
-  if (_spcPeekState.peeked) return;
-  _spcPeekState.peeked = true;
-
-  console.log('[SPC] Running session peek (shinyReady + consentDecided)');
+// Peek er ej consent-gated — landing-page skal kunne vise "Gendan session"-
+// prompt uden at kræve forudgående consent. Full restore (auto_restore_data
+// via performSessionRestore) gates derimod via R-side require_consent.
+$(document).on('shiny:sessioninitialized', function() {
+  console.log('[SPC] shiny:sessioninitialized fired');
   var data = window.loadAppState('current_session');
   console.log('[SPC] localStorage peek: data present =', data !== null);
   if (data) {
@@ -86,23 +79,6 @@ function _spcAttemptPeek() {
     window.__pendingRestore = null;
     Shiny.setInputValue('session_peek', {has_payload: false}, {priority: 'event'});
   }
-}
-
-$(document).on('shiny:sessioninitialized', function() {
-  console.log('[SPC] shiny:sessioninitialized fired');
-  _spcPeekState.shinyReady = true;
-  // Hvis consent allerede er besluttet (fast path: valid eksist. samtykke
-  // detected før Shiny connect), så markér decided + peek straks.
-  if (window._spcConsentDecided === true) {
-    _spcPeekState.consentDecided = true;
-  }
-  _spcAttemptPeek();
-});
-
-document.addEventListener('spc:consent-decided', function(_ev) {
-  console.log('[SPC] consent decided, attempting peek');
-  _spcPeekState.consentDecided = true;
-  _spcAttemptPeek();
 });
 
 // Trigges af R når bruger klikker "Gendan session"

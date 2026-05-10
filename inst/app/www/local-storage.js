@@ -108,11 +108,12 @@ window.saveAppState = function(key, data) {
 // Issue #193: Ved parse-fejl (fx gammel double-encoded data fra tidligere
 // version) rydder vi automatisk storage så brugeren ikke sidder fast i
 // et brudt state. Næste gang bruger gemmer, starter de forfra med v2.0.
+//
+// IKKE consent-gated: landing-page peek skal kunne læse eksisterende
+// localStorage-metadata for at vise "Gendan session"-prompt. Reading af
+// allerede gemt data er ej "ny persistens" — full restore (auto_restore_data)
+// gates separat via R-side require_consent_or_show_modal().
 window.loadAppState = function(key) {
-  if (!_spcIsPersistenceAllowed()) {
-    console.debug('[SPC] loadAppState blocked: consent not granted');
-    return null;
-  }
   var storageKey = 'spc_app_' + key;
   try {
     var data = localStorage.getItem(storageKey);

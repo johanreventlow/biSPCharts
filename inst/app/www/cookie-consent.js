@@ -328,18 +328,32 @@
     rejectBtn.addEventListener('click', function() { decide(false); });
   }
 
-  // Pre-app dim ved DOMContentLoaded (før Shiny renderer)
+  // Pre-app gate: ved DOMContentLoaded validerer vi eksisterende samtykke
+  // SILENT. Modal vises IKKE automatisk — den triggers af R-side når brugeren
+  // klikker "Kom i gang" eller "Gendan session" (action-baseret consent-flow).
+  // Landing-page kan vises uden modal — brugeren skal ikke samtykke for at
+  // se velkomstskærm.
   function preAppGate(consentVersion, maxAgeDays) {
     var record = readConsent();
     if (isConsentValid(record, consentVersion, maxAgeDays)) {
-      // Eksisterende valid samtykke — load uden modal
+      // Eksisterende valid samtykke — dispatch + notify uden modal
       dispatchDecidedEvent(record.consented);
       notifyShiny(record.consented, record);
+    }
+    // Ingen valid samtykke: hold stille. R-side triggerer modal ved
+    // første consent-krævende handling (start_wizard, restore_saved_session).
+  }
+
+  // Eksplicit trigger fra R-side — vises kun hvis consent ej allerede besluttet
+  function triggerConsentModal(consentVersion) {
+    if (window._spcConsentDecided === true) {
+      // Allerede besluttet — re-dispatch så pending R-action kan fortsætte
+      dispatchDecidedEvent(window._spcConsentGranted);
       return;
     }
-    // Ej valid samtykke — dim app + vis modal
+    if (document.getElementById('spc-cookie-modal')) return; // Allerede vist
     dimAppRoot();
-    buildModal(consentVersion);
+    buildModal(consentVersion || window._spcConsentVersion);
   }
 
   // Public API: footer-link genåbner samtykke-valg
@@ -380,18 +394,26 @@
   if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
     Shiny.addCustomMessageHandler('spc_set_consent_version', function(version) {
       window._spcConsentVersion = version;
-      // Hvis modal allerede vist, lad bruger fortsætte — ej re-render.
-      // Hvis besluttet med valid samtykke: re-validér mod ny version.
+      // Hvis besluttet med tidligere samtykke: re-validér mod ny version
+      // STILLE — modal vises ej automatisk, R triggerer den ved næste
+      // consent-krævende handling.
       if (window._spcConsentDecided) {
         var record = readConsent();
         if (!isConsentValid(record, version, window._spcConsentMaxAgeDays)) {
-          // Ny version forældede samtykke — vis modal igen
           window._spcConsentDecided = false;
-          dimAppRoot();
-          buildModal(version);
+          window._spcConsentGranted = undefined;
         }
       }
     });
+
+    // R triggerer modal når bruger forsøger consent-krævende handling
+    // (start_wizard, restore_saved_session) og samtykke endnu ej er besluttet.
+    Shiny.addCustomMessageHandler('spc_show_consent_modal', function(_message) {
+      triggerConsentModal(window._spcConsentVersion);
+    });
   }
+
+  // Eksponer triggerConsentModal i tilfælde af direkte JS-kald
+  window.spcTriggerConsentModal = triggerConsentModal;
 
 })();

@@ -19,6 +19,47 @@ should_track_analytics <- function(consent = NULL) {
   TRUE
 }
 
+#' Kræv cookie-samtykke før consent-bundet handling
+#'
+#' Wrapper omkring brugerhandlinger der kræver cookie-samtykke (fx
+#' "Kom i gang"-knap der starter wizard, eller "Gendan session"-knap der
+#' triggerer full restore). Hvis brugeren ej har truffet valg endnu, vises
+#' modal og handling defereres indtil samtykke-callback fyrer.
+#'
+#' Flow:
+#' 1. Hvis input$analytics_consent allerede sat (TRUE/FALSE) → kør then_do straks
+#' 2. Hvis ej besluttet → gem then_do som callback + send spc_show_consent_modal
+#' 3. Observer på input$analytics_consent (registreret separat) eksekverer
+#'    callback efter modal-valg
+#'
+#' @param input Shiny input-objekt (typisk session$input)
+#' @param session Shiny session-objekt (parent_session for moduler)
+#' @param then_do Function() der skal køres når samtykke er truffet
+#' @return Invisible TRUE hvis handling kørt straks, FALSE hvis defereret
+#' @export
+require_consent_or_show_modal <- function(input, session, then_do) {
+  if (!is.function(then_do)) {
+    stop("require_consent_or_show_modal: 'then_do' skal være en function")
+  }
+  consent <- tryCatch(
+    shiny::isolate(input$analytics_consent),
+    error = function(e) NULL # nolint: swallowed_error_linter
+  )
+  if (!is.null(consent) && !anyNA(consent) && length(consent) > 0L) {
+    # Bruger har allerede besluttet — kør straks
+    then_do()
+    return(invisible(TRUE))
+  }
+  # Defer: gem callback i session$userData og vis modal
+  session$userData$pending_consent_action <- then_do
+  session$sendCustomMessage("spc_show_consent_modal", list())
+  log_debug(
+    "Consent-modal triggered for pending action",
+    .context = LOG_CONTEXTS$analytics$consent
+  )
+  invisible(FALSE)
+}
+
 #' Tjek om localStorage-app-state-persistens er tilladt
 #'
 #' GDPR-binær consent-model: brugerens valg i cookie-modal gater alle
@@ -157,6 +198,37 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
       }
     },
     once = TRUE,
+    ignoreNULL = TRUE
+  )
+
+  # Pending-action callback: kør deferred handling efter modal-valg.
+  # Bruges af require_consent_or_show_modal() til at re-trigge fx
+  # start_wizard eller restore_saved_session efter brugeren har truffet
+  # consent-valg i modal. Observer fyrer ved hver consent-ændring (ej once)
+  # så footer-link → revoke → re-accept flow også virker.
+  shiny::observeEvent(input$analytics_consent,
+    priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
+    {
+      pending <- session$userData$pending_consent_action
+      if (!is.null(pending) && is.function(pending)) {
+        session$userData$pending_consent_action <- NULL
+        log_debug(
+          "Running deferred consent-action after modal decision",
+          .context = LOG_CONTEXTS$analytics$consent
+        )
+        safe_operation(
+          "Run deferred consent-action",
+          code = pending(),
+          fallback = function(e) {
+            log_error(
+              paste("Deferred consent-action fejlede:", e$message),
+              .context = LOG_CONTEXTS$analytics$consent
+            )
+          },
+          error_type = "processing"
+        )
+      }
+    },
     ignoreNULL = TRUE
   )
 

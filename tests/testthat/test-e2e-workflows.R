@@ -394,18 +394,14 @@ test_that("E2E: User can generate SPC chart", {
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 2000)
 
-  tryCatch(
-    {
-      app$set_inputs(chart_type = "Run chart")
-      app$wait_for_idle(duration = 1000)
-    },
-    error = function(e) message("Could not set chart_type input: ", e$message)
-  )
-
+  # chart_type selectizeInput accepterer engelske qicharts2-koder
+  # ("run", "i", "p", "u", "c"), ej danske labels. Se config_chart_types.R.
+  app$set_inputs(chart_type = "run")
   app$wait_for_idle(duration = 2000)
 
   values <- app$get_values()
   expect_true(!is.null(values$output))
+  expect_equal(values$input$chart_type, "run")
   app$stop()
 })
 
@@ -420,18 +416,22 @@ test_that("E2E: User can manually select columns", {
   app <- create_e2e_driver(name = "column_selection", height = 800, width = 1200)
   app$wait_for_idle()
   app$upload_file(direct_file_upload = temp_file)
+  app$wait_for_idle(duration = 3000)
+
+  # Kolonne-mapping inputs (x_column, y_column) lever kun i DOM når
+  # open_column_mapping_modal er åben — ellers throws "Unable to find
+  # input binding". Åbn modal først, så set_inputs lykkes.
+  app$click("open_column_mapping_modal")
   app$wait_for_idle(duration = 2000)
 
-  tryCatch(
-    {
-      app$set_inputs(x_column = "ColA", y_column = "ColB")
-      app$wait_for_idle(duration = 1000)
-    },
-    error = function(e) message("Could not set column inputs: ", e$message)
-  )
+  app$set_inputs(x_column = "ColA", y_column = "ColB")
+  app$wait_for_idle(duration = 1000)
 
   values <- app$get_values()
   expect_true(length(values) > 0)
+  expect_equal(values$input$x_column, "ColA")
+  expect_equal(values$input$y_column, "ColB")
+
   app$stop()
 })
 
@@ -492,22 +492,27 @@ test_that("E2E: Complete user journey from upload to chart", {
   app$wait_for_idle()
   app$upload_file(direct_file_upload = temp_file)
   app$wait_for_idle(duration = 3000)
-  app$expect_screenshot(name = "after_upload")
 
-  tryCatch(
-    {
-      app$set_inputs(chart_type = "P-kort (Andele)")
-      app$wait_for_idle(duration = 1500)
-    },
-    error = function(e) message("Could not set chart type: ", e$message)
-  )
-
+  # Sæt eksplicit kolonne-mapping via modal (auto-detekt kender ikke
+  # "Komplikationer" / "Operationer" som standard-headers).
+  app$click("open_column_mapping_modal")
   app$wait_for_idle(duration = 2000)
-  app$expect_screenshot(name = "final_chart")
+  app$set_inputs(
+    x_column = "Dato",
+    y_column = "Komplikationer",
+    n_column = "Operationer",
+    kommentar_column = "Kommentar"
+  )
+  app$wait_for_idle(duration = 1500)
+
+  # chart_type bruger engelsk qicharts2-kode, ej dansk label
+  app$set_inputs(chart_type = "p", y_axis_unit = "percent")
+  app$wait_for_idle(duration = 3000)
 
   expect_true(is.character(app$get_url()) && nzchar(app$get_url()))
 
   final_values <- app$get_values()
   expect_true(!is.null(final_values))
+  expect_equal(final_values$input$chart_type, "p")
   app$stop()
 })

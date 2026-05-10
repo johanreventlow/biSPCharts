@@ -1535,6 +1535,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle E NEW3 (Codex 2026-05-10) regression-tests for byte-aware filename-cap. Verificerer 255-byte cap respekteres for ASCII + danske multi-byte chars (Codex empirisk afsloerede 240 ae = 480 bytes -> nchar() default counts chars ej bytes).
+- file: test-parse-danish-number-thousand-sep.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle D M1 (Codex 2026-05-10) regression-tests for conditional thousand-separator strip i parse_danish_number(). Verificerer dansk grouping+decimal parses, engelsk point-decimal preserveres (no silent corruption per Codex), multi-grouping fungerer.
 - file: test-is-column-numeric-danish-aware.R
   audit_category: post-audit
   type: unit

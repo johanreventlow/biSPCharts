@@ -39,6 +39,23 @@ parse_danish_number <- function(x) {
   x_cleaned <- gsub("\\s+", "", x_cleaned) # Remove spaces
   x_cleaned <- trimws(x_cleaned)
 
+  # Cycle D M1 (Codex 2026-05-10): conditional thousand-separator strip.
+  # Dansk format "1.234,56" har komma som decimal -> punktum er grouping.
+  # Uden komma kan "1.234" v\u00e6re enten 1234 (dansk grouping) eller 1.234 (point-
+  # decimal, fx engelsk-eksport). Strip kun grouping-dots HVIS komma er til
+  # stede (entydigt dansk format-signal). Forhindrer silent corruption af
+  # engelsk point-decimal "1.234" -> 1234.
+  if (grepl(",", x_cleaned, fixed = TRUE)) {
+    # Match . der staar mellem cifre med pr\u00e6cis 3-cifre-gruppe efter
+    # (tusind-separator, ej decimal). K\u00f8rer over multiple grupperinger.
+    x_cleaned <- gsub(
+      "(?<=\\d)\\.(?=\\d{3}(\\D|$))",
+      "",
+      x_cleaned,
+      perl = TRUE
+    )
+  }
+
   # Replace comma with dot for decimal separation
   x_normalized <- gsub(",", ".", x_cleaned)
 

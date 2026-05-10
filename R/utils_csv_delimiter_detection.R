@@ -43,10 +43,18 @@ detect_csv_delimiter <- function(path, encoding = "UTF-8", n_max = 5L) {
       name = "auto-detect",
       delimiter = NA_character_, # Lader readr bestemme
       fn = function() {
+        # Cycle D L1 (Codex 2026-05-10): tilføj encoding-arg matching
+        # andre strategier. Tidligere defaultede readr til system-locale
+        # encoding ved auto-detect-strategi -> latin1-headers kunne
+        # mojibake'es ved fallback fra semikolon-strategi.
         readr::read_delim(
           path,
           delim = NULL,
-          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+          locale = readr::locale(
+            decimal_mark = ",",
+            grouping_mark = ".",
+            encoding = encoding
+          ),
           n_max = n_max,
           show_col_types = FALSE,
           trim_ws = TRUE,

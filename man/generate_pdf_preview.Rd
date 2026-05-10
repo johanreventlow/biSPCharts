@@ -4,7 +4,7 @@
 \alias{generate_pdf_preview}
 \title{Generate PDF Preview Image}
 \usage{
-generate_pdf_preview(bfh_qic_result, metadata, dpi = 150)
+generate_pdf_preview(bfh_qic_result, metadata, dpi = 150, preview_path = NULL)
 }
 \arguments{
 \item{bfh_qic_result}{bfh_qic_result object from BFHcharts::bfh_qic() or generateSPCPlot()$bfh_qic_result.}

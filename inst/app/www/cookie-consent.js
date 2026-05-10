@@ -15,11 +15,13 @@
 
   var STORAGE_KEY = 'spc_app_consent';
   var SCHEMA_VERSION = 2;
-  // Default consent_version skal matche R-side (config_analytics.R).
-  // R sender autoritativ version via spc_set_consent_version efter
-  // session-init, men vi bruger default ved DOMContentLoaded for
-  // pre-app gating før WebSocket er klar.
-  var DEFAULT_CONSENT_VERSION = 1;
+  // Defaults bruges KUN hvis R ikke har injiceret window._spcConsentVersion
+  // før denne fil loader (fx i tests eller hvis app_ui.R ændres). Single
+  // source of truth for prod er R/config_analytics.R::ANALYTICS_CONFIG —
+  // injiceret via app_ui.R synkron <script>-tag før golem::bundle_resources
+  // henter cookie-consent.js. Hvis R IKKE har sat dem, falder vi tilbage
+  // til disse defaults.
+  var DEFAULT_CONSENT_VERSION = 2;
   var DEFAULT_MAX_AGE_DAYS = 365;
 
   // Default: ej besluttet
@@ -355,9 +357,14 @@
     buildModal(window._spcConsentVersion || DEFAULT_CONSENT_VERSION);
   };
 
-  // Default config — overskrives når R sender spc_set_consent_version
-  window._spcConsentVersion = DEFAULT_CONSENT_VERSION;
-  window._spcConsentMaxAgeDays = DEFAULT_MAX_AGE_DAYS;
+  // Default config — bruges kun hvis R ikke har injiceret værdierne via
+  // app_ui.R synkron <script>-tag. Sætter ej hvis allerede sat (R wins).
+  if (typeof window._spcConsentVersion !== 'number') {
+    window._spcConsentVersion = DEFAULT_CONSENT_VERSION;
+  }
+  if (typeof window._spcConsentMaxAgeDays !== 'number') {
+    window._spcConsentMaxAgeDays = DEFAULT_MAX_AGE_DAYS;
+  }
 
   // Pre-app gate kører ASAP ved DOMContentLoaded
   if (document.readyState === 'loading') {

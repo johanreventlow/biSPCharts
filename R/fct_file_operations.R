@@ -572,8 +572,22 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
     return(invisible(NULL))
   }
 
-  # Fritekst med tilfaeldige separatorer kan passere strukturel validering
-  has_numeric <- any(vapply(data, is_column_numeric, logical(1), threshold = 0))
+  # Fritekst med tilfaeldige separatorer kan passere strukturel validering.
+  # Cycle D H3 (Codex 2026-05-10): admission-specifik heuristik (ej kvalitets-
+  # threshold). Tidligere brugte is_column_numeric(threshold=0) som var DEAD
+  # CODE (0/N >= 0 = altid TRUE). threshold=0.5 (Y-axis-quality-heuristik) er
+  # for aggressiv for paste-admission da sparse clinical-data (1 numeric col +
+  # 4 char cols) kunne afvises. Korrekt: kraever \u22651 column med \u22652 parsed
+  # numeric values -> tillader sparse data, afviser ren tekst.
+  count_parsed_numeric <- function(col) {
+    if (is.numeric(col)) {
+      return(sum(!is.na(col)))
+    }
+    parsed <- parse_danish_number(as.character(col))
+    sum(!is.na(parsed))
+  }
+  numeric_counts <- vapply(data, count_parsed_numeric, integer(1))
+  has_numeric <- any(numeric_counts >= 2L)
 
   if (!has_numeric) {
     shiny::showNotification(

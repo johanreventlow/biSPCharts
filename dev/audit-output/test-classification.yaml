@@ -1535,3 +1535,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle E NEW3 (Codex 2026-05-10) regression-tests for byte-aware filename-cap. Verificerer 255-byte cap respekteres for ASCII + danske multi-byte chars (Codex empirisk afsloerede 240 ae = 480 bytes -> nchar() default counts chars ej bytes).
+- file: test-paste-data-admission-heuristic.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-10'
+  rationale: Cycle D H3 (Codex 2026-05-10) regression-tests for admission-specifik heuristik i handle_paste_data. Verificerer pure prose afvises, normal numeric tilllades, sparse 1/5 numeric col tilllades (Codex bekymring), single-value afvises som noise.

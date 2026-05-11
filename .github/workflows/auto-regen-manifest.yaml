@@ -117,6 +117,28 @@ jobs:
           extra-packages: any::rsconnect, any::pkgload, any::renv
           needs: check
 
+      # Explicit install fra DESCRIPTION Remotes med korrekte @tag-refs.
+      # r-lib/actions/setup-r-dependencies@v2 (pak) respekterer ikke altid
+      # @tag-suffixet i Remotes og kan installere fra HEAD. Dette step
+      # sikrer at writeManifest() ser korrekte RemoteRef/GithubRef-metadata.
+      - name: Install GitHub sibling packages from DESCRIPTION Remotes
+        if: steps.check.outputs.deps_changed == 'true'
+        run: |
+          Rscript -e "
+          raw <- tryCatch(read.dcf('DESCRIPTION')[, 'Remotes'], error = function(e) NA_character_)
+          if (is.na(raw) || !nzchar(raw)) { cat('Ingen Remotes\n'); quit(status = 0) }
+          items <- trimws(strsplit(gsub('\n', ' ', raw), ',')[[1]])
+          items <- items[nzchar(items)]
+          for (item in items) {
+            cat('Installerer:', item, '\n')
+            tryCatch(
+              remotes::install_github(item, quiet = FALSE, upgrade = 'never', force = TRUE),
+              error = function(e) { cat('FEJL:', item, e\$message, '\n'); quit(status = 1) }
+            )
+          }
+          cat('Alle Remotes installeret OK\n')
+          "
+
       - name: Regenerate manifest.json
         if: steps.check.outputs.deps_changed == 'true'
         run: Rscript dev/_regen_manifest.R

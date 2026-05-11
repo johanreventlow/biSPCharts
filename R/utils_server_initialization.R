@@ -61,16 +61,17 @@ initialize_app_infrastructure <- function(session, hashed_token, session_debugge
   log_debug("UI update service initialized", .context = "APP_INIT")
 
   # ANALYTICS: Setup consent gate (erstatter direkte shinylogs init)
-  # shinylogs initialiseres KUN naar bruger har givet consent via cookie-banner
-  if (should_enable_shinylogs()) {
-    setup_analytics_consent(
-      input = session$input,
-      session = session,
-      hashed_token = hashed_token,
-      log_directory = "logs/"
-    )
-    log_debug("Analytics consent gate registered", .context = "APP_INIT")
-  }
+  # Kører altid — uafhængigt af shinylogs-flag. Pending-action observer
+  # bruges af require_consent_or_show_modal() til action-based consent
+  # selv når shinylogs er disabled (fx tests). Shinylogs-init inde i
+  # observeren gates separat via should_track_analytics().
+  setup_analytics_consent(
+    input = session$input,
+    session = session,
+    hashed_token = hashed_token,
+    log_directory = "logs/"
+  )
+  log_debug("Analytics consent gate registered", .context = "APP_INIT")
 
   # EVENT SYSTEM: Set up reactive event listeners AFTER shinylogs setup
   # SESSION FLAG: Prevent duplicate event listener registration

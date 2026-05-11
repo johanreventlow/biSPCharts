@@ -212,9 +212,13 @@ test_that("Landing module: set_session_peek_result haandterer discard-flow", {
 test_that("Landing module: restore_saved_session klik sender performSessionRestore til parent_session", {
   skip_if_not_installed("shiny")
 
-  # Mock parent_session som capture-target for sendCustomMessage
+  # Mock parent_session som capture-target for sendCustomMessage.
+  # input$analytics_consent = TRUE saa require_consent_or_show_modal
+  # er straight-through (gated flow daekkes separat i
+  # test-utils_analytics_consent.R).
   parent_msgs <- list()
   mock_parent_session <- list(
+    input = list(analytics_consent = TRUE),
     sendCustomMessage = function(type, message) {
       parent_msgs[[length(parent_msgs) + 1L]] <<- list(type = type, message = message)
       invisible(NULL)

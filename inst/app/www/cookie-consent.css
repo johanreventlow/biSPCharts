@@ -1,61 +1,146 @@
-/* Cookie consent banner — GDPR-compliant, diskret placement */
+/* Cookie consent modal — GDPR-compliant hård blocking modal med
+   binær valg (Acceptér alle / Kun nødvendige). Erstatter v1-banner. */
 
-.spc-cookie-banner {
+/* Backdrop: dækker viewport, blokerer interaktion med app bag modal.
+   pointer-events: auto overrider .spc-app-dimmed kaskade på body. */
+.spc-cookie-modal__backdrop {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #2c3e50;
-  color: #ffffff;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  z-index: 9999;
-  font-size: 14px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9998;
+  pointer-events: auto;
 }
 
-.spc-cookie-banner__text {
-  flex: 1;
+/* Modal-card: centreret, max-width for læsbarhed.
+   pointer-events: auto overrider .spc-app-dimmed kaskade på body. */
+.spc-cookie-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  color: #2c3e50;
+  padding: 24px 28px;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  width: calc(100% - 32px);
+  z-index: 9999;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  pointer-events: auto;
+  user-select: auto;
+}
+
+.spc-cookie-modal__title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.spc-cookie-modal__body {
+  margin-bottom: 16px;
+}
+
+.spc-cookie-modal__body p {
+  margin: 0 0 12px 0;
+}
+
+.spc-cookie-modal__body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Advarselsblok: vises kun når existing app-state vil slettes ved
+   valg af "Kun nødvendige". Visuelt distinkt med warning-farver. */
+.spc-cookie-modal__warning {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background-color: #fef3c7;
+  border-left: 4px solid #d97706;
+  color: #78350f;
+  border-radius: 4px;
+  font-size: 13px;
   line-height: 1.4;
 }
 
-.spc-cookie-banner__buttons {
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
+/* Knapper: equal-prominence (samme størrelse, samme visuelle vægt).
+   GDPR-krav om "ej forudvalgt" — ingen forskel der nudger mod accept. */
+.spc-cookie-modal__buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
 }
 
-.spc-cookie-banner__btn {
-  padding: 8px 20px;
-  border: none;
+@media (max-width: 360px) {
+  /* Smal skærm: stak knapper lodret */
+  .spc-cookie-modal__buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+.spc-cookie-modal__btn {
+  width: 100%;
+  padding: 10px 16px;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 14px;
   font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.spc-cookie-banner__btn--accept {
+.spc-cookie-modal__btn:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.spc-cookie-modal__btn--accept {
   background-color: #27ae60;
   color: #ffffff;
+  border-color: #27ae60;
 }
 
-.spc-cookie-banner__btn--accept:hover {
+.spc-cookie-modal__btn--accept:hover {
   background-color: #219a52;
+  border-color: #219a52;
 }
 
-.spc-cookie-banner__btn--reject {
-  background-color: transparent;
-  color: #ffffff;
-  border: 1px solid #ffffff;
+.spc-cookie-modal__btn--reject {
+  background-color: #ffffff;
+  color: #2c3e50;
+  border-color: #2c3e50;
 }
 
-.spc-cookie-banner__btn--reject:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.spc-cookie-modal__btn--reject:hover {
+  background-color: #f3f4f6;
 }
 
+.spc-cookie-modal__btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  /* Wrap er nu grid-item — fylder sin grid-cell automatisk via 1fr-track */
+}
+
+.spc-cookie-modal__btn-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* App-dim klasse: visuelt + funktionelt blokerer app bag modal.
+   pointer-events: none forhindrer klik i app-DOM. */
+.spc-app-dimmed {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Footer-link: bibeholdt fra v1 — diskret link til at genåbne samtykke */
 .spc-cookie-settings-link {
   color: #888;
   font-size: 12px;
@@ -65,8 +150,4 @@
 
 .spc-cookie-settings-link:hover {
   color: #555;
-}
-
-.spc-cookie-banner--hidden {
-  display: none !important;
 }

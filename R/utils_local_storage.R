@@ -286,6 +286,18 @@ clearDataLocally <- function(session) {
 #' @return NULL, invisibly.
 #' @keywords internal
 autoSaveAppState <- function(session, current_data, metadata, app_state = NULL) {
+  # GDPR-gate: Brugerens cookie-samtykke (binær model) gater al persistens.
+  # Fail-closed når consent endnu ej er givet eller eksplicit afvist.
+  # JS-laget gater også (window._spcConsentGranted), men R-side defense-in-depth
+  # forhindrer unødvendig server→klient roundtrip.
+  if (!is_persistence_allowed(session$input)) {
+    log_debug(
+      "Auto-save sprunget over: bruger har ej givet cookie-samtykke",
+      .context = "AUTO_SAVE"
+    )
+    return(invisible(NULL))
+  }
+
   # Guard: Respektér auto_save_enabled flag
   if (!is.null(app_state)) {
     enabled <- shiny::isolate(app_state$session$auto_save_enabled)

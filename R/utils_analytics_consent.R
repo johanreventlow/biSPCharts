@@ -39,7 +39,7 @@ should_track_analytics <- function(consent = NULL) {
 #' @export
 require_consent_or_show_modal <- function(input, session, then_do) {
   if (!is.function(then_do)) {
-    stop("require_consent_or_show_modal: 'then_do' skal være en function")
+    stop("require_consent_or_show_modal: 'then_do' skal v\u00e6re en function")
   }
   consent <- tryCatch(
     shiny::isolate(input$analytics_consent),
@@ -173,7 +173,7 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
             session$onSessionEnded(function() {
               if (isTRUE(session$userData$analytics_revoked)) {
                 log_info(
-                  "Analytics-aggregering sprunget over — samtykke tilbagetrukket i sessionen",
+                  "Analytics-aggregering sprunget over \u2014 samtykke tilbagetrukket i sessionen",
                   .context = LOG_CONTEXTS$analytics$pins
                 )
                 return()
@@ -255,9 +255,9 @@ setup_analytics_consent <- function(input, session, hashed_token, log_directory 
         session$sendCustomMessage("spc_stop_analytics", list())
         log_info(
           paste0(
-            "Analytics tracking stoppet efter samtykke-tilbagetrækning. ",
+            "Analytics tracking stoppet efter samtykke-tilbagetr\u00e6kning. ",
             "Klient-side metrics stoppet straks. ",
-            "Server-side shinylogs-session kan ikke stoppes midt i session — ",
+            "Server-side shinylogs-session kan ikke stoppes midt i session \u2014 ",
             "log-aggregering sprunget over ved session-afslutning."
           ),
           .context = LOG_CONTEXTS$analytics$consent

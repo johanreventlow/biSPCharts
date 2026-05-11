@@ -34,9 +34,29 @@
 * **Pre-app dimming:** Modal vises ved `DOMContentLoaded` før Shiny
   renderer, med visuel dim + `inert` på app-content. Forhindrer FOUC
   (flash of unstyled content) hvor brugere kan se app-UI før samtykke.
+## Bug fixes
+
+* **shinytest2.yaml workflow grøn på master (#712, #714, #716):**
+  `tests/testthat/test-bfh-module-integration.R` + `test-e2e-workflows.R`
+  fejlede deterministisk i mindst 5 nights. Root cause: `app$upload_file
+  (direct_file_upload=…)` loader IKKE data — den fylder kun
+  `paste_data_input` med text-content + viser "tryk Fortsæt"-notification.
+  Real user-flow kræver klik på `load_paste_data`-knap som parser tekst
+  via `handle_paste_data` → `emit$data_updated` → `wizard_gates`
+  auto-nav til "analyser" → SPC-pipeline. Tests omskrevet til at matche
+  faktisk user-flow, inkl. eksplicit nav fra "start" landing-tab til
+  "upload" tab. Visuelle screenshots erstattet af deterministiske
+  state-assertions (`plot_ready`, `anhoej_results`, `spc_plot_actual`
+  non-NULL) per CLAUDE.md "shinytest2 visual-tests miljøfølsomme".
 
 ## Dependency updates
 
+* **Cleanup unused Imports (#718):** Fjernet `forcats` fra Imports
+  (0 usage). Flyttet `pkgload` Imports → Suggests (kun brugt i
+  test-infrastruktur). Tilføjet `lintr (>= 3.0.0)` til Suggests
+  (brugt i `test-lintr-no-test-source-read.R`).
+* **Bump BFHcharts til v0.17.1** (`Imports` lower-bound + `Remotes`).
+  Auto-bumpet af `dev/publish_prepare.R` ved DESCRIPTION cleanup.
 * **Bump BFHcharts til v0.17.0** (`Imports` lower-bound + `Remotes`).
   Henter y-akse-padding-fix (12.5% expansion top + bund) der løser
   klipping af boundary-target-labels (fx `<1%`-udviklingsmål) ved

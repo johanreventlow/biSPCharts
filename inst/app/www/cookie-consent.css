@@ -44,6 +44,14 @@
   margin-bottom: 16px;
 }
 
+.spc-cookie-modal__body p {
+  margin: 0 0 12px 0;
+}
+
+.spc-cookie-modal__body p:last-child {
+  margin-bottom: 0;
+}
+
 /* Advarselsblok: vises kun når existing app-state vil slettes ved
    valg af "Kun nødvendige". Visuelt distinkt med warning-farver. */
 .spc-cookie-modal__warning {
@@ -60,14 +68,21 @@
 /* Knapper: equal-prominence (samme størrelse, samme visuelle vægt).
    GDPR-krav om "ej forudvalgt" — ingen forskel der nudger mod accept. */
 .spc-cookie-modal__buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
-  flex-wrap: wrap;
+  align-items: start;
+}
+
+@media (max-width: 360px) {
+  /* Smal skærm: stak knapper lodret */
+  .spc-cookie-modal__buttons {
+    grid-template-columns: 1fr;
+  }
 }
 
 .spc-cookie-modal__btn {
-  flex: 1 1 auto;
-  min-width: 140px;
+  width: 100%;
   padding: 10px 16px;
   border-radius: 4px;
   font-size: 14px;
@@ -101,6 +116,21 @@
 
 .spc-cookie-modal__btn--reject:hover {
   background-color: #f3f4f6;
+}
+
+.spc-cookie-modal__btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  /* Wrap er nu grid-item — fylder sin grid-cell automatisk via 1fr-track */
+}
+
+.spc-cookie-modal__btn-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.2;
 }
 
 /* App-dim klasse: visuelt + funktionelt blokerer app bag modal.

@@ -180,6 +180,14 @@ golem_add_external_resources <- function() {
       shiny::tags$script(htmltools::HTML(
         sprintf("window.SPC_LOCALSTORAGE_TTL_MINUTES = %d;", ttl_minutes)
       )),
+      # Injicer consent_version + max_age_days som JS-globals FØR cookie-consent.js
+      # kører preAppGate(). Single source of truth fra R-side ANALYTICS_CONFIG —
+      # forhindrer drift mellem JS-default og R-config der ville give
+      # eksisterende brugere "modal-flicker" ved version-bump.
+      shiny::tags$script(htmltools::HTML(sprintf(
+        "window._spcConsentVersion = %d; window._spcConsentMaxAgeDays = %d;",
+        ANALYTICS_CONFIG$consent_version, ANALYTICS_CONFIG$consent_max_age_days
+      ))),
       # Accessibility: aria-live paa Shinys notification-panel
       shiny::tags$script(htmltools::HTML(
         "$(function(){

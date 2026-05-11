@@ -54,6 +54,10 @@ Shiny.addCustomMessageHandler('activate-wizard-mode', function(_message) {
 // Fuld payload caches i window.__pendingRestore — sendes først når bruger
 // aktivt vælger "Gendan session" via performSessionRestore custom message.
 // Issue #193 / brugerstyret restore.
+//
+// Peek er ej consent-gated — landing-page skal kunne vise "Gendan session"-
+// prompt uden at kræve forudgående consent. Full restore (auto_restore_data
+// via performSessionRestore) gates derimod via R-side require_consent.
 $(document).on('shiny:sessioninitialized', function() {
   console.log('[SPC] shiny:sessioninitialized fired');
   var data = window.loadAppState('current_session');

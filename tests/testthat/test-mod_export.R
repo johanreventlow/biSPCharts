@@ -183,7 +183,13 @@ test_that("mod_export_server plot_available reflects app_state (§2.3.2)", {
   app_state <- create_mock_app_state()
 
   shiny::testServer(mod_export_server, args = list(app_state = app_state), {
-    session$flushReact()
+    # suppressWarnings(): BFHcharts emitterer FONT_FALLBACK-warning når CI-runner
+    # mangler de proprietære BFH-fonte (#650). .resolve_font_family cacher per
+    # process, så første cache-miss i test-suiten lander her under
+    # session$flushReact() → export_plot reactive → BFHcharts. Warning ville
+    # bryde R-CMD-check gate (error-on=warning) på PR→master. Upstream BFHcharts
+    # bør konvertere warning() → message() (tracked separat).
+    suppressWarnings(session$flushReact())
 
     # Initial: data + y_column sat → plot_available-logik skal give TRUE.
     expect_true(
@@ -196,7 +202,7 @@ test_that("mod_export_server plot_available reflects app_state (§2.3.2)", {
 
     # Ryd y_column → plot_available-logik skal give FALSE
     app_state$columns$mappings$y_column <- NULL
-    session$flushReact()
+    suppressWarnings(session$flushReact())
     expect_false(
       shiny::isolate(
         !is.null(app_state$data$current_data) &&

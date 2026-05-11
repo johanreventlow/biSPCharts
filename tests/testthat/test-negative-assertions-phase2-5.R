@@ -142,6 +142,7 @@ test_that("autoSaveAppState deaktiverer auto_save ved quota-exceeded (§2.5.3)",
 
   # Mock session med fejlende sendCustomMessage (simulerer JS quota-fejl)
   failing_session <- shiny::MockShinySession$new()
+  failing_session$setInputs(analytics_consent = TRUE)
   failing_session$sendCustomMessage <- function(type, message) {
     stop("QuotaExceededError: localStorage quota exceeded")
   }
@@ -176,9 +177,11 @@ test_that("autoSaveAppState springer over når auto_save_enabled=FALSE (§2.5.3)
     auto_save_enabled = FALSE
   )
 
-  # Session der IKKE må kaldes
+  # Session der IKKE må kaldes — sæt consent = TRUE så vi tester
+  # auto_save_enabled-branch (ej consent-branch).
   call_count <- 0L
   mock_session <- shiny::MockShinySession$new()
+  mock_session$setInputs(analytics_consent = TRUE)
   mock_session$sendCustomMessage <- function(type, message) {
     call_count <<- call_count + 1L
     invisible(NULL)

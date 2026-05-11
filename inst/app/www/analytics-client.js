@@ -6,12 +6,23 @@
   'use strict';
 
   var _analyticsActive = false;
+  var _perfObserver = null;
 
   Shiny.addCustomMessageHandler('spc_start_analytics', function(_message) {
     if (_analyticsActive) return;
     _analyticsActive = true;
     collectInitialMetrics();
     setupPerformanceObservers();
+  });
+
+  Shiny.addCustomMessageHandler('spc_stop_analytics', function(_message) {
+    if (!_analyticsActive) return;
+    _analyticsActive = false;
+    if (_perfObserver) {
+      try { _perfObserver.disconnect(); } catch (e) { /* ignore */ }
+      _perfObserver = null;
+    }
+    console.info('[SPC] Analytics tracking stoppet efter samtykke-tilbagetrækning');
   });
 
   function collectInitialMetrics() {
@@ -23,6 +34,7 @@
   }
 
   function sendPageLoadMetrics() {
+    if (!_analyticsActive) return;
     try {
       var perf = performance.getEntriesByType('navigation')[0];
       if (!perf) return;
@@ -43,7 +55,8 @@
   function setupPerformanceObservers() {
     if (typeof PerformanceObserver === 'undefined') return;
     try {
-      var observer = new PerformanceObserver(function(list) {
+      _perfObserver = new PerformanceObserver(function(list) {
+        if (!_analyticsActive) return;
         list.getEntries().forEach(function(entry) {
           if (entry.name.startsWith('spc_')) {
             Shiny.setInputValue('analytics_performance', {
@@ -54,9 +67,10 @@
           }
         });
       });
-      observer.observe({entryTypes: ['measure']});
+      _perfObserver.observe({entryTypes: ['measure']});
     } catch (e) {
       console.warn('[SPC] PerformanceObserver ikke tilgaengelig:', e.message);
+      _perfObserver = null;
     }
   }
 

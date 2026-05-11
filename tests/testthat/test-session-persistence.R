@@ -25,11 +25,16 @@ library(testthat)
 library(shiny)
 
 # HELPER: Mock session der fanger sendCustomMessage kald ====================
-create_mock_capture_session <- function() {
+# Consent default: TRUE — disse tests forudsætter brugeren har givet samtykke
+# (binær consent-model gater al persistens, men det er en orthogonal concern
+# fra de fejl-håndterings-scenarier disse tests dækker). Tests der eksplicit
+# vil teste consent-gate skal sætte input$analytics_consent = FALSE manuelt.
+create_mock_capture_session <- function(analytics_consent = TRUE) {
   captured <- new.env(parent = emptyenv())
   captured$messages <- list()
 
   mock_session <- shiny::MockShinySession$new()
+  mock_session$setInputs(analytics_consent = analytics_consent)
 
   # Override sendCustomMessage to capture calls
   mock_session$sendCustomMessage <- function(type, message) {
@@ -186,6 +191,7 @@ test_that("autoSaveAppState accepts app_state parameter and disables auto-save o
 
   # Mock session whose sendCustomMessage triggers an error
   failing_session <- shiny::MockShinySession$new()
+  failing_session$setInputs(analytics_consent = TRUE)
   failing_session$sendCustomMessage <- function(type, message) {
     stop("Simulated localStorage quota error")
   }
@@ -224,6 +230,26 @@ test_that("autoSaveAppState skips when auto_save_enabled is FALSE", {
   autoSaveAppState(mock$session, test_data, metadata, app_state = app_state)
 
   # Ingen sendCustomMessage kald skal være foretaget
+  expect_length(mock$captured$messages, 0)
+})
+
+test_that("autoSaveAppState skipper når cookie-samtykke mangler (GDPR-gate)", {
+  # Verificerer at consent-gaten er wired ind før eksisterende
+  # auto_save_enabled-check. Bruger uden samtykke må aldrig udløse
+  # localStorage-roundtrip — selv hvis auto_save_enabled = TRUE.
+  skip_if_not(
+    exists("autoSaveAppState", mode = "function"),
+    "autoSaveAppState not available"
+  )
+
+  app_state <- create_test_app_state(auto_save_enabled = TRUE)
+  mock <- create_mock_capture_session(analytics_consent = FALSE)
+
+  test_data <- data.frame(x = 1:3, y = 4:6)
+  metadata <- list(x_column = "x", y_column = "y")
+
+  autoSaveAppState(mock$session, test_data, metadata, app_state = app_state)
+
   expect_length(mock$captured$messages, 0)
 })
 

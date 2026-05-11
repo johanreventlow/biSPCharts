@@ -39,14 +39,26 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
       }
     })
 
-    # "Kom i gang" knap: vis navbar-trin og navigér til Upload
+    # "Kom i gang" knap: vis navbar-trin og navigér til Upload.
+    # Wrapped i require_consent_or_show_modal — første gang brugeren går
+    # ind på trin 1, vises cookie-modal hvis samtykke ej allerede besluttet.
     shiny::observeEvent(input$start_wizard,
       priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
       {
-        if (!is.null(parent_session)) {
-          shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
-          bslib::nav_select("main_navbar", selected = "upload", session = parent_session)
+        if (is.null(parent_session)) {
+          return()
         }
+        require_consent_or_show_modal(
+          input = parent_session$input,
+          session = parent_session,
+          then_do = function() {
+            shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
+            bslib::nav_select("main_navbar",
+              selected = "upload",
+              session = parent_session
+            )
+          }
+        )
       }
     )
 
@@ -72,13 +84,22 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
     )
 
     # Bruger vælger "Gendan session" — STATE_MANAGEMENT da restore muterer state.
+    # Full restore = behandling af persondata → require_consent_or_show_modal
+    # sikrer samtykke før vi sender performSessionRestore.
     shiny::observeEvent(input$restore_saved_session,
       priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
       {
         log_info("Bruger valgte at gendanne gemt session", .context = "SESSION_RESTORE")
-        if (!is.null(parent_session)) {
-          parent_session$sendCustomMessage("performSessionRestore", list())
+        if (is.null(parent_session)) {
+          return()
         }
+        require_consent_or_show_modal(
+          input = parent_session$input,
+          session = parent_session,
+          then_do = function() {
+            parent_session$sendCustomMessage("performSessionRestore", list())
+          }
+        )
       }
     )
 

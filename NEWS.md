@@ -1,7 +1,62 @@
 # biSPCharts (development)
 
+## Breaking changes
+
+* **Cookie-banner erstattet af hård modal-dialog** med eksplicit binær
+  valg-model (Acceptér alle / Kun nødvendige). Tidligere banner tillod
+  brugere at ignorere samtykket — ny modal blokerer al app-interaktion
+  indtil valg truffet (GDPR-stærkere informeret samtykke).
+* **localStorage-app-state-persistens (auto-save) er nu gatet bag
+  cookie-samtykke.** Brugere der vælger "Kun nødvendige" mister auto-save
+  af data + indstillinger mellem sessions; eksplicit Excel/CSV-download
+  skal anvendes for manuel persistens.
+* `consent_version` bumpet `1L` -> `2L`. Eksisterende samtykker invalideres
+  ved næste session-load — alle brugere får modal igen og skal vælge
+  påny. Legacy v1-storage (4 separate `spc_app_*`-keys) migreres
+  transparent til v2 JSON-schema (`spc_app_consent`).
+* **Revoke-flow er destruktivt:** Skift fra "Acceptér alle" ->
+  "Kun nødvendige" via footer-link "Cookie-indstillinger" sletter alle
+  eksisterende `spc_app_*`-data-keys (undtagen samtykke-record selv).
+  Modal viser eksplicit advarsel når der findes gemt session.
+
+## Nye features
+
+* **Hård consent-modal med a11y-support:** `inert`-attribut på app-DOM,
+  ARIA `role=dialog` + `aria-modal=true`, autofocus på "Acceptér alle"
+  (non-destruktivt default), focus-visible outline for keyboard-navigation.
+  Equal-prominence-knapper (samme størrelse + visuelle vægt) per GDPR-krav
+  om ikke-nudging.
+* **`is_persistence_allowed()`** ny eksporteret helper-funktion der gater
+  localStorage-app-state-persistens på cookie-samtykke. Anvendes i
+  `autoSaveAppState()` med fail-closed default. Adskilt fra
+  `should_track_analytics()` så funktionel persistens og analytics-tracking
+  håndteres som forskellige GDPR-kategorier.
+* **Pre-app dimming:** Modal vises ved `DOMContentLoaded` før Shiny
+  renderer, med visuel dim + `inert` på app-content. Forhindrer FOUC
+  (flash of unstyled content) hvor brugere kan se app-UI før samtykke.
+## Bug fixes
+
+* **shinytest2.yaml workflow grøn på master (#712, #714, #716):**
+  `tests/testthat/test-bfh-module-integration.R` + `test-e2e-workflows.R`
+  fejlede deterministisk i mindst 5 nights. Root cause: `app$upload_file
+  (direct_file_upload=…)` loader IKKE data — den fylder kun
+  `paste_data_input` med text-content + viser "tryk Fortsæt"-notification.
+  Real user-flow kræver klik på `load_paste_data`-knap som parser tekst
+  via `handle_paste_data` → `emit$data_updated` → `wizard_gates`
+  auto-nav til "analyser" → SPC-pipeline. Tests omskrevet til at matche
+  faktisk user-flow, inkl. eksplicit nav fra "start" landing-tab til
+  "upload" tab. Visuelle screenshots erstattet af deterministiske
+  state-assertions (`plot_ready`, `anhoej_results`, `spc_plot_actual`
+  non-NULL) per CLAUDE.md "shinytest2 visual-tests miljøfølsomme".
+
 ## Dependency updates
 
+* **Cleanup unused Imports (#718):** Fjernet `forcats` fra Imports
+  (0 usage). Flyttet `pkgload` Imports → Suggests (kun brugt i
+  test-infrastruktur). Tilføjet `lintr (>= 3.0.0)` til Suggests
+  (brugt i `test-lintr-no-test-source-read.R`).
+* **Bump BFHcharts til v0.17.1** (`Imports` lower-bound + `Remotes`).
+  Auto-bumpet af `dev/publish_prepare.R` ved DESCRIPTION cleanup.
 * **Bump BFHcharts til v0.17.0** (`Imports` lower-bound + `Remotes`).
   Henter y-akse-padding-fix (12.5% expansion top + bund) der løser
   klipping af boundary-target-labels (fx `<1%`-udviklingsmål) ved

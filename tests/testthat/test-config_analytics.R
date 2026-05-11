@@ -18,7 +18,9 @@ test_that("ANALYTICS_CONFIG har korrekte typer", {
 })
 
 test_that("ANALYTICS_CONFIG har fornuftige defaults", {
-  expect_equal(ANALYTICS_CONFIG$consent_version, 1L)
+  # consent_version v2 (2026-05-10): banner erstattet af haard modal,
+  # persistens-gating tilfoejet — kraever fornyet eksplicit samtykke.
+  expect_equal(ANALYTICS_CONFIG$consent_version, 2L)
   expect_equal(ANALYTICS_CONFIG$consent_max_age_days, 365L)
   expect_equal(ANALYTICS_CONFIG$log_retention_days, 365L)
   expect_equal(ANALYTICS_CONFIG$log_compress_after_days, 90L)

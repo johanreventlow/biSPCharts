@@ -57,14 +57,66 @@ Følgende shinylogs-kolonner **indsamles ikke**: `type`, `binding`.
 
 ## Opt-in mekanisme
 
-1. Bruger præsenteres for consent-dialog ved første app-start
-2. Kun ved eksplicit accept aktiveres `shinylogs::track_usage()`
-3. `should_track_analytics()` tjekker **begge** betingelser:
-   - `analytics.enabled` i `inst/golem-config.yml` (prod: `true`)
-   - Brugerens runtime-consent (`input$analytics_consent`)
-4. Ingen af delene er alene tilstrækkeligt — begge skal være opfyldt
+Brugeren præsenteres for en **hård modal-dialog** ved første app-start
+(eller efter version-bump af `consent_version`). Modalen blokerer al
+app-interaktion indtil et eksplicit valg er truffet — ingen "ignorér"-
+mulighed (som det tidligere banner tillod).
 
-Consent gemmes i browser `localStorage` så genbesøg ikke gentager dialogen.
+### Binær valg-model
+
+| Valg | Konsekvens |
+|------|------------|
+| **Acceptér alle** | Aktiverer alle samtykke-bundne features: shinylogs analytics, performance-metrics, visitor-ID, client-metadata **og** localStorage-app-state-persistens (auto-save af data + indstillinger). |
+| **Kun nødvendige** | Deaktiverer alle samtykke-bundne features. Ingen tracking. **Ingen auto-save** — browser-refresh = mistet arbejde i nuværende session, brug Excel/CSV-download for manuel persistens. Eksisterende `spc_app_*`-data slettes straks ved revoke (advarsel vises i modal når relevant). |
+
+### Hvad gates af samtykke
+
+| Feature | "Acceptér alle" | "Kun nødvendige" |
+|---------|:---:|:---:|
+| shinylogs analytics-events | ✅ | ❌ |
+| Performance-metrics (page-load, render) | ✅ | ❌ |
+| Visitor-ID + client-metadata | ✅ | ❌ |
+| localStorage app-state auto-save | ✅ | ❌ |
+| localStorage TTL-cleanup | ✅ | ✅ (strengt nødvendig — delte hospitals-PCer) |
+| Cookie-præferencer-storage | ✅ | ✅ |
+
+### Server-side gating
+
+`should_track_analytics()` tjekker **begge** betingelser før shinylogs aktiveres:
+- `analytics.enabled` i `inst/golem-config.yml` (prod: `true`)
+- Brugerens runtime-consent (`input$analytics_consent`)
+
+`is_persistence_allowed()` (separat helper) tjekker **kun** brugerens consent
+— persistens er en GDPR-funktionel-kategori uafhængig af analytics-feature-flag.
+
+Begge gates fail-closed: NULL/NA/manglende → returnér FALSE.
+
+### Storage-schema (v2)
+
+Samtykket gemmes som JSON-objekt under nøglen `spc_app_consent` i browserens
+`localStorage`:
+
+```json
+{
+  "schema_version": 2,
+  "consent_version": 2,
+  "timestamp": "2026-05-10T12:34:56.789Z",
+  "consented": true,
+  "visitor_id": "uuid-string-eller-null"
+}
+```
+
+v1-brugere (4 separate `spc_app_*`-keys) migreres transparent ved første
+load efter v2-deploy. Legacy-keys slettes efter successful migration.
+
+### Tilbagekaldelse + re-prompt
+
+- **Tilbagekaldelse:** Footer-link "Cookie-indstillinger" genåbner modalen
+  i alle app-tilstande. Skift fra "Acceptér alle" → "Kun nødvendige" sletter
+  eksisterende app-state straks.
+- **Auto re-prompt:** Modal vises automatisk igen når
+  - `consent_version` bumpes i `R/config_analytics.R` (v1→v2: 2026-05-10), eller
+  - samtykket er > 365 dage gammelt (GDPR-loft, `consent_max_age_days`).
 
 ---
 

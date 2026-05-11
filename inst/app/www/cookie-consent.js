@@ -272,7 +272,7 @@
       '<p>For at give dig den bedste oplevelse gemmer biSPCharts dit arbejde ' +
       '(uploadede data og indstillinger) <strong>lokalt</strong> i din browser, ' +
       'så du kan fortsætte hvor du slap.</p>' +
-      '<p>Vi måler også anonymt brugsadfærd (performance og fejltyper) ' +
+      '<p>Vi måler også brugsadfærd anonymt (performance og fejltyper) ' +
       'for løbende at kunne forbedre appen.</p>' +
       '<p>Statistikken vil aldrig kunne bruges til tracking, reklamer eller ' +
       'identifikation af brugere.</p>';

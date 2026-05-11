@@ -266,11 +266,16 @@
     var body = document.createElement('div');
     body.id = 'spc-cookie-modal-body';
     body.className = 'spc-cookie-modal__body';
-    body.textContent = 'For at give dig den bedste oplevelse gemmer ' +
-      'biSPCharts dit arbejde (uploadede data + indstillinger) lokalt ' +
-      'i din browser, så du kan fortsætte hvor du slap. Derudover måler ' +
-      'vi hvordan appen bruges — uden personidentifikation — for at ' +
-      'kunne forbedre den.';
+    // innerHTML er sikkert her: indhold er hardcoded konstant, ingen bruger-input.
+    // eslint-disable-next-line no-unsanitized/property
+    body.innerHTML =
+      '<p>For at give dig den bedste oplevelse gemmer biSPCharts dit arbejde ' +
+      '(uploadede data og indstillinger) <strong>lokalt</strong> i din browser, ' +
+      'så du kan fortsætte hvor du slap.</p>' +
+      '<p>Vi måler også anonymt brugsadfærd (performance og fejltyper) ' +
+      'for løbende at kunne forbedre appen.</p>' +
+      '<p>Statistikken vil aldrig kunne bruges til tracking, reklamer eller ' +
+      'identifikation af brugere.</p>';
 
     // Advarselsblok: vises når brugeren har eksisterende gemt session
     // som vil blive slettet ved valg af "Kun nødvendige".
@@ -297,8 +302,17 @@
     rejectBtn.className = 'spc-cookie-modal__btn spc-cookie-modal__btn--reject';
     rejectBtn.textContent = 'Kun nødvendige';
 
+    var rejectLabel = document.createElement('small');
+    rejectLabel.className = 'spc-cookie-modal__btn-label';
+    rejectLabel.textContent = '(begrænset brugeroplevelse)';
+
+    var rejectWrap = document.createElement('div');
+    rejectWrap.className = 'spc-cookie-modal__btn-wrap';
+    rejectWrap.appendChild(rejectBtn);
+    rejectWrap.appendChild(rejectLabel);
+
     buttons.appendChild(acceptBtn);
-    buttons.appendChild(rejectBtn);
+    buttons.appendChild(rejectWrap);
     modal.appendChild(title);
     modal.appendChild(body);
     if (warning) modal.appendChild(warning);
@@ -334,10 +348,21 @@
   // klikker "Kom i gang" eller "Gendan session" (action-baseret consent-flow).
   // Landing-page kan vises uden modal — brugeren skal ikke samtykke for at
   // se velkomstskærm.
+  //
+  // ASYMMETRISK PERSISTENS (politisk valg):
+  //   - Accept persisteres (365 dage / consent-version-gate)
+  //   - Reject persisteres IKKE på tværs af sessions → modal vises igen
+  //     næste besøg, så bruger får mulighed for at revurdere
   function preAppGate(consentVersion, maxAgeDays) {
     var record = readConsent();
     if (isConsentValid(record, consentVersion, maxAgeDays)) {
-      // Eksisterende valid samtykke — dispatch + notify uden modal
+      if (record.consented === false) {
+        // Tidligere afvist samtykke: ryd record + behandl som ej besluttet,
+        // så modal vises igen ved næste consent-krævende handling.
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+        return;
+      }
+      // Eksisterende valid accept — dispatch + notify uden modal
       dispatchDecidedEvent(record.consented);
       notifyShiny(record.consented, record);
     }

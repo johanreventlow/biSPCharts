@@ -281,3 +281,37 @@ test_that("nav_guard_confirm with download sends blob before reset", {
   # Efter hele sekvensen er data nulstillet
   expect_null(shiny::isolate(app_state$data$current_data))
 })
+
+test_that("new navigation_requested ignored while guard_modal_open is TRUE", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$guard_pending_target <- "upload"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  show_modal_count <- 0
+  testthat::local_mocked_bindings(
+    showModal = function(ui, session = NULL) {
+      show_modal_count <<- show_modal_count + 1
+    },
+    .package = "shiny"
+  )
+
+  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  shiny::isolate({
+    emit$navigation_requested("start") # Skal ignoreres
+  })
+  shiny:::flushReact()
+
+  expect_equal(show_modal_count, 0)
+  # Oprindeligt pending_target bevaret (ikke overskrevet af nyt emit)
+  expect_equal(shiny::isolate(app_state$navigation$guard_pending_target), "upload")
+})

@@ -470,6 +470,11 @@ create_emit_api <- function(app_state) {
     # Navigation guard trigger (logo/upload-tab/tilbage-knap intercept)
     navigation_requested = function(target) {
       shiny::isolate({
+        # Race-guard: ignorer hvis modal allerede er åben (bevar pending_target)
+        if (isTRUE(app_state$navigation$guard_modal_open)) {
+          return(invisible(NULL))
+        }
+
         # INPUT VALIDATION: target skal være én af de tilladte tab-værdier
         allowed_targets <- c("start", "upload")
         if (!is.character(target) || length(target) != 1 ||

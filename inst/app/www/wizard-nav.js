@@ -169,6 +169,26 @@
     });
   }
 
+  // Navigation guard: track has-data flag for client-side gating
+  var navGuardHasData = false;
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('nav_guard_has_data_update', function(msg) {
+      navGuardHasData = !!(msg && msg.value);
+    });
+  }
+
+  function navGuardShouldIntercept() {
+    var currentStep = getCurrentNavStep();
+    return navGuardHasData && (currentStep === '2' || currentStep === '3');
+  }
+
+  function getCurrentNavStep() {
+    var activeTab = document.querySelector('#main_navbar .nav-link.active');
+    var val = activeTab ? activeTab.getAttribute('data-value') : null;
+    return stepMap[val] || (val === 'start' ? '0' : '1');
+  }
+
   // Logo-klik: navigér til startside og skjul wizard-trin
   $(document).on('click', '#logo_home_link', function(e) {
     e.preventDefault();

@@ -74,6 +74,17 @@ setup_navigation_guard_listener <- function(app_state, emit, session, input) {
     }
   )
 
+  # Push has_data-flag to JS on every current_data change
+  shiny::observe({
+    has_data <- !is.null(app_state$data$current_data) &&
+      nrow(app_state$data$current_data) > 0
+    app_state$navigation$guard_has_data_flag <- has_data
+    session$sendCustomMessage(
+      type = "nav_guard_has_data_update",
+      message = list(value = has_data)
+    )
+  })
+
   invisible(NULL)
 }
 

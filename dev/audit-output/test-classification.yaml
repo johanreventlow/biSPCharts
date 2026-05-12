@@ -1,5 +1,5 @@
 metadata:
-  total_files: 182
+  total_files: 183
   audit_run: 2026-04-26T20:55:41+0200
   manifest_schema_version: '1.0'
   review_status:
@@ -1575,3 +1575,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-10'
   rationale: Cycle C H1 (Codex 2026-05-10) regression-tests for freeze_position extraction i SPC-analyse-arket. Verificerer setup_wizard_gates kalder extract_freeze_position + analysis_options inkluderer feltet. Phase_names skipped per Codex (qic_data$part = integer-IDs ej user-labels).
+- file: test-navigation-guard.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-12'
+  rationale: Navigation guard modal (trin 2/3 destruktiv navigation). 37 unit-tests dækker tom session (direkte nav), modal vises ved data, annullér bevarer state, nulstil reset, download-flag, browser-unload, JS-relay, og input-validation (injection-attempt). Testet med shiny::testServer + shiny:::flushReact.

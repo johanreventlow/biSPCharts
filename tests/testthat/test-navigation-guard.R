@@ -24,3 +24,40 @@ test_that("emit$navigation_requested validates target argument", {
     expect_equal(app_state$navigation$guard_pending_target, "upload")
   })
 })
+
+test_that("guard-listener triggers direct nav when current_data is NULL", {
+  # reactiveConsole = TRUE aktiverer reaktiv evaluering uden kørende Shiny-app.
+  # Nødvendigt for at observeEvent registreret uden for testServer kan flushe.
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+  nav_select_calls <- list()
+
+  # Intercept bslib::nav_select med local mock
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- list(
+        id = id, selected = selected
+      )
+    },
+    .package = "bslib"
+  )
+
+  setup_navigation_guard_listener(app_state, emit, session)
+
+  # Første flush forbruger ignoreInit = TRUE
+  shiny:::flushReact()
+
+  expect_null(shiny::isolate(app_state$data$current_data))
+  emit$navigation_requested("upload")
+
+  # Anden flush udløser observer-kroppen
+  shiny:::flushReact()
+
+  expect_length(nav_select_calls, 1)
+  expect_equal(nav_select_calls[[1]]$selected, "upload")
+  expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
+  expect_false(isTRUE(shiny::isolate(app_state$navigation$guard_modal_open)))
+})

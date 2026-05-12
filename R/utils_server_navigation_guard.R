@@ -138,7 +138,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
     "Navigation guard confirm",
     code = {
       if (download_first) {
-        blob <- build_spc_excel_blob(app_state)
+        blob <- build_spc_excel_blob(app_state, input)
         session$sendCustomMessage(
           "download_blob",
           list(
@@ -184,4 +184,48 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       app_state$navigation$guard_modal_open <- FALSE
     }
   )
+}
+
+#' Build in-memory Excel-blob fra current app_state
+#'
+#' Genbruger eksisterende build_spc_excel() (3-ark: Data + Indstillinger +
+#' SPC-analyse) som returnerer en tempfil-sti. Læser bytes tilbage via
+#' readBin og rydder op via on.exit.
+#'
+#' current_data bruges som original_data fordi det er det eneste tilgængelige
+#' datasæt i nav-guard-flowet (ingen separat original ved dette tidspunkt).
+#'
+#' @param app_state Hierarchical reactiveValues
+#' @param input Shiny input (kræves af collect_metadata)
+#' @return Raw bytes — XLSX file content
+#' @keywords internal
+#' @noRd
+build_spc_excel_blob <- function(app_state, input) {
+  data <- shiny::isolate(app_state$data$current_data)
+  metadata <- collect_metadata(input, app_state)
+
+  temp_path <- build_spc_excel(
+    data = data,
+    metadata = metadata,
+    qic_data = NULL,
+    original_data = data,
+    analysis_options = list()
+  )
+  on.exit(unlink(temp_path), add = TRUE)
+
+  readBin(temp_path, what = "raw", n = file.info(temp_path)$size)
+}
+
+#' Generer brugervenligt filnavn til nav-guard download
+#'
+#' Format: "spc-data_YYYY-MM-DD_HHMMSS.xlsx"
+#'
+#' @param app_state Hierarchical reactiveValues (reserveret til fremtidig
+#'   brug af file_info.name)
+#' @return Character — filnavn
+#' @keywords internal
+#' @noRd
+generate_spc_filename <- function(app_state) {
+  ts <- format(Sys.time(), "%Y-%m-%d_%H%M%S")
+  paste0("spc-data_", ts, ".xlsx")
 }

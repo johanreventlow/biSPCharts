@@ -144,6 +144,35 @@ test_that("nav_guard_cancel removes modal and clears flags", {
   expect_equal(nrow(shiny::isolate(app_state$data$current_data)), 3) # uændret
 })
 
+test_that("build_spc_excel_blob returns raw bytes with XLSX magic header", {
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(
+      dato = as.Date("2026-01-01") + 0:9,
+      taeller = sample(10, 10)
+    )
+    app_state$columns$mappings$x_column <- "dato"
+    app_state$columns$mappings$y_column <- "taeller"
+  })
+
+  # collect_metadata kræver input — send minimal stub (alle felter er NULL-safe)
+  input_stub <- list()
+
+  blob <- build_spc_excel_blob(app_state, input_stub)
+
+  expect_type(blob, "raw")
+  expect_gt(length(blob), 0)
+  # XLSX = ZIP-container, magic bytes 0x50 0x4B 0x03 0x04
+  expect_equal(as.integer(blob[1:4]), c(0x50, 0x4B, 0x03, 0x04))
+})
+
+test_that("generate_spc_filename returns .xlsx filename with date", {
+  app_state <- create_app_state()
+  name <- generate_spc_filename(app_state)
+  expect_match(name, "\\.xlsx$")
+  expect_match(name, "\\d{4}-\\d{2}-\\d{2}")
+})
+
 test_that("nav_guard_confirm without download resets session and navigates", {
   withr::local_options(shiny.reactiveConsole = TRUE)
 

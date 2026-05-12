@@ -63,3 +63,47 @@ test_that("guard-listener triggers direct nav when current_data is NULL", {
   expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
   expect_false(isTRUE(shiny::isolate(app_state$navigation$guard_modal_open)))
 })
+
+test_that("guard-listener shows modal when current_data has rows", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:5, y = 6:10)
+  })
+
+  show_modal_calls <- list()
+  testthat::local_mocked_bindings(
+    showModal = function(ui, session = NULL) {
+      show_modal_calls[[length(show_modal_calls) + 1]] <<- ui
+    },
+    .package = "shiny"
+  )
+
+  setup_navigation_guard_listener(app_state, emit, session)
+
+  # Første flush forbruger ignoreInit = TRUE
+  shiny:::flushReact()
+
+  emit$navigation_requested("start")
+
+  # Anden flush udløser observer-kroppen
+  shiny:::flushReact()
+
+  expect_length(show_modal_calls, 1)
+  expect_true(isTRUE(shiny::isolate(app_state$navigation$guard_modal_open)))
+  expect_equal(shiny::isolate(app_state$navigation$guard_pending_target), "start")
+})
+
+test_that("navigation_guard_modal contains both knapper + checkbox", {
+  modal <- navigation_guard_modal()
+  html <- as.character(modal)
+  expect_match(html, "nav_guard_confirm")
+  expect_match(html, "nav_guard_cancel")
+  expect_match(html, "nav_guard_download")
+  expect_match(html, "Annull") # "Annullér"
+  expect_match(html, "Nulstil")
+})

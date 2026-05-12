@@ -53,12 +53,42 @@ setup_navigation_guard_listener <- function(app_state, emit, session) {
   invisible(NULL)
 }
 
-#' Build navigation guard modal-dialog (stub — fleshed out in Task 4)
+#' Build navigation guard modal-dialog
+#'
+#' Vises når brugeren forsøger destruktiv navigation fra trin 2/3.
+#' 2 knapper (Annullér / Nulstil) + checkbox til download-opt-in.
+#'
+#' @return shiny::modalDialog
 #' @keywords internal
 #' @noRd
 navigation_guard_modal <- function() {
   shiny::modalDialog(
     title = "Forlad arbejde og start forfra?",
-    "Stub", footer = NULL, easyClose = FALSE
+    shiny::tagList(
+      shiny::tags$p("Du har data + indstillinger på arbejdsbordet."),
+      shiny::tags$p(
+        "Vil du starte forfra uden gemte ændringer?",
+        " Du kan ikke fortryde denne handling."
+      ),
+      shiny::checkboxInput(
+        inputId = "nav_guard_download",
+        label = "Download kopi af data + indstillinger først",
+        value = FALSE
+      )
+    ),
+    footer = shiny::tagList(
+      shiny::actionButton(
+        inputId = "nav_guard_cancel",
+        label = "Annullér"
+      ),
+      shiny::actionButton(
+        inputId = "nav_guard_confirm",
+        label = "Nulstil",
+        class = "btn btn-danger"
+      )
+    ),
+    size = "m",
+    easyClose = FALSE,
+    fade = TRUE
   )
 }

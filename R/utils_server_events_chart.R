@@ -381,13 +381,6 @@ observe_n_column_change <- function(input, session, app_state, register_observer
         safe_operation(
           "Adjust y-axis when denominator changed in run chart",
           code = {
-            # PHASE 1: MODAL PAUSE GUARD - Prevent observer firing during modal operations
-            # This prevents plot regeneration when modal populates fields programmatically
-            if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
-              # Modal er aaben -- spring al observer-logik over
-              return(invisible(NULL))
-            }
-
             # CRITICAL: Skip ALL logic during programmatic UI updates
             if (isTRUE(shiny::isolate(app_state$ui$updating_programmatically))) {
               return(invisible(NULL))

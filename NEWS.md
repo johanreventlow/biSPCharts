@@ -1,3 +1,9 @@
+# biSPCharts 0.4.1
+
+## Bug fixes
+* Navigations-guard: efter "Nulstil" sender appen nu brugeren til den valgte destination (forside eller trin 1) i stedet for at lande på trin 2. Tidligere overskrev wizard-gates' auto-navigation det valgte mål med "analyser" når placeholder-data blev opfattet som rigtige data.
+* Navigations-guard: indsæt-tekstfeltet på trin 1 ryddes nu automatisk ved "Nulstil" når brugeren navigerer til trin 1, så gammelt indsat data ikke længere ligger tilbage i feltet.
+
 # biSPCharts 0.4.0
 
 ## Nye features

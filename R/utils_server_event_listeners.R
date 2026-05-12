@@ -133,7 +133,15 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   }
 
   # 7. Wizard navigation gates (utils_server_wizard_gates.R)
-  setup_wizard_gates(input, output, app_state, session)
+  setup_wizard_gates(input, output, app_state, session, emit)
+
+  # 7b. Navigation guard (logo/upload-tab/back-knap intercept på trin 2/3 med data)
+  setup_nav_guard_listener(
+    app_state = app_state,
+    emit = emit,
+    session = session,
+    input = input
+  )
 
   # Issue #536: main_navbar-observer er konsolideret til app_server_main.R
   # (med STATE_MANAGEMENT-priority for at sikre state-write FØR emit). Den

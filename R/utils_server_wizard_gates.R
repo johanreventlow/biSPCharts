@@ -16,8 +16,9 @@
 #' @param output Shiny output
 #' @param app_state Centraliseret app state
 #' @param session Shiny session
+#' @param emit Event emission API
 #' @keywords internal
-setup_wizard_gates <- function(input, output, app_state, session) {
+setup_wizard_gates <- function(input, output, app_state, session, emit) {
   # Lock trin 2+3 ved startup
   session$sendCustomMessage("wizard-lock-step", 2)
   session$sendCustomMessage("wizard-lock-step", 3)
@@ -195,11 +196,11 @@ setup_wizard_gates <- function(input, output, app_state, session) {
     content = spc_save_content
   )
 
-  # Tilbage-knap: Trin 2 -> Trin 1
+  # Tilbage-knap: Trin 2 -> Trin 1 (via navigation guard)
   shiny::observeEvent(input$back_to_upload,
     priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
     {
-      bslib::nav_select("main_navbar", selected = "upload", session = session)
+      emit$navigation_requested("upload")
     }
   )
 

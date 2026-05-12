@@ -47,6 +47,7 @@ test_that("guard-listener triggers direct nav when current_data is NULL", {
 
   setup_navigation_guard_listener(app_state, emit, session)
 
+  # TODO: move to testServer() wrapper; shiny::: needed until guard-listener has a server-function home (Task 4 may enable this)
   # Første flush forbruger ignoreInit = TRUE
   shiny:::flushReact()
 
@@ -58,6 +59,7 @@ test_that("guard-listener triggers direct nav when current_data is NULL", {
 
   expect_length(nav_select_calls, 1)
   expect_equal(nav_select_calls[[1]]$selected, "upload")
+  expect_equal(nav_select_calls[[1]]$id, "main_navbar")
   expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
   expect_false(isTRUE(shiny::isolate(app_state$navigation$guard_modal_open)))
 })

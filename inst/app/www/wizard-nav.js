@@ -254,6 +254,30 @@
     });
   }
 
+  // Browser tab-close / refresh guard
+  var inAppNavigating = false;
+
+  window.addEventListener('beforeunload', function(e) {
+    if (inAppNavigating) return;
+    if (navGuardHasData) {
+      e.preventDefault();
+      e.returnValue = '';  // Browsere viser native prompt
+    }
+  });
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('set_in_app_navigating', function(msg) {
+      inAppNavigating = !!(msg && msg.value);
+    });
+
+    Shiny.addCustomMessageHandler('schedule_clear_in_app_navigating',
+      function(msg) {
+        var delay = (msg && msg.delay_ms) || 500;
+        setTimeout(function() { inAppNavigating = false; }, delay);
+      }
+    );
+  }
+
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
   // Select-inputs: 'change' fyrer ved valg-ændring
   var selectInputs = [

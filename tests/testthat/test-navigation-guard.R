@@ -283,6 +283,211 @@ test_that("nav_guard_confirm with download sends blob before reset", {
   expect_null(shiny::isolate(app_state$data$current_data))
 })
 
+test_that("nav_guard_confirm clears paste_data_input when target is upload", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$guard_pending_target <- "upload"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  session$sendCustomMessage <- function(type, message) invisible(NULL)
+
+  update_textarea_calls <- list()
+  testthat::local_mocked_bindings(
+    updateTextAreaInput = function(session, inputId, value = NULL, ...) {
+      update_textarea_calls[[length(update_textarea_calls) + 1]] <<- list(
+        inputId = inputId, value = value
+      )
+    },
+    .package = "shiny"
+  )
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) invisible(NULL),
+    .package = "bslib"
+  )
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit,
+                                      ui_service = NULL) {
+      app_state$data$current_data <- NULL
+    }
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = FALSE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  paste_calls <- Filter(
+    function(x) identical(x$inputId, "paste_data_input"),
+    update_textarea_calls
+  )
+  expect_length(paste_calls, 1)
+  expect_equal(paste_calls[[1]]$value, "")
+})
+
+test_that("nav_guard_confirm does NOT clear paste_data_input when target is start", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$guard_pending_target <- "start"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  session$sendCustomMessage <- function(type, message) invisible(NULL)
+
+  update_textarea_calls <- list()
+  testthat::local_mocked_bindings(
+    updateTextAreaInput = function(session, inputId, value = NULL, ...) {
+      update_textarea_calls[[length(update_textarea_calls) + 1]] <<- list(
+        inputId = inputId, value = value
+      )
+    },
+    .package = "shiny"
+  )
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) invisible(NULL),
+    .package = "bslib"
+  )
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit,
+                                      ui_service = NULL) {
+      app_state$data$current_data <- NULL
+    }
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = FALSE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  paste_calls <- Filter(
+    function(x) identical(x$inputId, "paste_data_input"),
+    update_textarea_calls
+  )
+  expect_length(paste_calls, 0)
+})
+
+test_that("nav_guard_confirm sets guard_active during confirm and clears after flush", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$guard_pending_target <- "start"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  session$sendCustomMessage <- function(type, message) invisible(NULL)
+
+  # Capture guard_active SAMTIDIG med reset_to_empty_session-kald
+  observed_flag <- NULL
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit,
+                                      ui_service = NULL) {
+      observed_flag <<- isTRUE(shiny::isolate(
+        app_state$navigation$guard_active
+      ))
+      app_state$data$current_data <- NULL
+    }
+  )
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) invisible(NULL),
+    .package = "bslib"
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = FALSE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  # Under reset var flagget sat
+  expect_true(observed_flag)
+})
+
+test_that("nav_guard_confirm sends wizard lock-step messages post-reset", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$guard_pending_target <- "upload"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  send_calls <- list()
+  session$sendCustomMessage <- function(type, message) {
+    send_calls[[length(send_calls) + 1]] <<- list(
+      type = type, message = message
+    )
+  }
+
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) invisible(NULL),
+    .package = "bslib"
+  )
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit,
+                                      ui_service = NULL) {
+      app_state$data$current_data <- NULL
+    }
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = FALSE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  uncomplete_calls <- Filter(
+    function(x) identical(x$type, "wizard-uncomplete-step"),
+    send_calls
+  )
+  lock_calls <- Filter(
+    function(x) identical(x$type, "wizard-lock-step"),
+    send_calls
+  )
+
+  expect_length(uncomplete_calls, 1)
+  expect_equal(as.numeric(uncomplete_calls[[1]]$message), 1)
+  expect_length(lock_calls, 2)
+  expect_setequal(
+    vapply(lock_calls, function(x) as.numeric(x$message), numeric(1)),
+    c(2, 3)
+  )
+})
+
 test_that("new navigation_requested ignored while guard_modal_open is TRUE", {
   withr::local_options(shiny.reactiveConsole = TRUE)
 

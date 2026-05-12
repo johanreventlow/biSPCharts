@@ -177,7 +177,18 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
         )
       }
 
+      # Veto wizard_gates' data_updated auto-nav under reset:
+      # ellers ser observeren empty session-data som "has_data" og
+      # nav_select("analyser") overskriver target nedenfor.
+      app_state$navigation$guard_active <- TRUE
+
       reset_to_empty_session(session, app_state, emit)
+
+      # Wizard_gates' wizard-step-messages er skippet via guard_active.
+      # Send selv korrekte lock-states post-reset for UI-konsistens.
+      session$sendCustomMessage("wizard-uncomplete-step", 1)
+      session$sendCustomMessage("wizard-lock-step", 2)
+      session$sendCustomMessage("wizard-lock-step", 3)
 
       session$sendCustomMessage(
         "set_in_app_navigating",
@@ -189,6 +200,13 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
         selected = target,
         session = session
       )
+
+      # T\u00f8m paste-textarea hvis user navigerede til trin 1 (upload);
+      # ellers ville gammelt indsat data ligge i feltet ved Upload-bes\u00f8g.
+      if (identical(target, "upload")) {
+        shiny::updateTextAreaInput(session, "paste_data_input", value = "")
+      }
+
       shiny::removeModal(session = session)
 
       app_state$navigation$guard_pending_target <- NULL
@@ -197,6 +215,17 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       session$sendCustomMessage(
         "schedule_clear_in_app_navigating",
         list(delay_ms = 500)
+      )
+
+      # Clear guard_active EFTER Shiny-flush, saa wizard_gates' observer
+      # (queued af emit$data_updated under reset) ser flagget TRUE og skipper.
+      session$onFlushed(
+        function() {
+          shiny::isolate({
+            app_state$navigation$guard_active <- FALSE
+          })
+        },
+        once = TRUE
       )
     },
     fallback = {
@@ -207,6 +236,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       shiny::removeModal(session = session)
       app_state$navigation$guard_pending_target <- NULL
       app_state$navigation$guard_modal_open <- FALSE
+      app_state$navigation$guard_active <- FALSE
     }
   )
 }

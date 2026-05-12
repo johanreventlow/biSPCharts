@@ -77,6 +77,7 @@ create_app_state <- function() {
     # Cycle B M1 (Codex 2026-05-09): column_choices_changed slettet — emit'et men
     # aldrig observeret. Verificeret med rg-grep + Codex peer-review.
     navigation_changed = 0L,
+    navigation_requested = 0L, # Guard-trigger: logo/upload-tab/tilbage-knap aktiverer modal-listener
 
     # SESSION LIVSCYKLUS ---------------------------------------------------
     session_started = 0L,
@@ -274,7 +275,14 @@ create_app_state <- function() {
     # reactiveVal i app_server_main.R. Bruges af help/app_guide-moduler til
     # kontekstuel tilbagenavigation. Default "start" matcher landing-page.
     current_tab = "start",
-    previous_tab = "start"
+    previous_tab = "start",
+
+    # Navigation guard (modal-advarsel ved destruktiv navigation fra trin 2/3)
+    guard_pending_target = NULL, # Target tab name ("start" | "upload")
+    guard_modal_open = FALSE, # TRUE while modal vises (race-guard)
+    # Server-side mirror af JS navGuardHasData;
+    # synkroniseres til JS via sendCustomMessage("nav_guard_has_data_update")
+    guard_has_data_flag = FALSE
   )
 
   # Visualization State - Convert to reactiveValues for consistency
@@ -456,6 +464,33 @@ create_emit_api <- function(app_state) {
     navigation_changed = function() {
       shiny::isolate({
         app_state$events$navigation_changed <- app_state$events$navigation_changed + 1L
+      })
+    },
+
+    # Navigation guard trigger (logo/upload-tab/tilbage-knap intercept)
+    navigation_requested = function(target) {
+      shiny::isolate({
+        # Race-guard: ignorer hvis modal allerede er åben (bevar pending_target)
+        if (isTRUE(app_state$navigation$guard_modal_open)) {
+          return(invisible(NULL))
+        }
+
+        # INPUT VALIDATION: target skal være én af de tilladte tab-værdier
+        allowed_targets <- c("start", "upload")
+        if (!is.character(target) || length(target) != 1 ||
+          !target %in% allowed_targets) {
+          if (exists("log_warn", mode = "function")) {
+            log_warn(
+              paste("Invalid target in emit$navigation_requested:", target),
+              .context = "EMIT_API"
+            )
+          }
+          target <- "upload" # Sikker fallback
+        }
+
+        app_state$navigation$guard_pending_target <- target
+        app_state$events$navigation_requested <-
+          app_state$events$navigation_requested + 1L
       })
     },
 

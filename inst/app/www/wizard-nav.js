@@ -169,13 +169,114 @@
     });
   }
 
-  // Logo-klik: navigér til startside og skjul wizard-trin
+  // Navigation guard: track has-data flag for client-side gating
+  var navGuardHasData = false;
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('nav_guard_has_data_update', function(msg) {
+      navGuardHasData = !!(msg && msg.value);
+    });
+  }
+
+  function navGuardShouldIntercept() {
+    var currentStep = getCurrentNavStep();
+    return navGuardHasData && (currentStep === '2' || currentStep === '3');
+  }
+
+  function getCurrentNavStep() {
+    var activeTab = document.querySelector('#main_navbar .nav-link.active');
+    var val = activeTab ? activeTab.getAttribute('data-value') : null;
+    return stepMap[val] || (val === 'start' ? '0' : '1');
+  }
+
+  // Logo-klik: navigér til startside (med guard hvis data på trin 2/3)
   $(document).on('click', '#logo_home_link', function(e) {
     e.preventDefault();
+
+    if (navGuardShouldIntercept()) {
+      // Route through Shiny server-side guard
+      Shiny.setInputValue('nav_guard_trigger', {
+        source: 'logo',
+        target: 'start',
+        timestamp: Date.now()
+      }, { priority: 'event' });
+      return;
+    }
+
+    // Default: direct nav to start
     document.body.classList.remove('wizard-nav-active');
     var startLink = document.querySelector('.navbar .nav-link[data-value="start"]');
     if (startLink) startLink.click();
   });
+
+  // Upload-tab-klik: intercept hvis trin 2/3 + data
+  $(document).on('click', '#main_navbar .nav-link[data-value="upload"]',
+    function(e) {
+      if (!navGuardShouldIntercept()) {
+        return;  // Let default bslib tab-switch run
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      Shiny.setInputValue('nav_guard_trigger', {
+        source: 'tab',
+        target: 'upload',
+        timestamp: Date.now()
+      }, { priority: 'event' });
+    }
+  );
+
+  function base64ToBlob(b64, mimeType) {
+    var bytes = atob(b64);
+    var arr = new Uint8Array(bytes.length);
+    for (var i = 0; i < bytes.length; i++) {
+      arr[i] = bytes.charCodeAt(i);
+    }
+    return new Blob([arr], { type: mimeType });
+  }
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('download_blob', function(msg) {
+      if (!msg || !msg.data_b64) return;
+      try {
+        var blob = base64ToBlob(msg.data_b64, msg.mime_type ||
+          'application/octet-stream');
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = msg.filename || 'spc-data.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      } catch (err) {
+        console.error('download_blob error:', err);
+      }
+    });
+  }
+
+  // Browser tab-close / refresh guard
+  var inAppNavigating = false;
+
+  window.addEventListener('beforeunload', function(e) {
+    if (inAppNavigating) return;
+    if (navGuardHasData) {
+      e.preventDefault();
+      e.returnValue = '';  // Browsere viser native prompt
+    }
+  });
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('set_in_app_navigating', function(msg) {
+      inAppNavigating = !!(msg && msg.value);
+    });
+
+    Shiny.addCustomMessageHandler('schedule_clear_in_app_navigating',
+      function(msg) {
+        var delay = (msg && msg.delay_ms) || 500;
+        setTimeout(function() { inAppNavigating = false; }, delay);
+      }
+    );
+  }
 
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
   // Select-inputs: 'change' fyrer ved valg-ændring

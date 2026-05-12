@@ -143,3 +143,63 @@ test_that("nav_guard_cancel removes modal and clears flags", {
   expect_false(shiny::isolate(app_state$navigation$guard_modal_open))
   expect_equal(nrow(shiny::isolate(app_state$data$current_data)), 3) # uændret
 })
+
+test_that("nav_guard_confirm without download resets session and navigates", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$columns$auto_detect$completed <- TRUE
+    app_state$navigation$guard_pending_target <- "upload"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  send_custom_calls <- list()
+  session$sendCustomMessage <- function(type, message) {
+    send_custom_calls[[length(send_custom_calls) + 1]] <<- list(
+      type = type, message = message
+    )
+  }
+
+  nav_select_calls <- list()
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- selected
+    },
+    .package = "bslib"
+  )
+
+  reset_called <- FALSE
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit, ui_service = NULL) {
+      reset_called <<- TRUE
+      app_state$data$current_data <- NULL
+      app_state$columns$auto_detect$completed <- FALSE
+    }
+  )
+
+  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = FALSE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  download_calls <- Filter(
+    function(x) x$type == "download_blob",
+    send_custom_calls
+  )
+  expect_length(download_calls, 0)
+
+  expect_true(reset_called)
+  expect_length(nav_select_calls, 1)
+  expect_equal(nav_select_calls[[1]], "upload")
+  expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
+  expect_false(shiny::isolate(app_state$navigation$guard_modal_open))
+})

@@ -33,10 +33,10 @@
 
 ## 5. Dokumentation + commit
 
-- [ ] 5.1 Opdater inline-kommentarer i `R/utils_server_visualization.R` der referer til "manual_config" eller "input vinder"
+- [x] 5.1 Opdater inline-kommentarer i `R/utils_server_visualization.R` der referer til "manual_config" eller "input vinder" — ny race-fix-kommentar (linje 48-54) erstatter gamle
 - [ ] 5.2 Skriv NEWS.md-entry under `## Bug fixes`: dansk beskrivelse + reference til issue (oprettes ved /opsx:propose-step)
-- [ ] 5.3 Commit Decision 1 (state-derived) som atomic commit
-- [ ] 5.4 Commit Decision 2 (fjern dead-guard) som separat atomic commit
+- [x] 5.3 Commit Decision 1 (state-derived) som atomic commit — a3a0f5f5
+- [x] 5.4 Commit Decision 2 (fjern dead-guard) som separat atomic commit — 93c8fecf
 - [ ] 5.5 Opret draft PR mod develop med titel "fix(visualization): state-derived chart-config eliminates upload race (#issue)"
 - [ ] 5.6 Reference `docs/reviews/10-upload-race.md` + Codex-recalibrering i PR-body
 

@@ -467,6 +467,28 @@ create_emit_api <- function(app_state) {
       })
     },
 
+    # Navigation guard trigger (logo/upload-tab/tilbage-knap intercept)
+    navigation_requested = function(target) {
+      shiny::isolate({
+        # INPUT VALIDATION: target skal være én af de tilladte tab-værdier
+        allowed_targets <- c("start", "upload")
+        if (!is.character(target) || length(target) != 1 ||
+          !target %in% allowed_targets) {
+          if (exists("log_warn", mode = "function")) {
+            log_warn(
+              paste("Ugyldigt target i emit$navigation_requested:", target),
+              .context = "EMIT_API"
+            )
+          }
+          target <- "upload" # Sikker fallback
+        }
+
+        app_state$navigation$guard_pending_target <- target
+        app_state$events$navigation_requested <-
+          app_state$events$navigation_requested + 1L
+      })
+    },
+
     # Visualization events (SPRINT 1: Consolidated event for atomic updates)
     visualization_update_needed = function() {
       shiny::isolate({

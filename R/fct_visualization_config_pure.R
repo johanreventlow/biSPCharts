@@ -103,6 +103,58 @@ new_visualization_config <- function(x_col, y_col, n_col, chart_type, source) {
   )
 }
 
+#' Byg chart-config med state-mappings som primær kilde (race-fix)
+#'
+#' Race-fix for upload-tom-graf-bug (Cycle 10, 2026-05-12). Bygger
+#' `VisualizationConfig` med `state_mappings` som primær kilde for x_col/y_col/n_col,
+#' efterfulgt af `autodetect` som fallback. `input_overrides` indgår ej som
+#' primary source — bruger-edits skrives til state via `handle_column_input()`
+#' og propagerer derfra.
+#'
+#' Eliminerer race-window mellem auto-detect (skriver til
+#' `app_state$columns$mappings`) og throttled UI-sync (250ms før
+#' `updateSelectizeInput` flusher input til klient). Plot-pipeline læser nu
+#' fra state-snapshot, ej fra potentielt stale `input$<col>`-værdier.
+#'
+#' @param state_mappings Named list med kolonne-mappings fra `app_state$columns$mappings`:
+#'   - `x_column`, `y_column`, `n_column`: Character eller NULL/empty
+#' @param autodetect `AutodetectResult` S3-objekt eller NULL
+#' @param chart_type Character — qic-format (`"run"`, `"p"`, `"c"`, ...)
+#' @param input_overrides Reserved for future use. Pre-fix code path; ikke brugt
+#'   i state-first-konstruktion. Beholdes for diagnose/logging og fremtidig
+#'   sammenligning ved race-detection.
+#' @return `VisualizationConfig` S3-objekt eller NULL hvis ingen y_col kan bestemmes
+#' @noRd
+chart_config_from_state <- function(state_mappings = list(),
+                                    autodetect = NULL,
+                                    chart_type = "run",
+                                    input_overrides = list()) {
+  state_mappings <- state_mappings %||% list()
+
+  # Tomme/NULL state-mappings behandles som ikke-sat → falder til autodetect
+  to_nonempty <- function(val) {
+    if (is.null(val)) {
+      return(NULL)
+    }
+    val_chr <- as.character(val)[1]
+    if (is.na(val_chr) || !nzchar(val_chr)) {
+      return(NULL)
+    }
+    val_chr
+  }
+
+  build_visualization_config(
+    data = NULL, # kolonne-validering sker i render-laget
+    autodetect = autodetect,
+    user_overrides = list(
+      x_col = to_nonempty(state_mappings$x_column),
+      y_col = to_nonempty(state_mappings$y_column),
+      n_col = to_nonempty(state_mappings$n_column),
+      chart_type = chart_type
+    )
+  )
+}
+
 #' Print-metode for VisualizationConfig
 #'
 #' @param x VisualizationConfig-objekt.

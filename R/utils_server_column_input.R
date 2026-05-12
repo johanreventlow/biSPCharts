@@ -67,17 +67,6 @@ handle_column_input <- function(col_name, new_value, app_state, emit) {
   input_received_time <- Sys.time()
 
   # ============================================================================
-  # STEP 0: MODAL PAUSE GUARD - Prevent observer firing during modal operations
-  # ============================================================================
-  # PHASE 1: If modal is active, skip all processing
-  # This prevents plot regeneration when modal populates fields programmatically
-
-  if (isTRUE(shiny::isolate(app_state$ui$modal_column_mapping_active))) {
-    # Modal is open - skip all observer logic
-    return(invisible(NULL))
-  }
-
-  # ============================================================================
   # STEP 1: NORMALIZATION
   # ============================================================================
   # Convert input value to consistent string format for storage and comparison

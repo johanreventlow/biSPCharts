@@ -45,22 +45,14 @@ setup_visualization <- function(input, output, session, app_state) {
     return(config)
   })
 
-  manual_config <- shiny::reactive({
-    x_col <- sanitize_selection(input$x_column)
-    y_col <- sanitize_selection(input$y_column)
-    n_col <- sanitize_selection(input$n_column)
-
-    list(
-      x_col = x_col,
-      y_col = y_col,
-      n_col = n_col,
-      chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
-    )
-  })
-
-  # Simplified column config via build_visualization_config() (pure)
+  # State-derived chart-config (race-fix Cycle 10, 2026-05-12).
+  # Læser primært fra app_state$columns$mappings (autodetect skriver synkront
+  # dertil før ui_sync emittes). Bruger-edits via dropdown skrives til mappings
+  # via handle_column_input() i utils_server_column_input.R og propagerer
+  # derfra. Eliminerer race-window mellem auto-detect og throttled
+  # updateSelectizeInput-flush til klient.
+  # Reference: docs/reviews/10-upload-race.md
   column_config <- shiny::reactive({
-    manual_cfg <- manual_config()
     auto_columns <- app_state$columns$auto_detect$results
 
     # Fix #393: Under session-restore er input$chart_type stadig "run" (default)
@@ -94,22 +86,14 @@ setup_visualization <- function(input, output, session, app_state) {
       NULL
     }
 
-    # Brug pure build_visualization_config med prioriteret input
-    cfg <- build_visualization_config(
-      data = NULL, # kolonne-validering sker i render-laget
+    cfg <- chart_config_from_state(
+      state_mappings = list(
+        x_column = app_state$columns$mappings$x_column,
+        y_column = app_state$columns$mappings$y_column,
+        n_column = app_state$columns$mappings$n_column
+      ),
       autodetect = autodetect_for_config,
-      user_overrides = list(
-        x_col = manual_cfg$x_col,
-        y_col = manual_cfg$y_col,
-        n_col = manual_cfg$n_col,
-        chart_type = chart_type_str,
-        # Issue #193 fallback: mappings ved session-restore
-        mappings = list(
-          x_column = app_state$columns$mappings$x_column,
-          y_column = app_state$columns$mappings$y_column,
-          n_column = app_state$columns$mappings$n_column
-        )
-      )
+      chart_type = chart_type_str
     )
 
     if (is.null(cfg)) {

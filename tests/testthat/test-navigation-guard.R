@@ -45,9 +45,10 @@ test_that("guard-listener triggers direct nav when current_data is NULL", {
     .package = "bslib"
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
 
-  # TODO: move to testServer() wrapper; shiny::: needed until guard-listener has a server-function home (Task 4 may enable this)
+  # TODO: move to testServer() wrapper; shiny::: needed until guard-listener
+  # has a server-function home (Task 4 may enable this)
   # Første flush forbruger ignoreInit = TRUE
   shiny:::flushReact()
 
@@ -83,7 +84,7 @@ test_that("guard-listener shows modal when current_data has rows", {
     .package = "shiny"
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
 
   # Første flush forbruger ignoreInit = TRUE
   shiny:::flushReact()
@@ -129,7 +130,7 @@ test_that("nav_guard_cancel removes modal and clears flags", {
     .package = "shiny"
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
 
   # Flush forbruger ignoreInit = TRUE for alle observers
   shiny:::flushReact()
@@ -211,7 +212,7 @@ test_that("nav_guard_confirm without download resets session and navigates", {
     }
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
   shiny:::flushReact()
 
   session$setInputs(
@@ -265,7 +266,7 @@ test_that("nav_guard_confirm with download sends blob before reset", {
     }
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
   shiny:::flushReact()
 
   session$setInputs(
@@ -303,7 +304,7 @@ test_that("new navigation_requested ignored while guard_modal_open is TRUE", {
     .package = "shiny"
   )
 
-  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  setup_nav_guard_listener(app_state, emit, session, session$input)
   shiny:::flushReact()
 
   shiny::isolate({

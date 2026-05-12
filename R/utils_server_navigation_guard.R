@@ -3,7 +3,7 @@
 # Navigation guard for trin 2/3 -> trin 1/forside.
 # Vises modal hvis app_state$data$current_data findes; ellers direct nav.
 #
-# Spec: docs/superpowers/specs/2026-05-12-navigation-guard-modal-design.md
+# Spec: docs/superpowers/specs/2026-05-12-navigation-guard-modal-design.md # nolint: commented_code_linter.
 
 #' Setup navigation guard listener
 #'
@@ -18,7 +18,7 @@
 #' @return Invisibly NULL (side-effect: registers observers)
 #' @keywords internal
 #' @noRd
-setup_navigation_guard_listener <- function(app_state, emit, session, input) {
+setup_nav_guard_listener <- function(app_state, emit, session, input) {
   # Primary listener — fires when emit$navigation_requested() called
   shiny::observeEvent(
     app_state$events$navigation_requested,

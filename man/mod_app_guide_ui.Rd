@@ -13,7 +13,7 @@ mod_app_guide_ui(id)
 Shiny UI element
 }
 \description{
-Detaljeret trin-for-trin vejledning i brug af biSPCharts-appen.
+Praktisk trin-for-trin vejledning i brug af biSPCharts-appen.
 Indholdet er statisk og kraever ingen server-logik.
 }
 \keyword{internal}

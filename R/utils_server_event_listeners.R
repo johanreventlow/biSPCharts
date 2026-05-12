@@ -136,7 +136,7 @@ setup_event_listeners <- function(app_state, emit, input, output, session, ui_se
   setup_wizard_gates(input, output, app_state, session, emit)
 
   # 7b. Navigation guard (logo/upload-tab/back-knap intercept på trin 2/3 med data)
-  setup_navigation_guard_listener(
+  setup_nav_guard_listener(
     app_state = app_state,
     emit = emit,
     session = session,

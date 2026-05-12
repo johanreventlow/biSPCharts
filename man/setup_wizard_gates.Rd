@@ -4,7 +4,7 @@
 \alias{setup_wizard_gates}
 \title{Setup wizard navigation gates}
 \usage{
-setup_wizard_gates(input, output, app_state, session)
+setup_wizard_gates(input, output, app_state, session, emit)
 }
 \arguments{
 \item{input}{Shiny input}
@@ -14,6 +14,8 @@ setup_wizard_gates(input, output, app_state, session)
 \item{app_state}{Centraliseret app state}
 
 \item{session}{Shiny session}
+
+\item{emit}{Event emission API}
 }
 \description{
 Locks/unlocks navbar wizard steps based on app state.

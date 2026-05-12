@@ -13,7 +13,7 @@ mod_help_ui(id)
 Shiny UI element
 }
 \description{
-Hjælpeside med SPC-grundbegreber og app-vejledning.
-Indholdet er statisk og kræver ingen server-logik.
+Introduktion til SPC-begreber og praktisk brug i biSPCharts.
+Indholdet er statisk og kraever ingen server-logik.
 }
 \keyword{internal}

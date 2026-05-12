@@ -114,7 +114,7 @@ jobs:
         if: steps.check.outputs.deps_changed == 'true'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rsconnect, any::pkgload, any::renv
+          extra-packages: any::rsconnect, any::pkgload, any::renv, any::remotes
           needs: check
 
       # Explicit install fra DESCRIPTION Remotes med korrekte @tag-refs.

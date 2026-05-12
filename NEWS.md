@@ -1,3 +1,8 @@
+# biSPCharts 0.4.0
+
+## Nye features
+* Navigations-guard på trin 2/3: brugere får nu en modal-advarsel før de forlader deres arbejde via logo, Upload-tab eller "Tilbage"-knappen. Modalen tilbyder valgfri download af data + indstillinger som Excel-fil inden session nulstilles. Browser-tab-close advares også via native dialog. (PR-nummer indsættes ved merge)
+
 # biSPCharts (development)
 
 ## Breaking changes

@@ -149,7 +149,7 @@ test_that("build_spc_excel_blob returns raw bytes with XLSX magic header", {
   shiny::isolate({
     app_state$data$current_data <- data.frame(
       dato = as.Date("2026-01-01") + 0:9,
-      taeller = sample(10, 10)
+      taeller = withr::with_seed(42, sample(10, 10))
     )
     app_state$columns$mappings$x_column <- "dato"
     app_state$columns$mappings$y_column <- "taeller"
@@ -231,4 +231,53 @@ test_that("nav_guard_confirm without download resets session and navigates", {
   expect_equal(nav_select_calls[[1]], "upload")
   expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
   expect_false(shiny::isolate(app_state$navigation$guard_modal_open))
+})
+
+test_that("nav_guard_confirm with download sends blob before reset", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3, y = 4:6)
+    app_state$navigation$guard_pending_target <- "start"
+    app_state$navigation$guard_modal_open <- TRUE
+  })
+
+  send_calls <- list()
+  session$sendCustomMessage <- function(type, message) {
+    # Fangs data_present-status VED TIDSPUNKTET for dette kald
+    send_calls[[length(send_calls) + 1]] <<- list(
+      type = type,
+      data_present = !is.null(shiny::isolate(app_state$data$current_data))
+    )
+  }
+
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) invisible(NULL),
+    .package = "bslib"
+  )
+  testthat::local_mocked_bindings(
+    reset_to_empty_session = function(session, app_state, emit, ui_service = NULL) {
+      app_state$data$current_data <- NULL
+    }
+  )
+
+  setup_navigation_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(
+    nav_guard_download = TRUE,
+    nav_guard_confirm = 1
+  )
+  shiny:::flushReact()
+
+  download_call <- Filter(function(x) x$type == "download_blob", send_calls)
+  expect_length(download_call, 1)
+  # Kritisk: data skal stadig være til stede da sendCustomMessage affyres
+  expect_true(download_call[[1]]$data_present)
+  # Efter hele sekvensen er data nulstillet
+  expect_null(shiny::isolate(app_state$data$current_data))
 })

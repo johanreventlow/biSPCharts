@@ -7,9 +7,9 @@
 
 #' Setup navigation guard listener
 #'
-#' Lytter på `emit$navigation_requested()`. Hvis data findes, vises modal
+#' Lytter p\u00e5 `emit$navigation_requested()`. Hvis data findes, vises modal
 #' med valgmulighed for download + reset. Hvis ikke, navigeres direkte.
-#' Registrerer også observers for Annullér- og Nulstil-knapper i modal.
+#' Registrerer ogs\u00e5 observers for Annull\u00e9r- og Nulstil-knapper i modal.
 #'
 #' @param app_state Hierarchical reactiveValues (environment)
 #' @param emit Emit-API fra create_emit_api()
@@ -19,7 +19,7 @@
 #' @keywords internal
 #' @noRd
 setup_nav_guard_listener <- function(app_state, emit, session, input) {
-  # Primary listener — fires when emit$navigation_requested() called
+  # Primary listener \u2014 fires when emit$navigation_requested() called
   shiny::observeEvent(
     app_state$events$navigation_requested,
     ignoreInit = TRUE,
@@ -36,7 +36,7 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
         nrow(shiny::isolate(app_state$data$current_data)) > 0
 
       if (!data_present) {
-        # Empty session — direct navigation
+        # Empty session \u2014 direct navigation
         bslib::nav_select(
           id = "main_navbar",
           selected = target,
@@ -46,13 +46,13 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
         return(invisible(NULL))
       }
 
-      # Data present — show modal (implemented in Task 4)
+      # Data present \u2014 show modal (implemented in Task 4)
       app_state$navigation$guard_modal_open <- TRUE
       shiny::showModal(navigation_guard_modal(), session = session)
     }
   )
 
-  # Cancel action — luk modal, gendan state
+  # Cancel action \u2014 luk modal, gendan state
   shiny::observeEvent(
     input$nav_guard_cancel,
     ignoreInit = TRUE,
@@ -64,7 +64,7 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
     }
   )
 
-  # Confirm action — download (opt-in) + reset + naviger
+  # Confirm action \u2014 download (opt-in) + reset + naviger
   shiny::observeEvent(
     input$nav_guard_confirm,
     ignoreInit = TRUE,
@@ -104,8 +104,8 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
 
 #' Build navigation guard modal-dialog
 #'
-#' Vises når brugeren forsøger destruktiv navigation fra trin 2/3.
-#' 2 knapper (Annullér / Nulstil) + checkbox til download-opt-in.
+#' Vises n\u00e5r brugeren fors\u00f8ger destruktiv navigation fra trin 2/3.
+#' 2 knapper (Annull\u00e9r / Nulstil) + checkbox til download-opt-in.
 #'
 #' @return shiny::modalDialog
 #' @keywords internal
@@ -114,21 +114,21 @@ navigation_guard_modal <- function() {
   shiny::modalDialog(
     title = "Forlad arbejde og start forfra?",
     shiny::tagList(
-      shiny::tags$p("Du har data + indstillinger på arbejdsbordet."),
+      shiny::tags$p("Du har data + indstillinger p\u00e5 arbejdsbordet."),
       shiny::tags$p(
-        "Vil du starte forfra uden gemte ændringer?",
+        "Vil du starte forfra uden gemte \u00e6ndringer?",
         " Du kan ikke fortryde denne handling."
       ),
       shiny::checkboxInput(
         inputId = "nav_guard_download",
-        label = "Download kopi af data + indstillinger først",
+        label = "Download kopi af data + indstillinger f\u00f8rst",
         value = FALSE
       )
     ),
     footer = shiny::tagList(
       shiny::actionButton(
         inputId = "nav_guard_cancel",
-        label = "Annullér"
+        label = "Annull\u00e9r"
       ),
       shiny::actionButton(
         inputId = "nav_guard_confirm",
@@ -145,7 +145,7 @@ navigation_guard_modal <- function() {
 #' Handle nav_guard_confirm action
 #'
 #' Hvis input$nav_guard_download er TRUE: bygger Excel-blob fra state,
-#' sender til browser via sendCustomMessage("download_blob"), så reset.
+#' sender til browser via sendCustomMessage("download_blob"), s\u00e5 reset.
 #' Hvis FALSE: reset direkte. Begge paths kalder reset_to_empty_session
 #' + nav_select til pending_target.
 #'
@@ -201,7 +201,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
     },
     fallback = {
       shiny::showNotification(
-        "Kunne ikke nulstille — prøv igen",
+        "Kunne ikke nulstille \u2014 pr\u00f8v igen",
         type = "error", duration = 5
       )
       shiny::removeModal(session = session)
@@ -214,15 +214,15 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
 #' Build in-memory Excel-blob fra current app_state
 #'
 #' Genbruger eksisterende build_spc_excel() (3-ark: Data + Indstillinger +
-#' SPC-analyse) som returnerer en tempfil-sti. Læser bytes tilbage via
+#' SPC-analyse) som returnerer en tempfil-sti. L\u00e6ser bytes tilbage via
 #' readBin og rydder op via on.exit.
 #'
-#' current_data bruges som original_data fordi det er det eneste tilgængelige
-#' datasæt i nav-guard-flowet (ingen separat original ved dette tidspunkt).
+#' current_data bruges som original_data fordi det er det eneste tilg\u00e6ngelige
+#' datas\u00e6t i nav-guard-flowet (ingen separat original ved dette tidspunkt).
 #'
 #' @param app_state Hierarchical reactiveValues
-#' @param input Shiny input (kræves af collect_metadata)
-#' @return Raw bytes — XLSX file content
+#' @param input Shiny input (kr\u00e6ves af collect_metadata)
+#' @return Raw bytes \u2014 XLSX file content
 #' @keywords internal
 #' @noRd
 build_spc_excel_blob <- function(app_state, input) {
@@ -247,7 +247,7 @@ build_spc_excel_blob <- function(app_state, input) {
 #'
 #' @param app_state Hierarchical reactiveValues (reserveret til fremtidig
 #'   brug af file_info.name)
-#' @return Character — filnavn
+#' @return Character \u2014 filnavn
 #' @keywords internal
 #' @noRd
 generate_spc_filename <- function(app_state) {

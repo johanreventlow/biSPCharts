@@ -281,7 +281,7 @@ create_app_state <- function() {
     guard_pending_target = NULL, # Target tab name ("start" | "upload")
     guard_modal_open = FALSE, # TRUE while modal vises (race-guard)
     # Server-side mirror af JS navGuardHasData;
-    # opdateres via sendCustomMessage("nav_guard_has_data_update")
+    # synkroniseres til JS via sendCustomMessage("nav_guard_has_data_update")
     guard_has_data_flag = FALSE
   )
 

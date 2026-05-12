@@ -36,6 +36,20 @@
   (flash of unstyled content) hvor brugere kan se app-UI før samtykke.
 ## Bug fixes
 
+* **State-derived chart-config eliminerer upload-race (Cycle 10):**
+  SPC-plot viste empty-state efter ny data-upload indtil bruger åbnede
+  "Tildel kolonner"-modal som workaround. Race-condition mellem auto-
+  detect (skriver til `app_state$columns$mappings`) og throttled UI-sync
+  (250ms før `updateSelectizeInput` flushed input til klient). Plot-
+  pipeline læste `input$<col>` direkte og renderede med stale værdier
+  fra forrige session. Fix: `column_config`-reactive læser nu primært
+  fra `app_state$columns$mappings` via ny pure helper
+  `chart_config_from_state()`. Bruger-edits via dropdown skrives til
+  state via eksisterende `handle_column_input()`-write-back. Dead
+  `modal_column_mapping_active`-guard fjernet (0 settere — implementering
+  ville have brudt modal-commits pga delt input-ID). Verificeret via
+  dual-review-cycle med Codex (`docs/reviews/10-upload-race.md`).
+
 * **shinytest2.yaml workflow grøn på master (#712, #714, #716):**
   `tests/testthat/test-bfh-module-integration.R` + `test-e2e-workflows.R`
   fejlede deterministisk i mindst 5 nights. Root cause: `app$upload_file

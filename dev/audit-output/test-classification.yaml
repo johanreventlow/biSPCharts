@@ -850,6 +850,18 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-upload-race-state-derived.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: yes
+  rationale: |
+    Regression-tests for upload-race-bug (Cycle 10, 2026-05-12). Verificerer at
+    chart_config_from_state() bruger app_state$columns$mappings som primær kilde
+    og falder til autodetect ved tomme mappings. 16/16 PASS. Pre-fix verified
+    failing (8 FAIL). Reference: docs/reviews/10-upload-race.md.
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-12'
 - file: test-utils_analytics_consent.R
   audit_category: green
   type: unit

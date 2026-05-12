@@ -152,5 +152,6 @@ jobs:
             --repo "$REPO" \
             --base master \
             --head develop \
+            --draft \
             --title "Promote develop to master" \
             --body "$body"

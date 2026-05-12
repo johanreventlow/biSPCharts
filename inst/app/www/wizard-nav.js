@@ -209,6 +209,22 @@
     if (startLink) startLink.click();
   });
 
+  // Upload-tab-klik: intercept hvis trin 2/3 + data
+  $(document).on('click', '#main_navbar .nav-link[data-value="upload"]',
+    function(e) {
+      if (!navGuardShouldIntercept()) {
+        return;  // Let default bslib tab-switch run
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      Shiny.setInputValue('nav_guard_trigger', {
+        source: 'tab',
+        target: 'upload',
+        timestamp: Date.now()
+      }, { priority: 'event' });
+    }
+  );
+
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
   // Select-inputs: 'change' fyrer ved valg-ændring
   var selectInputs = [

@@ -189,9 +189,21 @@
     return stepMap[val] || (val === 'start' ? '0' : '1');
   }
 
-  // Logo-klik: navigér til startside og skjul wizard-trin
+  // Logo-klik: navigér til startside (med guard hvis data på trin 2/3)
   $(document).on('click', '#logo_home_link', function(e) {
     e.preventDefault();
+
+    if (navGuardShouldIntercept()) {
+      // Route through Shiny server-side guard
+      Shiny.setInputValue('nav_guard_trigger', {
+        source: 'logo',
+        target: 'start',
+        timestamp: Date.now()
+      }, { priority: 'event' });
+      return;
+    }
+
+    // Default: direct nav to start
     document.body.classList.remove('wizard-nav-active');
     var startLink = document.querySelector('.navbar .nav-link[data-value="start"]');
     if (startLink) startLink.click();

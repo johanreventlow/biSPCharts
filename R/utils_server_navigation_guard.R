@@ -85,6 +85,20 @@ setup_navigation_guard_listener <- function(app_state, emit, session, input) {
     )
   })
 
+  # Server-side relay: JS-trigger -> emit
+  shiny::observeEvent(
+    input$nav_guard_trigger,
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT,
+    {
+      trigger <- input$nav_guard_trigger
+      if (!is.list(trigger) || is.null(trigger$target)) {
+        return(invisible(NULL))
+      }
+      emit$navigation_requested(trigger$target)
+    }
+  )
+
   invisible(NULL)
 }
 

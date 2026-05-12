@@ -225,6 +225,35 @@
     }
   );
 
+  function base64ToBlob(b64, mimeType) {
+    var bytes = atob(b64);
+    var arr = new Uint8Array(bytes.length);
+    for (var i = 0; i < bytes.length; i++) {
+      arr[i] = bytes.charCodeAt(i);
+    }
+    return new Blob([arr], { type: mimeType });
+  }
+
+  if (typeof Shiny !== 'undefined' && Shiny.addCustomMessageHandler) {
+    Shiny.addCustomMessageHandler('download_blob', function(msg) {
+      if (!msg || !msg.data_b64) return;
+      try {
+        var blob = base64ToBlob(msg.data_b64, msg.mime_type ||
+          'application/octet-stream');
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = msg.filename || 'spc-data.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      } catch (err) {
+        console.error('download_blob error:', err);
+      }
+    });
+  }
+
   // Debounce-feedback: dim plot øjeblikkeligt ved input-ændring
   // Select-inputs: 'change' fyrer ved valg-ændring
   var selectInputs = [

@@ -77,6 +77,7 @@ create_app_state <- function() {
     # Cycle B M1 (Codex 2026-05-09): column_choices_changed slettet — emit'et men
     # aldrig observeret. Verificeret med rg-grep + Codex peer-review.
     navigation_changed = 0L,
+    navigation_requested = 0L, # Guard-trigger from logo/upload-tab/back-knap
 
     # SESSION LIVSCYKLUS ---------------------------------------------------
     session_started = 0L,
@@ -274,7 +275,12 @@ create_app_state <- function() {
     # reactiveVal i app_server_main.R. Bruges af help/app_guide-moduler til
     # kontekstuel tilbagenavigation. Default "start" matcher landing-page.
     current_tab = "start",
-    previous_tab = "start"
+    previous_tab = "start",
+
+    # Navigation guard substate (navigation-guard-modal)
+    guard_pending_target = NULL, # Target tab name ("start" | "upload")
+    guard_modal_open = FALSE, # TRUE while modal vises (race-guard)
+    guard_has_data_flag = FALSE # Cached for JS-side gating
   )
 
   # Visualization State - Convert to reactiveValues for consistency

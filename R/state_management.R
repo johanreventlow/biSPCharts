@@ -476,7 +476,7 @@ create_emit_api <- function(app_state) {
           !target %in% allowed_targets) {
           if (exists("log_warn", mode = "function")) {
             log_warn(
-              paste("Ugyldigt target i emit$navigation_requested:", target),
+              paste("Invalid target in emit$navigation_requested:", target),
               .context = "EMIT_API"
             )
           }

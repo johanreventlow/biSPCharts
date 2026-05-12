@@ -21,8 +21,6 @@ test_that("emit$navigation_requested validates target argument", {
   shiny::isolate({
     # Ugyldigt target -> tving til "upload" + log advarsel
     emit$navigation_requested("malicious; rm -rf /")
-    expect_true(
-      app_state$navigation$guard_pending_target %in% c("upload", "start")
-    )
+    expect_equal(app_state$navigation$guard_pending_target, "upload")
   })
 })

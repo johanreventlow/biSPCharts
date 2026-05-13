@@ -63,11 +63,27 @@ app_guide_intro_carousel <- function(ns) {
   slides <- app_guide_intro_slides()
   total <- length(slides)
 
+  # DOM-r\u00e6kkef\u00f8lge matcher Bootstrap 5 canonical struktur:
+  # indicators F\u00d8RST (positioneret absolut over carousel-inner),
+  # derefter inner, derefter controls.
   shiny::tags$div(
     id = carousel_id,
     class = "carousel slide app-guide-carousel",
     `data-bs-interval` = "false",
     `data-bs-touch` = "true",
+    shiny::tags$div(
+      class = "carousel-indicators app-guide-indicators",
+      lapply(seq_along(slides), function(idx) {
+        shiny::tags$button(
+          type = "button",
+          `data-bs-target` = paste0("#", carousel_id),
+          `data-bs-slide-to` = idx - 1L,
+          class = if (idx == 1L) "active" else NULL,
+          `aria-current` = if (idx == 1L) "true" else NULL,
+          `aria-label` = paste("Vis trin", idx)
+        )
+      })
+    ),
     shiny::tags$div(
       class = "carousel-inner",
       lapply(seq_along(slides), function(idx) {
@@ -85,7 +101,8 @@ app_guide_intro_carousel <- function(ns) {
       `data-bs-target` = paste0("#", carousel_id),
       `data-bs-slide` = "prev",
       `aria-label` = "Forrige trin",
-      shiny::HTML("&lsaquo;")
+      shiny::HTML("&lsaquo;"),
+      shiny::tags$span(class = "visually-hidden", "Forrige")
     ),
     shiny::tags$button(
       class = "app-guide-control app-guide-control--next",
@@ -93,20 +110,8 @@ app_guide_intro_carousel <- function(ns) {
       `data-bs-target` = paste0("#", carousel_id),
       `data-bs-slide` = "next",
       `aria-label` = "N\u00e6ste trin",
-      shiny::HTML("&rsaquo;")
-    ),
-    shiny::tags$div(
-      class = "carousel-indicators app-guide-indicators",
-      lapply(seq_along(slides), function(idx) {
-        shiny::tags$button(
-          type = "button",
-          `data-bs-target` = paste0("#", carousel_id),
-          `data-bs-slide-to` = idx - 1L,
-          class = if (idx == 1L) "active" else NULL,
-          `aria-current` = if (idx == 1L) "true" else NULL,
-          `aria-label` = paste("Vis trin", idx)
-        )
-      })
+      shiny::HTML("&rsaquo;"),
+      shiny::tags$span(class = "visually-hidden", "N\u00e6ste")
     )
   )
 }
@@ -138,6 +143,9 @@ app_guide_intro_slide <- function(slide, idx, total, active = FALSE) {
   } else {
     shiny::div(
       class = "app-guide-media app-guide-media--decor",
+      # aria-hidden: title vises ogsaa i h3 nedenfor (content-col),
+      # decor-label er rent visuel — undgaa screen-reader-duplikering
+      `aria-hidden` = "true",
       shiny::div(class = "app-guide-decor-num", as.character(idx)),
       shiny::div(class = "app-guide-decor-label", slide$title)
     )

@@ -128,7 +128,7 @@ navigation_guard_modal <- function() {
     footer = shiny::tagList(
       shiny::actionButton(
         inputId = "nav_guard_cancel",
-        label = "Annull\u00e9r"
+        label = "Nej, bliv her"
       ),
       shiny::actionButton(
         inputId = "nav_guard_confirm",

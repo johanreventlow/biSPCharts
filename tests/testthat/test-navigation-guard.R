@@ -105,7 +105,7 @@ test_that("navigation_guard_modal contains both knapper + checkbox", {
   expect_match(html, "nav_guard_confirm")
   expect_match(html, "nav_guard_cancel")
   expect_match(html, "nav_guard_download")
-  expect_match(html, "Annull") # "Annullér"
+  expect_match(html, "Nej, bliv her")
   expect_match(html, "Nulstil")
 })
 

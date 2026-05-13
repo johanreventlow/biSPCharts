@@ -26,11 +26,27 @@ mod_app_guide_ui <- function(id) {
 #' @return invisible(NULL). Side-effekt: viser modal.
 #' @keywords internal
 show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
-  modal_markup <- shiny::tags$div(
+  shiny::showModal(build_app_guide_modal_markup(), session = session)
+}
+
+#' Byg markup-struktur for app-guide modal
+#'
+#' Extracted som separat helper for at testen kan asserte paa REEL
+#' production-output (ej recreation). Forhindrer drift mellem test og
+#' implementation.
+#'
+#' @return Shiny tag (modal-div med carousel-content + Bootstrap init-script)
+#' @keywords internal
+build_app_guide_modal_markup <- function() {
+  shiny::tags$div(
     id = "shiny-modal",
     class = "modal fade app-guide-modal",
     tabindex = "-1",
+    # Bemærk: bade data-* og data-bs-* sættes for parity med shiny::modalDialog.
+    # Shiny's Esc-handler i modal.ts laeser data-keyboard; Bootstrap 5 laeser data-bs-keyboard.
+    `data-backdrop` = "true",
     `data-bs-backdrop` = "true",
+    `data-keyboard` = "true",
     `data-bs-keyboard` = "true",
     shiny::tags$div(
       class = "modal-dialog app-guide-modal-dialog",
@@ -45,9 +61,19 @@ show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
         ),
         mod_app_guide_ui("app_guide")
       )
-    )
+    ),
+    # KRITISK: shiny::showModal() injicerer markup men initialiserer IKKE Bootstrap-modal.
+    # Mirror init-script fra shiny::modalDialog (verificeret via deparse(body())).
+    # Uden dette vises modal aldrig (silent runtime failure).
+    shiny::tags$script(shiny::HTML(
+      "if (window.bootstrap && !window.bootstrap.Modal.VERSION.match(/^4\\./)) {
+         var modal = new bootstrap.Modal(document.getElementById('shiny-modal'));
+         modal.show();
+      } else {
+         $('#shiny-modal').modal().focus();
+      }"
+    ))
   )
-  shiny::showModal(modal_markup, session = session)
 }
 
 # ---------------------------------------------------------------------------

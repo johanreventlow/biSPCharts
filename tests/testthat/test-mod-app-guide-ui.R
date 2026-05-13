@@ -123,28 +123,9 @@ test_that("mod_app_guide_ui returnerer kun carousel uden lead/titel", {
 })
 
 test_that("app-guide modal har custom Bootstrap 5 markup uden header/footer", {
-  # Recreate modal-markup som show_app_guide_modal bygger
-  modal <- shiny::tags$div(
-    id = "shiny-modal",
-    class = "modal fade app-guide-modal",
-    tabindex = "-1",
-    `data-bs-backdrop` = "true",
-    `data-bs-keyboard` = "true",
-    shiny::tags$div(
-      class = "modal-dialog app-guide-modal-dialog",
-      shiny::tags$div(
-        class = "modal-content app-guide-inner",
-        shiny::tags$button(
-          type = "button",
-          class = "app-guide-close",
-          `data-bs-dismiss` = "modal",
-          `aria-label` = "Luk",
-          shiny::HTML("&times;")
-        ),
-        mod_app_guide_ui("app_guide")
-      )
-    )
-  )
+  # Test paa REEL production-output via build_app_guide_modal_markup()
+  # i stedet for at recreate markup inline (forhindrer drift)
+  modal <- build_app_guide_modal_markup()
   html_str <- as.character(htmltools::doRenderTags(modal))
 
   # Custom modal-class
@@ -171,6 +152,14 @@ test_that("app-guide modal har custom Bootstrap 5 markup uden header/footer", {
   # Carousel embedded
   expect_true(grepl("app-guide-carousel", html_str),
     label = "Modal-body skal indeholde carousel"
+  )
+  # KRITISK: Bootstrap init-script skal vaere til stede ellers vises modal aldrig
+  expect_true(grepl("new bootstrap.Modal", html_str, fixed = TRUE),
+    label = "Modal skal indeholde Bootstrap-init-script (ellers aabnes modal aldrig)"
+  )
+  # Esc-handling parity: bade data-keyboard og data-bs-keyboard
+  expect_true(grepl("data-keyboard=\"true\"", html_str, fixed = TRUE),
+    label = "Modal skal have data-keyboard for Shiny modal.ts Esc-handler"
   )
 })
 

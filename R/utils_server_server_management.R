@@ -542,6 +542,10 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
   # If no data or settings, start new session directly
   if (!has_data && !has_settings) {
     reset_to_empty_session(session, app_state, emit, ui_service)
+    # Eksplicit nav til trin 2: brugeren valgte "Blank session" og forventer
+    # at lande paa datatabellen klar til manuel indtastning. Wizard_gates
+    # auto-naviger ikke pa placeholder-data (has_real_data = FALSE).
+    bslib::nav_select("main_navbar", selected = "analyser", session = session)
     shiny::showNotification("Ny session startet", type = "message", duration = 2)
     return()
   }
@@ -553,6 +557,9 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
   # paste-textarea ryddes i reset_to_empty_session() — ingen duplikat her.
   reset_to_empty_session(session, app_state, emit, ui_service)
+  # Eksplicit nav til trin 2 — bruger valgte aktivt "Blank session" og
+  # forventer at fortsaette pa datatabellen.
+  bslib::nav_select("main_navbar", selected = "analyser", session = session)
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
 }

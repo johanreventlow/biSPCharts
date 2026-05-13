@@ -57,7 +57,7 @@ Brug `Edit`-tool på `R/utils_ui_app_layout.R`. Erstat hele eksisterende `/* Int
   background: white;
   padding: 0;
 }
-.app-guide-modal-content {
+.app-guide-inner {
   position: relative;
   height: 520px;
   overflow: hidden;
@@ -676,7 +676,7 @@ test_that("app-guide modal har custom Bootstrap 5 markup uden header/footer", {
     shiny::tags$div(
       class = "modal-dialog app-guide-modal-dialog",
       shiny::tags$div(
-        class = "modal-content app-guide-modal-content",
+        class = "modal-content app-guide-inner",
         shiny::tags$button(
           type = "button",
           class = "app-guide-close",
@@ -750,7 +750,7 @@ show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
     shiny::tags$div(
       class = "modal-dialog app-guide-modal-dialog",
       shiny::tags$div(
-        class = "modal-content app-guide-modal-content",
+        class = "modal-content app-guide-inner",
         shiny::tags$button(
           type = "button",
           class = "app-guide-close",
@@ -782,7 +782,7 @@ modal <- shiny::tags\$div(
   shiny::tags\$div(
     class = 'modal-dialog app-guide-modal-dialog',
     shiny::tags\$div(
-      class = 'modal-content app-guide-modal-content',
+      class = 'modal-content app-guide-inner',
       shiny::tags\$button(
         type = 'button',
         class = 'app-guide-close',

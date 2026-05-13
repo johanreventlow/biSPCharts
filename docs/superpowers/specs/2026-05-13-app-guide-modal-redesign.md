@@ -115,7 +115,7 @@ show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
       shiny::tags$div(
         class = "modal-dialog app-guide-modal-dialog",
         shiny::tags$div(
-          class = "modal-content app-guide-modal-content",
+          class = "modal-content app-guide-inner",
           shiny::tags$button(
             type = "button",
             class = "app-guide-close",
@@ -150,7 +150,7 @@ Tilføj ny class-prefix `.app-guide-*` for at undgå konflikter med eksisterende
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
   background: white;
 }
-.app-guide-modal-content {
+.app-guide-inner {
   position: relative;
   height: 520px;
   overflow: hidden;
@@ -213,7 +213,7 @@ Opdaterede asserts:
 1. `mod_app_guide_ui()` returnerer carousel-content uden h1/lead
 2. `show_app_guide_modal()` rendrerer modal med class `app-guide-modal`
 3. Modal indeholder custom `.app-guide-close` X-knap
-4. Modal-content har class `.app-guide-modal-content` med fixed højde
+4. Modal-content har class `.app-guide-inner` med fixed højde
 5. Slides har konsekvent `.app-guide-slide` class med fixed højde
 6. Decorativ fallback rendrerer når `image_src = NULL` (med `.app-guide-media--decor` + trin-nummer)
 7. Image-side rendrerer når `image_src` er sat (med `.app-guide-media--image`)

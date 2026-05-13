@@ -292,7 +292,7 @@ create_ui_header <- function() {
       background: white;
       padding: 0;
     }
-    .app-guide-modal-content {
+    .app-guide-inner {
       position: relative;
       height: 520px;
       overflow: hidden;

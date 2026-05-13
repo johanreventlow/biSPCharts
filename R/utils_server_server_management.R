@@ -551,8 +551,8 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 }
 
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
+  # paste-textarea ryddes i reset_to_empty_session() — ingen duplikat her.
   reset_to_empty_session(session, app_state, emit, ui_service)
-  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
 }
@@ -567,6 +567,12 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
     .context = "SESSION_RESET"
   )
   clearDataLocally(session)
+
+  # Toem paste-textarea: bruger skal ej moede stale paste-data ved naeste
+  # trin 1-besoeg uanset hvilken reset-path der kaldte os (nav-guard,
+  # handle_confirm_clear_saved, handle_start_new_session).
+  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
+
   # Unified state assignment only
   app_state$session$last_save_time <- NULL
   app_state$session$pending_excel_upload <- NULL

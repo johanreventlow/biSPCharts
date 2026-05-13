@@ -251,11 +251,8 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
         session = session
       )
 
-      # T\u00f8m paste-textarea hvis user navigerede til trin 1 (upload);
-      # ellers ville gammelt indsat data ligge i feltet ved Upload-bes\u00f8g.
-      if (identical(target, "upload")) {
-        shiny::updateTextAreaInput(session, "paste_data_input", value = "")
-      }
+      # paste-textarea ryddes inde i reset_to_empty_session() \u2014 uafhaengig
+      # af target, saa bruger ikke moeder stale data ved senere trin 1-besoeg.
 
       shiny::removeModal(session = session)
 

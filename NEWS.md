@@ -2,7 +2,7 @@
 
 ## Bug fixes
 * Navigations-guard: efter "Nulstil" sender appen nu brugeren til den valgte destination (forside eller trin 1) i stedet for at lande på trin 2. Tidligere overskrev wizard-gates' auto-navigation det valgte mål med "analyser" når placeholder-data blev opfattet som rigtige data.
-* Navigations-guard: indsæt-tekstfeltet på trin 1 ryddes nu automatisk ved "Nulstil" når brugeren navigerer til trin 1, så gammelt indsat data ikke længere ligger tilbage i feltet.
+* Navigations-guard / sessions-reset: indsæt-tekstfeltet på trin 1 (`paste_data_input`) ryddes nu altid ved enhver session-reset, uanset om brugeren navigerer til forside, trin 1, eller en anden destination. Tidligere blev feltet kun ryddet ved nogle reset-paths, så gammelt indsat data kunne stadig være synligt ved senere trin 1-besøg. Clear-logikken er nu konsolideret i `reset_to_empty_session()`.
 * Navigations-guard: klik på Upload-menupunktet fra trin 2/3 viser nu korrekt modal-advarslen i stedet for blot at skifte til trin 1 uden bekræftelse. Bruger nu en server-side observer på `input$main_navbar` der detekterer destruktive tab-transitioner robust uafhængigt af JS-event-timing.
 * Navigations-guard: tom session (uden upload eller manuel indtastning) viser ikke længere fejlagtigt modal-advarslen ved klik på logo/Upload. Tidligere triggede placeholder-data (20 tomme rækker) en falsk-positiv has_data-detektion. Ny `has_real_data()`-helper kræver enten `file_uploaded`-flag eller faktisk non-NA indhold i data-kolonner (ekskl. default-FALSE Skift/Frys booleans).
 * Wizard-gates: fresh blank session lander ikke længere automatisk på trin 2 — wizard auto-navigerer nu kun til "analyser" når der er rigtige data (upload eller manuel indtastning), ikke ved placeholder.

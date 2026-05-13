@@ -60,10 +60,10 @@ test_that("app_guide_intro_slide saetter active-class kun paa foerste slide", {
   active_html <- as.character(active_slide)
   inactive_html <- as.character(inactive_slide)
 
-  expect_true(grepl("carousel-item intro-carousel-slide active", active_html),
+  expect_true(grepl("carousel-item app-guide-slide active", active_html),
     label = "Foerste slide skal have active-class"
   )
-  expect_false(grepl("carousel-item intro-carousel-slide active", inactive_html),
+  expect_false(grepl("carousel-item app-guide-slide active", inactive_html),
     label = "Anden slide maa IKKE have active-class"
   )
 })
@@ -111,8 +111,8 @@ test_that("mod_app_guide_ui rendrerer modal-content med carousel", {
   expect_true(grepl("guide-guide_carousel", html_str),
     label = "App-guide skal indeholde carousel med ns-praefixet ID"
   )
-  expect_true(grepl("intro-carousel-widget", html_str),
-    label = "App-guide skal indeholde intro-carousel-widget class"
+  expect_true(grepl("app-guide-carousel", html_str),
+    label = "App-guide skal indeholde app-guide-carousel class"
   )
   expect_true(grepl("syv trin", html_str),
     label = "App-guide skal have lead-tekst om syv trin"
@@ -138,11 +138,56 @@ test_that("show_app_guide_modal returnerer modalDialog-tag", {
   expect_true(grepl("S\u00e5dan bruger du appen", html_str),
     label = "Modal skal have hovedtitel"
   )
-  expect_true(grepl("intro-carousel-widget", html_str),
+  expect_true(grepl("app-guide-carousel", html_str),
     label = "Modal-body skal indeholde carousel"
   )
   # fade=TRUE skal generere "modal fade"-class (Bootstrap 5 fade-animation)
   expect_true(grepl("modal fade", html_str),
     label = "Modal skal have fade-class for animation"
+  )
+})
+
+test_that("app_guide_intro_slide renderer decorativ gradient naar image_src er NULL", {
+  slide_no_image <- list(
+    title = "Test uden billede",
+    image_src = NULL,
+    image_alt = NULL,
+    content = shiny::tags$p("Body content")
+  )
+  out <- app_guide_intro_slide(slide_no_image, idx = 2L, total = 7L, active = FALSE)
+  html <- as.character(htmltools::doRenderTags(out))
+
+  expect_true(grepl("app-guide-media--decor", html),
+    label = "Slide uden billede skal bruge decor-class"
+  )
+  expect_true(grepl("app-guide-decor-num", html),
+    label = "Decor-side skal indeholde stort trin-nummer"
+  )
+  expect_true(grepl(">2<", html),
+    label = "Decor-num skal vise idx (2)"
+  )
+  expect_false(grepl("app-guide-media--image", html),
+    label = "Slide uden billede maa IKKE bruge image-class"
+  )
+})
+
+test_that("app_guide_intro_slide renderer image-side naar image_src er sat", {
+  slide_with_image <- list(
+    title = "Test med billede",
+    image_src = "www/help/06a-trin1-upload.png",
+    image_alt = "Alt text",
+    content = shiny::tags$p("Body")
+  )
+  out <- app_guide_intro_slide(slide_with_image, idx = 1L, total = 7L, active = TRUE)
+  html <- as.character(htmltools::doRenderTags(out))
+
+  expect_true(grepl("app-guide-media--image", html),
+    label = "Slide med billede skal bruge image-class"
+  )
+  expect_true(grepl("06a-trin1-upload.png", html),
+    label = "Image src skal vaere i HTML"
+  )
+  expect_false(grepl("app-guide-media--decor", html),
+    label = "Slide med billede maa IKKE bruge decor-class"
   )
 })

@@ -63,66 +63,62 @@ app_guide_intro_carousel <- function(ns) {
   slides <- app_guide_intro_slides()
   total <- length(slides)
 
-  shiny::div(
-    class = "intro-carousel",
+  shiny::tags$div(
+    id = carousel_id,
+    class = "carousel slide app-guide-carousel",
+    `data-bs-interval` = "false",
+    `data-bs-touch` = "true",
     shiny::tags$div(
-      id = carousel_id,
-      class = "carousel slide intro-carousel-widget",
-      `data-bs-interval` = "false",
-      `data-bs-touch` = "true",
-      shiny::tags$div(
-        class = "carousel-indicators intro-carousel-indicators",
-        lapply(seq_along(slides), function(idx) {
-          shiny::tags$button(
-            type = "button",
-            `data-bs-target` = paste0("#", carousel_id),
-            `data-bs-slide-to` = idx - 1L,
-            class = if (idx == 1L) "active" else NULL,
-            `aria-current` = if (idx == 1L) "true" else NULL,
-            `aria-label` = paste("Vis trin", idx)
-          )
-        })
-      ),
-      shiny::tags$div(
-        class = "carousel-inner",
-        lapply(seq_along(slides), function(idx) {
-          app_guide_intro_slide(
-            slide = slides[[idx]],
-            idx = idx,
-            total = total,
-            active = idx == 1L
-          )
-        })
-      ),
-      shiny::tags$button(
-        class = "carousel-control-prev intro-carousel-control",
-        type = "button",
-        `data-bs-target` = paste0("#", carousel_id),
-        `data-bs-slide` = "prev",
-        `aria-label` = "Forrige trin",
-        shiny::tags$span(class = "carousel-control-prev-icon", `aria-hidden` = "true"),
-        shiny::tags$span(class = "visually-hidden", "Forrige")
-      ),
-      shiny::tags$button(
-        class = "carousel-control-next intro-carousel-control",
-        type = "button",
-        `data-bs-target` = paste0("#", carousel_id),
-        `data-bs-slide` = "next",
-        `aria-label` = "N\u00e6ste trin",
-        shiny::tags$span(class = "carousel-control-next-icon", `aria-hidden` = "true"),
-        shiny::tags$span(class = "visually-hidden", "N\u00e6ste")
-      )
+      class = "carousel-inner",
+      lapply(seq_along(slides), function(idx) {
+        app_guide_intro_slide(
+          slide = slides[[idx]],
+          idx = idx,
+          total = total,
+          active = idx == 1L
+        )
+      })
+    ),
+    shiny::tags$button(
+      class = "app-guide-control app-guide-control--prev",
+      type = "button",
+      `data-bs-target` = paste0("#", carousel_id),
+      `data-bs-slide` = "prev",
+      `aria-label` = "Forrige trin",
+      shiny::HTML("&lsaquo;")
+    ),
+    shiny::tags$button(
+      class = "app-guide-control app-guide-control--next",
+      type = "button",
+      `data-bs-target` = paste0("#", carousel_id),
+      `data-bs-slide` = "next",
+      `aria-label` = "N\u00e6ste trin",
+      shiny::HTML("&rsaquo;")
+    ),
+    shiny::tags$div(
+      class = "carousel-indicators app-guide-indicators",
+      lapply(seq_along(slides), function(idx) {
+        shiny::tags$button(
+          type = "button",
+          `data-bs-target` = paste0("#", carousel_id),
+          `data-bs-slide-to` = idx - 1L,
+          class = if (idx == 1L) "active" else NULL,
+          `aria-current` = if (idx == 1L) "true" else NULL,
+          `aria-label` = paste("Vis trin", idx)
+        )
+      })
     )
   )
 }
 
 #' Renderer ét carousel-slide i app-guide
 #'
-#' Slide-layout: venstre=billede (col-lg-6, hvis image_src er sat),
-#' hoejre=copy (col-lg-6 eller -12). Copy bruger rich Shiny tags fra
-#' slide$content saa tabeller, alerts og dl-lister kan renderes naturligt.
+#' Slide-layout: venstre=media (50%), hoejre=content (50%). Media-siden
+#' viser screenshot hvis slide$image_src er sat; ellers fallback decorativ
+#' gradient med stort trin-nummer (matcher hospital-brand). Konsekvent
+#' 460px hoejde uanset content for at undgaa layout-hop ved navigation.
 #'
-#' @param slide Named list med step, title, content, image_src, image_alt
+#' @param slide Named list med title, content, image_src, image_alt
 #' @param idx Integer. Slide-nummer (1-baseret)
 #' @param total Integer. Total antal slides
 #' @param active Logical. TRUE for første slide
@@ -131,45 +127,36 @@ app_guide_intro_carousel <- function(ns) {
 app_guide_intro_slide <- function(slide, idx, total, active = FALSE) {
   has_image <- !is.null(slide$image_src) && nzchar(slide$image_src)
 
-  copy_col <- shiny::div(
-    class = if (has_image) "col-lg-6" else "col-lg-12",
-    shiny::div(
-      class = "intro-carousel-copy",
-      shiny::tags$div(
-        class = "intro-carousel-step",
-        sprintf("Trin %d / %d", idx, total)
-      ),
-      shiny::tags$h3(slide$title, class = "intro-carousel-title"),
-      shiny::div(class = "intro-carousel-body", slide$content)
-    )
-  )
-
   media_col <- if (has_image) {
     shiny::div(
-      class = "col-lg-6",
-      shiny::div(
-        class = "intro-carousel-media",
-        shiny::img(
-          src = slide$image_src,
-          alt = slide$image_alt %||% "",
-          class = "img-fluid"
-        )
+      class = "app-guide-media app-guide-media--image",
+      shiny::img(
+        src = slide$image_src,
+        alt = slide$image_alt %||% ""
       )
     )
   } else {
-    NULL
+    shiny::div(
+      class = "app-guide-media app-guide-media--decor",
+      shiny::div(class = "app-guide-decor-num", as.character(idx)),
+      shiny::div(class = "app-guide-decor-label", slide$title)
+    )
   }
 
-  shiny::tags$div(
-    class = paste("carousel-item intro-carousel-slide", if (active) "active"),
+  content_col <- shiny::div(
+    class = "app-guide-content",
     shiny::div(
-      class = "intro-carousel-frame",
-      shiny::div(
-        class = "row g-4 align-items-center",
-        media_col,
-        copy_col
-      )
-    )
+      class = "app-guide-step",
+      sprintf("Trin %d / %d", idx, total)
+    ),
+    shiny::tags$h3(slide$title, class = "app-guide-title"),
+    shiny::div(class = "app-guide-body", slide$content)
+  )
+
+  shiny::tags$div(
+    class = paste("carousel-item app-guide-slide", if (active) "active"),
+    media_col,
+    content_col
   )
 }
 

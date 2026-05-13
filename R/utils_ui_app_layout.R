@@ -346,6 +346,7 @@ create_ui_header <- function() {
       object-fit: contain;
     }
     .app-guide-media--decor {
+      display: flex;
       background: linear-gradient(135deg, #007dbb 0%, #00293d 100%);
       color: rgba(255, 255, 255, 0.95);
       padding: 50px 40px;

@@ -246,7 +246,11 @@ main_app_server <- function(input, output, session) {
   )
 
   ## App-vejledning vises som modal-overlay (ingen tab, ingen back-nav).
-  ## Modal triggeres via show_app_guide_modal() fra landing-link.
+  ## Triggers: (a) "Sådan bruger du appen"-link på landing-side via
+  ## mod_landing_server, (b) navbar actionLink via observer nedenfor.
+  shiny::observeEvent(input$trigger_app_guide_modal, {
+    show_app_guide_modal(session)
+  })
 
   ## Hjaelpeside modul (tilbagenavigation til forrige tab)
   mod_help_server("help", parent_session = session, app_state = app_state)

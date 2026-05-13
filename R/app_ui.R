@@ -111,8 +111,17 @@ app_ui <- function(request) {
         shiny::uiOutput("session_save_status", inline = TRUE)
       ),
 
-      # App-vejledning vises som modal-overlay via show_app_guide_modal()
-      # triggered fra "S\u00e5dan bruger du appen"-link p\u00e5 landing-side. Ingen tab.
+      # App-vejledning trigger: actionLink i navbar (hoejre side) der aabner
+      # modal-overlay via show_app_guide_modal() i app_server_main observer.
+      bslib::nav_item(
+        shiny::actionLink(
+          inputId = "trigger_app_guide_modal",
+          label = "S\u00e5dan bruger du appen",
+          icon = shiny::icon("circle-question"),
+          class = "nav-link",
+          `data-value` = "app_guide_trigger"
+        )
+      ),
 
       # Hjaelp (adskilt fra wizard-flow)
       bslib::nav_panel(

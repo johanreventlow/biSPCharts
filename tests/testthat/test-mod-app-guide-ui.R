@@ -207,3 +207,20 @@ test_that("app_guide_intro_slide renderer image-side naar image_src er sat", {
     label = "Slide med billede maa IKKE bruge decor-class"
   )
 })
+
+test_that("app_ui indeholder app_guide_trigger nav-link", {
+  ui <- app_ui(NULL)
+  html_str <- as.character(htmltools::doRenderTags(ui))
+
+  expect_true(grepl("trigger_app_guide_modal", html_str),
+    label = "app_ui skal indeholde actionLink med id trigger_app_guide_modal"
+  )
+  expect_true(grepl("data-value=\"app_guide_trigger\"", html_str),
+    label = "Nav-link skal have data-value app_guide_trigger for CSS-visibility"
+  )
+  expect_true(
+    grepl("S\u00e5dan bruger du appen", html_str) ||
+      grepl("S\\u00e5dan bruger du appen", html_str),
+    label = "Nav-link skal have label 'S\u00e5dan bruger du appen'"
+  )
+})

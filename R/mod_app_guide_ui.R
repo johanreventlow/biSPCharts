@@ -3,29 +3,17 @@
 
 #' App Guide Module UI
 #'
-#' Praktisk trin-for-trin vejledning i brug af biSPCharts som
-#' Bootstrap 5 carousel. 7 slides svarer til de 7 hovedtrin: upload,
-#' kolonner, diagram, laesning, redigering, eksport, gem.
-#'
-#' Returnerer modal-body-content (ej fuld page). Modal vises via
-#' show_app_guide_modal() typisk triggered fra landing-side eller
-#' help-knapper.
+#' Returnerer carousel-content til app-guide modal-body. Modal-frame +
+#' close-knap haandteres af show_app_guide_modal() (custom Bootstrap 5
+#' markup). Ingen header, ingen footer, ingen lead-paragraph \u2014 modal er
+#' ren lightbox-overlay.
 #'
 #' @param id Character. Namespace ID for modulet
-#' @return Shiny tagList med carousel-content (modal-body)
+#' @return Shiny tag (carousel)
 #' @keywords internal
 mod_app_guide_ui <- function(id) {
   ns <- shiny::NS(id)
-
-  shiny::tagList(
-    shiny::tags$p(
-      class = "lead text-muted",
-      style = "margin-bottom: 16px;",
-      "biSPCharts hj\u00e6lper dig fra data til f\u00e6rdigt SPC-diagram i syv trin.",
-      " Brug pilene eller punkterne for at navigere."
-    ),
-    app_guide_intro_carousel(ns)
-  )
+  app_guide_intro_carousel(ns)
 }
 
 #' Vis app-guide som modal-overlay

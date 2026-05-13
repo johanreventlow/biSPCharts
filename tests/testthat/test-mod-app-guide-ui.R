@@ -103,19 +103,22 @@ test_that("app_guide_intro_carousel rendrerer 7 indicators og slides", {
   }
 })
 
-test_that("mod_app_guide_ui rendrerer modal-content med carousel", {
-  # Modal-version returnerer kun body-content (ej fuld page med titel)
+test_that("mod_app_guide_ui returnerer kun carousel uden lead/titel", {
   ui <- mod_app_guide_ui("guide")
   html_str <- as.character(htmltools::doRenderTags(ui))
 
   expect_true(grepl("guide-guide_carousel", html_str),
-    label = "App-guide skal indeholde carousel med ns-praefixet ID"
+    label = "Skal indeholde carousel med ns-praefixet ID"
   )
   expect_true(grepl("app-guide-carousel", html_str),
-    label = "App-guide skal indeholde app-guide-carousel class"
+    label = "Skal indeholde app-guide-carousel class"
   )
-  expect_true(grepl("syv trin", html_str),
-    label = "App-guide skal have lead-tekst om syv trin"
+  # Lead-tekst er fjernet — carousel er eneste content
+  expect_false(grepl("syv trin", html_str),
+    label = "Lead-tekst om syv trin skal vaere fjernet"
+  )
+  expect_false(grepl("biSPCharts hj", html_str, fixed = TRUE),
+    label = "Lead-tekst skal vaere fjernet"
   )
 })
 

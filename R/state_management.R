@@ -282,7 +282,16 @@ create_app_state <- function() {
     guard_modal_open = FALSE, # TRUE while modal vises (race-guard)
     # Server-side mirror af JS navGuardHasData;
     # synkroniseres til JS via sendCustomMessage("nav_guard_has_data_update")
-    guard_has_data_flag = FALSE
+    guard_has_data_flag = FALSE,
+    # Sat TRUE under nav-guard confirm-flow (reset + nav til target).
+    # Forhindrer wizard_gates data_updated-observer i at auto-naviger og
+    # overskrive vores target. Cleares via session$onFlushed efter flush.
+    guard_active = FALSE,
+    # Sat TRUE naar nav-guard reverter tab via bslib::nav_select.
+    # Forhindrer main_navbar-guard-observer i at fyre rekursivt paa revert-
+    # triggered input-opdatering. Konsumeres + cleares ved naeste main_navbar-
+    # event.
+    guard_reverting = FALSE
   )
 
   # Visualization State - Convert to reactiveValues for consistency

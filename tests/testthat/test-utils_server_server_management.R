@@ -163,6 +163,51 @@ test_that("reset_to_empty_session clears storage, resets state, and emits events
   expect_equal(ui_calls$reset, 1L)
 })
 
+test_that("reset_to_empty_session clears paste_data_input textarea", {
+  require_internal("reset_to_empty_session", mode = "function")
+
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(old = 1:3)
+  })
+  session_capture <- make_capture_session()
+  emit_bundle <- make_session_management_emit()
+
+  update_calls <- list()
+  testthat::local_mocked_bindings(
+    updateTextAreaInput = function(session, inputId, value = NULL, ...) {
+      update_calls[[length(update_calls) + 1L]] <<- list(
+        inputId = inputId, value = value
+      )
+    },
+    .package = "shiny"
+  )
+  testthat::local_mocked_bindings(
+    reset = function(id) invisible(NULL),
+    .package = "shinyjs"
+  )
+  testthat::local_mocked_bindings(
+    autodetect_engine = function(...) list(),
+    .package = "biSPCharts"
+  )
+
+  shiny::isolate(
+    reset_to_empty_session(
+      session = session_capture$session,
+      app_state = app_state,
+      emit = emit_bundle$emit,
+      ui_service = NULL
+    )
+  )
+
+  paste_calls <- Filter(
+    function(x) identical(x$inputId, "paste_data_input"),
+    update_calls
+  )
+  expect_length(paste_calls, 1L)
+  expect_equal(paste_calls[[1L]]$value, "")
+})
+
 test_that("reset_to_empty_session fallback works without ui_service", {
   require_internal("reset_to_empty_session", mode = "function")
 

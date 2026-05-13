@@ -209,21 +209,27 @@
     if (startLink) startLink.click();
   });
 
-  // Upload-tab-klik: intercept hvis trin 2/3 + data
-  $(document).on('click', '#main_navbar .nav-link[data-value="upload"]',
-    function(e) {
-      if (!navGuardShouldIntercept()) {
-        return;  // Let default bslib tab-switch run
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      Shiny.setInputValue('nav_guard_trigger', {
-        source: 'tab',
-        target: 'upload',
-        timestamp: Date.now()
-      }, { priority: 'event' });
-    }
-  );
+  // Upload-tab + Forside-tab klik: intercept via Bootstrap's officielle
+  // 'show.bs.tab'-event som fyrer FOER tab-aktivering. preventDefault() der
+  // blokerer hele swap (inkl. Shiny input-opdatering). Resultatet: ingen
+  // visuel flicker.
+  //
+  // Server-side observer paa input$main_navbar er fallback hvis Bootstrap
+  // event ikke fyrer (sjaeldent — fx ved direkte input-update).
+  document.addEventListener('show.bs.tab', function(e) {
+    var newTab = e.target;
+    if (!newTab) return;
+    var targetTab = newTab.getAttribute('data-value');
+    if (targetTab !== 'upload' && targetTab !== 'start') return;
+    if (!navGuardShouldIntercept()) return;
+
+    e.preventDefault();
+    Shiny.setInputValue('nav_guard_trigger', {
+      source: 'tab',
+      target: targetTab,
+      timestamp: Date.now()
+    }, { priority: 'event' });
+  }, true);
 
   function base64ToBlob(b64, mimeType) {
     var bytes = atob(b64);

@@ -28,7 +28,20 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
     ignoreInit = TRUE,
     priority = OBSERVER_PRIORITIES$UI_SYNC,
     {
-      has_data <- !is.null(shiny::isolate(app_state$data$current_data))
+      # Skip hele body under nav-guard confirm-flow: handle_nav_guard_confirm
+      # styrer selv wizard-step-messages + nav_select, og denne observer ville
+      # ellers nav_select("analyser") og overskrive target.
+      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+        log_info(
+          "wizard_gates: skipper data_updated handler (guard_active = TRUE)",
+          .context = "NAV_GUARD"
+        )
+        return(invisible(NULL))
+      }
+      # has_real_data() ekskluderer placeholder-data (20 NA-raekker fra
+      # create_empty_session_data) saa wizard ikke auto-navigerer til
+      # trin 2 paa fresh blank session.
+      has_data <- has_real_data(app_state)
       if (has_data) {
         session$sendCustomMessage("wizard-complete-step", 1)
         session$sendCustomMessage("wizard-unlock-step", 2)

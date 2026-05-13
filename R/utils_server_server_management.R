@@ -541,7 +541,7 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 
   # If no data or settings, start new session directly
   if (!has_data && !has_settings) {
-    reset_to_empty_session(session, app_state, emit, ui_service)
+    blank_session_reset_and_nav(session, app_state, emit, ui_service)
     shiny::showNotification("Ny session startet", type = "message", duration = 2)
     return()
   }
@@ -551,10 +551,32 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 }
 
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
-  reset_to_empty_session(session, app_state, emit, ui_service)
-  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
+  blank_session_reset_and_nav(session, app_state, emit, ui_service)
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
+}
+
+# Helper: blank-session reset + nav til trin 2.
+#
+# Vetoer wizard_gates auto-nav via guard_active-flag — ellers fyrer
+# emit$data_updated wizard_gates' observer som ser has_real_data = FALSE
+# paa placeholder-data og nav_select("upload"), som overskriver vores
+# "analyser"-nav. Cleanup via session$onFlushed mirror nav-guard confirm-
+# pattern (R/utils_server_navigation_guard.R::handle_nav_guard_confirm).
+#
+# paste-textarea ryddes inde i reset_to_empty_session().
+blank_session_reset_and_nav <- function(session, app_state, emit, ui_service = NULL) {
+  app_state$navigation$guard_active <- TRUE
+  reset_to_empty_session(session, app_state, emit, ui_service)
+  bslib::nav_select("main_navbar", selected = "analyser", session = session)
+  session$onFlushed(
+    function() {
+      shiny::isolate({
+        app_state$navigation$guard_active <- FALSE
+      })
+    },
+    once = TRUE
+  )
 }
 
 reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) {
@@ -567,6 +589,12 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
     .context = "SESSION_RESET"
   )
   clearDataLocally(session)
+
+  # Toem paste-textarea: bruger skal ej moede stale paste-data ved naeste
+  # trin 1-besoeg uanset hvilken reset-path der kaldte os (nav-guard,
+  # handle_confirm_clear_saved, handle_start_new_session).
+  shiny::updateTextAreaInput(session, "paste_data_input", value = "")
+
   # Unified state assignment only
   app_state$session$last_save_time <- NULL
   app_state$session$pending_excel_upload <- NULL

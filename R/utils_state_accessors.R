@@ -985,6 +985,45 @@ set_table_op_cleanup_needed <- function(app_state, value) {
   })
 }
 
+#' Has Real User Data
+#'
+#' Returnerer TRUE hvis brugeren har rigtige data i sessionen — enten via
+#' upload (`file_uploaded` flag) eller via manuel indtastning i datatabellen
+#' (mindst ét non-NA felt i en data-kolonne ekskl. default-FALSE booleans
+#' `Skift`/`Frys`).
+#'
+#' Placeholder-data fra `create_empty_session_data()` (20 NA-rækker med
+#' default-FALSE Skift/Frys) skal returnere FALSE — bruges af navigation
+#' guard + wizard gates til at skelne "rigtige data" fra "tom session".
+#'
+#' @param app_state Centralized app state
+#' @return Logical scalar
+#' @keywords internal
+has_real_data <- function(app_state) {
+  shiny::isolate({
+    if (isTRUE(app_state$session$file_uploaded)) {
+      return(TRUE)
+    }
+
+    data <- app_state$data$current_data
+    if (is.null(data) || nrow(data) == 0) {
+      return(FALSE)
+    }
+
+    # Ekskluder default-FALSE booleans — kun reelle data-felter taeller
+    data_cols <- setdiff(names(data), c("Skift", "Frys"))
+    if (length(data_cols) == 0) {
+      return(FALSE)
+    }
+
+    any(vapply(
+      data[data_cols],
+      function(col) any(!is.na(col)),
+      logical(1)
+    ))
+  })
+}
+
 #' Set Visualization Module Data Cache
 #'
 #' Atomisk update af både module_data_cache og module_cached_data — disse

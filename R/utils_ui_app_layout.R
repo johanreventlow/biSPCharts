@@ -279,6 +279,122 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
+    /* Landing intro-carousel (3-trins overblik paa velkomstside) */
+    .landing-intro-carousel {
+      width: min(100%, 960px);
+      margin: 0 auto 28px auto;
+    }
+    .landing-intro-carousel-widget .carousel-inner {
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top right, rgba(0, 125, 187, 0.16), transparent 32%),
+        linear-gradient(135deg, #f7fbfd 0%, #ffffff 52%, #eef5f8 100%);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08);
+    }
+    .landing-intro-slide {
+      min-height: 420px;
+    }
+    .landing-intro-frame {
+      padding: clamp(24px, 4vw, 42px);
+    }
+    .landing-intro-media {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 22px;
+      padding: 14px;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.08);
+    }
+    .landing-intro-media img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 14px;
+    }
+    .landing-intro-copy {
+      text-align: left;
+    }
+    .landing-intro-step {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(0, 125, 187, 0.10);
+      color: var(--bs-primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .landing-intro-title {
+      margin-bottom: 14px;
+      font-size: clamp(1.65rem, 2.2vw, 2.2rem);
+      line-height: 1.15;
+    }
+    .landing-intro-body {
+      margin-bottom: 16px;
+      color: #5f6a6d;
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+    .landing-intro-points {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: #4b5659;
+      line-height: 1.7;
+    }
+    .landing-intro-points li + li {
+      margin-top: 0.35rem;
+    }
+    .landing-intro-indicators {
+      margin-bottom: 0;
+    }
+    .landing-intro-indicators [data-bs-target] {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 0;
+      background-color: rgba(0, 37, 85, 0.22);
+    }
+    .landing-intro-indicators .active {
+      background-color: var(--bs-primary);
+    }
+    .landing-intro-control {
+      width: 8%;
+      min-width: 44px;
+    }
+    .landing-intro-control .carousel-control-prev-icon,
+    .landing-intro-control .carousel-control-next-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background-color: rgba(0, 37, 85, 0.68);
+      background-size: 52% 52%;
+    }
+    @media (max-width: 991.98px) {
+      .landing-intro-slide {
+        min-height: auto;
+      }
+      .landing-intro-copy {
+        text-align: center;
+      }
+      .landing-intro-points {
+        display: inline-block;
+        text-align: left;
+      }
+    }
+    @media (max-width: 767.98px) {
+      .landing-intro-frame {
+        padding: 20px 20px 48px 20px;
+      }
+      .landing-intro-control {
+        width: 12%;
+      }
+      .landing-intro-title {
+        font-size: 1.5rem;
+      }
+    }
+
         ")))
     ),
     # Tooltips paa Skift/Frys tabel-headere (excelR renderer dynamisk)

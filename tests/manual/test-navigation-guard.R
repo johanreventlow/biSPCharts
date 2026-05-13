@@ -42,6 +42,42 @@ test_that("Navigation guard modal vises på trin 2 ved logo-klik", {
   expect_equal(app$get_value(input = "main_navbar"), "analyser")
 })
 
+test_that("Navigation guard modal vises på trin 2 ved Upload-tab klik", {
+  # Regression: capture-phase listener skal intercepte FOR bslib's tab-swap
+  # ellers ser handler upload-tab som .active og skipper modal.
+  app <- AppDriver$new(
+    name = "nav-guard-upload-tab",
+    timeout = 20000,
+    height = 900, width = 1400
+  )
+  on.exit(app$stop(), add = TRUE)
+
+  app$click(selector = '#main_navbar .nav-link[data-value="upload"]')
+  app$wait_for_idle()
+
+  paste_data <- "dato\ttaeller\n2026-01-01\t10\n2026-01-02\t12\n"
+  app$set_inputs(paste_data_input = paste_data)
+  app$click("load_paste_data")
+  app$wait_for_idle(timeout = 5000)
+
+  # Auto-advance til trin 2
+  app$wait_for_value(input = "main_navbar", ignore = list("upload"))
+  expect_equal(app$get_value(input = "main_navbar"), "analyser")
+
+  # Klik Upload-tab fra trin 2 — skal vise modal, ikke skifte tab
+  app$click(selector = '#main_navbar .nav-link[data-value="upload"]')
+  app$wait_for_idle()
+
+  modal_html <- app$get_html(".modal-dialog")
+  expect_true(grepl("Forlad arbejde", modal_html))
+
+  # Verificer at vi STADIG er på analyser (bslib tab-swap blokeret)
+  expect_equal(app$get_value(input = "main_navbar"), "analyser")
+
+  app$click("nav_guard_cancel")
+  app$wait_for_idle()
+})
+
 test_that("Navigation guard Nulstil (no DL) reset session", {
   app <- AppDriver$new(
     name = "nav-guard-reset",

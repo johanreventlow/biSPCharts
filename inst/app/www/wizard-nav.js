@@ -210,20 +210,30 @@
   });
 
   // Upload-tab-klik: intercept hvis trin 2/3 + data
-  $(document).on('click', '#main_navbar .nav-link[data-value="upload"]',
-    function(e) {
-      if (!navGuardShouldIntercept()) {
-        return;  // Let default bslib tab-switch run
-      }
-      e.preventDefault();
-      e.stopPropagation();
-      Shiny.setInputValue('nav_guard_trigger', {
-        source: 'tab',
-        target: 'upload',
-        timestamp: Date.now()
-      }, { priority: 'event' });
+  //
+  // Capture-phase listener: bslib's tab-aktivering kører i bubble-phase
+  // og swapper .nav-link.active til "upload" FØR en jQuery-delegeret
+  // handler ville se DOM. getCurrentNavStep() ville derfor returnere "1"
+  // (upload) og navGuardShouldIntercept() ville returnere FALSE.
+  // Capture-phase fires BEFORE element-level handlers, så .active stadig
+  // peger på den nuværende trin 2/3-tab når vi tjekker.
+  // stopImmediatePropagation forhindrer bslib's egne handlers i at køre.
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest(
+      '#main_navbar .nav-link[data-value="upload"]'
+    );
+    if (!link) return;
+    if (!navGuardShouldIntercept()) {
+      return;  // Let default bslib tab-switch run
     }
-  );
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    Shiny.setInputValue('nav_guard_trigger', {
+      source: 'tab',
+      target: 'upload',
+      timestamp: Date.now()
+    }, { priority: 'event' });
+  }, true);
 
   function base64ToBlob(b64, mimeType) {
     var bytes = atob(b64);

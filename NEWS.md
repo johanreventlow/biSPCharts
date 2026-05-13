@@ -3,6 +3,7 @@
 ## Bug fixes
 * Navigations-guard: efter "Nulstil" sender appen nu brugeren til den valgte destination (forside eller trin 1) i stedet for at lande på trin 2. Tidligere overskrev wizard-gates' auto-navigation det valgte mål med "analyser" når placeholder-data blev opfattet som rigtige data.
 * Navigations-guard: indsæt-tekstfeltet på trin 1 ryddes nu automatisk ved "Nulstil" når brugeren navigerer til trin 1, så gammelt indsat data ikke længere ligger tilbage i feltet.
+* Navigations-guard: klik på Upload-menupunktet fra trin 2/3 viser nu korrekt modal-advarslen i stedet for blot at skifte til trin 1 uden bekræftelse. Tidligere swappede bslib tab-state før vores JS-handler kunne nå at intercepte; nu fanges klikket i capture-phase før bslib's egen tab-aktivering.
 
 # biSPCharts 0.4.0
 

@@ -1,40 +1,52 @@
 # mod_app_guide_ui.R
-# App-vejledning: Saadan bruger du biSPCharts (carousel-format)
+# App-vejledning: Saadan bruger du biSPCharts (modal-format med carousel)
 
 #' App Guide Module UI
 #'
 #' Praktisk trin-for-trin vejledning i brug af biSPCharts som
 #' Bootstrap 5 carousel. 7 slides svarer til de 7 hovedtrin: upload,
 #' kolonner, diagram, laesning, redigering, eksport, gem.
-#' Indholdet er statisk og kraever ingen server-logik.
+#'
+#' Returnerer modal-body-content (ej fuld page). Modal vises via
+#' show_app_guide_modal() typisk triggered fra landing-side eller
+#' help-knapper.
 #'
 #' @param id Character. Namespace ID for modulet
-#' @return Shiny UI element
+#' @return Shiny tagList med carousel-content (modal-body)
 #' @keywords internal
 mod_app_guide_ui <- function(id) {
   ns <- shiny::NS(id)
 
-  shiny::div(
-    class = "container-fluid",
-    style = "max-width: 1100px; margin: 0 auto; padding: 30px 20px;",
-
-    # Tilbagelink til forrige side
-    help_back_link(ns),
-
-    # Sidehoved
-    shiny::tags$h1("S\u00e5dan bruger du appen"),
+  shiny::tagList(
     shiny::tags$p(
-      class = "lead",
+      class = "lead text-muted",
+      style = "margin-bottom: 16px;",
       "biSPCharts hj\u00e6lper dig fra data til f\u00e6rdigt SPC-diagram i syv trin.",
-      " Brug pilene eller punkterne nedenfor til at navigere."
+      " Brug pilene eller punkterne for at navigere."
     ),
-    shiny::tags$p(
-      "Denne side handler om selve arbejdsgangen i appen. Hvis du vil forst\u00e5 ",
-      "SPC, variation, Anh\u00f8j-regler og kontrolgr\u00e6nser, s\u00e5 brug siden \u201eL\u00e6r om SPC\u201c."
-    ),
-
-    # Carousel med 7 trin
     app_guide_intro_carousel(ns)
+  )
+}
+
+#' Vis app-guide som modal-overlay
+#'
+#' Lightbox-style modal med 7-trins carousel. Lukkes ved klik udenfor
+#' (easyClose) eller via Esc/X-knap.
+#'
+#' @param session Shiny session-objekt (typisk parent_session fra modul)
+#' @return invisible(NULL). Side-effekt: viser modal.
+#' @keywords internal
+show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
+  shiny::showModal(
+    shiny::modalDialog(
+      title = "S\u00e5dan bruger du appen",
+      size = "xl",
+      easyClose = TRUE,
+      fade = TRUE,
+      footer = shiny::modalButton("Luk"),
+      mod_app_guide_ui("app_guide")
+    ),
+    session = session
   )
 }
 

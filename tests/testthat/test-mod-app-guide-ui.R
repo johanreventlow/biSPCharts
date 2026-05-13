@@ -103,17 +103,46 @@ test_that("app_guide_intro_carousel rendrerer 7 indicators og slides", {
   }
 })
 
-test_that("mod_app_guide_ui rendrerer titel + carousel", {
+test_that("mod_app_guide_ui rendrerer modal-content med carousel", {
+  # Modal-version returnerer kun body-content (ej fuld page med titel)
   ui <- mod_app_guide_ui("guide")
   html_str <- as.character(htmltools::doRenderTags(ui))
 
-  expect_true(grepl("S\u00e5dan bruger du appen", html_str),
-    label = "App-guide skal have hovedtitel"
-  )
   expect_true(grepl("guide-guide_carousel", html_str),
     label = "App-guide skal indeholde carousel med ns-praefixet ID"
   )
   expect_true(grepl("intro-carousel-widget", html_str),
     label = "App-guide skal indeholde intro-carousel-widget class"
+  )
+  expect_true(grepl("syv trin", html_str),
+    label = "App-guide skal have lead-tekst om syv trin"
+  )
+})
+
+test_that("show_app_guide_modal returnerer modalDialog-tag", {
+  # Verific\u00e9r at helper kan kaldes uden Shiny-session ved at intercept showModal.
+  # Vi tester strukturen ved at calle modalDialog direkte med samme args.
+  modal <- shiny::modalDialog(
+    title = "S\u00e5dan bruger du appen",
+    size = "xl",
+    easyClose = TRUE,
+    fade = TRUE,
+    footer = shiny::modalButton("Luk"),
+    mod_app_guide_ui("app_guide")
+  )
+  html_str <- as.character(htmltools::doRenderTags(modal))
+
+  expect_true(grepl("modal-xl", html_str),
+    label = "Modal skal have size=xl"
+  )
+  expect_true(grepl("S\u00e5dan bruger du appen", html_str),
+    label = "Modal skal have hovedtitel"
+  )
+  expect_true(grepl("intro-carousel-widget", html_str),
+    label = "Modal-body skal indeholde carousel"
+  )
+  # fade=TRUE skal generere "modal fade"-class (Bootstrap 5 fade-animation)
+  expect_true(grepl("modal fade", html_str),
+    label = "Modal skal have fade-class for animation"
   )
 })

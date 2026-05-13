@@ -234,7 +234,7 @@ main_app_server <- function(input, output, session) {
     {
       new_tab <- input$main_navbar
       old_tab <- app_state$navigation$current_tab
-      help_tabs <- c("app_guide", "hjaelp")
+      help_tabs <- c("hjaelp")
       if (new_tab %in% help_tabs) {
         app_state$navigation$previous_tab <- old_tab
       }
@@ -245,8 +245,8 @@ main_app_server <- function(input, output, session) {
     }
   )
 
-  ## App-vejledning modul (tilbagenavigation til forrige tab)
-  mod_app_guide_server("app_guide", parent_session = session, app_state = app_state)
+  ## App-vejledning vises som modal-overlay (ingen tab, ingen back-nav).
+  ## Modal triggeres via show_app_guide_modal() fra landing-link.
 
   ## Hjaelpeside modul (tilbagenavigation til forrige tab)
   mod_help_server("help", parent_session = session, app_state = app_state)

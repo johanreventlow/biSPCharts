@@ -42,6 +42,13 @@ build_app_guide_modal_markup <- function() {
     id = "shiny-modal",
     class = "modal fade app-guide-modal",
     tabindex = "-1",
+    # Accessibility: role + aria-modal saettes ej automatisk paa custom markup.
+    # Shiny's modalDialog laver Bootstrap modal-init der ikke retroaktivt
+    # tilfoejer disse — vi skal saette dem eksplicit her. aria-label erstatter
+    # aria-labelledby da modal har INGEN synlig title.
+    role = "dialog",
+    `aria-modal` = "true",
+    `aria-label` = "App-vejledning",
     # Bemærk: bade data-* og data-bs-* sættes for parity med shiny::modalDialog.
     # Shiny's Esc-handler i modal.ts laeser data-keyboard; Bootstrap 5 laeser data-bs-keyboard.
     `data-backdrop` = "true",
@@ -210,7 +217,6 @@ app_guide_intro_slides <- function() {
           "Start med at v\u00e6lge, hvordan du vil indl\u00e6se data:"
         ),
         shiny::tags$dl(
-          class = "intro-carousel-dl",
           shiny::tags$dt("Kopi\u00e9r & Inds\u00e6t data"),
           shiny::tags$dd(
             "Ligger dine data i Excel? Mark\u00e9r tabellen inkl. ",
@@ -250,7 +256,7 @@ app_guide_intro_slides <- function() {
           " og kontroll\u00e9r, at appen har forst\u00e5et data korrekt."
         ),
         shiny::tags$table(
-          class = "table table-sm table-striped intro-carousel-table",
+          class = "table table-sm table-striped",
           shiny::tags$thead(
             shiny::tags$tr(
               shiny::tags$th("Felt"),
@@ -306,7 +312,6 @@ app_guide_intro_slides <- function() {
           ", hvis du er i tvivl."
         ),
         shiny::tags$dl(
-          class = "intro-carousel-dl",
           shiny::tags$dt("Y-akse enhed"),
           shiny::tags$dd("Tal, procent, rate eller tid."),
           shiny::tags$dt("Udviklingsm\u00e5l"),
@@ -392,7 +397,6 @@ app_guide_intro_slides <- function() {
           "Klik ", shiny::tags$strong("Forts\u00e6t"), " for at g\u00e5 til eksport."
         ),
         shiny::tags$dl(
-          class = "intro-carousel-dl",
           shiny::tags$dt("PDF"),
           shiny::tags$dd(
             "Rapportering, kvalitetsm\u00f8der, arkivering og deling som ",

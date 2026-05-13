@@ -248,9 +248,14 @@ main_app_server <- function(input, output, session) {
   ## App-vejledning vises som modal-overlay (ingen tab, ingen back-nav).
   ## Triggers: (a) "Sådan bruger du appen"-link på landing-side via
   ## mod_landing_server, (b) navbar actionLink via observer nedenfor.
-  shiny::observeEvent(input$trigger_app_guide_modal, {
-    show_app_guide_modal(session)
-  })
+  ## ignoreInit = TRUE: actionLink starter på 0L (ej NULL) saa default ignoreNULL
+  ## suppresser ikke init-fire. Uden dette aabner modal auto ved hver session-start.
+  shiny::observeEvent(input$trigger_app_guide_modal,
+    ignoreInit = TRUE,
+    {
+      show_app_guide_modal(session)
+    }
+  )
 
   ## Hjaelpeside modul (tilbagenavigation til forrige tab)
   mod_help_server("help", parent_session = session, app_state = app_state)

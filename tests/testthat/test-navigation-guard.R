@@ -1,3 +1,65 @@
+test_that("has_real_data returns TRUE when file_uploaded is TRUE", {
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$session$file_uploaded <- TRUE
+    app_state$data$current_data <- NULL # selv hvis data er NULL
+  })
+  expect_true(has_real_data(app_state))
+})
+
+test_that("has_real_data returns FALSE for NULL data + no upload", {
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$session$file_uploaded <- FALSE
+    app_state$data$current_data <- NULL
+  })
+  expect_false(has_real_data(app_state))
+})
+
+test_that("has_real_data returns FALSE for placeholder session data (all NA)", {
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$session$file_uploaded <- FALSE
+    app_state$data$current_data <- data.frame(
+      Skift = rep(FALSE, 20),
+      Frys = rep(FALSE, 20),
+      Dato = rep(NA_character_, 20),
+      Taeller = rep(NA_real_, 20),
+      Naevner = rep(NA_real_, 20),
+      Kommentar = rep(NA_character_, 20)
+    )
+  })
+  expect_false(has_real_data(app_state))
+})
+
+test_that("has_real_data returns TRUE for manual entry (some non-NA cells)", {
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$session$file_uploaded <- FALSE
+    app_state$data$current_data <- data.frame(
+      Skift = c(FALSE, FALSE, FALSE),
+      Frys = c(FALSE, FALSE, FALSE),
+      Dato = c("2026-01-01", NA, NA),
+      Taeller = c(NA_real_, NA_real_, NA_real_)
+    )
+  })
+  expect_true(has_real_data(app_state))
+})
+
+test_that("has_real_data ignores Skift/Frys default-FALSE values", {
+  # 20 rows with Skift=FALSE/Frys=FALSE (default booleans) — skal IKKE
+  # taelle som "real data" selv om !is.na(FALSE) = TRUE
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$session$file_uploaded <- FALSE
+    app_state$data$current_data <- data.frame(
+      Skift = rep(FALSE, 5),
+      Frys = rep(FALSE, 5)
+    )
+  })
+  expect_false(has_real_data(app_state))
+})
+
 test_that("emit$navigation_requested increments event counter and stores target", {
   app_state <- create_app_state()
   emit <- create_emit_api(app_state)
@@ -486,6 +548,149 @@ test_that("nav_guard_confirm sends wizard lock-step messages post-reset", {
     vapply(lock_calls, function(x) as.numeric(x$message), numeric(1)),
     c(2, 3)
   )
+})
+
+test_that("server-side main_navbar guard reverts + emits on destructive transition", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$session$file_uploaded <- TRUE
+    app_state$navigation$current_tab <- "analyser"
+  })
+
+  nav_select_calls <- list()
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- selected
+    },
+    .package = "bslib"
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  # Simuler bslib tab-swap til upload
+  session$setInputs(main_navbar = "upload")
+  shiny:::flushReact()
+
+  # Guard skal have revertet tab tilbage til analyser + emit navigation_requested
+  expect_length(nav_select_calls, 1)
+  expect_equal(nav_select_calls[[1]], "analyser")
+  expect_equal(
+    shiny::isolate(app_state$navigation$guard_pending_target),
+    "upload"
+  )
+})
+
+test_that("server-side main_navbar guard skips when no real data", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    # Placeholder-only — file_uploaded FALSE, all-NA data
+    app_state$session$file_uploaded <- FALSE
+    app_state$data$current_data <- data.frame(
+      Skift = rep(FALSE, 20),
+      Frys = rep(FALSE, 20),
+      Dato = rep(NA_character_, 20)
+    )
+    app_state$navigation$current_tab <- "analyser"
+  })
+
+  nav_select_calls <- list()
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- selected
+    },
+    .package = "bslib"
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  session$setInputs(main_navbar = "upload")
+  shiny:::flushReact()
+
+  # Ingen revert, ingen emit — bruger maa lov til at gaa direkte
+  expect_length(nav_select_calls, 0)
+  expect_null(shiny::isolate(app_state$navigation$guard_pending_target))
+})
+
+test_that("server-side main_navbar guard skips trin 3 -> analyser (non-destructive)", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$session$file_uploaded <- TRUE
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$current_tab <- "eksporter"
+  })
+
+  nav_select_calls <- list()
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- selected
+    },
+    .package = "bslib"
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  # Trin 3 -> trin 2 (via Tilbage-knap) — non-destruktiv, ingen guard
+  session$setInputs(main_navbar = "analyser")
+  shiny:::flushReact()
+
+  expect_length(nav_select_calls, 0)
+})
+
+test_that("server-side main_navbar guard reverting-flag prevents re-fire on revert", {
+  withr::local_options(shiny.reactiveConsole = TRUE)
+
+  app_state <- create_app_state()
+  emit <- create_emit_api(app_state)
+  session <- shiny::MockShinySession$new()
+
+  shiny::isolate({
+    app_state$session$file_uploaded <- TRUE
+    app_state$data$current_data <- data.frame(x = 1:3)
+    app_state$navigation$current_tab <- "analyser"
+  })
+
+  nav_select_calls <- list()
+  testthat::local_mocked_bindings(
+    nav_select = function(id, selected, session) {
+      nav_select_calls[[length(nav_select_calls) + 1]] <<- selected
+    },
+    .package = "bslib"
+  )
+
+  setup_nav_guard_listener(app_state, emit, session, session$input)
+  shiny:::flushReact()
+
+  # Forste klik: trin 2 -> upload -> revert til analyser
+  session$setInputs(main_navbar = "upload")
+  shiny:::flushReact()
+  expect_length(nav_select_calls, 1) # revert kaldt
+
+  # Simuler revert-triggered input-update (bslib emit nyt main_navbar event)
+  session$setInputs(main_navbar = "analyser")
+  shiny:::flushReact()
+
+  # Skal IKKE trigger ny revert (guard_reverting konsumeret)
+  expect_length(nav_select_calls, 1) # still 1, ikke 2
+  expect_false(shiny::isolate(app_state$navigation$guard_reverting))
 })
 
 test_that("new navigation_requested ignored while guard_modal_open is TRUE", {

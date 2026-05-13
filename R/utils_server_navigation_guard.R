@@ -32,8 +32,7 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
         return(invisible(NULL))
       }
 
-      data_present <- !is.null(shiny::isolate(app_state$data$current_data)) &&
-        nrow(shiny::isolate(app_state$data$current_data)) > 0
+      data_present <- has_real_data(app_state)
 
       if (!data_present) {
         # Empty session \u2014 direct navigation
@@ -74,10 +73,15 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
     }
   )
 
-  # Push has_data-flag to JS on every current_data change
+  # Push has_data-flag to JS on every current_data / file_uploaded change.
+  # Explicit reactive deps: lookup begge felter direkte saa reactive system
+  # tracker dem (has_real_data() bruger isolate internt).
   shiny::observe({
-    has_data <- !is.null(app_state$data$current_data) &&
-      nrow(app_state$data$current_data) > 0
+    # Force reactive deps
+    invisible(app_state$data$current_data)
+    invisible(app_state$session$file_uploaded)
+
+    has_data <- has_real_data(app_state)
     app_state$navigation$guard_has_data_flag <- has_data
     session$sendCustomMessage(
       type = "nav_guard_has_data_update",
@@ -96,6 +100,52 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
         return(invisible(NULL))
       }
       emit$navigation_requested(trigger$target)
+    }
+  )
+
+  # Server-side guard: detect destruktiv tab-transition (trin 2/3 -> start/upload)
+  # uafhaengigt af JS-intercept. Primaer guard — robust mod bslib's egne
+  # event-handlers + Bootstrap's tab-switch-internals. Bruger priority
+  # STATE_MANAGEMENT + 1 saa den fyrer FOER main_navbar-tracker (priority
+  # STATE_MANAGEMENT) i app_server_main.R og kan laese OLD current_tab.
+  shiny::observeEvent(
+    input$main_navbar,
+    ignoreInit = TRUE,
+    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT + 1L,
+    {
+      current <- input$main_navbar
+      prev <- shiny::isolate(app_state$navigation$current_tab)
+
+      # Konsumer + clear revert-flag (sat af os i forrige fire)
+      if (isTRUE(shiny::isolate(app_state$navigation$guard_reverting))) {
+        app_state$navigation$guard_reverting <- FALSE
+        return(invisible(NULL))
+      }
+
+      # Skip under aktiv confirm-flow (handle_nav_guard_confirm styrer selv)
+      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+        return(invisible(NULL))
+      }
+
+      # Skip hvis modal allerede vises
+      if (isTRUE(shiny::isolate(app_state$navigation$guard_modal_open))) {
+        return(invisible(NULL))
+      }
+
+      leaving_wizard <- isTRUE(prev %in% c("analyser", "eksporter"))
+      going_destructive <- isTRUE(current %in% c("start", "upload"))
+
+      if (leaving_wizard && going_destructive && has_real_data(app_state)) {
+        # Revert tab visuelt + emit guard. nav_select trigger ny main_navbar-
+        # input-event som guard_reverting-flagget konsumerer ovenfor.
+        app_state$navigation$guard_reverting <- TRUE
+        bslib::nav_select(
+          "main_navbar",
+          selected = prev,
+          session = session
+        )
+        emit$navigation_requested(current)
+      }
     }
   )
 

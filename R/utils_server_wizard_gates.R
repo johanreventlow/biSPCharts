@@ -38,7 +38,10 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
         )
         return(invisible(NULL))
       }
-      has_data <- !is.null(shiny::isolate(app_state$data$current_data))
+      # has_real_data() ekskluderer placeholder-data (20 NA-raekker fra
+      # create_empty_session_data) saa wizard ikke auto-navigerer til
+      # trin 2 paa fresh blank session.
+      has_data <- has_real_data(app_state)
       if (has_data) {
         session$sendCustomMessage("wizard-complete-step", 1)
         session$sendCustomMessage("wizard-unlock-step", 2)

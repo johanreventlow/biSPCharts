@@ -209,31 +209,12 @@
     if (startLink) startLink.click();
   });
 
-  // Upload-tab-klik: intercept hvis trin 2/3 + data
-  //
-  // Capture-phase listener: bslib's tab-aktivering kører i bubble-phase
-  // og swapper .nav-link.active til "upload" FØR en jQuery-delegeret
-  // handler ville se DOM. getCurrentNavStep() ville derfor returnere "1"
-  // (upload) og navGuardShouldIntercept() ville returnere FALSE.
-  // Capture-phase fires BEFORE element-level handlers, så .active stadig
-  // peger på den nuværende trin 2/3-tab når vi tjekker.
-  // stopImmediatePropagation forhindrer bslib's egne handlers i at køre.
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest(
-      '#main_navbar .nav-link[data-value="upload"]'
-    );
-    if (!link) return;
-    if (!navGuardShouldIntercept()) {
-      return;  // Let default bslib tab-switch run
-    }
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    Shiny.setInputValue('nav_guard_trigger', {
-      source: 'tab',
-      target: 'upload',
-      timestamp: Date.now()
-    }, { priority: 'event' });
-  }, true);
+  // Upload-tab + Forside-tab klik håndteres af server-side observer på
+  // input$main_navbar i setup_nav_guard_listener() (R/utils_server_navigation_guard.R).
+  // JS-intercept-tilgang var fragile mod bslib's egne event-handlers og
+  // Bootstrap's tab-switch-internals — server-side observer er robust.
+  // Tradeoff: lille visuel flicker (tab swapper kort før revert) accepteres
+  // for korrekthed. Logo-intercept bevares ovenfor da logo ikke er bslib-tab.
 
   function base64ToBlob(b64, mimeType) {
     var bytes = atob(b64);

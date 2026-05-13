@@ -279,119 +279,147 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
-    /* Landing intro-carousel (3-trins overblik paa velkomstside) */
-    .landing-intro-carousel {
-      width: min(100%, 960px);
+    /* Intro-carousel (genbrugelig: app-guide o.l.) */
+    .intro-carousel {
+      width: min(100%, 1040px);
       margin: 0 auto 28px auto;
     }
-    .landing-intro-carousel-widget .carousel-inner {
-      border-radius: 28px;
+    .intro-carousel-widget .carousel-inner {
+      border-radius: 24px;
       overflow: hidden;
       background:
         radial-gradient(circle at top right, rgba(0, 125, 187, 0.16), transparent 32%),
         linear-gradient(135deg, #f7fbfd 0%, #ffffff 52%, #eef5f8 100%);
       box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08);
     }
-    .landing-intro-slide {
-      min-height: 420px;
+    .intro-carousel-slide {
+      min-height: 460px;
     }
-    .landing-intro-frame {
+    .intro-carousel-frame {
       padding: clamp(24px, 4vw, 42px);
     }
-    .landing-intro-media {
+    .intro-carousel-media {
       background: rgba(255, 255, 255, 0.92);
       border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 22px;
-      padding: 14px;
+      border-radius: 18px;
+      padding: 12px;
       box-shadow: 0 12px 34px rgba(0, 0, 0, 0.08);
     }
-    .landing-intro-media img {
+    .intro-carousel-media img {
       width: 100%;
       height: auto;
       display: block;
-      border-radius: 14px;
+      border-radius: 12px;
     }
-    .landing-intro-copy {
+    .intro-carousel-copy {
       text-align: left;
     }
-    .landing-intro-step {
+    .intro-carousel-step {
       display: inline-block;
       margin-bottom: 10px;
-      padding: 6px 12px;
+      padding: 5px 12px;
       border-radius: 999px;
       background: rgba(0, 125, 187, 0.10);
       color: var(--bs-primary);
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
-    .landing-intro-title {
+    .intro-carousel-title {
       margin-bottom: 14px;
-      font-size: clamp(1.65rem, 2.2vw, 2.2rem);
-      line-height: 1.15;
+      font-size: clamp(1.45rem, 2.1vw, 2rem);
+      line-height: 1.2;
     }
-    .landing-intro-body {
-      margin-bottom: 16px;
-      color: #5f6a6d;
-      font-size: 1rem;
-      line-height: 1.65;
-    }
-    .landing-intro-points {
-      margin: 0;
-      padding-left: 1.1rem;
+    .intro-carousel-body {
       color: #4b5659;
-      line-height: 1.7;
+      font-size: 0.98rem;
+      line-height: 1.6;
     }
-    .landing-intro-points li + li {
-      margin-top: 0.35rem;
+    .intro-carousel-body p {
+      margin-bottom: 0.75rem;
     }
-    .landing-intro-indicators {
+    .intro-carousel-body p:last-child {
       margin-bottom: 0;
     }
-    .landing-intro-indicators [data-bs-target] {
+    .intro-carousel-body code {
+      background: rgba(0, 125, 187, 0.08);
+      color: var(--bs-primary);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .intro-carousel-dl {
+      margin: 0 0 0.75rem 0;
+    }
+    .intro-carousel-dl dt {
+      font-weight: 600;
+      color: #2c3e44;
+      margin-top: 0.4rem;
+    }
+    .intro-carousel-dl dt:first-child {
+      margin-top: 0;
+    }
+    .intro-carousel-dl dd {
+      margin: 0 0 0.4rem 0;
+      padding-left: 1rem;
+      color: #4b5659;
+    }
+    .intro-carousel-table {
+      font-size: 0.88rem;
+      margin-bottom: 0.75rem;
+    }
+    .intro-carousel-table th {
+      background: rgba(0, 125, 187, 0.06);
+    }
+    .intro-carousel-body .alert {
+      font-size: 0.92rem;
+      padding: 8px 12px;
+      margin-top: 0.75rem;
+    }
+    .intro-carousel-indicators {
+      margin-bottom: 0;
+    }
+    .intro-carousel-indicators [data-bs-target] {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       border: 0;
       background-color: rgba(0, 37, 85, 0.22);
     }
-    .landing-intro-indicators .active {
+    .intro-carousel-indicators .active {
       background-color: var(--bs-primary);
     }
-    .landing-intro-control {
-      width: 8%;
+    .intro-carousel-control {
+      width: 6%;
       min-width: 44px;
+      opacity: 0.85;
     }
-    .landing-intro-control .carousel-control-prev-icon,
-    .landing-intro-control .carousel-control-next-icon {
-      width: 3rem;
-      height: 3rem;
+    .intro-carousel-control .carousel-control-prev-icon,
+    .intro-carousel-control .carousel-control-next-icon {
+      width: 2.6rem;
+      height: 2.6rem;
       border-radius: 50%;
       background-color: rgba(0, 37, 85, 0.68);
-      background-size: 52% 52%;
+      background-size: 50% 50%;
     }
     @media (max-width: 991.98px) {
-      .landing-intro-slide {
+      .intro-carousel-slide {
         min-height: auto;
-      }
-      .landing-intro-copy {
-        text-align: center;
-      }
-      .landing-intro-points {
-        display: inline-block;
-        text-align: left;
       }
     }
     @media (max-width: 767.98px) {
-      .landing-intro-frame {
+      .intro-carousel-frame {
         padding: 20px 20px 48px 20px;
       }
-      .landing-intro-control {
+      .intro-carousel-control {
         width: 12%;
       }
-      .landing-intro-title {
-        font-size: 1.5rem;
+      .intro-carousel-title {
+        font-size: 1.35rem;
+      }
+      .intro-carousel-table {
+        font-size: 0.82rem;
       }
     }
 

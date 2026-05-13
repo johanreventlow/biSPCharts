@@ -58,13 +58,6 @@ test_that("mod_landing_server renders default landing when peek_result is NULL (
       expect_true(grepl("start_wizard", html_str),
         label = "Default landing skal indeholde start_wizard-button"
       )
-      # Carousel-markup skal vaere til stede paa default-landing
-      expect_true(grepl("intro_carousel", html_str),
-        label = "Default landing skal indeholde intro-carousel markup"
-      )
-      expect_true(grepl("Upload data hurtigt og fleksibelt", html_str),
-        label = "Default landing skal indeholde slide-tekst for trin 1"
-      )
     }
   )
 })
@@ -132,10 +125,6 @@ test_that("mod_landing_server renders default when no saved payload (§2.3.3)", 
       )
       expect_false(grepl("restore_saved_session", html_str),
         label = "Default landing må IKKE have restore_saved_session"
-      )
-      # Carousel skal ogsaa renderes paa has_payload=FALSE-pathen
-      expect_true(grepl("www/help/06b-trin2-analyser.png", html_str),
-        label = "Default landing skal indeholde analyse-slide med billede"
       )
     }
   )

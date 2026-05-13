@@ -51,8 +51,22 @@ landing_default_ui <- function(ns) {
       "og eksport\u00e9r f\u00e6rdige diagrammer i regionalt layout."
     ),
 
-    # Intro-carousel (3 trin: upload, analys\u00e9r, eksport\u00e9r)
-    landing_intro_carousel(ns),
+    # Feature-highlights
+    shiny::div(
+      style = "display: flex; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;",
+      landing_feature_card(
+        "upload", "Upload data",
+        "Upload CSV/Excel eller inds\u00e6t direkte fra regneark"
+      ),
+      landing_feature_card(
+        "chart-line", "Analys\u00e9r med SPC",
+        "Seriediagrammer og kontroldiagrammer med automatisk signaldetektion"
+      ),
+      landing_feature_card(
+        "file-export", "Eksport\u00e9r diagram",
+        "Diagrammer i PDF eller PNG-format"
+      )
+    ),
 
     # CTA-knap
     shiny::actionButton(
@@ -187,155 +201,24 @@ landing_restore_ui <- function(ns, peek) {
   )
 }
 
-#' Intro-carousel: 3-trins overblik på landing page
-#' @param ns Namespace function (fra shiny::NS(id))
+#' Feature-highlight kort til landing page
+#' @param icon_name FontAwesome ikon
+#' @param title Kort titel
+#' @param description Beskrivelse
 #' @return shiny.tag
 #' @noRd
-landing_intro_carousel <- function(ns) {
-  carousel_id <- ns("intro_carousel")
-  slides <- landing_intro_slides()
-
+landing_feature_card <- function(icon_name, title, description) {
+  muted_color <- get_hospital_colors()$ui_grey_mid
   shiny::div(
-    class = "landing-intro-carousel",
-    shiny::tags$div(
-      id = carousel_id,
-      class = "carousel slide landing-intro-carousel-widget",
-      `data-bs-interval` = "false",
-      `data-bs-touch` = "true",
-      shiny::tags$div(
-        class = "carousel-indicators landing-intro-indicators",
-        lapply(seq_along(slides), function(idx) {
-          shiny::tags$button(
-            type = "button",
-            `data-bs-target` = paste0("#", carousel_id),
-            `data-bs-slide-to` = idx - 1L,
-            class = if (idx == 1L) "active" else NULL,
-            `aria-current` = if (idx == 1L) "true" else NULL,
-            `aria-label` = paste("Vis introtrin", idx)
-          )
-        })
-      ),
-      shiny::tags$div(
-        class = "carousel-inner",
-        lapply(seq_along(slides), function(idx) {
-          landing_intro_slide(
-            slide = slides[[idx]],
-            active = idx == 1L
-          )
-        })
-      ),
-      shiny::tags$button(
-        class = "carousel-control-prev landing-intro-control",
-        type = "button",
-        `data-bs-target` = paste0("#", carousel_id),
-        `data-bs-slide` = "prev",
-        `aria-label` = "Forrige introtrin",
-        shiny::tags$span(class = "carousel-control-prev-icon", `aria-hidden` = "true"),
-        shiny::tags$span(class = "visually-hidden", "Forrige")
-      ),
-      shiny::tags$button(
-        class = "carousel-control-next landing-intro-control",
-        type = "button",
-        `data-bs-target` = paste0("#", carousel_id),
-        `data-bs-slide` = "next",
-        `aria-label` = "N\u00e6ste introtrin",
-        shiny::tags$span(class = "carousel-control-next-icon", `aria-hidden` = "true"),
-        shiny::tags$span(class = "visually-hidden", "N\u00e6ste")
-      )
-    )
-  )
-}
-
-#' Renderer ét carousel-slide
-#' @param slide Named list med step, title, body, points, image_src, image_alt
-#' @param active Logical. TRUE for første slide
-#' @return shiny.tag
-#' @noRd
-landing_intro_slide <- function(slide, active = FALSE) {
-  shiny::tags$div(
-    class = paste("carousel-item landing-intro-slide", if (active) "active"),
+    style = "width: 200px; text-align: center;",
     shiny::div(
-      class = "landing-intro-frame",
-      shiny::div(
-        class = "row g-4 align-items-center",
-        shiny::div(
-          class = "col-lg-7",
-          shiny::div(
-            class = "landing-intro-media",
-            shiny::img(
-              src = slide$image_src,
-              alt = slide$image_alt,
-              class = "img-fluid"
-            )
-          )
-        ),
-        shiny::div(
-          class = "col-lg-5",
-          shiny::div(
-            class = "landing-intro-copy",
-            shiny::tags$div(class = "landing-intro-step", slide$step),
-            shiny::tags$h3(slide$title, class = "landing-intro-title"),
-            shiny::tags$p(class = "landing-intro-body", slide$body),
-            shiny::tags$ul(
-              class = "landing-intro-points",
-              lapply(slide$points, function(point) shiny::tags$li(point))
-            )
-          )
-        )
-      )
-    )
-  )
-}
-
-#' Slide-data til intro-carousel (3 trin: upload, analysér, eksportér)
-#' @return list med 3 slide-definitioner
-#' @noRd
-landing_intro_slides <- function() {
-  list(
-    list(
-      step = "Trin 1",
-      title = "Upload data hurtigt og fleksibelt",
-      body = paste(
-        "Start med at inds\u00e6tte data direkte fra Excel,",
-        "upload en fil eller brug eksempeldata for at l\u00e6re appen at kende."
-      ),
-      points = c(
-        "CSV, Excel og copy-paste underst\u00f8ttes",
-        "Automatisk kolonnedetektion reducerer manuelt arbejde",
-        "Egnet til b\u00e5de hurtige test og rigtige kliniske datas\u00e6t"
-      ),
-      image_src = "www/help/06a-trin1-upload.png",
-      image_alt = "Sk\u00e6rmbillede af upload-trinnet i biSPCharts"
+      style = "margin-bottom: 10px;",
+      shiny::icon(icon_name, class = "fa-2x", style = paste0("color: ", muted_color, ";"))
     ),
-    list(
-      step = "Trin 2",
-      title = "Analys\u00e9r med SPC og f\u00e5 overblik",
-      body = paste(
-        "V\u00e6lg diagramtype, map kolonner og just\u00e9r indstillinger,",
-        "mens diagrammet opdateres og signaler fremh\u00e6ves."
-      ),
-      points = c(
-        "Run charts og kontroldiagrammer i samme workflow",
-        "Automatisk signaldetektion hj\u00e6lper med at finde variation",
-        "Tilpas labels, akser og ops\u00e6tning uden at forlade analysen"
-      ),
-      image_src = "www/help/06b-trin2-analyser.png",
-      image_alt = "Sk\u00e6rmbillede af analyse-trinnet i biSPCharts"
-    ),
-    list(
-      step = "Trin 3",
-      title = "Eksport\u00e9r diagrammer i regionalt layout",
-      body = paste(
-        "Afslut med en eksport, der er klar til deling i kvalitetsarbejdet,",
-        "med titel, analyse og grafik i et konsistent format."
-      ),
-      points = c(
-        "Eksport til PDF og PNG",
-        "Velegnet til m\u00f8der, rapporter og dokumentation",
-        "Bevarer appens branding og ops\u00e6tning i output"
-      ),
-      image_src = "www/help/06c-trin3-eksporter.png",
-      image_alt = "Sk\u00e6rmbillede af eksport-trinnet i biSPCharts"
+    shiny::tags$h5(title, style = "font-weight: 600;"),
+    shiny::tags$p(
+      style = paste0("font-size: 0.9rem; color: ", muted_color, ";"),
+      description
     )
   )
 }

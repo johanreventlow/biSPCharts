@@ -16,26 +16,38 @@ mod_app_guide_ui <- function(id) {
   app_guide_intro_carousel(ns)
 }
 
-#' Vis app-guide som modal-overlay
+#' Vis app-guide som lightbox modal-overlay
 #'
-#' Lightbox-style modal med 7-trins carousel. Lukkes ved klik udenfor
-#' (easyClose) eller via Esc/X-knap.
+#' Custom Bootstrap 5 modal-markup uden header/footer (drop shiny::modalDialog
+#' for fuld kontrol). Lukkes ved klik udenfor (data-bs-backdrop=true), Esc
+#' (data-bs-keyboard=true), eller custom X-knap (data-bs-dismiss=modal).
 #'
 #' @param session Shiny session-objekt (typisk parent_session fra modul)
 #' @return invisible(NULL). Side-effekt: viser modal.
 #' @keywords internal
 show_app_guide_modal <- function(session = shiny::getDefaultReactiveDomain()) {
-  shiny::showModal(
-    shiny::modalDialog(
-      title = "S\u00e5dan bruger du appen",
-      size = "xl",
-      easyClose = TRUE,
-      fade = TRUE,
-      footer = shiny::modalButton("Luk"),
-      mod_app_guide_ui("app_guide")
-    ),
-    session = session
+  modal_markup <- shiny::tags$div(
+    id = "shiny-modal",
+    class = "modal fade app-guide-modal",
+    tabindex = "-1",
+    `data-bs-backdrop` = "true",
+    `data-bs-keyboard` = "true",
+    shiny::tags$div(
+      class = "modal-dialog app-guide-modal-dialog",
+      shiny::tags$div(
+        class = "modal-content app-guide-inner",
+        shiny::tags$button(
+          type = "button",
+          class = "app-guide-close",
+          `data-bs-dismiss` = "modal",
+          `aria-label` = "Luk",
+          shiny::HTML("&times;")
+        ),
+        mod_app_guide_ui("app_guide")
+      )
+    )
   )
+  shiny::showModal(modal_markup, session = session)
 }
 
 # ---------------------------------------------------------------------------

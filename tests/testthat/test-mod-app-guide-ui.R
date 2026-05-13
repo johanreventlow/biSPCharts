@@ -122,31 +122,55 @@ test_that("mod_app_guide_ui returnerer kun carousel uden lead/titel", {
   )
 })
 
-test_that("show_app_guide_modal returnerer modalDialog-tag", {
-  # Verific\u00e9r at helper kan kaldes uden Shiny-session ved at intercept showModal.
-  # Vi tester strukturen ved at calle modalDialog direkte med samme args.
-  modal <- shiny::modalDialog(
-    title = "S\u00e5dan bruger du appen",
-    size = "xl",
-    easyClose = TRUE,
-    fade = TRUE,
-    footer = shiny::modalButton("Luk"),
-    mod_app_guide_ui("app_guide")
+test_that("app-guide modal har custom Bootstrap 5 markup uden header/footer", {
+  # Recreate modal-markup som show_app_guide_modal bygger
+  modal <- shiny::tags$div(
+    id = "shiny-modal",
+    class = "modal fade app-guide-modal",
+    tabindex = "-1",
+    `data-bs-backdrop` = "true",
+    `data-bs-keyboard` = "true",
+    shiny::tags$div(
+      class = "modal-dialog app-guide-modal-dialog",
+      shiny::tags$div(
+        class = "modal-content app-guide-inner",
+        shiny::tags$button(
+          type = "button",
+          class = "app-guide-close",
+          `data-bs-dismiss` = "modal",
+          `aria-label` = "Luk",
+          shiny::HTML("&times;")
+        ),
+        mod_app_guide_ui("app_guide")
+      )
+    )
   )
   html_str <- as.character(htmltools::doRenderTags(modal))
 
-  expect_true(grepl("modal-xl", html_str),
-    label = "Modal skal have size=xl"
+  # Custom modal-class
+  expect_true(grepl("app-guide-modal", html_str),
+    label = "Modal skal have app-guide-modal class"
   )
-  expect_true(grepl("S\u00e5dan bruger du appen", html_str),
-    label = "Modal skal have hovedtitel"
+  # Custom X-knap
+  expect_true(grepl("app-guide-close", html_str),
+    label = "Modal skal have custom close-knap"
   )
+  expect_true(grepl("data-bs-dismiss=\"modal\"", html_str),
+    label = "Close-knap skal have Bootstrap dismiss-attribut"
+  )
+  # INGEN modal-header, INGEN modal-footer
+  expect_false(grepl("modal-header", html_str),
+    label = "Modal maa IKKE have Bootstrap modal-header"
+  )
+  expect_false(grepl("modal-footer", html_str),
+    label = "Modal maa IKKE have Bootstrap modal-footer"
+  )
+  expect_false(grepl(">Luk<", html_str),
+    label = "Ingen 'Luk'-knap i footer"
+  )
+  # Carousel embedded
   expect_true(grepl("app-guide-carousel", html_str),
     label = "Modal-body skal indeholde carousel"
-  )
-  # fade=TRUE skal generere "modal fade"-class (Bootstrap 5 fade-animation)
-  expect_true(grepl("modal fade", html_str),
-    label = "Modal skal have fade-class for animation"
   )
 })
 

@@ -279,148 +279,253 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
-    /* Intro-carousel (genbrugelig: app-guide o.l.) */
-    .intro-carousel {
-      width: min(100%, 1040px);
-      margin: 0 auto 28px auto;
+    /* App-guide modal (lightbox-overlay med carousel) */
+    .app-guide-modal .modal-dialog {
+      max-width: 960px;
+      width: 960px;
+      margin: 60px auto;
     }
-    .intro-carousel-widget .carousel-inner {
-      border-radius: 24px;
+    .app-guide-modal .modal-content {
+      border-radius: 0;
+      border: 1px solid #b8b8b8;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+      background: white;
+      padding: 0;
+    }
+    .app-guide-modal-content {
+      position: relative;
+      height: 520px;
       overflow: hidden;
-      background:
-        radial-gradient(circle at top right, rgba(0, 125, 187, 0.16), transparent 32%),
-        linear-gradient(135deg, #f7fbfd 0%, #ffffff 52%, #eef5f8 100%);
-      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.08);
     }
-    .intro-carousel-slide {
-      min-height: 460px;
+    .app-guide-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #d6d6d6;
+      color: #565656;
+      font-size: 18px;
+      line-height: 26px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 10;
+      padding: 0;
     }
-    .intro-carousel-frame {
-      padding: clamp(24px, 4vw, 42px);
+    .app-guide-close:hover {
+      background: white;
+      color: #333333;
     }
-    .intro-carousel-media {
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 18px;
-      padding: 12px;
-      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.08);
+    .app-guide-carousel {
+      height: 520px;
     }
-    .intro-carousel-media img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 12px;
+    .app-guide-carousel .carousel-inner {
+      height: 460px;
+      background: white;
     }
-    .intro-carousel-copy {
+    .app-guide-slide {
+      height: 460px;
+      display: flex;
+    }
+    .app-guide-media {
+      flex: 0 0 50%;
+      border-right: 1px solid #ebebeb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .app-guide-media--image {
+      background: linear-gradient(135deg, #ccebfa 0%, #e8f4f8 100%);
+      padding: 20px;
+    }
+    .app-guide-media--image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .app-guide-media--decor {
+      background: linear-gradient(135deg, #007dbb 0%, #00293d 100%);
+      color: rgba(255, 255, 255, 0.95);
+      padding: 50px 40px;
+      position: relative;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .app-guide-media--decor::before {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .app-guide-media--decor::after {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .app-guide-decor-num {
+      font-size: 96px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .app-guide-decor-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+    .app-guide-content {
+      flex: 1;
+      padding: 32px 36px;
       text-align: left;
+      color: #333333;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
-    .intro-carousel-step {
+    .app-guide-step {
       display: inline-block;
-      margin-bottom: 10px;
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: rgba(0, 125, 187, 0.10);
-      color: var(--bs-primary);
-      font-size: 0.78rem;
+      padding: 4px 11px;
+      background: rgba(0, 125, 187, 0.12);
+      color: #007dbb;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      margin-bottom: 12px;
+      align-self: flex-start;
     }
-    .intro-carousel-title {
-      margin-bottom: 14px;
-      font-size: clamp(1.45rem, 2.1vw, 2rem);
+    .app-guide-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: #1a2a30;
       line-height: 1.2;
     }
-    .intro-carousel-body {
+    .app-guide-body {
+      font-size: 13px;
+      line-height: 1.55;
       color: #4b5659;
-      font-size: 0.98rem;
-      line-height: 1.6;
     }
-    .intro-carousel-body p {
-      margin-bottom: 0.75rem;
-    }
-    .intro-carousel-body p:last-child {
-      margin-bottom: 0;
-    }
-    .intro-carousel-body code {
+    .app-guide-body p { margin: 0 0 8px 0; }
+    .app-guide-body p:last-child { margin-bottom: 0; }
+    .app-guide-body strong { color: #1a2a30; }
+    .app-guide-body code {
       background: rgba(0, 125, 187, 0.08);
-      color: var(--bs-primary);
+      color: #007dbb;
       padding: 1px 5px;
-      border-radius: 4px;
+      border-radius: 0;
       font-size: 0.9em;
     }
-    .intro-carousel-dl {
-      margin: 0 0 0.75rem 0;
+    .app-guide-body table {
+      width: 100%;
+      font-size: 11px;
+      border-collapse: collapse;
+      margin-top: 6px;
     }
-    .intro-carousel-dl dt {
+    .app-guide-body table th,
+    .app-guide-body table td {
+      border: 1px solid #d6d6d6;
+      padding: 5px 8px;
+      text-align: left;
+    }
+    .app-guide-body table th {
+      background: #ebebeb;
       font-weight: 600;
-      color: #2c3e44;
+    }
+    .app-guide-body dl {
+      margin: 0 0 0.5rem 0;
+    }
+    .app-guide-body dt {
+      font-weight: 600;
+      color: #1a2a30;
       margin-top: 0.4rem;
+      font-size: 12px;
     }
-    .intro-carousel-dl dt:first-child {
-      margin-top: 0;
-    }
-    .intro-carousel-dl dd {
-      margin: 0 0 0.4rem 0;
-      padding-left: 1rem;
+    .app-guide-body dt:first-child { margin-top: 0; }
+    .app-guide-body dd {
+      margin: 0 0 0.4rem 1rem;
       color: #4b5659;
+      font-size: 12px;
     }
-    .intro-carousel-table {
-      font-size: 0.88rem;
-      margin-bottom: 0.75rem;
-    }
-    .intro-carousel-table th {
-      background: rgba(0, 125, 187, 0.06);
-    }
-    .intro-carousel-body .alert {
-      font-size: 0.92rem;
+    .app-guide-body .alert {
+      font-size: 11.5px;
       padding: 8px 12px;
-      margin-top: 0.75rem;
+      margin-top: 10px;
+      border-radius: 0;
     }
-    .intro-carousel-indicators {
-      margin-bottom: 0;
+    .app-guide-indicators {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 14px 0;
+      background: white;
+      border-top: 1px solid #ebebeb;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
     }
-    .intro-carousel-indicators [data-bs-target] {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
+    .app-guide-indicators [data-bs-target] {
+      width: 8px;
+      height: 8px;
+      border-radius: 0;
       border: 0;
       background-color: rgba(0, 37, 85, 0.22);
+      transition: width 0.2s ease, background-color 0.2s ease;
+      padding: 0;
     }
-    .intro-carousel-indicators .active {
-      background-color: var(--bs-primary);
+    .app-guide-indicators .active {
+      background-color: #007dbb;
+      width: 22px;
     }
-    .intro-carousel-control {
-      width: 6%;
-      min-width: 44px;
+    .app-guide-control {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      background: rgba(0, 37, 85, 0.7);
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
       opacity: 0.85;
     }
-    .intro-carousel-control .carousel-control-prev-icon,
-    .intro-carousel-control .carousel-control-next-icon {
-      width: 2.6rem;
-      height: 2.6rem;
-      border-radius: 50%;
-      background-color: rgba(0, 37, 85, 0.68);
-      background-size: 50% 50%;
+    .app-guide-control:hover { opacity: 1; }
+    .app-guide-control--prev { left: 14px; }
+    .app-guide-control--next { right: 14px; }
+
+    /* Navbar-link «Sådan bruger du appen»: skjult før wizard-nav-active */
+    .navbar .nav-item:has(.nav-link[data-value='app_guide_trigger']) {
+      display: none !important;
     }
-    @media (max-width: 991.98px) {
-      .intro-carousel-slide {
-        min-height: auto;
-      }
-    }
-    @media (max-width: 767.98px) {
-      .intro-carousel-frame {
-        padding: 20px 20px 48px 20px;
-      }
-      .intro-carousel-control {
-        width: 12%;
-      }
-      .intro-carousel-title {
-        font-size: 1.35rem;
-      }
-      .intro-carousel-table {
-        font-size: 0.82rem;
-      }
+    body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='app_guide_trigger']) {
+      display: flex !important;
+      align-items: center;
     }
 
         ")))

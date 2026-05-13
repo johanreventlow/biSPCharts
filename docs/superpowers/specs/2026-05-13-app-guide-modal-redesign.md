@@ -94,7 +94,9 @@ Hver slide er 460px høj og delt i to kolonner (50/50):
 | Fil | Ændring |
 |---|---|
 | `R/mod_app_guide_ui.R` | Refactor `mod_app_guide_ui()`: returner KUN carousel (drop `lead`-paragraph). Refactor `show_app_guide_modal()`: byg custom modal-markup via `tags$div(class="modal app-guide-modal", ...)` + `showModal()`, ej `modalDialog()` (som tvinger header/footer-struktur). Tilføj custom X-knap. |
-| `R/utils_ui_app_layout.R` | Slet/erstat eksisterende `.intro-carousel-*` CSS-blok. Tilføj ny CSS-blok `.app-guide-modal-*` med 960×520 fixed sizing, square corners, decorativ gradient-fallback, custom dots/arrows/X. |
+| `R/utils_ui_app_layout.R` | Slet/erstat eksisterende `.intro-carousel-*` CSS-blok. Tilføj ny CSS-blok `.app-guide-modal-*` med 960×520 fixed sizing, square corners, decorativ gradient-fallback, custom dots/arrows/X. Tilføj CSS-rule for navbar-link `data-value='app_guide_trigger'` (skjult før wizard-nav-active, vises med wizard-nav). |
+| `R/app_ui.R` | Tilføj `bslib::nav_item()` med `shiny::actionLink("trigger_app_guide_modal", ...)` i navbar mellem `session_save_status` og "Lær om SPC". Synlighed styret via samme `wizard-nav-active`-class som de øvrige navbar-elementer. |
+| `R/app_server_main.R` | Tilføj observer på `input$trigger_app_guide_modal` der kalder `show_app_guide_modal(session)`. Placering ved øvrige modul-registrationer. |
 | `tests/testthat/test-mod-app-guide-ui.R` | Opdater asserts: drop "Sådan bruger du appen"-titel-assert (intet h1 længere). Tilføj asserts for custom X-knap, fixed højde-class, square-corners-class. |
 
 ### Custom modal-implementation
@@ -169,6 +171,42 @@ påvirke andre modals i appen (cookie-consent, kolonne-mapping, navigation-guard
 Hvis det ønskes senere, tilføj `body.app-guide-modal-open .modal-backdrop`
 override via JS-class-toggle ved show/hide.
 
+### Navbar-trigger
+
+Genaktiver "Sådan bruger du appen"-link i navbar (højre side) — fjernet
+ved overgang til modal i commit df7be652. Linket triggerer nu modal i
+stedet for tab-navigation.
+
+```r
+# I app_ui.R navbar (mellem session_save_status og hjaelp nav_panel):
+bslib::nav_item(
+  shiny::actionLink(
+    "trigger_app_guide_modal",
+    label = "Sådan bruger du appen",
+    icon = shiny::icon("circle-question"),
+    class = "nav-link",
+    `data-value` = "app_guide_trigger"
+  )
+)
+
+# I app_server_main.R:
+shiny::observeEvent(input$trigger_app_guide_modal, {
+  show_app_guide_modal(session)
+})
+```
+
+Visibility-rules i CSS (samme mønster som eksisterende wizard-nav-tabs):
+
+```css
+.navbar .nav-item:has([data-value='app_guide_trigger']) {
+  display: none !important;
+}
+body.wizard-nav-active .navbar .nav-item:has([data-value='app_guide_trigger']) {
+  display: flex !important;
+  align-items: center;
+}
+```
+
 ## Tests
 
 Opdaterede asserts:
@@ -181,6 +219,7 @@ Opdaterede asserts:
 7. Image-side rendrerer når `image_src` er sat (med `.app-guide-media--image`)
 8. 7 slides + 7 indicators bevares fra eksisterende implementation
 9. Bootstrap 5-attrs (`data-bs-target`, `data-bs-slide-to`, `data-bs-dismiss`) korrekt sat
+10. Navbar-trigger-observer kalder `show_app_guide_modal()` ved click på `input$trigger_app_guide_modal`
 
 ## Out-of-scope
 

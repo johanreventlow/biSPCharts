@@ -541,11 +541,7 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 
   # If no data or settings, start new session directly
   if (!has_data && !has_settings) {
-    reset_to_empty_session(session, app_state, emit, ui_service)
-    # Eksplicit nav til trin 2: brugeren valgte "Blank session" og forventer
-    # at lande paa datatabellen klar til manuel indtastning. Wizard_gates
-    # auto-naviger ikke pa placeholder-data (has_real_data = FALSE).
-    bslib::nav_select("main_navbar", selected = "analyser", session = session)
+    blank_session_reset_and_nav(session, app_state, emit, ui_service)
     shiny::showNotification("Ny session startet", type = "message", duration = 2)
     return()
   }
@@ -555,13 +551,32 @@ handle_clear_saved_request <- function(input, session, app_state, emit, ui_servi
 }
 
 handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NULL) {
-  # paste-textarea ryddes i reset_to_empty_session() — ingen duplikat her.
-  reset_to_empty_session(session, app_state, emit, ui_service)
-  # Eksplicit nav til trin 2 — bruger valgte aktivt "Blank session" og
-  # forventer at fortsaette pa datatabellen.
-  bslib::nav_select("main_navbar", selected = "analyser", session = session)
+  blank_session_reset_and_nav(session, app_state, emit, ui_service)
   shiny::removeModal()
   shiny::showNotification("Ny session startet - alt data og indstillinger nulstillet", type = "message", duration = 4)
+}
+
+# Helper: blank-session reset + nav til trin 2.
+#
+# Vetoer wizard_gates auto-nav via guard_active-flag — ellers fyrer
+# emit$data_updated wizard_gates' observer som ser has_real_data = FALSE
+# paa placeholder-data og nav_select("upload"), som overskriver vores
+# "analyser"-nav. Cleanup via session$onFlushed mirror nav-guard confirm-
+# pattern (R/utils_server_navigation_guard.R::handle_nav_guard_confirm).
+#
+# paste-textarea ryddes inde i reset_to_empty_session().
+blank_session_reset_and_nav <- function(session, app_state, emit, ui_service = NULL) {
+  app_state$navigation$guard_active <- TRUE
+  reset_to_empty_session(session, app_state, emit, ui_service)
+  bslib::nav_select("main_navbar", selected = "analyser", session = session)
+  session$onFlushed(
+    function() {
+      shiny::isolate({
+        app_state$navigation$guard_active <- FALSE
+      })
+    },
+    once = TRUE
+  )
 }
 
 reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) {

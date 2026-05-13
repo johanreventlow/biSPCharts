@@ -209,12 +209,27 @@
     if (startLink) startLink.click();
   });
 
-  // Upload-tab + Forside-tab klik håndteres af server-side observer på
-  // input$main_navbar i setup_nav_guard_listener() (R/utils_server_navigation_guard.R).
-  // JS-intercept-tilgang var fragile mod bslib's egne event-handlers og
-  // Bootstrap's tab-switch-internals — server-side observer er robust.
-  // Tradeoff: lille visuel flicker (tab swapper kort før revert) accepteres
-  // for korrekthed. Logo-intercept bevares ovenfor da logo ikke er bslib-tab.
+  // Upload-tab + Forside-tab klik: intercept via Bootstrap's officielle
+  // 'show.bs.tab'-event som fyrer FOER tab-aktivering. preventDefault() der
+  // blokerer hele swap (inkl. Shiny input-opdatering). Resultatet: ingen
+  // visuel flicker.
+  //
+  // Server-side observer paa input$main_navbar er fallback hvis Bootstrap
+  // event ikke fyrer (sjaeldent — fx ved direkte input-update).
+  document.addEventListener('show.bs.tab', function(e) {
+    var newTab = e.target;
+    if (!newTab) return;
+    var targetTab = newTab.getAttribute('data-value');
+    if (targetTab !== 'upload' && targetTab !== 'start') return;
+    if (!navGuardShouldIntercept()) return;
+
+    e.preventDefault();
+    Shiny.setInputValue('nav_guard_trigger', {
+      source: 'tab',
+      target: targetTab,
+      timestamp: Date.now()
+    }, { priority: 'event' });
+  }, true);
 
   function base64ToBlob(b64, mimeType) {
     var bytes = atob(b64);

@@ -171,9 +171,6 @@ create_spc_results_reactive <- function(
           plot_context = "analysis" # M11: Analyse-side uses "analysis" context
         )
 
-        # Denominator pre-filter fjernet i biSPCharts 0.4.2 \u2014 BFHcharts >= 0.19.0
-        # haandterer n=0 native (NaN-passthrough). n<0/Inf fejler stadig fra BFHcharts.
-
         # CRITICAL: Skip applyHospitalTheme() for BFHcharts plots
         # BFHcharts applies its own theme and label layers which are incompatible
         # with our theme system. Check metadata$backend flag to determine if plot

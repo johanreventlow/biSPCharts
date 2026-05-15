@@ -125,10 +125,6 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
     x_col_val <- "spc_row_index"
   }
 
-  # Denominator pre-filter fjernet i biSPCharts 0.4.2: BFHcharts >= 0.19.0
-  # haandterer nu n=0 native via qicharts2 NaN-passthrough. n<0 og Inf
-  # fejler stadig haard via BFHcharts validate_denominator_data().
-
   # Call BFHchart backend (compute_spc_results_bfh from Task #31)
   # Adapter: Map config object to individual parameters
   result <- tryCatch(

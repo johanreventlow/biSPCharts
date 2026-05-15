@@ -202,9 +202,6 @@ validate_spc_request <- function(
     )
   }
 
-  # 15. P/P'-kort y > n check fjernet i biSPCharts 0.4.2 (BFHcharts >= 0.19.0
-  # tillader nu proportion > 1 som outlier-signal over ucl=1).
-
   new_spc_request(
     data = data,
     x_var = x_var,

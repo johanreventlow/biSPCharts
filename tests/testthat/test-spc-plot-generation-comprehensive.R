@@ -468,15 +468,18 @@ test_that("generateSPCPlot error handling works correctly", {
     check.names = FALSE
   )
 
-  # Rækker med n=0 filtreres nu stille af denominator pre-filteret (PR #351).
-  # Ingen fejl kastes — data reduceres fra 5 til 4 rækker.
+  # Rækker med n=0 bevares nu i qic_data med NaN y-værdi (BFHcharts >= 0.19.0
+  # NaN-passthrough). Pre-filter fjernet i biSPCharts 0.4.2.
   result_zero <- generateSPCPlot(
     zero_data, empty_config, "p",
     chart_title_reactive = reactive("Zero Test")
   )
   expect_true(is.list(result_zero), label = "Resultat er en liste (ingen fejl kastet)")
-  expect_lt(nrow(result_zero$qic_data), nrow(zero_data),
-    label = "qic_data har færre rækker end input (n=0 rækker fjernet)"
+  expect_equal(nrow(result_zero$qic_data), nrow(zero_data),
+    label = "qic_data har samme antal rækker som input (n=0 → NaN, ej drop)"
+  )
+  expect_true(any(is.nan(result_zero$qic_data$y)),
+    label = "n=0 række producerer NaN y-værdi i qic_data"
   )
 
   # TEST: Too few data points

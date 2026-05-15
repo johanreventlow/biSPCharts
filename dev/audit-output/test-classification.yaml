@@ -1132,14 +1132,6 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
-- file: test-denominator-prefilter.R
-  audit_category: post-audit
-  type: unit
-  handling: keep
-  reviewed: yes
-  reviewer: johanreventlow
-  reviewed_date: '2026-05-03'
-  rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
 - file: test-derive_anhoej_per_part.R
   audit_category: post-audit
   type: unit

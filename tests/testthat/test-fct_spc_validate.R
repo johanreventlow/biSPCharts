@@ -139,11 +139,14 @@ test_that("validate_spc_request accepterer p-kort med n_var", {
   expect_equal(req$n_var, "naevner")
 })
 
-test_that("validate_spc_request kaster spc_input_error ved nul-nævner for p-kort", {
+test_that("validate_spc_request tillader nul-nævner for p-kort (BFHcharts >= 0.19.0)", {
+  # BFHcharts 0.19.0 tillader n=0 via qicharts2 NaN-passthrough.
+  # biSPCharts check #15 (y>n) fjernet for cross-package konsistens.
+  # Aggregate guard "alle n=0/NA → fejl" beholdt i check #12, men én n=0
+  # blandt valide rækker er nu acceptabel.
   df <- data.frame(dato = 1:10, tæller = 1:10, naevner = c(0L, rep(100L, 9)))
-  expect_error(
-    validate_spc_request(df, "dato", "tæller", "p", n_var = "naevner"),
-    class = "spc_input_error"
+  expect_no_error(
+    validate_spc_request(df, "dato", "tæller", "p", n_var = "naevner")
   )
 })
 

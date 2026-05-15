@@ -271,23 +271,23 @@ test_that("Edge case: mixed decimal/integer data", {
   )
 })
 
-test_that("Live SPC validation rejects impossible P-chart counts", {
+test_that("Live SPC validation tillader y > n for P-chart (BFHcharts >= 0.19.0)", {
+  # BFHcharts 0.19.0 tillader proportion > 1 som outlier-signal over ucl=1.
+  # biSPCharts check #15 fjernet for cross-package konsistens.
   invalid_p_data <- data.frame(
     dato = seq.Date(as.Date("2024-01-01"), by = "week", length.out = 4),
     taeller = c(10, 120, 60, 80),
     naevner = c(100, 100, 100, 100)
   )
 
-  expect_error(
+  expect_no_error(
     validate_spc_request(
       data = invalid_p_data,
       x_var = "dato",
       y_var = "taeller",
       n_var = "naevner",
       chart_type = "p"
-    ),
-    "Tæller-kolonne.*overstiger nævner-kolonne",
-    fixed = FALSE
+    )
   )
 })
 

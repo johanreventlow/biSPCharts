@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.18.0",
+        "Version": "0.19.0",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -41,17 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.18.0",
-        "RemoteSha": "91c6abfa624be1ee9ac126c17b3cff500fe4268c",
+        "RemoteRef": "v0.19.0",
+        "RemoteSha": "b5753e7cf599cec6ad1f5023ae75219088ba3758",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.18.0",
-        "GithubSHA1": "91c6abfa624be1ee9ac126c17b3cff500fe4268c",
+        "GithubRef": "v0.19.0",
+        "GithubSHA1": "b5753e7cf599cec6ad1f5023ae75219088ba3758",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:07:50 UTC; johanreventlow",
+        "Packaged": "2026-05-15 14:34:17 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:07:51 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-15 14:34:18 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.1",
         "GithubSHA1": "d296eda40e2fc452fc610cc0245c3562e5404104",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:08:10 UTC; johanreventlow",
+        "Packaged": "2026-05-15 14:34:39 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:08:11 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-15 14:34:40 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:08:06 UTC; johanreventlow",
+        "Packaged": "2026-05-15 14:34:34 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:08:06 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-15 14:34:35 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.0",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:07:59 UTC; johanreventlow",
+        "Packaged": "2026-05-15 14:34:26 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:07:59 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-15 14:34:27 UTC; unix"
       }
     },
     "BH": {
@@ -4483,7 +4483,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "33d930197d353a12f14c1bafb834d605"
+      "checksum": "a818358deffa7cb5ca289da1cd918384"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"

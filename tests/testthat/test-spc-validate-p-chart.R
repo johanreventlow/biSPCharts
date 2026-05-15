@@ -13,27 +13,12 @@ make_p_data <- function(y, n) {
   )
 }
 
-test_that("P-chart med y > n kaster spc_input_error", {
-  # Række 2: y=15 > n=10 --> ugyldig proportion
+test_that("P-chart med y > n tillades (BFHcharts >= 0.19.0)", {
+  # BFHcharts 0.19.0 tillader proportion > 1 som outlier-signal over ucl=1.
+  # biSPCharts check #15 fjernet for cross-package konsistens.
   d <- make_p_data(y = c(5, 15, 3), n = c(10, 10, 10))
-  expect_error(
-    validate_spc_request(d, x_var = "dato", y_var = "y", chart_type = "p", n_var = "n"),
-    class = "spc_input_error",
-    info = "y > n skal kaste spc_input_error for p-chart"
-  )
-})
-
-test_that("P-chart med y > n fejlbesked er dansk og refererer til ugyldig række", {
-  d <- make_p_data(y = c(5, 15, 3), n = c(10, 10, 10))
-  err <- tryCatch(
-    validate_spc_request(d, x_var = "dato", y_var = "y", chart_type = "p", n_var = "n"),
-    error = function(e) e
-  )
-  expect_true(
-    grepl("proportion", err$message, ignore.case = TRUE) ||
-      grepl("nævner", err$message, ignore.case = TRUE) ||
-      grepl("tæller", err$message, ignore.case = TRUE),
-    info = "Fejlbesked skal referere til proportion-problem"
+  expect_no_error(
+    validate_spc_request(d, x_var = "dato", y_var = "y", chart_type = "p", n_var = "n")
   )
 })
 
@@ -52,13 +37,9 @@ test_that("P-chart med y < n er gyldig", {
   )
 })
 
-test_that("P'-chart med y > n kaster spc_input_error", {
-  d <- make_p_data(y = c(5, 12, 3), n = c(10, 10, 10))
-  expect_error(
-    validate_spc_request(d, x_var = "dato", y_var = "y", chart_type = "pp", n_var = "n"),
-    class = "spc_input_error"
-  )
-})
+# P'-chart (pp) er ej supporteret i biSPCharts UI — test fjernet ved
+# fjernelse af check #15. Den oprindelige test passerede falsk positivt
+# (spc_input_error kom fra check #5 'invalid chart_type', ikke y>n).
 
 test_that("U-chart med y > n er tilladt (rate, ikke proportion)", {
   d <- make_p_data(y = c(15, 12, 18), n = c(10, 10, 10))

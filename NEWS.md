@@ -1,3 +1,22 @@
+# biSPCharts 0.4.2
+
+## Interne ændringer
+
+* Fjernet denominator pre-filter (`fct_spc_plot_generation.R:128-148`).
+  BFHcharts 0.19.0 håndterer nu `n = 0` native via qicharts2
+  NaN-passthrough (punkter med n=0 tegnes ej, centerline beregnes fra
+  valide rækker). Fjernet `dropped_denominator_rows`-metadata-tracking
+  og tilhørende `shiny::showNotification`-advarsel i
+  `mod_spc_chart_compute.R`.
+* Fjernet `validate_spc_request()` check #15 (y>n rejection for p/pp).
+  BFHcharts 0.19.0 tillader proportion > 1 som outlier-signal over ucl=1.
+  Inverteret tilhørende tests i `tests/testthat/test-spc-validate-p-chart.R`.
+* Slettet `tests/testthat/test-denominator-prefilter.R` (12 tests for
+  fjernet pre-filter).
+* Check #12 uændret: `n < 0` og `n = Inf` fejler stadig (matcher BFHcharts
+  0.19.0). Aggregate-guard "alle n=0/NA → fejl" beholdt som UI-værdi.
+* Bumpet BFHcharts lower-bound og Remotes-tag til `>= 0.19.0`.
+
 # biSPCharts 0.4.1
 
 ## Bug fixes

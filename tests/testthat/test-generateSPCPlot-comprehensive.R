@@ -660,8 +660,8 @@ describe("Edge Cases", {
 
     config <- list(x_col = "Obs", y_col = "Tæller", n_col = "Nævner")
 
-    # Rækker med n=0 filtreres nu stille af denominator pre-filteret (PR #351).
-    # Ingen fejl kastes — data reduceres fra 8 til 7 rækker.
+    # Rækker med n=0 bevares nu i qic_data men med NaN y-værdi (BFHcharts >=
+    # 0.19.0 NaN-passthrough). Pre-filter fjernet i biSPCharts 0.4.2.
     result <- generateSPCPlot(
       data = zero_data,
       config = config,
@@ -669,8 +669,11 @@ describe("Edge Cases", {
       chart_title_reactive = reactive("Zero Denominator Test")
     )
     expect_true(is.list(result), label = "Resultat er en liste (ingen fejl kastet)")
-    expect_lt(nrow(result$qic_data), nrow(zero_data),
-      label = "qic_data har færre rækker end input (n=0 rækker fjernet)"
+    expect_equal(nrow(result$qic_data), nrow(zero_data),
+      label = "qic_data har samme antal rækker som input (n=0 → NaN, ej drop)"
+    )
+    expect_true(any(is.nan(result$qic_data$y)),
+      label = "n=0 række producerer NaN y-værdi i qic_data"
     )
   })
 })

@@ -24,6 +24,11 @@
   `identical(old, new)`. Observer kører ved
   `OBSERVER_PRIORITIES$PLOT_GENERATION` (600) for at fyre EFTER
   autogen men FØR outputs (Codex peer-review 2026-05-16 sen, #759).
+* Ret U-kort sample-data-label til "Medicineringsfejl pr. indlæggelse"
+  (var: "pr. 1000"). Codex peer-review fandt at appen ikke normaliserer
+  til pr. 1000 — pipeline beregner rate per nævner-enhed (8/310 =
+  0.0258), så "pr. 1000"-løftet var faktor 1000 misvisende. Label
+  matcher nu faktisk skalering (#762).
 
 ## Nye features
 

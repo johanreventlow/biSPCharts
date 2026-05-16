@@ -106,12 +106,12 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
   # Server-side guard: detect destruktiv tab-transition (trin 2/3 -> start/upload)
   # uafhaengigt af JS-intercept. Primaer guard — robust mod bslib's egne
   # event-handlers + Bootstrap's tab-switch-internals. Bruger priority
-  # STATE_MANAGEMENT + 1 saa den fyrer FOER main_navbar-tracker (priority
-  # STATE_MANAGEMENT) i app_server_main.R og kan laese OLD current_tab.
+  # NAVIGATION_GUARD_INIT (2001) saa den fyrer FOER main_navbar-tracker
+  # (STATE_MANAGEMENT = 2000) i app_server_main.R og kan laese OLD current_tab.
   shiny::observeEvent(
     input$main_navbar,
     ignoreInit = TRUE,
-    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT + 1L,
+    priority = OBSERVER_PRIORITIES$NAVIGATION_GUARD_INIT,
     {
       current <- input$main_navbar
       prev <- shiny::isolate(app_state$navigation$current_tab)

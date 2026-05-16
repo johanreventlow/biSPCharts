@@ -46,6 +46,10 @@
 #' }
 #' @keywords internal
 OBSERVER_PRIORITIES <- list(
+  # Hoejest prioritet - nav-guard init skal fyre FOER state-management
+  # for at kunne laese OLD current_tab inden tracker overskriver det.
+  NAVIGATION_GUARD_INIT = 2001L, # Wave-13 L2: erstatter magic offset STATE_MANAGEMENT + 1L
+
   # Høj prioritet - kritisk state management
   STATE_MANAGEMENT = 2000, # Critical state operations
 

@@ -362,7 +362,20 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       dept_input <- shiny::isolate(input$export_department)
       # Analyse, datadefinition og hospital er debounced reactives (1000ms)
       # saa preview opdateres naar brugeren stopper med at skrive
-      analysis_input <- debounced_analysis()
+      #
+      # Cycle 11 H1 (Codex 2026-05-16): Brug effective-analysis-pattern.
+      # Tidligere lyttede preview KUN paa input$pdf_improvement (debounced),
+      # hvilket forarsagede dobbelt-render ved tab-skift med ny data:
+      #   1) Preview render FOERST med tom analyse-tekst
+      #   2) Autogen-observer kalder updateTextAreaInput med auto-tekst
+      #   3) Klient-roundtrip + debounce 1500ms => preview re-render
+      # Fix: prefer app_state$ui$last_auto_analysis (server-state sat synkront
+      # af autogen-observer) over debounced_analysis. Brug input-vaerdien KUN
+      # hvis bruger har redigeret (input differerer fra auto-tekst).
+      analysis_input <- compute_effective_analysis_text(
+        user_text = debounced_analysis(),
+        auto_text = app_state$ui$last_auto_analysis %||% ""
+      )
       data_def_input <- debounced_data_def()
       hospital_input <- debounced_hospital()
       footnote_input <- trimws(debounced_footnote())

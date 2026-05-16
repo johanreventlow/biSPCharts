@@ -295,3 +295,37 @@ build_export_plot <- function(app_state, title_input, dept_input,
     error_type = "processing"
   )
 }
+
+#' Beregn effektiv analyse-tekst til PDF-preview
+#'
+#' Cycle 11 H1 (Codex peer-review 2026-05-16): Helper der vaelger mellem
+#' bruger-redigeret tekst og auto-genereret analyse-tekst. Tidligere lyttede
+#' pdf_preview_image-reactive direkte paa input$pdf_improvement (debounced),
+#' hvilket forarsagede dobbelt-render ved tab-skift med ny data:
+#' (1) Preview rendres FOERST med tom analyse-tekst.
+#' (2) Autogen-observer kalder updateTextAreaInput med auto-tekst.
+#' (3) Klient-roundtrip + debounce 1500ms udloeser preview-re-render.
+#'
+#' Helperen bruger app_state$ui$last_auto_analysis (server-state sat synkront
+#' af autogen-observer) som primaer kilde og falder kun tilbage til
+#' input-vaerdien hvis brugeren faktisk har redigeret feltet.
+#'
+#' @param user_text character. Bruger-input (typisk debounced_analysis()).
+#' @param auto_text character. Auto-genereret tekst fra
+#'   app_state$ui$last_auto_analysis.
+#'
+#' @return character. Effektiv analyse-tekst til preview-rendering.
+#'   Returnerer user_text kun hvis non-empty + differer fra auto_text;
+#'   ellers returnerer auto_text.
+#'
+#' @keywords internal
+compute_effective_analysis_text <- function(user_text, auto_text) {
+  user_text <- user_text %||% ""
+  auto_text <- auto_text %||% ""
+  if (nzchar(trimws(user_text)) &&
+    !identical(trimws(user_text), trimws(auto_text))) {
+    user_text
+  } else {
+    auto_text
+  }
+}

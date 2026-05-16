@@ -2,6 +2,18 @@
 
 ## Bug fixes
 
+* Defensiv kolonne-klasse-lookup i `call_bfh_chart()`-logging
+  forhindrer at log_debug-build kaster når `bfh_params$n` (eller
+  x/y) er malformed opstrøms (fx en row-vektor i stedet for et
+  length-1 symbol). Tidligere blev sådanne fejl fanget af
+  `.safe_collapse()` og rapporteret som
+  `<COLLAPSE_ERROR: Can't extract column with n_col_name. Subscript
+  n_col_name must be size 1, not 24.>` — hvilket maskerede den ægte
+  rendering-fejl bag en generisk wrap. Ny `.safe_col_class()`-helper
+  returnerer altid en streng (`<NULL>`, `<INVALID_COL_NAME: length=N>`,
+  `<MISSING_COL: ...>` eller `<CLASS_ERROR: ...>`), så root-cause
+  propagerer uden at brake logging-pipelinen. Observeret i cycle 11
+  post-merge session 2026-05-16.
 * PDF-analysetekst respekterer nu retning på operator-targets (fx
   `<=1%`, `>=90%`) og arrow-only targets (`<`, `>`). Tidligere shadowede
   `build_export_analysis_metadata()` BFHcharts' `config$target_text` ved

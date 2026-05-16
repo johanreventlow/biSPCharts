@@ -60,8 +60,8 @@ SAMPLE_DATASETS <- list(
   # ),
   list(
     id = "u",
-    label = "U-kort \u2014 Medicineringsfejl pr. 1000",
-    description = "Rate af medicineringsfejl per 1000 indl\u00e6ggelser",
+    label = "U-kort \u2014 Medicineringsfejl pr. indl\u00e6ggelse",
+    description = "Rate af medicineringsfejl per indl\u00e6ggelse",
     file = "sample_u.csv",
     chart_type = "u"
   ),

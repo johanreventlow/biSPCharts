@@ -129,6 +129,14 @@ app_ui <- function(request) {
         icon = shiny::icon("book-open"),
         value = "hjaelp",
         mod_help_ui("help")
+      ),
+
+      # Rapporter fejl (adskilt fra wizard-flow)
+      bslib::nav_panel(
+        title = "Rapport\u00e9r fejl",
+        icon = shiny::icon("bug"),
+        value = "rapporter_fejl",
+        mod_report_bug_ui("report_bug")
       )
     )
   )

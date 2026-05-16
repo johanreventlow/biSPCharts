@@ -95,6 +95,7 @@ mod_report_bug_ui <- function(id) {
         shiny::tags$a(
           href = mailto_url,
           class = "btn btn-primary btn-lg",
+          style = "color: #ffffff;",
           shiny::icon("envelope"),
           " Åbn mail"
         )

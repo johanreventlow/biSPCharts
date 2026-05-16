@@ -15,6 +15,15 @@
   bruger `app_state$ui$last_auto_analysis` (server-state) som primær
   kilde; falder kun tilbage til input ved bruger-edit. Skip
   `updateTextAreaInput` hvis værdi identisk (#753).
+* Eliminer redundant 2. preview-render i første-tab-besøg via
+  `reactiveVal`-diff-check pattern. Post-cycle-11 verifikation viste
+  at #753 fix gjorde 1. render korrekt, men 2. render fyrede stadig
+  som no-op pga Shiny invaliderer downstream på dep-change uanset
+  value-equality. Cycle 12 wrapper i `reactiveVal` med diff-check —
+  Shiny 1.13.0 `reactiveVal$set()` skipper invalidation hvis
+  `identical(old, new)`. Observer kører ved
+  `OBSERVER_PRIORITIES$PLOT_GENERATION` (600) for at fyre EFTER
+  autogen men FØR outputs (Codex peer-review 2026-05-16 sen, #759).
 
 ## Nye features
 

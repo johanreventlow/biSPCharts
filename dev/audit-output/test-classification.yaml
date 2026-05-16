@@ -337,6 +337,14 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-export-preview-redundans-elimination.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Regression-test for cycle 12 H1 reactiveVal-diff-check + priority-ordering — tilfoejet manuelt.
 - file: test-export-effective-analysis.R
   audit_category: post-audit
   type: unit

@@ -107,7 +107,15 @@ LOG_CONTEXTS <- list(
     result = "QIC_RESULT",
     timing = "QIC_TIMING",
     spc_debug = "SPC_CALC_DEBUG",
-    pipeline = "SPC_PIPELINE"
+    pipeline = "SPC_PIPELINE",
+    cache = "SPC_CACHE",
+    qic_cache = "QIC_CACHE"
+  ),
+
+  # === BFHcharts Integration ===
+  bfh = list(
+    service = "BFH_SERVICE", # Wave-13 M7: 46 anvendelser, var ej registreret
+    timing = "BFH_TIMING"
   ),
 
   # === UI & Visualization ===
@@ -144,7 +152,23 @@ LOG_CONTEXTS <- list(
   # === Navigation ===
   navigation = list(
     unified = "NAVIGATION_UNIFIED",
-    welcome = "WELCOME_PAGE"
+    welcome = "WELCOME_PAGE",
+    guard = "NAV_GUARD" # Wave-13 M7: PR #737 nav-guard logging-target
+  ),
+
+  # === Session Persistence ===
+  session = list(
+    restore = "SESSION_RESTORE",
+    lifecycle = "SESSION_LIFECYCLE",
+    timeout = "SESSION_TIMEOUT",
+    auto_save = "AUTO_SAVE",
+    local_storage = "LOCAL_STORAGE"
+  ),
+
+  # === Background / Async ===
+  async = list(
+    helper = "ASYNC_HELPER", # Wave-13 M7+L4: kanonisk form (singular)
+    background = "BACKGROUND_TASKS"
   ),
 
   # === Test Mode ===
@@ -158,7 +182,12 @@ LOG_CONTEXTS <- list(
   file = list(
     upload = "FILE_UPLOAD",
     upload_security = "FILE_UPLOAD_SECURITY",
-    validation = "[FILE_VALIDATION]"
+    upload_flow = "FILE_UPLOAD_FLOW",
+    validation = "[FILE_VALIDATION]",
+    parse_pure = "FILE_PARSE_PURE",
+    csv_detect = "CSV_DETECT",
+    paste = "PASTE_DATA",
+    excel_sheet = "EXCEL_SHEET_DETECTION"
   ),
 
   # === Security ===

@@ -86,25 +86,31 @@ setup_visualization <- function(input, output, session, app_state) {
     )
   })
 
-  # Observer to update last_valid_config via central applier (side effects outside reactives)
-  shiny::observe({
-    config <- column_config()
-    if (!is.null(config$y_col)) {
-      vc <- build_visualization_config(
-        data = NULL,
-        autodetect = NULL,
-        user_overrides = list(
-          x_col      = config$x_col,
-          y_col      = config$y_col,
-          n_col      = config$n_col,
-          chart_type = config$chart_type
+  # Observer to update last_valid_config via central applier (side effects outside reactives).
+  # Wave-13 M2: Eksplicit priority = UI_SYNC (750) — forhindrer race med default-priority
+  # outputs (0) der laeser last_valid_config. Samme anti-pattern som cycle 12 H1 (#759):
+  # state-writing observer ved priority 0 kan fyre EFTER outputs er skedulleret = stale read.
+  shiny::observe(
+    {
+      config <- column_config()
+      if (!is.null(config$y_col)) {
+        vc <- build_visualization_config(
+          data = NULL,
+          autodetect = NULL,
+          user_overrides = list(
+            x_col      = config$x_col,
+            y_col      = config$y_col,
+            n_col      = config$n_col,
+            chart_type = config$chart_type
+          )
         )
-      )
-      if (!is.null(vc)) {
-        apply_state_transition(app_state, transition_chart_config_updated(vc))
+        if (!is.null(vc)) {
+          apply_state_transition(app_state, transition_chart_config_updated(vc))
+        }
       }
-    }
-  })
+    },
+    priority = OBSERVER_PRIORITIES$UI_SYNC
+  )
 
   # Chart type reactive (shared by target and centerline)
   chart_type_reactive <- shiny::reactive({

@@ -1,3 +1,14 @@
+# biSPCharts (development)
+
+## Nye features
+
+* Ny "Rapportér fejl"-side i navbaren (til højre for "Lær om SPC")
+  med en ikke-teknisk guide til hvordan brugere rapporterer fejl.
+  Siden indeholder en knap der åbner brugerens mail-klient med en
+  præfyldt skabelon mod Dataenhedens postkasse, og opfordrer til
+  vedhæftning af datasæt (Excel-eksport), graf og/eller skærmbillede
+  (#747).
+
 # biSPCharts 0.4.2
 
 ## Interne ændringer

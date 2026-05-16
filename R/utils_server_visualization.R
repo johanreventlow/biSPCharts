@@ -22,29 +22,6 @@ setup_visualization <- function(input, output, session, app_state) {
     app_state$visualization$last_valid_config <- list(x_col = NULL, y_col = NULL, n_col = NULL, chart_type = "run")
   }
 
-  # Separate reactives for auto-detected and manual column selection
-  auto_detected_config <- shiny::reactive({
-    # Use unified state management - CORRECTED PATH
-    auto_columns <- app_state$columns$auto_detect$results
-
-    if (!is.null(auto_columns)) {
-      if (!is.null(auto_columns$timestamp)) {
-        # Timestamp available for logging/debugging if needed
-      }
-    }
-
-    shiny::req(auto_columns)
-
-    config <- list(
-      x_col = auto_columns$x_col,
-      y_col = auto_columns$y_col,
-      n_col = auto_columns$n_col,
-      chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
-    )
-
-    return(config)
-  })
-
   # State-derived chart-config (race-fix Cycle 10, 2026-05-12).
   # Læser primært fra app_state$columns$mappings (autodetect skriver synkront
   # dertil før ui_sync emittes). Bruger-edits via dropdown skrives til mappings

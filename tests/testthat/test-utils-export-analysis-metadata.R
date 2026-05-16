@@ -36,7 +36,9 @@ test_that("build_export_analysis_metadata enriches context with BFHddl-like fiel
   )
 
   expect_equal(metadata$data_definition, "Ventetid til operation")
-  expect_equal(metadata$target, 10)
+  # Foretraek operator-string fremfor numerisk vaerdi som metadata$target
+  # saa BFHcharts kan parse direction (#TBD).
+  expect_equal(metadata$target, "< 10")
   expect_equal(metadata$chart_title, "Ventetid 2026")
   expect_equal(metadata$department, "Ortopædkirurgi")
   expect_equal(metadata$centerline, "12,4")
@@ -302,4 +304,80 @@ test_that("build_export_analysis_metadata defaulter baseline_analysis + signal_e
 
   expect_equal(metadata$baseline_analysis, "")
   expect_equal(metadata$signal_examples, "")
+})
+
+# ============================================================================
+# Regression: target-direction-shadowed-in-analysis-metadata (#TBD)
+#
+# Bug: numerisk metadata$target shadowede config$target_text i BFHcharts'
+# .resolve_analysis_target(). resolve_target(0.01) returnerede
+# direction = NULL og analysen faldt til vaerdi-neutral at_target-tekst
+# ("ligger taet paa udviklingsmaalet") selvom brugeren havde skrevet "<=1%"
+# og centerlinjen var paa forkert side af maalet.
+#
+# Fix: send target_text-strengen (operator + value) som metadata$target
+# saa BFHcharts kan parse retning og vaelge near_target-tekst korrekt.
+# ============================================================================
+
+test_that("build_export_analysis_metadata sender target_text som metadata$target (#TBD)", {
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 0.019, y_axis_unit = "percent"),
+    target_value = 0.01,
+    target_text = "<=1%"
+  )
+  expect_identical(metadata$target, "<=1%",
+    info = "metadata$target skal bevare operator-streng saa BFHcharts kan udlede direction"
+  )
+})
+
+test_that("build_export_analysis_metadata fallbacker til numerisk target naar target_text mangler (#TBD)", {
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 50, y_axis_unit = "count"),
+    target_value = 42,
+    target_text = NULL
+  )
+  expect_identical(metadata$target, 42)
+})
+
+test_that("compute_at_target afviser CL paa forkert side af target uden for relativ tolerance (#TBD)", {
+  # Bug-scenarie: target <=1% (0.01) og CL 1.9% (0.019).
+  # Tidligere: tolerance = max(0.0005, 0.01) = 0.01 (= 100% af target) ->
+  # close_enough = TRUE -> at_target = TRUE selvom 0.019 > 0.01.
+  # Fix: tolerance = 0.0005 (5% af target), |0.019-0.01| = 0.009 > 0.0005
+  # -> close_enough = FALSE -> lower-branch: 0.019 <= 0.01 = FALSE.
+  result <- compute_at_target(
+    centerline = 0.019,
+    target_value = 0.01,
+    target_text = "<=1%"
+  )
+  expect_false(result,
+    info = "CL=1.9% er ikke 'taet nok' paa target=1% (90% relativ afvigelse)"
+  )
+})
+
+test_that("compute_at_target accepterer CL inden for 5% relativ tolerance (#TBD)", {
+  # target=0.01, CL=0.0103 -> delta=0.0003 < tolerance=0.0005 -> close_enough=TRUE
+  result <- compute_at_target(
+    centerline = 0.0103,
+    target_value = 0.01,
+    target_text = "<=1%"
+  )
+  expect_true(result)
+})
+
+test_that("build_export_analysis_metadata sender operator-streng for arrow-only target (#TBD)", {
+  # SPC-47 scenarie: bruger satte kun "<" i target-feltet (retning uden vaerdi).
+  # biSPCharts UI saetter target_value = 0 (dummy) + target_text = "<".
+  # Tidligere blev metadata$target = 0 (numerisk) -> BFHcharts laeste
+  # target_value=0 og rapporterede "ligger taet paa udviklingsmaalet (0%)".
+  # Fix: metadata$target = "<" (string) -> BFHcharts' resolve_target()
+  # parser arrow -> value=NA -> has_target=FALSE -> stable_no_target-armen.
+  metadata <- build_export_analysis_metadata(
+    bfh_qic_result = make_bfh_result_with_anhoej(centerline = 0.019, y_axis_unit = "percent"),
+    target_value = 0,
+    target_text = "<"
+  )
+  expect_identical(metadata$target, "<",
+    info = "Arrow-only target skal videregives som streng saa BFHcharts kan udlede direction-uden-vaerdi"
+  )
 })

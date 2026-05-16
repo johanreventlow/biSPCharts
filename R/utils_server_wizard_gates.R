@@ -6,11 +6,9 @@
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
 # ==============================================================================
 
-# Wave-13 refactor: extract wizard step-besked-helpers (eliminer magic strings).
-# Tidligere var "wizard-lock-step", "wizard-unlock-step", "wizard-complete-step",
-# "wizard-uncomplete-step" hardcoded paa 17+ call-sites paa tvaers af 3 filer.
-# Stavefejl ville producere silent JS-fejl. Helpers giver autocomplete + enkelt
-# soegemaal hvis message-strenge skal aendres.
+# Wizard step-besked-helpers indkapsler JS custom-message-strenge.
+# Stavefejl i magic-string ville producere silent JS-fejl; helpers giver
+# autocomplete + enkelt soegemaal hvis message-strenge skal aendres.
 
 #' Wizard step-besked-helpers
 #'
@@ -89,8 +87,7 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
         # Skip auto-navigation under session restore: restore-observer har
         # allerede valgt korrekt tab (saved_tab), og vi maa ikke overskrive
         # brugerens gemte valg med default "analyser". Issue #193.
-        restoring <- isTRUE(shiny::isolate(app_state$session$restoring_session))
-        if (!restoring) {
+        if (!is_restoring_session(app_state)) {
           bslib::nav_select(
             "main_navbar",
             selected = "analyser",

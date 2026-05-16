@@ -87,9 +87,13 @@ setup_visualization <- function(input, output, session, app_state) {
   })
 
   # Observer to update last_valid_config via central applier (side effects outside reactives).
-  # Wave-13 M2: Eksplicit priority = UI_SYNC (750) — forhindrer race med default-priority
-  # outputs (0) der laeser last_valid_config. Samme anti-pattern som cycle 12 H1 (#759):
-  # state-writing observer ved priority 0 kan fyre EFTER outputs er skedulleret = stale read.
+  # Eksplicit priority = UI_SYNC (750) forhindrer race med default-priority outputs (0)
+  # der laeser last_valid_config. Uden priority kan state-write fyre EFTER outputs er
+  # skedulleret = stale read (samme anti-pattern som cycle 12 H1 #759).
+  #
+  # identical()-guard skipper apply_state_transition naar config er uaendret.
+  # Uden guard ville hver column_config-invalidation (inkl. no-op gen-select af
+  # samme kolonne) trigge ny reactivity-flush hos downstream outputs.
   shiny::observe(
     {
       config <- column_config()
@@ -105,7 +109,11 @@ setup_visualization <- function(input, output, session, app_state) {
           )
         )
         if (!is.null(vc)) {
-          apply_state_transition(app_state, transition_chart_config_updated(vc))
+          current_vc <- shiny::isolate(app_state$visualization$last_valid_config)
+          relevant_fields <- c("x_col", "y_col", "n_col", "chart_type")
+          if (!identical(current_vc[relevant_fields], vc[relevant_fields])) {
+            apply_state_transition(app_state, transition_chart_config_updated(vc))
+          }
         }
       }
     },

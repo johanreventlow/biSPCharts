@@ -114,7 +114,7 @@ LOG_CONTEXTS <- list(
 
   # === BFHcharts Integration ===
   bfh = list(
-    service = "BFH_SERVICE", # Wave-13 M7: 46 anvendelser, var ej registreret
+    service = "BFH_SERVICE",
     timing = "BFH_TIMING"
   ),
 
@@ -153,7 +153,7 @@ LOG_CONTEXTS <- list(
   navigation = list(
     unified = "NAVIGATION_UNIFIED",
     welcome = "WELCOME_PAGE",
-    guard = "NAV_GUARD" # Wave-13 M7: PR #737 nav-guard logging-target
+    guard = "NAV_GUARD"
   ),
 
   # === Session Persistence ===
@@ -167,7 +167,7 @@ LOG_CONTEXTS <- list(
 
   # === Background / Async ===
   async = list(
-    helper = "ASYNC_HELPER", # Wave-13 M7+L4: kanonisk form (singular)
+    helper = "ASYNC_HELPER", # Kanonisk singular form (matcher konvention)
     background = "BACKGROUND_TASKS"
   ),
 

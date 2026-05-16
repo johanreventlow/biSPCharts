@@ -1042,16 +1042,17 @@ set_module_data_cache <- function(app_state, data) {
 }
 
 # ==============================================================================
-# Navigation Guard Accessors (Wave-13 refactor)
+# Navigation Guard Accessors
 # ==============================================================================
-# Etablerer accessor-disciplin for app_state$navigation$guard_*-felter.
-# Pattern: alle aendringer gaar gennem set_*-helpers; isolate()-wrap sikrer
-# at vi ikke utilsigtet tracker reactivity i kalde-konteksten.
 
 #' Get Navigation Guard Active Flag
 #'
 #' guard_active er veto-flag der beder wizard_gates' auto-nav-observer
 #' om at skippe en cyklus. Bruges under orkestrerede reset+nav-flows.
+#'
+#' @note Laeser isoleret — opretter IKKE reactive dependency. Brug ej i
+#' contexts hvor reaktivitet kraeves; tilfoej direkte read uden accessor
+#' hvis du vil have dependency.
 #'
 #' @param app_state Centralized app state
 #' @return Logical (TRUE hvis guard aktiv)
@@ -1066,9 +1067,7 @@ get_guard_active <- function(app_state) {
 #' @param value Logical
 #' @keywords internal
 set_guard_active <- function(app_state, value) {
-  shiny::isolate({
-    app_state$navigation$guard_active <- isTRUE(value)
-  })
+  app_state$navigation$guard_active <- isTRUE(value)
 }
 
 #' Clear Navigation Guard Active Flag on Next Shiny Flush

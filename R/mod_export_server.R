@@ -341,8 +341,8 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # reactiveValues; identical-check sker kun mod containerens last-set,
     # ej per-field. Cycle 12 H1, PR #759.
     #
-    # Cycle 12 H1 (Codex 2026-05-16 sen): reactiveVal-diff-check eliminerer
-    # redundant 2. preview-render i foerste-tab-besoeg. Mekanik:
+    # reactiveVal-diff-check eliminerer redundant 2. preview-render i
+    # foerste-tab-besoeg. Mekanik:
     #   - Observer laeser debounced_analysis() + last_auto_analysis
     #   - Beregner effective text via compute_effective_analysis_text()
     #   - Skipper reactiveVal-update hvis identical med eksisterende (Shiny

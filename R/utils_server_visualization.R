@@ -22,29 +22,6 @@ setup_visualization <- function(input, output, session, app_state) {
     app_state$visualization$last_valid_config <- list(x_col = NULL, y_col = NULL, n_col = NULL, chart_type = "run")
   }
 
-  # Separate reactives for auto-detected and manual column selection
-  auto_detected_config <- shiny::reactive({
-    # Use unified state management - CORRECTED PATH
-    auto_columns <- app_state$columns$auto_detect$results
-
-    if (!is.null(auto_columns)) {
-      if (!is.null(auto_columns$timestamp)) {
-        # Timestamp available for logging/debugging if needed
-      }
-    }
-
-    shiny::req(auto_columns)
-
-    config <- list(
-      x_col = auto_columns$x_col,
-      y_col = auto_columns$y_col,
-      n_col = auto_columns$n_col,
-      chart_type = get_qic_chart_type(if (is.null(input$chart_type)) "Seriediagram (Run Chart)" else input$chart_type)
-    )
-
-    return(config)
-  })
-
   # State-derived chart-config (race-fix Cycle 10, 2026-05-12).
   # Læser primært fra app_state$columns$mappings (autodetect skriver synkront
   # dertil før ui_sync emittes). Bruger-edits via dropdown skrives til mappings
@@ -109,25 +86,39 @@ setup_visualization <- function(input, output, session, app_state) {
     )
   })
 
-  # Observer to update last_valid_config via central applier (side effects outside reactives)
-  shiny::observe({
-    config <- column_config()
-    if (!is.null(config$y_col)) {
-      vc <- build_visualization_config(
-        data = NULL,
-        autodetect = NULL,
-        user_overrides = list(
-          x_col      = config$x_col,
-          y_col      = config$y_col,
-          n_col      = config$n_col,
-          chart_type = config$chart_type
+  # Observer to update last_valid_config via central applier (side effects outside reactives).
+  # Eksplicit priority = UI_SYNC (750) forhindrer race med default-priority outputs (0)
+  # der laeser last_valid_config. Uden priority kan state-write fyre EFTER outputs er
+  # skedulleret = stale read (samme anti-pattern som cycle 12 H1 #759).
+  #
+  # identical()-guard skipper apply_state_transition naar config er uaendret.
+  # Uden guard ville hver column_config-invalidation (inkl. no-op gen-select af
+  # samme kolonne) trigge ny reactivity-flush hos downstream outputs.
+  shiny::observe(
+    {
+      config <- column_config()
+      if (!is.null(config$y_col)) {
+        vc <- build_visualization_config(
+          data = NULL,
+          autodetect = NULL,
+          user_overrides = list(
+            x_col      = config$x_col,
+            y_col      = config$y_col,
+            n_col      = config$n_col,
+            chart_type = config$chart_type
+          )
         )
-      )
-      if (!is.null(vc)) {
-        apply_state_transition(app_state, transition_chart_config_updated(vc))
+        if (!is.null(vc)) {
+          current_vc <- shiny::isolate(app_state$visualization$last_valid_config)
+          relevant_fields <- c("x_col", "y_col", "n_col", "chart_type")
+          if (!identical(current_vc[relevant_fields], vc[relevant_fields])) {
+            apply_state_transition(app_state, transition_chart_config_updated(vc))
+          }
+        }
       }
-    }
-  })
+    },
+    priority = OBSERVER_PRIORITIES$UI_SYNC
+  )
 
   # Chart type reactive (shared by target and centerline)
   chart_type_reactive <- shiny::reactive({

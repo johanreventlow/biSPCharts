@@ -396,6 +396,17 @@ resolve_bfh_chart_title <- function(title_candidate) {
             }
           },
           error = function(e) {
+            # Synlig log saa silent NULL-fallback ej maskerer cache-staleness:
+            # charts med forskellige titler der alle fejler reactive-eval
+            # ville ellers dele samme NULL-title cache-slot.
+            log_warn(
+              "Reactive chart_title evaluation failed; falling back to NULL",
+              .context = LOG_CONTEXTS$bfh$service,
+              details = list(
+                error_message = conditionMessage(e),
+                error_class = class(e)[1]
+              )
+            )
             result <<- NULL
           }
         )

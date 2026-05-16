@@ -1,5 +1,21 @@
 # biSPCharts (development)
 
+## Bug fixes
+
+* Cache-key for SPC-beregning resolver nu reactive `chart_title` til
+  string FØR hashing. Tidligere passerede analysis-tab en
+  `shiny::reactive`-function-objekt der hashede som reference uafhængigt
+  af closed-over state → analysis-tab kunne vise STALE chart-title fra
+  cache ved title-edit. Codex peer-review 2026-05-16 fandt bug via
+  empirisk repro af `digest::digest()` på function-objekter (#752).
+* PDF preview rendres nu ÉN gang ved navigation til eksport-tab med ny
+  data. Tidligere fyrede preview FØRST med tom analyse-tekst, dernæst
+  igen ~3 sek senere når auto-genereret analyse-tekst ankom via
+  klient-roundtrip. Fix: ny `compute_effective_analysis_text()`-helper
+  bruger `app_state$ui$last_auto_analysis` (server-state) som primær
+  kilde; falder kun tilbage til input ved bruger-edit. Skip
+  `updateTextAreaInput` hvis værdi identisk (#753).
+
 ## Nye features
 
 * Ny "Rapportér fejl"-side i navbaren (til højre for "Lær om SPC")

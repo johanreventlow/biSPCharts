@@ -12,7 +12,7 @@
 
 #' Support-email til bug-rapporter
 #'
-#' Modtager-adresse for bug-rapporter sendt via "Rapportér fejl"-siden.
+#' Modtager-adresse for bug-rapporter sendt via "Rapport\u00e9r fejl"-siden.
 #' Ændring kræver kun opdatering af denne konstant.
 #'
 #' @keywords internal
@@ -42,10 +42,10 @@ SUPPORT_EMAIL_BODY <- paste(
   "Hvad havde du forventet?",
   "[Beskriv hvad du regnede med ville ske]",
   "",
-  "Vedhæft gerne:",
-  "* evt. downloadet kopi af data og indstillinger (gemt til .xlsx fra Analysér-trin eller Eksportér-trin)",
-  "* evt. graf (eksporteret fra Eksportér-fanen)",
-  "* evt. skærmbillede",
+  "Vedh\u00e6ft gerne:",
+  "* evt. downloadet kopi af data og indstillinger (gemt til .xlsx fra Analys\u00e9r-trin eller Eksport\u00e9r-trin)",
+  "* evt. graf (eksporteret fra Eksport\u00e9r-fanen)",
+  "* evt. sk\u00e6rmbillede",
   "",
   "Andre kommentarer:",
   "[Valgfrit]",

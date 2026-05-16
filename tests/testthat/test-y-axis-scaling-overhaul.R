@@ -301,6 +301,51 @@ test_that("Priority system works as designed", {
   expect_equal(result_heuristic, 80) # Data suggests percent: 80% → 80 percent
 })
 
+# REGRESSION: chart_type=run må ikke pass-through percent-symbol som absolute -----
+# Bug-rapport 2026-05-16: target ">=1%" på p-chart → 0.01, men ved skift til
+# run-chart blev target opfattet som 1 (100%) i stedet for 0.01.
+# Årsag: determine_internal_unit_by_chart_type("run") returnerer "absolute",
+# hvilket lod to_internal_scale pass-through "1" uden percent→proportion-scaling.
+
+test_that("run-chart respekterer eksplicit percent-symbol i target (regression)", {
+  # User_unit="percent" + symbol "%" må aldrig pass-through som absolute
+  expect_equal(
+    normalize_axis_value("1%", user_unit = "percent", chart_type = "run"),
+    0.01
+  )
+  expect_equal(
+    normalize_axis_value("80%", user_unit = "percent", chart_type = "run"),
+    0.8
+  )
+
+  # Permille pendant
+  expect_equal(
+    normalize_axis_value("10‰", user_unit = "percent", chart_type = "run"),
+    0.01
+  )
+
+  # p-chart skal være uændret (kontrol)
+  expect_equal(
+    normalize_axis_value("1%", user_unit = "percent", chart_type = "p"),
+    0.01
+  )
+
+  # Run + count må ikke ændres af fix (input uden symbol, count-unit)
+  expect_equal(
+    normalize_axis_value("5", user_unit = "count", chart_type = "run"),
+    5
+  )
+})
+
+test_that("run-chart uden user_unit forbliver absolute pass-through (Phase 2)", {
+  # Phase 2 design-kontrakt: uden eksplicit user_unit forbliver run/c/u
+  # "absolute" pass-through. Override sker kun ved user_unit i proportion-familie.
+  expect_equal(
+    normalize_axis_value("80%", chart_type = "run"),
+    80
+  )
+})
+
 # =============================================================================
 # SEKTION 2: Y-AXIS MAPPING (fra test-y-axis-mapping.R)
 # Tests for chart_type_to_ui_type() og decide_default_y_axis_ui_type()

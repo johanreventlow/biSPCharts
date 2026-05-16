@@ -63,9 +63,11 @@ build_bfh_args <- function(prepared, axes, extra_params) {
     .context = "BFH_SERVICE"
   )
 
-  chart_title <- resolve_bfh_chart_title(
-    extra_params$chart_title_reactive %||% extra_params$chart_title
-  )
+  # Cycle 11 H2-NEW: chart_title resolves nu i compute_spc_results_bfh()
+  # FOER cache-key generation (fct_spc_bfh_facade.R). Her er extra_params$chart_title
+  # garanteret resolved (string eller NULL). Kald resolve_bfh_chart_title() er
+  # idempotent paa strings men bevares som defense-in-depth for andre call-paths.
+  chart_title <- resolve_bfh_chart_title(extra_params$chart_title)
 
   # VIGTIGT: width/height/units forwarded til bfh_qic() for korrekt
   # label-placering (bredde-baseret skalering i BFHcharts)

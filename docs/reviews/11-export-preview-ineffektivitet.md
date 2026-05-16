@@ -1,6 +1,7 @@
 # Cycle 11 — Export-preview-ineffektivitet (dev-log 2026-05-16)
 
-**Status:** Draft — afventer Codex adversarial-review.
+**Status:** ✅ KOMPLET 2026-05-16 sen. PR #752 + #753 + #754 merged.
+H1 follow-up: Option C accepteret (se "Post-merge verifikation" sektion).
 **Område:** PDF preview reactive-chain + SPC cache-key.
 **Baseline:** Bruger observerede ~3 sek delay ved navigation til eksport-tab pga dobbelt preview-render. Log-evidens vedlagt.
 
@@ -378,3 +379,59 @@ Reactive deps: `debounced_analysis()` + `app_state$ui$last_auto_analysis` (begge
 ### Worktree-discipline
 
 Begge PRs implementeres fra develop-baseret branch i samme tree. Atomic commits (én PR per finding). Manifest-konflikter resolves via `git merge origin/develop --no-edit` hvis merge-rækkefølge giver YAML-conflicts.
+
+---
+
+## Post-merge verifikation (2026-05-16 sen)
+
+Bruger leverede dev-log efter PR #752 + #753 merget. H1-symptom delvist mitigeret men 2 renders forbliver. Analyse:
+
+### H1 — observeret adfaerd
+
+```
+18:17:30  Export plot generated
+18:17:30  settings_save pdf_improvement='...ustabilitet...'   <-- GAMMEL tekst
+18:17:31  PDF preview PNG (1)
+18:17:32  settings_save pdf_improvement='...varierer naturligt...'   <-- NY tekst!
+18:17:34  PDF preview PNG (2)
+```
+
+**Visuel verifikation:** Bruger ser KORREKT tekst i begge previews (ej tom). 2 renders har FORSKELLIG content:
+- Preview 1: med eksisterende `last_auto_analysis` fra foer skift-edits
+- Preview 2: med ny analyse-tekst genberegnet af autogen-observer efter fresh SPC-compute (post-skift-edits)
+
+Race: pdf_preview_image evaluerer FOER autogen-observer afslutter recompute. Server-state `last_auto_analysis` er stale ved foerste eval; opdateres efter.
+
+### Option C verdict — accepteret
+
+Tre fix-options blev overvejet:
+- **A)** Defer preview til autogen-completion via reactiveVal-flag
+- **B)** Lad autogen-observer trigger preview direkte (kobl reactive-chain)
+- **C)** Acceptér 2 renders som "data-progression" (quick feedback + fresh content)
+
+**Bruger valgte Option C** (2026-05-16). Rationale:
+- Bruger ser instant preview-feedback med eksisterende tekst (ej tom)
+- 2. preview opdateres med fresh content naar autogen er faerdig
+- Bedre UX end at vente 1-2 sek paa fully-computed analyse-tekst foer foerste render
+- 2 sek total compute-spildtid acceptable
+
+**Dokumentation:** `R/mod_export_server.R:365-389` inline-kommentar forklarer expected behavior. Hvis senere optimering kraeves: Option A implementation via `reactiveVal`-flag.
+
+### Andre observerede patterns (post-merge)
+
+- ✅ **AUTO_SAVE-dedupe virker:** `settings_save sprunget over: payload uaendret` ses kl 18:17:20, 18:17:22, 18:17:27. M1 confirmed dismissed.
+- ❌ **NY BUG (ikke cycle 11 scope):** BFHcharts `<COLLAPSE_ERROR: Can't extract column with n_col_name. Subscript n_col_name must be size 1, not 24.>` — fyrer ved hvert `bfh_qic`-kald uden `n_var` paa i-chart. Skal eskaleres til BFHcharts-repo som separat issue.
+- ⚠️ **Trin 2 (analyse) skift-edits:** 3 separate compute-cycles ved 3 skift-edits (1.3 sek total). Korrekt adfaerd — debouncing ville give laggy feel.
+
+### Cycle 11 closure
+
+| Finding | Status |
+|---------|--------|
+| H1 | ✅ Mitigated + Option C accepted |
+| H2-NEW | ✅ Fixed (#752) |
+| H2-ORIG | ✅ Defer (Option B per Codex) |
+| M1 | ✅ Dismissed (already implemented) |
+| M2 | ⏸ Defer pending repro-cycle |
+| M3 | ⏸ Defer (negligible) |
+
+Cycle 11 lukket. Follow-up: BFHcharts COLLAPSE_ERROR + M2/M3 hvis kandidater for senere cycle.

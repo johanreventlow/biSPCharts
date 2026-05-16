@@ -426,6 +426,23 @@ normalize_axis_value <- function(x, user_unit = NULL, col_unit = NULL,
     return(NULL)
   }
 
+  # Override chart-type default når brugeren eksplicit angiver proportion-familien.
+  # Forhindrer at chart_type="run" (default "absolute") pass-through "1%" som 1
+  # i stedet for 0.01 når y_axis_unit=percent er valgt i UI. Phase 2 design:
+  # uden eksplicit user_unit forbliver run/c/u "absolute" pass-through.
+  proportion_family <- c("percent", "permille", "proportion")
+  has_proportion_user_unit <- !is.null(user_unit) && user_unit %in% proportion_family
+  if (internal_unit == "absolute" && has_proportion_user_unit) {
+    log_debug(
+      paste(
+        "Override internal_unit absolute -> proportion (user_unit:", user_unit,
+        ", symbol:", parsed$symbol, ", chart_type:", chart_type, ")"
+      ),
+      .context = "Y_AXIS_SCALING"
+    )
+    internal_unit <- "proportion"
+  }
+
   # Layer 2: Resolve target unit (with symbol awareness to prevent conflicts)
   target_unit <- resolve_y_unit_smart(user_unit, col_unit, y_sample, parsed)
 

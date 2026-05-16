@@ -48,10 +48,10 @@
         "GithubRef": "v0.19.0",
         "GithubSHA1": "b5753e7cf599cec6ad1f5023ae75219088ba3758",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:34:17 UTC; johanreventlow",
+        "Packaged": "2026-05-16 08:17:58 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:34:18 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-16 08:17:59 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.1",
         "GithubSHA1": "d296eda40e2fc452fc610cc0245c3562e5404104",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:34:39 UTC; johanreventlow",
+        "Packaged": "2026-05-16 08:18:18 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:34:40 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-16 08:18:19 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:34:34 UTC; johanreventlow",
+        "Packaged": "2026-05-16 08:18:13 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:34:35 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-16 08:18:14 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.0",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-15 14:34:26 UTC; johanreventlow",
+        "Packaged": "2026-05-16 08:18:07 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-15 14:34:27 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-16 08:18:07 UTC; unix"
       }
     },
     "BH": {
@@ -4483,7 +4483,7 @@
       "checksum": "dad4a64cf961e5ab5f2fe380573810f0"
     },
     "DESCRIPTION": {
-      "checksum": "a818358deffa7cb5ca289da1cd918384"
+      "checksum": "001ee87bc6620308da63ef7e35b59b08"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4735,13 +4735,13 @@
       "checksum": "1912dc78f2ba1539814437000715bf9b"
     },
     "R/fct_spc_plot_generation.R": {
-      "checksum": "4d52c6893bd63065dd103a9665dc2dd1"
+      "checksum": "6c9925f7a78041a5e4403971bfe629c5"
     },
     "R/fct_spc_prepare.R": {
       "checksum": "dcd119cd238085f15f4ac1ea953579fb"
     },
     "R/fct_spc_validate.R": {
-      "checksum": "d17cf2f1b821d2d9947c359bd9c0aadb"
+      "checksum": "14a70f563188ae4c75d4d9c550f6b722"
     },
     "R/fct_visualization_config_pure.R": {
       "checksum": "67e9cbe0f7b526bd2a54021847be61f5"
@@ -4783,7 +4783,7 @@
       "checksum": "f3a303e87e5040b6e0455f17ba6aa1bb"
     },
     "R/mod_spc_chart_compute.R": {
-      "checksum": "bb5c0e2812f59039628897fd40e34c62"
+      "checksum": "9d500938ae08606bc7a9bf5cc91421cb"
     },
     "R/mod_spc_chart_config.R": {
       "checksum": "e9d769f9a0ac84e375ecb01800c0fc5a"

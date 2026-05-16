@@ -42,10 +42,11 @@ register_ai_button_state <- function(session, input, output, app_state) {
     # button hidden. Forhindrer fragile reliance paa CSS-display:none alene.
     ai_enabled <- isTRUE(get_ai_config()$enabled)
     if (!ai_enabled) {
-      shinyjs::hide("ai_generate_suggestion")
+      # Skjul BAADE knap OG helper-tekst som samlet blok naar feature disabled.
+      shinyjs::hide("ai_suggestion_block")
       log_debug(
         .context = "EXPORT_MODULE",
-        message = "AI button hidden: ai.enabled=false in golem-config"
+        message = "AI suggestion block hidden: ai.enabled=false in golem-config"
       )
       return(invisible(NULL))
     }
@@ -63,8 +64,9 @@ register_ai_button_state <- function(session, input, output, app_state) {
     # Button enabled only when all prerequisites met
     can_use_ai <- has_spc_data && api_ready
 
-    # Show + toggle button state
-    shinyjs::show("ai_generate_suggestion")
+    # Show entire block (knap + helper-tekst) naar feature enabled.
+    # toggleState styrer kun knap-state baseret paa data/api-prerequisites.
+    shinyjs::show("ai_suggestion_block")
     shinyjs::toggleState("ai_generate_suggestion", can_use_ai)
 
     # Update tooltip based on state

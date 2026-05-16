@@ -18,11 +18,13 @@ app_ui <- function(request) {
       .navbar .nav-link[data-value='eksporter'],
       .navbar .nav-link[data-value='app_guide'],
       .navbar .nav-link[data-value='hjaelp'],
+      .navbar .nav-link[data-value='rapporter_fejl'],
       .navbar .nav-item:has(.nav-link[data-value='upload']),
       .navbar .nav-item:has(.nav-link[data-value='analyser']),
       .navbar .nav-item:has(.nav-link[data-value='eksporter']),
       .navbar .nav-item:has(.nav-link[data-value='app_guide']),
       .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
+      .navbar .nav-item:has(.nav-link[data-value='rapporter_fejl']),
       .navbar .nav-item:has(#session_save_status) {
         display: none !important;
       }
@@ -31,6 +33,7 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='eksporter']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='app_guide']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='rapporter_fejl']),
       body.wizard-nav-active .navbar .nav-item:has(#session_save_status) {
         display: flex !important;
         align-items: center;
@@ -39,7 +42,8 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
       body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
       body.wizard-nav-active .navbar .nav-link[data-value='app_guide'],
-      body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'] {
+      body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'],
+      body.wizard-nav-active .navbar .nav-link[data-value='rapporter_fejl'] {
         display: block !important;
       }
       /* Flash-mitigation: undgaa tom landing mens peek-resultatet afklares */
@@ -129,6 +133,14 @@ app_ui <- function(request) {
         icon = shiny::icon("book-open"),
         value = "hjaelp",
         mod_help_ui("help")
+      ),
+
+      # Rapporter fejl (adskilt fra wizard-flow)
+      bslib::nav_panel(
+        title = "Rapport\u00e9r fejl",
+        icon = shiny::icon("bug"),
+        value = "rapporter_fejl",
+        mod_report_bug_ui("report_bug")
       )
     )
   )

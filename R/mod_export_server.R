@@ -372,6 +372,17 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # Fix: prefer app_state$ui$last_auto_analysis (server-state sat synkront
       # af autogen-observer) over debounced_analysis. Brug input-vaerdien KUN
       # hvis bruger har redigeret (input differerer fra auto-tekst).
+      #
+      # FORVENTET ADFAERD (Option C, 2026-05-16): 2 preview-renders ved
+      # data-progression (fx skift-indsaettelse efterfulgt af tab-skift) er
+      # INTENDED:
+      #   - Render 1: quick feedback med eksisterende last_auto_analysis
+      #   - Render 2: fresh content efter autogen-observer har genberegnet
+      #     analyse-tekst fra ny SPC-data (bfh_generate_analysis)
+      # 2 sek total spildtid acceptable for korrekt UX hvor bruger ser
+      # instant feedback frem for at vente paa fully-computed analyse-tekst.
+      # Hvis senere optimering kraeves, vaelg Option A (defer render til
+      # autogen-completion via reactiveVal-flag) — se docs/reviews/11-*.md.
       analysis_input <- compute_effective_analysis_text(
         user_text = debounced_analysis(),
         auto_text = app_state$ui$last_auto_analysis %||% ""

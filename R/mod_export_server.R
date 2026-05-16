@@ -334,6 +334,41 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # NOTE: debounced_footnote er flyttet til top-of-server-scope (#EM1) saa
     # PNG-preview kan dele samme debouncer. Definition: se efter debounced_dept.
 
+    # Cycle 12 H1 (Codex 2026-05-16 sen): reactiveVal-diff-check eliminerer
+    # redundant 2. preview-render i foerste-tab-besoeg. Mekanik:
+    #   - Observer laeser debounced_analysis() + last_auto_analysis
+    #   - Beregner effective text via compute_effective_analysis_text()
+    #   - Skipper reactiveVal-update hvis identical med eksisterende (Shiny
+    #     1.13.0 source: reactiveVal$set() returnerer FOER invalidation
+    #     hvis identical(old, new))
+    #   - pdf_preview_image laeser effective_analysis_val() — invalideres
+    #     KUN ved reel value-change, ej ved no-op dep-invalidation
+    #
+    # PRIORITY ORDERING (Codex Shiny flush-simulation): Observer SKAL have
+    # eksplicit priority > 0 for at fyre FOER outputs (default priority 0).
+    # Priority PLOT_GENERATION (600) er mellem autogen (UI_SYNC=750) og
+    # default outputs — garanterer:
+    #   - EFTER autogen-observer (sat last_auto_analysis)
+    #   - FOER output-rendering (sikrer effective_analysis_val populated)
+    # Uden eksplicit priority ville priority-0 race med outputs reproducere
+    # cycle 11 H1 i ny form (tom 1. render → fuld 2. render).
+    effective_analysis_val <- shiny::reactiveVal(
+      shiny::isolate(app_state$ui$last_auto_analysis %||% "")
+    )
+    shiny::observe(
+      {
+        new_text <- compute_effective_analysis_text(
+          user_text = debounced_analysis(),
+          auto_text = app_state$ui$last_auto_analysis %||% ""
+        )
+        current <- shiny::isolate(effective_analysis_val())
+        if (!identical(new_text, current)) {
+          effective_analysis_val(new_text)
+        }
+      },
+      priority = OBSERVER_PRIORITIES$PLOT_GENERATION
+    )
+
     pdf_preview_image <- shiny::reactive({
       # TAB-GUARD (Issue #644): Typst→PNG-render er dyr (~2s) og maa ej koere
       # mens brugeren er paa upload/analyser-tab. Tidligere lakage skyldtes at
@@ -360,33 +395,18 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
-      # Analyse, datadefinition og hospital er debounced reactives (1000ms)
-      # saa preview opdateres naar brugeren stopper med at skrive
+      # Cycle 12 H1 (2026-05-16 sen): Laes effective-analysis fra reactiveVal
+      # der kun invalideres ved reel value-change. Eliminerer redundant 2.
+      # render naar debounced_analysis ankommer fra klient-roundtrip med
+      # vaerdi der matcher allerede-vist auto_text.
       #
-      # Cycle 11 H1 (Codex 2026-05-16): Brug effective-analysis-pattern.
-      # Tidligere lyttede preview KUN paa input$pdf_improvement (debounced),
-      # hvilket forarsagede dobbelt-render ved tab-skift med ny data:
-      #   1) Preview render FOERST med tom analyse-tekst
-      #   2) Autogen-observer kalder updateTextAreaInput med auto-tekst
-      #   3) Klient-roundtrip + debounce 1500ms => preview re-render
-      # Fix: prefer app_state$ui$last_auto_analysis (server-state sat synkront
-      # af autogen-observer) over debounced_analysis. Brug input-vaerdien KUN
-      # hvis bruger har redigeret (input differerer fra auto-tekst).
-      #
-      # FORVENTET ADFAERD (Option C, 2026-05-16): 2 preview-renders ved
-      # data-progression (fx skift-indsaettelse efterfulgt af tab-skift) er
-      # INTENDED:
-      #   - Render 1: quick feedback med eksisterende last_auto_analysis
-      #   - Render 2: fresh content efter autogen-observer har genberegnet
-      #     analyse-tekst fra ny SPC-data (bfh_generate_analysis)
-      # 2 sek total spildtid acceptable for korrekt UX hvor bruger ser
-      # instant feedback frem for at vente paa fully-computed analyse-tekst.
-      # Hvis senere optimering kraeves, vaelg Option A (defer render til
-      # autogen-completion via reactiveVal-flag) — se docs/reviews/11-*.md.
-      analysis_input <- compute_effective_analysis_text(
-        user_text = debounced_analysis(),
-        auto_text = app_state$ui$last_auto_analysis %||% ""
-      )
+      # Historisk: Cycle 11 H1 (PR #753) introducerede
+      # compute_effective_analysis_text() inline-kald som fix paa "preview
+      # render med tom tekst foer autogen-text ankom". Det loeste 1. render
+      # men efterlod 2. render som no-op redundans. Cycle 12 wrapper i
+      # reactiveVal med diff-check eliminerer 2. render via Shiny's
+      # built-in identical-skip-invalidation-semantik.
+      analysis_input <- effective_analysis_val()
       data_def_input <- debounced_data_def()
       hospital_input <- debounced_hospital()
       footnote_input <- trimws(debounced_footnote())

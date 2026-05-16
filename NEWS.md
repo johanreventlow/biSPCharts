@@ -2,6 +2,22 @@
 
 ## Bug fixes
 
+* PDF-analysetekst respekterer nu retning på operator-targets (fx
+  `<=1%`, `>=90%`) og arrow-only targets (`<`, `>`). Tidligere shadowede
+  `build_export_analysis_metadata()` BFHcharts' `config$target_text` ved
+  at sende numerisk `target_value` som `metadata$target`. BFHcharts'
+  `.resolve_analysis_target()` foretrækker metadata-feltet, så
+  operator-information forsvandt og analysen faldt til værdi-neutral
+  "ligger tæt på udviklingsmålet" — selvom CL lå på forkert side, eller
+  selvom brugeren slet ikke havde angivet en målværdi (arrow-only).
+  Fix: send `target_text`-strengen (når til stede) som `metadata$target`
+  så BFHcharts kan udlede direction og vælge `near_target.detailed`
+  ("ligger lige over/under udviklingsmålet") eller `stable_no_target`
+  ("Overvej, om et udviklingsmål kan fastsættes…") afhængigt af om
+  brugeren har givet en målværdi. Samtidig strammes
+  `compute_at_target()`-tolerancen fra `max(target*0.05, 0.01)` til ren
+  `target*0.05` (relativ 5%); det absolutte floor på 0.01 betød at
+  proportion-targets klassificerede 100%-relativ afvigelse som "tæt nok".
 * Cache-key for SPC-beregning resolver nu reactive `chart_title` til
   string FØR hashing. Tidligere passerede analysis-tab en
   `shiny::reactive`-function-objekt der hashede som reference uafhængigt
@@ -24,6 +40,11 @@
   `identical(old, new)`. Observer kører ved
   `OBSERVER_PRIORITIES$PLOT_GENERATION` (600) for at fyre EFTER
   autogen men FØR outputs (Codex peer-review 2026-05-16 sen, #759).
+* Ret U-kort sample-data-label til "Medicineringsfejl pr. indlæggelse"
+  (var: "pr. 1000"). Codex peer-review fandt at appen ikke normaliserer
+  til pr. 1000 — pipeline beregner rate per nævner-enhed (8/310 =
+  0.0258), så "pr. 1000"-løftet var faktor 1000 misvisende. Label
+  matcher nu faktisk skalering (#762).
 
 ## Nye features
 

@@ -566,17 +566,10 @@ handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NU
 #
 # paste-textarea ryddes inde i reset_to_empty_session().
 blank_session_reset_and_nav <- function(session, app_state, emit, ui_service = NULL) {
-  app_state$navigation$guard_active <- TRUE
+  set_guard_active(app_state, TRUE)
   reset_to_empty_session(session, app_state, emit, ui_service)
   bslib::nav_select("main_navbar", selected = "analyser", session = session)
-  session$onFlushed(
-    function() {
-      shiny::isolate({
-        app_state$navigation$guard_active <- FALSE
-      })
-    },
-    once = TRUE
-  )
+  clear_guard_active_on_flush(app_state, session)
 }
 
 reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) {

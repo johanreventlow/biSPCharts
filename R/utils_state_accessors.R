@@ -1040,3 +1040,51 @@ set_module_data_cache <- function(app_state, data) {
     app_state$visualization$module_cached_data <- data
   })
 }
+
+# ==============================================================================
+# Navigation Guard Accessors (Wave-13 refactor)
+# ==============================================================================
+# Etablerer accessor-disciplin for app_state$navigation$guard_*-felter.
+# Pattern: alle aendringer gaar gennem set_*-helpers; isolate()-wrap sikrer
+# at vi ikke utilsigtet tracker reactivity i kalde-konteksten.
+
+#' Get Navigation Guard Active Flag
+#'
+#' guard_active er veto-flag der beder wizard_gates' auto-nav-observer
+#' om at skippe en cyklus. Bruges under orkestrerede reset+nav-flows.
+#'
+#' @param app_state Centralized app state
+#' @return Logical (TRUE hvis guard aktiv)
+#' @keywords internal
+get_guard_active <- function(app_state) {
+  isTRUE(shiny::isolate(app_state$navigation$guard_active))
+}
+
+#' Set Navigation Guard Active Flag
+#'
+#' @param app_state Centralized app state
+#' @param value Logical
+#' @keywords internal
+set_guard_active <- function(app_state, value) {
+  shiny::isolate({
+    app_state$navigation$guard_active <- isTRUE(value)
+  })
+}
+
+#' Clear Navigation Guard Active Flag on Next Shiny Flush
+#'
+#' Schedules clear af guard_active efter Shiny-flush, saa wizard_gates'
+#' observer (queued af emit$data_updated under reset) ser flagget TRUE
+#' og skipper. Mirror af restoring_session-pattern fra fct_file_operations.R.
+#'
+#' @param app_state Centralized app state
+#' @param session Shiny session (kraeves for onFlushed)
+#' @keywords internal
+clear_guard_active_on_flush <- function(app_state, session) {
+  session$onFlushed(
+    function() {
+      set_guard_active(app_state, FALSE)
+    },
+    once = TRUE
+  )
+}

@@ -31,7 +31,7 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
       # Skip hele body under nav-guard confirm-flow: handle_nav_guard_confirm
       # styrer selv wizard-step-messages + nav_select, og denne observer ville
       # ellers nav_select("analyser") og overskrive target.
-      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+      if (get_guard_active(app_state)) {
         log_info(
           "wizard_gates: skipper data_updated handler (guard_active = TRUE)",
           .context = "NAV_GUARD"

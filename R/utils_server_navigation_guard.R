@@ -123,7 +123,7 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
       }
 
       # Skip under aktiv confirm-flow (handle_nav_guard_confirm styrer selv)
-      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+      if (get_guard_active(app_state)) {
         return(invisible(NULL))
       }
 
@@ -230,7 +230,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       # Veto wizard_gates' data_updated auto-nav under reset:
       # ellers ser observeren empty session-data som "has_data" og
       # nav_select("analyser") overskriver target nedenfor.
-      app_state$navigation$guard_active <- TRUE
+      set_guard_active(app_state, TRUE)
 
       reset_to_empty_session(session, app_state, emit)
 
@@ -266,14 +266,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
 
       # Clear guard_active EFTER Shiny-flush, saa wizard_gates' observer
       # (queued af emit$data_updated under reset) ser flagget TRUE og skipper.
-      session$onFlushed(
-        function() {
-          shiny::isolate({
-            app_state$navigation$guard_active <- FALSE
-          })
-        },
-        once = TRUE
-      )
+      clear_guard_active_on_flush(app_state, session)
     },
     fallback = {
       shiny::showNotification(
@@ -283,7 +276,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       shiny::removeModal(session = session)
       app_state$navigation$guard_pending_target <- NULL
       app_state$navigation$guard_modal_open <- FALSE
-      app_state$navigation$guard_active <- FALSE
+      set_guard_active(app_state, FALSE)
     }
   )
 }

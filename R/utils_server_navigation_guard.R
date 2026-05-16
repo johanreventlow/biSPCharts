@@ -236,9 +236,9 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
 
       # Wizard_gates' wizard-step-messages er skippet via guard_active.
       # Send selv korrekte lock-states post-reset for UI-konsistens.
-      session$sendCustomMessage("wizard-uncomplete-step", 1)
-      session$sendCustomMessage("wizard-lock-step", 2)
-      session$sendCustomMessage("wizard-lock-step", 3)
+      wizard_uncomplete_step(session, 1)
+      wizard_lock_step(session, 2)
+      wizard_lock_step(session, 3)
 
       session$sendCustomMessage(
         "set_in_app_navigating",

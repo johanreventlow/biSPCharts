@@ -284,11 +284,11 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             }
 
             # Unlock wizard-trin 2 og naviger (goer det synligt straks)
-            session$sendCustomMessage("wizard-complete-step", 1)
-            session$sendCustomMessage("wizard-unlock-step", 2)
+            wizard_complete_step(session, 1)
+            wizard_unlock_step(session, 2)
             if (saved_tab == "eksporter") {
-              session$sendCustomMessage("wizard-complete-step", 2)
-              session$sendCustomMessage("wizard-unlock-step", 3)
+              wizard_complete_step(session, 2)
+              wizard_unlock_step(session, 3)
             }
             bslib::nav_select("main_navbar", selected = saved_tab, session = session)
 

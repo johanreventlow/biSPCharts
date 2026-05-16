@@ -234,7 +234,7 @@ main_app_server <- function(input, output, session) {
     {
       new_tab <- input$main_navbar
       old_tab <- app_state$navigation$current_tab
-      help_tabs <- c("app_guide", "hjaelp")
+      help_tabs <- c("app_guide", "hjaelp", "rapporter_fejl")
       if (new_tab %in% help_tabs) {
         app_state$navigation$previous_tab <- old_tab
       }
@@ -250,6 +250,9 @@ main_app_server <- function(input, output, session) {
 
   ## Hjaelpeside modul (tilbagenavigation til forrige tab)
   mod_help_server("help", parent_session = session, app_state = app_state)
+
+  ## "Rapporter fejl"-modul (tilbagenavigation til forrige tab)
+  mod_report_bug_server("report_bug", parent_session = session, app_state = app_state)
 
   ## Landing page modul
   mod_landing_server("landing", parent_session = session, app_state = app_state)

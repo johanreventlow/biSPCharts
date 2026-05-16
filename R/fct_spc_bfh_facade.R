@@ -171,6 +171,20 @@ compute_spc_results_bfh <- function(
   )
 
   extra_params <- list(...)
+
+  # Cycle 11 H2-NEW (Codex 2026-05-16): Resolve chart_title FOER cache-key
+  # generation. Tidligere blev `extra_params$chart_title` partial-matched fra
+  # `chart_title_reactive` (utils_server_visualization.R:293 passerer
+  # shiny::reactive function-objekt). Hash af function-objekt forblev IDENTISK
+  # naar closed-over input$indicator_title aendrede sig => STALE CACHE.
+  # Empirisk repro: digest::digest(fn) returnerer samme hash for samme fn-objekt
+  # uafhaengigt af closure-state.
+  resolved_title <- resolve_bfh_chart_title(
+    extra_params$chart_title_reactive %||% extra_params$chart_title
+  )
+  extra_params$chart_title <- resolved_title
+  extra_params$chart_title_reactive <- NULL
+
   cache_key <- build_cache_key(
     data, chart_type, x_var, y_var, n_var,
     cl_var = cl_var, freeze_var = freeze_var,

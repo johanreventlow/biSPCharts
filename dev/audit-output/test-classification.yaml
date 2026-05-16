@@ -1076,6 +1076,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-04'
   rationale: Regression-test for #482 cache-key freeze/part/cl/notes — tilfoejet manuelt.
+- file: test-cache-key-reactive-title.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Regression-test for cycle 11 H2-NEW cache-key reactive title resolution — tilfoejet manuelt.
 - file: test-cache-key-target-text-chart-title.R
   audit_category: post-audit
   type: unit

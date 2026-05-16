@@ -27,10 +27,12 @@
 # remove.packages("BFHcharts")
 # remove.packages("BFHtheme")
 # remove.packages("BFHllm")
+# remove.packages("BFHchartsAssets")
 # 
 # pak::pkg_install(c(
 #   "johanreventlow/BFHtheme",
 #   "johanreventlow/BFHcharts",
+#   "johanreventlow/BFHchartsAssets",
 #   "johanreventlow/BFHllm"))
 
 # ==============================================================================

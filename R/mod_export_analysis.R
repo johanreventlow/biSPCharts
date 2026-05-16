@@ -100,9 +100,23 @@ register_analysis_autogen <- function(session, input, output, pdf_export_plot, a
       user_has_edited <- nzchar(trimws(current_text)) && current_text != prev_auto
 
       if (!user_has_edited) {
+        # Cycle 11 H1 (Codex 2026-05-16): Saet server-state FOERST. Dette
+        # eliminerer afhaengighed af klient-roundtrip for downstream-consumers
+        # (pdf_preview_image bruger effective_analysis_text() der laeser
+        # last_auto_analysis fra app_state — ej input$pdf_improvement).
         app_state$ui$last_auto_analysis <- auto_text
-        # Sæt suspend-flag FØR updateTextAreaInput så settings_save ikke
-        # gemmer den programmatiske input-ændring som en bruger-ændring.
+
+        # Cycle 11 H1: Skip updateTextAreaInput hvis feltets value allerede
+        # matcher auto_text (fx tab-revisit med uaendret data). Tidligere
+        # sendte vi altid besked til klient, hvilket forarsagede tom
+        # roundtrip + debounced_analysis-invalidering => unoedig preview-
+        # re-render.
+        if (identical(current_text, auto_text)) {
+          return()
+        }
+
+        # Saet suspend-flag FOER updateTextAreaInput saa settings_save ikke
+        # gemmer den programmatiske input-aendring som en bruger-aendring.
         # onFlushed(once=TRUE) rydder flaget efter Shiny har flushet
         # updateTextAreaInput-beskeden til klienten.
         set_autogen_active(app_state, TRUE)

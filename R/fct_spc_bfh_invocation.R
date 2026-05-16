@@ -101,9 +101,18 @@ call_bfh_chart <- function(bfh_params) {
     )
   }
   if (!is.null(bfh_params_clean$data)) {
+    # NB: Brug [["n"]] ej $n. R's $-operator udfoerer partial-matching:
+    # bfh_params_clean$n matcher "notes" hvis "n" ikke findes, hvilket
+    # returnerer notes-vektoren (length nrow) som n_col_name og trigger
+    # COLLAPSE_ERROR i log_debug-build via tibble [[-validator.
+    # [["n"]] er strict og returnerer NULL ved manglende key.
     x_col_name <- as.character(bfh_params_clean$x)
     y_col_name <- as.character(bfh_params_clean$y)
-    n_col_name <- if (!is.null(bfh_params_clean$n)) as.character(bfh_params_clean$n) else NULL
+    n_col_name <- if (!is.null(bfh_params_clean[["n"]])) {
+      as.character(bfh_params_clean[["n"]])
+    } else {
+      NULL
+    }
 
     log_debug(
       paste(

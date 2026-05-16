@@ -72,9 +72,9 @@ build_bug_report_mailto <- function(to = SUPPORT_EMAIL,
                                     subject = SUPPORT_EMAIL_SUBJECT,
                                     body = SUPPORT_EMAIL_BODY) {
   stopifnot(
-    is.character(to), length(to) == 1L, nzchar(to),
-    is.character(subject), length(subject) == 1L,
-    is.character(body), length(body) == 1L
+    is.character(to), length(to) == 1L, !is.na(to), nzchar(to),
+    is.character(subject), length(subject) == 1L, !is.na(subject),
+    is.character(body), length(body) == 1L, !is.na(body)
   )
 
   paste0(

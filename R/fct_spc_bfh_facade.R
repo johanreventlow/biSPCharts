@@ -396,6 +396,18 @@ resolve_bfh_chart_title <- function(title_candidate) {
             }
           },
           error = function(e) {
+            # Wave-13 H1: log_warn fjerner silent NULL-fallback. Tidligere
+            # blev fejl ved reactive-evaluation usynligt swallowed, hvilket
+            # gav cache-staleness: charts med forskellige titler der alle
+            # fejlede reactive-eval delte samme NULL-title cache-slot.
+            log_warn(
+              "Reactive chart_title evaluation failed; falling back to NULL",
+              .context = "BFH_SERVICE",
+              details = list(
+                error_message = conditionMessage(e),
+                error_class = class(e)[1]
+              )
+            )
             result <<- NULL
           }
         )

@@ -41,10 +41,10 @@ test_that("SUPPORT_EMAIL_BODY indeholder ikke-tekniske skabelon-afsnit", {
   expect_match(SUPPORT_EMAIL_BODY, "Hvad skete der?", fixed = TRUE)
   expect_match(SUPPORT_EMAIL_BODY, "Hvad lavede du, da det skete?", fixed = TRUE)
   expect_match(SUPPORT_EMAIL_BODY, "Hvad havde du forventet?", fixed = TRUE)
-  expect_match(SUPPORT_EMAIL_BODY, "Vedhæftet:", fixed = TRUE)
-  expect_match(SUPPORT_EMAIL_BODY, "Datasæt", fixed = TRUE)
-  expect_match(SUPPORT_EMAIL_BODY, "Graf", fixed = TRUE)
-  expect_match(SUPPORT_EMAIL_BODY, "Skærmbillede", fixed = TRUE)
+  expect_match(SUPPORT_EMAIL_BODY, "Vedhæft gerne:", fixed = TRUE)
+  expect_match(SUPPORT_EMAIL_BODY, "data og indstillinger", fixed = TRUE)
+  expect_match(SUPPORT_EMAIL_BODY, "graf", fixed = TRUE)
+  expect_match(SUPPORT_EMAIL_BODY, "skærmbillede", fixed = TRUE)
 })
 
 test_that("mod_report_bug_ui returnerer shiny.tag-objekt", {

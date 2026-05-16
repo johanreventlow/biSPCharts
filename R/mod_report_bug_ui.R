@@ -87,8 +87,8 @@ mod_report_bug_ui <- function(id) {
       shiny::tags$h2("Send rapporten"),
       shiny::tags$p(
         "Når du klikker på knappen herunder, åbnes din mail-klient med ",
-        "en færdig skabelon. Udfyld felterne, vedhæft din datafil ",
-        "(og gerne grafen og et skærmbillede), og tryk send."
+        "en færdig skabelon til inspiration. Skriv eller udfyld det du kan, vedhæft gerne din datafil, ",
+        "samt evt. din graf og et skærmbillede, og tryk send."
       ),
       shiny::div(
         class = "text-center my-4",

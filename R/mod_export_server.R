@@ -334,6 +334,13 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # NOTE: debounced_footnote er flyttet til top-of-server-scope (#EM1) saa
     # PNG-preview kan dele samme debouncer. Definition: se efter debounced_dept.
 
+    # ADR-004 exception: effective_analysis_val er session-scoped reactiveVal
+    # — bevidst konstrueret udenfor app_state-hierarkiet fordi diff-check-
+    # idiom kraever Shiny 1.13.0 identical()-semantik paa reactiveVal$set()
+    # (skip-invalidation hvis old===new). app_state-fields er hierarkiske
+    # reactiveValues; identical-check sker kun mod containerens last-set,
+    # ej per-field. Cycle 12 H1, PR #759.
+    #
     # Cycle 12 H1 (Codex 2026-05-16 sen): reactiveVal-diff-check eliminerer
     # redundant 2. preview-render i foerste-tab-besoeg. Mekanik:
     #   - Observer laeser debounced_analysis() + last_auto_analysis

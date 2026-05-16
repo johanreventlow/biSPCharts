@@ -105,6 +105,52 @@ test_that(".safe_col_class haandterer ugyldige col-references uden crash", {
   expect_match(.safe_col_class(df, "missing"), "<MISSING_COL: missing>")
 })
 
+test_that("call_bfh_chart logging ej partial-matcher notes til n via $-operator", {
+  skip_if_not_installed("BFHcharts")
+  require_internal("call_bfh_chart", mode = "function")
+
+  # Root-cause for cycle 11 COLLAPSE_ERROR: bfh_params indeholder "notes" men
+  # IKKE "n". R's $-operator partial-matcher "n" -> "notes" og returnerer
+  # notes-vektoren (length nrow), hvilket trigger log_debug-fejl. Fix bruger
+  # [["n"]] som er strict (NULL ved manglende key).
+  notes_only_params <- c(
+    minimal_bfh_params(),
+    list(notes = c("", "", "Kompleks patient", "Ny teknik"))
+  )
+
+  # Capture log-messages via mocked log_debug
+  captured_msgs <- character(0)
+  local_mocked_bindings(
+    log_debug = function(..., .context = NULL) {
+      msg <- paste(..., collapse = " ")
+      captured_msgs <<- c(captured_msgs, msg)
+      invisible(NULL)
+    }
+  )
+
+  with_mocked_bindings(
+    bfh_qic = function(...) {
+      structure(list(qic_data = data.frame(x = 1), plot = NULL),
+        class = "bfh_qic_result"
+      )
+    },
+    is_bfh_qic_result = function(x) inherits(x, "bfh_qic_result"),
+    .package = "BFHcharts",
+    code = {
+      result <- call_bfh_chart(notes_only_params)
+    }
+  )
+
+  expect_s3_class(result, "bfh_qic_result")
+  # Verificer at "BFHcharts data types"-log IKKE rapporterer n via partial-match.
+  # Pre-fix: log indeholdt "n(,,Kompleks...)=<INVALID_COL_NAME: length=4>".
+  # Post-fix: log ender efter y-class uden n-segment.
+  data_types_msg <- captured_msgs[grepl("BFHcharts data types", captured_msgs)]
+  expect_length(data_types_msg, 1)
+  expect_false(grepl("INVALID_COL_NAME", data_types_msg))
+  expect_false(grepl("Kompleks patient", data_types_msg))
+})
+
 test_that("call_bfh_chart logging survives malformed n parameter (root-cause exposed)", {
   skip_if_not_installed("BFHcharts")
   require_internal("call_bfh_chart", mode = "function")

@@ -2,6 +2,15 @@
 
 ## Bug fixes
 
+* Eliminer root-cause for cycle 11 COLLAPSE_ERROR i
+  `call_bfh_chart()`-logging: brug `bfh_params_clean[["n"]]` i stedet
+  for `$n`. R's `$`-operator udfører partial-matching og returnerede
+  `notes`-vektoren (length=nrow) når `n` ikke findes som key, hvilket
+  brød `class(data[[n_col_name]])`-lookup i log_debug-build. `[[`-form
+  er strict og returnerer NULL ved manglende key. Følger op på
+  defensiv `.safe_col_class()`-fix; eliminerer `<INVALID_COL_NAME:
+  length=N>`-støj i debug-output ved chart-typer der har notes-kolonne
+  men ingen denominator.
 * Defensiv kolonne-klasse-lookup i `call_bfh_chart()`-logging
   forhindrer at log_debug-build kaster når `bfh_params$n` (eller
   x/y) er malformed opstrøms (fx en row-vektor i stedet for et

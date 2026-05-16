@@ -1587,3 +1587,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-12'
   rationale: Navigation guard modal (trin 2/3 destruktiv navigation). 37 unit-tests dækker tom session (direkte nav), modal vises ved data, annullér bevarer state, nulstil reset, download-flag, browser-unload, JS-relay, og input-validation (injection-attempt). Testet med shiny::testServer + shiny:::flushReact.
+- file: test-mod_report_bug.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Smoke-tests for "Rapportér fejl"-modul (#747). 24 tests dækker build_bug_report_mailto() URL-encoding (subject, body, danske tegn æøå -> %C3%A6, linjeskift -> %0A), input-validering (NA/tom/multi-element afvises), SUPPORT_EMAIL_BODY-skabelon-indhold, og mod_report_bug_ui() HTML-rendering (mailto-link, modtager, tilbage-link, bug-ikon).

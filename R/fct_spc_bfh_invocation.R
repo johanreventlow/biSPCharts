@@ -6,6 +6,28 @@
 # - Error handling og graceful degradation
 # - Diagnostisk logging
 
+# Defensiv kolonne-klasse-lookup for diagnostisk logging. Returnerer altid
+# en streng. Forhindrer at log_debug-build (paste()) propagerer fejl naar
+# col_name ej er en valid length-1 kolonne-reference — fx hvis bfh_params$n
+# er overskrevet med en row-vektor opstroems. Tidligere blev saadanne fejl
+# fanget af .safe_collapse og rapporteret som <COLLAPSE_ERROR: ...>, hvilket
+# maskerede ægte rendering-fejl bag generisk wrap.
+.safe_col_class <- function(data, col_name) {
+  if (is.null(col_name)) {
+    return("<NULL>")
+  }
+  if (length(col_name) != 1L) {
+    return(sprintf("<INVALID_COL_NAME: length=%d>", length(col_name)))
+  }
+  if (!col_name %in% names(data)) {
+    return(sprintf("<MISSING_COL: %s>", col_name))
+  }
+  tryCatch(
+    class(data[[col_name]])[1],
+    error = function(e) paste0("<CLASS_ERROR: ", conditionMessage(e), ">")
+  )
+}
+
 call_bfh_chart <- function(bfh_params) {
   # H5 (#451): Pre-condition validation kaster typed spc_render_error
   # direkte. Tidligere brugte safe_operation + base stop() — fejlene
@@ -79,16 +101,32 @@ call_bfh_chart <- function(bfh_params) {
     )
   }
   if (!is.null(bfh_params_clean$data)) {
+    # NB: Brug [["n"]] ej $n. R's $-operator udfoerer partial-matching:
+    # bfh_params_clean$n matcher "notes" hvis "n" ikke findes, hvilket
+    # returnerer notes-vektoren (length nrow) som n_col_name og trigger
+    # COLLAPSE_ERROR i log_debug-build via tibble [[-validator.
+    # [["n"]] er strict og returnerer NULL ved manglende key.
     x_col_name <- as.character(bfh_params_clean$x)
     y_col_name <- as.character(bfh_params_clean$y)
-    n_col_name <- if (!is.null(bfh_params_clean$n)) as.character(bfh_params_clean$n) else NULL
+    n_col_name <- if (!is.null(bfh_params_clean[["n"]])) {
+      as.character(bfh_params_clean[["n"]])
+    } else {
+      NULL
+    }
 
     log_debug(
       paste(
         "BFHcharts data types:",
-        "x(", x_col_name, ")=", class(bfh_params_clean$data[[x_col_name]])[1],
-        ", y(", y_col_name, ")=", class(bfh_params_clean$data[[y_col_name]])[1],
-        if (!is.null(n_col_name)) paste0(", n(", n_col_name, ")=", class(bfh_params_clean$data[[n_col_name]])[1]) else ""
+        "x(", x_col_name, ")=", .safe_col_class(bfh_params_clean$data, x_col_name),
+        ", y(", y_col_name, ")=", .safe_col_class(bfh_params_clean$data, y_col_name),
+        if (!is.null(n_col_name)) {
+          paste0(
+            ", n(", paste(n_col_name, collapse = ","), ")=",
+            .safe_col_class(bfh_params_clean$data, n_col_name)
+          )
+        } else {
+          ""
+        }
       ),
       .context = "BFH_SERVICE"
     )

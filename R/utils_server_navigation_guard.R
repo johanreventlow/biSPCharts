@@ -217,7 +217,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
         session$sendCustomMessage(
           "download_blob",
           list(
-            filename = generate_spc_filename(app_state),
+            filename = spc_save_filename(app_state, input),
             data_b64 = base64enc::base64encode(blob),
             mime_type = paste0(
               "application/vnd.openxmlformats-officedocument.",
@@ -281,46 +281,8 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
   )
 }
 
-#' Build in-memory Excel-blob fra current app_state
-#'
-#' Genbruger eksisterende build_spc_excel() (3-ark: Data + Indstillinger +
-#' SPC-analyse) som returnerer en tempfil-sti. L\u00e6ser bytes tilbage via
-#' readBin og rydder op via on.exit.
-#'
-#' current_data bruges som original_data fordi det er det eneste tilg\u00e6ngelige
-#' datas\u00e6t i nav-guard-flowet (ingen separat original ved dette tidspunkt).
-#'
-#' @param app_state Hierarchical reactiveValues
-#' @param input Shiny input (kr\u00e6ves af collect_metadata)
-#' @return Raw bytes \u2014 XLSX file content
-#' @keywords internal
-#' @noRd
-build_spc_excel_blob <- function(app_state, input) {
-  data <- shiny::isolate(app_state$data$current_data)
-  metadata <- collect_metadata(input, app_state)
-
-  temp_path <- build_spc_excel(
-    data = data,
-    metadata = metadata,
-    qic_data = NULL,
-    original_data = data,
-    analysis_options = list()
-  )
-  on.exit(unlink(temp_path), add = TRUE)
-
-  readBin(temp_path, what = "raw", n = file.info(temp_path)$size)
-}
-
-#' Generer brugervenligt filnavn til nav-guard download
-#'
-#' Format: "spc-data_YYYY-MM-DD_HHMMSS.xlsx"
-#'
-#' @param app_state Hierarchical reactiveValues (reserveret til fremtidig
-#'   brug af file_info.name)
-#' @return Character \u2014 filnavn
-#' @keywords internal
-#' @noRd
-generate_spc_filename <- function(app_state) {
-  ts <- format(Sys.time(), "%Y-%m-%d_%H%M%S")
-  paste0("spc-data_", ts, ".xlsx")
-}
+# Excel-blob + filnavn-helpers er flyttet til utils_server_spc_save.R
+# saa nav-guard-download deler implementation med
+# "Download kopi af data og indstillinger"-knappen paa Eksport\u00e9r-trinnet.
+# Begge call-sites genererer nu identisk 3-ark Excel (Data +
+# Indstillinger + SPC-analyse) + samme titel-baserede filnavn.

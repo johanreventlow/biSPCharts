@@ -145,92 +145,19 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
     }
   })
 
-  # Gem til fil: download handler (delt logik mellem trin 2 og trin 3)
-  spc_save_filename <- function() {
-    md <- collect_metadata(input, app_state)
-    title <- md$indicator_title
-    if (is.null(title) || !nzchar(trimws(title))) {
-      return("data_biSPCharts.xlsx")
-    }
-    safe_title <- sanitize_filename(trimws(title))
-    if (nchar(safe_title) == 0) {
-      return("data_biSPCharts.xlsx")
-    }
-    safe_title <- stringr::str_trunc(safe_title, 50, ellipsis = "")
-    paste0(safe_title, "_biSPCharts.xlsx")
+  # Gem til fil: download handler (delt logik mellem trin 2 og trin 3).
+  # Helper-funktioner findes i utils_server_spc_save.R og deles med
+  # navigation-guard-modal saa begge call-sites producerer identisk
+  # 3-ark Excel-fil plus samme titel-baserede filnavn.
+  spc_save_filename_handler <- function() {
+    spc_save_filename(app_state, input)
   }
 
-  spc_save_content <- function(file) {
+  spc_save_content_handler <- function(file) {
     safe_operation(
       "Gem til fil",
       code = {
-        data <- shiny::isolate(app_state$data$current_data)
-        metadata <- collect_metadata(input, app_state)
-
-        # Hent qic_data fra senest beregnede SPC-resultat. build_export_plot()
-        # genererer plot + qic_data via samme pipeline som UI-grafen.
-        # Hvis kaldet fejler eller returnerer NULL, springes SPC-analyse-arket
-        # over (build_spc_excel() haandterer NULL graciously).
-        qic_data <- NULL
-
-        # Cycle C H1 (Codex 2026-05-10): ekstraher freeze_position fra data
-        # + metadata$frys_column saa SPC-analyse-arket Sektion A 'Frozen til
-        # raekke' populeres per spec. extract_freeze_position returnerer NULL
-        # hvis ingen frys_column eller ingen markeringer findes — gracefully
-        # haandteret af build_spc_analysis_sheet.
-        # NB: phase_names er IKKE sat (Codex anbefaling): qic_data$part er
-        # auto-genereret integer-IDs, ej user-labels. Implementer kun naar
-        # eksplicit label-source-kontrakt eksisterer.
-        freeze_position <- tryCatch(
-          extract_freeze_position(data, metadata$frys_column),
-          error = function(e) NULL # nolint: swallowed_error_linter
-        )
-
-        analysis_options <- list(
-          pkg_versions = list(
-            biSPCharts = tryCatch(as.character(utils::packageVersion("biSPCharts")),
-              error = function(e) ""
-            ),
-            BFHcharts = tryCatch(as.character(utils::packageVersion("BFHcharts")),
-              error = function(e) ""
-            )
-          ),
-          computed_at = Sys.time(),
-          freeze_position = freeze_position
-        )
-        spc_for_export <- tryCatch(
-          build_export_plot(
-            app_state = app_state,
-            title_input = metadata$indicator_title %||% "",
-            dept_input = metadata$export_department %||% "",
-            plot_context = "export_pdf"
-          ),
-          error = function(e) {
-            log_warn(
-              .context = "EXCEL_EXPORT",
-              message = paste(
-                "build_export_plot fejlede ved Excel-download;",
-                "SPC-analyse-ark springes over:", conditionMessage(e)
-              )
-            )
-            NULL
-          }
-        )
-        has_qic <- !is.null(spc_for_export) && is.list(spc_for_export) &&
-          !is.null(spc_for_export$qic_data)
-        if (has_qic) {
-          qic_data <- spc_for_export$qic_data
-        }
-
-        temp_path <- build_spc_excel(
-          data = data,
-          metadata = metadata,
-          qic_data = qic_data,
-          original_data = data,
-          analysis_options = analysis_options
-        )
-        on.exit(unlink(temp_path), add = TRUE)
-        file.copy(temp_path, file)
+        build_spc_excel_full(app_state, input, file = file)
       },
       error_type = "processing",
       session = session,
@@ -239,12 +166,12 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
   }
 
   output$download_spc_file <- shiny::downloadHandler(
-    filename = spc_save_filename,
-    content = spc_save_content
+    filename = spc_save_filename_handler,
+    content = spc_save_content_handler
   )
   output$download_spc_file_step3 <- shiny::downloadHandler(
-    filename = spc_save_filename,
-    content = spc_save_content
+    filename = spc_save_filename_handler,
+    content = spc_save_content_handler
   )
 
   # Tilbage-knap: Trin 2 -> Trin 1 (via navigation guard)

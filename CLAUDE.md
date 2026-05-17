@@ -22,6 +22,8 @@
 2. Push til remote uden anmodning
 3. Tilføj Claude attribution footers (`🤖 Generated with [Claude Code]` /
    `Co-Authored-By: Claude <noreply@anthropic.com>`)
+4. Target PRs mod master/main — alle `fix/feat/test/chore`-PRs SKAL
+   target `develop` (master modtager kun `develop→master` release-PRs)
 
 ---
 

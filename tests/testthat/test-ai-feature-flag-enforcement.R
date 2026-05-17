@@ -73,6 +73,42 @@ test_that("production-config har ai.enabled=false (eksplicit kill-switch)", {
   )
 })
 
+# 2026-05-17: AI-feature skjules globalt (alle profiler). Connect Cloud setter
+# ej GOLEM_CONFIG_ACTIVE pr default; uden default-fail-closed vil app falde
+# tilbage til "default"-profil og vise AI-blok i deploy. Test verificerer at
+# default+development+testing matcher production (kill-switch).
+test_that("default-config har ai.enabled=false (fail-closed naar profil mangler)", {
+  config_path <- testthat::test_path("..", "..", "inst", "golem-config.yml")
+  skip_if_not(file.exists(config_path), "golem-config.yml ikke fundet")
+
+  yaml_content <- yaml::read_yaml(config_path)
+  expect_false(
+    isTRUE(yaml_content$default$ai$enabled),
+    info = paste(
+      "default-profile skal have ai.enabled=false saa Connect Cloud uden",
+      "eksplicit GOLEM_CONFIG_ACTIVE ej viser AI-blok."
+    )
+  )
+  expect_false(
+    isTRUE(yaml_content$default$ai$rag$enabled),
+    info = "default-profile RAG skal koble til ai (begge false naar AI disabled)"
+  )
+})
+
+test_that("development-config har ai.enabled=false (matcher global kill-switch)", {
+  config_path <- testthat::test_path("..", "..", "inst", "golem-config.yml")
+  skip_if_not(file.exists(config_path), "golem-config.yml ikke fundet")
+
+  yaml_content <- yaml::read_yaml(config_path)
+  expect_false(
+    isTRUE(yaml_content$development$ai$enabled),
+    info = paste(
+      "development-profile skal have ai.enabled=false. AI globalt disabled",
+      "2026-05-17 — re-enable kraever explicit flip + H0+H3-fix."
+    )
+  )
+})
+
 test_that("production-config har ai.rag.enabled=false (kobles til ai)", {
   config_path <- testthat::test_path("..", "..", "inst", "golem-config.yml")
   skip_if_not(file.exists(config_path), "golem-config.yml ikke fundet")

@@ -48,10 +48,10 @@
         "GithubRef": "v0.19.0",
         "GithubSHA1": "b5753e7cf599cec6ad1f5023ae75219088ba3758",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-16 08:17:58 UTC; johanreventlow",
+        "Packaged": "2026-05-17 12:15:19 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-16 08:17:59 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-17 12:15:20 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.1",
         "GithubSHA1": "d296eda40e2fc452fc610cc0245c3562e5404104",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-16 08:18:18 UTC; johanreventlow",
+        "Packaged": "2026-05-17 12:15:39 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-16 08:18:19 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-17 12:15:40 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-16 08:18:13 UTC; johanreventlow",
+        "Packaged": "2026-05-17 12:15:34 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-16 08:18:14 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-17 12:15:35 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.0",
         "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-16 08:18:07 UTC; johanreventlow",
+        "Packaged": "2026-05-17 12:15:27 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-16 08:18:07 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-17 12:15:28 UTC; unix"
       }
     },
     "BH": {
@@ -4618,13 +4618,13 @@
       "checksum": "d85bbd8c1967f0d78e01081616a4e723"
     },
     "R/app_server_main.R": {
-      "checksum": "296bb4d5d237213fea192bcad1383972"
+      "checksum": "e6ddbd44bbe2441fb06169f516ce9528"
     },
     "R/app_server.R": {
       "checksum": "c97a964c3c2b954be459b38cc6fef0e4"
     },
     "R/app_ui.R": {
-      "checksum": "3a18493a2c039049eb244d72813a34dd"
+      "checksum": "d6b4c44d64e85c27c784256ed66cf46a"
     },
     "R/config_analytics.R": {
       "checksum": "5a2e6a33573869e94ac5b43e6f27f0b9"
@@ -4639,10 +4639,10 @@
       "checksum": "410356d2c0c0ff25130cefeb609bfa32"
     },
     "R/config_log_contexts.R": {
-      "checksum": "0bd4e036225cbdd244a178255a031dba"
+      "checksum": "f4d5b2b046c48bf81b967abdd6288460"
     },
     "R/config_observer_priorities.R": {
-      "checksum": "16f518420ec7b65cd73a812633e7fdef"
+      "checksum": "8ef87af445b04aef959c7f62199ea414"
     },
     "R/config_performance_getters.R": {
       "checksum": "fe8ecc8838a34f5f209d3b4bd3b8477b"
@@ -4651,10 +4651,13 @@
       "checksum": "0d896f77a7c0f726de856af20c4020e6"
     },
     "R/config_sample_data.R": {
-      "checksum": "d504bdd5333920af1fbcede491110837"
+      "checksum": "eb8ed5ccb830e1c4e41ddaa3300731e8"
     },
     "R/config_spc_config.R": {
       "checksum": "0d6f652d8227943b71624ea7abf5dc7c"
+    },
+    "R/config_support.R": {
+      "checksum": "6ae38812b6d116755650f5f7277a12db"
     },
     "R/config_system_config.R": {
       "checksum": "7b615d801bba01f16b5659f654c5e9b7"
@@ -4702,10 +4705,10 @@
       "checksum": "6d56eb21965ae4ed0350e23260f5e6cd"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "62660b423cdaea636ed3fb237ee84641"
+      "checksum": "d7688dd5fed849e42990e3cd93f32978"
     },
     "R/fct_spc_bfh_invocation.R": {
-      "checksum": "978891350f004118ba898c2a7356f00a"
+      "checksum": "9a2d7663d8a98a06a990182b916d3801"
     },
     "R/fct_spc_bfh_output.R": {
       "checksum": "06d9b6808569487628fd8370b556bfdc"
@@ -4726,7 +4729,7 @@
       "checksum": "d8a1f060147ffd0df5a6ff8490bce3ad"
     },
     "R/fct_spc_execute.R": {
-      "checksum": "e3b9afbb47a8530b11e18bed1e6cf351"
+      "checksum": "b98e0e5fcbf04eb62dbabd621a547eaf"
     },
     "R/fct_spc_file_save_load.R": {
       "checksum": "ce1e71cec2afe3f34144e8febef607dd"
@@ -4756,19 +4759,19 @@
       "checksum": "d43c99d2aa43f1b00ac424341d90a0bf"
     },
     "R/mod_export_ai.R": {
-      "checksum": "5942f0f35ff24bed6273f3443e6245e1"
+      "checksum": "3e05bee8423d5db8e433202bf34e5d66"
     },
     "R/mod_export_analysis.R": {
-      "checksum": "b937246ee3a4e2e3bda63c09f23a108d"
+      "checksum": "9c0ecdd409037ca33ca3743ce6145525"
     },
     "R/mod_export_download.R": {
       "checksum": "91761c59d3f984b8dd6f6a5b81635717"
     },
     "R/mod_export_server.R": {
-      "checksum": "3b06b5fd9fe462e22b96f78403c02a0e"
+      "checksum": "f0c3be7f3c91a4ff5919e460af160f8c"
     },
     "R/mod_export_ui.R": {
-      "checksum": "2ef63aa67dba7db380d8d367747b3019"
+      "checksum": "35573e91ef3737e5e8fc2484dcca9f29"
     },
     "R/mod_help_server.R": {
       "checksum": "1dbd9afb732efdf03222ebab03e29762"
@@ -4781,6 +4784,12 @@
     },
     "R/mod_landing_ui.R": {
       "checksum": "f3a303e87e5040b6e0455f17ba6aa1bb"
+    },
+    "R/mod_report_bug_server.R": {
+      "checksum": "0fda8b12eb1539b1164ffad60337e893"
+    },
+    "R/mod_report_bug_ui.R": {
+      "checksum": "36152139d2c80c484b0f9ce84211d6c5"
     },
     "R/mod_spc_chart_compute.R": {
       "checksum": "9d500938ae08606bc7a9bf5cc91421cb"
@@ -4825,7 +4834,7 @@
       "checksum": "0da716b6a4b805c42d3477ad8f582127"
     },
     "R/utils_async_helpers.R": {
-      "checksum": "a0c17f34f885b2ae8fd605331d2066ce"
+      "checksum": "d8c5dc6a8429afae190b8433610bcc25"
     },
     "R/utils_bfhllm_integration.R": {
       "checksum": "3ac2436241b437d29a0126fc7235a568"
@@ -4849,13 +4858,13 @@
       "checksum": "ad29bacba617e29a0d3f6c3e210046b4"
     },
     "R/utils_export_analysis_metadata.R": {
-      "checksum": "3fe1125f54a138821dfcb5449bc32ff0"
+      "checksum": "ebe72626be3692e4e8efb941434c5dc9"
     },
     "R/utils_export_filename.R": {
       "checksum": "6239f32d74045acbca25463fd89d8132"
     },
     "R/utils_export_helpers.R": {
-      "checksum": "77736edec5fdf6e90ff31b91ec8b5249"
+      "checksum": "ee5f7bd6deeb3e60667a94ecbe58f03b"
     },
     "R/utils_export_validation.R": {
       "checksum": "f1901f35087860ff18513fa7950eaaaf"
@@ -4930,7 +4939,7 @@
       "checksum": "94e76a069570922e6df19146cf2b463d"
     },
     "R/utils_server_navigation_guard.R": {
-      "checksum": "2688b12a1f001692a1183663b130b9bd"
+      "checksum": "12d9d77a09431812a45c071b1c40278b"
     },
     "R/utils_server_observer_manager.R": {
       "checksum": "99793a6fe76515d1eaee0204be77c26a"
@@ -4939,7 +4948,7 @@
       "checksum": "e33196c14e2d621e42bc529c4cd9f808"
     },
     "R/utils_server_server_management.R": {
-      "checksum": "fcc259d117d0604136db1afcac2cd8bc"
+      "checksum": "ef5589d55076b2b38d72c565996fdb28"
     },
     "R/utils_server_session_helpers.R": {
       "checksum": "ccdbad93843066c9ce73a7630146d6ab"
@@ -4951,10 +4960,10 @@
       "checksum": "1a2af18a328a7548b7fa91df0cff8511"
     },
     "R/utils_server_visualization.R": {
-      "checksum": "505d559a373bfa5d360503e41668366e"
+      "checksum": "c076f5ee589c087944b5047800ccecaa"
     },
     "R/utils_server_wizard_gates.R": {
-      "checksum": "b260e07230942da62d8f82c6994b56cb"
+      "checksum": "7faa06021009c1b3c90edbaf7bd10e32"
     },
     "R/utils_shinylogs_config.R": {
       "checksum": "a1670ba5e7b8fc62b9a767f9562a02c2"
@@ -4972,7 +4981,7 @@
       "checksum": "dc34f9a3705ea40924010753ec6dc4a2"
     },
     "R/utils_state_accessors.R": {
-      "checksum": "8369998501c6d37a2618b6a3fe6bee05"
+      "checksum": "42ab11735e2f227e1275bc8d230484ad"
     },
     "R/utils_state_transitions.R": {
       "checksum": "c844beb6cf159c6452eecceadf94f6ad"
@@ -5014,7 +5023,7 @@
       "checksum": "d312ae61935af94b38ffa900d179150f"
     },
     "R/utils_y_axis_scaling.R": {
-      "checksum": "922d95160f269b5bf675707480cfc1d3"
+      "checksum": "66f44772ca3108f367347e54ff91ebae"
     },
     "R/zzz.R": {
       "checksum": "ad32ff26f43f3842a572d684737ab410"

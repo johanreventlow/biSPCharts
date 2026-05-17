@@ -2,24 +2,23 @@
 # Cycle C H1 (Codex 2026-05-10): regression-tests for freeze_position
 # extraction i SPC-analyse-arket.
 #
-# Pre-fix: spc_save_content() byggede analysis_options uden freeze_position.
+# Pre-fix: download-handlers byggede analysis_options uden freeze_position.
 # build_spc_analysis_sheet defaulter til NULL -> Sektion A 'Frozen til
 # raekke' altid tomt. Spec-divergens (openspec/specs/excel-spc-analysis-
 # sheet/spec.md:51 SHALL angive 'Frozen til raekke').
 #
-# Post-fix: spc_save_content kalder extract_freeze_position(data,
-# metadata\$frys_column) og passerer til analysis_options.
+# Post-fix: build_spc_excel_full() kalder extract_freeze_position(data,
+# metadata$frys_column) og passerer til analysis_options. Funktionen er
+# delt mellem wizard-eksport-knappen og navigation-guard-modal download.
 
-test_that("spc_save_content body kalder extract_freeze_position", {
+test_that("build_spc_excel_full body kalder extract_freeze_position", {
   # Body-introspection (R CMD check sikker) — verificer at fix-kald
-  # eksisterer i save-content-kroppen. spc_save_content er defineret som
-  # nested function inde i setup_wizard_gates, saa vi tjekker via
-  # deparse paa parent-funktionen.
-  require_internal("setup_wizard_gates", mode = "function")
-  body_text <- paste(deparse(body(setup_wizard_gates)), collapse = "\n")
+  # eksisterer i den delte Excel-builder-funktion.
+  require_internal("build_spc_excel_full", mode = "function")
+  body_text <- paste(deparse(body(build_spc_excel_full)), collapse = "\n")
   expect_true(
     grepl("extract_freeze_position", body_text),
-    info = "setup_wizard_gates skal kalde extract_freeze_position i spc_save_content"
+    info = "build_spc_excel_full skal kalde extract_freeze_position"
   )
   expect_true(
     grepl("freeze_position\\s*=\\s*freeze_position", body_text),

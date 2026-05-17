@@ -7,6 +7,12 @@
 # uden installation. pkgload skal være i Imports (ikke Suggests) for at være
 # installeret på Connect. Se docs/adr/ADR-019-production-entrypoint-pkgload.md.
 
+# Aktiver production-profile FOER load_all saa get_golem_config() returnerer
+# production-overrides (ai.enabled=false, branding-gate, logging.level=ERROR).
+# Connect Cloud setter ej dette env var pr default — uden eksplicit setenv
+# falder profile tilbage til "default" og production-only settings haandhaeves ej.
+Sys.setenv(GOLEM_CONFIG_ACTIVE = "production")
+
 # Forhindre Shiny fra at auto-source R/ filer (pkgload haandterer dette)
 options(shiny.autoload.r = FALSE)
 

@@ -284,11 +284,11 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             }
 
             # Unlock wizard-trin 2 og naviger (goer det synligt straks)
-            session$sendCustomMessage("wizard-complete-step", 1)
-            session$sendCustomMessage("wizard-unlock-step", 2)
+            wizard_complete_step(session, 1)
+            wizard_unlock_step(session, 2)
             if (saved_tab == "eksporter") {
-              session$sendCustomMessage("wizard-complete-step", 2)
-              session$sendCustomMessage("wizard-unlock-step", 3)
+              wizard_complete_step(session, 2)
+              wizard_unlock_step(session, 3)
             }
             bslib::nav_select("main_navbar", selected = saved_tab, session = session)
 
@@ -566,17 +566,10 @@ handle_confirm_clear_saved <- function(session, app_state, emit, ui_service = NU
 #
 # paste-textarea ryddes inde i reset_to_empty_session().
 blank_session_reset_and_nav <- function(session, app_state, emit, ui_service = NULL) {
-  app_state$navigation$guard_active <- TRUE
+  set_guard_active(app_state, TRUE)
   reset_to_empty_session(session, app_state, emit, ui_service)
   bslib::nav_select("main_navbar", selected = "analyser", session = session)
-  session$onFlushed(
-    function() {
-      shiny::isolate({
-        app_state$navigation$guard_active <- FALSE
-      })
-    },
-    once = TRUE
-  )
+  clear_guard_active_on_flush(app_state, session)
 }
 
 reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) {

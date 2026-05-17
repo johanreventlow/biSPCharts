@@ -172,9 +172,10 @@ S3-typed errors arver fra `spc_error`
 **Filer:**
 - `fct_spc_bfh_facade.R` — orkestrering (entry point)
 - `fct_spc_validate.R` — input-validering
-- `fct_spc_prepare.R` — data-forberedelse + numerisk parsing
-- `fct_spc_bfh_params.R` — resolve_axis_units + build_bfh_args
-- `fct_spc_bfh_invocation.R` — execute_bfh_request (BFHcharts-kald)
+- `fct_spc_prepare.R` — data-forberedelse + numerisk parsing + resolve_axis_units
+- `fct_spc_execute.R` — build_bfh_args + execute_bfh_request (BFHcharts-kald)
+- `fct_spc_bfh_params.R` — column-mapping helpers + map_to_bfh_params
+- `fct_spc_bfh_invocation.R` — call_bfh_chart (low-level BFHcharts wrapper)
 - `fct_spc_decorate.R` — decorate_plot_for_display
 - `fct_spc_bfh_output.R` — output-standardisering
 - `fct_spc_bfh_signals.R` — Anhøj-signal-tilknytning

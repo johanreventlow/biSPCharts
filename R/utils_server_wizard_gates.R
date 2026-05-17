@@ -6,6 +6,45 @@
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
 # ==============================================================================
 
+# Wizard step-besked-helpers indkapsler JS custom-message-strenge.
+# Stavefejl i magic-string ville producere silent JS-fejl; helpers giver
+# autocomplete + enkelt soegemaal hvis message-strenge skal aendres.
+
+#' Wizard step-besked-helpers
+#'
+#' Send JS custom-message til klient for at lock/unlock/complete/uncomplete
+#' et wizard-trin. Strengene matcher handlers i `inst/app/www/wizard-nav.js`.
+#'
+#' @param session Shiny session
+#' @param step Integer wizard-trin (1-3)
+#' @keywords internal
+#' @name wizard_step_messages
+NULL
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_lock_step <- function(session, step) {
+  session$sendCustomMessage("wizard-lock-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_unlock_step <- function(session, step) {
+  session$sendCustomMessage("wizard-unlock-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_complete_step <- function(session, step) {
+  session$sendCustomMessage("wizard-complete-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_uncomplete_step <- function(session, step) {
+  session$sendCustomMessage("wizard-uncomplete-step", step)
+}
+
 #' Setup wizard navigation gates
 #'
 #' Locks/unlocks navbar wizard steps based on app state.
@@ -20,8 +59,8 @@
 #' @keywords internal
 setup_wizard_gates <- function(input, output, app_state, session, emit) {
   # Lock trin 2+3 ved startup
-  session$sendCustomMessage("wizard-lock-step", 2)
-  session$sendCustomMessage("wizard-lock-step", 3)
+  wizard_lock_step(session, 2)
+  wizard_lock_step(session, 3)
 
   # Gate: Data loaded -> unlock trin 2, auto-naviger
   shiny::observeEvent(app_state$events$data_updated,
@@ -31,7 +70,7 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
       # Skip hele body under nav-guard confirm-flow: handle_nav_guard_confirm
       # styrer selv wizard-step-messages + nav_select, og denne observer ville
       # ellers nav_select("analyser") og overskrive target.
-      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+      if (get_guard_active(app_state)) {
         log_info(
           "wizard_gates: skipper data_updated handler (guard_active = TRUE)",
           .context = "NAV_GUARD"
@@ -43,13 +82,12 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
       # trin 2 paa fresh blank session.
       has_data <- has_real_data(app_state)
       if (has_data) {
-        session$sendCustomMessage("wizard-complete-step", 1)
-        session$sendCustomMessage("wizard-unlock-step", 2)
+        wizard_complete_step(session, 1)
+        wizard_unlock_step(session, 2)
         # Skip auto-navigation under session restore: restore-observer har
         # allerede valgt korrekt tab (saved_tab), og vi maa ikke overskrive
         # brugerens gemte valg med default "analyser". Issue #193.
-        restoring <- isTRUE(shiny::isolate(app_state$session$restoring_session))
-        if (!restoring) {
+        if (!is_restoring_session(app_state)) {
           bslib::nav_select(
             "main_navbar",
             selected = "analyser",
@@ -62,8 +100,8 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
           )
         }
       } else {
-        session$sendCustomMessage("wizard-lock-step", 2)
-        session$sendCustomMessage("wizard-lock-step", 3)
+        wizard_lock_step(session, 2)
+        wizard_lock_step(session, 3)
         bslib::nav_select(
           "main_navbar",
           selected = "upload",
@@ -79,14 +117,14 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
   shiny::observe(priority = OBSERVER_PRIORITIES$UI_SYNC, {
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
-      session$sendCustomMessage("wizard-complete-step", 2)
-      session$sendCustomMessage("wizard-unlock-step", 3)
+      wizard_complete_step(session, 2)
+      wizard_unlock_step(session, 3)
       shinyjs::enable("continue_to_export")
     } else {
       # Kun send lock-beskeder naar plot_ready eksplicit er FALSE (ej NULL ved init)
       req(!is.null(plot_ready))
-      session$sendCustomMessage("wizard-uncomplete-step", 2)
-      session$sendCustomMessage("wizard-lock-step", 3)
+      wizard_uncomplete_step(session, 2)
+      wizard_lock_step(session, 3)
       shinyjs::disable("continue_to_export")
     }
   })

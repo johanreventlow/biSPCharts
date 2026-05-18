@@ -41,6 +41,7 @@ make_export_app_state <- function(x_column = NULL, y_column = "value",
 
 test_that("build_export_plot tolererer NULL x_column naar y er sat", {
   if (!exists("build_export_plot", mode = "function")) {
+    # SKIP-REASON: env -- build_export_plot kraever load_all() context
     skip("build_export_plot ikke tilgaengelig")
   }
   withr::local_options(shiny.reactiveConsole = TRUE)
@@ -77,6 +78,7 @@ test_that("build_export_plot tolererer NULL x_column naar y er sat", {
 
 test_that("build_export_plot returnerer NULL ved manglende y_column", {
   if (!exists("build_export_plot", mode = "function")) {
+    # SKIP-REASON: env -- build_export_plot kraever load_all() context
     skip("build_export_plot ikke tilgaengelig")
   }
   withr::local_options(shiny.reactiveConsole = TRUE)
@@ -105,8 +107,64 @@ test_that("build_export_plot returnerer NULL ved manglende y_column", {
   )
 })
 
+test_that("preview_ready evaluerer uden at blokere naar x_column er NULL", {
+  # Regression: tidligere blokerede shiny::req(mappings$x_column) preview-
+  # reactive'erne (export_plot + pdf_export_plot) naar auto-detect ikke kunne
+  # gaette x. Effekt: preview blev aldrig rendret, selvom analyse-pathen viste
+  # fungerende chart via spc_row_index-fallback. Fix: x_column fjernet fra
+  # req()-listerne i begge reactive'er.
+  if (!exists("mod_export_server", mode = "function")) {
+    # SKIP-REASON: env -- mod_export_server kraever fuldt load_all() context
+    skip("mod_export_server ikke tilgaengelig")
+  }
+
+  app_state <- shiny::reactiveValues(
+    data = shiny::reactiveValues(
+      current_data = data.frame(
+        Observation = c("A", "B", "C", "D", "E"),
+        value = c(10, 12, 11, 13, 12),
+        stringsAsFactors = FALSE
+      )
+    ),
+    columns = shiny::reactiveValues(
+      mappings = shiny::reactiveValues(
+        x_column = NULL,
+        y_column = "value",
+        n_column = NULL,
+        chart_type = "run"
+      ),
+      auto_detect = shiny::reactiveValues(
+        results = list(x_col = NULL, y_col = "value")
+      )
+    ),
+    visualization = shiny::reactiveValues(
+      last_valid_config = list(chart_type = "run"),
+      plot_object = NULL,
+      plot_ready = TRUE
+    ),
+    session = shiny::reactiveValues(active_tab = "eksporter"),
+    events = shiny::reactiveValues()
+  )
+
+  shiny::testServer(mod_export_server, args = list(app_state = app_state), {
+    suppressWarnings(session$flushReact())
+    returned <- session$returned
+    ready_value <- tryCatch(returned$preview_ready(),
+      error = function(e) NULL
+    )
+    # Med NULL x_column og valid y_column skal preview_ready evaluere uden
+    # at req() blokerer hele reactive-grafen. Vi accepterer baade FALSE
+    # (fx hvis Quarto mangler) og TRUE -- nogensinde NULL betyder req()
+    # blokerede early og reactive blev droppet.
+    expect_true(is.logical(ready_value),
+      label = "preview_ready skal evaluere til logical -- ikke droppet af req(x_column)"
+    )
+  })
+})
+
 test_that("build_export_plot bruger auto_detect$results$x_col som fallback for mappings", {
   if (!exists("build_export_plot", mode = "function")) {
+    # SKIP-REASON: env -- build_export_plot kraever load_all() context
     skip("build_export_plot ikke tilgaengelig")
   }
   withr::local_options(shiny.reactiveConsole = TRUE)

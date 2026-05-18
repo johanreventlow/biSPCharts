@@ -28,8 +28,9 @@ session_timeout_message <- function() {
 #'
 #' @param session Shiny session-objekt (skal have \code{$close()}-metode)
 #' @param minutes Antal minutter til timeout (numerisk, positiv)
-#' @param .scheduler Funktion med signatur \code{function(callback, delay_secs)}.
-#'   Default: \code{later::later}. Override i tests for synkron eksekvering.
+#' @param .scheduler Funktion kaldt positionelt med \code{(callback_fn, delay_secs)}.
+#'   Default: \code{later::later} (signatur \code{(func, delay)}). Override i
+#'   tests med synkron stub. Arg-navne i stub er ligegyldige — kaldes positionelt.
 #' @return List med:
 #'   \describe{
 #'     \item{cancel}{Funktion der annullerer planlagt callback (no-op hvis allerede udlobet)}
@@ -47,8 +48,13 @@ setup_session_timeout <- function(session, minutes,
 
   schedule_disconnect <- function() {
     cancelled <<- FALSE
+    # NB: positionelt kald — later::later har signatur (func, delay).
+    # Tidligere brugte vi callback=/delay=-navne, hvilket virkede for
+    # test-fake-schedulers men kraschede later::later i production
+    # (ubrugt argument 'callback'). Aktiveret session timeout i prod
+    # via fix(config) commit 85950038 eksponerede bug.
     handle <<- .scheduler(
-      callback = function() {
+      function() {
         if (cancelled) {
           return(invisible(NULL))
         }
@@ -73,7 +79,7 @@ setup_session_timeout <- function(session, minutes,
           }
         )
       },
-      delay = delay_secs
+      delay_secs
     )
     invisible(NULL)
   }

@@ -121,8 +121,11 @@ resolve_analytics_config <- function() {
   if (toupper(disable_flag) %in% c("TRUE", "1", "YES", "ON")) {
     return(list(enabled = FALSE, source = "env:BISPC_DISABLE_ANALYTICS"))
   }
+  # NB: brug get_golem_config (YAML-config) frem for golem::get_golem_options
+  # (runtime-options). app.R kalder shiny::shinyApp direkte uden with_golem_options,
+  # saa get_golem_options returnerer NULL paa Connect Cloud.
   config_val <- tryCatch(
-    golem::get_golem_options("analytics.shinylogs_enabled"),
+    get_golem_config("analytics")$shinylogs_enabled,
     error = function(e) NULL # nolint: swallowed_error_linter. Golem-config kan mangle uden for app-kontekst
   )
   if (!is.null(config_val)) {

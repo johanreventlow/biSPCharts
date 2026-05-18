@@ -36,9 +36,10 @@ test_that("resolve_analytics_config(): ENABLE_SHINYLOGS=FALSE giver FALSE naar c
   withr::with_envvar(
     list(BISPC_DISABLE_ANALYTICS = "", ENABLE_SHINYLOGS = "FALSE"),
     {
+      # Stub get_golem_config -> NULL simulerer "config-blok mangler"
       mockery::stub(
         resolve_analytics_config,
-        "golem::get_golem_options",
+        "get_golem_config",
         NULL
       )
       expect_false(resolve_analytics_config()$enabled)
@@ -50,10 +51,11 @@ test_that("resolve_analytics_config(): config-flag FALSE returnerer FALSE selv m
   withr::with_envvar(
     list(BISPC_DISABLE_ANALYTICS = "", ENABLE_SHINYLOGS = "TRUE"),
     {
+      # resolve_analytics_config gør get_golem_config("analytics")$shinylogs_enabled
       mockery::stub(
         resolve_analytics_config,
-        "golem::get_golem_options",
-        FALSE
+        "get_golem_config",
+        list(shinylogs_enabled = FALSE)
       )
       expect_false(resolve_analytics_config()$enabled)
     }
@@ -66,8 +68,8 @@ test_that("resolve_analytics_config(): config-flag TRUE returnerer TRUE", {
     {
       mockery::stub(
         resolve_analytics_config,
-        "golem::get_golem_options",
-        TRUE
+        "get_golem_config",
+        list(shinylogs_enabled = TRUE)
       )
       expect_true(resolve_analytics_config()$enabled)
     }

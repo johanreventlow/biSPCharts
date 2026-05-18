@@ -110,8 +110,12 @@ activate_session_timeout_from_config <- function(input, session,
                                                  .scheduler = later::later) {
   # Hent timeout fra security-blok i golem-config (production: 60 min, dev: 480 min)
   # Kilde: inst/golem-config.yml -> <env>:security:session_timeout_minutes
+  # NB: get_golem_config (YAML) frem for golem::get_golem_options (runtime).
+  # app.R kalder shiny::shinyApp() direkte uden with_golem_options, saa
+  # get_golem_options returnerer NULL paa Connect Cloud — timeout blev
+  # silent deaktiveret. Se ADR-019 + commit 8ee8790f.
   timeout_minutes <- tryCatch(
-    golem::get_golem_options("security")$session_timeout_minutes,
+    get_golem_config("security")$session_timeout_minutes,
     error = function(e) {
       log_debug(
         paste("get_golem_config('security') fejlede:", conditionMessage(e)),

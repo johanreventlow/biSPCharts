@@ -158,10 +158,15 @@ build_export_plot <- function(app_state, title_input, dept_input,
   y_col <- normalize_mapping(app_state$columns$mappings$y_column) %||%
     normalize_mapping(app_state$columns$auto_detect$results$y_col)
 
-  if (is.null(x_col) || is.null(y_col)) {
+  # y er hard-requirement; uden y er der intet at plotte. x maa vaere NULL --
+  # generateSPCPlot fallback'er til spc_row_index (samme adfaerd som analyse-
+  # pathen, jf. R/fct_spc_plot_generation.R:115-126). Asymmetrisk afvisning
+  # her foer fix gav tom preview + "Ingen plot tilgaengeligt"-fejl ved export
+  # for datasaet uden detekterbar x-kolonne (fx tekst-x, tom header).
+  if (is.null(y_col)) {
     log_warn(
       .context = "EXPORT_MODULE",
-      message = "build_export_plot: Missing required column mappings (x or y)"
+      message = "build_export_plot: Missing required y-column mapping"
     )
     return(NULL)
   }

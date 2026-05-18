@@ -290,7 +290,15 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
   safe_operation(
     "Sync analytics data",
     code = {
-      github_sync_enabled <- isTRUE(golem::get_golem_options("analytics.github_sync_enabled"))
+      # NB: brug get_golem_config (YAML-config) frem for golem::get_golem_options
+      # (runtime-options). app.R kalder shiny::shinyApp direkte uden with_golem_options,
+      # saa get_golem_options returnerer NULL paa Connect Cloud.
+      github_sync_enabled <- isTRUE(
+        tryCatch(
+          get_golem_config("analytics")$github_sync_enabled,
+          error = function(e) FALSE
+        )
+      )
       if (github_sync_enabled &&
         nchar(safe_getenv("GITHUB_PAT")) > 0 &&
         nchar(safe_getenv("PIN_REPO_URL")) > 0) {

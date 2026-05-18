@@ -372,8 +372,11 @@ handle_upload_error <- function(error, file_info, session_id = NULL) {
   )
 
   # Gate tekniske fejldetaljer bag hide_error_details (default TRUE i produktion)
+  # NB: get_golem_config (YAML) frem for golem::get_golem_options (runtime).
+  # YAML har nestet security.hide_error_details (prod=true, dev=false).
+  # app.R uden with_golem_options → get_golem_options returnerer NULL.
   hide_details <- tryCatch(
-    isTRUE(golem::get_golem_options("hide_error_details", default = TRUE)),
+    isTRUE(get_golem_config("security")$hide_error_details),
     error = function(e) TRUE # nolint: swallowed_error_linter
   )
 

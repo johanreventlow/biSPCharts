@@ -2,6 +2,19 @@
 
 ## Bug fixes
 
+* PDF/PNG-eksport tolererer nu manglende x-kolonne-mapping paa samme
+  maade som analyse-pathen. Tidligere returnerede `build_export_plot()`
+  stille NULL hvis hverken `mappings$x_column` eller
+  `auto_detect$results$x_col` var sat — selv for datasaet hvor
+  analyse-fanen rendrede chart fint via fallback til syntetisk
+  `spc_row_index` (R/fct_spc_plot_generation.R:115-126). Resultatet for
+  brugeren: ingen preview blev vist, og download fejlede med "Ingen
+  plot tilgaengeligt til eksport". Triggeres typisk af indsat data med
+  tom kolonne-header (renamed til `...2`) eller ren tekst-x-kolonne der
+  ikke auto-detekteres. Fix: kun `y_col` er hard-requirement i
+  export-pathen; x_col=NULL propageres til `generateSPCPlot()` som har
+  egen fallback.
+
 * Eliminer root-cause for cycle 11 COLLAPSE_ERROR i
   `call_bfh_chart()`-logging: brug `bfh_params_clean[["n"]]` i stedet
   for `$n`. R's `$`-operator udfører partial-matching og returnerede

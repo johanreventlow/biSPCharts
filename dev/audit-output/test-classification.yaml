@@ -337,6 +337,14 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-export-null-x-fallback.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-18'
+  rationale: Regression-test for build_export_plot NULL x_column fallback (PR #779) — tilfoejet manuelt.
 - file: test-export-preview-redundans-elimination.R
   audit_category: post-audit
   type: unit

@@ -89,6 +89,14 @@
   vedhæftning af datasæt (Excel-eksport), graf og/eller skærmbillede
   (#747).
 
+## Dependencies
+
+* Bump `BFHcharts` til `>= 0.20.0`: struktureret SPC-analyse via
+  `bfh_analyse()` + `bfh_render_analysis()` (ADR-003). Bagudkompatibel
+  via `bfh_generate_analysis()`-delegation. Se BFHcharts NEWS 0.20.0
+  for 7 nye fortolknings-akser (magnitude, direction, baseline-delta,
+  variable CL, few-obs, CL-disclosure, discrete-scale).
+
 # biSPCharts 0.4.2
 
 ## Interne ændringer

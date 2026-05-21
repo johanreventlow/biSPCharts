@@ -1627,3 +1627,11 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-16'
   rationale: Smoke-tests for "Rapportér fejl"-modul (#747). 24 tests dækker build_bug_report_mailto() URL-encoding (subject, body, danske tegn æøå -> %C3%A6, linjeskift -> %0A), input-validering (NA/tom/multi-element afvises), SUPPORT_EMAIL_BODY-skabelon-indhold, og mod_report_bug_ui() HTML-rendering (mailto-link, modtager, tilbage-link, bug-ikon).
+- file: test-process-chart-title-markdown.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-21'
+  rationale: Regression-test for markdown-asterisks i SPC chart-titel. Sprint 3 XSS-hardening (631e4cd8, 2025-09-30) overrode default allowed_chars i process_chart_title() og droppede `*`, hvilket strippede `**fed**` foer marquee::element_marquee i BFHtheme kunne rendere markdown. Verificerer at asterisks bevares OG at script-tags stadig strippes.

@@ -281,11 +281,14 @@ process_chart_title <- function(chart_title_reactive, config) {
     paste("SPC Diagram -", config$y_col)
   }
 
-  # Sanitize titel mod XSS
+  # Sanitize titel mod XSS.
+  # Tilladte tegn inkluderer `*` saa marquee-parseren (BFHtheme plot.title)
+  # kan rendere markdown-bold (`**fed**`) og kursiv. html_escape neutraliserer
+  # fortsat HTML-tags; marquee parser markdown ej HTML.
   title_result <- sanitize_user_input(
     input_value = title_result,
     max_length = 200,
-    allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?/",
+    allowed_chars = "A-Za-z0-9_\u00e6\u00f8\u00e5\u00c6\u00d8\u00c5 .,-:!?/*",
     html_escape = TRUE
   )
 

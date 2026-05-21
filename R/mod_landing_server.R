@@ -62,14 +62,12 @@ mod_landing_server <- function(id, parent_session = NULL, app_state = NULL) {
       }
     )
 
-    # Discoveryability-links: navigér til hjælpefanerne uden at aktivere wizard-nav
+    # Discoveryability-link "Sådan bruger du appen": vis app-guide som modal-overlay
+    # (lightbox-style). Bruger lukker via Esc, X-knap eller klik udenfor (easyClose).
     shiny::observeEvent(input$goto_app_guide,
       priority = OBSERVER_PRIORITIES$STATUS_UPDATES,
       {
-        if (!is.null(parent_session)) {
-          shinyjs::runjs("document.body.classList.add('wizard-nav-active');")
-          bslib::nav_select("main_navbar", selected = "app_guide", session = parent_session)
-        }
+        show_app_guide_modal(session = parent_session)
       }
     )
 

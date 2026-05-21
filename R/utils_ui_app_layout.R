@@ -279,6 +279,266 @@ create_ui_header <- function() {
       z-index: 10;
     }
 
+    /* App-guide modal (lightbox-overlay med carousel) */
+    .app-guide-modal .modal-dialog {
+      max-width: 1140px;
+      width: 1140px;
+      margin: 40px auto;
+    }
+    .app-guide-modal .modal-content {
+      border-radius: 0;
+      border: 1px solid #b8b8b8;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+      background: white;
+      padding: 0;
+    }
+    .app-guide-inner {
+      position: relative;
+      height: 680px;
+      overflow: hidden;
+    }
+    .app-guide-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid #d6d6d6;
+      color: #565656;
+      font-size: 18px;
+      line-height: 26px;
+      text-align: center;
+      cursor: pointer;
+      z-index: 10;
+      padding: 0;
+    }
+    .app-guide-close:hover {
+      background: white;
+      color: #333333;
+    }
+    .app-guide-carousel {
+      height: 680px;
+    }
+    .app-guide-carousel .carousel-inner {
+      height: 620px;
+      background: white;
+    }
+    .app-guide-slide {
+      height: 620px;
+    }
+    /* Bootstrap 5 toggler display: block paa .active + transition-states.
+       Override til flex for at bevare 2-kolonne-layout, men kun paa synlige
+       items — ellers bleed-through fordi display: flex hijacker
+       Bootstrap's display: none paa inactive items. */
+    .app-guide-slide.active,
+    .app-guide-slide.carousel-item-next,
+    .app-guide-slide.carousel-item-prev {
+      display: flex;
+    }
+    .app-guide-media {
+      flex: 0 0 60%;
+      border-right: 1px solid #ebebeb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .app-guide-media--image {
+      background: linear-gradient(135deg, #ccebfa 0%, #e8f4f8 100%);
+      padding: 12px;
+    }
+    .app-guide-media--image img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border: 1px solid #d6d6d6;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    .app-guide-media--decor {
+      display: flex;
+      background: linear-gradient(135deg, #007dbb 0%, #00293d 100%);
+      color: rgba(255, 255, 255, 0.95);
+      padding: 50px 40px;
+      position: relative;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .app-guide-media--decor::before {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .app-guide-media--decor::after {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .app-guide-decor-num {
+      font-size: 96px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    .app-guide-decor-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      position: relative;
+      z-index: 1;
+    }
+    .app-guide-content {
+      flex: 1;
+      padding: 28px 28px;
+      text-align: left;
+      color: #333333;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .app-guide-step {
+      display: inline-block;
+      padding: 4px 11px;
+      background: rgba(0, 125, 187, 0.12);
+      color: #007dbb;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+    .app-guide-title {
+      font-size: 26px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: #1a2a30;
+      line-height: 1.2;
+    }
+    .app-guide-body {
+      font-size: 16px;
+      line-height: 1.55;
+      color: #4b5659;
+    }
+    .app-guide-body p { margin: 0 0 8px 0; }
+    .app-guide-body p:last-child { margin-bottom: 0; }
+    .app-guide-body strong { color: #1a2a30; }
+    .app-guide-body code {
+      background: rgba(0, 125, 187, 0.08);
+      color: #007dbb;
+      padding: 1px 5px;
+      border-radius: 0;
+      font-size: 0.9em;
+    }
+    .app-guide-body table {
+      width: 100%;
+      font-size: 14px;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+    .app-guide-body table th,
+    .app-guide-body table td {
+      border: 1px solid #d6d6d6;
+      padding: 5px 8px;
+      text-align: left;
+    }
+    .app-guide-body table th {
+      background: #ebebeb;
+      font-weight: 600;
+    }
+    .app-guide-body dl {
+      margin: 0 0 0.5rem 0;
+    }
+    .app-guide-body dt {
+      font-weight: 600;
+      color: #1a2a30;
+      margin-top: 0.4rem;
+      font-size: 16px;
+    }
+    .app-guide-body dt:first-child { margin-top: 0; }
+    .app-guide-body dd {
+      margin: 0 0 0.4rem 1rem;
+      color: #4b5659;
+      font-size: 16px;
+    }
+    .app-guide-body .alert {
+      font-size: 15px;
+      padding: 8px 12px;
+      margin-top: 10px;
+      border-radius: 0;
+    }
+    .app-guide-indicators {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 14px 0;
+      background: white;
+      border-top: 1px solid #ebebeb;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+    .app-guide-indicators [data-bs-target] {
+      width: 8px;
+      height: 8px;
+      border-radius: 0;
+      border: 0;
+      background-color: rgba(0, 37, 85, 0.22);
+      transition: width 0.2s ease, background-color 0.2s ease;
+      padding: 0;
+    }
+    .app-guide-indicators .active {
+      background-color: #007dbb;
+      width: 22px;
+    }
+    .app-guide-control {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 38px;
+      height: 38px;
+      background: rgba(0, 37, 85, 0.7);
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      opacity: 0.85;
+    }
+    .app-guide-control:hover { opacity: 1; }
+    .app-guide-control--prev { left: 14px; }
+    .app-guide-control--next { right: 14px; }
+
+    /* Navbar-link «Sådan bruger du appen»: skjult før wizard-nav-active */
+    .navbar .nav-item:has(.nav-link[data-value='app_guide_trigger']) {
+      display: none !important;
+    }
+    body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='app_guide_trigger']) {
+      display: flex !important;
+      align-items: center;
+    }
+
         ")))
     ),
     # Tooltips paa Skift/Frys tabel-headere (excelR renderer dynamisk)

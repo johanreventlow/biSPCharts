@@ -84,3 +84,6 @@ dev/audit-output/*.rds
 !dev/audit-output/test-audit.json
 # Undtagelse: skip-inventory.json er baseline for CI delta-comparison
 !dev/audit-output/skip-inventory.json
+
+# Tooling-state (Antigravity CLI lokal state)
+.antigravitycli/

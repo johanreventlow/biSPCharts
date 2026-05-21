@@ -169,6 +169,39 @@ test_that("local-storage.js loadAppState still parses JSON once (static check)",
   )
 })
 
+test_that("metadata-only localStorage update rejects schema mismatch", {
+  js_file <- file.path("..", "..", "inst", "app", "www", "local-storage.js")
+  skip_if_not(file.exists(js_file), "local-storage.js not found")
+
+  js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
+
+  expect_true(
+    grepl("payload\\.version\\s*!==\\s*version", js_text),
+    info = "metadata-only update must not stamp current schema version onto stale stored data"
+  )
+  expect_true(
+    grepl("schema version mismatch", js_text, fixed = TRUE),
+    info = "schema mismatch should be visible in browser diagnostics"
+  )
+})
+
+test_that("metadata-only Shiny handler avoids debug console logging", {
+  js_file <- file.path("..", "..", "inst", "app", "www", "shiny-handlers.js")
+  skip_if_not(file.exists(js_file), "shiny-handlers.js not found")
+
+  js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
+  metadata_handler <- regmatches(
+    js_text,
+    regexpr("Shiny\\.addCustomMessageHandler\\('updateAppStateMetadata'[\\s\\S]+?\\n\\}\\);", js_text, perl = TRUE)
+  )
+
+  expect_length(metadata_handler, 1)
+  expect_false(
+    grepl("console\\.log", metadata_handler),
+    info = "metadata-only save handler should not emit production console.log noise"
+  )
+})
+
 # ==============================================================================
 # SECTION 2: autoSaveAppState scope bug (disable on failure)
 # ==============================================================================
@@ -687,6 +720,100 @@ test_that("settings_save diff-check: NULL forrige payload trigger altid save", {
     identical(last_payload, current_payload),
     info = "NULL last_payload må aldrig resultere i skip af første save"
   )
+})
+
+test_that("auto-save payload signature is stable for identical data and metadata", {
+  skip_if_not(
+    exists("auto_save_payload_sig", mode = "function"),
+    "auto_save_payload_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  sig_1 <- auto_save_payload_sig(test_data, metadata)
+  Sys.sleep(0.01)
+  sig_2 <- auto_save_payload_sig(test_data, metadata)
+
+  expect_identical(
+    sig_1,
+    sig_2,
+    info = "Uændret data+metadata skal give samme payload-signatur"
+  )
+})
+
+test_that("auto-save payload signature changes when metadata or data changes", {
+  skip_if_not(
+    exists("auto_save_payload_sig", mode = "function"),
+    "auto_save_payload_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  baseline <- auto_save_payload_sig(test_data, metadata)
+  changed_metadata <- auto_save_payload_sig(
+    test_data,
+    list(active_tab = "analyser", export_title = "Titel")
+  )
+  changed_data <- auto_save_payload_sig(
+    transform(test_data, x = c(1L, 2L, 99L)),
+    metadata
+  )
+
+  expect_false(
+    identical(baseline, changed_metadata),
+    info = "Metadata-only ændringer skal stadig gemmes"
+  )
+  expect_false(
+    identical(baseline, changed_data),
+    info = "Dataændringer skal stadig gemmes"
+  )
+})
+
+test_that("auto-save data signature is stable across metadata changes", {
+  skip_if_not(
+    exists("auto_save_data_sig", mode = "function"),
+    "auto_save_data_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+
+  expect_identical(
+    auto_save_data_sig(test_data),
+    auto_save_data_sig(test_data),
+    info = "Data-signaturen skal kun afspejle data, ikke metadata/tid"
+  )
+  expect_false(
+    identical(
+      auto_save_data_sig(test_data),
+      auto_save_data_sig(transform(test_data, x = c(1L, 2L, 99L)))
+    ),
+    info = "Data-signaturen skal ændre sig ved dataændring"
+  )
+})
+
+test_that("save_metadata_locally sends metadata-only update message", {
+  skip_if_not(
+    exists("save_metadata_locally", mode = "function"),
+    "save_metadata_locally not available"
+  )
+
+  mock <- create_mock_capture_session()
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  save_metadata_locally(mock$session, metadata)
+
+  expect_length(mock$captured$messages, 1)
+  msg <- mock$captured$messages[[1]]
+  expect_equal(msg$type, "updateAppStateMetadata")
+  expect_equal(msg$message$key, "current_session")
+  expect_true(is.character(msg$message$metadata))
+  expect_true("version" %in% names(msg$message))
+
+  parsed <- jsonlite::fromJSON(msg$message$metadata, simplifyVector = TRUE)
+  expect_equal(parsed$active_tab, "eksporter")
+  expect_equal(parsed$export_title, "Titel")
 })
 
 test_that("saveDataLocally payload uses current version tag", {

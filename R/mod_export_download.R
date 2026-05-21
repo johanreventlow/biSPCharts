@@ -33,9 +33,9 @@ register_export_downloads <- function(output, input, session, app_state) {
         department = input$export_department %||% ""
       )
 
-      log_info(
+      log_debug(
         .context = "EXPORT_MODULE",
-        message = "Download initiated",
+        message = "Download filename resolved",
         details = list(format = format, filename = filename)
       )
 
@@ -50,6 +50,12 @@ register_export_downloads <- function(output, input, session, app_state) {
       safe_operation(
         operation_name = paste("Export", toupper(format)),
         code = {
+          log_info(
+            .context = "EXPORT_MODULE",
+            message = "Download initiated",
+            details = list(format = format)
+          )
+
           if (format == "pdf") {
             generate_pdf_export(input, app_state, file)
           } else if (format == "png") {

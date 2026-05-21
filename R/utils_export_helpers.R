@@ -246,6 +246,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
         base_size = 14,
         viewport_width = final_width,
         viewport_height = final_height,
+        app_state = app_state,
         plot_context = plot_context
       )
       # PNG export: override DPI for correct dimension conversion (Issue #64)

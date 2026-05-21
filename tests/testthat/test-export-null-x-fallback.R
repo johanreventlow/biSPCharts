@@ -53,6 +53,7 @@ test_that("build_export_plot tolererer NULL x_column naar y er sat", {
   mockery::stub(build_export_plot, "generateSPCPlot", function(...) {
     args <- list(...)
     captured$config <- args$config
+    captured$app_state <- args$app_state
     list(
       plot = "sentinel-plot",
       bfh_qic_result = list(plot = "sentinel-plot")
@@ -74,6 +75,9 @@ test_that("build_export_plot tolererer NULL x_column naar y er sat", {
     info = "x_col propageres som NULL saa generateSPCPlot-fallback til spc_row_index aktiveres"
   )
   expect_equal(captured$config$y_col, "value")
+  expect_identical(captured$app_state, app_state,
+    info = "app_state skal sendes videre saa export-pathen kan bruge SPC-cache"
+  )
 })
 
 test_that("build_export_plot returnerer NULL ved manglende y_column", {

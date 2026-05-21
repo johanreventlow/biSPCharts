@@ -60,7 +60,11 @@ compute_at_target <- function(centerline, target_value, target_text = NULL) {
   }
 
   target_label <- trimws(target_text %||% "")
-  tolerance <- max(abs(target_value) * 0.05, 0.01)
+  # Relativ tolerance uden absolut floor. Floor pa 0.01 var meningslost for
+  # proportion-targets (target=0.01 gav tolerance=0.01 = 100% af target), saa
+  # enhver centerlinje inden for +/-100% blev klassificeret som at_target.
+  # Fix: ren 5%-relativ tolerance + lille epsilon-floor mod target=0-edge.
+  tolerance <- max(abs(target_value) * 0.05, 1e-9)
   close_enough <- abs(centerline - target_value) <= tolerance
 
   if (grepl("^\\s*(>|>=|\u2265|\u2191)", target_label)) {
@@ -155,9 +159,23 @@ build_export_analysis_metadata <- function(bfh_qic_result,
     !is.null(centerline_raw) &&
     !is.na(centerline_raw)
 
+  # Foretraek operator-string (fx "<=1%") fremfor numerisk vaerdi som
+  # metadata$target. BFHcharts' .resolve_analysis_target() bruger
+  # metadata$target FOER config$target_text, saa hvis vi sender numerisk
+  # taber vi operator-information og resolve_target() returnerer
+  # direction = NULL. Det fanger BFHcharts ikke som near_target-scenarie
+  # paa "forkert side af target inden for proces-stoej" og falder tilbage
+  # til vaerdi-neutral at_target-tekst ("ligger taet paa udviklingsmaalet")
+  # i stedet for "ligger lige over/under udviklingsmaalet".
+  metadata_target <- if (nzchar(normalized_target_text)) {
+    normalized_target_text
+  } else {
+    normalized_target_value
+  }
+
   list(
     data_definition = data_definition %||% "",
-    target = normalized_target_value,
+    target = metadata_target,
     target_display = format_analysis_context_value(normalized_target_value, y_axis_unit),
     chart_title = chart_title %||% "",
     department = normalized_department,

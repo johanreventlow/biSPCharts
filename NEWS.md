@@ -1,3 +1,139 @@
+# biSPCharts (development)
+
+## Bug fixes
+
+* Auto-save metadata-only path er gjort mere robust. Serveren markerer nu
+  foerst metadata-only saves som gemt efter JS-confirm (`mode='metadata'`),
+  full-save readiness-observeren koerer med hoej state-management priority,
+  og browserens `updateAppStateMetadata()` afviser payloads med forkert
+  schema-version i stedet for at opgradere gammel data ved kun at skrive
+  metadata. Samtidig fjernes debug-`console.log` fra den nye
+  metadata-only handler.
+
+* PDF/PNG-eksport sender nu `app_state` videre til `generateSPCPlot()`, saa
+  export-pathen bruger samme SPC-cache som analyse-rendering. Tidligere
+  rekomputerede eksport-preview og download BFHcharts-resultatet fra bunden,
+  selv naar samme `export_pdf` plot netop var genereret.
+
+* PDF-eksport sender ikke laengere `title` som BFHcharts-metadatafelt.
+  Titlen kommer fra `bfh_qic_result$config$chart_title`; det ekstra
+  metadatafelt gav advarslen "Unknown metadata fields will be ignored: title"
+  under download.
+
+* PDF/PNG-eksport tolererer nu manglende x-kolonne-mapping paa samme
+  maade som analyse-pathen. Tidligere returnerede `build_export_plot()`
+  stille NULL hvis hverken `mappings$x_column` eller
+  `auto_detect$results$x_col` var sat — selv for datasaet hvor
+  analyse-fanen rendrede chart fint via fallback til syntetisk
+  `spc_row_index` (R/fct_spc_plot_generation.R:115-126). Resultatet for
+  brugeren: ingen preview blev vist, og download fejlede med "Ingen
+  plot tilgaengeligt til eksport". Triggeres typisk af indsat data med
+  tom kolonne-header (renamed til `...2`) eller ren tekst-x-kolonne der
+  ikke auto-detekteres. Fix: kun `y_col` er hard-requirement i
+  export-pathen; x_col=NULL propageres til `generateSPCPlot()` som har
+  egen fallback.
+
+* Eliminer root-cause for cycle 11 COLLAPSE_ERROR i
+  `call_bfh_chart()`-logging: brug `bfh_params_clean[["n"]]` i stedet
+  for `$n`. R's `$`-operator udfører partial-matching og returnerede
+  `notes`-vektoren (length=nrow) når `n` ikke findes som key, hvilket
+  brød `class(data[[n_col_name]])`-lookup i log_debug-build. `[[`-form
+  er strict og returnerer NULL ved manglende key. Følger op på
+  defensiv `.safe_col_class()`-fix; eliminerer `<INVALID_COL_NAME:
+  length=N>`-støj i debug-output ved chart-typer der har notes-kolonne
+  men ingen denominator.
+* Defensiv kolonne-klasse-lookup i `call_bfh_chart()`-logging
+  forhindrer at log_debug-build kaster når `bfh_params$n` (eller
+  x/y) er malformed opstrøms (fx en row-vektor i stedet for et
+  length-1 symbol). Tidligere blev sådanne fejl fanget af
+  `.safe_collapse()` og rapporteret som
+  `<COLLAPSE_ERROR: Can't extract column with n_col_name. Subscript
+  n_col_name must be size 1, not 24.>` — hvilket maskerede den ægte
+  rendering-fejl bag en generisk wrap. Ny `.safe_col_class()`-helper
+  returnerer altid en streng (`<NULL>`, `<INVALID_COL_NAME: length=N>`,
+  `<MISSING_COL: ...>` eller `<CLASS_ERROR: ...>`), så root-cause
+  propagerer uden at brake logging-pipelinen. Observeret i cycle 11
+  post-merge session 2026-05-16.
+* PDF-analysetekst respekterer nu retning på operator-targets (fx
+  `<=1%`, `>=90%`) og arrow-only targets (`<`, `>`). Tidligere shadowede
+  `build_export_analysis_metadata()` BFHcharts' `config$target_text` ved
+  at sende numerisk `target_value` som `metadata$target`. BFHcharts'
+  `.resolve_analysis_target()` foretrækker metadata-feltet, så
+  operator-information forsvandt og analysen faldt til værdi-neutral
+  "ligger tæt på udviklingsmålet" — selvom CL lå på forkert side, eller
+  selvom brugeren slet ikke havde angivet en målværdi (arrow-only).
+  Fix: send `target_text`-strengen (når til stede) som `metadata$target`
+  så BFHcharts kan udlede direction og vælge `near_target.detailed`
+  ("ligger lige over/under udviklingsmålet") eller `stable_no_target`
+  ("Overvej, om et udviklingsmål kan fastsættes…") afhængigt af om
+  brugeren har givet en målværdi. Samtidig strammes
+  `compute_at_target()`-tolerancen fra `max(target*0.05, 0.01)` til ren
+  `target*0.05` (relativ 5%); det absolutte floor på 0.01 betød at
+  proportion-targets klassificerede 100%-relativ afvigelse som "tæt nok".
+* Cache-key for SPC-beregning resolver nu reactive `chart_title` til
+  string FØR hashing. Tidligere passerede analysis-tab en
+  `shiny::reactive`-function-objekt der hashede som reference uafhængigt
+  af closed-over state → analysis-tab kunne vise STALE chart-title fra
+  cache ved title-edit. Codex peer-review 2026-05-16 fandt bug via
+  empirisk repro af `digest::digest()` på function-objekter (#752).
+* PDF preview rendres nu ÉN gang ved navigation til eksport-tab med ny
+  data. Tidligere fyrede preview FØRST med tom analyse-tekst, dernæst
+  igen ~3 sek senere når auto-genereret analyse-tekst ankom via
+  klient-roundtrip. Fix: ny `compute_effective_analysis_text()`-helper
+  bruger `app_state$ui$last_auto_analysis` (server-state) som primær
+  kilde; falder kun tilbage til input ved bruger-edit. Skip
+  `updateTextAreaInput` hvis værdi identisk (#753).
+* Eliminer redundant 2. preview-render i første-tab-besøg via
+  `reactiveVal`-diff-check pattern. Post-cycle-11 verifikation viste
+  at #753 fix gjorde 1. render korrekt, men 2. render fyrede stadig
+  som no-op pga Shiny invaliderer downstream på dep-change uanset
+  value-equality. Cycle 12 wrapper i `reactiveVal` med diff-check —
+  Shiny 1.13.0 `reactiveVal$set()` skipper invalidation hvis
+  `identical(old, new)`. Observer kører ved
+  `OBSERVER_PRIORITIES$PLOT_GENERATION` (600) for at fyre EFTER
+  autogen men FØR outputs (Codex peer-review 2026-05-16 sen, #759).
+* Ret U-kort sample-data-label til "Medicineringsfejl pr. indlæggelse"
+  (var: "pr. 1000"). Codex peer-review fandt at appen ikke normaliserer
+  til pr. 1000 — pipeline beregner rate per nævner-enhed (8/310 =
+  0.0258), så "pr. 1000"-løftet var faktor 1000 misvisende. Label
+  matcher nu faktisk skalering (#762).
+
+## Nye features
+
+* Ny "Rapportér fejl"-side i navbaren (til højre for "Lær om SPC")
+  med en ikke-teknisk guide til hvordan brugere rapporterer fejl.
+  Siden indeholder en knap der åbner brugerens mail-klient med en
+  præfyldt skabelon mod Dataenhedens postkasse, og opfordrer til
+  vedhæftning af datasæt (Excel-eksport), graf og/eller skærmbillede
+  (#747).
+
+## Dependencies
+
+* Bump `BFHcharts` til `>= 0.20.0`: struktureret SPC-analyse via
+  `bfh_analyse()` + `bfh_render_analysis()` (ADR-003). Bagudkompatibel
+  via `bfh_generate_analysis()`-delegation. Se BFHcharts NEWS 0.20.0
+  for 7 nye fortolknings-akser (magnitude, direction, baseline-delta,
+  variable CL, few-obs, CL-disclosure, discrete-scale).
+
+# biSPCharts 0.4.2
+
+## Interne ændringer
+
+* Fjernet denominator pre-filter (`fct_spc_plot_generation.R:128-148`).
+  BFHcharts 0.19.0 håndterer nu `n = 0` native via qicharts2
+  NaN-passthrough (punkter med n=0 tegnes ej, centerline beregnes fra
+  valide rækker). Fjernet `dropped_denominator_rows`-metadata-tracking
+  og tilhørende `shiny::showNotification`-advarsel i
+  `mod_spc_chart_compute.R`.
+* Fjernet `validate_spc_request()` check #15 (y>n rejection for p/pp).
+  BFHcharts 0.19.0 tillader proportion > 1 som outlier-signal over ucl=1.
+  Inverteret tilhørende tests i `tests/testthat/test-spc-validate-p-chart.R`.
+* Slettet `tests/testthat/test-denominator-prefilter.R` (12 tests for
+  fjernet pre-filter).
+* Check #12 uændret: `n < 0` og `n = Inf` fejler stadig (matcher BFHcharts
+  0.19.0). Aggregate-guard "alle n=0/NA → fejl" beholdt som UI-værdi.
+* Bumpet BFHcharts lower-bound og Remotes-tag til `>= 0.19.0`.
+
 # biSPCharts 0.4.1
 
 ## Bug fixes

@@ -290,7 +290,15 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
   safe_operation(
     "Sync analytics data",
     code = {
-      github_sync_enabled <- isTRUE(golem::get_golem_options("analytics.github_sync_enabled"))
+      # NB: brug get_golem_config (YAML-config) frem for golem::get_golem_options
+      # (runtime-options). app.R kalder shiny::shinyApp direkte uden with_golem_options,
+      # saa get_golem_options returnerer NULL paa Connect Cloud.
+      github_sync_enabled <- isTRUE(
+        tryCatch(
+          get_golem_config("analytics")$github_sync_enabled,
+          error = function(e) FALSE
+        )
+      )
       if (github_sync_enabled &&
         nchar(safe_getenv("GITHUB_PAT")) > 0 &&
         nchar(safe_getenv("PIN_REPO_URL")) > 0) {
@@ -314,25 +322,49 @@ aggregate_and_pin_logs <- function(log_directory = "logs/",
         }
       } else if (requireNamespace("pins", quietly = TRUE) &&
         nchar(safe_getenv("CONNECT_SERVER")) > 0) {
-        board <- pins::board_connect()
-        safe_pin_data <- filter_shinylogs_allowlist(all_data)
-        pins::pin_write(board, safe_pin_data, config$pin_name,
-          type = "rds",
-          description = paste(
-            "biSPCharts analytics:",
-            nrow(all_data$sessions), "sessions,",
-            nrow(all_data$inputs), "inputs,",
-            nrow(all_data$outputs), "outputs,",
-            nrow(all_data$errors), "errors"
+        # Legacy fallback: pins::board_connect() til Posit Connect Server.
+        # Fejler typisk paa nyere Connect-instanser ("is.character(x) er ikke TRUE")
+        # pga. API-aendringer i pins/connectapi. Logges som warning i stedet for
+        # at lade error propagere ud af safe_operation-fallback.
+        pin_result <- tryCatch(
+          {
+            board <- pins::board_connect()
+            safe_pin_data <- filter_shinylogs_allowlist(all_data)
+            pins::pin_write(board, safe_pin_data, config$pin_name,
+              type = "rds",
+              description = paste(
+                "biSPCharts analytics:",
+                nrow(all_data$sessions), "sessions,",
+                nrow(all_data$inputs), "inputs,",
+                nrow(all_data$outputs), "outputs,",
+                nrow(all_data$errors), "errors"
+              )
+            )
+            list(ok = TRUE)
+          },
+          error = function(e) {
+            list(ok = FALSE, error = conditionMessage(e))
+          }
+        )
+        if (isTRUE(pin_result$ok)) {
+          log_info(
+            paste(
+              "Analytics pin opdateret (Connect Server):",
+              nrow(all_data$sessions), "sessions"
+            ),
+            .context = LOG_CONTEXTS$analytics$pins
           )
-        )
-        log_info(
-          paste(
-            "Analytics pin opdateret (Connect Server):",
-            nrow(all_data$sessions), "sessions"
-          ),
-          .context = LOG_CONTEXTS$analytics$pins
-        )
+        } else {
+          log_warn(
+            paste0(
+              "Legacy Connect Server pin-sync fejlede (",
+              pin_result$error,
+              "). Aktiver analytics.github_sync_enabled + GITHUB_PAT/PIN_REPO_URL ",
+              "for at bruge GitHub-backend."
+            ),
+            .context = LOG_CONTEXTS$analytics$pins
+          )
+        }
       } else {
         log_debug("Ingen analytics-backend konfigureret (GITHUB_PAT/PIN_REPO_URL eller CONNECT_SERVER)",
           .context = LOG_CONTEXTS$analytics$pins

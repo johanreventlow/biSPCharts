@@ -87,7 +87,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # Export plot reactive - regenerates plot with export-specific dimensions
     # Issue #61: Separate plot generation with context "export_preview" (800x450px)
     # Issue #62: Cache isolated from analysis context
-    # Issue #646: title/dept debounced paa input-niveau (1500ms) — png_width/
+    # Issue #646: title/dept debounced paa input-niveau (1500ms) -- png_width/
     # png_height passerer reactive uden delay for snappy spinner-respons.
     export_plot <- shiny::reactive({
       # TAB-GUARD (Issue #644): hejs guard fra renderPlot til selve reactive.
@@ -98,11 +98,16 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
 
       chart_type <- resolve_export_chart_type(app_state)
 
-      # Single req() call for all required dependencies
+      # Single req() call for all required dependencies.
+      # NB: x_column er IKKE i req() -- den maa vaere NULL (auto-detect kunne
+      # ikke gaette x, fx ved faa raekker eller tekst-x uden dato-format).
+      # build_export_plot tolererer NULL x og generateSPCPlot fallback'er til
+      # spc_row_index (samme som analyse-pathen). Tidligere blokerede req()
+      # paa NULL x_column og preview blev aldrig rendret -- selvom analyse-
+      # fanen viste fungerende chart. Se R/utils_export_helpers.R og NEWS.
       shiny::req(
         app_state,
         app_state$data$current_data,
-        app_state$columns$mappings$x_column,
         app_state$columns$mappings$y_column,
         chart_type,
         nzchar(trimws(chart_type))
@@ -153,10 +158,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # TAB-GUARD (Issue #644): kun beregn pdf_export_plot paa eksporter-tab.
       shiny::req(app_state$session$active_tab == "eksporter")
 
+      # NB: x_column ej i req() -- se kommentar i export_plot reactive ovenfor.
       shiny::req(
         app_state,
         app_state$data$current_data,
-        app_state$columns$mappings$x_column,
         app_state$columns$mappings$y_column
       )
 
@@ -175,7 +180,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     output$export_preview <- shiny::renderPlot(
       {
         # Guard: kun render paa eksporter-tab. suspendWhenHidden=TRUE (linje 224)
-        # hjælper, men bs4Dash-navbar registrerer ej output som hidden i Shiny core.
+        # hjaelper, men bs4Dash-navbar registrerer ej output som hidden i Shiny core.
         # Eksplicit req() via app_state$session$active_tab sikrer korrekt gating
         # og skaber reaktiv dependency saa render genoptages naar brugeren navigerer
         # til eksporter-tab (Issue #407).
@@ -316,7 +321,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # PDF preview reactive - generates PNG preview of Typst PDF layout
     # Only active when format is "pdf"
     # Debounced metadata-inputs til PDF preview (undgaar re-render per tastetryk)
-    # Issue #646: hejs debounce 1000 → 1500ms for at absorbere flere keystrokes
+    # Issue #646: hejs debounce 1000 -> 1500ms for at absorbere flere keystrokes
     # i lange tekst-felter. Behold separate reactives for at undgaa unoedig
     # kobling i pdf-preview-cascade.
     debounced_analysis <- shiny::debounce(
@@ -334,8 +339,50 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
     # NOTE: debounced_footnote er flyttet til top-of-server-scope (#EM1) saa
     # PNG-preview kan dele samme debouncer. Definition: se efter debounced_dept.
 
+    # ADR-004 exception: effective_analysis_val er session-scoped reactiveVal
+    # -- bevidst konstrueret udenfor app_state-hierarkiet fordi diff-check-
+    # idiom kraever Shiny 1.13.0 identical()-semantik paa reactiveVal$set()
+    # (skip-invalidation hvis old===new). app_state-fields er hierarkiske
+    # reactiveValues; identical-check sker kun mod containerens last-set,
+    # ej per-field. Cycle 12 H1, PR #759.
+    #
+    # reactiveVal-diff-check eliminerer redundant 2. preview-render i
+    # foerste-tab-besoeg. Mekanik:
+    #   - Observer laeser debounced_analysis() + last_auto_analysis
+    #   - Beregner effective text via compute_effective_analysis_text()
+    #   - Skipper reactiveVal-update hvis identical med eksisterende (Shiny
+    #     1.13.0 source: reactiveVal$set() returnerer FOER invalidation
+    #     hvis identical(old, new))
+    #   - pdf_preview_image laeser effective_analysis_val() -- invalideres
+    #     KUN ved reel value-change, ej ved no-op dep-invalidation
+    #
+    # PRIORITY ORDERING (Codex Shiny flush-simulation): Observer SKAL have
+    # eksplicit priority > 0 for at fyre FOER outputs (default priority 0).
+    # Priority PLOT_GENERATION (600) er mellem autogen (UI_SYNC=750) og
+    # default outputs -- garanterer:
+    #   - EFTER autogen-observer (sat last_auto_analysis)
+    #   - FOER output-rendering (sikrer effective_analysis_val populated)
+    # Uden eksplicit priority ville priority-0 race med outputs reproducere
+    # cycle 11 H1 i ny form (tom 1. render -> fuld 2. render).
+    effective_analysis_val <- shiny::reactiveVal(
+      shiny::isolate(app_state$ui$last_auto_analysis %||% "")
+    )
+    shiny::observe(
+      {
+        new_text <- compute_effective_analysis_text(
+          user_text = debounced_analysis(),
+          auto_text = app_state$ui$last_auto_analysis %||% ""
+        )
+        current <- shiny::isolate(effective_analysis_val())
+        if (!identical(new_text, current)) {
+          effective_analysis_val(new_text)
+        }
+      },
+      priority = OBSERVER_PRIORITIES$PLOT_GENERATION
+    )
+
     pdf_preview_image <- shiny::reactive({
-      # TAB-GUARD (Issue #644): Typst→PNG-render er dyr (~2s) og maa ej koere
+      # TAB-GUARD (Issue #644): Typst->PNG-render er dyr (~2s) og maa ej koere
       # mens brugeren er paa upload/analyser-tab. Tidligere lakage skyldtes at
       # output$pdf_preview kun tab-guardede output-niveauet, ikke reactive-bodyen.
       shiny::req(app_state$session$active_tab == "eksporter")
@@ -360,9 +407,18 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       # via dens egne reactive dependencies (debounced 1000ms).
       title_input <- shiny::isolate(input$export_title)
       dept_input <- shiny::isolate(input$export_department)
-      # Analyse, datadefinition og hospital er debounced reactives (1000ms)
-      # saa preview opdateres naar brugeren stopper med at skrive
-      analysis_input <- debounced_analysis()
+      # Cycle 12 H1 (2026-05-16 sen): Laes effective-analysis fra reactiveVal
+      # der kun invalideres ved reel value-change. Eliminerer redundant 2.
+      # render naar debounced_analysis ankommer fra klient-roundtrip med
+      # vaerdi der matcher allerede-vist auto_text.
+      #
+      # Historisk: Cycle 11 H1 (PR #753) introducerede
+      # compute_effective_analysis_text() inline-kald som fix paa "preview
+      # render med tom tekst foer autogen-text ankom". Det loeste 1. render
+      # men efterlod 2. render som no-op redundans. Cycle 12 wrapper i
+      # reactiveVal med diff-check eliminerer 2. render via Shiny's
+      # built-in identical-skip-invalidation-semantik.
+      analysis_input <- effective_analysis_val()
       data_def_input <- debounced_data_def()
       hospital_input <- debounced_hospital()
       footnote_input <- trimws(debounced_footnote())
@@ -444,7 +500,7 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         },
         error_type = "processing"
       )
-    }) |> shiny::debounce(millis = DEBOUNCE_DELAYS$metadata_input) # #646: 1500ms — Typst-render dyr, faerre cascades
+    }) |> shiny::debounce(millis = DEBOUNCE_DELAYS$metadata_input) # #646: 1500ms -- Typst-render dyr, faerre cascades
 
     # PDF preview renderImage - displays PNG preview of Typst PDF layout
     output$pdf_preview <- shiny::renderImage(

@@ -337,6 +337,30 @@ files:
   reviewed: yes
   reviewer: johanreventlow
   reviewed_date: '2026-04-17'
+- file: test-export-null-x-fallback.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-18'
+  rationale: Regression-test for build_export_plot NULL x_column fallback (PR #779) — tilfoejet manuelt.
+- file: test-export-preview-redundans-elimination.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Regression-test for cycle 12 H1 reactiveVal-diff-check + priority-ordering — tilfoejet manuelt.
+- file: test-export-effective-analysis.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Regression-test for cycle 11 H1 compute_effective_analysis_text helper — tilfoejet manuelt.
 - file: test-export-footnote.R
   audit_category: green
   type: unit
@@ -1081,6 +1105,14 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-04'
   rationale: Regression-test for #482 cache-key freeze/part/cl/notes — tilfoejet manuelt.
+- file: test-cache-key-reactive-title.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Regression-test for cycle 11 H2-NEW cache-key reactive title resolution — tilfoejet manuelt.
 - file: test-cache-key-target-text-chart-title.R
   audit_category: post-audit
   type: unit
@@ -1130,14 +1162,6 @@ files:
   reviewed_date: '2026-05-03'
   rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
 - file: test-data-signature-collision.R
-  audit_category: post-audit
-  type: unit
-  handling: keep
-  reviewed: yes
-  reviewer: johanreventlow
-  reviewed_date: '2026-05-03'
-  rationale: Tilfoejet manuelt — fil oprettet efter audit-baseline 2026-04-26.
-- file: test-denominator-prefilter.R
   audit_category: post-audit
   type: unit
   handling: keep
@@ -1600,3 +1624,19 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-12'
   rationale: Navigation guard modal (trin 2/3 destruktiv navigation). 37 unit-tests dækker tom session (direkte nav), modal vises ved data, annullér bevarer state, nulstil reset, download-flag, browser-unload, JS-relay, og input-validation (injection-attempt). Testet med shiny::testServer + shiny:::flushReact.
+- file: test-mod_report_bug.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-16'
+  rationale: Smoke-tests for "Rapportér fejl"-modul (#747). 24 tests dækker build_bug_report_mailto() URL-encoding (subject, body, danske tegn æøå -> %C3%A6, linjeskift -> %0A), input-validering (NA/tom/multi-element afvises), SUPPORT_EMAIL_BODY-skabelon-indhold, og mod_report_bug_ui() HTML-rendering (mailto-link, modtager, tilbage-link, bug-ikon).
+- file: test-process-chart-title-markdown.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-21'
+  rationale: Regression-test for markdown-asterisks i SPC chart-titel. Sprint 3 XSS-hardening (631e4cd8, 2025-09-30) overrode default allowed_chars i process_chart_title() og droppede `*`, hvilket strippede `**fed**` foer marquee::element_marquee i BFHtheme kunne rendere markdown. Verificerer at asterisks bevares OG at script-tags stadig strippes.

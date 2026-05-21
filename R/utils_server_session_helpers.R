@@ -28,8 +28,9 @@ session_timeout_message <- function() {
 #'
 #' @param session Shiny session-objekt (skal have \code{$close()}-metode)
 #' @param minutes Antal minutter til timeout (numerisk, positiv)
-#' @param .scheduler Funktion med signatur \code{function(callback, delay_secs)}.
-#'   Default: \code{later::later}. Override i tests for synkron eksekvering.
+#' @param .scheduler Funktion kaldt positionelt med \code{(callback_fn, delay_secs)}.
+#'   Default: \code{later::later} (signatur \code{(func, delay)}). Override i
+#'   tests med synkron stub. Arg-navne i stub er ligegyldige — kaldes positionelt.
 #' @return List med:
 #'   \describe{
 #'     \item{cancel}{Funktion der annullerer planlagt callback (no-op hvis allerede udlobet)}
@@ -47,8 +48,13 @@ setup_session_timeout <- function(session, minutes,
 
   schedule_disconnect <- function() {
     cancelled <<- FALSE
+    # NB: positionelt kald — later::later har signatur (func, delay).
+    # Tidligere brugte vi callback=/delay=-navne, hvilket virkede for
+    # test-fake-schedulers men kraschede later::later i production
+    # (ubrugt argument 'callback'). Aktiveret session timeout i prod
+    # via fix(config) commit 85950038 eksponerede bug.
     handle <<- .scheduler(
-      callback = function() {
+      function() {
         if (cancelled) {
           return(invisible(NULL))
         }
@@ -73,7 +79,7 @@ setup_session_timeout <- function(session, minutes,
           }
         )
       },
-      delay = delay_secs
+      delay_secs
     )
     invisible(NULL)
   }
@@ -110,8 +116,12 @@ activate_session_timeout_from_config <- function(input, session,
                                                  .scheduler = later::later) {
   # Hent timeout fra security-blok i golem-config (production: 60 min, dev: 480 min)
   # Kilde: inst/golem-config.yml -> <env>:security:session_timeout_minutes
+  # NB: get_golem_config (YAML) frem for golem::get_golem_options (runtime).
+  # app.R kalder shiny::shinyApp() direkte uden with_golem_options, saa
+  # get_golem_options returnerer NULL paa Connect Cloud — timeout blev
+  # silent deaktiveret. Se ADR-019 + commit 8ee8790f.
   timeout_minutes <- tryCatch(
-    golem::get_golem_options("security")$session_timeout_minutes,
+    get_golem_config("security")$session_timeout_minutes,
     error = function(e) {
       log_debug(
         paste("get_golem_config('security') fejlede:", conditionMessage(e)),
@@ -245,6 +255,49 @@ flush_session_save_on_exit <- function(session, input, app_state) {
 
 # Dependencies ----------------------------------------------------------------
 
+#' Build Stable Auto-Save Data Signature
+#'
+#' Computes a stable signature for the data payload that is persisted to
+#' localStorage.
+#'
+#' @param data data.frame or compatible object to persist.
+#'
+#' @return Character hash suitable for equality checks.
+#' @keywords internal
+auto_save_data_sig <- function(data) {
+  digest::digest(data, algo = "xxhash64", serialize = TRUE)
+}
+
+#' Build Stable Auto-Save Metadata Signature
+#'
+#' Computes a stable signature for persisted UI metadata.
+#'
+#' @param metadata Named list with persisted UI metadata.
+#'
+#' @return Character hash suitable for equality checks.
+#' @keywords internal
+auto_save_meta_sig <- function(metadata) {
+  digest::digest(metadata, algo = "xxhash64", serialize = TRUE)
+}
+
+#' Build Stable Auto-Save Payload Signature
+#'
+#' Computes a stable signature for the data + metadata payload that is persisted
+#' to localStorage. The volatile save timestamp is intentionally excluded; it is
+#' added inside `saveDataLocally()` and must not make unchanged payloads look new.
+#'
+#' @param data data.frame or compatible object to persist.
+#' @param metadata Named list with persisted UI metadata.
+#'
+#' @return Character hash suitable for equality checks.
+#' @keywords internal
+auto_save_payload_sig <- function(data, metadata) {
+  digest::digest(list(
+    data_hash = auto_save_data_sig(data),
+    metadata_hash = auto_save_meta_sig(metadata)
+  ), algo = "xxhash64", serialize = TRUE)
+}
+
 ## Hovedfunktion for hjaelper
 # Opsaetter alle hjaelper observers og status funktioner
 setup_helper_observers <- function(input, output, session, obs_manager = NULL, app_state = NULL) {
@@ -309,16 +362,94 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     millis = get_save_interval_ms()
   )
 
+  # Shared gate for all auto-save paths in this session. Full saves send data +
+  # metadata. Metadata-only saves update the browser's existing localStorage
+  # payload in place, preserving the restore schema while avoiding data resend.
+  last_data_sig <- NULL
+  last_save_sig <- NULL
+  pending_metadata_sig <- NULL
+  full_save_sent <- FALSE
+  full_save_ready <- FALSE
+  obs_full_save_ready <- shiny::observeEvent(input$local_storage_save_result,
+    {
+      result <- input$local_storage_save_result
+      if (is.null(result) || !identical(result$key, "current_session")) {
+        return(invisible(NULL))
+      }
+
+      mode <- result$mode %||% "full"
+      if (identical(mode, "full")) {
+        full_save_ready <<- isTRUE(result$success)
+      } else if (identical(mode, "metadata")) {
+        if (isTRUE(result$success) && !is.null(pending_metadata_sig)) {
+          last_save_sig <<- pending_metadata_sig
+        } else if (!isTRUE(result$success)) {
+          full_save_ready <<- FALSE
+          full_save_sent <<- FALSE
+        }
+        pending_metadata_sig <<- NULL
+      }
+    },
+    ignoreNULL = TRUE,
+    priority = OBSERVER_PRIORITIES$HIGH
+  )
+  if (!is.null(obs_manager)) {
+    obs_manager$add(obs_full_save_ready, "auto_save_full_ready")
+  }
+
+  save_if_payload_changed <- function(save_data, source) {
+    if (!is_persistence_allowed(session$input)) {
+      autoSaveAppState(session, save_data$data, save_data$metadata,
+        app_state = app_state
+      )
+      return(invisible(FALSE))
+    }
+
+    current_signature <- auto_save_payload_sig(
+      save_data$data,
+      save_data$metadata
+    )
+    current_data_sig <- auto_save_data_sig(save_data$data)
+    if (identical(last_save_sig, current_signature)) {
+      log_debug(
+        sprintf("%s sprunget over: data+metadata uaendret", source),
+        .context = "AUTO_SAVE"
+      )
+      return(invisible(FALSE))
+    }
+
+    data_changed <- !identical(last_data_sig, current_data_sig)
+    if (isTRUE(full_save_sent) && isTRUE(full_save_ready) && !data_changed) {
+      if (identical(pending_metadata_sig, current_signature)) {
+        return(invisible(FALSE))
+      }
+      result <- save_metadata_locally(session, save_data$metadata)
+      if (!identical(result, FALSE)) {
+        pending_metadata_sig <<- current_signature
+      }
+      return(invisible(TRUE))
+    }
+
+    # NB: last_save_time opdateres af local_storage_save_result observer
+    # naar JS-siden bekraefter success -- ikke her.
+    result <- autoSaveAppState(session, save_data$data, save_data$metadata,
+      app_state = app_state
+    )
+    if (!identical(result, FALSE)) {
+      last_data_sig <<- current_data_sig
+      last_save_sig <<- current_signature
+      pending_metadata_sig <<- NULL
+      full_save_sent <<- TRUE
+    }
+    invisible(TRUE)
+  }
+
   if (auto_save_feature_enabled) {
     obs_data_save <- shiny::observe({
       save_data <- auto_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
 
-      # NB: last_save_time opdateres af local_storage_save_result observer
-      # naar JS-siden bekraefter success -- ikke her.
-      autoSaveAppState(session, save_data$data, save_data$metadata,
-        app_state = app_state
-      )
+      save_if_payload_changed(save_data, "data_auto_save")
     })
 
     # Register observer with manager
@@ -432,13 +563,6 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     millis = get_settings_save_interval_ms() # Faster debounce for settings
   )
 
-  # Diff-check: undgaar duplicate localStorage-writes naar payload er identisk.
-  # Eksempel: tab-revisit uden aendringer fyrer settings_save_trigger to gange
-  # med identisk metadata. last_settings_payload fanges i closure (per session).
-  # NB: sammenligner kun metadata, IKKE data + timestamp — timestamp aendres
-  # hver gang og ville goere diff-checket virkningslost.
-  last_settings_payload <- NULL
-
   obs_settings_save <- if (auto_save_feature_enabled) {
     # Ingen bindEvent her: settings_save_trigger har nu selv eksplicitte
     # input-deps, saa den fyrer via sin egen debounce naar inputs aendres.
@@ -455,25 +579,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       save_data <- settings_save_trigger()
       shiny::req(save_data) # Only proceed if we have valid save data
 
-      # Diff-check: spring over hvis metadata er identisk med sidst gemte.
-      # Fanger duplikater ved tab-revisit, identisk input-reaafiring o.l.
-      # NB: de to events i #396-loggen (NULL → genereret tekst) har FORSKELLIG
-      # metadata og passerer begge igennem — det er intentionelt korrekt adfaerd.
-      current_payload <- jsonlite::toJSON(save_data$metadata, auto_unbox = TRUE)
-      if (identical(last_settings_payload, current_payload)) {
-        log_debug(
-          "settings_save sprunget over: payload uaendret",
-          .context = "AUTO_SAVE"
-        )
-        return(invisible(NULL))
-      }
-      last_settings_payload <<- current_payload
-
-      # NB: last_save_time opdateres af local_storage_save_result observer
-      # naar JS-siden bekraefter success -- ikke her.
-      autoSaveAppState(session, save_data$data, save_data$metadata,
-        app_state = app_state
-      )
+      save_if_payload_changed(save_data, "settings_save")
     })
   } else {
     NULL

@@ -202,24 +202,6 @@ validate_spc_request <- function(
     )
   }
 
-  # 15. P/P'-kort: taeller <= naevner (proportion kan ikke overstige 1)
-  if (!is.null(n_var) && n_var %in% names(data) && ct_normalized %in% c("p", "pp")) {
-    y_num <- parse_danish_number(data[[y_var]])
-    n_vals2 <- parse_danish_number(data[[n_var]])
-    invalid_prop <- !is.na(y_num) & !is.na(n_vals2) & y_num > n_vals2
-    if (any(invalid_prop)) {
-      first_invalid <- which(invalid_prop)[1]
-      spc_abort(
-        paste0(
-          "T\u00e6ller-kolonne '", y_var, "' overstiger n\u00e6vner-kolonne '", n_var, "' ",
-          "i r\u00e6kke ", first_invalid, " (", y_num[first_invalid], " > ", n_vals2[first_invalid], "). ",
-          "P-kort kr\u00e6ver at t\u00e6ller \u2264 n\u00e6vner (proportioner kan ikke overskride 100%)."
-        ),
-        class = "spc_input_error"
-      )
-    }
-  }
-
   new_spc_request(
     data = data,
     x_var = x_var,

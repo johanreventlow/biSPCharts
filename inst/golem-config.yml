@@ -93,12 +93,17 @@ default:
     github_sync_enabled: false    # Opt-in: kræver eksplicit konfiguration
 
   # AI-powered improvement suggestions
+  # NB (2026-05-17): AI-feature GLOBALT disabled (default+dev+prod+test).
+  # AI-feature er bevidst hidden foreloebig — re-enable kraever:
+  #   1. Fix data_consent='explicit' i mod_export_ai.R + utils_async_helpers.R
+  #      (cycle G H0 + H3 - se docs/reviews/04-ai-rag.md)
+  #   2. Implementer shared preflight guard (PHI-check + truncate)
+  #   3. Skift enabled: true her + i development-profile
   # NB (Cycle A 2026-05-09): model-felt droppet — biSPCharts foelger BFHllm's
-  # default-model (Gemini 3.1 Flash-Lite). Hvis BFHllm bumper sin default,
-  # foelger biSPCharts automatisk med uden config-update. Override-mulighed
-  # bevares: tilfoej `model: "..."` for at pinne specifik model.
+  # default-model (Gemini 3.1 Flash-Lite). Override-mulighed bevares: tilfoej
+  # `model: "..."` for at pinne specifik model.
   ai:
-    enabled: true
+    enabled: false                  # GLOBAL kill-switch (fail-closed)
     provider: "gemini"
     timeout_seconds: 10
     max_response_chars: 350
@@ -109,9 +114,9 @@ default:
     rate_limit:
       max_requests_per_minute: 20
     rag:
-      enabled: true
-      n_results: 3              # Number of knowledge chunks to retrieve
-      method: "hybrid"          # Search method: "hybrid", "vector", "keyword"
+      enabled: false              # RAG uden AI er meningsloest
+      n_results: 3                # Number of knowledge chunks to retrieve
+      method: "hybrid"            # Search method: "hybrid", "vector", "keyword"
 
 
 # DEVELOPMENT CONFIGURATION ==================================================
@@ -197,13 +202,13 @@ development:
     github_sync_enabled: false    # Off — undgå utilsigtet upload under dev
 
   # AI configuration (development overrides)
+  # NB (2026-05-17): AI globalt disabled — dev override matcher default.
+  # Lokal AI-test kraever midlertidig flip til enabled=true (se default-blok-kommentar).
   ai:
-    enabled: true                   # Enable AI in development
+    enabled: false                  # Match default (global kill-switch)
     timeout_seconds: 15            # Longer timeout for debugging
     rag:
-      enabled: true                 # Enable RAG for development testing
-      n_results: 3                  # Standard retrieval count
-      method: "hybrid"              # Hybrid search (vector + keyword)
+      enabled: false                # Match default
 
 # PRODUCTION CONFIGURATION ===================================================
 # Optimized for security, stability and performance
@@ -277,23 +282,24 @@ production:
     localstorage_ttl_minutes: 480     # TTL for localStorage (8 timer = klinisk arbejdsdag)
 
   # Analytics (aktiv i production)
+  # NB (2026-05-18): github_sync_enabled flippet til true. Kraever
+  # GITHUB_PAT + PIN_REPO_URL env vars paa Connect-instans (fine-grained
+  # PAT med contents:write paa bispcharts-analytics-data repo). Legacy
+  # pins::board_connect-fallback fejler paa nyere Posit Connect/Cloud
+  # ('is.character(x) er ikke TRUE') saa GitHub-pathen er nu eneste
+  # supported analytics-backend i production.
   analytics:
     enabled: true
-    shinylogs_enabled: false      # Opt-in: sæt til true i deployment-config
-    github_sync_enabled: false    # Opt-in: kræver eksplicit konfiguration
+    shinylogs_enabled: true       # Production-default: log brugs-events
+    github_sync_enabled: true     # Production-default: sync til GitHub data-repo
 
-  # AI configuration (production settings)
-  # Cycle G H_NEW (2026-05-09): AI-feature er BEVIDST disabled i production
-  # foreloebig. For meget i begyndelsen at give brugere adgang. Re-enable
-  # kraever:
-  #   1. Fix data_consent='explicit' i mod_export_ai.R + utils_async_helpers.R
-  #      (cycle G H0 + H3 - se docs/reviews/04-ai-rag.md)
-  #   2. Implementer shared preflight guard (PHI-check + truncate)
-  #   3. Skift enabled: true her
+  # AI configuration (production)
+  # NB (2026-05-17): AI globalt disabled — production override matcher default.
+  # Re-enable-kriterier dokumenteret i default-blok-kommentar ovenfor.
   ai:
-    enabled: false                  # DISABLED: see Cycle G H_NEW comment above
+    enabled: false                  # Match default (eksplicit kill-switch)
     rag:
-      enabled: false                # DISABLED with AI (RAG kun nyttig naar AI aktiv)
+      enabled: false                # Match default
       n_results: 3                  # Balance between context and performance
       method: "hybrid"              # Optimal search accuracy
 

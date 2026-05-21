@@ -6,6 +6,45 @@
 # Extracted from: utils_server_event_listeners.R (Phase 2d refactoring)
 # ==============================================================================
 
+# Wizard step-besked-helpers indkapsler JS custom-message-strenge.
+# Stavefejl i magic-string ville producere silent JS-fejl; helpers giver
+# autocomplete + enkelt soegemaal hvis message-strenge skal aendres.
+
+#' Wizard step-besked-helpers
+#'
+#' Send JS custom-message til klient for at lock/unlock/complete/uncomplete
+#' et wizard-trin. Strengene matcher handlers i `inst/app/www/wizard-nav.js`.
+#'
+#' @param session Shiny session
+#' @param step Integer wizard-trin (1-3)
+#' @keywords internal
+#' @name wizard_step_messages
+NULL
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_lock_step <- function(session, step) {
+  session$sendCustomMessage("wizard-lock-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_unlock_step <- function(session, step) {
+  session$sendCustomMessage("wizard-unlock-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_complete_step <- function(session, step) {
+  session$sendCustomMessage("wizard-complete-step", step)
+}
+
+#' @rdname wizard_step_messages
+#' @keywords internal
+wizard_uncomplete_step <- function(session, step) {
+  session$sendCustomMessage("wizard-uncomplete-step", step)
+}
+
 #' Setup wizard navigation gates
 #'
 #' Locks/unlocks navbar wizard steps based on app state.
@@ -20,8 +59,8 @@
 #' @keywords internal
 setup_wizard_gates <- function(input, output, app_state, session, emit) {
   # Lock trin 2+3 ved startup
-  session$sendCustomMessage("wizard-lock-step", 2)
-  session$sendCustomMessage("wizard-lock-step", 3)
+  wizard_lock_step(session, 2)
+  wizard_lock_step(session, 3)
 
   # Gate: Data loaded -> unlock trin 2, auto-naviger
   shiny::observeEvent(app_state$events$data_updated,
@@ -31,7 +70,7 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
       # Skip hele body under nav-guard confirm-flow: handle_nav_guard_confirm
       # styrer selv wizard-step-messages + nav_select, og denne observer ville
       # ellers nav_select("analyser") og overskrive target.
-      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+      if (get_guard_active(app_state)) {
         log_info(
           "wizard_gates: skipper data_updated handler (guard_active = TRUE)",
           .context = "NAV_GUARD"
@@ -43,13 +82,12 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
       # trin 2 paa fresh blank session.
       has_data <- has_real_data(app_state)
       if (has_data) {
-        session$sendCustomMessage("wizard-complete-step", 1)
-        session$sendCustomMessage("wizard-unlock-step", 2)
+        wizard_complete_step(session, 1)
+        wizard_unlock_step(session, 2)
         # Skip auto-navigation under session restore: restore-observer har
         # allerede valgt korrekt tab (saved_tab), og vi maa ikke overskrive
         # brugerens gemte valg med default "analyser". Issue #193.
-        restoring <- isTRUE(shiny::isolate(app_state$session$restoring_session))
-        if (!restoring) {
+        if (!is_restoring_session(app_state)) {
           bslib::nav_select(
             "main_navbar",
             selected = "analyser",
@@ -62,8 +100,8 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
           )
         }
       } else {
-        session$sendCustomMessage("wizard-lock-step", 2)
-        session$sendCustomMessage("wizard-lock-step", 3)
+        wizard_lock_step(session, 2)
+        wizard_lock_step(session, 3)
         bslib::nav_select(
           "main_navbar",
           selected = "upload",
@@ -79,14 +117,14 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
   shiny::observe(priority = OBSERVER_PRIORITIES$UI_SYNC, {
     plot_ready <- app_state$visualization$plot_ready
     if (isTRUE(plot_ready)) {
-      session$sendCustomMessage("wizard-complete-step", 2)
-      session$sendCustomMessage("wizard-unlock-step", 3)
+      wizard_complete_step(session, 2)
+      wizard_unlock_step(session, 3)
       shinyjs::enable("continue_to_export")
     } else {
       # Kun send lock-beskeder naar plot_ready eksplicit er FALSE (ej NULL ved init)
       req(!is.null(plot_ready))
-      session$sendCustomMessage("wizard-uncomplete-step", 2)
-      session$sendCustomMessage("wizard-lock-step", 3)
+      wizard_uncomplete_step(session, 2)
+      wizard_lock_step(session, 3)
       shinyjs::disable("continue_to_export")
     }
   })
@@ -107,92 +145,19 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
     }
   })
 
-  # Gem til fil: download handler (delt logik mellem trin 2 og trin 3)
-  spc_save_filename <- function() {
-    md <- collect_metadata(input, app_state)
-    title <- md$indicator_title
-    if (is.null(title) || !nzchar(trimws(title))) {
-      return("data_biSPCharts.xlsx")
-    }
-    safe_title <- sanitize_filename(trimws(title))
-    if (nchar(safe_title) == 0) {
-      return("data_biSPCharts.xlsx")
-    }
-    safe_title <- stringr::str_trunc(safe_title, 50, ellipsis = "")
-    paste0(safe_title, "_biSPCharts.xlsx")
+  # Gem til fil: download handler (delt logik mellem trin 2 og trin 3).
+  # Helper-funktioner findes i utils_server_spc_save.R og deles med
+  # navigation-guard-modal saa begge call-sites producerer identisk
+  # 3-ark Excel-fil plus samme titel-baserede filnavn.
+  spc_save_filename_handler <- function() {
+    spc_save_filename(app_state, input)
   }
 
-  spc_save_content <- function(file) {
+  spc_save_content_handler <- function(file) {
     safe_operation(
       "Gem til fil",
       code = {
-        data <- shiny::isolate(app_state$data$current_data)
-        metadata <- collect_metadata(input, app_state)
-
-        # Hent qic_data fra senest beregnede SPC-resultat. build_export_plot()
-        # genererer plot + qic_data via samme pipeline som UI-grafen.
-        # Hvis kaldet fejler eller returnerer NULL, springes SPC-analyse-arket
-        # over (build_spc_excel() haandterer NULL graciously).
-        qic_data <- NULL
-
-        # Cycle C H1 (Codex 2026-05-10): ekstraher freeze_position fra data
-        # + metadata$frys_column saa SPC-analyse-arket Sektion A 'Frozen til
-        # raekke' populeres per spec. extract_freeze_position returnerer NULL
-        # hvis ingen frys_column eller ingen markeringer findes — gracefully
-        # haandteret af build_spc_analysis_sheet.
-        # NB: phase_names er IKKE sat (Codex anbefaling): qic_data$part er
-        # auto-genereret integer-IDs, ej user-labels. Implementer kun naar
-        # eksplicit label-source-kontrakt eksisterer.
-        freeze_position <- tryCatch(
-          extract_freeze_position(data, metadata$frys_column),
-          error = function(e) NULL # nolint: swallowed_error_linter
-        )
-
-        analysis_options <- list(
-          pkg_versions = list(
-            biSPCharts = tryCatch(as.character(utils::packageVersion("biSPCharts")),
-              error = function(e) ""
-            ),
-            BFHcharts = tryCatch(as.character(utils::packageVersion("BFHcharts")),
-              error = function(e) ""
-            )
-          ),
-          computed_at = Sys.time(),
-          freeze_position = freeze_position
-        )
-        spc_for_export <- tryCatch(
-          build_export_plot(
-            app_state = app_state,
-            title_input = metadata$indicator_title %||% "",
-            dept_input = metadata$export_department %||% "",
-            plot_context = "export_pdf"
-          ),
-          error = function(e) {
-            log_warn(
-              .context = "EXCEL_EXPORT",
-              message = paste(
-                "build_export_plot fejlede ved Excel-download;",
-                "SPC-analyse-ark springes over:", conditionMessage(e)
-              )
-            )
-            NULL
-          }
-        )
-        has_qic <- !is.null(spc_for_export) && is.list(spc_for_export) &&
-          !is.null(spc_for_export$qic_data)
-        if (has_qic) {
-          qic_data <- spc_for_export$qic_data
-        }
-
-        temp_path <- build_spc_excel(
-          data = data,
-          metadata = metadata,
-          qic_data = qic_data,
-          original_data = data,
-          analysis_options = analysis_options
-        )
-        on.exit(unlink(temp_path), add = TRUE)
-        file.copy(temp_path, file)
+        build_spc_excel_full(app_state, input, file = file)
       },
       error_type = "processing",
       session = session,
@@ -201,12 +166,12 @@ setup_wizard_gates <- function(input, output, app_state, session, emit) {
   }
 
   output$download_spc_file <- shiny::downloadHandler(
-    filename = spc_save_filename,
-    content = spc_save_content
+    filename = spc_save_filename_handler,
+    content = spc_save_content_handler
   )
   output$download_spc_file_step3 <- shiny::downloadHandler(
-    filename = spc_save_filename,
-    content = spc_save_content
+    filename = spc_save_filename_handler,
+    content = spc_save_content_handler
   )
 
   # Tilbage-knap: Trin 2 -> Trin 1 (via navigation guard)

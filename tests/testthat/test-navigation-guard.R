@@ -229,11 +229,58 @@ test_that("build_spc_excel_blob returns raw bytes with XLSX magic header", {
   expect_equal(as.integer(blob[1:4]), c(0x50, 0x4B, 0x03, 0x04))
 })
 
-test_that("generate_spc_filename returns .xlsx filename with date", {
+test_that("spc_save_filename uses indicator_title when available", {
   app_state <- create_app_state()
-  name <- generate_spc_filename(app_state)
+  input_stub <- list(indicator_title = "Min Indikator")
+  name <- spc_save_filename(app_state, input_stub)
   expect_match(name, "\\.xlsx$")
-  expect_match(name, "\\d{4}-\\d{2}-\\d{2}")
+  expect_match(name, "_biSPCharts\\.xlsx$")
+  expect_match(name, "Min")
+})
+
+test_that("spc_save_filename falls back to data_biSPCharts.xlsx without title", {
+  app_state <- create_app_state()
+  input_stub <- list()
+  name <- spc_save_filename(app_state, input_stub)
+  expect_equal(name, "data_biSPCharts.xlsx")
+})
+
+test_that("nav-guard blob og wizard-handler producerer identisk Excel-struktur", {
+  # Regression-test for fejlrapport 2026-05-17: nav-guard-download
+  # genererede 2-ark Excel mens "Download kopi af data og indstillinger"
+  # paa Eksportér-trinnet gav 3-ark. Begge call-sites skal nu kalde
+  # build_spc_excel_full og producere identisk output.
+  app_state <- create_app_state()
+  shiny::isolate({
+    app_state$data$current_data <- data.frame(
+      dato = as.Date("2026-01-01") + 0:9,
+      taeller = withr::with_seed(42, sample(10, 10))
+    )
+    app_state$columns$mappings$x_column <- "dato"
+    app_state$columns$mappings$y_column <- "taeller"
+  })
+
+  input_stub <- list(indicator_title = "Regressionstest")
+
+  # Path A: wizard-handler skriver til file (downloadHandler-callback)
+  file_a <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(file_a), add = TRUE)
+  build_spc_excel_full(app_state, input_stub, file = file_a)
+
+  # Path B: nav-guard blob → bytes → fil
+  blob <- build_spc_excel_blob(app_state, input_stub)
+  file_b <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(file_b), add = TRUE)
+  writeBin(blob, file_b)
+
+  sheets_a <- openxlsx::getSheetNames(file_a)
+  sheets_b <- openxlsx::getSheetNames(file_b)
+
+  expect_equal(sheets_a, sheets_b)
+  # Begge call-sites skal generere mindst Data + Indstillinger; helper
+  # forsoeger SPC-analyse-ark via build_export_plot. Verifikation af
+  # arknavne sikrer at de to paths ej divergerer fremover.
+  expect_true(all(c("Data", "Indstillinger") %in% sheets_a))
 })
 
 test_that("nav_guard_confirm without download resets session and navigates", {

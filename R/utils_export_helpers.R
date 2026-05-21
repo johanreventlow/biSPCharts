@@ -158,10 +158,15 @@ build_export_plot <- function(app_state, title_input, dept_input,
   y_col <- normalize_mapping(app_state$columns$mappings$y_column) %||%
     normalize_mapping(app_state$columns$auto_detect$results$y_col)
 
-  if (is.null(x_col) || is.null(y_col)) {
+  # y er hard-requirement; uden y er der intet at plotte. x maa vaere NULL --
+  # generateSPCPlot fallback'er til spc_row_index (samme adfaerd som analyse-
+  # pathen, jf. R/fct_spc_plot_generation.R:115-126). Asymmetrisk afvisning
+  # her foer fix gav tom preview + "Ingen plot tilgaengeligt"-fejl ved export
+  # for datasaet uden detekterbar x-kolonne (fx tekst-x, tom header).
+  if (is.null(y_col)) {
     log_warn(
       .context = "EXPORT_MODULE",
-      message = "build_export_plot: Missing required column mappings (x or y)"
+      message = "build_export_plot: Missing required y-column mapping"
     )
     return(NULL)
   }
@@ -241,6 +246,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
         base_size = 14,
         viewport_width = final_width,
         viewport_height = final_height,
+        app_state = app_state,
         plot_context = plot_context
       )
       # PNG export: override DPI for correct dimension conversion (Issue #64)
@@ -294,4 +300,38 @@ build_export_plot <- function(app_state, title_input, dept_input,
     },
     error_type = "processing"
   )
+}
+
+#' Beregn effektiv analyse-tekst til PDF-preview
+#'
+#' Cycle 11 H1 (Codex peer-review 2026-05-16): Helper der vaelger mellem
+#' bruger-redigeret tekst og auto-genereret analyse-tekst. Tidligere lyttede
+#' pdf_preview_image-reactive direkte paa input$pdf_improvement (debounced),
+#' hvilket forarsagede dobbelt-render ved tab-skift med ny data:
+#' (1) Preview rendres FOERST med tom analyse-tekst.
+#' (2) Autogen-observer kalder updateTextAreaInput med auto-tekst.
+#' (3) Klient-roundtrip + debounce 1500ms udloeser preview-re-render.
+#'
+#' Helperen bruger app_state$ui$last_auto_analysis (server-state sat synkront
+#' af autogen-observer) som primaer kilde og falder kun tilbage til
+#' input-vaerdien hvis brugeren faktisk har redigeret feltet.
+#'
+#' @param user_text character. Bruger-input (typisk debounced_analysis()).
+#' @param auto_text character. Auto-genereret tekst fra
+#'   app_state$ui$last_auto_analysis.
+#'
+#' @return character. Effektiv analyse-tekst til preview-rendering.
+#'   Returnerer user_text kun hvis non-empty + differer fra auto_text;
+#'   ellers returnerer auto_text.
+#'
+#' @keywords internal
+compute_effective_analysis_text <- function(user_text, auto_text) {
+  user_text <- user_text %||% ""
+  auto_text <- auto_text %||% ""
+  if (nzchar(trimws(user_text)) &&
+    !identical(trimws(user_text), trimws(auto_text))) {
+    user_text
+  } else {
+    auto_text
+  }
 }

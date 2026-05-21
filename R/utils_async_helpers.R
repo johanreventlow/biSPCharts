@@ -95,7 +95,7 @@ make_ai_extended_task <- function(
     !is.function(shiny::ExtendedTask$new)) {
     log_warn(
       "shiny::ExtendedTask ikke tilg\u00e6ngeligt (kr\u00e6ver shiny >= 1.8.0). Bruger synkron fallback.",
-      .context = "ASYNC_HELPERS"
+      .context = "ASYNC_HELPER"
     )
     return(NULL)
   }
@@ -104,7 +104,7 @@ make_ai_extended_task <- function(
   if (!requireNamespace("promises", quietly = TRUE)) {
     log_warn(
       "promises-pakken er ikke installeret. Bruger synkron fallback.",
-      .context = "ASYNC_HELPERS"
+      .context = "ASYNC_HELPER"
     )
     return(NULL)
   }

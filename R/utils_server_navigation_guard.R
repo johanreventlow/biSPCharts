@@ -106,12 +106,12 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
   # Server-side guard: detect destruktiv tab-transition (trin 2/3 -> start/upload)
   # uafhaengigt af JS-intercept. Primaer guard — robust mod bslib's egne
   # event-handlers + Bootstrap's tab-switch-internals. Bruger priority
-  # STATE_MANAGEMENT + 1 saa den fyrer FOER main_navbar-tracker (priority
-  # STATE_MANAGEMENT) i app_server_main.R og kan laese OLD current_tab.
+  # NAVIGATION_GUARD_INIT (2001) saa den fyrer FOER main_navbar-tracker
+  # (STATE_MANAGEMENT = 2000) i app_server_main.R og kan laese OLD current_tab.
   shiny::observeEvent(
     input$main_navbar,
     ignoreInit = TRUE,
-    priority = OBSERVER_PRIORITIES$STATE_MANAGEMENT + 1L,
+    priority = OBSERVER_PRIORITIES$NAVIGATION_GUARD_INIT,
     {
       current <- input$main_navbar
       prev <- shiny::isolate(app_state$navigation$current_tab)
@@ -123,7 +123,7 @@ setup_nav_guard_listener <- function(app_state, emit, session, input) {
       }
 
       # Skip under aktiv confirm-flow (handle_nav_guard_confirm styrer selv)
-      if (isTRUE(shiny::isolate(app_state$navigation$guard_active))) {
+      if (get_guard_active(app_state)) {
         return(invisible(NULL))
       }
 
@@ -217,7 +217,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
         session$sendCustomMessage(
           "download_blob",
           list(
-            filename = generate_spc_filename(app_state),
+            filename = spc_save_filename(app_state, input),
             data_b64 = base64enc::base64encode(blob),
             mime_type = paste0(
               "application/vnd.openxmlformats-officedocument.",
@@ -230,15 +230,15 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       # Veto wizard_gates' data_updated auto-nav under reset:
       # ellers ser observeren empty session-data som "has_data" og
       # nav_select("analyser") overskriver target nedenfor.
-      app_state$navigation$guard_active <- TRUE
+      set_guard_active(app_state, TRUE)
 
       reset_to_empty_session(session, app_state, emit)
 
       # Wizard_gates' wizard-step-messages er skippet via guard_active.
       # Send selv korrekte lock-states post-reset for UI-konsistens.
-      session$sendCustomMessage("wizard-uncomplete-step", 1)
-      session$sendCustomMessage("wizard-lock-step", 2)
-      session$sendCustomMessage("wizard-lock-step", 3)
+      wizard_uncomplete_step(session, 1)
+      wizard_lock_step(session, 2)
+      wizard_lock_step(session, 3)
 
       session$sendCustomMessage(
         "set_in_app_navigating",
@@ -266,14 +266,7 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
 
       # Clear guard_active EFTER Shiny-flush, saa wizard_gates' observer
       # (queued af emit$data_updated under reset) ser flagget TRUE og skipper.
-      session$onFlushed(
-        function() {
-          shiny::isolate({
-            app_state$navigation$guard_active <- FALSE
-          })
-        },
-        once = TRUE
-      )
+      clear_guard_active_on_flush(app_state, session)
     },
     fallback = {
       shiny::showNotification(
@@ -283,51 +276,13 @@ handle_nav_guard_confirm <- function(app_state, emit, session, input) {
       shiny::removeModal(session = session)
       app_state$navigation$guard_pending_target <- NULL
       app_state$navigation$guard_modal_open <- FALSE
-      app_state$navigation$guard_active <- FALSE
+      set_guard_active(app_state, FALSE)
     }
   )
 }
 
-#' Build in-memory Excel-blob fra current app_state
-#'
-#' Genbruger eksisterende build_spc_excel() (3-ark: Data + Indstillinger +
-#' SPC-analyse) som returnerer en tempfil-sti. L\u00e6ser bytes tilbage via
-#' readBin og rydder op via on.exit.
-#'
-#' current_data bruges som original_data fordi det er det eneste tilg\u00e6ngelige
-#' datas\u00e6t i nav-guard-flowet (ingen separat original ved dette tidspunkt).
-#'
-#' @param app_state Hierarchical reactiveValues
-#' @param input Shiny input (kr\u00e6ves af collect_metadata)
-#' @return Raw bytes \u2014 XLSX file content
-#' @keywords internal
-#' @noRd
-build_spc_excel_blob <- function(app_state, input) {
-  data <- shiny::isolate(app_state$data$current_data)
-  metadata <- collect_metadata(input, app_state)
-
-  temp_path <- build_spc_excel(
-    data = data,
-    metadata = metadata,
-    qic_data = NULL,
-    original_data = data,
-    analysis_options = list()
-  )
-  on.exit(unlink(temp_path), add = TRUE)
-
-  readBin(temp_path, what = "raw", n = file.info(temp_path)$size)
-}
-
-#' Generer brugervenligt filnavn til nav-guard download
-#'
-#' Format: "spc-data_YYYY-MM-DD_HHMMSS.xlsx"
-#'
-#' @param app_state Hierarchical reactiveValues (reserveret til fremtidig
-#'   brug af file_info.name)
-#' @return Character \u2014 filnavn
-#' @keywords internal
-#' @noRd
-generate_spc_filename <- function(app_state) {
-  ts <- format(Sys.time(), "%Y-%m-%d_%H%M%S")
-  paste0("spc-data_", ts, ".xlsx")
-}
+# Excel-blob + filnavn-helpers er flyttet til utils_server_spc_save.R
+# saa nav-guard-download deler implementation med
+# "Download kopi af data og indstillinger"-knappen paa Eksport\u00e9r-trinnet.
+# Begge call-sites genererer nu identisk 3-ark Excel (Data +
+# Indstillinger + SPC-analyse) + samme titel-baserede filnavn.

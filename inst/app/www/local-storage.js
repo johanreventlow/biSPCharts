@@ -104,6 +104,43 @@ window.saveAppState = function(key, data) {
   }
 };
 
+window.updateAppStateMetadata = function(key, metadataJson, version) {
+  if (!_spcIsPersistenceAllowed()) {
+    console.debug('[SPC] updateAppStateMetadata blocked: consent not granted');
+    return false;
+  }
+
+  var storageKey = 'spc_app_' + key;
+  try {
+    var raw = localStorage.getItem(storageKey);
+    if (!raw) {
+      console.warn('[SPC] updateAppStateMetadata failed: no existing app state');
+      return false;
+    }
+
+    var payload = JSON.parse(raw);
+    if (!payload || !payload.data) {
+      console.warn('[SPC] updateAppStateMetadata failed: existing state has no data');
+      return false;
+    }
+
+    if (payload.version !== version) {
+      console.warn('[SPC] updateAppStateMetadata failed: schema version mismatch');
+      return false;
+    }
+
+    payload.metadata = JSON.parse(metadataJson);
+    payload.timestamp = new Date().toISOString();
+    payload.version = version;
+
+    localStorage.setItem(storageKey, JSON.stringify(payload));
+    return true;
+  } catch(e) {
+    console.error('Failed to update localStorage metadata:', e);
+    return false;
+  }
+};
+
 // Load data from localStorage
 // Issue #193: Ved parse-fejl (fx gammel double-encoded data fra tidligere
 // version) rydder vi automatisk storage så brugeren ikke sidder fast i

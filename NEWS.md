@@ -10,6 +10,16 @@
   metadata. Samtidig fjernes debug-`console.log` fra den nye
   metadata-only handler.
 
+* PDF/PNG-eksport sender nu `app_state` videre til `generateSPCPlot()`, saa
+  export-pathen bruger samme SPC-cache som analyse-rendering. Tidligere
+  rekomputerede eksport-preview og download BFHcharts-resultatet fra bunden,
+  selv naar samme `export_pdf` plot netop var genereret.
+
+* PDF-eksport sender ikke laengere `title` som BFHcharts-metadatafelt.
+  Titlen kommer fra `bfh_qic_result$config$chart_title`; det ekstra
+  metadatafelt gav advarslen "Unknown metadata fields will be ignored: title"
+  under download.
+
 * PDF/PNG-eksport tolererer nu manglende x-kolonne-mapping paa samme
   maade som analyse-pathen. Tidligere returnerede `build_export_plot()`
   stille NULL hvis hverken `mappings$x_column` eller

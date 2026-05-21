@@ -27,10 +27,7 @@ Shiny.addCustomMessageHandler('saveAppState', function(message) {
 });
 
 Shiny.addCustomMessageHandler('updateAppStateMetadata', function(message) {
-  var dataLen = message.metadata ? message.metadata.length : 0;
-  console.log('[SPC] updateAppStateMetadata handler called, key:', message.key, 'size:', dataLen);
   var success = window.updateAppStateMetadata(message.key, message.metadata, message.version);
-  console.log('[SPC] updateAppStateMetadata success:', success);
   if (success) {
     window._spcLastSaveTime = Date.now();
     _spcUpdateSaveElapsed();

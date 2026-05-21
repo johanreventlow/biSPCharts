@@ -367,6 +367,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
   # payload in place, preserving the restore schema while avoiding data resend.
   last_data_sig <- NULL
   last_save_sig <- NULL
+  pending_metadata_sig <- NULL
   full_save_sent <- FALSE
   full_save_ready <- FALSE
   obs_full_save_ready <- shiny::observeEvent(input$local_storage_save_result,
@@ -379,9 +380,18 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       mode <- result$mode %||% "full"
       if (identical(mode, "full")) {
         full_save_ready <<- isTRUE(result$success)
+      } else if (identical(mode, "metadata")) {
+        if (isTRUE(result$success) && !is.null(pending_metadata_sig)) {
+          last_save_sig <<- pending_metadata_sig
+        } else if (!isTRUE(result$success)) {
+          full_save_ready <<- FALSE
+          full_save_sent <<- FALSE
+        }
+        pending_metadata_sig <<- NULL
       }
     },
-    ignoreNULL = TRUE
+    ignoreNULL = TRUE,
+    priority = OBSERVER_PRIORITIES$HIGH
   )
   if (!is.null(obs_manager)) {
     obs_manager$add(obs_full_save_ready, "auto_save_full_ready")
@@ -410,9 +420,12 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
 
     data_changed <- !identical(last_data_sig, current_data_sig)
     if (isTRUE(full_save_sent) && isTRUE(full_save_ready) && !data_changed) {
+      if (identical(pending_metadata_sig, current_signature)) {
+        return(invisible(FALSE))
+      }
       result <- save_metadata_locally(session, save_data$metadata)
       if (!identical(result, FALSE)) {
-        last_save_sig <<- current_signature
+        pending_metadata_sig <<- current_signature
       }
       return(invisible(TRUE))
     }
@@ -425,6 +438,7 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
     if (!identical(result, FALSE)) {
       last_data_sig <<- current_data_sig
       last_save_sig <<- current_signature
+      pending_metadata_sig <<- NULL
       full_save_sent <<- TRUE
     }
     invisible(TRUE)

@@ -169,6 +169,39 @@ test_that("local-storage.js loadAppState still parses JSON once (static check)",
   )
 })
 
+test_that("metadata-only localStorage update rejects schema mismatch", {
+  js_file <- file.path("..", "..", "inst", "app", "www", "local-storage.js")
+  skip_if_not(file.exists(js_file), "local-storage.js not found")
+
+  js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
+
+  expect_true(
+    grepl("payload\\.version\\s*!==\\s*version", js_text),
+    info = "metadata-only update must not stamp current schema version onto stale stored data"
+  )
+  expect_true(
+    grepl("schema version mismatch", js_text, fixed = TRUE),
+    info = "schema mismatch should be visible in browser diagnostics"
+  )
+})
+
+test_that("metadata-only Shiny handler avoids debug console logging", {
+  js_file <- file.path("..", "..", "inst", "app", "www", "shiny-handlers.js")
+  skip_if_not(file.exists(js_file), "shiny-handlers.js not found")
+
+  js_text <- paste(readLines(js_file, warn = FALSE), collapse = "\n")
+  metadata_handler <- regmatches(
+    js_text,
+    regexpr("Shiny\\.addCustomMessageHandler\\('updateAppStateMetadata'[\\s\\S]+?\\n\\}\\);", js_text, perl = TRUE)
+  )
+
+  expect_length(metadata_handler, 1)
+  expect_false(
+    grepl("console\\.log", metadata_handler),
+    info = "metadata-only save handler should not emit production console.log noise"
+  )
+})
+
 # ==============================================================================
 # SECTION 2: autoSaveAppState scope bug (disable on failure)
 # ==============================================================================
@@ -689,7 +722,7 @@ test_that("settings_save diff-check: NULL forrige payload trigger altid save", {
   )
 })
 
-test_that("auto-save payload signature ignores volatile timestamp by construction", {
+test_that("auto-save payload signature is stable for identical data and metadata", {
   skip_if_not(
     exists("auto_save_payload_sig", mode = "function"),
     "auto_save_payload_sig not available"
@@ -705,7 +738,7 @@ test_that("auto-save payload signature ignores volatile timestamp by constructio
   expect_identical(
     sig_1,
     sig_2,
-    info = "Uændret data+metadata skal ikke blive ny payload pga. save-tidspunkt"
+    info = "Uændret data+metadata skal give samme payload-signatur"
   )
 })
 

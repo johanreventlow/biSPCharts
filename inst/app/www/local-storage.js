@@ -124,6 +124,11 @@ window.updateAppStateMetadata = function(key, metadataJson, version) {
       return false;
     }
 
+    if (payload.version !== version) {
+      console.warn('[SPC] updateAppStateMetadata failed: schema version mismatch');
+      return false;
+    }
+
     payload.metadata = JSON.parse(metadataJson);
     payload.timestamp = new Date().toISOString();
     payload.version = version;

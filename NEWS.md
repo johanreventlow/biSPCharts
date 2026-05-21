@@ -2,6 +2,14 @@
 
 ## Bug fixes
 
+* Auto-save metadata-only path er gjort mere robust. Serveren markerer nu
+  foerst metadata-only saves som gemt efter JS-confirm (`mode='metadata'`),
+  full-save readiness-observeren koerer med hoej state-management priority,
+  og browserens `updateAppStateMetadata()` afviser payloads med forkert
+  schema-version i stedet for at opgradere gammel data ved kun at skrive
+  metadata. Samtidig fjernes debug-`console.log` fra den nye
+  metadata-only handler.
+
 * PDF/PNG-eksport tolererer nu manglende x-kolonne-mapping paa samme
   maade som analyse-pathen. Tidligere returnerede `build_export_plot()`
   stille NULL hvis hverken `mappings$x_column` eller

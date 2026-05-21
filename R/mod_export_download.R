@@ -165,7 +165,6 @@ generate_pdf_export <- function(input, app_state, file) {
   metadata <- list(
     hospital = escape_typst_metadata(hospital_value),
     department = escape_typst_metadata(input$export_department),
-    title = escape_typst_metadata(input$export_title),
     analysis = escape_typst_metadata(input$pdf_improvement),
     data_definition = escape_typst_metadata(data_definition_with_note),
     footer_content = if (nzchar(footnote_value)) escape_typst_metadata(footnote_value) else NULL,

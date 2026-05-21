@@ -280,6 +280,48 @@ test_that("mod_export_server registers download_export handler (§2.3.2)", {
   })
 })
 
+test_that("generate_pdf_export sender kun BFHcharts-understoettede metadatafelter", {
+  skip_if_not_installed("BFHcharts")
+  skip_if_not_installed("mockery")
+
+  app_state <- create_mock_app_state()
+  input <- list(
+    export_title = "Dette er min proevetitel",
+    export_department = "Afdeling X",
+    export_hospital = "Bispebjerg og Frederiksberg Hospital",
+    pdf_description = "Datadefinition",
+    pdf_improvement = "Analyse",
+    export_footnote = ""
+  )
+  output_file <- tempfile(fileext = ".pdf")
+  captured <- new.env(parent = emptyenv())
+  captured$metadata <- NULL
+
+  mockery::stub(generate_pdf_export, "build_export_plot", function(...) {
+    list(bfh_qic_result = list(config = list(chart_title = input$export_title)))
+  })
+
+  testthat::with_mocked_bindings(
+    bfh_export_pdf = function(x, output, metadata, ...) {
+      captured$metadata <- metadata
+      writeBin(as.raw(rep(1L, 600L)), output)
+      output
+    },
+    .package = "BFHcharts",
+    testthat::with_mocked_bindings(
+      showNotification = function(...) invisible(NULL),
+      .package = "shiny",
+      shiny::isolate(generate_pdf_export(input, app_state, output_file))
+    )
+  )
+
+  expect_false("title" %in% names(captured$metadata),
+    info = "BFHcharts validerer title som ukendt metadatafelt; titel kommer fra bfh_qic_result$config$chart_title"
+  )
+  expect_true(all(c("hospital", "department", "analysis", "data_definition", "date") %in%
+    names(captured$metadata)))
+})
+
 # INTEGRATION TESTS ==========================================================
 
 test_that("Export module integrates with app_ui navigation", {

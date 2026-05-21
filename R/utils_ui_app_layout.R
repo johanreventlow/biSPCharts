@@ -281,9 +281,9 @@ create_ui_header <- function() {
 
     /* App-guide modal (lightbox-overlay med carousel) */
     .app-guide-modal .modal-dialog {
-      max-width: 960px;
-      width: 960px;
-      margin: 60px auto;
+      max-width: 1140px;
+      width: 1140px;
+      margin: 40px auto;
     }
     .app-guide-modal .modal-content {
       border-radius: 0;
@@ -294,7 +294,7 @@ create_ui_header <- function() {
     }
     .app-guide-inner {
       position: relative;
-      height: 520px;
+      height: 680px;
       overflow: hidden;
     }
     .app-guide-close {
@@ -318,18 +318,26 @@ create_ui_header <- function() {
       color: #333333;
     }
     .app-guide-carousel {
-      height: 520px;
+      height: 680px;
     }
     .app-guide-carousel .carousel-inner {
-      height: 460px;
+      height: 620px;
       background: white;
     }
     .app-guide-slide {
-      height: 460px;
+      height: 620px;
+    }
+    /* Bootstrap 5 toggler display: block paa .active + transition-states.
+       Override til flex for at bevare 2-kolonne-layout, men kun paa synlige
+       items — ellers bleed-through fordi display: flex hijacker
+       Bootstrap's display: none paa inactive items. */
+    .app-guide-slide.active,
+    .app-guide-slide.carousel-item-next,
+    .app-guide-slide.carousel-item-prev {
       display: flex;
     }
     .app-guide-media {
-      flex: 0 0 50%;
+      flex: 0 0 60%;
       border-right: 1px solid #ebebeb;
       display: flex;
       align-items: center;
@@ -338,12 +346,14 @@ create_ui_header <- function() {
     }
     .app-guide-media--image {
       background: linear-gradient(135deg, #ccebfa 0%, #e8f4f8 100%);
-      padding: 20px;
+      padding: 12px;
     }
     .app-guide-media--image img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      border: 1px solid #d6d6d6;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
     .app-guide-media--decor {
       display: flex;
@@ -394,7 +404,7 @@ create_ui_header <- function() {
     }
     .app-guide-content {
       flex: 1;
-      padding: 32px 36px;
+      padding: 28px 28px;
       text-align: left;
       color: #333333;
       overflow-y: auto;
@@ -406,7 +416,7 @@ create_ui_header <- function() {
       padding: 4px 11px;
       background: rgba(0, 125, 187, 0.12);
       color: #007dbb;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -414,14 +424,14 @@ create_ui_header <- function() {
       align-self: flex-start;
     }
     .app-guide-title {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: 600;
       margin: 0 0 12px 0;
       color: #1a2a30;
       line-height: 1.2;
     }
     .app-guide-body {
-      font-size: 13px;
+      font-size: 16px;
       line-height: 1.55;
       color: #4b5659;
     }
@@ -437,7 +447,7 @@ create_ui_header <- function() {
     }
     .app-guide-body table {
       width: 100%;
-      font-size: 11px;
+      font-size: 14px;
       border-collapse: collapse;
       margin-top: 6px;
     }
@@ -458,16 +468,16 @@ create_ui_header <- function() {
       font-weight: 600;
       color: #1a2a30;
       margin-top: 0.4rem;
-      font-size: 12px;
+      font-size: 16px;
     }
     .app-guide-body dt:first-child { margin-top: 0; }
     .app-guide-body dd {
       margin: 0 0 0.4rem 1rem;
       color: #4b5659;
-      font-size: 12px;
+      font-size: 16px;
     }
     .app-guide-body .alert {
-      font-size: 11.5px;
+      font-size: 15px;
       padding: 8px 12px;
       margin-top: 10px;
       border-radius: 0;

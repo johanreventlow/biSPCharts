@@ -247,8 +247,8 @@ app_guide_intro_slides <- function() {
     # Trin 2: Tildel kolonner
     list(
       title = "Tildel kolonner",
-      image_src = NULL,
-      image_alt = NULL,
+      image_src = "www/help/06b-trin2-kolonner.png",
+      image_alt = "Sk\u00e6rmbillede af kolonne-tildeling",
       content = shiny::tagList(
         shiny::tags$p(
           "N\u00e5r data er indl\u00e6st, viser appen tabellen og et forel\u00f8bigt ",
@@ -302,7 +302,7 @@ app_guide_intro_slides <- function() {
     # Trin 3: Juster diagrammet
     list(
       title = "Just\u00e9r diagrammet",
-      image_src = "www/help/06b-trin2-analyser.png",
+      image_src = "www/help/06c-trin3-juster.png",
       image_alt = "Sk\u00e6rmbillede af analyse-trinnet",
       content = shiny::tagList(
         shiny::tags$p(
@@ -340,7 +340,7 @@ app_guide_intro_slides <- function() {
     # Trin 4: Laes diagrammet
     list(
       title = "L\u00e6s diagrammet",
-      image_src = NULL,
+      image_src = "www/help/06d-trin4-laes.png",
       image_alt = NULL,
       content = shiny::tagList(
         shiny::tags$p(
@@ -368,7 +368,7 @@ app_guide_intro_slides <- function() {
     # Trin 5: Rediger data
     list(
       title = "Redig\u00e9r data ved behov",
-      image_src = NULL,
+      image_src = "www/help/06e-trin5-rediger.png",
       image_alt = NULL,
       content = shiny::tagList(
         shiny::tags$p(
@@ -390,7 +390,7 @@ app_guide_intro_slides <- function() {
     # Trin 6: Eksporter
     list(
       title = "Eksport\u00e9r",
-      image_src = "www/help/06c-trin3-eksporter.png",
+      image_src = "www/help/06f-trin6-eksporter.png",
       image_alt = "Sk\u00e6rmbillede af eksport-trinnet",
       content = shiny::tagList(
         shiny::tags$p(
@@ -437,7 +437,7 @@ app_guide_intro_slides <- function() {
     # Trin 7: Gem arbejdet
     list(
       title = "Gem arbejdet",
-      image_src = NULL,
+      image_src = "www/help/06g-trin7-gem.png",
       image_alt = NULL,
       content = shiny::tagList(
         shiny::tags$p(
@@ -450,7 +450,7 @@ app_guide_intro_slides <- function() {
           "anden computer, b\u00f8r du ogs\u00e5 downloade en kopi af data og ",
           "indstillinger via knappen ",
           shiny::tags$strong("Download kopi af data og indstillinger"),
-          " p\u00e5 analyse-trinnet."
+          " p\u00e5 Analysér- eller Eksportér-trinnet."
         )
       )
     )

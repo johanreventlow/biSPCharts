@@ -552,6 +552,11 @@ files:
   type: integration
   handling: keep
   reviewed: no
+- file: test-mod-app-guide-ui.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: no
 - file: test-mod-spc-chart-comprehensive.R
   audit_category: green
   type: integration

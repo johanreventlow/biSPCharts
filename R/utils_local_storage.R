@@ -238,6 +238,52 @@ saveDataLocally <- function(session, data, metadata = NULL) {
   )
 }
 
+save_metadata_locally <- function(session, metadata) {
+  safe_operation(
+    "Save metadata to local storage",
+    code = {
+      metadata_json <- jsonlite::toJSON(
+        metadata,
+        auto_unbox = TRUE,
+        pretty = FALSE,
+        digits = NA,
+        na = "null"
+      )
+      metadata_raw <- as.character(metadata_json)
+      invalid_metadata <- is.null(metadata_raw) ||
+        length(metadata_raw) == 0 ||
+        nchar(metadata_raw) == 0
+      if (invalid_metadata) {
+        stop("JSON konvertering resulterede i tom metadata")
+      }
+
+      log_debug(
+        sprintf("Sending %d bytes metadata update to browser localStorage", nchar(metadata_raw)),
+        .context = "LOCAL_STORAGE"
+      )
+
+      session$sendCustomMessage(
+        type = "updateAppStateMetadata",
+        message = list(
+          key = "current_session",
+          metadata = metadata_raw,
+          version = LOCAL_STORAGE_SCHEMA_VERSION
+        )
+      )
+    },
+    fallback = function(e) {
+      log_error(
+        paste("Kunne ikke gemme metadata lokalt:", e$message),
+        .context = "LOCAL_STORAGE"
+      )
+      FALSE
+    },
+    error_type = "local_storage",
+    session = session,
+    show_user = FALSE
+  )
+}
+
 ## Load data med logging
 loadDataLocally <- function(session) {
   safe_operation(

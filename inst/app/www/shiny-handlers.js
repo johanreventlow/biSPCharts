@@ -21,7 +21,27 @@ Shiny.addCustomMessageHandler('saveAppState', function(message) {
   Shiny.setInputValue('local_storage_save_result', {
     success: success,
     timestamp: new Date().toISOString(),
-    key: message.key
+    key: message.key,
+    mode: 'full'
+  }, {priority: 'event'});
+});
+
+Shiny.addCustomMessageHandler('updateAppStateMetadata', function(message) {
+  var dataLen = message.metadata ? message.metadata.length : 0;
+  console.log('[SPC] updateAppStateMetadata handler called, key:', message.key, 'size:', dataLen);
+  var success = window.updateAppStateMetadata(message.key, message.metadata, message.version);
+  console.log('[SPC] updateAppStateMetadata success:', success);
+  if (success) {
+    window._spcLastSaveTime = Date.now();
+    _spcUpdateSaveElapsed();
+  } else {
+    console.error('updateAppStateMetadata failed for key:', message.key);
+  }
+  Shiny.setInputValue('local_storage_save_result', {
+    success: success,
+    timestamp: new Date().toISOString(),
+    key: message.key,
+    mode: 'metadata'
   }, {priority: 'event'});
 });
 

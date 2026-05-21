@@ -689,6 +689,100 @@ test_that("settings_save diff-check: NULL forrige payload trigger altid save", {
   )
 })
 
+test_that("auto-save payload signature ignores volatile timestamp by construction", {
+  skip_if_not(
+    exists("auto_save_payload_sig", mode = "function"),
+    "auto_save_payload_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  sig_1 <- auto_save_payload_sig(test_data, metadata)
+  Sys.sleep(0.01)
+  sig_2 <- auto_save_payload_sig(test_data, metadata)
+
+  expect_identical(
+    sig_1,
+    sig_2,
+    info = "Uændret data+metadata skal ikke blive ny payload pga. save-tidspunkt"
+  )
+})
+
+test_that("auto-save payload signature changes when metadata or data changes", {
+  skip_if_not(
+    exists("auto_save_payload_sig", mode = "function"),
+    "auto_save_payload_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  baseline <- auto_save_payload_sig(test_data, metadata)
+  changed_metadata <- auto_save_payload_sig(
+    test_data,
+    list(active_tab = "analyser", export_title = "Titel")
+  )
+  changed_data <- auto_save_payload_sig(
+    transform(test_data, x = c(1L, 2L, 99L)),
+    metadata
+  )
+
+  expect_false(
+    identical(baseline, changed_metadata),
+    info = "Metadata-only ændringer skal stadig gemmes"
+  )
+  expect_false(
+    identical(baseline, changed_data),
+    info = "Dataændringer skal stadig gemmes"
+  )
+})
+
+test_that("auto-save data signature is stable across metadata changes", {
+  skip_if_not(
+    exists("auto_save_data_sig", mode = "function"),
+    "auto_save_data_sig not available"
+  )
+
+  test_data <- data.frame(x = 1:3, y = c("a", "b", "c"))
+
+  expect_identical(
+    auto_save_data_sig(test_data),
+    auto_save_data_sig(test_data),
+    info = "Data-signaturen skal kun afspejle data, ikke metadata/tid"
+  )
+  expect_false(
+    identical(
+      auto_save_data_sig(test_data),
+      auto_save_data_sig(transform(test_data, x = c(1L, 2L, 99L)))
+    ),
+    info = "Data-signaturen skal ændre sig ved dataændring"
+  )
+})
+
+test_that("save_metadata_locally sends metadata-only update message", {
+  skip_if_not(
+    exists("save_metadata_locally", mode = "function"),
+    "save_metadata_locally not available"
+  )
+
+  mock <- create_mock_capture_session()
+  metadata <- list(active_tab = "eksporter", export_title = "Titel")
+
+  save_metadata_locally(mock$session, metadata)
+
+  expect_length(mock$captured$messages, 1)
+  msg <- mock$captured$messages[[1]]
+  expect_equal(msg$type, "updateAppStateMetadata")
+  expect_equal(msg$message$key, "current_session")
+  expect_true(is.character(msg$message$metadata))
+  expect_true("version" %in% names(msg$message))
+
+  parsed <- jsonlite::fromJSON(msg$message$metadata, simplifyVector = TRUE)
+  expect_equal(parsed$active_tab, "eksporter")
+  expect_equal(parsed$export_title, "Titel")
+})
+
 test_that("saveDataLocally payload uses current version tag", {
   skip_if_not(
     exists("saveDataLocally", mode = "function"),

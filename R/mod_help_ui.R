@@ -41,7 +41,7 @@ mod_help_ui <- function(id) {
       "Denne side forklarer de vigtigste begreber, du m\u00f8der i biSPCharts: ",
       "variation, seriediagrammer, Anh\u00f8j-regler, kontrolgr\u00e6nser og valg af charttype. ",
       "Hvis du leder efter den konkrete klik-for-klik arbejdsgang, ",
-      "s\u00e5 brug siden \u201eS\u00e5dan bruger du appen\u201c."
+      "s\u00e5 brug linket \u201eS\u00e5dan bruger du appen\u201c p\u00e5 velkomstsiden."
     ),
 
     # Ankerlinks

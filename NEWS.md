@@ -1,4 +1,4 @@
-# biSPCharts (development)
+# biSPCharts 0.5.0
 
 ## Bug fixes
 
@@ -100,6 +100,17 @@
 
 ## Nye features
 
+* App-guide vejledning er redesignet som lightbox-modal med 7-trins
+  carousel (Upload → Tildel kolonner → Justér diagrammet → Læs
+  diagrammet → Redigér data → Eksportér → Gem arbejdet). Erstatter
+  tidligere lang-form vejledning på dedikeret tab. Modal-overlay (1140×680)
+  med to-kolonne-layout: screenshot venstre (60%), beskrivelse højre (40%).
+  Navbar-trigger erstatter tidligere tab-link. Alle 7 trin har real
+  screenshots med tynd grå border + drop shadow. Typografi opskaleret
+  (16px body, 26px title) for læsbarhed på modal-format. Bootstrap 5
+  custom-markup uden header/footer for lightbox-feel; lukkes ved klik
+  udenfor, Esc, eller X-knap (#795).
+
 * Ny "Rapportér fejl"-side i navbaren (til højre for "Lær om SPC")
   med en ikke-teknisk guide til hvordan brugere rapporterer fejl.
   Siden indeholder en knap der åbner brugerens mail-klient med en
@@ -114,6 +125,9 @@
   via `bfh_generate_analysis()`-delegation. Se BFHcharts NEWS 0.20.0
   for 7 nye fortolknings-akser (magnitude, direction, baseline-delta,
   variable CL, few-obs, CL-disclosure, discrete-scale).
+
+* Bump `BFHchartsAssets` til `v0.1.1`: opdaterede brand-assets
+  (fonts/logoer) til Connect Cloud-deploy via `inject_template_assets()`.
 
 # biSPCharts 0.4.2
 

@@ -1,8 +1,8 @@
 # Ugentlig sårbarhedsscanning af R-afhængigheder (fixes #591).
 #
-# Bruger oysteR til OSV-opslag mod installerede pakker (renv-låste versioner).
-# Ikke-blokerende: fund rapporteres i workflow-summary + opretter GitHub Issue
-# (advisory, blokerer ikke PRs).
+# Bruger oysteR til OSV-opslag mod pakker erklaeret i DESCRIPTION + installerede
+# dependencies. Ikke-blokerende: fund rapporteres i workflow-summary + opretter
+# GitHub Issue (advisory, blokerer ikke PRs).
 #
 # Kør manuelt: gh workflow run security-audit.yaml
 name: security-audit
@@ -37,16 +37,12 @@ jobs:
           r-version: 'release'
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-renv@v2
+      # Projektet bruger ikke renv (ingen renv.lock). Brug setup-r-dependencies
+      # som installerer fra DESCRIPTION via pak. oysteR tilfoejes som extra.
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          cache-version: 1
-
-      - name: Install oysteR
-        shell: Rscript {0}
-        run: |
-          if (!requireNamespace("oysteR", quietly = TRUE)) {
-            install.packages("oysteR", repos = "https://cloud.r-project.org")
-          }
+          extra-packages: any::oysteR
+          dependencies: '"hard"'
 
       - name: Scan for known vulnerabilities (oysteR)
         id: oyster_scan
@@ -91,8 +87,8 @@ jobs:
 
           Anbefalede handlinger:
           1. Tjek workflow-loggen for berørte pakker
-          2. Opdater via renv::update() + renv::snapshot()
-          3. Commit ny renv.lock
+          2. Bump version-bounds i DESCRIPTION (Imports / Suggests / Remotes)
+          3. Verificer test-suite + commit version-bump
 
           _Automatisk oprettet af security-audit.yaml_"
 

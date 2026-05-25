@@ -292,6 +292,10 @@ test_that("Live SPC validation tillader y > n for P-chart (BFHcharts >= 0.19.0)"
 })
 
 test_that("Performance: normalization is reasonably fast", {
+  # Skip under covr -- instrumentering tilfoejer overhead der goer 1s-threshold
+  # urealistisk for 1000 kald (coverage-jobbet fejlede pga dette).
+  skip_if(identical(Sys.getenv("R_COVR"), "true"), "Skipped under covr instrumentation")
+
   # Basic performance check - normalization should be fast enough
   # for interactive use
 

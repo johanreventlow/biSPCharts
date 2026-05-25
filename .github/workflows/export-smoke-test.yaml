@@ -68,6 +68,9 @@ jobs:
         shell: bash
 
       - name: Kor export capability tests
+        # test_dir() (i modsaetning til test_file()) sources helper-*.R, hvilket
+        # koerer pkgload::load_all() og dermed eksponerer internal funktioner
+        # som check_quarto_capability() og validate_export_dpi() uden ::: prefix.
         run: |
-          Rscript -e "library(biSPCharts); testthat::test_file('tests/testthat/test-export-quarto-capability.R', stop_on_failure = TRUE)"
+          Rscript -e "testthat::test_dir('tests/testthat', filter = 'export-quarto-capability', stop_on_failure = TRUE)"
         shell: bash

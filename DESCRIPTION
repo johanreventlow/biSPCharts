@@ -63,7 +63,7 @@ Suggests:
     qicharts2 (>= 0.7.0),
     curl (>= 4.3.0),
     BFHllm (>= 0.2.0),
-    BFHchartsAssets,
+    BFHchartsAssets (>= 0.1.2),
     pins (>= 1.2.0),
     gert (>= 1.9.0),
     shinylogs (>= 0.2.0),
@@ -79,5 +79,5 @@ Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded me
 Remotes: johanreventlow/BFHcharts@v0.20.0,
     johanreventlow/BFHtheme@v0.5.0,
     johanreventlow/BFHllm@v0.2.0,
-    johanreventlow/BFHchartsAssets@v0.1.1
+    johanreventlow/BFHchartsAssets@main
 Config/roxygen2/version: 8.0.0

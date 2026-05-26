@@ -1,3 +1,30 @@
+# biSPCharts (development)
+
+## Dependency bumps
+
+* `BFHchartsAssets (>= 0.1.2)` — adopterer kilden-fix for Mari-font
+  glyph "1"-anomali. BFHchartsAssets PR #2 patcher alle 6 Mari-*.otf-
+  varianter med MariOffice-glyph-data (canonical Region H-typografi)
+  + retter OS/2-metadata (`usWeightClass`, `fsSelection`) til drop-in
+  replacement. Cifret "1" er nu på cap-height ensartet med øvrige cifre.
+
+## Internal changes
+
+* **Revert af PR #801's Region H @font-face-workaround.** Workaround
+  adopterede Region H's distinct-family-name-pattern
+  (`mariregular`/`maribold`/etc) som midlertidig løsning på glyph-
+  anomalien i browser. Nu hvor BFHchartsAssets 0.1.2 fixer underlying
+  Mari-Book/Bold.otf direkte, er workaround redundant. CSS-stack rullet
+  tilbage til simpel `font-family: 'Mari', Arial, Helvetica, sans-serif`
+  + `@font-face font-family: 'Mari'; src: Mari-Book.otf/Mari-Bold.otf`.
+
+  Konsekvens: alle tre rendering-surfaces (Shiny browser, Typst PDF,
+  ggplot/ragg) får nu korrekt typografi via samme underlying font-filer.
+  PDF-eksport verificeret 2026-05-26 i SPC-50.pdf — body-tekst korrekt
+  Book-vægt, fed tekst korrekt Bold-vægt (modsat SPC-49.pdf hvor alt
+  rendrede faux-bold pga fontTools-patch nameID-asymmetri på Windows-
+  platformID — fixed i BFHchartsAssets PR #2 second iteration).
+
 # biSPCharts 0.5.0
 
 ## Bug fixes

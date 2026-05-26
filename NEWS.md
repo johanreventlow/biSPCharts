@@ -1,3 +1,41 @@
+# biSPCharts (development)
+
+## Bug fixes
+
+* Browser-side Mari-font workaround for glyph "1"-anomali. Cifret "1" i
+  `Mari-Book.otf` (og 4 andre Mari-*.otf-varianter) har glyph yMax=659 -
+  hoejere end baade overshoot-glyfer (0/3/6/8/9 = 653) og flade cifre
+  (4/5/7 = 641). Resultat: "1" stikker visuelt op over alle andre cifre
+  i tabeller, datoer ("01-01-2023") og talkolonner. Synligt især på
+  Windows DirectWrite-rendering.
+
+  Empirisk verificeret at `MariOffice-*.ttf` i BFHchartsAssets har
+  korrekt typografi og matcher Region H's canonical Mari brugt på
+  bispebjerghospital.dk 1:1. Workaround adopterer Region H's
+  @font-face-pattern: distinct family-names per vægt
+  (`mariregular`/`maribold`/`maribook`/`marilight`/`mariheavy`) der
+  peger på `MariOffice-*.ttf` via `bfh_assets` resource-prefix.
+  Distinct family-name eliminerer collision med system-installeret
+  Mari (PR #517-regression strukturelt umulig).
+
+  Fallback-stack ændret fra `Mari, Arial, ...` til
+  `'Helvetica Neue', Helvetica, Arial, sans-serif` for at undgå at
+  browseren vælger system-Mari-Book.otf (samme glyph-anomali) hvis
+  @font-face ikke loader.
+
+  Filer ændret: `R/utils_ui_app_layout.R`, `inst/config/brand.yml`,
+  `R/config_branding_getters.R`.
+
+## Known issues
+
+* **Surface 2 (Typst PDF) + Surface 3 (ggplot/ragg) viser fortsat
+  glyph-anomali** for cifret "1". Workaround er begrænset til
+  Shiny browser-side. PDF-eksport bruger `Mari-Book.otf` via BFHcharts
+  Typst-template (cross-repo); ggplot-charts bruger `Mari-Book.otf` via
+  `systemfonts::register_font(name="Mari", ...)`. Begge afventer
+  kilden-fix i BFHchartsAssets (issue
+  `johanreventlow/BFHchartsAssets#1`).
+
 # biSPCharts 0.5.0
 
 ## Bug fixes

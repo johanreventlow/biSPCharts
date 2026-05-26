@@ -433,19 +433,6 @@ files:
   type: unit
   handling: keep
   reviewed: no
-- file: test-font-css.R
-  audit_category: green
-  type: unit
-  handling: keep
-  reviewed: yes
-  rationale: |
-    Regression-tests for Region H @font-face-pattern adopteret 2026-05-26.
-    Verificerer distinct family-names per vaegt (mariregular/maribold/maribook/
-    marilight/mariheavy), MariOffice-*.ttf som canonical src, + Helvetica Neue
-    fallback (NOT Mari). Counter-test mod PR #517-regression. Tilfoejet manuelt
-    til manifest per feedback_test_classification_manifest.
-  reviewer: johanreventlow
-  reviewed_date: '2026-05-26'
 - file: test-file-io-comprehensive.R
   audit_category: green
   type: unit

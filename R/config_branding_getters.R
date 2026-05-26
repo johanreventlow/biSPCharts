@@ -141,14 +141,9 @@ create_brand_theme <- function(config = NULL) {
         "navbar-dark-active-color" = "white",
         "navbar-dark-brand-color" = "white",
 
-        # Typografi: Region H @font-face-pattern (distinct family-names per
-        # vaegt via BFHchartsAssets MariOffice-*.ttf -- se create_ui_header()).
-        # Helvetica Neue prioriteres over system-Mari som fallback for at
-        # undgaa shadow af defekt BFHchartsAssets Mari-*.otf hvis @font-face
-        # ikke loader. Empirisk: Region H bruger samme stack paa
-        # bispebjerghospital.dk.
-        "font-family-base" = "mariregular, 'Helvetica Neue', Helvetica, Arial, sans-serif",
-        "headings-font-family" = "maribold, 'Helvetica Neue', Helvetica, Arial, sans-serif",
+        # Typografi: Mari med Arial-fallback
+        "font-family-base" = "Mari, Arial, Helvetica, sans-serif",
+        "headings-font-family" = "Mari, Arial, Helvetica, sans-serif",
         "headings-font-weight" = 400
       ) |>
         # Knapper: lysere sekundaer-knapper end koncern-graa

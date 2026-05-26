@@ -56,13 +56,9 @@ color:
 
 
 typography:
-  # Region H @font-face-pattern fra bispebjerghospital.dk: distinct family-name
-  # per vægt forhindrer browser-shadow fra system-installerede Mari-fonts.
-  # mariregular/maribold deklareres i create_ui_header() via BFHchartsAssets
-  # MariOffice-*.ttf-filer (canonical Region H-glyph-data).
-  base: "mariregular, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+  base: "Mari, Arial, Helvetica, sans-serif"
   headings:
-    family: "maribold, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    family: "Mari, Arial, Helvetica, sans-serif"
     weight: 700
 
 # Theme bygges programmatisk i create_brand_theme() (config_branding_getters.R)

@@ -14,61 +14,35 @@ create_ui_header <- function() {
   # Get hospital colors using the proper package function
   hospital_colors <- get_hospital_colors()
 
-  # Byg betinget @font-face CSS til Mari-font (Region H-pattern).
+  # Byg betinget @font-face CSS til Mari-font.
   # Mari-fonts leveres af BFHchartsAssets companion-pakken (privat) via
   # resource-prefix 'bfh_assets' registreret i golem_add_external_resources().
   # Fallback: ingen @font-face injiceres -- browser bruger naesteoverladte
-  # system-font fra CSS font-family-stack ('Helvetica Neue', Helvetica, Arial,
-  # sans-serif).
-  #
-  # TEMP (afventer BFHchartsAssets-issue) -- adopter Region H-pattern fra
-  # bispebjerghospital.dk: distinct lowercase family-name per vaegt
-  # (mariregular/maribold/maribook/marilight/mariheavy). Empirisk verificeret
-  # 2026-05-26 at Region H's mari-webfont.ttf har identisk glyph-data med
-  # BFHchartsAssets's MariOffice-*.ttf (1=659, 0/3/6/8/9=671, 4/5/7=659,
-  # hhea-ascent=820). BFHchartsAssets's Mari-*.otf har typografisk anomali
-  # (1=659 over baseline pa cap-height 641, alle weights weight=4 -- forvirrer
-  # browser-weight-matching). Workaround: peg @font-face pa MariOffice-*.ttf
-  # med distinct family-names der ikke kan shadowes af system-Mari ("Mari" hhv
-  # "Mari Office" -- begge forskellige fra mariregular/maribold).
+  # system-font fra CSS font-family-stack (Arial, Helvetica, sans-serif).
   mari_fontface_css <- if (requireNamespace("BFHchartsAssets", quietly = TRUE)) {
+    # Brug Mari-Book.otf / Mari-Bold.otf (internal family = "Mari", weight=4/7).
+    # Tidligere brugte vi MariOffice-Book.ttf / MariOffice-Bold.ttf der internt
+    # hedder "Mari Office" (med mellemrum) -- mismatch mod CSS-deklarationen
+    # `font-family: 'Mari'` resulterede i forkert weight-rendering i browser.
+    # Mari-*.otf filerne er authoritative-navngivne (BFHchartsAssets v0.1.0).
     "
-      /* Mari hospital font via BFHchartsAssets (Region H @font-face-pattern) */
+      /* Mari hospital font via BFHchartsAssets companion-pakke (@font-face) */
       @font-face {
-        font-family: mariregular;
-        src: url('bfh_assets/MariOffice-Book.ttf') format('truetype');
+        font-family: 'Mari';
+        src: url('bfh_assets/Mari-Book.otf') format('opentype');
         font-weight: normal;
         font-style: normal;
       }
       @font-face {
-        font-family: maribook;
-        src: url('bfh_assets/MariOffice-Book.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: maribold;
-        src: url('bfh_assets/MariOffice-Bold.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: marilight;
-        src: url('bfh_assets/MariOffice-Light.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-      }
-      @font-face {
-        font-family: mariheavy;
-        src: url('bfh_assets/MariOffice-Heavy.ttf') format('truetype');
-        font-weight: 900;
+        font-family: 'Mari';
+        src: url('bfh_assets/Mari-Bold.otf') format('opentype');
+        font-weight: bold;
         font-style: normal;
       }
     "
   } else {
     # BFHchartsAssets ikke tilgaengelig -- browser falder tilbage til
-    # 'Helvetica Neue'/Helvetica/Arial/sans-serif fra CSS-stakken i
-    # config_branding_getters.R.
+    # Arial/Helvetica/sans-serif fra CSS-stakken i config_branding_getters.R.
     ""
   }
 

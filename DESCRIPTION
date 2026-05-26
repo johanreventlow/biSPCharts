@@ -79,5 +79,5 @@ Config/Notes: qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded me
 Remotes: johanreventlow/BFHcharts@v0.20.0,
     johanreventlow/BFHtheme@v0.5.0,
     johanreventlow/BFHllm@v0.2.0,
-    johanreventlow/BFHchartsAssets@main
+    johanreventlow/BFHchartsAssets@v0.1.2
 Config/roxygen2/version: 8.0.0

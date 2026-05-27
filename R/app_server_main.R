@@ -263,6 +263,9 @@ main_app_server <- function(input, output, session) {
   ## "Rapporter fejl"-modul (tilbagenavigation til forrige tab)
   mod_report_bug_server("report_bug", parent_session = session, app_state = app_state)
 
+  ## "Om os"-modul (tilbagenavigation til forrige tab)
+  mod_about_server("about", parent_session = session, app_state = app_state)
+
   ## Landing page modul
   mod_landing_server("landing", parent_session = session, app_state = app_state)
 

@@ -141,10 +141,15 @@ create_brand_theme <- function(config = NULL) {
         "navbar-dark-active-color" = "white",
         "navbar-dark-brand-color" = "white",
 
-        # Typografi: Mari med Arial-fallback
+        # Typografi: Mari-font globalt. Tekst-skala (18px-base, h1-h4-sizes)
+        # scopes til .info-page + modal via dedicated CSS for at undgaa overflow
+        # i fast-dashboard-layouts (wizard-trins). Links er Bispebjerg-blaa
+        # globalt for konsistent visuel sprog.
         "font-family-base" = "Mari, Arial, Helvetica, sans-serif",
         "headings-font-family" = "Mari, Arial, Helvetica, sans-serif",
-        "headings-font-weight" = 400
+        "link-color" = "#005F8F",
+        "link-decoration" = "underline",
+        "link-hover-color" = "#003e5d"
       ) |>
         # Knapper: lysere sekundaer-knapper end koncern-graa
         bslib::bs_add_rules(paste0(

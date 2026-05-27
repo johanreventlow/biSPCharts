@@ -17,7 +17,7 @@ mod_report_bug_ui <- function(id) {
   mailto_url <- build_bug_report_mailto()
 
   shiny::div(
-    class = "container-fluid",
+    class = "container-fluid info-page",
     style = "max-width: 900px; margin: 0 auto; padding: 30px 20px;",
     help_back_link(ns),
     shiny::tags$h1("Rapport\u00e9r fejl"),

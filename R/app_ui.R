@@ -51,6 +51,26 @@ app_ui <- function(request) {
       /* Graa linkfarve paa hjaelpesider (matcher download-template-link) */
       .tab-pane a { color: #666666; }
       .tab-pane a:hover { color: #333333; }
+      /* Tekst-sider (.info-page): bispebjerghospital.dk-skala. */
+      /* Wizard-trins + navbar bevarer Bootstrap-default 16px-base */
+      /* (theme er reverteret til default for at undgaa overflow). */
+      .info-page {
+        font-size: 1.125rem;
+        line-height: 1.5;
+        color: #333;
+      }
+      .info-page p,
+      .info-page li,
+      .info-page dt,
+      .info-page dd {
+        font-size: 1.125rem;
+        color: #333;
+      }
+      .info-page h1 { font-size: 3rem; font-weight: 300; color: #333; line-height: 1.2; }
+      .info-page h2 { font-size: 1.875rem; font-weight: 700; color: #333; line-height: 1.2; }
+      .info-page h3 { font-size: 1rem; font-weight: 700; color: #333; }
+      .info-page h4 { font-size: 0.875rem; font-weight: 700; color: #333; }
+      .info-page .lead { font-size: 1.4rem; font-weight: 400; color: #333; }
     ")),
     # Your application UI logic
     bslib::page_navbar(

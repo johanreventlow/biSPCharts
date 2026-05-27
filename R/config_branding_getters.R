@@ -141,37 +141,16 @@ create_brand_theme <- function(config = NULL) {
         "navbar-dark-active-color" = "white",
         "navbar-dark-brand-color" = "white",
 
-        # Typografi: Mari med Arial-fallback
-        # Skala matcher bispebjerghospital.dk Region H-pattern:
-        # H1 48px/300, H2 30px/500, H3 16px/700, H4 14px/700, body 18px/400, lead 22.4px/400.
+        # Typografi: Mari-font globalt. Tekst-skala (18px-base, h1-h4-sizes)
+        # scopes til .info-page + modal via dedicated CSS for at undgaa overflow
+        # i fast-dashboard-layouts (wizard-trins). Links er Bispebjerg-blaa
+        # globalt for konsistent visuel sprog.
         "font-family-base" = "Mari, Arial, Helvetica, sans-serif",
-        "font-size-base" = "1.125rem",
-        "body-color" = "#333",
-        "body-line-height" = 1.5,
         "headings-font-family" = "Mari, Arial, Helvetica, sans-serif",
-        # Mari leveres som Light(300)/Book(400)/Bold(700)/Heavy(800) -- ingen 500-fil.
-        # h2 = 700 = Mari-Bold (site bruger "maribold"-fil med CSS-weight 500, men
-        # vi har kun Mari-Bold-filen, saa weight 700 sikrer korrekt font-valg).
-        "headings-font-weight" = 700,
-        "headings-color" = "#333",
-        "headings-line-height" = 1.2,
-        "h1-font-size" = "3rem",
-        "h2-font-size" = "1.875rem",
-        "h3-font-size" = "1rem",
-        "h4-font-size" = "0.875rem",
-        "lead-font-size" = "1.4rem",
-        "lead-font-weight" = 400,
-        # Links: Bispebjerg-blaa (#005F8F) i stedet for Bootstrap primary
         "link-color" = "#005F8F",
         "link-decoration" = "underline",
         "link-hover-color" = "#003e5d"
       ) |>
-        # Heading-vaegt-afvigelser (h2 bruger headings-font-weight default 500).
-        # h1 = light (300), h3+h4 = bold (700).
-        bslib::bs_add_rules(paste0(
-          "h1, .h1 { font-weight: 300; }",
-          "h3, .h3, h4, .h4 { font-weight: 700; }"
-        )) |>
         # Knapper: lysere sekundaer-knapper end koncern-graa
         bslib::bs_add_rules(paste0(
           ".btn-secondary {",

@@ -1,5 +1,17 @@
 # biSPCharts (development)
 
+## Bug fixes
+
+* **Connect Cloud: ggplot bruger nu Mari, ikke Roboto-fallback.**
+  `.onLoad` rydder nu `BFHtheme:::clear_bfh_font_cache()` efter
+  `register_mari_font()`/`register_roboto_font()`. Belt-and-suspenders
+  mod scenarier hvor BFHtheme's font-detection-cache er låst på en
+  fallback (fx hvis `theme_bfh()` blev kaldt før `.onLoad` var færdig).
+  Den fulde fix kræver BFHtheme >= 0.5.1 hvor `font_available()` nu
+  konsulterer både `system_fonts()` og `registry_fonts()` (PR
+  johanreventlow/BFHtheme#73). Lower-bound bump følger separat når
+  BFHtheme 0.5.1 er tagget.
+
 ## Dependency bumps
 
 * `BFHchartsAssets (>= 0.1.2)` — adopterer kilden-fix for Mari-font

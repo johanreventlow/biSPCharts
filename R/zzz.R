@@ -224,6 +224,27 @@ reset_qic_performance_counters <- function() {
     register_roboto_font()
   }
 
+  # BFHtheme::get_bfh_font() cacher foerste match. Hvis noget kaldte
+  # theme_bfh() FOeR vores font-registreringer ovenfor (fx via en
+  # tidlig roxygen-load, en namespace-side-effekt, eller seeded test-
+  # harness), kunne cachen nu vaere laast paa "Roboto"/"sans" selvom
+  # Mari nu er tilgaengelig i registry'et. Belt-and-suspenders: ryd
+  # cachen efter registrering saa naeste get_bfh_font()-kald gen-
+  # detekterer Mari korrekt. Kraever BFHtheme >= 0.5.1 (font_available
+  # konsulterer registry_fonts) for at have effekt paa Connect Cloud.
+  if (requireNamespace("BFHtheme", quietly = TRUE)) {
+    tryCatch(
+      suppressMessages(BFHtheme:::clear_bfh_font_cache()),
+      error = function(e) {
+        # nolint next: swallowed_error_linter
+        # Begrundelse: BFHtheme er en valgfri runtime-dependency for
+        # font-cache-clear under .onLoad; logger ikke aktivt endnu, og en
+        # fejl her er kosmetisk (paavirker ej app-funktionalitet).
+        NULL
+      }
+    )
+  }
+
   # Defense-in-depth: vaer sikker paa BFHcharts >= 0.14.0 er installeret.
   # bfh_create_typst_document() er foerst public i 0.14.0.
   if (utils::packageVersion("BFHcharts") < "0.14.0") {

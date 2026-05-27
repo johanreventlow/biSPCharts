@@ -26,7 +26,7 @@ mod_help_ui <- function(id) {
   }
 
   shiny::div(
-    class = "container-fluid",
+    class = "container-fluid info-page",
     style = "max-width: 900px; margin: 0 auto; padding: 30px 20px;",
 
     # Tilbagelink til forrige side

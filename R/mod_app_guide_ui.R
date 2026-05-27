@@ -237,9 +237,34 @@ app_guide_intro_slides <- function() {
         ),
         shiny::div(
           class = "alert alert-info mt-3 mb-0",
-          shiny::tags$strong("Dataformat: "),
-          "En almindelig tabel med \u00e9n r\u00e6kke per observation. ",
-          "Mindst en kolonne til tid/kategori og en kolonne med v\u00e6rdien."
+          shiny::tags$p(
+            class = "mb-2",
+            shiny::tags$strong("Dataformat: "),
+            "En almindelig tabel med \u00e9n r\u00e6kke per observation."
+          ),
+          shiny::tags$p(
+            class = "mb-1",
+            "Som minimum kr\u00e6ves to kolonner:"
+          ),
+          shiny::tags$ul(
+            class = "mb-2",
+            shiny::tags$li("Tid/kategori (fx dato, uge, m\u00e5ned)"),
+            shiny::tags$li("V\u00e6rdi \u2014 det tal du vil f\u00f8lge")
+          ),
+          shiny::tags$p(
+            class = "mb-1",
+            "Valgfrit kan du tilf\u00f8je:"
+          ),
+          shiny::tags$ul(
+            class = "mb-2",
+            shiny::tags$li("N\u00e6vner \u2014 hvis du arbejder med andele eller rater"),
+            shiny::tags$li("Kommentar \u2014 noter der vises p\u00e5 diagrammet")
+          ),
+          shiny::tags$p(
+            class = "mb-0",
+            "Kolonnerne kan hedde hvad som helst. P\u00e5 n\u00e6ste trin kan du justere, ",
+            "hvordan appen har forst\u00e5et dem."
+          )
         )
       )
     ),

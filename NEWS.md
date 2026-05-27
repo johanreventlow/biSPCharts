@@ -1,6 +1,31 @@
 # biSPCharts (development)
 
+## Bug fixes
+
+* **Connect Cloud: ggplot bruger nu Mari, ikke Roboto-fallback.**
+  Trippel fix der lukker hele kæden fra font-detection til rendering:
+    1. **Cache-clear i `.onLoad`** efter `register_mari_font()` /
+       `register_roboto_font()` — belt-and-suspenders mod scenarier hvor
+       BFHtheme's font-detection-cache er låst på en fallback (fx hvis
+       `theme_bfh()` blev kaldt før `.onLoad` var færdig).
+    2. **ragg som default renderer.** Cairo PNG (Shiny's legacy default
+       på Linux) bruger fontconfig til font-resolution, og fontconfig
+       kan IKKE se fonts registreret via `systemfonts::register_font()`.
+       ragg konsulterer derimod systemfonts-registry'et direkte via
+       `match_fonts()`. `ragg` tilføjet til Imports + manifest.json,
+       og `.onLoad` sætter eksplicit `options(shiny.useragg = TRUE)`.
+    3. **Den fulde fix kræver også BFHtheme >= 0.5.1** hvor
+       `font_available()` nu konsulterer både `system_fonts()` og
+       `registry_fonts()` (PR johanreventlow/BFHtheme#73). Lower-bound
+       bump følger separat når BFHtheme 0.5.1 er tagget.
+
 ## Dependency bumps
+
+* `ragg (>= 1.2.0)` tilføjet til Imports — påkrævet for at Shiny
+  renderPlot kan tegne ggplot med fonts registreret via
+  `systemfonts::register_font()` på Linux deploy-targets (Posit
+  Connect Cloud). Cairo PNG (legacy default) bruger fontconfig og
+  ser ikke registry-fonts.
 
 * `BFHchartsAssets (>= 0.1.2)` — adopterer kilden-fix for Mari-font
   glyph "1"-anomali. BFHchartsAssets PR #2 patcher alle 6 Mari-*.otf-

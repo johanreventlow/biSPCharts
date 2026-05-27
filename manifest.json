@@ -4842,15 +4842,6 @@
     "DESCRIPTION": {
       "checksum": "2113045db4f8bf84f90040485bc6106c"
     },
-    "inst/.DS_Store": {
-      "checksum": "1ad883d77f4fa1366f539db331cbe44f"
-    },
-    "inst/app/.DS_Store": {
-      "checksum": "7d1074f35bdcf0254f79c4bc24363b97"
-    },
-    "inst/app/www/.DS_Store": {
-      "checksum": "18818c0d6bec754f431019ecba7c71ac"
-    },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
     },
@@ -4862,9 +4853,6 @@
     },
     "inst/app/www/cookie-consent.js": {
       "checksum": "7189fd2166a28917be429a708f9a0234"
-    },
-    "inst/app/www/help/.DS_Store": {
-      "checksum": "194577a7e20bdcc7afbb718f502c134c"
     },
     "inst/app/www/help/01-run-chart-stabil.png": {
       "checksum": "52fe486fe9191060c766afa64afe24f3"
@@ -4991,9 +4979,6 @@
     },
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
-    },
-    "manifest.json": {
-      "checksum": "46e2dbaca8e9735c733cd5f81fa89885"
     },
     "NAMESPACE": {
       "checksum": "b9cf8aced2ef17dc040af58c1db3c830"

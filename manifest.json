@@ -3342,6 +3342,44 @@
         "RemoteSha": "0.8.1"
       }
     },
+    "ragg": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Type": "Package",
+        "Package": "ragg",
+        "Title": "Graphic Devices Based on AGG",
+        "Version": "1.5.2",
+        "Authors@R": "c(\n    person(\"Thomas Lin\", \"Pedersen\", , \"thomas.pedersen@posit.co\", role = c(\"cre\", \"aut\"),\n           comment = c(ORCID = \"0000-0002-5147-4711\")),\n    person(\"Maxim\", \"Shemanarev\", role = c(\"aut\", \"cph\"),\n           comment = \"Author of AGG\"),\n    person(\"Tony\", \"Juricic\", , \"tonygeek@yahoo.com\", role = c(\"ctb\", \"cph\"),\n           comment = \"Contributor to AGG\"),\n    person(\"Milan\", \"Marusinec\", , \"milan@marusinec.sk\", role = c(\"ctb\", \"cph\"),\n           comment = \"Contributor to AGG\"),\n    person(\"Spencer\", \"Garrett\", role = \"ctb\",\n           comment = \"Contributor to AGG\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\"))\n  )",
+        "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+        "Description": "Anti-Grain Geometry (AGG) is a high-quality and\n    high-performance 2D drawing library. The 'ragg' package provides a set\n    of graphic devices based on AGG to use as alternative to the raster\n    devices provided through the 'grDevices' package.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://ragg.r-lib.org, https://github.com/r-lib/ragg",
+        "BugReports": "https://github.com/r-lib/ragg/issues",
+        "Imports": "systemfonts (>= 1.0.3), textshaping (>= 0.3.0)",
+        "Suggests": "covr, graphics, grid, testthat (>= 3.0.0)",
+        "LinkingTo": "systemfonts, textshaping",
+        "Config/build/compilation-database": "true",
+        "Config/Needs/website": "ggplot2, devoid, magick, bench, tidyr, ggridges,\nhexbin, sessioninfo, pkgdown, tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Config/usethis/last-upkeep": "2025-04-25",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.3",
+        "SystemRequirements": "freetype2, libpng, libtiff, libjpeg, libwebp,\nlibwebpmux",
+        "NeedsCompilation": "yes",
+        "Packaged": "2026-03-16 07:50:17 UTC; thomas",
+        "Author": "Thomas Lin Pedersen [cre, aut] (ORCID:\n    <https://orcid.org/0000-0002-5147-4711>),\n  Maxim Shemanarev [aut, cph] (Author of AGG),\n  Tony Juricic [ctb, cph] (Contributor to AGG),\n  Milan Marusinec [ctb, cph] (Contributor to AGG),\n  Spencer Garrett [ctb] (Contributor to AGG),\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-03-23 08:50:08 UTC",
+        "Built": "R 4.5.2; aarch64-apple-darwin20; 2026-03-23 09:05:47 UTC; unix",
+        "Archs": "ragg.so.dSYM",
+        "RemoteType": "standard",
+        "RemotePkgRef": "ragg",
+        "RemoteRef": "ragg",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.5.2"
+      }
+    },
     "ragnar": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -4802,7 +4840,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "e112cdc5c4137ac949aeaac3d436fc5b"
+      "checksum": "2113045db4f8bf84f90040485bc6106c"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4817,19 +4855,19 @@
       "checksum": "7189fd2166a28917be429a708f9a0234"
     },
     "inst/app/www/help/01-run-chart-stabil.png": {
-      "checksum": "09201a8c8cc7623b622d2dd9f1bde626"
+      "checksum": "52fe486fe9191060c766afa64afe24f3"
     },
-    "inst/app/www/help/02-variation-sammenligning.png": {
-      "checksum": "9ca0b83e521d5751ba9a11bd459c5704"
+    "inst/app/www/help/02-niveauskift.png": {
+      "checksum": "5a2edf3a8bb0d81bef6edd57956363a4"
     },
-    "inst/app/www/help/03-diagram-annoteret.png": {
-      "checksum": "8fdd71c1c90d0eaa6b441589b3caeb44"
+    "inst/app/www/help/03-seriediagram-annoteret.png": {
+      "checksum": "3d87e983d54c577a95630e68d1f26310"
     },
     "inst/app/www/help/04-anhoej-signal.png": {
-      "checksum": "c25e22603cbc59de70a0f12151087bfa"
+      "checksum": "cd05e9142fc1def79dc9c2f025c665f4"
     },
     "inst/app/www/help/05-p-chart.png": {
-      "checksum": "b7933561b2de61e4521fd155571627b3"
+      "checksum": "0965ab680b3d61b09bc9f949dcbe65c2"
     },
     "inst/app/www/help/06a-trin1-upload.png": {
       "checksum": "740f2677c4a0c96e16d68f1d2e3dffc9"
@@ -4955,19 +4993,19 @@
       "checksum": "d85bbd8c1967f0d78e01081616a4e723"
     },
     "R/app_server_main.R": {
-      "checksum": "24369a76507c6172f1b52d197cbaed0d"
+      "checksum": "e4d7b10a9d62bae8a52f5084acecf35e"
     },
     "R/app_server.R": {
       "checksum": "c97a964c3c2b954be459b38cc6fef0e4"
     },
     "R/app_ui.R": {
-      "checksum": "b677cca6fa49b03929b43bc30c9f5b04"
+      "checksum": "feae2fa63f1e6e8fe78a81e4dd40a6f7"
     },
     "R/config_analytics.R": {
       "checksum": "5a2e6a33573869e94ac5b43e6f27f0b9"
     },
     "R/config_branding_getters.R": {
-      "checksum": "755ec9cef515962e33c5b25882f84052"
+      "checksum": "cb066b1eac8c4724f030e0006c1b6fbc"
     },
     "R/config_chart_types.R": {
       "checksum": "cf03e313f2c208f032d9227848831465"
@@ -5089,8 +5127,14 @@
     "R/golem_utils.R": {
       "checksum": "ba1180b923c7f4425ff5b7788c734336"
     },
+    "R/mod_about_server.R": {
+      "checksum": "a83e2c12d1e07745310dc0e1e7c98683"
+    },
+    "R/mod_about_ui.R": {
+      "checksum": "8b2d58e256221443ed2d2a9524534aa1"
+    },
     "R/mod_app_guide_ui.R": {
-      "checksum": "567b186a738998ca103f697524bcd28b"
+      "checksum": "8cd0b9fd8547487ab33a5fd9d544af78"
     },
     "R/mod_export_ai.R": {
       "checksum": "3e05bee8423d5db8e433202bf34e5d66"
@@ -5111,7 +5155,7 @@
       "checksum": "1dbd9afb732efdf03222ebab03e29762"
     },
     "R/mod_help_ui.R": {
-      "checksum": "b5825df9e9a38821f07b2c6d9831cc3d"
+      "checksum": "280b5ecbe74b97189eeba1b966c0a18c"
     },
     "R/mod_landing_server.R": {
       "checksum": "81da0c8c3f74ad1a37ec39e7c35444d8"
@@ -5123,7 +5167,7 @@
       "checksum": "0fda8b12eb1539b1164ffad60337e893"
     },
     "R/mod_report_bug_ui.R": {
-      "checksum": "36152139d2c80c484b0f9ce84211d6c5"
+      "checksum": "083c17739e20efc9f95a5ec9ed11694f"
     },
     "R/mod_spc_chart_compute.R": {
       "checksum": "9d500938ae08606bc7a9bf5cc91421cb"
@@ -5246,7 +5290,7 @@
       "checksum": "68908bd7f0038bcbeb637e0c56ab9569"
     },
     "R/utils_server_column_management.R": {
-      "checksum": "1867833208a01e4b9d23d9bbd906cb74"
+      "checksum": "547dd3d3bc4d4ba6e35105239dfb9fb5"
     },
     "R/utils_server_event_listeners.R": {
       "checksum": "456128f7233f32e0bf62161edb8e6e55"
@@ -5330,7 +5374,7 @@
       "checksum": "2a89e70626500a1b8267ecb603047ff5"
     },
     "R/utils_ui_app_layout.R": {
-      "checksum": "c9b138876dec18ffa5aa5dc576f3a0f1"
+      "checksum": "da12c58ef7963b33b0883ba01e249572"
     },
     "R/utils_ui_column_sync.R": {
       "checksum": "cfb8a0e40df0094e786ba865c1caef30"
@@ -5363,7 +5407,7 @@
       "checksum": "66f44772ca3108f367347e54ff91ebae"
     },
     "R/zzz.R": {
-      "checksum": "ad32ff26f43f3842a572d684737ab410"
+      "checksum": "8af6a97ee8d87cbefd81882e728c7667"
     }
   },
   "users": null

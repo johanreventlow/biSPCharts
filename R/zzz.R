@@ -245,6 +245,19 @@ reset_qic_performance_counters <- function() {
     )
   }
 
+  # Tving Shiny til at bruge ragg som default renderer. Cairo PNG (Shiny's
+  # legacy default paa Linux) bruger fontconfig til font-resolution, og
+  # fontconfig kan IKKE se fonts registreret via systemfonts::register_font().
+  # ragg konsulterer derimod systemfonts-registry'et direkte via
+  # match_fonts(). Uden dette ville Mari (registreret i registry ovenfor)
+  # vaere usynlig for renderen paa Posit Connect Cloud, selv om
+  # BFHtheme::get_bfh_font() returnerer "Mari" som base_family. Shiny
+  # >= 1.7.4 auto-detekterer ragg hvis installeret, men eksplicit option
+  # er belt-and-suspenders mod future-default-aendringer.
+  if (requireNamespace("ragg", quietly = TRUE)) {
+    options(shiny.useragg = TRUE)
+  }
+
   # Defense-in-depth: vaer sikker paa BFHcharts >= 0.14.0 er installeret.
   # bfh_create_typst_document() er foerst public i 0.14.0.
   if (utils::packageVersion("BFHcharts") < "0.14.0") {

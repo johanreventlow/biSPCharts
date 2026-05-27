@@ -26,17 +26,30 @@ create_ui_header <- function() {
     # `font-family: 'Mari'` resulterede i forkert weight-rendering i browser.
     # Mari-*.otf filerne er authoritative-navngivne (BFHchartsAssets v0.1.0).
     "
-      /* Mari hospital font via BFHchartsAssets companion-pakke (@font-face) */
+      /* Mari hospital font via BFHchartsAssets companion-pakke (@font-face). */
+      /* 4 vaegte: Light (300, H1), Book (400, body), Bold (700, H3/H4), Heavy (800). */
+      @font-face {
+        font-family: 'Mari';
+        src: url('bfh_assets/Mari-Light.otf') format('opentype');
+        font-weight: 300;
+        font-style: normal;
+      }
       @font-face {
         font-family: 'Mari';
         src: url('bfh_assets/Mari-Book.otf') format('opentype');
-        font-weight: normal;
+        font-weight: 400;
         font-style: normal;
       }
       @font-face {
         font-family: 'Mari';
         src: url('bfh_assets/Mari-Bold.otf') format('opentype');
-        font-weight: bold;
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: 'Mari';
+        src: url('bfh_assets/Mari-Heavy.otf') format('opentype');
+        font-weight: 800;
         font-style: normal;
       }
     "
@@ -423,31 +436,32 @@ create_ui_header <- function() {
       margin-bottom: 12px;
       align-self: flex-start;
     }
+    /* Modal-typografi foelger Bispebjerg-site-pattern (Mari, #333). */
+    /* Title = h2-pendant (30px / weight 700). Body arver 18px fra theme. */
     .app-guide-title {
-      font-size: 26px;
-      font-weight: 600;
+      font-size: 1.875rem;
+      font-weight: 700;
       margin: 0 0 12px 0;
-      color: #1a2a30;
+      color: #333;
       line-height: 1.2;
     }
     .app-guide-body {
-      font-size: 16px;
-      line-height: 1.55;
-      color: #4b5659;
+      line-height: 1.5;
+      color: #333;
     }
     .app-guide-body p { margin: 0 0 8px 0; }
     .app-guide-body p:last-child { margin-bottom: 0; }
-    .app-guide-body strong { color: #1a2a30; }
+    .app-guide-body strong { color: #333; }
     .app-guide-body code {
-      background: rgba(0, 125, 187, 0.08);
-      color: #007dbb;
+      background: rgba(0, 95, 143, 0.08);
+      color: #005F8F;
       padding: 1px 5px;
       border-radius: 0;
       font-size: 0.9em;
     }
     .app-guide-body table {
       width: 100%;
-      font-size: 14px;
+      font-size: 1rem;
       border-collapse: collapse;
       margin-top: 6px;
     }
@@ -456,31 +470,66 @@ create_ui_header <- function() {
       border: 1px solid #d6d6d6;
       padding: 5px 8px;
       text-align: left;
+      color: #333;
     }
     .app-guide-body table th {
       background: #ebebeb;
-      font-weight: 600;
+      font-weight: 700;
     }
     .app-guide-body dl {
       margin: 0 0 0.5rem 0;
     }
     .app-guide-body dt {
-      font-weight: 600;
-      color: #1a2a30;
+      font-weight: 700;
+      color: #333;
       margin-top: 0.4rem;
-      font-size: 16px;
     }
     .app-guide-body dt:first-child { margin-top: 0; }
     .app-guide-body dd {
       margin: 0 0 0.4rem 1rem;
-      color: #4b5659;
-      font-size: 16px;
+      color: #333;
     }
     .app-guide-body .alert {
-      font-size: 15px;
+      font-size: 1rem;
       padding: 8px 12px;
       margin-top: 10px;
       border-radius: 0;
+    }
+    /* Lysere alert-farver matcher media-gradient (#ccebfa->#e8f4f8) */
+    /* Moerkere tekst sikrer WCAG AA-kontrast paa lys baggrund */
+    .app-guide-body .alert-info {
+      background-color: #e8f4f8;
+      border-color: #ccebfa;
+      color: #0c4a6e;
+    }
+    .app-guide-body .alert-info strong {
+      color: #0c4a6e;
+    }
+    .app-guide-body .alert-warning {
+      background-color: #fef9e7;
+      border-color: #fbe9a6;
+      color: #6b5300;
+    }
+    .app-guide-body .alert-warning strong {
+      color: #6b5300;
+    }
+    /* info-page: delt class for tekst-sider (Laer om SPC, Rapporter fejl). */
+    /* Samme alert-palette som app-guide-modal for visuel konsistens. */
+    .info-page .alert-info {
+      background-color: #e8f4f8;
+      border-color: #ccebfa;
+      color: #0c4a6e;
+    }
+    .info-page .alert-info strong {
+      color: #0c4a6e;
+    }
+    .info-page .alert-warning {
+      background-color: #fef9e7;
+      border-color: #fbe9a6;
+      color: #6b5300;
+    }
+    .info-page .alert-warning strong {
+      color: #6b5300;
     }
     .app-guide-indicators {
       position: absolute;

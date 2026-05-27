@@ -26,7 +26,7 @@ mod_help_ui <- function(id) {
   }
 
   shiny::div(
-    class = "container-fluid",
+    class = "container-fluid info-page",
     style = "max-width: 900px; margin: 0 auto; padding: 30px 20px;",
 
     # Tilbagelink til forrige side
@@ -34,7 +34,7 @@ mod_help_ui <- function(id) {
     shiny::tags$h1("L\u00e6r om SPC"),
     shiny::tags$p(
       class = "lead",
-      "SPC hj\u00e6lper dig med at se, om en proces bare varierer naturligt, ",
+      "SPC hj\u00e6lper dig med at se, om en proces varierer tilf\u00e6ldigt \u2014 alts\u00e5 naturligt \u2014 ",
       "eller om der er tegn p\u00e5 en reel \u00e6ndring."
     ),
     shiny::tags$p(
@@ -118,7 +118,7 @@ mod_help_ui <- function(id) {
         shiny::tags$strong("Pas p\u00e5 databrud: "),
         "Hvis definitionen, datakilden eller opg\u00f8relsesmetoden \u00e6ndrer sig, ",
         "kan diagrammet vise et signal, der skyldes m\u00e5den data er opgjort p\u00e5 ",
-        "- ikke en reel proces\u00e6ndring."
+        "\u2014 ikke en reel proces\u00e6ndring."
       ),
       shiny::tags$hr()
     ),
@@ -128,7 +128,7 @@ mod_help_ui <- function(id) {
       id = "spc-variation",
       shiny::tags$h2("To typer variation"),
       shiny::tags$p(
-        "Den vigtigste skelnen i SPC er mellem tilf\u00e6ldig variation og s\u00e6rlig variation."
+        "Den vigtigste skelnen i SPC er mellem tilf\u00e6ldig variation og ikke-tilf\u00e6ldig variation."
       ),
       shiny::div(
         class = "row mb-3",
@@ -155,7 +155,7 @@ mod_help_ui <- function(id) {
             class = "card h-100",
             shiny::tags$div(
               class = "card-body",
-              shiny::tags$h5("S\u00e6rlig variation", class = "card-title text-danger"),
+              shiny::tags$h5("Ikke-tilf\u00e6ldig (eller s\u00e6rlig) variation", class = "card-title text-danger"),
               shiny::tags$p(
                 class = "card-text",
                 "Ogs\u00e5 kaldet ",
@@ -178,9 +178,9 @@ mod_help_ui <- function(id) {
         "Hvis niveauet er utilfredsstillende, kr\u00e6ver forbedring typisk en \u00e6ndring af selve systemet."
       ),
       help_image(
-        "www/help/02-variation-sammenligning.png",
-        "Sammenligning af stabil proces og proces med niveauskift",
-        "Venstre: Stabil proces. H\u00f8jre: Proces med et tydeligt niveauskift."
+        "www/help/02-niveauskift.png",
+        "Proces med tydeligt niveauskift",
+        "Proces med et tydeligt niveauskift."
       ),
       shiny::tags$hr()
     ),
@@ -212,7 +212,7 @@ mod_help_ui <- function(id) {
         shiny::tags$dd(class = "col-sm-9", "N\u00e5r linjen krydser midterlinjen.")
       ),
       help_image(
-        "www/help/03-diagram-annoteret.png",
+        "www/help/03-seriediagram-annoteret.png",
         "Seriediagram med annotationer der viser midterlinje, serie og kryds",
         "Et seriediagram med midterlinje, markeret serie og kryds."
       ),
@@ -279,7 +279,7 @@ mod_help_ui <- function(id) {
         "at data varierer, hvis processen er stabil."
       ),
       shiny::tags$p(
-        "Punkter uden for kontrolgr\u00e6nserne er st\u00e6rke signaler om s\u00e6rlig variation. ",
+        "Punkter uden for kontrolgr\u00e6nserne er st\u00e6rke signaler om ikke-tilf\u00e6ldig variation. ",
         "De skal ikke bare ignoreres som st\u00f8j, men de skal heller ikke tolkes uden lokal viden."
       ),
       shiny::div(
@@ -400,7 +400,7 @@ mod_help_ui <- function(id) {
       id = "spc-fortolkning",
       shiny::tags$h2("Fra signal til handling"),
       shiny::tags$p(
-        "Et SPC-signal er starten p\u00e5 en faglig vurdering - ikke slutningen. ",
+        "Et SPC-signal er starten p\u00e5 en faglig vurdering \u2014 ikke slutningen. ",
         "Appen kan vise, at et m\u00f8nster er us\u00e6dvanligt, men den kan ikke alene forklare hvorfor."
       ),
       shiny::tags$h4("Gode sp\u00f8rgsm\u00e5l n\u00e5r der er signal"),
@@ -426,7 +426,7 @@ mod_help_ui <- function(id) {
         shiny::tags$li(
           shiny::tags$strong("For f\u00e5 datapunkter: "),
           "Meget korte serier kan give usikre signalvurderinger. ",
-          "Brug derfor mindst 12 datapunkter i en serie - og helst 20 eller flere - ",
+          "Brug derfor mindst 12 datapunkter i en serie \u2014 og helst 20 eller flere \u2014 ",
           "f\u00f8r signalvurderingen till\u00e6gges stor v\u00e6gt."
         ),
         shiny::tags$li(

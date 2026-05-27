@@ -43,26 +43,6 @@
 setup_column_management <- function(input, output, session, app_state, emit) {
   log_debug_block("COLUMN_MGMT", "Setting up column management")
 
-  # Auto-detekterings knap handler - koerer altid naar bruger trykker
-  # AUTO_DETECT-priority: kolonne-detection er central data-processing.
-  shiny::observeEvent(input$auto_detect_columns,
-    priority = OBSERVER_PRIORITIES$AUTO_DETECT,
-    {
-      safe_operation(
-        "Manual auto-detection trigger",
-        code = {
-          emit$manual_autodetect_button() # triggerer event-listener med frozen state-bypass
-        },
-        fallback = NULL,
-        session = session,
-        show_user = TRUE,
-        error_type = "processing",
-        emit = emit,
-        app_state = app_state
-      )
-    }
-  )
-
   # Aabn modal til kolonne-mapping. Modal-felterne erstatter den tidligere
   # inline-mapping over datatabellen. STATUS_UPDATES-priority (UI-kun).
   shiny::observeEvent(input$open_column_mapping_modal,
@@ -209,7 +189,8 @@ handle_column_name_changes <- function(input, session, app_state = NULL, emit = 
 
 ## Vis kolonne-mapping modal
 # Viser modal med 6 dropdowns til mapping af datakolonner til SPC-variable.
-# Erstatter den tidligere inline-mapping og samler ogsaa Auto-detekt-knappen.
+# Erstatter den tidligere inline-mapping over datatabellen. Auto-detect
+# koerer automatisk paa session_started -- ingen manuel knap noedvendig.
 show_column_mapping_modal <- function(session, app_state) {
   current_data <- app_state$data$current_data
   shiny::req(current_data)
@@ -226,16 +207,7 @@ show_column_mapping_modal <- function(session, app_state) {
     size = "l",
     easyClose = TRUE,
     create_inline_column_mapping(choices = choices, mappings = mappings),
-    footer = shiny::tagList(
-      shiny::actionButton(
-        "auto_detect_columns",
-        label = "Auto-detekt\u00e9r kolonner",
-        icon = shiny::icon("magic"),
-        title = "Lad appen forsl\u00e5 kolonne-tildelinger ud fra data",
-        class = "btn-primary"
-      ),
-      shiny::modalButton("Luk")
-    )
+    footer = shiny::modalButton("Luk")
   ))
 }
 

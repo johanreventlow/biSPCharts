@@ -18,11 +18,13 @@ app_ui <- function(request) {
       .navbar .nav-link[data-value='eksporter'],
       .navbar .nav-link[data-value='hjaelp'],
       .navbar .nav-link[data-value='rapporter_fejl'],
+      .navbar .nav-link[data-value='om_os'],
       .navbar .nav-item:has(.nav-link[data-value='upload']),
       .navbar .nav-item:has(.nav-link[data-value='analyser']),
       .navbar .nav-item:has(.nav-link[data-value='eksporter']),
       .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
       .navbar .nav-item:has(.nav-link[data-value='rapporter_fejl']),
+      .navbar .nav-item:has(.nav-link[data-value='om_os']),
       .navbar .nav-item:has(#session_save_status) {
         display: none !important;
       }
@@ -31,6 +33,7 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='eksporter']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='hjaelp']),
       body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='rapporter_fejl']),
+      body.wizard-nav-active .navbar .nav-item:has(.nav-link[data-value='om_os']),
       body.wizard-nav-active .navbar .nav-item:has(#session_save_status) {
         display: flex !important;
         align-items: center;
@@ -39,7 +42,8 @@ app_ui <- function(request) {
       body.wizard-nav-active .navbar .nav-link[data-value='analyser'],
       body.wizard-nav-active .navbar .nav-link[data-value='eksporter'],
       body.wizard-nav-active .navbar .nav-link[data-value='hjaelp'],
-      body.wizard-nav-active .navbar .nav-link[data-value='rapporter_fejl'] {
+      body.wizard-nav-active .navbar .nav-link[data-value='rapporter_fejl'],
+      body.wizard-nav-active .navbar .nav-link[data-value='om_os'] {
         display: block !important;
       }
       /* Flash-mitigation: undgaa tom landing mens peek-resultatet afklares */
@@ -47,6 +51,26 @@ app_ui <- function(request) {
       /* Graa linkfarve paa hjaelpesider (matcher download-template-link) */
       .tab-pane a { color: #666666; }
       .tab-pane a:hover { color: #333333; }
+      /* Tekst-sider (.info-page): bispebjerghospital.dk-skala. */
+      /* Wizard-trins + navbar bevarer Bootstrap-default 16px-base */
+      /* (theme er reverteret til default for at undgaa overflow). */
+      .info-page {
+        font-size: 1.125rem;
+        line-height: 1.5;
+        color: #333;
+      }
+      .info-page p,
+      .info-page li,
+      .info-page dt,
+      .info-page dd {
+        font-size: 1.125rem;
+        color: #333;
+      }
+      .info-page h1 { font-size: 3rem; font-weight: 300; color: #333; line-height: 1.2; }
+      .info-page h2 { font-size: 1.875rem; font-weight: 700; color: #333; line-height: 1.2; }
+      .info-page h3 { font-size: 1rem; font-weight: 700; color: #333; }
+      .info-page h4 { font-size: 0.875rem; font-weight: 700; color: #333; }
+      .info-page .lead { font-size: 1.4rem; font-weight: 400; color: #333; }
     ")),
     # Your application UI logic
     bslib::page_navbar(
@@ -141,6 +165,14 @@ app_ui <- function(request) {
         icon = shiny::icon("bug"),
         value = "rapporter_fejl",
         mod_report_bug_ui("report_bug")
+      ),
+
+      # Om os (adskilt fra wizard-flow)
+      bslib::nav_panel(
+        title = "Om os",
+        icon = shiny::icon("circle-info"),
+        value = "om_os",
+        mod_about_ui("about")
       )
     )
   )

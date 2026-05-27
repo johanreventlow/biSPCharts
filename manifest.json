@@ -130,7 +130,7 @@
         "Package": "BFHtheme",
         "Type": "Package",
         "Title": "BFH Theme and Color Palettes for ggplot2",
-        "Version": "0.5.0",
+        "Version": "0.5.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "Provides comprehensive theming support for ggplot2 graphics\n    following Bispebjerg og Frederiksberg Hospital and Region Hovedstaden\n    visual identity guidelines. Includes color palettes for both Hospital\n    and Region H branding, themes, scale functions, and helper utilities\n    for creating consistent and professional visualizations. Uses modern\n    'systemfonts' package for robust font detection with graceful fallback.\n    Recommends 'ragg', 'svglite', and Cairo devices for high-quality output.",
         "License": "MIT + file LICENSE",
@@ -145,17 +145,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHtheme",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.5.0",
-        "RemoteSha": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
+        "RemoteRef": "v0.5.1",
+        "RemoteSha": "c70eab872e9418df32ddc68d15efc79e0c97f9bf",
         "GithubRepo": "BFHtheme",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.5.0",
-        "GithubSHA1": "82435c3a1e6d25d0bf6f7f0fdb539fcef6223f10",
+        "GithubRef": "v0.5.1",
+        "GithubSHA1": "c70eab872e9418df32ddc68d15efc79e0c97f9bf",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-26 20:09:01 UTC; johanreventlow",
+        "Packaged": "2026-05-27 23:02:39 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-26 20:09:01 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-27 23:02:39 UTC; unix"
       }
     },
     "BH": {
@@ -4840,7 +4840,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "2113045db4f8bf84f90040485bc6106c"
+      "checksum": "655ef77afb7cd67581b5815b25fed175"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"

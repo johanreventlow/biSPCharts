@@ -21,6 +21,14 @@
 
 ## Dependency bumps
 
+* `BFHtheme (>= 0.5.1)` tilføjet til Suggests + `johanreventlow/BFHtheme@v0.5.1`
+  i Remotes. BFHtheme 0.5.1 indeholder `font_available()`-fix der konsulterer
+  både `system_fonts()` og `registry_fonts()` (PR johanreventlow/BFHtheme#73).
+  Uden bumpet ville `BFHtheme::get_bfh_font()` ikke se Mari registreret via
+  `systemfonts::register_font()` i runtime og fortsat falde tilbage til
+  Roboto/sans på Posit Connect Cloud. Lukker det sidste led i font-fix-
+  kæden ovenfor.
+
 * `ragg (>= 1.2.0)` tilføjet til Imports — påkrævet for at Shiny
   renderPlot kan tegne ggplot med fonts registreret via
   `systemfonts::register_font()` på Linux deploy-targets (Posit

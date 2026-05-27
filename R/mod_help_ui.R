@@ -178,9 +178,9 @@ mod_help_ui <- function(id) {
         "Hvis niveauet er utilfredsstillende, kr\u00e6ver forbedring typisk en \u00e6ndring af selve systemet."
       ),
       help_image(
-        "www/help/02-variation-sammenligning.png",
-        "Sammenligning af stabil proces og proces med niveauskift",
-        "Venstre: Stabil proces. H\u00f8jre: Proces med et tydeligt niveauskift."
+        "www/help/02-niveauskift.png",
+        "Proces med tydeligt niveauskift",
+        "Proces med et tydeligt niveauskift."
       ),
       shiny::tags$hr()
     ),
@@ -212,7 +212,7 @@ mod_help_ui <- function(id) {
         shiny::tags$dd(class = "col-sm-9", "N\u00e5r linjen krydser midterlinjen.")
       ),
       help_image(
-        "www/help/03-diagram-annoteret.png",
+        "www/help/03-seriediagram-annoteret.png",
         "Seriediagram med annotationer der viser midterlinje, serie og kryds",
         "Et seriediagram med midterlinje, markeret serie og kryds."
       ),

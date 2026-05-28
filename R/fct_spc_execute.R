@@ -170,8 +170,24 @@ execute_bfh_request <- function(bfh_params, prepared) {
     spc_abort("Output transformation failed", class = "spc_render_error")
   }
 
-  if (!is.null(x_scale) && !is.null(standardized$plot)) {
-    standardized$plot <- standardized$plot + x_scale + x_theme
+  # Applicer x_scale + x_theme paa BEGGE plot-objekter saa tekst-x-labels
+  # (fx maanedsnavne) vises korrekt i baade analyse-view OG eksport-paths.
+  #
+  # standardized$plot er gg-objektet brugt af analyse-view-render.
+  # standardized$bfh_qic_result$plot er det raw BFHcharts S3-objekt der bruges
+  # af eksport-pipelinen (bfh_export_pdf, bfh_export_png + preview-PNG via
+  # ggsave i generate_pdf_preview). Tidligere blev x_scale kun appliceret paa
+  # standardized$plot -> eksport viste numerisk fallback (1,2,3,...) for
+  # tekst-x i stedet for original-labels (januar, februar, ...).
+  if (!is.null(x_scale)) {
+    if (!is.null(standardized$plot)) {
+      standardized$plot <- standardized$plot + x_scale + x_theme
+    }
+    if (!is.null(standardized$bfh_qic_result) &&
+      !is.null(standardized$bfh_qic_result$plot)) {
+      standardized$bfh_qic_result$plot <-
+        standardized$bfh_qic_result$plot + x_scale + x_theme
+    }
   }
 
   standardized

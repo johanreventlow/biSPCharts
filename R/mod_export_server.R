@@ -440,6 +440,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
       } else {
         get_hospital_name_for_export()
       }
+      # x_labels: original tekst-x-labels (maanedsnavne etc.) propageret via
+      # standardized output fra fct_spc_execute.R. NULL ved numerisk x ->
+      # bfh_generate_details falder tilbage til dato-baseret Periode-format.
+      preview_x_labels <- pdf_result$x_labels
       metadata <- list(
         hospital = preview_hospital_value,
         department = dept_input,
@@ -447,7 +451,10 @@ mod_export_server <- function(id, app_state, parent_session = NULL) {
         analysis = analysis_input,
         details = safe_operation(
           operation_name = "Generate PDF preview details",
-          code = BFHcharts::bfh_generate_details(pdf_result$bfh_qic_result),
+          code = BFHcharts::bfh_generate_details(
+            pdf_result$bfh_qic_result,
+            x_labels = preview_x_labels
+          ),
           fallback = NULL,
           error_type = "processing"
         ),

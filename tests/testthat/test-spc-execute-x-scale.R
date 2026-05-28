@@ -90,6 +90,69 @@ test_that("execute_bfh_request: text-x labels appliceres ogsaa paa bfh_qic_resul
   expect_equal(bfh_labels, std_labels)
 })
 
+test_that("execute_bfh_request: x_labels propageret paa standardized output", {
+  # Regression: x_labels-vector skal eksponeres paa standardized output saa
+  # eksport-callere kan forwarde til BFHcharts::bfh_generate_details(x_labels=)
+  # og dermed faa Periode-felt "januar - december" frem for "1970-01-01"-nonsens.
+  skip_if_not_installed("BFHcharts")
+
+  months_da <- c(
+    "januar", "februar", "marts", "april", "maj", "juni",
+    "juli", "august", "september", "oktober", "november", "december"
+  )
+  test_data <- data.frame(
+    maaned = months_da,
+    indikator = c(10, 12, 15, 13, 14, 16, 18, 17, 19, 20, 21, 22)
+  )
+
+  result <- compute_spc_results_bfh(
+    data = test_data,
+    chart_type = "i",
+    x_var = "maaned",
+    y_var = "indikator",
+    use_cache = FALSE
+  )
+
+  expect_equal(result$x_labels, months_da)
+})
+
+test_that("execute_bfh_request: subsample begraenser breaks ved >12 tekst-labels", {
+  # Regression: BFHcharts::bfh_subsample_label_indices() integration. Ved
+  # n_labels > BFH_MAX_X_LABELS_TEXT (default 12) skal x_scale kun vise
+  # subset af labels (foerste + sidste anchored) for at undgaa overlap.
+  skip_if_not_installed("BFHcharts")
+
+  weeks <- paste0("Uge ", 1:52)
+  test_data <- data.frame(uge = weeks, v = seq.int(52))
+
+  result <- compute_spc_results_bfh(
+    data = test_data,
+    chart_type = "i",
+    x_var = "uge",
+    y_var = "v",
+    use_cache = FALSE
+  )
+
+  # x_labels skal indeholde alle 52 (raw labels propageret)
+  expect_equal(length(result$x_labels), 52L)
+
+  # Men x_scale paa plot skal kun have <= 12 breaks (subsample)
+  extract_scale_breaks <- function(plot) {
+    for (s in plot$scales$scales) {
+      if ("x" %in% s$aesthetics && inherits(s, "ScaleContinuousPosition")) {
+        if (is.numeric(s$breaks)) {
+          return(s$breaks)
+        }
+      }
+    }
+    NULL
+  }
+  breaks <- extract_scale_breaks(result$plot)
+  expect_lte(length(breaks), 12L)
+  expect_equal(breaks[1], 1L) # foerste anker
+  expect_equal(breaks[length(breaks)], 52L) # sidste anker
+})
+
 test_that("execute_bfh_request: numeric-x-axis plot påvirkes ikke af #450-fix", {
   skip_if_not_installed("BFHcharts")
 

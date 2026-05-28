@@ -168,10 +168,28 @@ generate_pdf_export <- function(input, app_state, file) {
   # som lille graa UPPERCASE-tekst nederst-hoejre. NULL hvis tom -> ingen
   # tom blok i PDF (graceful empty-state).
   footnote_value <- trimws(input$export_footnote %||% "")
+
+  # Pre-compute details med x_labels-support saa Periode-felt viser foerste/
+  # sidste original-tekst-label (fx "januar - december") naar x-kolonne er
+  # tekst-kategorier. bfh_export_pdf auto-genererer details internt uden
+  # x_labels-vector, hvilket gav "Periode: 1970-01-01 - 1970-01-12"-nonsens
+  # ved tekst-x. Sender metadata$details eksplicit -> overrider auto-gen.
+  download_x_labels <- pdf_plot_result$x_labels
+  download_details <- safe_operation(
+    operation_name = "Generate PDF download details",
+    code = BFHcharts::bfh_generate_details(
+      pdf_plot_result$bfh_qic_result,
+      x_labels = download_x_labels
+    ),
+    fallback = NULL,
+    error_type = "processing"
+  )
+
   metadata <- list(
     hospital = hospital_value,
     department = input$export_department,
     analysis = input$pdf_improvement,
+    details = download_details,
     data_definition = data_definition_with_note,
     footer_content = if (nzchar(footnote_value)) footnote_value else NULL,
     date = Sys.Date()

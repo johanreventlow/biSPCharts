@@ -295,6 +295,17 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             # FINALLY emit event (listeners ser nu korrekt state)
             emit$data_updated(context = "session_restore")
 
+            # Ryd peek_result + JS-side cached payload saa restore-card ej
+            # vises naar bruger senere navigerer tilbage til landing-page
+            # (fx fra om_os-tab). Tidligere blev peek_result alene ryddet ved
+            # eksplicit discard, hvilket lod restore-card hænge for resten af
+            # sessionen — anden klik paa "Gendan session" sendte performSession-
+            # Restore, men JS-handler havde allerede nulstillet
+            # window.__pendingRestore i foerste restore-passage -> ingen data
+            # naaede til R og brugeren oplevede "intet sker".
+            set_session_peek_result(app_state, list(has_payload = FALSE))
+            session$sendCustomMessage("discardPendingRestore", list())
+
             # Cleanup restoring_session flag AFTER alle data_updated-listeners
             # har koert. wizard_gates-observeren paa data_updated fyrer i naeste
             # flush og maa se restoring_session = TRUE saa den skipper auto-nav

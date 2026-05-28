@@ -136,15 +136,25 @@ execute_bfh_request <- function(bfh_params, prepared) {
   # H4 (#450): x_scale + x_theme appliceres ÉN gang efter
   # transform_bfh_output(). Tidligere appliceret to gange (her + efter
   # transform), hvilket gav duplikeret layer-objekt og bloated layer-list.
+  #
+  # Subsample-strategi: ved >BFH_MAX_X_LABELS_TEXT labels brug
+  # BFHcharts::bfh_subsample_label_indices() til at vaelge evenly-spaced
+  # subset med foerste+sidste anchored. Holder labels horisontale (ingen
+  # rotation) jf. user-praeference. <= maks vises alle labels horisontalt.
   x_labels_col <- paste0(".x_labels_", prepared$x_var)
   x_scale <- NULL
   x_theme <- NULL
+  x_labels <- NULL
   if (x_labels_col %in% names(prepared$data)) {
     x_labels <- prepared$data[[x_labels_col]]
-    x_breaks <- seq_along(x_labels)
-    x_scale <- ggplot2::scale_x_continuous(breaks = x_breaks, labels = x_labels)
+    n_labels <- length(x_labels)
+    visible_idx <- BFHcharts::bfh_subsample_label_indices(n_labels)
+    x_scale <- ggplot2::scale_x_continuous(
+      breaks = visible_idx,
+      labels = x_labels[visible_idx]
+    )
     x_theme <- ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+      axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5)
     )
   }
 
@@ -188,6 +198,14 @@ execute_bfh_request <- function(bfh_params, prepared) {
       standardized$bfh_qic_result$plot <-
         standardized$bfh_qic_result$plot + x_scale + x_theme
     }
+  }
+
+  # Eksporter x_labels-vector saa eksport-callere kan forwarde til
+  # BFHcharts::bfh_generate_details(x_labels = ...) og dermed faa Periode-
+  # felt "januar - december" frem for "1970-01-01 - 1970-01-12".
+  # NULL hvis numerisk x (ingen labels-konvertering noedvendig).
+  if (!is.null(x_labels)) {
+    standardized$x_labels <- x_labels
   }
 
   standardized

@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.20.0",
+        "Version": "0.21.0",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -31,7 +31,7 @@
         "URL": "https://github.com/johanreventlow/BFHcharts",
         "BugReports": "https://github.com/johanreventlow/BFHcharts/issues",
         "Depends": "R (>= 4.1.0)",
-        "Imports": "BFHtheme (>= 0.5.0), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
+        "Imports": "BFHtheme (>= 0.5.1), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
         "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, jsonlite, knitr, rmarkdown",
         "VignetteBuilder": "knitr",
         "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
@@ -41,17 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.20.0",
-        "RemoteSha": "d4f72ed50c9a5b963177e7b3ff27415b23530019",
+        "RemoteRef": "v0.21.0",
+        "RemoteSha": "70c67bde0ce907516d488817df474953ae3bc8db",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.20.0",
-        "GithubSHA1": "d4f72ed50c9a5b963177e7b3ff27415b23530019",
+        "GithubRef": "v0.21.0",
+        "GithubSHA1": "70c67bde0ce907516d488817df474953ae3bc8db",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-26 20:08:52 UTC; johanreventlow",
+        "Packaged": "2026-05-28 16:19:26 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-26 20:08:53 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-28 16:19:26 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.2",
         "GithubSHA1": "afae3a0c9f7f0f36f6131feadf69c480a9733d4b",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-26 20:09:15 UTC; johanreventlow",
+        "Packaged": "2026-05-28 16:19:51 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-26 20:09:16 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-28 16:19:52 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-26 20:09:08 UTC; johanreventlow",
+        "Packaged": "2026-05-28 16:19:43 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-26 20:09:09 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-28 16:19:44 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.1",
         "GithubSHA1": "c70eab872e9418df32ddc68d15efc79e0c97f9bf",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-27 23:02:39 UTC; johanreventlow",
+        "Packaged": "2026-05-28 16:20:30 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-27 23:02:39 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-28 16:20:31 UTC; unix"
       }
     },
     "BH": {
@@ -4840,7 +4840,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "655ef77afb7cd67581b5815b25fed175"
+      "checksum": "657127f56d9c450b4a12f6733e62cf28"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4993,7 +4993,7 @@
       "checksum": "d85bbd8c1967f0d78e01081616a4e723"
     },
     "R/app_server_main.R": {
-      "checksum": "e4d7b10a9d62bae8a52f5084acecf35e"
+      "checksum": "0ab839bfb85391ec70e0da6361fd8d44"
     },
     "R/app_server.R": {
       "checksum": "c97a964c3c2b954be459b38cc6fef0e4"
@@ -5104,7 +5104,7 @@
       "checksum": "d8a1f060147ffd0df5a6ff8490bce3ad"
     },
     "R/fct_spc_execute.R": {
-      "checksum": "b98e0e5fcbf04eb62dbabd621a547eaf"
+      "checksum": "8952dc02659b932024ef5bd5845d483e"
     },
     "R/fct_spc_file_save_load.R": {
       "checksum": "ce1e71cec2afe3f34144e8febef607dd"
@@ -5116,7 +5116,7 @@
       "checksum": "6c9925f7a78041a5e4403971bfe629c5"
     },
     "R/fct_spc_prepare.R": {
-      "checksum": "dcd119cd238085f15f4ac1ea953579fb"
+      "checksum": "b7346e4341019b2b15915a28246f2ab3"
     },
     "R/fct_spc_validate.R": {
       "checksum": "14a70f563188ae4c75d4d9c550f6b722"
@@ -5143,10 +5143,10 @@
       "checksum": "9c0ecdd409037ca33ca3743ce6145525"
     },
     "R/mod_export_download.R": {
-      "checksum": "98d2829d358050520d27c0f3f285fd9d"
+      "checksum": "f0358316a0476dea3715532573300aa7"
     },
     "R/mod_export_server.R": {
-      "checksum": "c7c4c1c0a6a279d463c45c316cba92a3"
+      "checksum": "40ba4680fa08ffed664ebfcece59c7bd"
     },
     "R/mod_export_ui.R": {
       "checksum": "35573e91ef3737e5e8fc2484dcca9f29"
@@ -5170,7 +5170,7 @@
       "checksum": "083c17739e20efc9f95a5ec9ed11694f"
     },
     "R/mod_spc_chart_compute.R": {
-      "checksum": "9d500938ae08606bc7a9bf5cc91421cb"
+      "checksum": "65e9b0421f5d795accbfae0d78ad2a68"
     },
     "R/mod_spc_chart_config.R": {
       "checksum": "e9d769f9a0ac84e375ecb01800c0fc5a"
@@ -5326,7 +5326,7 @@
       "checksum": "e33196c14e2d621e42bc529c4cd9f808"
     },
     "R/utils_server_server_management.R": {
-      "checksum": "ef5589d55076b2b38d72c565996fdb28"
+      "checksum": "2b19c7a918c14df96f9131394203d8be"
     },
     "R/utils_server_session_helpers.R": {
       "checksum": "ef64f081934a0374ae5647a1320ac1a6"

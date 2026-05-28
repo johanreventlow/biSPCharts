@@ -160,7 +160,7 @@ create_spc_results_reactive <- function(
           show_phases = inputs$skift_config$show_phases %||% FALSE,
           skift_column = inputs$skift_config$skift_column,
           frys_column = inputs$frys_column,
-          chart_title_reactive = NULL, # Will be passed at call site
+          chart_title_reactive = inputs$title,
           y_axis_unit = inputs$y_axis_unit,
           kommentar_column = inputs$kommentar_column,
           base_size = inputs$base_size,

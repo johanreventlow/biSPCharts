@@ -252,13 +252,29 @@ resolve_axis_units <- function(prepared) {
     target_text <- new_target_text
   }
 
-  # Guard: "percent" kraever naevner -- uden naevner er det en fejldetektering
+  # Guard: "percent" og "rate" kraever begge naevner -- uden naevner er det
+  # en fejldetektering (typisk session-restore med y_axis_unit fra forrige
+  # dataset hvor n_column manglede i ny metadata). Tidligere kun "percent"-
+  # guard; "rate" forblev og gav forkert beregning naar dataset manglede
+  # naevner. Anhoej-bokse viste tom state indtil bruger manuelt klikkede
+  # "Tildel kolonner" og udloeste auto-detect.
   if (identical(y_axis_unit, "percent") && is.null(prepared$n_var)) {
     log_warn(
       paste(
         "y_axis_unit='percent' uden n\u00e6vner (n_var=NULL) for chart_type=",
         prepared$chart_type,
         "\u2014 overskriver til 'count' for at undg\u00e5 forkert normalisering"
+      ),
+      .context = "BFH_SERVICE"
+    )
+    y_axis_unit <- "count"
+  }
+  if (identical(y_axis_unit, "rate") && is.null(prepared$n_var)) {
+    log_warn(
+      paste(
+        "y_axis_unit='rate' uden n\u00e6vner (n_var=NULL) for chart_type=",
+        prepared$chart_type,
+        "\u2014 overskriver til 'count' for at undg\u00e5 forkert beregning"
       ),
       .context = "BFH_SERVICE"
     )

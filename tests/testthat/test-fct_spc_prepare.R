@@ -119,6 +119,48 @@ test_that("prepare_spc_data bevarer n_var data for p-kort", {
   expect_true(is.numeric(prep$data$naevner))
 })
 
+test_that("resolve_axis_units nedgraderer 'percent' til 'count' naar n_var mangler", {
+  df <- data.frame(x = 1:10, y = as.numeric(1:10))
+  req <- new_spc_request(df, "x", "y", "run", options = list(y_axis_unit = "percent"))
+  prep <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prep)
+  expect_equal(axes$y_axis_unit, "count")
+})
+
+test_that("resolve_axis_units nedgraderer 'rate' til 'count' naar n_var mangler", {
+  # Regression: session-restore med y_axis_unit='rate' fra forrige dataset hvor
+  # n_column manglede i ny metadata -> rate-render fejlede eller producerede
+  # forkert beregning. Anhoej-bokse viste tom state indtil bruger manuelt
+  # klikkede "Tildel kolonner".
+  df <- data.frame(x = 1:10, y = as.numeric(1:10))
+  req <- new_spc_request(df, "x", "y", "run", options = list(y_axis_unit = "rate"))
+  prep <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prep)
+  expect_equal(axes$y_axis_unit, "count")
+})
+
+test_that("resolve_axis_units bevarer 'percent' naar n_var er sat", {
+  df <- data.frame(x = 1:10, y = as.numeric(1:10), n = rep(100, 10))
+  req <- new_spc_request(df, "x", "y", "p",
+    n_var = "n",
+    options = list(y_axis_unit = "percent")
+  )
+  prep <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prep)
+  expect_equal(axes$y_axis_unit, "percent")
+})
+
+test_that("resolve_axis_units bevarer 'rate' naar n_var er sat", {
+  df <- data.frame(x = 1:10, y = as.numeric(1:10), n = rep(100, 10))
+  req <- new_spc_request(df, "x", "y", "u",
+    n_var = "n",
+    options = list(y_axis_unit = "rate")
+  )
+  prep <- prepare_spc_data(req)
+  axes <- resolve_axis_units(prep)
+  expect_equal(axes$y_axis_unit, "rate")
+})
+
 test_that("spc_prepare_error arver fra spc_error", {
   df <- data.frame(
     x = integer(0),

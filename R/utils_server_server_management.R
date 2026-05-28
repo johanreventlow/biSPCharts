@@ -218,15 +218,29 @@ setup_session_management <- function(input, output, session, app_state, emit, ui
             # mapping-state i foerste iteration. Selve selectize-selected
             # opdateringen sker stadig i onFlushed nedenfor, fordi choices
             # skal vaere populeret foerst.
+            #
+            # Clear-then-restore (atomisk transaction): nulstil ALLE column-
+            # mappings foer write, saa felter der ej findes i ny metadata
+            # (eller har tom vaerdi) ej bevarer stale-vaerdier fra forrige
+            # session. Tidligere skip-tom-guard `if (!is.null(val) && nzchar(val))`
+            # lod fx mappings$n_column pege paa en kolonne der ej findes i nyt
+            # dataset, hvilket gav inkonsistent state med y_axis_unit der
+            # kraever naevner (p/u/pp/up) -> Anhoej-bokse tomme indtil bruger
+            # manuelt aabnede "Tildel kolonner" og udloeste auto-detect.
+            column_fields <- c(
+              "x_column", "y_column", "n_column",
+              "skift_column", "frys_column", "kommentar_column"
+            )
             if (!is.null(saved_state$metadata)) {
               saved_meta <- saved_state$metadata
-              for (field in c(
-                "x_column", "y_column", "n_column",
-                "skift_column", "frys_column", "kommentar_column"
-              )) {
+              for (field in column_fields) {
                 val <- saved_meta[[field]]
-                if (!is.null(val) && nzchar(val)) {
-                  app_state$columns$mappings[[field]] <- val
+                app_state$columns$mappings[[field]] <- if (
+                  !is.null(val) && nzchar(val)
+                ) {
+                  val
+                } else {
+                  NULL
                 }
               }
 

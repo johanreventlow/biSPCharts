@@ -234,7 +234,12 @@ main_app_server <- function(input, output, session) {
     {
       new_tab <- input$main_navbar
       old_tab <- app_state$navigation$current_tab
-      help_tabs <- c("hjaelp", "rapporter_fejl")
+      # om_os har samme tilbagenavigation-pattern som hjaelp + rapporter_fejl:
+      # alle tre tabs er adskilt fra wizard-flow og bruger help_back_link til
+      # at returnere til oprindelig tab. Mangel paa "om_os" i listen gjorde at
+      # previous_tab ej opdateredes ved nav til om_os -> tilbage-knap brugte
+      # stale-vaerdi (typisk "start") i stedet for trin-2.
+      help_tabs <- c("hjaelp", "rapporter_fejl", "om_os")
       if (new_tab %in% help_tabs) {
         app_state$navigation$previous_tab <- old_tab
       }

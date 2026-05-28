@@ -151,8 +151,14 @@ generate_pdf_export <- function(input, app_state, file) {
     base_description
   }
 
-  # PDF-specifik metadata til BFHcharts Typst-template
-  # escape_typst_metadata() beskytter mod markup-injection (#427)
+  # PDF-specifik metadata til BFHcharts Typst-template.
+  # BFHcharts haandterer al Typst-escaping internt: escape_typst_string() for
+  # plain-text-felter og markdown_to_typst() (AST-baseret) for rich-text-felter.
+  # Pre-escape via escape_typst_metadata() er fjernet fordi den dobbelt-escaper
+  # markdown-syntax (`**fed**` -> `\*\*fed\*\*`) saa BFHcharts AST-parseren ej
+  # genkender bold/italic. Historisk (#427/#486) escapede vi selv da Typst-
+  # template var lokal i biSPCharts; v0.3.0-migration (cc21b50c) flyttede
+  # rendering til BFHcharts uden at fjerne pre-escape.
   hospital_value <- if (nzchar(input$export_hospital %||% "")) {
     input$export_hospital
   } else {
@@ -163,11 +169,11 @@ generate_pdf_export <- function(input, app_state, file) {
   # tom blok i PDF (graceful empty-state).
   footnote_value <- trimws(input$export_footnote %||% "")
   metadata <- list(
-    hospital = escape_typst_metadata(hospital_value),
-    department = escape_typst_metadata(input$export_department),
-    analysis = escape_typst_metadata(input$pdf_improvement),
-    data_definition = escape_typst_metadata(data_definition_with_note),
-    footer_content = if (nzchar(footnote_value)) escape_typst_metadata(footnote_value) else NULL,
+    hospital = hospital_value,
+    department = input$export_department,
+    analysis = input$pdf_improvement,
+    data_definition = data_definition_with_note,
+    footer_content = if (nzchar(footnote_value)) footnote_value else NULL,
     date = Sys.Date()
   )
 

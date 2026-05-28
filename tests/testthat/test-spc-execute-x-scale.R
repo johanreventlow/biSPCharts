@@ -39,6 +39,57 @@ test_that("execute_bfh_request: text-x-axis plot har max 2 x-scales efter #450 (
   expect_lte(pos_scales, 2L)
 })
 
+test_that("execute_bfh_request: text-x labels appliceres ogsaa paa bfh_qic_result$plot (export-paths)", {
+  # Regression: tidligere appliceredes x_scale + x_theme kun paa
+  # standardized$plot (analyse-view), ej paa standardized$bfh_qic_result$plot
+  # (raw S3-objekt brugt af eksport-pipelinen via bfh_export_pdf,
+  # bfh_export_png + PDF preview-PNG via ggsave i generate_pdf_preview).
+  # Konsekvens: PDF/PNG eksport viste numerisk fallback (1,2,3,...) for
+  # tekst-x i stedet for original-labels (januar, februar, ...).
+  skip_if_not_installed("BFHcharts")
+
+  test_data <- data.frame(
+    maaned = c(
+      "Jan", "Feb", "Mar", "Apr", "Maj", "Jun",
+      "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+    ),
+    indikator = c(10, 12, 15, 13, 14, 16, 18, 17, 19, 20, 21, 22)
+  )
+
+  result <- compute_spc_results_bfh(
+    data = test_data,
+    chart_type = "i",
+    x_var = "maaned",
+    y_var = "indikator",
+    use_cache = FALSE
+  )
+
+  expect_false(is.null(result$plot))
+  expect_false(is.null(result$bfh_qic_result))
+  expect_false(is.null(result$bfh_qic_result$plot))
+
+  # Helper: extract text-labels fra ScaleContinuousPosition i et plot
+  extract_text_labels <- function(plot) {
+    for (s in plot$scales$scales) {
+      if ("x" %in% s$aesthetics && inherits(s, "ScaleContinuousPosition")) {
+        if (is.character(s$labels) && length(s$labels) > 0) {
+          return(s$labels)
+        }
+      }
+    }
+    NULL
+  }
+
+  std_labels <- extract_text_labels(result$plot)
+  bfh_labels <- extract_text_labels(result$bfh_qic_result$plot)
+
+  expect_equal(std_labels, c(
+    "Jan", "Feb", "Mar", "Apr", "Maj", "Jun",
+    "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+  ))
+  expect_equal(bfh_labels, std_labels)
+})
+
 test_that("execute_bfh_request: numeric-x-axis plot påvirkes ikke af #450-fix", {
   skip_if_not_installed("BFHcharts")
 

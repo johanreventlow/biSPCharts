@@ -824,6 +824,24 @@ create_chart_settings_card_compact <- function() {
         selected = "count",
         width = "100%"
       ),
+      shiny::textInput(
+        "target_value",
+        shiny::tagList(
+          "Udviklingsm\u00e5l:",
+          shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+            bslib::tooltip("En vandret linje der viser jeres m\u00e5ls\u00e6tning. P\u00e5virker ikke beregninger eller signaldetektion.")
+        ),
+        value = "",
+        placeholder = "fx >=90%, <25 eller >",
+        width = "100%"
+      ),
+      shiny::textInput(
+        "centerline_value",
+        "Evt. baseline:",
+        value = "",
+        placeholder = "fx 68%, 0,7 el. 22",
+        width = "100%"
+      ),
       bslib::layout_columns(
         col_widths = c(6, 6),
         gap = "0.5rem",
@@ -849,24 +867,6 @@ create_chart_settings_card_compact <- function() {
           placeholder = "auto",
           width = "100%"
         )
-      ),
-      shiny::textInput(
-        "target_value",
-        shiny::tagList(
-          "Udviklingsm\u00e5l:",
-          shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-            bslib::tooltip("En vandret linje der viser jeres m\u00e5ls\u00e6tning. P\u00e5virker ikke beregninger eller signaldetektion.")
-        ),
-        value = "",
-        placeholder = "fx >=90%, <25 eller >",
-        width = "100%"
-      ),
-      shiny::textInput(
-        "centerline_value",
-        "Evt. baseline:",
-        value = "",
-        placeholder = "fx 68%, 0,7 el. 22",
-        width = "100%"
       )
     )
   )

@@ -714,8 +714,10 @@ create_ui_main_content <- function() {
     # flex: 1 1 auto + min-height: 0 lader grid'et auto-tilpasse sig den plads
     # hjaelpe-rand og knap-rand efterlader — i stedet for et hardkodet
     # calc(100vh - Npx) der bliver staaende naar soeskende-elementer aendres.
+    # margin-bottom skaber luft mellem cards og knap-randen — gridet krymper
+    # tilsvarende (data-card + hoejre bokse reduceres uniformt).
     shiny::div(
-      style = "flex: 1 1 auto; min-height: 0;",
+      style = "flex: 1 1 auto; min-height: 0; margin-bottom: 16px;",
       bslib::layout_columns(
         col_widths = c(6, 6),
         height = "100%",

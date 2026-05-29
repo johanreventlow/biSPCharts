@@ -645,7 +645,7 @@ create_ui_header <- function() {
 #' @keywords internal
 create_ui_main_content <- function() {
   shiny::div(
-    style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
+    style = "display: flex; flex-direction: column; height: calc(100vh - 80px); min-height: 0;",
 
     # Sammenklapbar hjaelp (minimal footprint naar sammenklappet)
     shiny::div(
@@ -707,35 +707,41 @@ create_ui_main_content <- function() {
       )
     ),
 
-    # Layout: 6-6 grid (fylder det meste, men ikke helt til bunden)
+    # Layout: 6-6 grid (fylder resten af wrapper-hoejden via flex-fill)
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
-    bslib::layout_columns(
-      col_widths = c(6, 6),
-      height = "calc(100vh - 175px)",
+    # flex: 1 1 auto + min-height: 0 lader grid'et auto-tilpasse sig den plads
+    # hjaelpe-rand og knap-rand efterlader — i stedet for et hardkodet
+    # calc(100vh - Npx) der bliver staaende naar soeskende-elementer aendres.
+    shiny::div(
+      style = "flex: 1 1 auto; min-height: 0;",
+      bslib::layout_columns(
+        col_widths = c(6, 6),
+        height = "100%",
 
-      # Venstre kolonne: Datatabel (fuld hoejde)
-      create_data_table_card(),
+        # Venstre kolonne: Datatabel (fuld hoejde)
+        create_data_table_card(),
 
-      # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
-      shiny::div(
-        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
-
-        # Oeverste halvdel: SPC Preview
+        # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
         shiny::div(
-          style = "flex: 1 1 50%; min-height: 0;",
-          create_plot_only_card()
-        ),
+          style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
 
-        # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
-        shiny::div(
-          style = "flex: 1 1 50%; min-height: 0;",
-          bslib::layout_columns(
-            col_widths = c(6, 6),
-            height = "100%",
-            create_chart_settings_card_compact(),
-            create_status_value_boxes()
+          # Oeverste halvdel: SPC Preview
+          shiny::div(
+            style = "flex: 1 1 50%; min-height: 0;",
+            create_plot_only_card()
+          ),
+
+          # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
+          shiny::div(
+            style = "flex: 1 1 50%; min-height: 0;",
+            bslib::layout_columns(
+              col_widths = c(6, 6),
+              height = "100%",
+              create_chart_settings_card_compact(),
+              create_status_value_boxes()
+            )
           )
         )
       )

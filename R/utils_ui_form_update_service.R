@@ -37,6 +37,7 @@ create_form_update_service <- function(session, app_state, column_service = NULL
     "x_column", "y_column", "n_column",
     "skift_column", "frys_column", "kommentar_column",
     "target_value", "centerline_value", "y_axis_unit",
+    "y_axis_min", "y_axis_max",
     "export_title", "export_hospital", "export_department", "export_footnote", "export_format",
     "pdf_description", "pdf_improvement",
     "png_width", "png_height"
@@ -52,7 +53,10 @@ create_form_update_service <- function(session, app_state, column_service = NULL
       shiny::updateTextInput(session, field, value = value)
     } else if (field == "indicator_description") {
       shiny::updateTextAreaInput(session, field, value = value)
-    } else if (field %in% c("target_value", "centerline_value")) {
+    } else if (field %in% c(
+      "target_value", "centerline_value",
+      "y_axis_min", "y_axis_max"
+    )) {
       shiny::updateTextInput(session, field, value = value)
     } else if (field %in% c(
       "unit_select", "chart_type",
@@ -131,6 +135,8 @@ create_form_update_service <- function(session, app_state, column_service = NULL
           shiny::updateTextInput(session, "unit_custom", value = "")
           shiny::updateTextInput(session, "target_value", value = "")
           shiny::updateTextInput(session, "centerline_value", value = "")
+          shiny::updateTextInput(session, "y_axis_min", value = "")
+          shiny::updateTextInput(session, "y_axis_max", value = "")
 
           shiny::updateSelectizeInput(session, "unit_select", selected = "")
           shiny::updateSelectizeInput(session, "chart_type", selected = "run")

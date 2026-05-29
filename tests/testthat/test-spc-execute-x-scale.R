@@ -119,7 +119,10 @@ test_that("execute_bfh_request: x_labels propageret paa standardized output", {
 test_that("execute_bfh_request: subsample begraenser breaks ved >12 tekst-labels", {
   # Regression: BFHcharts::bfh_subsample_label_indices() integration. Ved
   # n_labels > BFH_MAX_X_LABELS_TEXT (default 12) skal x_scale kun vise
-  # subset af labels (foerste + sidste anchored) for at undgaa overlap.
+  # subset af labels (foerste anker + step-grid-alignede positioner).
+  # Bemaerk: BFHcharts 0.22.1 dropped force-last anchor -- sidste label
+  # vises kun naar (n - 1) %% step == 0. For n=52 (step=5) bliver sidste
+  # break 51, ikke 52 (BFHcharts issue #396 follow-up).
   skip_if_not_installed("BFHcharts")
 
   weeks <- paste0("Uge ", 1:52)
@@ -150,7 +153,9 @@ test_that("execute_bfh_request: subsample begraenser breaks ved >12 tekst-labels
   breaks <- extract_scale_breaks(result$plot)
   expect_lte(length(breaks), 12L)
   expect_equal(breaks[1], 1L) # foerste anker
-  expect_equal(breaks[length(breaks)], 52L) # sidste anker
+  # n=52, step = ceil(51/11) = 5 -> sidste step-aligned position = 51
+  # (52 ej grid-aligned: 51 %% 5 != 0). BFHcharts >= 0.22.1.
+  expect_equal(breaks[length(breaks)], 51L)
 })
 
 test_that("execute_bfh_request: numeric-x-axis plot påvirkes ikke af #450-fix", {

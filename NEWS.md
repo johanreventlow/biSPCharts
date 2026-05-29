@@ -21,6 +21,22 @@
 
 ## Dependency bumps
 
+* `BFHcharts (>= 0.22.1)` (op fra 0.21.0) + `johanreventlow/BFHcharts@v0.22.1`
+  i Remotes. Adopterer step-baseret label-thinning i
+  `bfh_subsample_label_indices()` der fixer asymmetrisk round()-gap-bug
+  for n=24 (BFHcharts issue #396, PRs #397 + #400). Observable behavior-
+  change i SPC-eksport med kategoriske x-akser:
+    * **n=24**: 12 visible labels → 8 visible labels med konstant step=3.
+      Sidste label (`n`) vises kun når `(n-1) %% step == 0`. For 24-mdrs
+      serier betyder det at "dec 26" droppes (sidste vises bliver "nov 26",
+      index 22).
+    * **n=36**: 12 → 9 visible labels, konstant step=4. Sidste = 33.
+    * **n=52**: 12 → 11 visible labels, konstant step=5. Sidste = 51.
+    * **n=100**: uændret 12 visible labels (100 lander naturligt på grid).
+  Rationale: forhindrer at to konsekutive labels skjules midt i serien
+  (visuel anti-pattern fra 0.21.0) + holder konstant rytme uden tail-break
+  (forbedring over 0.22.0's force-last anchor).
+
 * `BFHtheme (>= 0.5.1)` tilføjet til Suggests + `johanreventlow/BFHtheme@v0.5.1`
   i Remotes. BFHtheme 0.5.1 indeholder `font_available()`-fix der konsulterer
   både `system_fonts()` og `registry_fonts()` (PR johanreventlow/BFHtheme#73).

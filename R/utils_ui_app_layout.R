@@ -644,12 +644,11 @@ create_ui_header <- function() {
 #' @return tagList with main content components
 #' @keywords internal
 create_ui_main_content <- function() {
-  shiny::div(
-    style = "display: flex; flex-direction: column; height: calc(100vh - 80px);",
-
+  # Samme layout-moenster som trin 3 (eksport): naturlig dokument-flow uden
+  # rigid flex-column-hoejde, saa der ikke opstaar overflow-scrollbar.
+  shiny::tagList(
     # Sammenklapbar hjaelp (minimal footprint naar sammenklappet)
     shiny::div(
-      style = "flex-shrink: 0;",
       shiny::tags$button(
         class = "btn btn-sm btn-link text-muted p-0",
         style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
@@ -680,8 +679,6 @@ create_ui_main_content <- function() {
             "Klik ", shiny::tags$em("Tildel kolonner"),
             " \u00f8verst over datatabellen for at \u00e5bne dialogen, hvor du kan v\u00e6lge ",
             "hvilke kolonner der er Tid/kategori (X-akse), T\u00e6ller (Y-akse), N\u00e6vner osv. ",
-            "Brug ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
-            " inde i dialogen for at lade appen forsl\u00e5 tildelinger ud fra data. ",
             "Tid/kategori og T\u00e6ller er p\u00e5kr\u00e6vede. ",
             "V\u00e6lg en N\u00e6vner hvis du arbejder med andele eller rater."
           ),
@@ -709,13 +706,20 @@ create_ui_main_content <- function() {
       )
     ),
 
-    # Layout: 6-6 grid (fylder det meste, men ikke helt til bunden)
+    # Layout: 6-6 grid -- samme moenster som trin 3 (eksport).
+    # height = "auto" + min_height lader gridet flyde i normal dokument-flow
+    # med konsistent card-hoejde og luft til knap-randen, uden overflow-scrollbar.
+    # Offset = trin-3's 200px + ~40px for hjaelp-fold-ud-randen ("Hjaelp til
+    # dette trin") der ligger OVER gridet her (trin 3 har den inde i venstre
+    # card). Det krymper alle cards/bokse uniformt, saa bund-knapperne flugter
+    # med trin-3 i hjaelpens default (kollapsede) tilstand.
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
       col_widths = c(6, 6),
-      height = "calc(100vh - 175px)",
+      height = "auto",
+      min_height = "calc(100vh - 240px)",
 
       # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),

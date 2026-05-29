@@ -116,13 +116,24 @@ test_that("execute_bfh_request: x_labels propageret paa standardized output", {
   expect_equal(result$x_labels, months_da)
 })
 
+extract_scale_x <- function(plot) {
+  for (s in plot$scales$scales) {
+    if ("x" %in% s$aesthetics && inherits(s, "ScaleContinuousPosition")) {
+      return(s)
+    }
+  }
+  NULL
+}
+
 test_that("execute_bfh_request: subsample begraenser breaks ved >12 tekst-labels", {
   # Regression: BFHcharts::bfh_subsample_label_indices() integration. Ved
-  # n_labels > BFH_MAX_X_LABELS_TEXT (default 12) skal x_scale kun vise
-  # subset af labels (foerste anker + step-grid-alignede positioner).
-  # Bemaerk: BFHcharts 0.22.1 dropped force-last anchor -- sidste label
+  # n_labels > BFH_MAX_X_LABELS_TEXT (default 12) vises kun et subset af
+  # labels (foerste anker + step-grid-alignede positioner).
+  # Bemaerk: BFHcharts 0.22.1 dropped force-last anchor -- sidste *label*
   # vises kun naar (n - 1) %% step == 0. For n=52 (step=5) bliver sidste
-  # break 51, ikke 52 (BFHcharts issue #396 follow-up).
+  # synlige label 51, ikke 52 (BFHcharts issue #396 follow-up). Det sidste
+  # *break* er dog n_labels (52) som akse-linje-anker med tom label, se
+  # naeste test.
   skip_if_not_installed("BFHcharts")
 
   weeks <- paste0("Uge ", 1:52)
@@ -139,23 +150,76 @@ test_that("execute_bfh_request: subsample begraenser breaks ved >12 tekst-labels
   # x_labels skal indeholde alle 52 (raw labels propageret)
   expect_equal(length(result$x_labels), 52L)
 
-  # Men x_scale paa plot skal kun have <= 12 breaks (subsample)
-  extract_scale_breaks <- function(plot) {
-    for (s in plot$scales$scales) {
-      if ("x" %in% s$aesthetics && inherits(s, "ScaleContinuousPosition")) {
-        if (is.numeric(s$breaks)) {
-          return(s$breaks)
-        }
-      }
-    }
-    NULL
-  }
-  breaks <- extract_scale_breaks(result$plot)
-  expect_lte(length(breaks), 12L)
-  expect_equal(breaks[1], 1L) # foerste anker
-  # n=52, step = ceil(51/11) = 5 -> sidste step-aligned position = 51
-  # (52 ej grid-aligned: 51 %% 5 != 0). BFHcharts >= 0.22.1.
-  expect_equal(breaks[length(breaks)], 51L)
+  scale_x <- extract_scale_x(result$plot)
+  expect_false(is.null(scale_x))
+  expect_lte(length(scale_x$breaks), 12L)
+  expect_equal(scale_x$breaks[1], 1L) # foerste anker
+
+  # Synlige labels (ikke-tomme) slutter ved 51 (step-grid-aligned), mens
+  # break 52 er anker med tom label.
+  nonblank_idx <- which(nzchar(scale_x$labels))
+  expect_equal(scale_x$breaks[max(nonblank_idx)], 51L)
+})
+
+test_that("execute_bfh_request: akse-linje-anker straekker breaks til sidste observation", {
+  # Regression (axis.line truncation): ggplot2 4.0 capper axis.line.x ved
+  # yderste break. Da BFHcharts 0.22.1 dropper sidste label naar (n-1) ej
+  # delelig med step, stoppede akse-linjen ved sidste synlige label i stedet
+  # for ved sidste datapunkt. Fix: tilfoej n_labels som break med tom label.
+  skip_if_not_installed("BFHcharts")
+
+  # n=24 -> step=3, visible_idx slutter ved 22; 24 ej grid-aligned.
+  months <- format(
+    seq(as.Date("2025-01-01"), by = "month", length.out = 24), "%b %y"
+  )
+  test_data <- data.frame(maaned = months, v = seq.int(24))
+
+  result <- compute_spc_results_bfh(
+    data = test_data,
+    chart_type = "i",
+    x_var = "maaned",
+    y_var = "v",
+    use_cache = FALSE
+  )
+
+  scale_x <- extract_scale_x(result$plot)
+  expect_false(is.null(scale_x))
+
+  # Sidste break = n_labels (24) -> akse-linjen naar sidste observation.
+  expect_equal(scale_x$breaks[length(scale_x$breaks)], 24L)
+  # Anker-label er tom (24 ej synlig label-position).
+  expect_identical(scale_x$labels[length(scale_x$labels)], "")
+  # Sidste *synlige* label er fortsat 22 (okt 26).
+  nonblank_idx <- which(nzchar(scale_x$labels))
+  expect_equal(scale_x$breaks[max(nonblank_idx)], 22L)
+
+  # Anker appliceres ogsaa paa eksport-plot (bfh_qic_result$plot).
+  scale_x_exp <- extract_scale_x(result$bfh_qic_result$plot)
+  expect_equal(scale_x_exp$breaks[length(scale_x_exp$breaks)], 24L)
+})
+
+test_that("execute_bfh_request: grid-aligned n tilfoejer ikke duplikat-anker", {
+  # Naar n_labels allerede ligger paa step-grid (fx n=23: step=2, sidste
+  # synlige=23), skal anker-logikken vaere no-op (ingen ekstra break/tom label).
+  skip_if_not_installed("BFHcharts")
+
+  labs23 <- paste0("P", 1:23)
+  test_data <- data.frame(p = labs23, v = seq.int(23))
+
+  result <- compute_spc_results_bfh(
+    data = test_data,
+    chart_type = "i",
+    x_var = "p",
+    y_var = "v",
+    use_cache = FALSE
+  )
+
+  scale_x <- extract_scale_x(result$plot)
+  expect_false(is.null(scale_x))
+  # n=23, step=ceil(22/11)=2 -> visible slutter ved 23 (grid-aligned).
+  expect_equal(scale_x$breaks[length(scale_x$breaks)], 23L)
+  # Ingen tomme labels: anker er allerede en synlig position.
+  expect_true(all(nzchar(scale_x$labels)))
 })
 
 test_that("execute_bfh_request: numeric-x-axis plot påvirkes ikke af #450-fix", {

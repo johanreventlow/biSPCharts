@@ -492,6 +492,12 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       force(target_value_save_debounced()) # debounced — undgaar save per tastetryk
       force(input$centerline_value)
       force(input$y_axis_unit)
+      # Y-akse-graenser: uden disse reads trigger settings_save IKKE ved
+      # min/max-aendring -> localStorage gemmer aldrig nye graenser, og
+      # session-restore henter dem ikke (Excel virker fordi download kalder
+      # collect_metadata on-demand). Ydre debounce daekker save-per-tastetryk.
+      force(input$y_axis_min)
+      force(input$y_axis_max)
       force(input[["export-export_title"]])
       force(input[["export-export_hospital"]])
       force(input[["export-export_department"]])

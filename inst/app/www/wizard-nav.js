@@ -127,8 +127,8 @@
   $(document).on('click', '#trigger_file_upload', function() {
     setActiveUploadBtn('trigger_file_upload');
   });
-  $(document).on('click', '#load_sample_data', function() {
-    setActiveUploadBtn('load_sample_data');
+  $(document).on('click', '#toggle_sample_dropdown', function() {
+    setActiveUploadBtn('toggle_sample_dropdown');
   });
   $(document).on('click', '#clear_saved', function() {
     setActiveUploadBtn('clear_saved');

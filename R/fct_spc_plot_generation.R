@@ -37,6 +37,8 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
                                          frys_column = NULL,
                                          chart_title_reactive = NULL,
                                          y_axis_unit = "count",
+                                         y_axis_min = NULL,
+                                         y_axis_max = NULL,
                                          kommentar_column = NULL,
                                          base_size = 14,
                                          viewport_width = NULL,
@@ -146,6 +148,10 @@ generateSPCPlot_with_backend <- function(data, config, chart_type,
         centerline_value = centerline_value,
         chart_title_reactive = chart_title_reactive,
         y_axis_unit = y_axis_unit,
+        # Y-akse-grænser -> options -> resolve_axis_units -> ylim på bfh_qic.
+        # Indgår også i extra_params -> build_cache_key (cache-invalidering).
+        y_axis_min = y_axis_min,
+        y_axis_max = y_axis_max,
         # CRITICAL: Pass viewport dimensions in INCHES (BFHcharts format)
         # Converted from pixels using context-specific DPI
         # units = "in" er noedvendigt saa BFHcharts ikke gaetter enheden

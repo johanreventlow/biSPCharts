@@ -69,7 +69,8 @@ call_bfh_chart <- function(bfh_params) {
   fields_to_keep <- c(
     "data", "x", "y", "n", "chart_type", "freeze", "part",
     "multiply", "target_value", "target_text", "cl", "notes",
-    "y_axis_unit", "width", "height", "units", "base_size", "chart_title"
+    "y_axis_unit", "width", "height", "units", "base_size", "chart_title",
+    "ylim"
   )
   bfh_params_clean <- bfh_params[names(bfh_params) %in% fields_to_keep]
 

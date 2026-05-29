@@ -1,5 +1,16 @@
 # biSPCharts (development)
 
+## Nye features
+
+* **Y-akse-grænser på trin 2.** To nye felter ("Y-akse min" / "Y-akse max")
+  under Indstillinger lader brugeren fastsætte y-aksens nedre og/eller øvre
+  grænse — analogt med `coord_cartesian(ylim=)` i ggplot. Tomt felt = automatisk
+  (datadrevet) grænse, så man kan fastsætte kun den ene ende. Værdierne fortolkes
+  enhedsbevidst: på en %-akse giver fx min=0/max=1 (eller 0%/100%) en akse fra
+  0% til 100%. Grænserne *zoomer* kun visningen og fjerner ikke datapunkter eller
+  kontrolgrænse-segmenter. Grænserne gemmes i session-persistensen og indgår i
+  plot-cache-nøglen. Kræver BFHcharts >= 0.23.0 (ny `ylim`-parameter).
+
 ## Bug fixes
 
 * **Tekst-x-akse: akse-linjen strækker nu til sidste observation.**

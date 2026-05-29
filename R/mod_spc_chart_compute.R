@@ -162,6 +162,8 @@ create_spc_results_reactive <- function(
           frys_column = inputs$frys_column,
           chart_title_reactive = inputs$title,
           y_axis_unit = inputs$y_axis_unit,
+          y_axis_min = inputs$y_axis_min,
+          y_axis_max = inputs$y_axis_max,
           kommentar_column = inputs$kommentar_column,
           base_size = inputs$base_size,
           viewport_width = inputs$viewport_width_px,

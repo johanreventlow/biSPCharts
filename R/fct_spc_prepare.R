@@ -187,6 +187,11 @@ resolve_axis_units <- function(prepared) {
   target_value <- options$target_value
   centerline_value <- options$centerline_value
   target_text <- options$target_text
+  # Y-akse-grænser (allerede normaliseret til kanonisk skala af
+  # normalize_axis_limit i utils_server_visualization.R; for tids-enheder
+  # skaleres de til minutter nedenfor, parallelt med target/centerline).
+  y_lim_min <- options$y_axis_min
+  y_lim_max <- options$y_axis_max
 
   # Skaler target/centerline til kanoniske minutter hvis y-enheden er en
   # tids-enhed. Brugeren indtaster target i den valgte enhed (fx 90 med
@@ -214,6 +219,31 @@ resolve_axis_units <- function(prepared) {
       )
       centerline_value <- scaled_cl
     }
+    if (!is.null(y_lim_min) && length(y_lim_min) > 0) {
+      y_lim_min <- parse_time_to_minutes(y_lim_min, input_unit = y_axis_unit)
+    }
+    if (!is.null(y_lim_max) && length(y_lim_max) > 0) {
+      y_lim_max <- parse_time_to_minutes(y_lim_max, input_unit = y_axis_unit)
+    }
+  }
+
+  # Saml y-akse-grænser til ylim c(min, max). NA per ende = fri grænse;
+  # begge tomme => NULL (ingen grænse). BFHcharts' validate_ylim() håndterer
+  # NA/min>=max defensivt.
+  y_lim_min_val <- if (!is.null(y_lim_min) && length(y_lim_min) > 0) {
+    y_lim_min
+  } else {
+    NA_real_
+  }
+  y_lim_max_val <- if (!is.null(y_lim_max) && length(y_lim_max) > 0) {
+    y_lim_max
+  } else {
+    NA_real_
+  }
+  ylim <- if (is.na(y_lim_min_val) && is.na(y_lim_max_val)) {
+    NULL
+  } else {
+    c(y_lim_min_val, y_lim_max_val)
   }
 
   # BFHcharts 0.8.0's y_axis_unit accepterer kun "count", "percent", "rate", "time".
@@ -286,6 +316,7 @@ resolve_axis_units <- function(prepared) {
     multiply = prepared$multiply,
     target_value = target_value,
     centerline_value = centerline_value,
-    target_text = target_text
+    target_text = target_text,
+    ylim = ylim
   )
 }

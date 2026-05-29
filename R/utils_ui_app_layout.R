@@ -707,16 +707,19 @@ create_ui_main_content <- function() {
     ),
 
     # Layout: 6-6 grid -- samme moenster som trin 3 (eksport).
-    # height = "auto" + min_height = calc(100vh - 200px) lader gridet flyde i
-    # normal dokument-flow med konsistent card-hoejde og luft til knap-randen
-    # nedenunder, uden overflow-scrollbar.
+    # height = "auto" + min_height lader gridet flyde i normal dokument-flow
+    # med konsistent card-hoejde og luft til knap-randen, uden overflow-scrollbar.
+    # Offset = trin-3's 200px + ~25px for hjaelp-fold-ud-randen ("Hjaelp til
+    # dette trin") der ligger OVER gridet her (trin 3 har den inde i venstre
+    # card). Det krymper alle cards/bokse uniformt, saa bund-knapperne flugter
+    # med trin-3 i hjaelpens default (kollapsede) tilstand.
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
     bslib::layout_columns(
       col_widths = c(6, 6),
       height = "auto",
-      min_height = "calc(100vh - 200px)",
+      min_height = "calc(100vh - 225px)",
 
       # Venstre kolonne: Datatabel (fuld hoejde)
       create_data_table_card(),

@@ -680,8 +680,6 @@ create_ui_main_content <- function() {
             "Klik ", shiny::tags$em("Tildel kolonner"),
             " \u00f8verst over datatabellen for at \u00e5bne dialogen, hvor du kan v\u00e6lge ",
             "hvilke kolonner der er Tid/kategori (X-akse), T\u00e6ller (Y-akse), N\u00e6vner osv. ",
-            "Brug ", shiny::tags$em("Auto-detekt\u00e9r kolonner"),
-            " inde i dialogen for at lade appen forsl\u00e5 tildelinger ud fra data. ",
             "Tid/kategori og T\u00e6ller er p\u00e5kr\u00e6vede. ",
             "V\u00e6lg en N\u00e6vner hvis du arbejder med andele eller rater."
           ),

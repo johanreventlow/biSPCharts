@@ -832,7 +832,7 @@ create_chart_settings_card_compact <- function() {
           shiny::tagList(
             "Y-akse min:",
             shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-              bslib::tooltip("Nedre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Fx 0 (eller 0%).")
+              bslib::tooltip("Nedre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Angiv i aksens enhed (fx 0 eller 0%).")
           ),
           value = "",
           placeholder = "auto",
@@ -843,7 +843,7 @@ create_chart_settings_card_compact <- function() {
           shiny::tagList(
             "Y-akse max:",
             shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
-              bslib::tooltip("\u00d8vre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Fx 100% (eller 1).")
+              bslib::tooltip("\u00d8vre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Angiv i aksens enhed (fx 100 eller 100% p\u00e5 en %-akse).")
           ),
           value = "",
           placeholder = "auto",

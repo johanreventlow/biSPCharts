@@ -9,6 +9,23 @@ ylim_test_data <- function() {
   )
 }
 
+# Kontrakt: y-akse-grænser normaliseres via normalize_axis_value (samme som
+# target/centerline). På en %-akse er konventionen procent-point: "100"/"100%"
+# -> 1.0 (=100%), "0" -> 0. Bare "1" -> 0.01 (=1%), ikke 1.0 -- bevidst
+# konsistent med target-feltet. Pinner headline-adfærd mod regression.
+test_that("y-akse-grænse percent-konvention: procent-point -> proportion", {
+  expect_equal(normalize_axis_value("0", user_unit = "percent", chart_type = "p"), 0)
+  expect_equal(normalize_axis_value("100", user_unit = "percent", chart_type = "p"), 1)
+  expect_equal(normalize_axis_value("100%", user_unit = "percent", chart_type = "p"), 1)
+  expect_equal(normalize_axis_value("90%", user_unit = "percent", chart_type = "p"), 0.9)
+  expect_equal(normalize_axis_value("50", user_unit = "percent", chart_type = "p"), 0.5)
+})
+
+test_that("y-akse-grænse count-konvention: pass-through", {
+  expect_equal(normalize_axis_value("0", user_unit = "count", chart_type = "i"), 0)
+  expect_equal(normalize_axis_value("20", user_unit = "count", chart_type = "i"), 20)
+})
+
 test_that("build_cache_key invaliderer ved ændring af y_axis_min/max", {
   df <- data.frame(x = 1:10, y = as.numeric(1:10))
   base <- build_cache_key(df, "run", "x", "y", NULL, extra_params = list())

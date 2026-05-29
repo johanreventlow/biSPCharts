@@ -644,12 +644,11 @@ create_ui_header <- function() {
 #' @return tagList with main content components
 #' @keywords internal
 create_ui_main_content <- function() {
-  shiny::div(
-    style = "display: flex; flex-direction: column; height: calc(100vh - 80px); min-height: 0;",
-
+  # Samme layout-moenster som trin 3 (eksport): naturlig dokument-flow uden
+  # rigid flex-column-hoejde, saa der ikke opstaar overflow-scrollbar.
+  shiny::tagList(
     # Sammenklapbar hjaelp (minimal footprint naar sammenklappet)
     shiny::div(
-      style = "flex-shrink: 0;",
       shiny::tags$button(
         class = "btn btn-sm btn-link text-muted p-0",
         style = "text-decoration: none; font-size: 0.75rem; line-height: 1.2;",
@@ -707,43 +706,39 @@ create_ui_main_content <- function() {
       )
     ),
 
-    # Layout: 6-6 grid (fylder resten af wrapper-hoejden via flex-fill)
+    # Layout: 6-6 grid -- samme moenster som trin 3 (eksport).
+    # height = "auto" + min_height = calc(100vh - 200px) lader gridet flyde i
+    # normal dokument-flow med konsistent card-hoejde og luft til knap-randen
+    # nedenunder, uden overflow-scrollbar.
     # Venstre: Datatabel (fuld hoejde)
     # Hoejre top: SPC Preview
     # Hoejre bund: Anhoej (3) + Indstillinger (3)
-    # flex: 1 1 auto + min-height: 0 lader grid'et auto-tilpasse sig den plads
-    # hjaelpe-rand og knap-rand efterlader — i stedet for et hardkodet
-    # calc(100vh - Npx) der bliver staaende naar soeskende-elementer aendres.
-    # margin-bottom skaber luft mellem cards og knap-randen — gridet krymper
-    # tilsvarende (data-card + hoejre bokse reduceres uniformt).
-    shiny::div(
-      style = "flex: 1 1 auto; min-height: 0; margin-bottom: 16px;",
-      bslib::layout_columns(
-        col_widths = c(6, 6),
-        height = "100%",
+    bslib::layout_columns(
+      col_widths = c(6, 6),
+      height = "auto",
+      min_height = "calc(100vh - 200px)",
 
-        # Venstre kolonne: Datatabel (fuld hoejde)
-        create_data_table_card(),
+      # Venstre kolonne: Datatabel (fuld hoejde)
+      create_data_table_card(),
 
-        # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
+      # Hoejre kolonne: SPC preview + Anhoej/Indstillinger
+      shiny::div(
+        style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
+
+        # Oeverste halvdel: SPC Preview
         shiny::div(
-          style = "display: flex; flex-direction: column; height: 100%; gap: 8px;",
+          style = "flex: 1 1 50%; min-height: 0;",
+          create_plot_only_card()
+        ),
 
-          # Oeverste halvdel: SPC Preview
-          shiny::div(
-            style = "flex: 1 1 50%; min-height: 0;",
-            create_plot_only_card()
-          ),
-
-          # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
-          shiny::div(
-            style = "flex: 1 1 50%; min-height: 0;",
-            bslib::layout_columns(
-              col_widths = c(6, 6),
-              height = "100%",
-              create_chart_settings_card_compact(),
-              create_status_value_boxes()
-            )
+        # Nederste halvdel: Indstillinger (3) + Anhoej-regler (3)
+        shiny::div(
+          style = "flex: 1 1 50%; min-height: 0;",
+          bslib::layout_columns(
+            col_widths = c(6, 6),
+            height = "100%",
+            create_chart_settings_card_compact(),
+            create_status_value_boxes()
           )
         )
       )

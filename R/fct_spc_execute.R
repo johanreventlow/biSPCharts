@@ -141,6 +141,14 @@ execute_bfh_request <- function(bfh_params, prepared) {
   # BFHcharts::bfh_subsample_label_indices() til at vaelge evenly-spaced
   # subset med foerste+sidste anchored. Holder labels horisontale (ingen
   # rotation) jf. user-praeference. <= maks vises alle labels horisontalt.
+  #
+  # Akse-linje-anker: ggplot2 4.0 capper axis.line.x ved yderste break.
+  # bfh_subsample_label_indices() dropper sidste label naar (n-1) ej er
+  # delelig med step (BFHcharts 0.22.1), saa axis.line ellers stopper ved
+  # sidste synlige label i stedet for sidste observation. Vi tilfoejer
+  # n_labels som ekstra break med tom label -> akse-linjen straekker til
+  # sidste datapunkt, uden synlig tick (x-ticks blanket i theme_bfh) eller
+  # ekstra label. Grid-aligned n (n_labels allerede i visible_idx) uaendret.
   x_labels_col <- paste0(".x_labels_", prepared$x_var)
   x_scale <- NULL
   x_theme <- NULL
@@ -149,9 +157,13 @@ execute_bfh_request <- function(bfh_params, prepared) {
     x_labels <- prepared$data[[x_labels_col]]
     n_labels <- length(x_labels)
     visible_idx <- BFHcharts::bfh_subsample_label_indices(n_labels)
+    axis_breaks <- sort(unique(c(visible_idx, n_labels)))
+    axis_labels <- ifelse(
+      axis_breaks %in% visible_idx, x_labels[axis_breaks], ""
+    )
     x_scale <- ggplot2::scale_x_continuous(
-      breaks = visible_idx,
-      labels = x_labels[visible_idx]
+      breaks = axis_breaks,
+      labels = axis_labels
     )
     x_theme <- ggplot2::theme(
       axis.text.x = ggplot2::element_text(angle = 0, hjust = 0.5)

@@ -57,6 +57,41 @@ test_that("Bagudkompatibilitet: 2-ark Excel uden SPC-analyse parses uden fejl", 
   expect_equal(parsed$indicator_title, "Legacy")
 })
 
+test_that("y-akse-grænser (min/max) round-trip i Indstillinger-arket", {
+  data <- data.frame(x = 1:5, y = c(1, 2, 3, 4, 5))
+  metadata <- list(
+    chart_type = "i",
+    y_axis_unit = "percent",
+    y_axis_min = "0",
+    y_axis_max = "100",
+    indicator_title = "Test ylim"
+  )
+
+  temp_path <- build_spc_excel(data = data, metadata = metadata)
+  on.exit(unlink(temp_path), add = TRUE)
+
+  parsed <- parse_spc_excel(temp_path)
+  expect_equal(parsed$y_axis_min, "0")
+  expect_equal(parsed$y_axis_max, "100")
+})
+
+test_that("tomme y-akse-grænser round-trip som tom streng", {
+  data <- data.frame(x = 1:5, y = c(1, 2, 3, 4, 5))
+  metadata <- list(
+    chart_type = "run",
+    y_axis_unit = "count",
+    y_axis_min = "",
+    y_axis_max = "50"
+  )
+
+  temp_path <- build_spc_excel(data = data, metadata = metadata)
+  on.exit(unlink(temp_path), add = TRUE)
+
+  parsed <- parse_spc_excel(temp_path)
+  expect_equal(parsed$y_axis_min, "")
+  expect_equal(parsed$y_axis_max, "50")
+})
+
 test_that("Tomt qic_data resulterer i 2-ark Excel (SPC-analyse springes over)", {
   data <- data.frame(x = 1:3, y = c(1, 2, 3))
   metadata <- list(chart_type = "run", y_axis_unit = "count")

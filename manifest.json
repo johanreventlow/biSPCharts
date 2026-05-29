@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.21.0",
+        "Version": "0.22.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -41,17 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.21.0",
-        "RemoteSha": "70c67bde0ce907516d488817df474953ae3bc8db",
+        "RemoteRef": "v0.22.1",
+        "RemoteSha": "efb23fb120bd930c52804d0c693f49c83434342d",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.21.0",
-        "GithubSHA1": "70c67bde0ce907516d488817df474953ae3bc8db",
+        "GithubRef": "v0.22.1",
+        "GithubSHA1": "efb23fb120bd930c52804d0c693f49c83434342d",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-28 16:19:26 UTC; johanreventlow",
+        "Packaged": "2026-05-29 05:48:34 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.5.2; ; 2026-05-28 16:19:26 UTC; unix"
+        "Built": "R 4.5.2; ; 2026-05-29 05:48:35 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -4840,7 +4840,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "657127f56d9c450b4a12f6733e62cf28"
+      "checksum": "18c9f0ffce42a2e728543fd5b3fe53a9"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4979,6 +4979,9 @@
     },
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
+    },
+    "manifest.json": {
+      "checksum": "9e65c84b4b558e9897e5b84d7724b490"
     },
     "NAMESPACE": {
       "checksum": "b9cf8aced2ef17dc040af58c1db3c830"

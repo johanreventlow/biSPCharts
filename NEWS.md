@@ -2,6 +2,15 @@
 
 ## Bug fixes
 
+* **Tekst-x-akse: akse-linjen strækker nu til sidste observation.**
+  ggplot2 4.0 capper `axis.line.x` ved yderste break. Da BFHcharts 0.22.1
+  dropper det sidste label når `(n-1)` ej er delelig med step, stoppede den
+  vandrette akse-linje ved sidste *synlige* label (fx okt 26) i stedet for
+  ved sidste datapunkt (dec 26) — mens proces-båndet korrekt nåede helt ud.
+  `execute_bfh_request()` tilføjer nu `n_labels` som ekstra break med tom
+  label, så akse-linjen strækker til sidste observation uden synlig
+  tick/label (BFHcharts 0.22.1 follow-up).
+
 * **Connect Cloud: ggplot bruger nu Mari, ikke Roboto-fallback.**
   Trippel fix der lukker hele kæden fra font-detection til rendering:
     1. **Cache-clear i `.onLoad`** efter `register_mari_font()` /

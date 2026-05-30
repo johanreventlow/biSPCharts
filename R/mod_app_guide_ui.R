@@ -44,12 +44,12 @@ build_app_guide_modal_markup <- function() {
     tabindex = "-1",
     # Accessibility: role + aria-modal saettes ej automatisk paa custom markup.
     # Shiny's modalDialog laver Bootstrap modal-init der ikke retroaktivt
-    # tilfoejer disse — vi skal saette dem eksplicit her. aria-label erstatter
+    # tilfoejer disse -- vi skal saette dem eksplicit her. aria-label erstatter
     # aria-labelledby da modal har INGEN synlig title.
     role = "dialog",
     `aria-modal` = "true",
     `aria-label` = "App-vejledning",
-    # Bemærk: bade data-* og data-bs-* sættes for parity med shiny::modalDialog.
+    # Bemaerk: bade data-* og data-bs-* saettes for parity med shiny::modalDialog.
     # Shiny's Esc-handler i modal.ts laeser data-keyboard; Bootstrap 5 laeser data-bs-keyboard.
     `data-backdrop` = "true",
     `data-bs-backdrop` = "true",
@@ -149,7 +149,7 @@ app_guide_intro_carousel <- function(ns) {
   )
 }
 
-#' Renderer ét carousel-slide i app-guide
+#' Renderer et carousel-slide i app-guide
 #'
 #' Slide-layout: venstre=media (50%), hoejre=content (50%). Media-siden
 #' viser screenshot hvis slide$image_src er sat; ellers fallback decorativ
@@ -159,7 +159,7 @@ app_guide_intro_carousel <- function(ns) {
 #' @param slide Named list med title, content, image_src, image_alt
 #' @param idx Integer. Slide-nummer (1-baseret)
 #' @param total Integer. Total antal slides
-#' @param active Logical. TRUE for første slide
+#' @param active Logical. TRUE for foerste slide
 #' @return shiny.tag
 #' @noRd
 app_guide_intro_slide <- function(slide, idx, total, active = FALSE) {
@@ -177,7 +177,7 @@ app_guide_intro_slide <- function(slide, idx, total, active = FALSE) {
     shiny::div(
       class = "app-guide-media app-guide-media--decor",
       # aria-hidden: title vises ogsaa i h3 nedenfor (content-col),
-      # decor-label er rent visuel — undgaa screen-reader-duplikering
+      # decor-label er rent visuel -- undgaa screen-reader-duplikering
       `aria-hidden` = "true",
       shiny::div(class = "app-guide-decor-num", as.character(idx)),
       shiny::div(class = "app-guide-decor-label", slide$title)
@@ -475,7 +475,7 @@ app_guide_intro_slides <- function() {
           "anden computer, b\u00f8r du ogs\u00e5 downloade en kopi af data og ",
           "indstillinger via knappen ",
           shiny::tags$strong("Download kopi af data og indstillinger"),
-          " p\u00e5 Analysér- eller Eksportér-trinnet."
+          " p\u00e5 Analys\u00e9r- eller Eksport\u00e9r-trinnet."
         )
       )
     )

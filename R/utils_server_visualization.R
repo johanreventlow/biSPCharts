@@ -134,6 +134,39 @@ setup_visualization <- function(input, output, session, app_state) {
     return(input$target_value)
   }), millis = DEBOUNCE_DELAYS$chart_update)
 
+  # Normaliser en y-akse-grænse (min/max) til canonical skala (samme som
+  # target/centerline). Tom -> NULL (fri grænse). Chart-type-aware så percent
+  # parses til 0-1-proportion mens count forbliver absolut. Genbruges af både
+  # y_axis_min_reactive og y_axis_max_reactive.
+  normalize_axis_limit <- function(raw) {
+    if (is.null(raw) || !nzchar(trimws(raw))) {
+      return(NULL)
+    }
+    chart_type <- chart_type_reactive()
+    y_unit <- if (is.null(input$y_axis_unit) || input$y_axis_unit == "") {
+      NULL
+    } else {
+      input$y_axis_unit
+    }
+    # Y sample til heuristik når brugeren ikke har valgt eksplicit enhed
+    y_sample <- NULL
+    if (is.null(y_unit)) {
+      data <- app_state$data$current_data
+      config <- column_config()
+      if (!is.null(data) && !is.null(config) && !is.null(config$y_col) &&
+        config$y_col %in% names(data)) {
+        y_sample <- parse_danish_number(data[[config$y_col]])
+      }
+    }
+    normalize_axis_value(
+      x = trimws(raw),
+      user_unit = y_unit,
+      col_unit = NULL,
+      y_sample = y_sample,
+      chart_type = chart_type
+    )
+  }
+
   # Initialiser visualiserings modul - no debouncing for valuebox stability
   # NB: Module-id "visualization" er hardcoded i inst/app/www/viewport-ready.js
   # (selectorer #visualization-spc_plot_actual + visualization-viewport_ready
@@ -289,6 +322,12 @@ setup_visualization <- function(input, output, session, app_state) {
         return(input$y_axis_unit)
       }
     }),
+    y_axis_min_reactive = shiny::debounce(shiny::reactive({
+      normalize_axis_limit(input$y_axis_min)
+    }), millis = DEBOUNCE_DELAYS$chart_update),
+    y_axis_max_reactive = shiny::debounce(shiny::reactive({
+      normalize_axis_limit(input$y_axis_max)
+    }), millis = DEBOUNCE_DELAYS$chart_update),
     kommentar_column_reactive = shiny::reactive({
       # Use same fallback pattern as skift_column and frys_column
       val <- sanitize_selection(input$kommentar_column)

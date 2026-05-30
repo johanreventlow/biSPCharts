@@ -192,6 +192,14 @@ build_export_plot <- function(app_state, title_input, dept_input,
   mappings_y_axis_unit <- normalize_mapping(
     app_state$columns$mappings$y_axis_unit
   )
+  # Y-akse-graenser (normaliserede vaerdier synket fra input via
+  # observe_y_axis_limits) -- sikrer at eksporten zoomer som skaermvisningen.
+  mappings_y_axis_min <- normalize_mapping(
+    app_state$columns$mappings$y_axis_min
+  )
+  mappings_y_axis_max <- normalize_mapping(
+    app_state$columns$mappings$y_axis_max
+  )
   mappings_kommentar_column <- normalize_mapping(
     app_state$columns$mappings$kommentar_column
   )
@@ -242,6 +250,8 @@ build_export_plot <- function(app_state, title_input, dept_input,
         frys_column = mappings_frys_column,
         chart_title_reactive = export_title,
         y_axis_unit = mappings_y_axis_unit %||% "count",
+        y_axis_min = mappings_y_axis_min,
+        y_axis_max = mappings_y_axis_max,
         kommentar_column = mappings_kommentar_column,
         base_size = 14,
         viewport_width = final_width,

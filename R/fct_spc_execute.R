@@ -87,6 +87,7 @@ build_bfh_args <- function(prepared, axes, extra_params) {
     y_axis_unit = y_axis_unit,
     target_text = axes$target_text,
     multiply = axes$multiply,
+    ylim = axes$ylim,
     width = extra_params$width,
     height = extra_params$height,
     units = extra_params$units,

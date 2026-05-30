@@ -4,9 +4,15 @@
 # Dependencies ----------------------------------------------------------------
 
 # SCHEMA VERSION ==============================================================
-# Bumpes når payload-struktur ændres. Load-logik rydder ved version-mismatch.
+# Bumpes KUN ved BREAKING payload-ændring (felt fjernet/omdøbt eller semantik
+# ændret). Load-logik rydder hele gemte state ved version-mismatch, så additive,
+# bagudkompatible felter må IKKE udløse bump (ellers mister alle brugere deres
+# session unødigt).
 # 3.0: y_axis_unit "time" splittet til time_minutes/time_hours/time_days.
 #      Silent forward-migration via migrate_time_yaxis_unit().
+#      Additive felter under 3.0 (bagudkompatible, intet bump):
+#      - y_axis_min / y_axis_max (y-akse-grænser; mangler i ældre payloads
+#        => restore springer over, akse forbliver automatisk).
 LOCAL_STORAGE_SCHEMA_VERSION <- "3.0"
 
 # MIGRATION ==================================================================

@@ -841,6 +841,32 @@ create_chart_settings_card_compact <- function() {
         value = "",
         placeholder = "fx 68%, 0,7 el. 22",
         width = "100%"
+      ),
+      bslib::layout_columns(
+        col_widths = c(6, 6),
+        gap = "0.5rem",
+        shiny::textInput(
+          "y_axis_min",
+          shiny::tagList(
+            "Y-akse min:",
+            shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+              bslib::tooltip("Nedre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Angiv i aksens enhed (fx 0 eller 0%).")
+          ),
+          value = "",
+          placeholder = "auto",
+          width = "100%"
+        ),
+        shiny::textInput(
+          "y_axis_max",
+          shiny::tagList(
+            "Y-akse max:",
+            shiny::icon("circle-info", style = "font-size: 0.8em; opacity: 0.6; margin-left: 4px;") |>
+              bslib::tooltip("\u00d8vre y-akse-gr\u00e6nse. Lad st\u00e5 tom for automatisk. Zoomer kun visningen \u2013 fjerner ikke datapunkter. Angiv i aksens enhed (fx 100 eller 100% p\u00e5 en %-akse).")
+          ),
+          value = "",
+          placeholder = "auto",
+          width = "100%"
+        )
       )
     )
   )

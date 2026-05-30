@@ -455,6 +455,12 @@ restore_metadata <- function(session, metadata, ui_service = NULL) {
       if (!is.null(metadata$y_axis_unit)) {
         shiny::updateSelectizeInput(session, "y_axis_unit", selected = metadata$y_axis_unit)
       }
+      if (!is.null(metadata$y_axis_min)) {
+        shiny::updateTextInput(session, "y_axis_min", value = metadata$y_axis_min)
+      }
+      if (!is.null(metadata$y_axis_max)) {
+        shiny::updateTextInput(session, "y_axis_max", value = metadata$y_axis_max)
+      }
       if (!is.null(metadata$indicator_title)) {
         shiny::updateTextInput(session, "indicator_title", value = metadata$indicator_title)
       }
@@ -518,6 +524,9 @@ collect_metadata <- function(input, app_state = NULL) {
       target_value = scalar_text(input$target_value),
       centerline_value = scalar_text(input$centerline_value),
       y_axis_unit = scalar_text(input$y_axis_unit, default = "count"),
+      # Y-akse-grænser (rå tekst-input; tom = automatisk grænse).
+      y_axis_min = scalar_text(input$y_axis_min),
+      y_axis_max = scalar_text(input$y_axis_max),
       # Unit-type system (select/custom) og tilhoerende vaerdier.
       # Disse triggerer autosave og opdateres i update_form_fields(),
       # saa de skal ogsaa gemmes i metadata for korrekt roundtrip.
@@ -692,6 +701,8 @@ reset_to_empty_session <- function(session, app_state, emit, ui_service = NULL) 
 
       shiny::updateTextInput(session, "target_value", value = "")
       shiny::updateTextInput(session, "centerline_value", value = "")
+      shiny::updateTextInput(session, "y_axis_min", value = "")
+      shiny::updateTextInput(session, "y_axis_max", value = "")
     }
 
     shinyjs::reset("direct_file_upload")

@@ -89,6 +89,11 @@ register_chart_type_events <- function(app_state, emit, input, session, register
     input, session, app_state, register_observer
   )
 
+  # Y-akse-graenser (min/max) -- synker normaliserede vaerdier til mappings
+  # saa export-modulet faar samme graenser som skaermvisningen.
+  observers$y_axis_limits <- observe_y_axis_limits(
+    input, session, app_state, register_observer
+  )
 
   observers
 }
@@ -597,6 +602,87 @@ observe_centerline_value <- function(input, session, app_state, register_observe
       },
       ignoreInit = TRUE,
       priority = OBSERVER_PRIORITIES$UI_SYNC
+    )
+  )
+}
+
+# ==============================================================================
+# OBSERVE_Y_AXIS_LIMITS
+# Etablerer observers paa input$y_axis_min / input$y_axis_max og synker
+# NORMALISEREDE vaerdier til app_state$columns$mappings. Export-modulet laeser
+# fra mappings (ikke fra reactives), saa eksporterede charts faar samme
+# y-akse-graenser som skaermvisningen (display/export-paritet).
+# ==============================================================================
+
+#' Etabler observers for y-akse-graenser (min/max)
+#'
+#' @param input Shiny input
+#' @param session Shiny session
+#' @param app_state Centraliseret app state
+#' @param register_observer Funktion til observer-registrering
+#' @return Liste med min/max observer-objekter
+#' @keywords internal
+#' @noRd
+observe_y_axis_limits <- function(input, session, app_state, register_observer) {
+  # Faelles sync-helper: normaliser raa input til kanonisk skala (samme som
+  # target/centerline) og skriv til mappings. Tom -> NULL (fri graense).
+  sync_limit <- function(raw_input, mapping_key) {
+    val <- input_scalar(raw_input, default = "")
+    if (!nzchar(val)) {
+      app_state$columns$mappings[[mapping_key]] <- NULL
+      return(invisible(NULL))
+    }
+    chart_type <- get_qic_chart_type(input_scalar(input$chart_type, default = "run"))
+    y_unit <- input_scalar(input$y_axis_unit, default = "count")
+    y_sample <- NULL
+    if (is.null(y_unit) || y_unit == "") {
+      data <- get_current_data(app_state)
+      y_col <- get_y_column(app_state)
+      if (!is.null(data) && !is.null(y_col) && y_col %in% names(data)) {
+        y_sample <- parse_danish_number(data[[y_col]])
+      }
+    }
+    app_state$columns$mappings[[mapping_key]] <- normalize_axis_value(
+      x = trimws(val),
+      user_unit = y_unit,
+      col_unit = NULL,
+      y_sample = y_sample,
+      chart_type = chart_type
+    )
+  }
+
+  list(
+    y_axis_min = register_observer(
+      "y_axis_min",
+      shiny::observeEvent(input$y_axis_min,
+        {
+          safe_operation(
+            "Sync y_axis_min to mappings",
+            code = sync_limit(input$y_axis_min, "y_axis_min"),
+            fallback = NULL,
+            session = session,
+            error_type = "processing"
+          )
+        },
+        ignoreInit = TRUE,
+        priority = OBSERVER_PRIORITIES$UI_SYNC
+      )
+    ),
+    y_axis_max = register_observer(
+      "y_axis_max",
+      shiny::observeEvent(input$y_axis_max,
+        {
+          safe_operation(
+            "Sync y_axis_max to mappings",
+            code = sync_limit(input$y_axis_max, "y_axis_max"),
+            fallback = NULL,
+            session = session,
+            error_type = "processing"
+          )
+        },
+        ignoreInit = TRUE,
+        priority = OBSERVER_PRIORITIES$UI_SYNC
+      )
     )
   )
 }

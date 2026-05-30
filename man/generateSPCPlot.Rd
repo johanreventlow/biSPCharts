@@ -15,6 +15,8 @@ generateSPCPlot(
   frys_column = NULL,
   chart_title_reactive = NULL,
   y_axis_unit = "count",
+  y_axis_min = NULL,
+  y_axis_max = NULL,
   kommentar_column = NULL,
   base_size = 14,
   viewport_width = NULL,

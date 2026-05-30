@@ -9,7 +9,8 @@ new_spc_axes(
   multiply,
   target_value = NULL,
   centerline_value = NULL,
-  target_text = NULL
+  target_text = NULL,
+  ylim = NULL
 )
 }
 \arguments{
@@ -24,6 +25,10 @@ enheder (minutter for tids-typer).}
 \item{centerline_value}{numeric eller NULL. Manuel centerlinje (skaleret).}
 
 \item{target_text}{character eller NULL. Formateret target-label til display.}
+
+\item{ylim}{numeric(2) eller NULL. Y-akse-visningsgrænser \code{c(min, max)} i
+kanonisk skala (NA tilladt per ende for fri grænse), videregivet til
+BFHcharts' \code{ylim}-parameter (coord_cartesian-zoom, dropper ikke data).}
 }
 \value{
 S3-objekt af klassen \code{c("spc_axes", "list")}.

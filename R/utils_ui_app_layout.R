@@ -342,7 +342,7 @@ create_ui_header <- function() {
     }
     /* Bootstrap 5 toggler display: block paa .active + transition-states.
        Override til flex for at bevare 2-kolonne-layout, men kun paa synlige
-       items — ellers bleed-through fordi display: flex hijacker
+       items -- ellers bleed-through fordi display: flex hijacker
        Bootstrap's display: none paa inactive items. */
     .app-guide-slide.active,
     .app-guide-slide.carousel-item-next,
@@ -579,7 +579,7 @@ create_ui_header <- function() {
     .app-guide-control--prev { left: 14px; }
     .app-guide-control--next { right: 14px; }
 
-    /* Navbar-link «Sådan bruger du appen»: skjult før wizard-nav-active */
+    /* Navbar-link 'Saadan bruger du appen': skjult foer wizard-nav-active */
     .navbar .nav-item:has(.nav-link[data-value='app_guide_trigger']) {
       display: none !important;
     }

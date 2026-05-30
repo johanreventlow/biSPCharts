@@ -807,6 +807,15 @@ files:
     event orchestration. Alle grønne.'
   reviewer: johanreventlow
   reviewed_date: '2026-04-26'
+- file: test-spc-ylim-integration.R
+  audit_category: green
+  type: integration
+  handling: keep
+  reviewed: yes
+  rationale: 'Ny fil (feat/y-axis-limits). Integration-tests for y-akse-graenser
+    (ylim) gennem SPC-pipeline + round-trip. Alle groenne.'
+  reviewer: johanreventlow
+  reviewed_date: '2026-05-30'
 - file: test-spc-plot-generation-comprehensive.R
   audit_category: green
   type: unit

@@ -273,6 +273,10 @@ build_cache_key <- function(data, chart_type, x_var, y_var, n_var,
         target_value = extra_params$target_value,
         centerline_value = extra_params$centerline_value,
         y_axis_unit = extra_params$y_axis_unit,
+        # Y-akse-grænser: cache skal invalidere når bruger ændrer min/max,
+        # ellers returneres plot med forrige zoom-vindue.
+        y_axis_min = extra_params$y_axis_min,
+        y_axis_max = extra_params$y_axis_max,
         # Codex peer-review 2026-05-08 (#H3): target_text og chart_title bruges
         # i BFH-kald (fct_spc_execute.R:84,86) men manglede i cache-keyen.
         # Konsekvens: cache returnerede plot med stale labels naar bruger

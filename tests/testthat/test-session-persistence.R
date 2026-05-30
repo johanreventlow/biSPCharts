@@ -461,6 +461,8 @@ test_that("collect_metadata captures all form fields including active_tab", {
     target_value = "0.95",
     centerline_value = "0.90",
     y_axis_unit = "percent",
+    y_axis_min = "0",
+    y_axis_max = "100",
     indicator_title = "Patientfremm\u00f8de",
     indicator_description = "Procent m\u00f8dt ud af tilkaldte",
     main_navbar = "analyser"
@@ -480,6 +482,8 @@ test_that("collect_metadata captures all form fields including active_tab", {
   expect_equal(metadata$target_value, "0.95")
   expect_equal(metadata$centerline_value, "0.90")
   expect_equal(metadata$y_axis_unit, "percent")
+  expect_equal(metadata$y_axis_min, "0")
+  expect_equal(metadata$y_axis_max, "100")
   expect_equal(metadata$indicator_title, "Patientfremm\u00f8de")
   expect_equal(metadata$indicator_description, "Procent m\u00f8dt ud af tilkaldte")
   expect_equal(metadata$active_tab, "analyser")

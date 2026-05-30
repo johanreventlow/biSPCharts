@@ -166,6 +166,9 @@ print.spc_prepared <- function(x, ...) { # S3 print-metode — cat() er idiomati
 #'   enheder (minutter for tids-typer).
 #' @param centerline_value numeric eller NULL. Manuel centerlinje (skaleret).
 #' @param target_text character eller NULL. Formateret target-label til display.
+#' @param ylim numeric(2) eller NULL. Y-akse-visningsgrænser `c(min, max)` i
+#'   kanonisk skala (NA tilladt per ende for fri grænse), videregivet til
+#'   BFHcharts' `ylim`-parameter (coord_cartesian-zoom, dropper ikke data).
 #'
 #' @return S3-objekt af klassen `c("spc_axes", "list")`.
 #' @keywords internal
@@ -174,7 +177,8 @@ new_spc_axes <- function(
   multiply,
   target_value = NULL,
   centerline_value = NULL,
-  target_text = NULL
+  target_text = NULL,
+  ylim = NULL
 ) {
   structure(
     list(
@@ -182,7 +186,8 @@ new_spc_axes <- function(
       multiply = multiply,
       target_value = target_value,
       centerline_value = centerline_value,
-      target_text = target_text
+      target_text = target_text,
+      ylim = ylim
     ),
     class = c("spc_axes", "list")
   )

@@ -492,6 +492,12 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
       force(target_value_save_debounced()) # debounced — undgaar save per tastetryk
       force(input$centerline_value)
       force(input$y_axis_unit)
+      # Y-akse-graenser: uden disse reads trigger settings_save IKKE ved
+      # min/max-aendring -> localStorage gemmer aldrig nye graenser, og
+      # session-restore henter dem ikke (Excel virker fordi download kalder
+      # collect_metadata on-demand). Ydre debounce daekker save-per-tastetryk.
+      force(input$y_axis_min)
+      force(input$y_axis_max)
       force(input[["export-export_title"]])
       force(input[["export-export_hospital"]])
       force(input[["export-export_department"]])
@@ -533,12 +539,15 @@ setup_helper_observers <- function(input, output, session, obs_manager = NULL, a
           sprintf(
             paste0(
               "settings_save capture: active_tab='%s', target='%s', ",
+              "y_axis_min='%s', y_axis_max='%s', ",
               "export_title='%s', export_hospital='%s', export_department='%s', export_footnote='%s', export_format='%s', ",
               "pdf_description='%s', pdf_improvement='%s', ",
               "png_width='%s', png_height='%s'"
             ),
             md$active_tab %||% "<NULL>",
             md$target_value %||% "<NULL>",
+            md$y_axis_min %||% "<NULL>",
+            md$y_axis_max %||% "<NULL>",
             md$export_title %||% "<NULL>",
             md$export_hospital %||% "<NULL>",
             md$export_department %||% "<NULL>",

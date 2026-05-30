@@ -111,3 +111,64 @@ test_that("resolve_axis_units lader target_text være NULL ved count", {
   ))
   expect_equal(axes$target_text, "5")
 })
+
+# ---------------------------------------------------------------------------
+# ylim (y-akse-grænser)
+# ---------------------------------------------------------------------------
+
+helper_prepared_ylim <- function(y_axis_unit = "count", n_var = NULL,
+                                 chart_type = "run",
+                                 y_axis_min = NULL, y_axis_max = NULL) {
+  df <- data.frame(x = 1:10, y = as.numeric(1:10))
+  options <- list(
+    y_axis_unit = y_axis_unit,
+    y_axis_min = y_axis_min,
+    y_axis_max = y_axis_max
+  )
+  new_spc_prepared(df, "x", "y", chart_type,
+    n_var = n_var, multiply = 1, options = options
+  )
+}
+
+test_that("resolve_axis_units giver ylim=NULL uden grænser", {
+  axes <- resolve_axis_units(helper_prepared_ylim())
+  expect_null(axes$ylim)
+})
+
+test_that("resolve_axis_units bygger ylim c(min, max) for count", {
+  axes <- resolve_axis_units(helper_prepared_ylim(
+    y_axis_unit = "count", y_axis_min = 0, y_axis_max = 100
+  ))
+  expect_equal(axes$ylim, c(0, 100))
+})
+
+test_that("resolve_axis_units bygger ylim c(0, 1) for percent (0%-100%)", {
+  # Værdier er allerede normaliseret til proportion af reactive-laget;
+  # resolve_axis_units rør ikke percent-værdier.
+  axes <- resolve_axis_units(helper_prepared_ylim(
+    y_axis_unit = "percent", n_var = "n", y_axis_min = 0, y_axis_max = 1
+  ))
+  expect_equal(axes$ylim, c(0, 1))
+})
+
+test_that("resolve_axis_units understøtter partiel grænse (kun min)", {
+  axes <- resolve_axis_units(helper_prepared_ylim(
+    y_axis_unit = "count", y_axis_min = 0, y_axis_max = NULL
+  ))
+  expect_equal(axes$ylim, c(0, NA))
+})
+
+test_that("resolve_axis_units understøtter partiel grænse (kun max)", {
+  axes <- resolve_axis_units(helper_prepared_ylim(
+    y_axis_unit = "count", y_axis_min = NULL, y_axis_max = 50
+  ))
+  expect_equal(axes$ylim, c(NA, 50))
+})
+
+test_that("resolve_axis_units skalerer ylim til minutter for time_hours", {
+  axes <- resolve_axis_units(helper_prepared_ylim(
+    y_axis_unit = "time_hours", y_axis_min = 1, y_axis_max = 2
+  ))
+  # 1 time = 60 min, 2 timer = 120 min
+  expect_equal(axes$ylim, c(60, 120))
+})

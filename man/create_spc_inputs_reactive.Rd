@@ -11,6 +11,8 @@ create_spc_inputs_reactive(
   ns,
   app_state,
   y_axis_unit_reactive = NULL,
+  y_axis_min_reactive = NULL,
+  y_axis_max_reactive = NULL,
   target_value_reactive = NULL,
   target_text_reactive = NULL,
   centerline_value_reactive = NULL,

@@ -172,6 +172,10 @@ generate_spc_cache_key <- function(data, config) {
         target_value = config$target_value,
         centerline_value = config$centerline_value,
         y_axis_unit = config$y_axis_unit,
+        # Y-akse-grænser: forskellige min/max skal give cache-miss, ellers
+        # genbruges plot med forrige zoom-vindue.
+        y_axis_min = config$y_axis_min,
+        y_axis_max = config$y_axis_max,
         # Codex peer-review 2026-05-08 (#H3): target_text og chart_title bruges
         # i BFH-kald (fct_spc_execute.R:84,86) men manglede i config_signature.
         # Konsekvens: cache returnerede plot med stale labels naar bruger

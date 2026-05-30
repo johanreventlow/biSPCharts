@@ -39,6 +39,8 @@ visualizationModuleServer <- function(
   frys_config_reactive,
   chart_title_reactive = NULL,
   y_axis_unit_reactive = NULL,
+  y_axis_min_reactive = NULL,
+  y_axis_max_reactive = NULL,
   kommentar_column_reactive = NULL,
   app_state = NULL,
   emit = NULL
@@ -100,6 +102,8 @@ visualizationModuleServer <- function(
       ns = ns,
       app_state = app_state,
       y_axis_unit_reactive = y_axis_unit_reactive,
+      y_axis_min_reactive = y_axis_min_reactive,
+      y_axis_max_reactive = y_axis_max_reactive,
       target_value_reactive = target_value_reactive,
       target_text_reactive = target_text_reactive,
       centerline_value_reactive = centerline_value_reactive,

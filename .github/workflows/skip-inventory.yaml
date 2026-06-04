@@ -139,6 +139,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: skip-inventory
+          retention-days: 7
           path: |
             dev/audit-output/skip-inventory.json
             dev/audit-output/skip-inventory.md

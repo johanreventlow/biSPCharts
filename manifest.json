@@ -145,17 +145,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHtheme",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.5.4",
-        "RemoteSha": "46861275af23f8b6bee5cac240545dd60ef99693",
+        "RemoteRef": "v0.5.2",
+        "RemoteSha": "a71a64a643b3785dbeb39a5e466dcd897a4204ee",
         "GithubRepo": "BFHtheme",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.5.4",
-        "GithubSHA1": "46861275af23f8b6bee5cac240545dd60ef99693",
+        "GithubRef": "v0.5.2",
+        "GithubSHA1": "a71a64a643b3785dbeb39a5e466dcd897a4204ee",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-07 09:40:16 UTC; johanreventlow",
+        "Packaged": "2026-06-07 09:47:03 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-06-07 09:40:17 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 09:47:04 UTC; unix"
       }
     },
     "BH": {

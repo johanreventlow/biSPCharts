@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.23.0",
+        "Version": "0.23.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -34,24 +34,24 @@
         "Imports": "BFHtheme (>= 0.5.1), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
         "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, jsonlite, knitr, rmarkdown",
         "VignetteBuilder": "knitr",
-        "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
+        "Remotes": "johanreventlow/BFHtheme@v0.5.2, johanreventlow/BFHllm@v0.2.0",
         "Config/testthat/edition": "3",
         "Config/roxygen2/version": "8.0.0",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.23.0",
-        "RemoteSha": "1e9a825d34b33506b938d27a53ee1b63e33c8c73",
+        "RemoteRef": "v0.23.1",
+        "RemoteSha": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.23.0",
-        "GithubSHA1": "1e9a825d34b33506b938d27a53ee1b63e33c8c73",
+        "GithubRef": "v0.23.1",
+        "GithubSHA1": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:23:14 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:17:01 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:23:14 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:17:02 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.2",
         "GithubSHA1": "afae3a0c9f7f0f36f6131feadf69c480a9733d4b",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:24:16 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:15:35 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:24:17 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:15:36 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:23:40 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:16:54 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:23:41 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:16:55 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.2",
         "GithubSHA1": "a71a64a643b3785dbeb39a5e466dcd897a4204ee",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:44:58 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:16:45 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:44:58 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:16:46 UTC; unix"
       }
     },
     "BH": {
@@ -2310,7 +2310,7 @@
         "Type": "Package",
         "Package": "mirai",
         "Title": "Minimalist Async Evaluation Framework for R",
-        "Version": "2.7.0",
+        "Version": "2.7.1",
         "Authors@R": "c(\n    person(\"Charlie\", \"Gao\", , \"charlie.gao@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-0750-061X\")),\n    person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"ctb\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\")),\n    person(\"Hibiki AI Limited\", role = \"cph\")\n  )",
         "Description": "Evaluates R expressions asynchronously and in parallel,\n    locally or distributed across networks. An official parallel cluster\n    type for R. Built on 'nanonext' and 'NNG', its non-polling,\n    event-driven architecture scales from a laptop to thousands of\n    processes across high-performance computing clusters and cloud\n    platforms. Features FIFO scheduling with task cancellation and bounded\n    queues, promises for reactive programming, 'OpenTelemetry' distributed\n    tracing, and custom serialization for cross-language data types.",
         "License": "MIT + file LICENSE",
@@ -2328,12 +2328,12 @@
         "Config/usethis/last-upkeep": "2025-04-23",
         "Encoding": "UTF-8",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-08 08:33:20 UTC; cg334",
+        "Packaged": "2026-06-01 11:11:45 UTC; shikokuchuo",
         "Author": "Charlie Gao [aut, cre] (ORCID: <https://orcid.org/0000-0002-0750-061X>),\n  Joe Cheng [ctb],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),\n  Hibiki AI Limited [cph]",
         "Maintainer": "Charlie Gao <charlie.gao@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-05-08 11:30:02 UTC",
-        "Built": "R 4.6.0; ; 2026-05-08 15:59:29 UTC; unix"
+        "Date/Publication": "2026-06-01 12:00:02 UTC",
+        "Built": "R 4.6.0; ; 2026-06-01 15:24:46 UTC; unix"
       }
     },
     "nanonext": {
@@ -2343,7 +2343,7 @@
         "Type": "Package",
         "Package": "nanonext",
         "Title": "Lightweight Toolkit for Messaging, Concurrency and the Web",
-        "Version": "1.9.0",
+        "Version": "1.9.1",
         "Authors@R": "c(\n    person(\"Charlie\", \"Gao\", , \"charlie.gao@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-0750-061X\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\")),\n    person(\"Hibiki AI Limited\", role = \"cph\"),\n    person(\"Staysail Systems, Inc.\", role = \"cph\",\n           comment = \"NNG library\"),\n    person(\"Capitar IT Group BV\", role = \"cph\",\n           comment = \"NNG library\"),\n    person(\"The Mbed TLS Contributors\", role = \"cph\",\n           comment = \"Mbed TLS library\"),\n    person(\"Pierre\", \"L'Ecuyer\", role = \"cph\",\n           comment = \"RngStreams library\"),\n    person(\"sakura authors\", role = \"cph\",\n           comment = \"Serialization hooks\"),\n    person(\"R Consortium\", role = \"fnd\",\n           comment = c(ROR = \"01z833950\"))\n  )",
         "Description": "R binding for NNG (Nanomsg Next Gen), a successor to ZeroMQ.\n    A toolkit for messaging, concurrency and the web. High-performance\n    socket messaging over in-process, IPC, TCP, WebSocket and secure TLS\n    transports implements 'Scalability Protocols', a standard for common\n    communications patterns including publish/subscribe, request/reply and\n    survey. A threaded concurrency framework with intuitive 'aio' objects\n    that resolve automatically upon completion of asynchronous operations,\n    and synchronisation primitives that allow R to wait on events\n    signalled by concurrent threads. A unified HTTP server hosting REST\n    endpoints, WebSocket connections and streaming on a single port, with\n    a built-in HTTP client.",
         "License": "MIT + file LICENSE",
@@ -2362,12 +2362,12 @@
         "Encoding": "UTF-8",
         "SystemRequirements": "'libnng' >= 1.11 and 'libmbedtls' >= 2.5, or\n'cmake' to compile NNG and/or Mbed TLS included in package\nsources",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-05-04 12:51:18 UTC; cg334",
+        "Packaged": "2026-06-01 02:08:34 UTC; shikokuchuo",
         "Author": "Charlie Gao [aut, cre] (ORCID: <https://orcid.org/0000-0002-0750-061X>),\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),\n  Hibiki AI Limited [cph],\n  Staysail Systems, Inc. [cph] (NNG library),\n  Capitar IT Group BV [cph] (NNG library),\n  The Mbed TLS Contributors [cph] (Mbed TLS library),\n  Pierre L'Ecuyer [cph] (RngStreams library),\n  sakura authors [cph] (Serialization hooks),\n  R Consortium [fnd] (ROR: <https://ror.org/01z833950>)",
         "Maintainer": "Charlie Gao <charlie.gao@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-05-04 13:40:02 UTC",
-        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-05-04 17:18:51 UTC; unix",
+        "Date/Publication": "2026-06-01 06:10:02 UTC",
+        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-06-01 10:22:23 UTC; unix",
         "Archs": "nanonext.so.dSYM"
       }
     },
@@ -4015,7 +4015,7 @@
         "Package": "xfun",
         "Type": "Package",
         "Title": "Supporting Functions for Packages Maintained by 'Yihui Xie'",
-        "Version": "0.57",
+        "Version": "0.58",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\", URL = \"https://yihui.org\")),\n  person(\"Wush\", \"Wu\", role = \"ctb\"),\n  person(\"Daijiang\", \"Li\", role = \"ctb\"),\n  person(\"Xianying\", \"Tan\", role = \"ctb\"),\n  person(\"Salim\", \"Brüggemann\", role = \"ctb\", email = \"salim-b@pm.me\", comment = c(ORCID = \"0000-0002-5329-5987\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.",
         "Depends": "R (>= 3.2.0)",
@@ -4025,15 +4025,15 @@
         "URL": "https://github.com/yihui/xfun",
         "BugReports": "https://github.com/yihui/xfun/issues",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
         "VignetteBuilder": "litedown",
+        "Config/roxygen2/version": "8.0.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-03-19 17:27:02 UTC; yihui",
+        "Packaged": "2026-05-31 16:49:17 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org),\n  Wush Wu [ctb],\n  Daijiang Li [ctb],\n  Xianying Tan [ctb],\n  Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>),\n  Christophe Dervieux [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-03-20 16:50:02 UTC",
-        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-04-25 15:40:14 UTC; unix",
+        "Date/Publication": "2026-06-01 05:10:03 UTC",
+        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-06-01 05:21:21 UTC; unix",
         "Archs": "xfun.so.dSYM"
       }
     },
@@ -4184,7 +4184,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "2432de5587d2042ee334d424c6f1f21f"
+      "checksum": "d627750e9e0955cf775ad1a200a52d34"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4424,10 +4424,10 @@
       "checksum": "6d56eb21965ae4ed0350e23260f5e6cd"
     },
     "R/fct_spc_bfh_facade.R": {
-      "checksum": "d7688dd5fed849e42990e3cd93f32978"
+      "checksum": "fd6a74c91390f66dc80cd722b7bc5143"
     },
     "R/fct_spc_bfh_invocation.R": {
-      "checksum": "9a2d7663d8a98a06a990182b916d3801"
+      "checksum": "d3a5d5a6d6f75bc929b94277ccd8f745"
     },
     "R/fct_spc_bfh_output.R": {
       "checksum": "06d9b6808569487628fd8370b556bfdc"
@@ -4439,7 +4439,7 @@
       "checksum": "8b4d3ad2da3ecd752dff1853d8513f98"
     },
     "R/fct_spc_contracts.R": {
-      "checksum": "24b1c7e7428362c1e06e2ca1ec983abb"
+      "checksum": "cffca287393a6e68877e5066158e8497"
     },
     "R/fct_spc_decorate.R": {
       "checksum": "026c3d389d6197dd72e166ddcb87e4d3"
@@ -4448,7 +4448,7 @@
       "checksum": "d8a1f060147ffd0df5a6ff8490bce3ad"
     },
     "R/fct_spc_execute.R": {
-      "checksum": "a3576e599770818484a2463e76835360"
+      "checksum": "aec7a62736731e9fcefdd295899891fc"
     },
     "R/fct_spc_file_save_load.R": {
       "checksum": "ce1e71cec2afe3f34144e8febef607dd"
@@ -4457,10 +4457,10 @@
       "checksum": "d72626a55c1e9e7034fd4aedeaea42cd"
     },
     "R/fct_spc_plot_generation.R": {
-      "checksum": "6c9925f7a78041a5e4403971bfe629c5"
+      "checksum": "6d7047f1a8228376410eebdc2d24c9e3"
     },
     "R/fct_spc_prepare.R": {
-      "checksum": "b7346e4341019b2b15915a28246f2ab3"
+      "checksum": "8d151fe0b6346dbad722113200f7ef2e"
     },
     "R/fct_spc_validate.R": {
       "checksum": "14a70f563188ae4c75d4d9c550f6b722"
@@ -4478,7 +4478,7 @@
       "checksum": "8b2d58e256221443ed2d2a9524534aa1"
     },
     "R/mod_app_guide_ui.R": {
-      "checksum": "8cd0b9fd8547487ab33a5fd9d544af78"
+      "checksum": "da34aedc88073594c3f2fea3f8fa4df5"
     },
     "R/mod_export_ai.R": {
       "checksum": "3e05bee8423d5db8e433202bf34e5d66"
@@ -4514,19 +4514,19 @@
       "checksum": "083c17739e20efc9f95a5ec9ed11694f"
     },
     "R/mod_spc_chart_compute.R": {
-      "checksum": "65e9b0421f5d795accbfae0d78ad2a68"
+      "checksum": "513a0fbafebc8ec46fe53fe7811602f2"
     },
     "R/mod_spc_chart_config.R": {
       "checksum": "e9d769f9a0ac84e375ecb01800c0fc5a"
     },
     "R/mod_spc_chart_inputs.R": {
-      "checksum": "13f3f51c00dd93e1a06fd4ac82294454"
+      "checksum": "06a7e5f91423f5c9dab74d9a7e336317"
     },
     "R/mod_spc_chart_observers.R": {
       "checksum": "4d6320e958a8d35e0818501e7dfd098c"
     },
     "R/mod_spc_chart_server.R": {
-      "checksum": "f87a31fa7befb4d5f3a029e11a5708a7"
+      "checksum": "f31a1693cee075c3e24a4a4e4273fe3e"
     },
     "R/mod_spc_chart_state.R": {
       "checksum": "088fc48c3a84be768aa72d20dc19a316"
@@ -4586,7 +4586,7 @@
       "checksum": "6239f32d74045acbca25463fd89d8132"
     },
     "R/utils_export_helpers.R": {
-      "checksum": "a462f7632a3e806f8d1ed72b3545b616"
+      "checksum": "cc46060c45e0aa79d31da00d5bd49320"
     },
     "R/utils_export_validation.R": {
       "checksum": "f1901f35087860ff18513fa7950eaaaf"
@@ -4604,7 +4604,7 @@
       "checksum": "be1cf2da615d708f873e68caa27150d4"
     },
     "R/utils_local_storage.R": {
-      "checksum": "1058ee1ea16f4b22bb669ec6c6176c7f"
+      "checksum": "9d4ffec108a28ccf354cb656fa084729"
     },
     "R/utils_logging.R": {
       "checksum": "29006c6add3022c86c8cdfc7b26b396f"
@@ -4643,7 +4643,7 @@
       "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "0f005f5804af84481586165bcbe879cb"
+      "checksum": "acbe642b2c59c5353f53a8d1bf876c5c"
     },
     "R/utils_server_events_data.R": {
       "checksum": "ddbbb46f800c8e25322ee6f4dc3e13c9"
@@ -4670,10 +4670,10 @@
       "checksum": "e33196c14e2d621e42bc529c4cd9f808"
     },
     "R/utils_server_server_management.R": {
-      "checksum": "2b19c7a918c14df96f9131394203d8be"
+      "checksum": "a0fd02f0f83d18c8f558946fbbac1216"
     },
     "R/utils_server_session_helpers.R": {
-      "checksum": "ef64f081934a0374ae5647a1320ac1a6"
+      "checksum": "fea262aa9aa6b10b9f7178bfd690fe46"
     },
     "R/utils_server_session_persistence.R": {
       "checksum": "29e54bbb3df84175c5df750add58303c"
@@ -4685,7 +4685,7 @@
       "checksum": "41bc790bb280fd04ad7f7a07c607583d"
     },
     "R/utils_server_visualization.R": {
-      "checksum": "c076f5ee589c087944b5047800ccecaa"
+      "checksum": "d750e76fc69fde29d518090d8e4febbf"
     },
     "R/utils_server_wizard_gates.R": {
       "checksum": "c092927e0a8bf1ffbd15223629de87b4"
@@ -4694,7 +4694,7 @@
       "checksum": "d70582982f337504eeb67e0689c46e7b"
     },
     "R/utils_spc_cache.R": {
-      "checksum": "549546205e45f9d7d76d4d5113bfbbde"
+      "checksum": "402ed626f076b65088ef19d909cae196"
     },
     "R/utils_spc_chart_ui_helpers.R": {
       "checksum": "5cf348dcb531651a6772b3cd81ab1ef7"
@@ -4718,7 +4718,7 @@
       "checksum": "2a89e70626500a1b8267ecb603047ff5"
     },
     "R/utils_ui_app_layout.R": {
-      "checksum": "83e12e86341a1a2a0bc8577c4a59fae3"
+      "checksum": "de05f0ab32d19159b4ccb6ecd599157c"
     },
     "R/utils_ui_column_sync.R": {
       "checksum": "cfb8a0e40df0094e786ba865c1caef30"
@@ -4727,7 +4727,7 @@
       "checksum": "29b13bca4cdc753a8491af2eadf5687a"
     },
     "R/utils_ui_form_update_service.R": {
-      "checksum": "70cf4c77d7aa2261e45875fb8d69c0f0"
+      "checksum": "2623daa0e0e58461e516f5ec2b75ddd7"
     },
     "R/utils_ui_table_update_service.R": {
       "checksum": "4cf6cb607f94317f89e8e2209604b873"

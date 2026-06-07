@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.23.0",
+        "Version": "0.23.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -34,24 +34,24 @@
         "Imports": "BFHtheme (>= 0.5.1), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
         "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, jsonlite, knitr, rmarkdown",
         "VignetteBuilder": "knitr",
-        "Remotes": "johanreventlow/BFHtheme, johanreventlow/BFHllm",
+        "Remotes": "johanreventlow/BFHtheme@v0.5.2, johanreventlow/BFHllm@v0.2.0",
         "Config/testthat/edition": "3",
         "Config/roxygen2/version": "8.0.0",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.23.0",
-        "RemoteSha": "1e9a825d34b33506b938d27a53ee1b63e33c8c73",
+        "RemoteRef": "v0.23.1",
+        "RemoteSha": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.23.0",
-        "GithubSHA1": "1e9a825d34b33506b938d27a53ee1b63e33c8c73",
+        "GithubRef": "v0.23.1",
+        "GithubSHA1": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:23:14 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:17:01 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:23:14 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:17:02 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.2",
         "GithubSHA1": "afae3a0c9f7f0f36f6131feadf69c480a9733d4b",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:24:16 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:15:35 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:24:17 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:15:36 UTC; unix"
       }
     },
     "BFHllm": {
@@ -117,10 +117,10 @@
         "GithubRef": "v0.2.0",
         "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-30 09:23:40 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:16:54 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-30 09:23:41 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:16:55 UTC; unix"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.2",
         "GithubSHA1": "a71a64a643b3785dbeb39a5e466dcd897a4204ee",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-07 09:47:03 UTC; johanreventlow",
+        "Packaged": "2026-06-07 10:16:45 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-06-07 09:47:04 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-07 10:16:46 UTC; unix"
       }
     },
     "BH": {
@@ -2310,7 +2310,7 @@
         "Type": "Package",
         "Package": "mirai",
         "Title": "Minimalist Async Evaluation Framework for R",
-        "Version": "2.7.0",
+        "Version": "2.7.1",
         "Authors@R": "c(\n    person(\"Charlie\", \"Gao\", , \"charlie.gao@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-0750-061X\")),\n    person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"ctb\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\")),\n    person(\"Hibiki AI Limited\", role = \"cph\")\n  )",
         "Description": "Evaluates R expressions asynchronously and in parallel,\n    locally or distributed across networks. An official parallel cluster\n    type for R. Built on 'nanonext' and 'NNG', its non-polling,\n    event-driven architecture scales from a laptop to thousands of\n    processes across high-performance computing clusters and cloud\n    platforms. Features FIFO scheduling with task cancellation and bounded\n    queues, promises for reactive programming, 'OpenTelemetry' distributed\n    tracing, and custom serialization for cross-language data types.",
         "License": "MIT + file LICENSE",
@@ -2328,12 +2328,12 @@
         "Config/usethis/last-upkeep": "2025-04-23",
         "Encoding": "UTF-8",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-08 08:33:20 UTC; cg334",
+        "Packaged": "2026-06-01 11:11:45 UTC; shikokuchuo",
         "Author": "Charlie Gao [aut, cre] (ORCID: <https://orcid.org/0000-0002-0750-061X>),\n  Joe Cheng [ctb],\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),\n  Hibiki AI Limited [cph]",
         "Maintainer": "Charlie Gao <charlie.gao@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-05-08 11:30:02 UTC",
-        "Built": "R 4.6.0; ; 2026-05-08 15:59:29 UTC; unix"
+        "Date/Publication": "2026-06-01 12:00:02 UTC",
+        "Built": "R 4.6.0; ; 2026-06-01 15:24:46 UTC; unix"
       }
     },
     "nanonext": {
@@ -2343,7 +2343,7 @@
         "Type": "Package",
         "Package": "nanonext",
         "Title": "Lightweight Toolkit for Messaging, Concurrency and the Web",
-        "Version": "1.9.0",
+        "Version": "1.9.1",
         "Authors@R": "c(\n    person(\"Charlie\", \"Gao\", , \"charlie.gao@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-0750-061X\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = c(ROR = \"03wc8by49\")),\n    person(\"Hibiki AI Limited\", role = \"cph\"),\n    person(\"Staysail Systems, Inc.\", role = \"cph\",\n           comment = \"NNG library\"),\n    person(\"Capitar IT Group BV\", role = \"cph\",\n           comment = \"NNG library\"),\n    person(\"The Mbed TLS Contributors\", role = \"cph\",\n           comment = \"Mbed TLS library\"),\n    person(\"Pierre\", \"L'Ecuyer\", role = \"cph\",\n           comment = \"RngStreams library\"),\n    person(\"sakura authors\", role = \"cph\",\n           comment = \"Serialization hooks\"),\n    person(\"R Consortium\", role = \"fnd\",\n           comment = c(ROR = \"01z833950\"))\n  )",
         "Description": "R binding for NNG (Nanomsg Next Gen), a successor to ZeroMQ.\n    A toolkit for messaging, concurrency and the web. High-performance\n    socket messaging over in-process, IPC, TCP, WebSocket and secure TLS\n    transports implements 'Scalability Protocols', a standard for common\n    communications patterns including publish/subscribe, request/reply and\n    survey. A threaded concurrency framework with intuitive 'aio' objects\n    that resolve automatically upon completion of asynchronous operations,\n    and synchronisation primitives that allow R to wait on events\n    signalled by concurrent threads. A unified HTTP server hosting REST\n    endpoints, WebSocket connections and streaming on a single port, with\n    a built-in HTTP client.",
         "License": "MIT + file LICENSE",
@@ -2362,12 +2362,12 @@
         "Encoding": "UTF-8",
         "SystemRequirements": "'libnng' >= 1.11 and 'libmbedtls' >= 2.5, or\n'cmake' to compile NNG and/or Mbed TLS included in package\nsources",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-05-04 12:51:18 UTC; cg334",
+        "Packaged": "2026-06-01 02:08:34 UTC; shikokuchuo",
         "Author": "Charlie Gao [aut, cre] (ORCID: <https://orcid.org/0000-0002-0750-061X>),\n  Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>),\n  Hibiki AI Limited [cph],\n  Staysail Systems, Inc. [cph] (NNG library),\n  Capitar IT Group BV [cph] (NNG library),\n  The Mbed TLS Contributors [cph] (Mbed TLS library),\n  Pierre L'Ecuyer [cph] (RngStreams library),\n  sakura authors [cph] (Serialization hooks),\n  R Consortium [fnd] (ROR: <https://ror.org/01z833950>)",
         "Maintainer": "Charlie Gao <charlie.gao@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-05-04 13:40:02 UTC",
-        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-05-04 17:18:51 UTC; unix",
+        "Date/Publication": "2026-06-01 06:10:02 UTC",
+        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-06-01 10:22:23 UTC; unix",
         "Archs": "nanonext.so.dSYM"
       }
     },
@@ -4015,7 +4015,7 @@
         "Package": "xfun",
         "Type": "Package",
         "Title": "Supporting Functions for Packages Maintained by 'Yihui Xie'",
-        "Version": "0.57",
+        "Version": "0.58",
         "Authors@R": "c(\n  person(\"Yihui\", \"Xie\", role = c(\"aut\", \"cre\", \"cph\"), email = \"xie@yihui.name\", comment = c(ORCID = \"0000-0003-0645-5666\", URL = \"https://yihui.org\")),\n  person(\"Wush\", \"Wu\", role = \"ctb\"),\n  person(\"Daijiang\", \"Li\", role = \"ctb\"),\n  person(\"Xianying\", \"Tan\", role = \"ctb\"),\n  person(\"Salim\", \"Brüggemann\", role = \"ctb\", email = \"salim-b@pm.me\", comment = c(ORCID = \"0000-0002-5329-5987\")),\n  person(\"Christophe\", \"Dervieux\", role = \"ctb\"),\n  person()\n  )",
         "Description": "Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.",
         "Depends": "R (>= 3.2.0)",
@@ -4025,15 +4025,15 @@
         "URL": "https://github.com/yihui/xfun",
         "BugReports": "https://github.com/yihui/xfun/issues",
         "Encoding": "UTF-8",
-        "RoxygenNote": "7.3.3",
         "VignetteBuilder": "litedown",
+        "Config/roxygen2/version": "8.0.0",
         "NeedsCompilation": "yes",
-        "Packaged": "2026-03-19 17:27:02 UTC; yihui",
+        "Packaged": "2026-05-31 16:49:17 UTC; yihui",
         "Author": "Yihui Xie [aut, cre, cph] (ORCID:\n    <https://orcid.org/0000-0003-0645-5666>, URL: https://yihui.org),\n  Wush Wu [ctb],\n  Daijiang Li [ctb],\n  Xianying Tan [ctb],\n  Salim Brüggemann [ctb] (ORCID: <https://orcid.org/0000-0002-5329-5987>),\n  Christophe Dervieux [ctb]",
         "Maintainer": "Yihui Xie <xie@yihui.name>",
         "Repository": "CRAN",
-        "Date/Publication": "2026-03-20 16:50:02 UTC",
-        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-04-25 15:40:14 UTC; unix",
+        "Date/Publication": "2026-06-01 05:10:03 UTC",
+        "Built": "R 4.6.0; aarch64-apple-darwin23; 2026-06-01 05:21:21 UTC; unix",
         "Archs": "xfun.so.dSYM"
       }
     },

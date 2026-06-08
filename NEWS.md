@@ -1,5 +1,12 @@
 # biSPCharts (development)
 
+## Interne ændringer
+
+* Bumpede `BFHcharts` til `>= 0.23.1` og pinnede Remotes til
+  `BFHcharts@v0.23.1` + `BFHtheme@v0.5.4`. Retter pak
+  dependency-konflikt der fejlede alle 3 scheduled CI-workflows
+  fra 2026-06-05 (BFHtheme Remotes-divergens i BFHcharts release-tag).
+
 ## Nye features
 
 * **Y-akse-grænser på trin 2.** To nye felter ("Y-akse min" / "Y-akse max")

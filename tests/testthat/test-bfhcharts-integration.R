@@ -148,6 +148,10 @@ test_that("BFHcharts to-trins workflow: bfh_qic + get_plot", {
 test_that("BFHcharts bfh_qic kan oprette I-prime chart (i') med naevner", {
   skip_if_not_installed("BFHcharts")
   skip_if_not_installed("qicharts2")
+  # i'-beregning delegeres til pbcharts (BFHcharts Suggests/Remotes-dep).
+  # pbcharts er ikke i biSPCharts' egne deps, saa CI har den typisk ikke;
+  # skip naar fravaerende -- selve i'-pipelinen er CI-testet i BFHcharts.
+  skip_if_not_installed("pbcharts")
 
   test_data <- data.frame(
     Dato = seq.Date(from = as.Date("2024-01-01"), by = "week", length.out = 20),

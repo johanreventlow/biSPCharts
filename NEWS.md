@@ -1,3 +1,23 @@
+# biSPCharts 0.7.0
+
+## Nye features
+
+* **I′-kort (I-prime) er nu valgbar i diagramtype-dropdown.** Diagramtypen
+  beregnes via `BFHcharts::bfh_qic(..., chart_type = "i'")` og er beregnet
+  til individuelle målinger med varierende nævner (n), som giver
+  nævner-justerede kontrolgrænser. Nævner-feltet aktiveres automatisk i UI,
+  så brugere kan angive en nævnerkolonne — nævneren er valgfri; udfyldes den
+  ikke, degenererer diagrammet til et standard I-kort med en besked fra
+  BFHcharts.
+
+## Dependency bumps
+
+* `BFHcharts (>= 0.24.0)` (op fra 0.23.1) + `johanreventlow/BFHcharts@v0.24.0`
+  i Remotes. BFHcharts 0.24.0 introducerer `chart_type = "i'"` (I-prime-kort).
+  **Bemærk:** BFHcharts v0.24.0-tagget eksisterer endnu ikke på GitHub ved
+  dette release — tagges af BFHcharts-maintainer. Install/CI resolver
+  korrekt så snart tagget pushes.
+
 # biSPCharts (development)
 
 ## Interne ændringer

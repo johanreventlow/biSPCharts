@@ -145,6 +145,37 @@ test_that("BFHcharts to-trins workflow: bfh_qic + get_plot", {
   expect_s3_class(plot, "ggplot")
 })
 
+test_that("BFHcharts bfh_qic kan oprette I-prime chart (i') med naevner", {
+  skip_if_not_installed("BFHcharts")
+  skip_if_not_installed("qicharts2")
+
+  test_data <- data.frame(
+    Dato = seq.Date(from = as.Date("2024-01-01"), by = "week", length.out = 20),
+    Vaerdi = c(
+      12, 15, 13, 14, 16, 11, 15, 17, 13, 14,
+      18, 20, 17, 19, 21, 22, 18, 20, 23, 21
+    ),
+    Naevner = c(
+      5, 6, 5, 6, 7, 5, 6, 7, 5, 6,
+      7, 8, 7, 8, 9, 9, 7, 8, 10, 9
+    )
+  )
+
+  plot_result <- expect_no_error(
+    BFHcharts::bfh_qic(
+      data = test_data,
+      x = Dato,
+      y = Vaerdi,
+      n = Naevner,
+      chart_type = "i'",
+      y_axis_unit = "count",
+      chart_title = "Test I-prime Chart"
+    )
+  )
+
+  expect_true(inherits(plot_result, "bfh_qic_result"))
+})
+
 test_that("BFHcharts::create_spc_chart er ikke i namespace (gammel API bekraeftelse)", {
   skip_if_not_installed("BFHcharts")
   # Gammel API er fjernet — bfh_qic() er den nuvaerende entrypoint

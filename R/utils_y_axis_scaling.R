@@ -23,7 +23,7 @@ PROPORTION_CHART_TYPES <- c("p", "pp")
 
 #' Chart types that use absolute internal unit (no scaling)
 #' @keywords internal
-ABSOLUTE_CHART_TYPES <- c("c", "u", "up", "i", "mr", "g")
+ABSOLUTE_CHART_TYPES <- c("c", "u", "up", "i", "mr", "g", "i'")
 
 # LAYER 1: PARSING ============================================================
 

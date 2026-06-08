@@ -387,6 +387,18 @@ test_that("run chart denominator toggle semantics (unit-only)", {
   expect_equal(decide_default_y_axis_ui_type("run", n_present = FALSE), "count")
 })
 
+test_that("i-prime default y-axis with denominator presence", {
+  # I' + med naevner -> procent (y/n er en andel); standard foerste auto-valg
+  expect_equal(decide_default_y_axis_ui_type("i'", n_present = TRUE), "percent")
+
+  # I' + uden naevner -> tal (degenererer til standard i-kort)
+  expect_equal(decide_default_y_axis_ui_type("i'", n_present = FALSE), "count")
+
+  # Oevrige korttyper paavirkes ikke af naevner-tilstedevaerelse
+  expect_equal(decide_default_y_axis_ui_type("i", n_present = TRUE), "count")
+  expect_equal(decide_default_y_axis_ui_type("c", n_present = TRUE), "count")
+})
+
 # =============================================================================
 # SEKTION 3: Y-AXIS MODEL (fra test-y-axis-model.R)
 # Tests for determine_internal_class() og suggest_chart_type()

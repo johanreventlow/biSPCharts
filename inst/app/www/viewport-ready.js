@@ -54,15 +54,14 @@
     }
 
     // If ResizeObserver is unavailable (very old browsers, headless tests
-    // without ResizeObserver polyfill), measure synchronously once and let
-    // the server-side timeout fallback handle re-measure.
+    // without ResizeObserver polyfill), measure synchronously once.
+    // Use fallback dimensions if element is hidden or too small.
     if (typeof window.ResizeObserver !== 'function') {
       console.warn('[VIEWPORT_READY] ResizeObserver unavailable, sending one-shot measurement');
       var rect = el.getBoundingClientRect();
-      if (rect.width > MIN_DIM_PX && rect.height > MIN_DIM_PX) {
-        sendReady(rect.width, rect.height);
-      }
-      // No retry — server-side timeout will fall back if this fails.
+      var w = rect.width > MIN_DIM_PX ? rect.width : 800;
+      var h = rect.height > MIN_DIM_PX ? rect.height : 600;
+      sendReady(w, h);
       return;
     }
 
@@ -86,16 +85,18 @@
     observer.observe(el);
 
     // Belt-and-suspenders: if the observer hasn't fired within 1500 ms
-    // (e.g., element hidden behind tab), measure synchronously. Server-side
-    // timeout (2 s) is the ultimate fallback.
+    // (e.g., element hidden behind tab or dimensions < MIN_DIM_PX in
+    // headless sessions), always call sendReady with real or fallback
+    // dimensions. Server-side timeout (2 s) is the ultimate fallback for
+    // JS errors only.
     fallbackTimer = setTimeout(function () {
       if (fired) return;
       var rect = el.getBoundingClientRect();
-      if (rect.width > MIN_DIM_PX && rect.height > MIN_DIM_PX) {
-        if (sendReady(rect.width, rect.height)) {
-          fired = true;
-          observer.disconnect();
-        }
+      var w = rect.width > MIN_DIM_PX ? rect.width : 800;
+      var h = rect.height > MIN_DIM_PX ? rect.height : 600;
+      if (sendReady(w, h)) {
+        fired = true;
+        observer.disconnect();
       }
     }, 1500);
   }

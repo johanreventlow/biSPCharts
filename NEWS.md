@@ -1,3 +1,12 @@
+# biSPCharts (development)
+
+## Nye features
+
+* **Flere kontrolkort i diagramtype-dropdown.** P′-kort og U′-kort
+  (Laney, overdispersion-korrigeret) samt MR-kort (moving range) er nu
+  valgbare diagramtyper. Alle typer beregnes af qicharts2 — ingen ny
+  afhængighed.
+
 # biSPCharts 0.7.0
 
 ## Nye features

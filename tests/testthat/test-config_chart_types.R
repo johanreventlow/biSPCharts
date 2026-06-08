@@ -16,13 +16,11 @@ test_that("get_qic_chart_type konverterer danske labels korrekt", {
 })
 
 test_that("get_qic_chart_type returnerer engelske koder uændret", {
-  # Kun aktive koder der er registreret i lookup-tabellen
-  for (code in c("run", "i", "i'", "p", "u", "c")) {
+  # Aktive koder registreret i lookup-tabellen (mr/pp/up nu eksponeret)
+  for (code in c("run", "i", "i'", "mr", "p", "pp", "u", "up", "c")) {
     expect_equal(get_qic_chart_type(code), code)
   }
-  # Bemærk: MR/PP/UP/G er ikke registreret som engelske koder i lookup-tabellen
-  # og returnerer "run" (fallback). Hvis disse aktiveres i CHART_TYPES_DA,
-  # udvid vektoren ovenfor med "mr", "pp", "up", "g".
+  # Bemærk: G/T er stadig ikke registreret og returnerer "run" (fallback).
 })
 
 test_that("get_qic_chart_type håndterer edge cases med fallback til run", {
@@ -45,9 +43,9 @@ test_that("chart_type_requires_denominator identificerer korrekte typer", {
   # Typer der IKKE kræver nævner
   expect_false(chart_type_requires_denominator("i"))
   expect_false(chart_type_requires_denominator("c"))
-  # mr og g er ikke registreret i CHART_TYPES_DA og fallbacker derfor til run.
-  # expect_false(chart_type_requires_denominator("mr"))
-  # expect_false(chart_type_requires_denominator("g"))
+  # mr er nu aktiv: bruger ingen nævner (companion til i-kort, ikke ratio).
+  expect_false(chart_type_requires_denominator("mr"))
+  # g er stadig udkommenteret -> fallback til run.
 })
 
 test_that("chart_type_requires_denominator accepterer danske labels", {
@@ -122,4 +120,25 @@ test_that("i'-kort: fct_spc_validate accepterer i' som chart_type", {
     y = as.numeric(1:10)
   )
   expect_no_error(validate_spc_request(df, "x", "y", "i'"))
+})
+
+# Laney P'/U' + MR eksponering -------------------------------------------------
+
+test_that("Laney prime-kort (pp/up) + MR er eksponeret i dropdown", {
+  for (code in c("pp", "up", "mr")) {
+    expect_true(code %in% unlist(CHART_TYPES_DA), info = paste(code, "i dropdown"))
+    expect_true(code %in% unlist(CHART_TYPES_EN), info = paste(code, "i EN-map"))
+    expect_true(code %in% SUPPORTED_CHART_TYPES_BFH, info = paste(code, "i allowlist"))
+  }
+  # pp/up bruger naevner; mr goer ikke (companion til i-kort)
+  expect_true(chart_type_requires_denominator("pp"))
+  expect_true(chart_type_requires_denominator("up"))
+  expect_false(chart_type_requires_denominator("mr"))
+})
+
+test_that("Laney/MR danske labels mapper til koder", {
+  for (code in c("pp", "up", "mr")) {
+    label <- names(CHART_TYPES_DA)[unlist(CHART_TYPES_DA) == code]
+    expect_equal(get_qic_chart_type(label), code)
+  }
 })

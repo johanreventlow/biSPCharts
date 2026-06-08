@@ -7,6 +7,13 @@
   valgbare diagramtyper. Alle typer beregnes af qicharts2 — ingen ny
   afhængighed.
 
+* **I′-kort vælger automatisk procent-y-akse ved nævner.** Når I′-kort vælges
+  og der allerede er angivet både tæller og nævner, sættes y-akse-enheden
+  automatisk til procent (y/n er en andel) som første automatiserede valg. Er
+  der kun en tæller, forbliver enheden "tal". Skifter brugeren selv til rate
+  eller tal, respekteres det (auto-valget sker kun ved skift af diagramtype,
+  ikke ved manuelt y-akse-valg).
+
 # biSPCharts 0.7.0
 
 ## Nye features

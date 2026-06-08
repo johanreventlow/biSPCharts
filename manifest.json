@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.23.1",
+        "Version": "0.24.0",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -32,26 +32,26 @@
         "BugReports": "https://github.com/johanreventlow/BFHcharts/issues",
         "Depends": "R (>= 4.1.0)",
         "Imports": "BFHtheme (>= 0.5.1), ggplot2 (>= 3.4.0), qicharts2 (>= 0.7.0),\nscales (>= 1.2.0), lubridate (>= 1.9.0), dplyr (>= 1.1.0),\npurrr (>= 1.0.0), stringr (>= 1.5.0), tibble (>= 3.2.0), yaml,\nlemon, marquee (>= 0.1.0), grid, commonmark (>= 1.9), xml2,\nsystemfonts, rlang, svglite",
-        "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, jsonlite, knitr, rmarkdown",
+        "Suggests": "testthat (>= 3.1.7), vdiffr, covr, pdftools (>= 3.3.0),\nwithr, bench, BFHllm, jsonlite, knitr, pbcharts, rmarkdown",
         "VignetteBuilder": "knitr",
-        "Remotes": "johanreventlow/BFHtheme@v0.5.2, johanreventlow/BFHllm@v0.2.0",
+        "Remotes": "johanreventlow/BFHtheme@v0.5.2, johanreventlow/BFHllm@v0.2.0,\nanhoej/pbcharts@d37a8ec1864528ece1f5cd60ac152d06c013515f",
         "Config/testthat/edition": "3",
         "Config/roxygen2/version": "8.0.0",
         "RemoteType": "github",
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.23.1",
-        "RemoteSha": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
+        "RemoteRef": "v0.24.0",
+        "RemoteSha": "2c5b4514174725364b9ff4b905a6704601cd1fed",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.23.1",
-        "GithubSHA1": "eaf31ace9d4d9d588124e8f0c2f6a05503cf988e",
+        "GithubRef": "v0.24.0",
+        "GithubSHA1": "2c5b4514174725364b9ff4b905a6704601cd1fed",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-07 10:17:01 UTC; johanreventlow",
+        "Packaged": "2026-06-08 18:52:37 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-06-07 10:17:02 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-08 18:52:38 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -4184,7 +4184,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "d627750e9e0955cf775ad1a200a52d34"
+      "checksum": "36b624c8d59c9f1aa9a8ca5bb26cc397"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4324,6 +4324,9 @@
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
     },
+    "manifest.json": {
+      "checksum": "9d7461a1cb632dc0e67d25c9e1e1f21d"
+    },
     "NAMESPACE": {
       "checksum": "b9cf8aced2ef17dc040af58c1db3c830"
     },
@@ -4352,7 +4355,7 @@
       "checksum": "cb066b1eac8c4724f030e0006c1b6fbc"
     },
     "R/config_chart_types.R": {
-      "checksum": "cf03e313f2c208f032d9227848831465"
+      "checksum": "525356b7e1ae33481c5c641a91e89f34"
     },
     "R/config_export_config.R": {
       "checksum": "410356d2c0c0ff25130cefeb609bfa32"
@@ -4748,7 +4751,7 @@
       "checksum": "d312ae61935af94b38ffa900d179150f"
     },
     "R/utils_y_axis_scaling.R": {
-      "checksum": "66f44772ca3108f367347e54ff91ebae"
+      "checksum": "0863dc7a47fc3e1c6e4528a6dcd40593"
     },
     "R/zzz.R": {
       "checksum": "8af6a97ee8d87cbefd81882e728c7667"

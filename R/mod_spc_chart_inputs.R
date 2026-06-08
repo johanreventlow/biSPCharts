@@ -105,6 +105,14 @@ create_spc_inputs_reactive <- function(
   kommentar_column_reactive = NULL
 ) {
   shiny::reactive({
+    # Block SPC computation while gem-format session restore is in progress.
+    # restoring_session is set TRUE by transition_session_restore() and cleared
+    # by set_session_restoring(FALSE) in the second onFlushed() callback after
+    # restore_metadata() completes (fct_file_operations.R:367-378). Reading
+    # without isolate() creates a reactive dep so the chain re-fires
+    # automatically when the flag clears.
+    shiny::req(!isTRUE(app_state$session$restoring_session))
+
     data <- data_ready_reactive()
     config <- chart_config()
     shiny::req(config)

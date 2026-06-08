@@ -207,6 +207,29 @@ build_export_plot <- function(app_state, title_input, dept_input,
     app_state$columns$mappings$n_column
   )
 
+  # Pre-flight: kolonner med kun NA-vaerdier => BFHcharts fejler nedenfor.
+  # Returnér NULL; mod_export_server.R:211 viser "Ingen graf tilgaengeligt".
+  current_data <- app_state$data$current_data
+  if (y_col %in% names(current_data) && all(is.na(current_data[[y_col]]))) {
+    log_warn(
+      .context = "EXPORT_MODULE",
+      message = "build_export_plot: y_col all-NA — venter paa gyldig kolonnemapping",
+      details = list(chart_type = chart_type, y_col = y_col)
+    )
+    return(NULL)
+  }
+  if (!is.null(mappings_n_column) &&
+    chart_type_requires_denominator(chart_type) &&
+    mappings_n_column %in% names(current_data) &&
+    all(is.na(current_data[[mappings_n_column]]))) {
+    log_warn(
+      .context = "EXPORT_MODULE",
+      message = "build_export_plot: n_col all-NA — venter paa gyldig kolonnemapping",
+      details = list(chart_type = chart_type, n_col = mappings_n_column)
+    )
+    return(NULL)
+  }
+
   # Construct chart title (kun brugerens titel - hospital/afdeling tilfoejes
   # som subtitle direkte paa plottet i PNG-specifikke kontekster)
   is_png_context <- plot_context %in% c("export_png", "export_preview")

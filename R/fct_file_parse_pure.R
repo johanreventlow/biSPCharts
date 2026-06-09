@@ -9,8 +9,10 @@
 #'
 #' CSV-strategier afproeves i raekkefoelge:
 #' 1. Semikolon-separator (dansk standard, decimal=komma)
-#' 2. Auto-detect separator
-#' 3. Komma-separator (engelsk standard)
+#' 2. Komma-separator (engelsk standard, decimal=punktum)
+#' 3. Auto-detect separator
+#'
+#' Linjer der starter med '#' ignoreres (de-facto CSV-kommentar-konvention).
 #'
 #' Excel: Returnerer foerste ark (eller specificeret ark via `encoding_hints$sheet`).
 #' biSPCharts gem-format (ark "Data" + "Indstillinger") detekteres og returneres
@@ -67,18 +69,8 @@ parse_csv_file <- function(path, encoding = "UTF-8") {
             grouping_mark = ".",
             encoding = encoding
           ),
-          show_col_types = FALSE
-        )
-        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
-        result
-      },
-      "auto-detect separator" = function() {
-        result <- readr::read_delim(
-          path,
-          delim = NULL,
-          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
           show_col_types = FALSE,
-          trim_ws = TRUE
+          comment = "#"
         )
         if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
         result
@@ -91,7 +83,20 @@ parse_csv_file <- function(path, encoding = "UTF-8") {
             grouping_mark = ",",
             encoding = encoding
           ),
-          show_col_types = FALSE
+          show_col_types = FALSE,
+          comment = "#"
+        )
+        if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
+        result
+      },
+      "auto-detect separator" = function() {
+        result <- readr::read_delim(
+          path,
+          delim = NULL,
+          locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+          show_col_types = FALSE,
+          trim_ws = TRUE,
+          comment = "#"
         )
         if (ncol(result) < 2) stop(sprintf("Kun %d kolonne(r) fundet", ncol(result)))
         result

@@ -240,7 +240,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
     NULL
   } else {
     # PDF: instruktiv default-titel
-    "Skriv en kort og sigende titel eller\n**konkluder hvad grafen viser**"
+    "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**"
   }
 
   # Regenerate plot with context-specific dimensions

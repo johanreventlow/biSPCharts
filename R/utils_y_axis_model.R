@@ -93,6 +93,39 @@ suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_
   return("run")
 }
 
+#' Afgør om en proportions-centerline overstiger 100%
+#'
+#' For I'- og run-kort med naevner plottes per-punkt-andelen y/n. Centerlinjen
+#' er den pooled andel `sum(tæller)/sum(nævner)` (samme som pbcharts beregner
+#' via `weighted.mean(y, den)` i `pbc.i`). Naar denne overstiger 1.0 (100%) er
+#' serien ikke en andel men en rate (haendelser pr. enhed, kan overstige 1),
+#' og "procent" giver et misvisende default.
+#'
+#' @param y Numeric/character vektor – tæller-kolonne (parses defensivt).
+#' @param n Numeric/character vektor – nævner-kolonne.
+#' @return Logical(1). TRUE hvis pooled centerline > 1. FALSE ved manglende
+#'   data, nul/negativ samlet nævner eller NULL-input (saa default forbliver
+#'   procent — konservativt).
+#' @keywords internal
+#' @noRd
+proportion_centerline_exceeds_unity <- function(y, n) {
+  if (is.null(y) || is.null(n) || length(y) == 0L || length(n) == 0L) {
+    return(FALSE)
+  }
+  y_num <- suppressWarnings(as.numeric(y))
+  n_num <- suppressWarnings(as.numeric(n))
+  ok <- !is.na(y_num) & !is.na(n_num) & n_num > 0
+  if (!any(ok)) {
+    return(FALSE)
+  }
+  den_sum <- sum(n_num[ok])
+  if (!is.finite(den_sum) || den_sum <= 0) {
+    return(FALSE)
+  }
+  cl <- sum(y_num[ok]) / den_sum
+  is.finite(cl) && cl > 1
+}
+
 #' Vælg default Y-akse UI-type ud fra kontekst
 #'
 #' Særligt for run chart ønsker vi:
@@ -100,15 +133,27 @@ suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_
 #' - Hvis kun tæller: default = count
 #' Brugeren kan altid overskrive.
 #'
+#' For I'- og run-kort med nævner gælder desuden: hvis den pooled centerline
+#' (`sum(tæller)/sum(nævner)`) overstiger 100%, er serien reelt en rate, ikke
+#' en andel → default = rate i stedet for percent. Kræver at `y` og `n` gives;
+#' uden dem bevares den hidtidige procent-default (bagudkompatibelt).
+#'
 #' @param chart_type qicharts2-kode for korttype (fx "run")
 #' @param n_present Logical – om N-kolonne er valgt
-#' @return "percent" eller "count"
+#' @param y Numeric/character vektor – tæller-kolonne (valgfri). Bruges kun til
+#'   centerline-tjek for run/i'-kort med nævner.
+#' @param n Numeric/character vektor – nævner-kolonne (valgfri).
+#' @return "percent", "rate" eller "count"
 #' @keywords internal
-decide_default_y_axis_ui_type <- function(chart_type, n_present) {
+decide_default_y_axis_ui_type <- function(chart_type, n_present, y = NULL, n = NULL) {
   ct <- get_qic_chart_type(chart_type)
   # Run og I-prime: med naevner plottes en andel (y/n) -> default procent.
   # Uden naevner -> tal. Brugeren kan altid overskrive.
   if (ct %in% c("run", "i'") && isTRUE(n_present)) {
+    # Andel > 100% i centerlinjen => det er en rate, ikke en procent.
+    if (proportion_centerline_exceeds_unity(y, n)) {
+      return("rate")
+    }
     return("percent")
   }
   return("count")

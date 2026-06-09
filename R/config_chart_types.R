@@ -50,9 +50,9 @@ CHART_TYPES_EN <- list(
   "pp" = "pp",
   "u" = "u",
   "up" = "up",
-  "c" = "c"
-  # "g" = "g",
-  # "t" = "t"
+  "c" = "c",
+  "g" = "g",
+  "t" = "t"
 )
 
 ## Understoettede chart types (single source of truth) -----
@@ -77,6 +77,10 @@ get_qic_chart_type <- function(danish_selection) {
   if (is.null(danish_selection) || danish_selection == "") {
     return("run") # standard
   }
+
+  # MVP grouped-dropdown: strip alias-suffix (fx "i'__dt"/"pp__dt" -> "i'"/"pp").
+  # Ingen rigtig kode/label indeholder "__", saa dette er en no-op for dem.
+  danish_selection <- sub("__.*$", "", danish_selection)
 
   # Hvis det allerede er en engelsk kode, returner som-den-er
   if (danish_selection %in% unlist(CHART_TYPES_EN)) {

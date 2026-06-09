@@ -2,6 +2,18 @@
 
 ## Nye features
 
+* **Grupperet diagramtype-dropdown.** Diagramtype-vælgeren er nu inddelt i
+  tre kategorier med progressiv disclosure: *Standardvalg* (seriediagram +
+  anbefalet kontrolkort), *Udvidede kontrolkortvalg* (datatype-drevne labels
+  der skjuler kort-navnet — fx "Procent/andele"), og *Avanceret
+  kontrolkortvalg* (alle korttyper ved navn, inkl. G- og T-kort). Samme
+  korttype kan optræde i flere grupper via alias-values der resolves til den
+  rette qicharts2-kode.
+
+* **G-kort og T-kort tilføjet.** Geometriske kort (muligheder mellem sjældne
+  hændelser) og T-kort (tid mellem sjældne hændelser) er nu valgbare under
+  *Avanceret kontrolkortvalg*.
+
 * **Flere kontrolkort i diagramtype-dropdown.** P′-kort og U′-kort
   (Laney, overdispersion-korrigeret) samt MR-kort (moving range) er nu
   valgbare diagramtyper. Alle typer beregnes af qicharts2 — ingen ny

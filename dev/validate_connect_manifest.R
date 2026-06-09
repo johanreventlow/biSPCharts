@@ -84,6 +84,11 @@ main <- function() {
   failures <- character(0)
   checked <- character(0)
   semver_tag_pattern <- "^v[0-9]+\\.[0-9]+\\.[0-9]+$"
+  # Fuld 40-char commit-SHA. Immutable -> deploy-stabil for tredjeparts-repos
+  # vi ikke kan tagge (jf. exemption nedenfor + issue #445).
+  full_sha_pattern <- "^[0-9a-f]{40}$"
+  # Vores egne sibling-pakker: vi kontrollerer tags -> kraev vX.Y.Z.
+  sibling_org_prefix <- "johanreventlow/"
 
   # Cycle 9 (maturity-audit Codex 2026-05-10): Forbidden file-pattern denylist.
   # release-tarball-audit forbyder allerede .DS_Store i tarball, men dette gate
@@ -115,11 +120,28 @@ main <- function() {
     dep_row <- deps[deps$package == remote$package, ]
     is_required_import <- remote$package %in% imports$package
 
-    if (!is.na(remote$ref) && !grepl(semver_tag_pattern, remote$ref)) {
-      failures <- c(failures, sprintf(
-        "%s ref er ikke vX.Y.Z-tag: DESCRIPTION Remotes=%s (feature-branches og SHA er ikke deploy-stabile, jf. issue #445)",
-        remote$package, remote$ref
-      ))
+    # Ref-stabilitetskrav afhaenger af repo-ejerskab (issue #445 ramte en
+    # MUTABEL feature-branch-ref, ikke immutable SHA'er):
+    #   - Egne siblings (johanreventlow/*): kraev vX.Y.Z-tag. Vi kontrollerer
+    #     deres tags, og tag-pinning er VERSIONING_POLICY-konventionen.
+    #   - Tredjeparts (fx anhoej/pbcharts): utagget upstream vi ikke kan tagge.
+    #     En fuld 40-char SHA er immutable og dermed lige saa deploy-stabil som
+    #     et tag. Branch-navne afvises stadig (de er mutable, kernen i #445).
+    is_sibling <- startsWith(remote$repo, sibling_org_prefix)
+    if (!is.na(remote$ref)) {
+      if (is_sibling && !grepl(semver_tag_pattern, remote$ref)) {
+        failures <- c(failures, sprintf(
+          "%s ref er ikke vX.Y.Z-tag: DESCRIPTION Remotes=%s (feature-branches er ikke deploy-stabile for egne siblings, jf. issue #445)",
+          remote$package, remote$ref
+        ))
+      } else if (!is_sibling &&
+                 !grepl(semver_tag_pattern, remote$ref) &&
+                 !grepl(full_sha_pattern, remote$ref)) {
+        failures <- c(failures, sprintf(
+          "%s ref er hverken vX.Y.Z-tag eller fuld 40-char SHA: DESCRIPTION Remotes=%s (branch-refs er ikke deploy-stabile for tredjeparts-pakker, jf. issue #445)",
+          remote$package, remote$ref
+        ))
+      }
     }
 
     if (is.null(pkg_desc)) {
@@ -144,12 +166,26 @@ main <- function() {
       ))
     }
 
+    # Ref-match: ved SHA-pin (tredjeparts) registrerer remotes-install ofte
+    # RemoteRef=HEAD mens den immutable SHA staar i RemoteSha/GithubSHA1.
+    # Sammenlign derfor DESCRIPTION-SHA mod manifest-SHA, ikke mod RemoteRef.
     manifest_ref <- pkg_desc$GithubRef %||% pkg_desc$RemoteRef
-    if (!is.na(remote$ref) && !identical(manifest_ref, remote$ref)) {
-      failures <- c(failures, sprintf(
-        "%s ref mismatch: DESCRIPTION Remotes=%s, manifest=%s",
-        remote$package, remote$ref, manifest_ref
-      ))
+    manifest_sha <- pkg_desc$GithubSHA1 %||% pkg_desc$RemoteSha
+    ref_is_sha <- !is.na(remote$ref) && grepl(full_sha_pattern, remote$ref)
+    if (!is.na(remote$ref)) {
+      if (ref_is_sha) {
+        if (!identical(manifest_sha, remote$ref)) {
+          failures <- c(failures, sprintf(
+            "%s SHA mismatch: DESCRIPTION Remotes=%s, manifest RemoteSha=%s",
+            remote$package, remote$ref, manifest_sha %||% "(mangler)"
+          ))
+        }
+      } else if (!identical(manifest_ref, remote$ref)) {
+        failures <- c(failures, sprintf(
+          "%s ref mismatch: DESCRIPTION Remotes=%s, manifest=%s",
+          remote$package, remote$ref, manifest_ref
+        ))
+      }
     }
 
     if (nrow(dep_row) > 0) {

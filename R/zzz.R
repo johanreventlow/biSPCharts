@@ -275,6 +275,12 @@ reset_qic_performance_counters <- function() {
 .onAttach <- function(libname, pkgname) {
   bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
+  # pbcharts kraeves af BFHcharts for i'/i-prime + Laney P'/U'-charts, som er
+  # eksponeret som foersteklasses chart-typer i dropdownen. Den eksplicitte
+  # requireNamespace-reference goer desuden pakken synlig for rsconnect's
+  # dependency-scanner, saa den medtages i Connect-manifestet (uden en
+  # kode-reference scanner rsconnect den ikke, selvom den staar i Suggests).
+  pbcharts_status <- if (requireNamespace("pbcharts", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   quarto_status <- if (nzchar(Sys.which("quarto"))) "tilg\u00e6ngelig" else "ikke fundet i PATH"
 
   analytics_cfg <- resolve_analytics_config()
@@ -282,6 +288,7 @@ reset_qic_performance_counters <- function() {
     "biSPCharts optional features: ",
     "BFHllm=", bfhllm_status, ", ",
     "qicharts2=", qic_status, ", ",
+    "pbcharts=", pbcharts_status, ", ",
     "Quarto=", quarto_status, "\n",
     "Analytics: shinylogs=", if (analytics_cfg$enabled) "aktiv" else "inaktiv",
     " (kilde: ", analytics_cfg$source, ")"

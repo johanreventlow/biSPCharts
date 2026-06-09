@@ -216,6 +216,105 @@ test_that("Paste-data: handle_paste_data populates app_state + emits data_update
   })
 })
 
+test_that("Paste-data: komma-sep med punktum-decimal parser korrekte vaerdier (ikke 5.93e14)", {
+  skip_if_not_installed("shiny")
+
+  test_server <- function(input, output, session) {
+    app_state <- create_app_state()
+    emit <- create_emit_api(app_state)
+    setup_event_listeners(app_state, emit, input, output, session, ui_service = NULL)
+    session$userData$app_state <- app_state
+    session$userData$emit <- emit
+  }
+
+  shiny::testServer(test_server, {
+    app_state <- session$userData$app_state
+    emit <- session$userData$emit
+
+    # Internationalt format: komma-separator + punktum-decimal (fx udenlandsk
+    # eksport). Struktur-invariant: ',' kan ikke vaere baade sep og decimal.
+    # Pre-fix parsede komma-grenen "59.32" som 5932243...e14.
+    paste_text <- paste(
+      "month,avg_hba1c,n",
+      "2019-03-01,59.3224299065421,214",
+      "2019-04-01,60.2413793103448,203",
+      "2019-05-01,58.0660377358491,212",
+      sep = "\n"
+    )
+
+    result <- tryCatch(
+      handle_paste_data(
+        text_data = paste_text,
+        app_state = app_state,
+        session_id = sanitize_session_token(session$token),
+        emit = emit
+      ),
+      error = function(e) e
+    )
+    flush_reactive_chain(session)
+
+    if (inherits(result, "error")) {
+      skip(paste("handle_paste_data signatur drift:", conditionMessage(result)))
+    }
+
+    df <- app_state$data$current_data
+    expect_true(!is.null(df))
+    expect_true("avg_hba1c" %in% names(df))
+    # Kernen: vaerdierne skal vaere ~59-60, IKKE 5.9e14
+    expect_equal(as.numeric(df$avg_hba1c[1]), 59.32, tolerance = 0.01)
+    expect_equal(as.numeric(df$avg_hba1c[2]), 60.24, tolerance = 0.01)
+    expect_true(all(as.numeric(df$avg_hba1c) < 1000))
+  })
+})
+
+test_that("Paste-data: dansk semikolon med komma-decimal parser korrekte vaerdier (regression)", {
+  skip_if_not_installed("shiny")
+
+  test_server <- function(input, output, session) {
+    app_state <- create_app_state()
+    emit <- create_emit_api(app_state)
+    setup_event_listeners(app_state, emit, input, output, session, ui_service = NULL)
+    session$userData$app_state <- app_state
+    session$userData$emit <- emit
+  }
+
+  shiny::testServer(test_server, {
+    app_state <- session$userData$app_state
+    emit <- session$userData$emit
+
+    # Dansk standard: semikolon-separator + komma-decimal. Skal forblive intakt
+    # efter per-separator-locale-fix.
+    paste_text <- paste(
+      "Dato;Vaerdi;N",
+      "2019-03-01;59,32;214",
+      "2019-04-01;60,24;203",
+      "2019-05-01;58,07;212",
+      sep = "\n"
+    )
+
+    result <- tryCatch(
+      handle_paste_data(
+        text_data = paste_text,
+        app_state = app_state,
+        session_id = sanitize_session_token(session$token),
+        emit = emit
+      ),
+      error = function(e) e
+    )
+    flush_reactive_chain(session)
+
+    if (inherits(result, "error")) {
+      skip(paste("handle_paste_data signatur drift:", conditionMessage(result)))
+    }
+
+    df <- app_state$data$current_data
+    expect_true(!is.null(df))
+    expect_true("Vaerdi" %in% names(df))
+    expect_equal(as.numeric(df$Vaerdi[1]), 59.32, tolerance = 0.01)
+    expect_equal(as.numeric(df$Vaerdi[2]), 60.24, tolerance = 0.01)
+  })
+})
+
 test_that("Paste-data: malformet input kalder safe_operation fallback uden state-pollution", {
   skip_if_not_installed("shiny")
 

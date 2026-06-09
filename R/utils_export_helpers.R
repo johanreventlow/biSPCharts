@@ -208,7 +208,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   )
 
   # Pre-flight: kolonner med kun NA-vaerdier => BFHcharts fejler nedenfor.
-  # Returnér NULL; mod_export_server.R:211 viser "Ingen graf tilgaengeligt".
+  # Returner NULL; mod_export_server.R:211 viser "Ingen graf tilgaengeligt".
   current_data <- app_state$data$current_data
   if (y_col %in% names(current_data) && all(is.na(current_data[[y_col]]))) {
     log_warn(
@@ -240,7 +240,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
     NULL
   } else {
     # PDF: instruktiv default-titel
-    "Skriv en kort titel, eller tilføj en konklusion,\n**der tydeligt opsummerer, hvad grafen fortæller**"
+    "Skriv en kort titel, eller tilf\u00f8j en konklusion,\n**der tydeligt opsummerer, hvad grafen fort\u00e6ller**"
   }
 
   # Regenerate plot with context-specific dimensions

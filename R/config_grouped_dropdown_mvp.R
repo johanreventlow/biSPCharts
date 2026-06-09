@@ -22,13 +22,13 @@
 CHART_TYPE_GROUPS_MVP <- list(
   "Standardvalg" = list(
     "Seriediagram – udvikling over tid" = "run",
-    "Kontrolkort – udvikling og variation" = "i'__ctrl"
+    "Kontrolkort – vurdering af variation" = "i'__ctrl"
   ),
   "Udvidede kontrolkortvalg" = list(
-    "Enkeltmåling/værdi over tid" = "i'__dt",
-    "Procent/andel over tid" = "pp__dt",
-    "Rate over tid (fx pr. 1000)" = "up__dt",
-    "Antal/tællinger over tid" = "c__dt"
+    "Enkeltmåling/værdi" = "i'__dt",
+    "Procent/andel" = "pp__dt",
+    "Rate (fx pr. 1000)" = "up__dt",
+    "Antal/tællinger" = "c__dt"
   ),
   "Avanceret kontrolkortvalg" = list(
     "I-kort" = "i",

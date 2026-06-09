@@ -207,4 +207,4 @@ jobs:
           name: release-gate-check-output
           path: biSPCharts.Rcheck/
           if-no-files-found: ignore
-          retention-days: 7
+          retention-days: 5

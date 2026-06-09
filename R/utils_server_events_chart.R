@@ -228,8 +228,25 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
       # (med naevner -> procent, ellers tal). Bruger-override respekteres, da
       # denne observer kun fyrer ved chart_type-skift, ikke ved manuelt
       # y_axis_unit-valg.
-      n_present <- has_input_value(get_n_column(app_state))
-      desired_ui <- decide_default_y_axis_ui_type(qic_ct, n_present)
+      n_col <- get_n_column(app_state)
+      n_present <- has_input_value(n_col)
+      # Hent tæller/nævner-data saa default kan skifte til rate naar den pooled
+      # centerline overstiger 100% (da er serien en rate, ikke en andel).
+      y_vec <- NULL
+      n_vec <- NULL
+      if (isTRUE(n_present)) {
+        current_data <- shiny::isolate(app_state$data$current_data)
+        y_col <- get_y_column(app_state)
+        cols_available <- !is.null(current_data) &&
+          has_input_value(y_col) &&
+          y_col %in% names(current_data) &&
+          n_col %in% names(current_data)
+        if (cols_available) {
+          y_vec <- current_data[[y_col]]
+          n_vec <- current_data[[n_col]]
+        }
+      }
+      desired_ui <- decide_default_y_axis_ui_type(qic_ct, n_present, y = y_vec, n = n_vec)
     } else {
       # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
       # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker

@@ -76,11 +76,14 @@ jobs:
         shell: Rscript {0}
 
       - name: Upload screenshots and snapshot diffs
-        if: always()
+        # Kun ved failure: snapshot-diffs er kun relevante naar visual-regression
+        # fejler. Tidligere always() uploadede snapshots paa hvert groent run
+        # -> unoedig Actions-storage.
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: shinytest2-snapshots
-          retention-days: 7
+          retention-days: 5
           path: |
             tests/testthat/**/_snaps/
             tests/testthat/**/*-new.png

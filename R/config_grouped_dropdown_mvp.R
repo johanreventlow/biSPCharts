@@ -21,7 +21,7 @@
 #' @noRd
 CHART_TYPE_GROUPS_MVP <- list(
   "Standardvalg" = list(
-    "Seriediagram – udvikling og tendenser over tid" = "run",
+    "Seriediagram – udvikling over tid" = "run",
     "Kontrolkort – vurdering af variation" = "i'__ctrl"
   ),
   "Udvidede kontrolkortvalg" = list(

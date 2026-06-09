@@ -190,3 +190,48 @@ test_that("parse_file parser tab-sep fil som validator accepterer", {
   parsed <- parse_file(path)
   expect_false(is.null(parsed))
 })
+
+# =============================================================================
+# VAERDI-TESTS: komma+punkt-decimal returnerer korrekte tal (ikke 5.93e14)
+# =============================================================================
+
+test_that("parse_file parser komma-sep med punkt-decimal korrekt (vaerdi-tjek)", {
+  require_internal("parse_file", mode = "function")
+
+  csv <- "Date,Count,Denominator\n2024-01-01,10.5,100\n2024-02-01,11.5,120"
+  path <- write_tmp_csv(csv)
+  on.exit(unlink(path))
+
+  parsed <- parse_file(path)
+  expect_false(is.null(parsed))
+  expect_equal(as.numeric(parsed$data$Count[1]), 10.5, tolerance = 0.001)
+  expect_equal(as.numeric(parsed$data$Count[2]), 11.5, tolerance = 0.001)
+})
+
+# =============================================================================
+# PARITET: hash-kommentarlinjer
+# =============================================================================
+
+test_that("validate_csv_file accepterer CSV med hash-kommentarlinjer", {
+  require_internal("validate_csv_file", mode = "function")
+
+  csv <- "# Kommentar linje 1\n# Kommentar linje 2\nDate,Count,Denominator\n2024-01-01,10.5,100\n2024-02-01,15.3,120"
+  path <- write_tmp_csv(csv)
+  on.exit(unlink(path))
+
+  result <- validate_csv_file(path)
+  expect_true(result$valid, info = paste("Fejl:", paste(result$errors, collapse = "; ")))
+})
+
+test_that("parse_file parser CSV med hash-kommentarlinjer korrekt (vaerdi-tjek)", {
+  require_internal("parse_file", mode = "function")
+
+  csv <- "# Kommentar linje 1\n# Kommentar linje 2\nDate,Count,Denominator\n2024-01-01,10.5,100\n2024-02-01,15.3,120"
+  path <- write_tmp_csv(csv)
+  on.exit(unlink(path))
+
+  parsed <- parse_file(path)
+  expect_false(is.null(parsed))
+  expect_equal(as.numeric(parsed$data$Count[1]), 10.5, tolerance = 0.001)
+  expect_equal(as.numeric(parsed$data$Count[2]), 15.3, tolerance = 0.001)
+})

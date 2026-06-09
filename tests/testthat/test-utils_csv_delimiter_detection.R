@@ -39,6 +39,28 @@ test_that("detect_csv_delimiter handles comma CSV with point decimals", {
   result <- detect_csv_delimiter(path)
 
   expect_true(result$parseable)
+  expect_equal(result$strategy, "komma")
+  expect_equal(result$delimiter, ",")
+  expect_equal(result$ncol, 3L)
+  expect_equal(result$nrow, 2L)
+})
+
+test_that("detect_csv_delimiter haandterer CSV med hash-kommentarlinjer", {
+  require_internal("detect_csv_delimiter", mode = "function")
+
+  path <- write_delimiter_probe(c(
+    "# Dette er en kommentar",
+    "# Endnu en kommentar",
+    "Date,Count,Denominator",
+    "2024-01-01,10.5,100",
+    "2024-02-01,11.5,120"
+  ))
+  on.exit(unlink(path), add = TRUE)
+
+  result <- detect_csv_delimiter(path)
+
+  expect_true(result$parseable)
+  expect_equal(result$strategy, "komma")
   expect_equal(result$delimiter, ",")
   expect_equal(result$ncol, 3L)
   expect_equal(result$nrow, 2L)

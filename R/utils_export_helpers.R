@@ -213,7 +213,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
   if (y_col %in% names(current_data) && all(is.na(current_data[[y_col]]))) {
     log_warn(
       .context = "EXPORT_MODULE",
-      message = "build_export_plot: y_col all-NA — venter paa gyldig kolonnemapping",
+      message = "build_export_plot: y_col all-NA \u2014 venter paa gyldig kolonnemapping",
       details = list(chart_type = chart_type, y_col = y_col)
     )
     return(NULL)
@@ -224,7 +224,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
     all(is.na(current_data[[mappings_n_column]]))) {
     log_warn(
       .context = "EXPORT_MODULE",
-      message = "build_export_plot: n_col all-NA — venter paa gyldig kolonnemapping",
+      message = "build_export_plot: n_col all-NA \u2014 venter paa gyldig kolonnemapping",
       details = list(chart_type = chart_type, n_col = mappings_n_column)
     )
     return(NULL)

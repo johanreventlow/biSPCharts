@@ -1,3 +1,31 @@
+# biSPCharts (development)
+
+## Nye features
+
+* **Grupperet diagramtype-dropdown.** Diagramtype-vælgeren er nu inddelt i
+  tre kategorier med progressiv disclosure: *Standardvalg* (seriediagram +
+  anbefalet kontrolkort), *Udvidede kontrolkortvalg* (datatype-drevne labels
+  der skjuler kort-navnet — fx "Procent/andele"), og *Avanceret
+  kontrolkortvalg* (alle korttyper ved navn, inkl. G- og T-kort). Samme
+  korttype kan optræde i flere grupper via alias-values der resolves til den
+  rette qicharts2-kode.
+
+* **G-kort og T-kort tilføjet.** Geometriske kort (muligheder mellem sjældne
+  hændelser) og T-kort (tid mellem sjældne hændelser) er nu valgbare under
+  *Avanceret kontrolkortvalg*.
+
+* **Flere kontrolkort i diagramtype-dropdown.** P′-kort og U′-kort
+  (Laney, overdispersion-korrigeret) samt MR-kort (moving range) er nu
+  valgbare diagramtyper. Alle typer beregnes af qicharts2 — ingen ny
+  afhængighed.
+
+* **I′-kort vælger automatisk procent-y-akse ved nævner.** Når I′-kort vælges
+  og der allerede er angivet både tæller og nævner, sættes y-akse-enheden
+  automatisk til procent (y/n er en andel) som første automatiserede valg. Er
+  der kun en tæller, forbliver enheden "tal". Skifter brugeren selv til rate
+  eller tal, respekteres det (auto-valget sker kun ved skift af diagramtype,
+  ikke ved manuelt y-akse-valg).
+
 # biSPCharts 0.7.0
 
 ## Nye features

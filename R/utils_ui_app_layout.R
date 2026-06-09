@@ -813,7 +813,7 @@ create_chart_settings_card_compact <- function() {
       shiny::selectizeInput(
         "chart_type",
         "Diagram type:",
-        choices = CHART_TYPES_DA,
+        choices = build_grouped_chart_choices(),
         selected = "run",
         width = "100%"
       ),

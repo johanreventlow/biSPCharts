@@ -30,11 +30,11 @@ CHART_TYPES_DA <- list(
   "Seriediagram (Run) \u2014 data over tid" = "run",
   "I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)" = "i",
   "I\u2032-kort \u2014 individuelle m\u00e5linger med varierende n\u00e6vner" = "i'",
-  # "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
+  "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
   "P-kort \u2014 andele/procenter (fx infektionsrate)" = "p",
-  # "P\u2032-kort \u2014 andele, standardiseret" = "pp",
+  "P\u2032-kort \u2014 andele/procenter, standardiseret" = "pp",
   "U-kort \u2014 rater (fx komplikationer pr. 1000)" = "u",
-  # "U\u2032-kort \u2014 rater, standardiseret" = "up",
+  "U\u2032-kort \u2014 rater, standardiseret" = "up",
   "C-kort \u2014 t\u00e6llinger (fx antal fald)" = "c"
   # "G-kort \u2014 tid mellem sj\u00e6ldne h\u00e6ndelser" = "g",
   # "T-kort \u2014 tid mellem sj\u00e6ldne komplikationer" = "t"
@@ -45,14 +45,14 @@ CHART_TYPES_EN <- list(
   "run" = "run",
   "i" = "i",
   "i'" = "i'",
-  # "mr" = "mr",
+  "mr" = "mr",
   "p" = "p",
-  # "pp" = "pp",
+  "pp" = "pp",
   "u" = "u",
-  # "up" = "up",
-  "c" = "c"
-  # "g" = "g",
-  # "t" = "t"
+  "up" = "up",
+  "c" = "c",
+  "g" = "g",
+  "t" = "t"
 )
 
 ## Understoettede chart types (single source of truth) -----
@@ -77,6 +77,10 @@ get_qic_chart_type <- function(danish_selection) {
   if (is.null(danish_selection) || danish_selection == "") {
     return("run") # standard
   }
+
+  # MVP grouped-dropdown: strip alias-suffix (fx "i'__dt"/"pp__dt" -> "i'"/"pp").
+  # Ingen rigtig kode/label indeholder "__", saa dette er en no-op for dem.
+  danish_selection <- sub("__.*$", "", danish_selection)
 
   # Hvis det allerede er en engelsk kode, returner som-den-er
   if (danish_selection %in% unlist(CHART_TYPES_EN)) {

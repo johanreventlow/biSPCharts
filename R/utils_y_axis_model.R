@@ -106,7 +106,9 @@ suggest_chart_type <- function(internal_class, n_present = FALSE, n_points = NA_
 #' @keywords internal
 decide_default_y_axis_ui_type <- function(chart_type, n_present) {
   ct <- get_qic_chart_type(chart_type)
-  if (identical(ct, "run") && isTRUE(n_present)) {
+  # Run og I-prime: med naevner plottes en andel (y/n) -> default procent.
+  # Uden naevner -> tal. Brugeren kan altid overskrive.
+  if (ct %in% c("run", "i'") && isTRUE(n_present)) {
     return("percent")
   }
   return("count")

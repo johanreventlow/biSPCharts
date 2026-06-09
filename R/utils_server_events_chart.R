@@ -223,10 +223,19 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
   )
 
   if (!identical(qic_ct, "run")) {
-    # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
-    # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
-    # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
-    desired_ui <- chart_type_to_ui_type(ct)
+    if (identical(qic_ct, "i'")) {
+      # I-prime: naevner-bevidst default via den pure decide_default_y_axis_ui_type
+      # (med naevner -> procent, ellers tal). Bruger-override respekteres, da
+      # denne observer kun fyrer ved chart_type-skift, ikke ved manuelt
+      # y_axis_unit-valg.
+      n_present <- has_input_value(get_n_column(app_state))
+      desired_ui <- decide_default_y_axis_ui_type(qic_ct, n_present)
+    } else {
+      # Brug ct (original) ikke qic_ct, saa "t" matches direkte i
+      # chart_type_to_ui_type() -- get_qic_chart_type("t") fallbacker
+      # til "run" fordi "t" ikke er i CHART_TYPES_EN endnu.
+      desired_ui <- chart_type_to_ui_type(ct)
+    }
     current_ui <- input_scalar(input$y_axis_unit, default = "count")
     if (!identical(current_ui, desired_ui)) {
       safe_programmatic_ui_update(session, app_state, function() {

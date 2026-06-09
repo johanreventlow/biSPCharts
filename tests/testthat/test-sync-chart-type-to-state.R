@@ -85,16 +85,16 @@ test_that("sync_chart_type_to_state: 'c' → qic_type = 'c'", {
   expect_equal(result$chart_type, "c")
 })
 
-test_that("sync_chart_type_to_state: 'g' → qic_type = 'run' (fallback, ikke i CHART_TYPES_EN)", {
-  # "g" er udkommenteret i CHART_TYPES_EN — fallback til "run"
+test_that("sync_chart_type_to_state: 'g' → qic_type = 'g'", {
+  # "g" er nu eksponeret i CHART_TYPES_EN
   result <- sync_chart_type_to_state(make_state(), "g")
-  expect_equal(result$chart_type, "run")
+  expect_equal(result$chart_type, "g")
 })
 
-test_that("sync_chart_type_to_state: 't' → qic_type = 'run' (fallback, ikke i CHART_TYPES_EN)", {
-  # "t" er udkommenteret i CHART_TYPES_EN — fallback til "run"
+test_that("sync_chart_type_to_state: 't' → qic_type = 't'", {
+  # "t" er nu eksponeret i CHART_TYPES_EN
   result <- sync_chart_type_to_state(make_state(), "t")
-  expect_equal(result$chart_type, "run")
+  expect_equal(result$chart_type, "t")
 })
 
 # ==============================================================================

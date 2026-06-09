@@ -399,6 +399,58 @@ test_that("i-prime default y-axis with denominator presence", {
   expect_equal(decide_default_y_axis_ui_type("c", n_present = TRUE), "count")
 })
 
+test_that("i-prime/run skifter default til rate naar pooled centerline > 100%", {
+  # Centerline = sum(taeller)/sum(naevner). cl = 135/300 = 0.45 <= 1 -> procent.
+  y_andel <- c(40, 50, 45)
+  n_andel <- c(100, 100, 100)
+  expect_equal(
+    decide_default_y_axis_ui_type("i'", n_present = TRUE, y = y_andel, n = n_andel),
+    "percent"
+  )
+
+  # cl = 525/300 = 1.75 > 1 -> rate (taeller overstiger naevner i gennemsnit)
+  y_rate <- c(150, 200, 175)
+  n_rate <- c(100, 100, 100)
+  expect_equal(
+    decide_default_y_axis_ui_type("i'", n_present = TRUE, y = y_rate, n = n_rate),
+    "rate"
+  )
+
+  # Samme regel gaelder run-kort med naevner
+  expect_equal(
+    decide_default_y_axis_ui_type("run", n_present = TRUE, y = y_rate, n = n_rate),
+    "rate"
+  )
+
+  # Uden y/n-data -> bagudkompatibel procent-default (intet centerline-tjek)
+  expect_equal(decide_default_y_axis_ui_type("i'", n_present = TRUE), "percent")
+})
+
+test_that("proportion_centerline_exceeds_unity haandterer edge cases robust", {
+  # Pooled (ikke mean-of-ratios): vaegtning efter naevner som pbcharts
+  # weighted.mean(y, den). cl = sum(y)/sum(n).
+  expect_false(proportion_centerline_exceeds_unity(c(100, 100), c(100, 100)))
+  expect_true(proportion_centerline_exceeds_unity(c(120, 100), c(100, 100)))
+
+  # Pooled vs mean-of-ratios divergerer ved varierende naevner: store naevnere
+  # vejer tungere. y=c(10,300) n=c(10,100): pooled=310/110=2.82>1 (rate),
+  # mean-of-ratios=(1.0+3.0)/2=2.0. Begge > 1 her, men pooled er det korrekte
+  # (matcher pbcharts).
+  expect_true(proportion_centerline_exceeds_unity(c(10, 300), c(10, 100)))
+
+  # NULL / tomme / NA / nul-naevner -> FALSE (konservativt: behold procent)
+  expect_false(proportion_centerline_exceeds_unity(NULL, NULL))
+  expect_false(proportion_centerline_exceeds_unity(numeric(0), numeric(0)))
+  expect_false(proportion_centerline_exceeds_unity(c(NA, NA), c(NA, NA)))
+  expect_false(proportion_centerline_exceeds_unity(c(150, 200), c(0, 0)))
+
+  # Character-input parses defensivt
+  expect_true(proportion_centerline_exceeds_unity(c("150", "200"), c("100", "100")))
+
+  # Delvis NA: kun gyldige raekker taeller (n>0, ikke-NA)
+  expect_true(proportion_centerline_exceeds_unity(c(150, NA, 200), c(100, 50, 100)))
+})
+
 # =============================================================================
 # SEKTION 3: Y-AXIS MODEL (fra test-y-axis-model.R)
 # Tests for determine_internal_class() og suggest_chart_type()

@@ -579,14 +579,25 @@ handle_paste_data <- function(text_data, app_state, session_id = NULL, emit = NU
   data <- NULL
   best_fallback <- NULL
   for (sep in c(";", "\t", ",")) {
+    # Decimaltegn afhaenger af separator (struktur-invariant: ',' kan ikke vaere
+    # baade feltseparator OG decimaltegn samtidig). Komma-separeret data MAA
+    # bruge punktum-decimal (engelsk/internationalt format); semikolon/tab
+    # bruger dansk komma-decimal. Uden denne kobling parser komma-sep tal som
+    # "59.32" -> 5932243...e14 (punktum laest som tusind-separator).
+    sep_locale <- if (identical(sep, ",")) {
+      readr::locale(decimal_mark = ".", grouping_mark = ",")
+    } else {
+      readr::locale(decimal_mark = ",", grouping_mark = ".")
+    }
     # Silent-fail korrekt: multi-separator loop -- fejl pr. separator er forventet
     attempt <- tryCatch(
       readr::read_delim(
         I(text_data),
         delim = sep,
-        locale = readr::locale(decimal_mark = ",", grouping_mark = "."),
+        locale = sep_locale,
         show_col_types = FALSE,
-        trim_ws = TRUE
+        trim_ws = TRUE,
+        comment = "#"
       ),
       error = function(e) NULL # nolint: swallowed_error_linter
     )

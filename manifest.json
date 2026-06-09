@@ -2494,6 +2494,41 @@
         "Built": "R 4.6.0; ; 2026-04-25 15:39:31 UTC; unix"
       }
     },
+    "pbcharts": {
+      "Source": "github",
+      "Repository": null,
+      "description": {
+        "Package": "pbcharts",
+        "Title": "Process Behaviour Charts",
+        "Version": "0.1.0",
+        "Authors@R": "\n    person(\"Jacob\", \"Anhøj\", , \"jacob@anhoej.net\", role = c(\"aut\", \"cre\"))",
+        "Description": "Run charts and individuals control charts for statistical quality\n    control and improvement. Control limits accommodate varying subgroup sizes\n    as suggested by Taylor (2017)\n    <https://variation.com/normalized-individuals-control-chart/> making \n    `pbcharts` useful for a wide range of measurement and count data and a\n    convenient replacement for classic Shewhart control charts.",
+        "URL": "https://github.com/anhoej/pbcharts",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "Roxygen": "list(markdown = TRUE)",
+        "RoxygenNote": "7.3.3",
+        "Depends": "R (>= 3.5)",
+        "LazyData": "true",
+        "Suggests": "testthat (>= 3.0.0)",
+        "Config/testthat/edition": "3",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "pbcharts",
+        "RemoteUsername": "anhoej",
+        "RemoteRef": "HEAD",
+        "RemoteSha": "d37a8ec1864528ece1f5cd60ac152d06c013515f",
+        "GithubRepo": "pbcharts",
+        "GithubUsername": "anhoej",
+        "GithubRef": "HEAD",
+        "GithubSHA1": "d37a8ec1864528ece1f5cd60ac152d06c013515f",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-06-08 14:12:12 UTC; johanreventlow",
+        "Author": "Jacob Anhøj [aut, cre]",
+        "Maintainer": "Jacob Anhøj <jacob@anhoej.net>",
+        "Built": "R 4.6.0; ; 2026-06-08 14:12:13 UTC; unix"
+      }
+    },
     "pillar": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -4184,7 +4219,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "36b624c8d59c9f1aa9a8ca5bb26cc397"
+      "checksum": "d81029d9c0653dcb0562969d5c6759ea"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4754,7 +4789,7 @@
       "checksum": "0863dc7a47fc3e1c6e4528a6dcd40593"
     },
     "R/zzz.R": {
-      "checksum": "8af6a97ee8d87cbefd81882e728c7667"
+      "checksum": "73a9c7bdd9db7cc421b1890f057675d2"
     }
   },
   "users": null

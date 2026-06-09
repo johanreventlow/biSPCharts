@@ -4,15 +4,20 @@
 \alias{decide_default_y_axis_ui_type}
 \title{Vælg default Y-akse UI-type ud fra kontekst}
 \usage{
-decide_default_y_axis_ui_type(chart_type, n_present)
+decide_default_y_axis_ui_type(chart_type, n_present, y = NULL, n = NULL)
 }
 \arguments{
 \item{chart_type}{qicharts2-kode for korttype (fx "run")}
 
 \item{n_present}{Logical – om N-kolonne er valgt}
+
+\item{y}{Numeric/character vektor – tæller-kolonne (valgfri). Bruges kun til
+centerline-tjek for run/i'-kort med nævner.}
+
+\item{n}{Numeric/character vektor – nævner-kolonne (valgfri).}
 }
 \value{
-"percent" eller "count"
+"percent", "rate" eller "count"
 }
 \description{
 Særligt for run chart ønsker vi:
@@ -21,5 +26,11 @@ Særligt for run chart ønsker vi:
 \item Hvis kun tæller: default = count
 Brugeren kan altid overskrive.
 }
+}
+\details{
+For I'- og run-kort med nævner gælder desuden: hvis den pooled centerline
+(\code{sum(tæller)/sum(nævner)}) overstiger 100\%, er serien reelt en rate, ikke
+en andel → default = rate i stedet for percent. Kræver at \code{y} og \code{n} gives;
+uden dem bevares den hidtidige procent-default (bagudkompatibelt).
 }
 \keyword{internal}

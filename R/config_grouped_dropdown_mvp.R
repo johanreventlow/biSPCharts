@@ -22,7 +22,7 @@
 CHART_TYPE_GROUPS_MVP <- list(
   "Standardvalg" = list(
     "Seriediagram – udvikling og tendenser over tid" = "run",
-    "Kontrolkort – vurdering af variation (stabil vs. særlig)" = "i'__ctrl"
+    "Kontrolkort – vurdering af variation" = "i'__ctrl"
   ),
   "Udvidede kontrolkortvalg" = list(
     "Enkeltmålinger/værdier – fx ventetid, blodtryk, score" = "i'__dt",

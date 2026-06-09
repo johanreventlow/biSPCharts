@@ -21,26 +21,26 @@
 #' @noRd
 CHART_TYPE_GROUPS_MVP <- list(
   "Standardvalg" = list(
-    "Seriediagram – udvikling over tid" = "run",
-    "Kontrolkort – vurdering af variation" = "i'__ctrl"
+    "Seriediagram – udvikling og tendenser over tid" = "run",
+    "Kontrolkort – vurdering af variation (stabil vs. særlig)" = "i'__ctrl"
   ),
   "Udvidede kontrolkortvalg" = list(
-    "Enkeltmåling/værdi" = "i'__dt",
-    "Procent/andel" = "pp__dt",
-    "Rate (fx pr. 1000)" = "up__dt",
-    "Antal/tællinger" = "c__dt"
+    "Enkeltmålinger/værdier – fx ventetid, blodtryk, score" = "i'__dt",
+    "Procent/andele – fx andel med komplikation" = "pp__dt",
+    "Rater – fx hændelser pr. 1000 patientdage" = "up__dt",
+    "Antal/tællinger – fx antal fald pr. måned" = "c__dt"
   ),
   "Avanceret kontrolkortvalg" = list(
-    "I-kort" = "i",
-    "I'-kort" = "i'",
-    "P-kort" = "p",
-    "P'-kort" = "pp",
-    "U-kort" = "u",
-    "U'-kort" = "up",
-    "C-kort" = "c",
-    "MR-kort" = "mr",
-    "G-kort" = "g",
-    "T-kort" = "t"
+    "I-kort – enkeltmålinger" = "i",
+    "I'-kort – enkeltmålinger, varierende nævner" = "i'",
+    "P-kort – andele" = "p",
+    "P'-kort – andele, standardiseret" = "pp",
+    "U-kort – rater" = "u",
+    "U'-kort – rater, standardiseret" = "up",
+    "C-kort – tællinger" = "c",
+    "MR-kort – variation mellem målinger" = "mr",
+    "G-kort – mellem sjældne hændelser" = "g",
+    "T-kort – tid mellem sjældne hændelser" = "t"
   )
 )
 

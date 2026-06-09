@@ -3,8 +3,10 @@
 #
 # Spejler parser-kaskaden i fct_file_parse_pure.R:
 #   1. Semikolon (dansk standard)
-#   2. Auto-detect (readr, decimal_mark = ",")
-#   3. Komma (engelsk standard)
+#   2. Komma (engelsk standard, decimal_mark = ".")
+#   3. Auto-detect (readr, decimal_mark = ",")
+#
+# Linjer der starter med '#' ignoreres (comment = "#" i alle readr-kald).
 #
 # En fil er "parseable" hvis mindst én strategi giver >= 2 kolonner og > 0 rækker.
 #
@@ -35,7 +37,22 @@ detect_csv_delimiter <- function(path, encoding = "UTF-8", n_max = 5L) {
           locale = readr::locale(decimal_mark = ",", grouping_mark = ".", encoding = encoding),
           n_max = n_max,
           show_col_types = FALSE,
-          progress = FALSE
+          progress = FALSE,
+          comment = "#"
+        )
+      }
+    ),
+    list(
+      name = "komma",
+      delimiter = ",",
+      fn = function() {
+        readr::read_csv(
+          path,
+          locale = readr::locale(decimal_mark = ".", grouping_mark = ",", encoding = encoding),
+          n_max = n_max,
+          show_col_types = FALSE,
+          progress = FALSE,
+          comment = "#"
         )
       }
     ),
@@ -43,7 +60,7 @@ detect_csv_delimiter <- function(path, encoding = "UTF-8", n_max = 5L) {
       name = "auto-detect",
       delimiter = NA_character_, # Lader readr bestemme
       fn = function() {
-        # Cycle D L1 (Codex 2026-05-10): tilføj encoding-arg matching
+        # Cycle D L1 (Codex 2026-05-10): tilfoej encoding-arg matching
         # andre strategier. Tidligere defaultede readr til system-locale
         # encoding ved auto-detect-strategi -> latin1-headers kunne
         # mojibake'es ved fallback fra semikolon-strategi.
@@ -58,20 +75,8 @@ detect_csv_delimiter <- function(path, encoding = "UTF-8", n_max = 5L) {
           n_max = n_max,
           show_col_types = FALSE,
           trim_ws = TRUE,
-          progress = FALSE
-        )
-      }
-    ),
-    list(
-      name = "komma",
-      delimiter = ",",
-      fn = function() {
-        readr::read_csv(
-          path,
-          locale = readr::locale(decimal_mark = ".", grouping_mark = ",", encoding = encoding),
-          n_max = n_max,
-          show_col_types = FALSE,
-          progress = FALSE
+          progress = FALSE,
+          comment = "#"
         )
       }
     )

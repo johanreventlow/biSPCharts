@@ -4253,7 +4253,7 @@
       "checksum": "add4ce5c2fc35cef938e935ad4f873f4"
     },
     "inst/app/www/viewport-ready.js": {
-      "checksum": "e5af14aa12d4679f71ba54443c346be3"
+      "checksum": "b888c376118cc359a5b7902eb65e1eed"
     },
     "inst/app/www/wizard-nav.js": {
       "checksum": "3be30466bdbb018a2ae71101b0fe191d"
@@ -4324,9 +4324,6 @@
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
     },
-    "manifest.json": {
-      "checksum": "9d7461a1cb632dc0e67d25c9e1e1f21d"
-    },
     "NAMESPACE": {
       "checksum": "b9cf8aced2ef17dc040af58c1db3c830"
     },
@@ -4354,8 +4351,11 @@
     "R/config_branding_getters.R": {
       "checksum": "cb066b1eac8c4724f030e0006c1b6fbc"
     },
+    "R/config_chart_type_groups.R": {
+      "checksum": "b9dfc8fd47fad1e19046cbdb9d788677"
+    },
     "R/config_chart_types.R": {
-      "checksum": "525356b7e1ae33481c5c641a91e89f34"
+      "checksum": "9eaf85cc7f871387436ab09a0013b035"
     },
     "R/config_export_config.R": {
       "checksum": "410356d2c0c0ff25130cefeb609bfa32"
@@ -4418,7 +4418,7 @@
       "checksum": "ed62fada50ce28c1e2452fc45bc1a962"
     },
     "R/fct_file_parse_pure.R": {
-      "checksum": "43244a6ddbb720c7c5a42e4fbe2b8a42"
+      "checksum": "7e3744188e2cd07ec98a7c6a489f3550"
     },
     "R/fct_file_validation.R": {
       "checksum": "54fb273d08ec403b0d20c1486edd2d11"
@@ -4523,7 +4523,7 @@
       "checksum": "e9d769f9a0ac84e375ecb01800c0fc5a"
     },
     "R/mod_spc_chart_inputs.R": {
-      "checksum": "06a7e5f91423f5c9dab74d9a7e336317"
+      "checksum": "1575f7897a1a29c794e1caf65e8fe551"
     },
     "R/mod_spc_chart_observers.R": {
       "checksum": "4d6320e958a8d35e0818501e7dfd098c"
@@ -4568,7 +4568,7 @@
       "checksum": "9ddd22e6cb24b986659758b4ab0143b7"
     },
     "R/utils_csv_delimiter_detection.R": {
-      "checksum": "0ef33d0f187ee494f0be842cf270ed15"
+      "checksum": "e1f5a724400aecc2d5804ea95e471eae"
     },
     "R/utils_danish_locale.R": {
       "checksum": "4aa6dceb469e70d9cc4a2b7ac61d27f9"
@@ -4589,7 +4589,7 @@
       "checksum": "6239f32d74045acbca25463fd89d8132"
     },
     "R/utils_export_helpers.R": {
-      "checksum": "cc46060c45e0aa79d31da00d5bd49320"
+      "checksum": "47354f33f1aaa2789c2e9048bc22d26a"
     },
     "R/utils_export_validation.R": {
       "checksum": "f1901f35087860ff18513fa7950eaaaf"
@@ -4646,7 +4646,7 @@
       "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "acbe642b2c59c5353f53a8d1bf876c5c"
+      "checksum": "2d2901ae7356d934b05a783ce526e81c"
     },
     "R/utils_server_events_data.R": {
       "checksum": "ddbbb46f800c8e25322ee6f4dc3e13c9"
@@ -4721,7 +4721,7 @@
       "checksum": "2a89e70626500a1b8267ecb603047ff5"
     },
     "R/utils_ui_app_layout.R": {
-      "checksum": "de05f0ab32d19159b4ccb6ecd599157c"
+      "checksum": "02f6670291e0add0fe4c525a0aa93983"
     },
     "R/utils_ui_column_sync.R": {
       "checksum": "cfb8a0e40df0094e786ba865c1caef30"
@@ -4748,7 +4748,7 @@
       "checksum": "a43315bd81b9b8e9c4c8d7eb9e5e853c"
     },
     "R/utils_y_axis_model.R": {
-      "checksum": "d312ae61935af94b38ffa900d179150f"
+      "checksum": "36682c0122cbf6a9863c01e2dd96e3bb"
     },
     "R/utils_y_axis_scaling.R": {
       "checksum": "0863dc7a47fc3e1c6e4528a6dcd40593"

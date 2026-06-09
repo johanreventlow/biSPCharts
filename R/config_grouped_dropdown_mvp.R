@@ -39,7 +39,7 @@ CHART_TYPE_GROUPS_MVP <- list(
     "U'-kort – rater, standardiseret" = "up",
     "C-kort – tællinger" = "c",
     "MR-kort – variation mellem målinger" = "mr",
-    "G-kort – mellem sjældne hændelser" = "g",
+    "G-kort – muligheder mellem sjældne hændelser" = "g",
     "T-kort – tid mellem sjældne hændelser" = "t"
   )
 )

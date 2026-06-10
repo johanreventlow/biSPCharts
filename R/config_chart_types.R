@@ -29,7 +29,7 @@
 CHART_TYPES_DA <- list(
   "Seriediagram (Run) \u2014 data over tid" = "run",
   "I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)" = "i",
-  "I\u2032-kort \u2014 individuelle m\u00e5linger med varierende n\u00e6vner" = "i'",
+  "I\u2032-kort \u2014 individuelle m\u00e5linger med varierende n\u00e6vner" = "ip",
   "MR-kort \u2014 variation mellem m\u00e5linger" = "mr",
   "P-kort \u2014 andele/procenter (fx infektionsrate)" = "p",
   "P\u2032-kort \u2014 andele/procenter, standardiseret" = "pp",
@@ -44,7 +44,7 @@ CHART_TYPES_DA <- list(
 CHART_TYPES_EN <- list(
   "run" = "run",
   "i" = "i",
-  "i'" = "i'",
+  "ip" = "ip",
   "mr" = "mr",
   "p" = "p",
   "pp" = "pp",
@@ -78,7 +78,7 @@ get_qic_chart_type <- function(danish_selection) {
     return("run") # standard
   }
 
-  # MVP grouped-dropdown: strip alias-suffix (fx "i'__dt"/"pp__dt" -> "i'"/"pp").
+  # MVP grouped-dropdown: strip alias-suffix (fx "ip__dt"/"pp__dt" -> "ip"/"pp").
   # Ingen rigtig kode/label indeholder "__", saa dette er en no-op for dem.
   danish_selection <- sub("__.*$", "", danish_selection)
 
@@ -109,7 +109,7 @@ get_qic_chart_type <- function(danish_selection) {
 CHART_TYPE_DESCRIPTIONS <- list(
   "run" = "Seriediagram der viser data over tid med median centerlinje",
   "i" = "I-kort til individuelle m\u00e5linger",
-  "i'" = "I\u2032-kort til individuelle m\u00e5linger med n\u00e6vner-justerede kontrolgr\u00e6nser",
+  "ip" = "I\u2032-kort til individuelle m\u00e5linger med n\u00e6vner-justerede kontrolgr\u00e6nser",
   "mr" = "Moving Range kort til variabilitet mellem p\u00e5 hinanden f\u00f8lgende m\u00e5linger",
   "p" = "P-kort til andele og procenter",
   "pp" = "P'-kort til standardiserede andele",
@@ -134,6 +134,6 @@ chart_type_requires_denominator <- function(chart_type) {
   # Normaliser til qicharts2-kode
   ct <- get_qic_chart_type(chart_type)
 
-  # Naevner er relevant for run, p, pp, u, up, i'
-  return(ct %in% c("run", "p", "pp", "u", "up", "i'"))
+  # Naevner er relevant for run, p, pp, u, up, ip
+  return(ct %in% c("run", "p", "pp", "u", "up", "ip"))
 }

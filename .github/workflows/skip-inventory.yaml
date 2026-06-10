@@ -137,6 +137,10 @@ jobs:
 
       - name: Upload skip inventory artifact
         uses: actions/upload-artifact@v4
+        # Artifact-upload er bekvemmelighed (inspektion), ikke en gate. En
+        # account-bred artifact-storage-quota maa ikke faelde audit-jobbet --
+        # den reelle gate er "Fail if TODO-skips increased" nedenfor.
+        continue-on-error: true
         with:
           name: skip-inventory
           retention-days: 5

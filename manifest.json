@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.24.0",
+        "Version": "0.25.0",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3 + file LICENSE",
@@ -41,17 +41,18 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.24.0",
-        "RemoteSha": "2c5b4514174725364b9ff4b905a6704601cd1fed",
+        "RemotePkgRef": "johanreventlow/BFHcharts@v0.25.0",
+        "RemoteRef": "v0.25.0",
+        "RemoteSha": "670ad7803d0e680efa2c5587e476cbac6bbb3d8d",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.24.0",
-        "GithubSHA1": "2c5b4514174725364b9ff4b905a6704601cd1fed",
+        "GithubRef": "v0.25.0",
+        "GithubSHA1": "670ad7803d0e680efa2c5587e476cbac6bbb3d8d",
         "NeedsCompilation": "no",
-        "Packaged": "2026-06-08 18:52:37 UTC; johanreventlow",
+        "Packaged": "2026-06-10 19:23:45 UTC; johanreventlow",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-06-08 18:52:38 UTC; unix"
+        "Built": "R 4.6.0; ; 2026-06-10 19:23:47 UTC; unix"
       }
     },
     "BFHchartsAssets": {
@@ -4219,7 +4220,7 @@
       "checksum": "3229dcd4aabe33a327543f3081c6a86b"
     },
     "DESCRIPTION": {
-      "checksum": "d81029d9c0653dcb0562969d5c6759ea"
+      "checksum": "dde40b4ec126775809577b5259acb79f"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "2ed67aade811d126e30272f5e6e0d035"
@@ -4359,6 +4360,9 @@
     "inst/templates/typst/README.md": {
       "checksum": "5f4913fc0a1e497e314621369145b916"
     },
+    "manifest.json": {
+      "checksum": "04af46bde9d78ce6d13bdce49f90a65a"
+    },
     "NAMESPACE": {
       "checksum": "b9cf8aced2ef17dc040af58c1db3c830"
     },
@@ -4387,10 +4391,10 @@
       "checksum": "cb066b1eac8c4724f030e0006c1b6fbc"
     },
     "R/config_chart_type_groups.R": {
-      "checksum": "b9dfc8fd47fad1e19046cbdb9d788677"
+      "checksum": "08e6842003c325ade7fd8001b64eb9a5"
     },
     "R/config_chart_types.R": {
-      "checksum": "9eaf85cc7f871387436ab09a0013b035"
+      "checksum": "a2df867a75348d9e5974be2fb7c53065"
     },
     "R/config_export_config.R": {
       "checksum": "410356d2c0c0ff25130cefeb609bfa32"
@@ -4450,7 +4454,7 @@
       "checksum": "d4d7e0569dc318ba62f75738d391238b"
     },
     "R/fct_file_operations.R": {
-      "checksum": "ed62fada50ce28c1e2452fc45bc1a962"
+      "checksum": "34f1fda5219513fcf2ec14b45ce74c7b"
     },
     "R/fct_file_parse_pure.R": {
       "checksum": "7e3744188e2cd07ec98a7c6a489f3550"
@@ -4624,7 +4628,7 @@
       "checksum": "6239f32d74045acbca25463fd89d8132"
     },
     "R/utils_export_helpers.R": {
-      "checksum": "47354f33f1aaa2789c2e9048bc22d26a"
+      "checksum": "7f3f4c4de2fcef6e94d3c7d7a271e360"
     },
     "R/utils_export_validation.R": {
       "checksum": "f1901f35087860ff18513fa7950eaaaf"
@@ -4681,7 +4685,7 @@
       "checksum": "60614a7b4afebc57ccbe80442e63cf9a"
     },
     "R/utils_server_events_chart.R": {
-      "checksum": "2d2901ae7356d934b05a783ce526e81c"
+      "checksum": "f980bd04d476812ee5d9f9c975238495"
     },
     "R/utils_server_events_data.R": {
       "checksum": "ddbbb46f800c8e25322ee6f4dc3e13c9"
@@ -4783,13 +4787,13 @@
       "checksum": "a43315bd81b9b8e9c4c8d7eb9e5e853c"
     },
     "R/utils_y_axis_model.R": {
-      "checksum": "36682c0122cbf6a9863c01e2dd96e3bb"
+      "checksum": "62c5fe0b350a2997174b38d141fee69b"
     },
     "R/utils_y_axis_scaling.R": {
-      "checksum": "0863dc7a47fc3e1c6e4528a6dcd40593"
+      "checksum": "f894af4a40bcf6f45db307687e3cef20"
     },
     "R/zzz.R": {
-      "checksum": "73a9c7bdd9db7cc421b1890f057675d2"
+      "checksum": "179e6232b79a8e3613f42bb7a97d0272"
     }
   },
   "users": null

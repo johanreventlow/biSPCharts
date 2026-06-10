@@ -275,7 +275,7 @@ reset_qic_performance_counters <- function() {
 .onAttach <- function(libname, pkgname) {
   bfhllm_status <- if (requireNamespace("BFHllm", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
   qic_status <- if (requireNamespace("qicharts2", quietly = TRUE)) "tilg\u00e6ngelig" else "ikke installeret"
-  # pbcharts kraeves af BFHcharts for i'/i-prime + Laney P'/U'-charts, som er
+  # pbcharts kraeves af BFHcharts for ip/i-prime + Laney P'/U'-charts, som er
   # eksponeret som foersteklasses chart-typer i dropdownen. Den eksplicitte
   # requireNamespace-reference goer desuden pakken synlig for rsconnect's
   # dependency-scanner, saa den medtages i Connect-manifestet (uden en

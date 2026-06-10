@@ -66,6 +66,7 @@ NULL
     pp = "P'-kort",
     u = "U-kort",
     up = "U'-kort",
+    ip = "I'-kort",
     c = "C-kort",
     g = "G-kort",
     t = "T-kort",

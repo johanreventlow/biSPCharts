@@ -17,7 +17,7 @@ test_that("get_qic_chart_type konverterer danske labels korrekt", {
 
 test_that("get_qic_chart_type returnerer engelske koder uændret", {
   # Aktive koder registreret i lookup-tabellen (mr/pp/up nu eksponeret)
-  for (code in c("run", "i", "i'", "mr", "p", "pp", "u", "up", "c")) {
+  for (code in c("run", "i", "ip", "mr", "p", "pp", "u", "up", "c")) {
     expect_equal(get_qic_chart_type(code), code)
   }
   # Bemærk: G/T er stadig ikke registreret og returnerer "run" (fallback).
@@ -38,7 +38,7 @@ test_that("chart_type_requires_denominator identificerer korrekte typer", {
   expect_true(chart_type_requires_denominator("pp"))
   expect_true(chart_type_requires_denominator("u"))
   expect_true(chart_type_requires_denominator("up"))
-  expect_true(chart_type_requires_denominator("i'"))
+  expect_true(chart_type_requires_denominator("ip"))
 
   # Typer der IKKE kræver nævner
   expect_false(chart_type_requires_denominator("i"))
@@ -52,7 +52,7 @@ test_that("chart_type_requires_denominator accepterer danske labels", {
   # Opdaterede labels til nuværende em-dash format
   expect_true(chart_type_requires_denominator("P-kort \u2014 andele/procenter (fx infektionsrate)"))
   expect_false(chart_type_requires_denominator("I-kort \u2014 enkelte m\u00e5linger (fx ventetid, temperatur)"))
-  # i'-kort: naevner er relevant (varierende naevner er kernefeature)
+  # ip-kort: naevner er relevant (varierende naevner er kernefeature)
   expect_true(chart_type_requires_denominator(
     "I\u2032-kort \u2014 individuelle m\u00e5linger med varierende n\u00e6vner"
   ))
@@ -61,65 +61,65 @@ test_that("chart_type_requires_denominator accepterer danske labels", {
 # Konstanter ------------------------------------------------------------------
 
 test_that("CHART_TYPES_DA indeholder aktive diagramtyper", {
-  # Aktuelt 6 aktive typer inkl. i' (mr, pp, up, g er udkommenteret i config_chart_types.R)
+  # Aktuelt 6 aktive typer inkl. ip (mr, pp, up, g er udkommenteret i config_chart_types.R)
   expect_true(length(CHART_TYPES_DA) >= 6,
     info = "CHART_TYPES_DA skal indeholde mindst 6 aktive diagramtyper"
   )
-  expect_true(all(unlist(CHART_TYPES_DA) %in% c("run", "i", "i'", "mr", "p", "pp", "u", "up", "c", "g")),
+  expect_true(all(unlist(CHART_TYPES_DA) %in% c("run", "i", "ip", "mr", "p", "pp", "u", "up", "c", "g")),
     info = "Alle aktive typer skal have gyldige engelske koder"
   )
 })
 
 test_that("CHART_TYPE_DESCRIPTIONS daekker alle engelske koder inkl. i-prime", {
-  expected_codes <- c("run", "i", "i'", "mr", "p", "pp", "u", "up", "c", "g")
+  expected_codes <- c("run", "i", "ip", "mr", "p", "pp", "u", "up", "c", "g")
   expect_true(all(expected_codes %in% names(CHART_TYPE_DESCRIPTIONS)))
 })
 
-# i' (I-prime) chart type -------------------------------------------------------
+# ip (I-prime) chart type -------------------------------------------------------
 
-test_that("i'-kort: get_qic_chart_type returnerer i' uaendret (passthrough)", {
-  expect_equal(get_qic_chart_type("i'"), "i'")
+test_that("ip-kort: get_qic_chart_type returnerer ip uaendret (passthrough)", {
+  expect_equal(get_qic_chart_type("ip"), "ip")
 })
 
-test_that("i'-kort: get_qic_chart_type konverterer dansk label korrekt", {
+test_that("ip-kort: get_qic_chart_type konverterer dansk label korrekt", {
   expect_equal(
     get_qic_chart_type("I′-kort — individuelle målinger med varierende nævner"),
-    "i'"
+    "ip"
   )
 })
 
-test_that("i'-kort: i' er i SUPPORTED_CHART_TYPES_BFH (validering accepterer den)", {
-  expect_true("i'" %in% SUPPORTED_CHART_TYPES_BFH)
+test_that("ip-kort: ip er i SUPPORTED_CHART_TYPES_BFH (validering accepterer den)", {
+  expect_true("ip" %in% SUPPORTED_CHART_TYPES_BFH)
 })
 
-test_that("i'-kort: chart_type_requires_denominator returnerer TRUE", {
-  expect_true(chart_type_requires_denominator("i'"))
+test_that("ip-kort: chart_type_requires_denominator returnerer TRUE", {
+  expect_true(chart_type_requires_denominator("ip"))
 })
 
-test_that("i'-kort: chart_type_requires_denominator via dansk label returnerer TRUE", {
+test_that("ip-kort: chart_type_requires_denominator via dansk label returnerer TRUE", {
   expect_true(chart_type_requires_denominator(
     "I′-kort — individuelle målinger med varierende nævner"
   ))
 })
 
-test_that("i'-kort: build_bfh_args bevarer n_var for i'-chart (ikke stripped)", {
-  # chart_type_requires_denominator("i'") er TRUE → n_var skal IKKE fjernes
+test_that("ip-kort: build_bfh_args bevarer n_var for ip-chart (ikke stripped)", {
+  # chart_type_requires_denominator("ip") er TRUE → n_var skal IKKE fjernes
   # Verificer logik-gaten direkte (build_bfh_args bruger denne guard)
-  expect_true(chart_type_requires_denominator("i'"),
-    info = "Guard-condition: i' requires denominator → n_var skal bevares af build_bfh_args"
+  expect_true(chart_type_requires_denominator("ip"),
+    info = "Guard-condition: ip requires denominator → n_var skal bevares af build_bfh_args"
   )
 })
 
-test_that("i'-kort: i' er i ABSOLUTE_CHART_TYPES (arver i's y-akse skalering)", {
-  expect_true("i'" %in% ABSOLUTE_CHART_TYPES)
+test_that("ip-kort: ip er i ABSOLUTE_CHART_TYPES (arver ips y-akse skalering)", {
+  expect_true("ip" %in% ABSOLUTE_CHART_TYPES)
 })
 
-test_that("i'-kort: fct_spc_validate accepterer i' som chart_type", {
+test_that("ip-kort: fct_spc_validate accepterer ip som chart_type", {
   df <- data.frame(
     x = seq.Date(as.Date("2023-01-01"), by = "week", length.out = 10),
     y = as.numeric(1:10)
   )
-  expect_no_error(validate_spc_request(df, "x", "y", "i'"))
+  expect_no_error(validate_spc_request(df, "x", "y", "ip"))
 })
 
 # Laney P'/U' + MR eksponering -------------------------------------------------

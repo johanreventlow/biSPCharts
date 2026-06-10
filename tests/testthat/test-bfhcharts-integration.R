@@ -145,12 +145,12 @@ test_that("BFHcharts to-trins workflow: bfh_qic + get_plot", {
   expect_s3_class(plot, "ggplot")
 })
 
-test_that("BFHcharts bfh_qic kan oprette I-prime chart (i') med naevner", {
+test_that("BFHcharts bfh_qic kan oprette I-prime chart (ip) med naevner", {
   skip_if_not_installed("BFHcharts")
   skip_if_not_installed("qicharts2")
-  # i'-beregning delegeres til pbcharts (BFHcharts Suggests/Remotes-dep).
+  # ip-beregning delegeres til pbcharts (BFHcharts Suggests/Remotes-dep).
   # pbcharts er ikke i biSPCharts' egne deps, saa CI har den typisk ikke;
-  # skip naar fravaerende -- selve i'-pipelinen er CI-testet i BFHcharts.
+  # skip naar fravaerende -- selve ip-pipelinen er CI-testet i BFHcharts.
   skip_if_not_installed("pbcharts")
 
   test_data <- data.frame(
@@ -171,7 +171,7 @@ test_that("BFHcharts bfh_qic kan oprette I-prime chart (i') med naevner", {
       x = Dato,
       y = Vaerdi,
       n = Naevner,
-      chart_type = "i'",
+      chart_type = "ip",
       y_axis_unit = "count",
       chart_title = "Test I-prime Chart"
     )

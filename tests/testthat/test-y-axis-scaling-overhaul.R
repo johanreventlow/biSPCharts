@@ -389,10 +389,10 @@ test_that("run chart denominator toggle semantics (unit-only)", {
 
 test_that("i-prime default y-axis with denominator presence", {
   # I' + med naevner -> procent (y/n er en andel); standard foerste auto-valg
-  expect_equal(decide_default_y_axis_ui_type("i'", n_present = TRUE), "percent")
+  expect_equal(decide_default_y_axis_ui_type("ip", n_present = TRUE), "percent")
 
   # I' + uden naevner -> tal (degenererer til standard i-kort)
-  expect_equal(decide_default_y_axis_ui_type("i'", n_present = FALSE), "count")
+  expect_equal(decide_default_y_axis_ui_type("ip", n_present = FALSE), "count")
 
   # Oevrige korttyper paavirkes ikke af naevner-tilstedevaerelse
   expect_equal(decide_default_y_axis_ui_type("i", n_present = TRUE), "count")
@@ -404,7 +404,7 @@ test_that("i-prime/run skifter default til rate naar pooled centerline > 100%", 
   y_andel <- c(40, 50, 45)
   n_andel <- c(100, 100, 100)
   expect_equal(
-    decide_default_y_axis_ui_type("i'", n_present = TRUE, y = y_andel, n = n_andel),
+    decide_default_y_axis_ui_type("ip", n_present = TRUE, y = y_andel, n = n_andel),
     "percent"
   )
 
@@ -412,7 +412,7 @@ test_that("i-prime/run skifter default til rate naar pooled centerline > 100%", 
   y_rate <- c(150, 200, 175)
   n_rate <- c(100, 100, 100)
   expect_equal(
-    decide_default_y_axis_ui_type("i'", n_present = TRUE, y = y_rate, n = n_rate),
+    decide_default_y_axis_ui_type("ip", n_present = TRUE, y = y_rate, n = n_rate),
     "rate"
   )
 
@@ -423,7 +423,7 @@ test_that("i-prime/run skifter default til rate naar pooled centerline > 100%", 
   )
 
   # Uden y/n-data -> bagudkompatibel procent-default (intet centerline-tjek)
-  expect_equal(decide_default_y_axis_ui_type("i'", n_present = TRUE), "percent")
+  expect_equal(decide_default_y_axis_ui_type("ip", n_present = TRUE), "percent")
 })
 
 test_that("proportion_centerline_exceeds_unity haandterer edge cases robust", {

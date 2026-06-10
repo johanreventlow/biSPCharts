@@ -223,7 +223,7 @@ update_ui_for_chart_type <- function(transition, ct, input, session, app_state,
   )
 
   if (!identical(qic_ct, "run")) {
-    if (identical(qic_ct, "i'")) {
+    if (identical(qic_ct, "ip")) {
       # I-prime: naevner-bevidst default via den pure decide_default_y_axis_ui_type
       # (med naevner -> procent, ellers tal). Bruger-override respekteres, da
       # denne observer kun fyrer ved chart_type-skift, ikke ved manuelt

@@ -3,11 +3,11 @@
 # ==============================================================================
 # Grupperet diagramtype-dropdown med progressiv disclosure i tre kategorier.
 # Samme korttype kan optraede i flere grupper, saa hver option har en UNIK
-# alias-value (fx "i'__dt") for at undgaa at selectize.js deduperer paa value.
+# alias-value (fx "ip__dt") for at undgaa at selectize.js deduperer paa value.
 # get_qic_chart_type() stripper aliaset tilbage til den rene qicharts2-kode
 # (se config_chart_types.R: sub("__.*$", "", ...)).
 #
-#   Standardvalg              -> simple valg (run + anbefalet kontrolkort = i')
+#   Standardvalg              -> simple valg (run + anbefalet kontrolkort = ip)
 #   Udvidede kontrolkortvalg  -> datatype-drevne labels (skjuler kort-navnet)
 #   Avanceret kontrolkortvalg -> alle korttyper ved navn
 # ==============================================================================
@@ -22,17 +22,17 @@
 CHART_TYPE_GROUPS <- list(
   "Standardvalg" = list(
     "Seriediagram \u2013 udvikling over tid" = "run",
-    "Kontrolkort \u2013 vurdering af variation" = "i'__ctrl"
+    "Kontrolkort \u2013 vurdering af variation" = "ip__ctrl"
   ),
   "Udvidede kontrolkortvalg" = list(
-    "Enkeltm\u00e5linger/v\u00e6rdier \u2013 fx ventetid, blodtryk, score" = "i'__dt",
+    "Enkeltm\u00e5linger/v\u00e6rdier \u2013 fx ventetid, blodtryk, score" = "ip__dt",
     "Procent/andele \u2013 fx andel med komplikation" = "pp__dt",
     "Rater \u2013 fx h\u00e6ndelser pr. 1000 patientdage" = "up__dt",
     "Antal/t\u00e6llinger \u2013 fx antal fald pr. m\u00e5ned" = "c__dt"
   ),
   "Avanceret kontrolkortvalg" = list(
     "I-kort \u2013 enkeltm\u00e5linger" = "i",
-    "I'-kort \u2013 enkeltm\u00e5linger, varierende n\u00e6vner" = "i'",
+    "I'-kort \u2013 enkeltm\u00e5linger, varierende n\u00e6vner" = "ip",
     "P-kort \u2013 andele" = "p",
     "P'-kort \u2013 andele, standardiseret" = "pp",
     "U-kort \u2013 rater" = "u",

@@ -141,7 +141,7 @@ proportion_centerline_exceeds_unity <- function(y, n) {
 #' @param chart_type qicharts2-kode for korttype (fx "run")
 #' @param n_present Logical – om N-kolonne er valgt
 #' @param y Numeric/character vektor – tæller-kolonne (valgfri). Bruges kun til
-#'   centerline-tjek for run/i'-kort med nævner.
+#'   centerline-tjek for run/ip-kort med nævner.
 #' @param n Numeric/character vektor – nævner-kolonne (valgfri).
 #' @return "percent", "rate" eller "count"
 #' @keywords internal
@@ -149,7 +149,7 @@ decide_default_y_axis_ui_type <- function(chart_type, n_present, y = NULL, n = N
   ct <- get_qic_chart_type(chart_type)
   # Run og I-prime: med naevner plottes en andel (y/n) -> default procent.
   # Uden naevner -> tal. Brugeren kan altid overskrive.
-  if (ct %in% c("run", "i'") && isTRUE(n_present)) {
+  if (ct %in% c("run", "ip") && isTRUE(n_present)) {
     # Andel > 100% i centerlinjen => det er en rate, ikke en procent.
     if (proportion_centerline_exceeds_unity(y, n)) {
       return("rate")

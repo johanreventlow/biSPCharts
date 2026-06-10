@@ -1,5 +1,13 @@
 # biSPCharts (development)
 
+## Interne ændringer
+
+* **Tilpasset BFHcharts 0.25.0: I-prime-kortets `chart_type`-værdi omdøbt
+  fra `"i'"` til `"ip"`.** Følger BFHcharts' breaking change der harmoniserer
+  prime-kortenes navngivning (`pp`, `up`, `ip`). De danske UI-labels
+  (I′-kort) er uændrede; kun den interne kode-værdi der sendes til
+  `bfh_qic()` er ændret. Kræver BFHcharts (>= 0.25.0).
+
 ## Nye features
 
 * **Grupperet diagramtype-dropdown.** Diagramtype-vælgeren er nu inddelt i

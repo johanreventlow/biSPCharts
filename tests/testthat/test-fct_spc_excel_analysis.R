@@ -37,6 +37,10 @@ test_that("build_overview_section angiver charttype på dansk", {
   expect_equal(ct, "P-kort")
 })
 
+test_that(".excel_chart_type_da oversaetter ip til I'-kort (ikke raa kode)", {
+  expect_equal(.excel_chart_type_da("ip"), "I'-kort")
+})
+
 test_that("build_overview_section samler ooc-rækker som komma-separeret tekst", {
   qic <- fixture_qic_data_3_parts()
   # Forvent ooc-rækker i part 3: y[11] = 0.15 > ucl[11] = 0.10 -> række 11

@@ -2,6 +2,7 @@
 
 **Project-type rules (Tier 2 — Shiny):**
 
+@~/.claude/rules-profiles/r/R_STANDARDS.md
 @~/.claude/rules-profiles/shiny/SHINY_STANDARDS.md
 @~/.claude/rules-profiles/shiny/SHINY_ADVANCED_PATTERNS.md
 @~/.claude/rules-profiles/shiny/ARCHITECTURE_PATTERNS.md
@@ -10,7 +11,6 @@
 
 <!-- @~/.claude/rules-ondemand/OBSERVABILITY_STANDARDS.md -->
 <!-- @~/.claude/rules-ondemand/DEPLOYMENT_GUIDE.md -->
-<!-- @~/.claude/rules-ondemand/TROUBLESHOOTING_GUIDE.md -->
 <!-- @~/.claude/rules-ondemand/CI_CD_WORKFLOW.md -->
 
 ---

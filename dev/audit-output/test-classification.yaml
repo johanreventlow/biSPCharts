@@ -162,6 +162,22 @@ files:
   rationale: 'Ny unit-test for grupperet dropdown-builder + alias-resolution.'
   reviewer: johanreventlow
   reviewed_date: '2026-06-09'
+- file: test-config_sample_data.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: yes
+  rationale: 'Drift-guard: eksempeldatasaet chart_type SKAL vaere i kurateret dropdown-maengde (Standardvalg + Udvidede), ikke en ren by-name-kode fra Avanceret.'
+  reviewer: johanreventlow
+  reviewed_date: '2026-06-13'
+- file: test-chart-title-no-sentinel.R
+  audit_category: green
+  type: unit
+  handling: keep
+  reviewed: yes
+  rationale: 'Regression: chart_title() emitter tom streng (ikke "SPC Analyse"-sentinel) ved tom indikatortitel -> ingen ggplot-titel paa trin-2-preview.'
+  reviewer: johanreventlow
+  reviewed_date: '2026-06-13'
 - file: test-config_export.R
   audit_category: green
   type: unit

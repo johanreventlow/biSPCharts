@@ -62,12 +62,13 @@ mock_bfh_qic <- function(data, x, y, n = NULL, chart_type = "run",
                          notes = NULL, part = NULL, freeze = NULL,
                          exclude = NULL, cl = NULL, ylim = NULL,
                          multiply = NULL,
-                         agg.fun = "mean", base_size = 12,
+                         agg.fun = "mean", agg_fun = NULL,
+                         base_size = 12,
                          width = NULL, height = NULL, units = "in",
                          dpi = 96, plot_margin = NULL,
                          ylab = NULL, xlab = NULL,
                          subtitle = NULL, caption = NULL,
-                         return.data = FALSE,
+                         return.data = FALSE, return_data = NULL,
                          language = "da") {
   n_rows <- nrow(data)
   cl_value <- if (!is.null(cl)) {

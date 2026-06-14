@@ -672,17 +672,18 @@ current_unit <- function(input) {
 chart_title <- function(input) {
   shiny::reactive({
     indicator_title_safe <- input_scalar(input$indicator_title)
-    base_title <- if (indicator_title_safe == "") "SPC Analyse" else indicator_title_safe
-    unit_name <- current_unit(input)()
 
-    if (base_title != "SPC Analyse" && unit_name != "") {
-      return(paste(base_title, "-", unit_name))
-    } else if (base_title != "SPC Analyse") {
-      return(base_title)
-    } else if (unit_name != "") {
-      return(paste("SPC Analyse -", unit_name))
-    } else {
-      return("SPC Analyse")
+    # Ingen indikatortitel -> tom streng (IKKE en "SPC Analyse"-sentinel).
+    # Rendering-laget (resolve_bfh_chart_title) mapper "" -> NULL -> ingen
+    # ggplot-titel. En sentinel-streng ville derimod blive renderet verbatim.
+    if (indicator_title_safe == "") {
+      return("")
     }
+
+    unit_name <- current_unit(input)()
+    if (unit_name != "") {
+      return(paste(indicator_title_safe, "-", unit_name))
+    }
+    indicator_title_safe
   })
 }

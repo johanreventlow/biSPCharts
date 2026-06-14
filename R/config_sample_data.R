@@ -25,17 +25,17 @@
 SAMPLE_DATASETS <- list(
   list(
     id = "run",
-    label = "Seriediagram \u2014 Patientfremm\u00f8de ved ambulante bes\u00f8g",
-    description = "Andel patienter m\u00f8dt til aftale (m\u00f8dt/tilkaldt)",
+    label = "Seriediagram: Patientfremm\u00f8de",
+    description = "Andel m\u00f8dt af planlagte aftaler (m\u00f8dt/aftaler)",
     file = "sample_run.csv",
     chart_type = "run"
   ),
   list(
     id = "i",
-    label = "I-kort \u2014 Operationsvarighed",
-    description = "Individuelle m\u00e5linger af operationstid i minutter",
+    label = "Kontrolkort: Enkeltm\u00e5linger",
+    description = "Operationsvarighed i minutter (individuelle m\u00e5linger)",
     file = "sample_i_mr.csv",
-    chart_type = "i"
+    chart_type = "ip__dt"
   ),
   # list(
   #   id = "mr",
@@ -46,10 +46,10 @@ SAMPLE_DATASETS <- list(
   # ),
   list(
     id = "p",
-    label = "P-kort \u2014 Postoperativ infektionsrate",
-    description = "Andel infektioner per antal opererede patienter",
+    label = "Kontrolkort: Procent/andele",
+    description = "Postoperativ infektionsrate (infektioner/opererede)",
     file = "sample_p.csv",
-    chart_type = "p"
+    chart_type = "pp__dt"
   ),
   # list(
   #   id = "pp",
@@ -60,10 +60,10 @@ SAMPLE_DATASETS <- list(
   # ),
   list(
     id = "u",
-    label = "U-kort \u2014 Medicineringsfejl pr. indl\u00e6ggelse",
-    description = "Rate af medicineringsfejl per indl\u00e6ggelse",
+    label = "Kontrolkort: Rater",
+    description = "Medicineringsfejl pr. indl\u00e6ggelse",
     file = "sample_u.csv",
-    chart_type = "u"
+    chart_type = "up__dt"
   ),
   # list(
   #   id = "up",
@@ -74,10 +74,10 @@ SAMPLE_DATASETS <- list(
   # ),
   list(
     id = "c",
-    label = "C-kort \u2014 Antal klager pr. m\u00e5ned",
-    description = "T\u00e6llinger af patientklager per m\u00e5ned",
+    label = "Kontrolkort: Antal/t\u00e6llinger",
+    description = "Antal patientklager pr. m\u00e5ned",
     file = "sample_c.csv",
-    chart_type = "c"
+    chart_type = "c__dt"
   )
   # list(
   #   id = "g",

@@ -23,7 +23,7 @@ Imports:
     ggplot2 (>= 3.4.0),
     htmltools (>= 0.5.0),
     rlang (>= 1.0.0),
-    BFHcharts (>= 0.26.0),
+    BFHcharts (>= 0.27.0),
     readr (>= 2.0.0),
     readxl (>= 1.4.0),
     scales (>= 1.2.0),
@@ -79,7 +79,7 @@ Suggests:
     pbcharts (>= 0.1.0)
 Config/testthat/edition: 3
 Config/Notes: pbcharts i Suggests+Remotes — kraeves af BFHcharts for ip/i-prime + Laney P'/U'-charts (eksponeret som foersteklasses chart-typer). Refereres via requireNamespace() i .onAttach (R/zzz.R) saa rsconnect-scanneren medtager den i Connect-manifestet; uden kode-reference scanner rsconnect den ikke. SHA-pinnet (anhoej/pbcharts utagget upstream) — validate_connect_manifest.R tillader fuld 40-char SHA for tredjeparts-repos. qicharts2 i Suggests — bruges til Anhøj-beregninger, guarded med require_qicharts2(). BFHllm i Suggests — optional AI-forbedringer, degraderer gracefully hvis ikke installeret. pins, gert, shinylogs i Suggests — analytics-features, guarded med requireNamespace(). DO NOT REMOVE svglite fra Imports — workaround for BFHcharts svglite-Suggests-bug (BFHcharts issue #268). Tidligere fjernet i #293 ("0 direkte brug i grep R/") og #382 (manifest regen) → produktions-PDF-eksport fejler med "package svglite is required to save as SVG". svglite kaldes indirekte via BFHcharts::bfh_export_pdf() i export_chart_svg(). Fjern KUN når BFHcharts promoter svglite til Imports.
-Remotes: johanreventlow/BFHcharts@v0.26.0,
+Remotes: johanreventlow/BFHcharts@v0.27.0,
     johanreventlow/BFHtheme@v0.5.2,
     johanreventlow/BFHllm@v0.2.0,
     johanreventlow/BFHchartsAssets@v0.1.2,

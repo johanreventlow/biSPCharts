@@ -175,10 +175,10 @@ mock_board_connect <- function(auth = c("auto", "manual", "envvar"),
 #' Mock for gert::git_clone
 #'
 #' Returnerer path uden faktisk git-clone.
-#' formals() matcher gert::git_clone (gert 2.1.5+).
+#' formals() matcher gert::git_clone (gert 2.4.0+, inkl. depth-param).
 mock_git_clone <- function(url, path = NULL, branch = NULL, password = NULL,
                            ssh_key = NULL, bare = FALSE, mirror = FALSE,
-                           verbose = interactive()) {
+                           depth = 0, verbose = interactive()) {
   path <- path %||% tempfile("mock-clone-")
   if (!dir.exists(path)) dir.create(path, recursive = TRUE)
   invisible(path)

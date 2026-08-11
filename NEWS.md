@@ -2,6 +2,13 @@
 
 ## Interne ændringer
 
+* **BFHcharts bumpet til 0.27.0** (fra 0.26.0, inkl. 0.26.1's bugfixes).
+  0.27.0 gør periodelinjen granularitets-bevidst (uge-, dags-, kvartals- og
+  årsdata vises nu med matchende periodeformat i stedet for altid måned+år,
+  med ISO-år for ugenumre) og forankrer x-akse-labels til kalenderen for
+  dags- og ugedata, så lange serier får læsbare, regelmæssige breaks.
+  Se BFHcharts NEWS 0.27.0 for detaljer.
+
 * **Tilpasset BFHcharts 0.25.0: I-prime-kortets `chart_type`-værdi omdøbt
   fra `"i'"` til `"ip"`.** Følger BFHcharts' breaking change der harmoniserer
   prime-kortenes navngivning (`pp`, `up`, `ip`). De danske UI-labels

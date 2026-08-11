@@ -48,10 +48,10 @@
         "GithubRef": "v0.27.0",
         "GithubSHA1": "e5cc1ef8844f7c3c4b547f43dc091c573254704e",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 15:37:21 UTC; JREV0004",
+        "Packaged": "2026-08-11 16:49:08 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 15:37:32 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-11 16:49:12 UTC; windows"
       }
     },
     "BFHchartsAssets": {
@@ -81,21 +81,21 @@
         "GithubRef": "v0.1.2",
         "GithubSHA1": "afae3a0c9f7f0f36f6131feadf69c480a9733d4b",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 15:40:49 UTC; JREV0004",
+        "Packaged": "2026-08-11 16:50:51 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 15:40:56 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-11 16:50:55 UTC; windows"
       }
     },
     "BFHllm": {
-      "Source": "https://johanreventlow.r-universe.dev",
+      "Source": "github",
       "Repository": null,
       "description": {
         "Package": "BFHllm",
         "Title": "LLM Integration Framework for BFH Packages",
         "Version": "0.2.0",
         "Authors@R": "\n    person(\"Johan\", \"Reventlow\", , \"johan.reventlow@regionh.dk\", role = c(\"aut\", \"cre\"))",
-        "Description": "AI-driven insights and text generation for healthcare\n        quality improvement. Provides LLM chat interface, RAG\n        (Retrieval Augmented Generation) integration with knowledge\n        stores, and SPC-specific improvement suggestions. Designed for\n        standalone use with BFHcharts or integration in Shiny\n        applications.",
+        "Description": "AI-driven insights and text generation for healthcare quality\n    improvement. Provides LLM chat interface, RAG (Retrieval Augmented\n    Generation) integration with knowledge stores, and SPC-specific\n    improvement suggestions. Designed for standalone use with BFHcharts\n    or integration in Shiny applications.",
         "License": "MIT + file LICENSE",
         "URL": "https://github.com/johanreventlow/BFHllm",
         "BugReports": "https://github.com/johanreventlow/BFHllm/issues",
@@ -106,17 +106,21 @@
         "Suggests": "testthat (>= 3.0.0), shiny (>= 1.7.0), mockery, withr,\nBFHcharts (>= 0.4.0)",
         "Remotes": "johanreventlow/BFHcharts",
         "Config/testthat/edition": "3",
-        "Config/pak/sysreqs": "cmake libicu-dev libpng-dev libxml2-dev libssl-dev\npython3 xz-utils",
-        "Repository": "https://johanreventlow.r-universe.dev",
-        "Date/Publication": "2026-05-09 08:27:54 UTC",
-        "RemoteUrl": "https://github.com/johanreventlow/BFHllm",
-        "RemoteRef": "HEAD",
+        "RemoteType": "github",
+        "RemoteHost": "api.github.com",
+        "RemoteRepo": "BFHllm",
+        "RemoteUsername": "johanreventlow",
+        "RemoteRef": "v0.2.0",
         "RemoteSha": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
+        "GithubRepo": "BFHllm",
+        "GithubUsername": "johanreventlow",
+        "GithubRef": "v0.2.0",
+        "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
         "NeedsCompilation": "no",
-        "Packaged": "2026-05-09 09:19:40 UTC; root",
+        "Packaged": "2026-08-11 16:53:49 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-05-09 09:21:10 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-11 16:53:53 UTC; windows"
       }
     },
     "BFHtheme": {
@@ -148,10 +152,10 @@
         "GithubRef": "v0.5.5",
         "GithubSHA1": "8fc1eb9809de13af00aeaafcc5a791fe3bfb4330",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 16:34:06 UTC; JREV0004",
+        "Packaged": "2026-08-11 16:49:54 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 16:34:09 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-11 16:49:56 UTC; windows"
       }
     },
     "BH": {
@@ -4747,7 +4751,7 @@
       "checksum": "1eabc37e56e29f274f2e5b8eb4d2cf58"
     },
     "DESCRIPTION": {
-      "checksum": "b36ee123613337d060c8eadcf60cc53b"
+      "checksum": "945b803011eb0dc08db399abc1d4fbd9"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "9f3554011b310b942c12109f347d92b0"

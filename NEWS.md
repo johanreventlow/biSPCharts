@@ -1,4 +1,4 @@
-# biSPCharts (development)
+# biSPCharts 0.8.0
 
 ## Interne ændringer
 

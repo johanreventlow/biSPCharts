@@ -322,7 +322,10 @@ test_that("generateSPCPlot centerline label bruger geom_marquee", {
   expect_equal(length(text_layers), 1)
 
   layer <- text_layers[[1]]
-  expect_equal(rlang::as_name(layer$mapping$label), "label")
+  # BFHcharts 0.26.1+ bygger label-aesthetic som .data[["label"]] (call) i
+  # stedet for et symbol — rlang::as_name() håndterer kun symboler, så vi
+  # evaluerer quosure'en direkte mod layer$data i stedet.
+  expect_equal(rlang::eval_tidy(layer$mapping$label, layer$data), layer$data$label)
   expect_equal(layer$aes_params$size, 6)
 
   # 'type'-kolonne fjernet i BFHcharts 0.10.x — identificér centrallinjerækker via label-indhold
@@ -365,7 +368,10 @@ test_that("generateSPCPlot target label bruger geom_marquee", {
   expect_equal(length(text_layers), 1)
 
   layer <- text_layers[[1]]
-  expect_equal(rlang::as_name(layer$mapping$label), "label")
+  # BFHcharts 0.26.1+ bygger label-aesthetic som .data[["label"]] (call) i
+  # stedet for et symbol — rlang::as_name() håndterer kun symboler, så vi
+  # evaluerer quosure'en direkte mod layer$data i stedet.
+  expect_equal(rlang::eval_tidy(layer$mapping$label, layer$data), layer$data$label)
   expect_equal(layer$aes_params$size, 6)
 
   # 'type'-kolonne fjernet i BFHcharts 0.10.x — identificér målrækker via label-indhold

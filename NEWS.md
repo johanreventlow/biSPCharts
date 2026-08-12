@@ -1,3 +1,18 @@
+# biSPCharts (development)
+
+## Interne ændringer
+
+* **BFHcharts bumpet til 0.27.1** (PATCH fra 0.27.0). Afdelinger der
+  præsterer over målet får ikke længere en tekst, der lyder som en
+  bebrejdelse: når målet angives som et bart tal uden retningsoperator
+  (fx `target_value = 0.85`), rapporterer analysen nu retningen neutralt
+  ("Niveauet ligger stabilt over målet. Vurdér, om det er
+  tilfredsstillende.") i stedet for at antage målet er et minimum. Se
+  BFHcharts NEWS 0.27.1 for detaljer.
+
+* **BFHllm bumpet til 0.2.1** (fra 0.2.0). Ren version-sync-fix i BFHllm
+  selv (BFHllm PR #11) — ingen funktionel ændring for biSPCharts.
+
 # biSPCharts 0.8.0
 
 ## Interne ændringer

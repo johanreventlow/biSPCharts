@@ -21,7 +21,7 @@
       "description": {
         "Package": "BFHcharts",
         "Title": "SPC Visualization for Healthcare Quality Improvement",
-        "Version": "0.27.0",
+        "Version": "0.27.1",
         "Authors@R": "c(\n    person(\n      \"Johan\", \"Reventlow\",\n      email = \"johan.reventlow@regionh.dk\",\n      role = c(\"aut\", \"cre\")\n    )\n  )",
         "Description": "A modern R package for creating Statistical Process Control (SPC)\n    charts in healthcare settings. Built on ggplot2 and qicharts2, BFHcharts\n    provides beautiful, publication-ready SPC visualizations with configurable\n    themes and multi-organizational branding support. Inspired by BBC's bbplot\n    design philosophy.",
         "License": "GPL-3",
@@ -41,17 +41,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHcharts",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.27.0",
-        "RemoteSha": "e5cc1ef8844f7c3c4b547f43dc091c573254704e",
+        "RemoteRef": "v0.27.1",
+        "RemoteSha": "6c30136bc0d043104330687d4e79bbcbdadcee73",
         "GithubRepo": "BFHcharts",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.27.0",
-        "GithubSHA1": "e5cc1ef8844f7c3c4b547f43dc091c573254704e",
+        "GithubRef": "v0.27.1",
+        "GithubSHA1": "6c30136bc0d043104330687d4e79bbcbdadcee73",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 16:49:08 UTC; JREV0004",
+        "Packaged": "2026-08-12 11:04:04 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 16:49:12 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-12 11:04:12 UTC; windows"
       }
     },
     "BFHchartsAssets": {
@@ -81,10 +81,10 @@
         "GithubRef": "v0.1.2",
         "GithubSHA1": "afae3a0c9f7f0f36f6131feadf69c480a9733d4b",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 16:50:51 UTC; JREV0004",
+        "Packaged": "2026-08-12 11:05:16 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 16:50:55 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-12 11:05:19 UTC; windows"
       }
     },
     "BFHllm": {
@@ -93,7 +93,7 @@
       "description": {
         "Package": "BFHllm",
         "Title": "LLM Integration Framework for BFH Packages",
-        "Version": "0.2.0",
+        "Version": "0.2.1",
         "Authors@R": "\n    person(\"Johan\", \"Reventlow\", , \"johan.reventlow@regionh.dk\", role = c(\"aut\", \"cre\"))",
         "Description": "AI-driven insights and text generation for healthcare quality\n    improvement. Provides LLM chat interface, RAG (Retrieval Augmented\n    Generation) integration with knowledge stores, and SPC-specific\n    improvement suggestions. Designed for standalone use with BFHcharts\n    or integration in Shiny applications.",
         "License": "MIT + file LICENSE",
@@ -110,17 +110,17 @@
         "RemoteHost": "api.github.com",
         "RemoteRepo": "BFHllm",
         "RemoteUsername": "johanreventlow",
-        "RemoteRef": "v0.2.0",
-        "RemoteSha": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
+        "RemoteRef": "v0.2.2",
+        "RemoteSha": "5b3f38f18af815aa7e6ff59ec07db7d1f814a279",
         "GithubRepo": "BFHllm",
         "GithubUsername": "johanreventlow",
-        "GithubRef": "v0.2.0",
-        "GithubSHA1": "23f10472e40ecfb8b8b682e4ca395bc4e07b74b3",
+        "GithubRef": "v0.2.2",
+        "GithubSHA1": "5b3f38f18af815aa7e6ff59ec07db7d1f814a279",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 16:53:49 UTC; JREV0004",
+        "Packaged": "2026-08-12 11:35:23 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 16:53:53 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-12 11:35:35 UTC; windows"
       }
     },
     "BFHtheme": {
@@ -152,10 +152,10 @@
         "GithubRef": "v0.5.5",
         "GithubSHA1": "8fc1eb9809de13af00aeaafcc5a791fe3bfb4330",
         "NeedsCompilation": "no",
-        "Packaged": "2026-08-11 16:49:54 UTC; JREV0004",
+        "Packaged": "2026-08-12 11:04:38 UTC; JREV0004",
         "Author": "Johan Reventlow [aut, cre]",
         "Maintainer": "Johan Reventlow <johan.reventlow@regionh.dk>",
-        "Built": "R 4.6.0; ; 2026-08-11 16:49:56 UTC; windows"
+        "Built": "R 4.6.0; ; 2026-08-12 11:04:42 UTC; windows"
       }
     },
     "BH": {
@@ -4751,7 +4751,7 @@
       "checksum": "1eabc37e56e29f274f2e5b8eb4d2cf58"
     },
     "DESCRIPTION": {
-      "checksum": "945b803011eb0dc08db399abc1d4fbd9"
+      "checksum": "23ee929299f1bf4113b3f606a043cf00"
     },
     "inst/app/www/analytics-client.js": {
       "checksum": "9f3554011b310b942c12109f347d92b0"

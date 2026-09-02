@@ -1,5 +1,17 @@
 # biSPCharts (development)
 
+## Fejlrettelser
+
+* **Seriediagram kunne ikke tegnes, når Nævner-kolonnen stod tom i
+  tabel-skabelonen (#873).** Når man indtastede data direkte i tabellen og
+  kun udfyldte Dato + Tæller, auto-mappede appen den tomme Nævner-kolonne som
+  nævner, og filtreringen krævede derefter begge kolonner udfyldt. Fejlen
+  blev oven i købet maskeret, så loggen viste en misvisende "kunne ikke
+  konvertere N værdier"-besked for hvert tastetryk. Nu ignoreres en helt tom
+  nævner for ikke-ratio-kort (run, I, C, …), og filtreringsfejl bobler op som
+  typede `spc_prepare_error` i stedet for at sende ufiltreret data videre.
+  P-/U-kort afvises fortsat med klar besked, når nævneren mangler.
+
 ## Interne ændringer
 
 * **BFHcharts bumpet til 0.27.1** (PATCH fra 0.27.0). Afdelinger der

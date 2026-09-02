@@ -685,3 +685,31 @@ test_that("compute_spc_results_bfh() completes within reasonable time", {
 # Total test scenarios: 50+
 # Expected lines: ~300
 # All tests deterministic (fixed seed)
+
+# Issue #873: tom tabel-skabelon med udfyldt Tæller + tom Nævner
+
+test_that("compute_spc_results_bfh() tegner run-kort når Nævner er all-NA fra skabelonen (#873)", {
+  # Spejler create_empty_session_data(): brugeren har udfyldt Dato + Tæller,
+  # Nævner står tom, og auto-detect har mappet den tomme Nævner som n_var.
+  data <- data.frame(
+    Dato = seq.Date(as.Date("2024-01-01"), by = "month", length.out = 24),
+    "Tæller" = as.numeric(c(
+      12, 15, 9, 14, 11, 13, 10, 16, 12, 14, 9, 13,
+      15, 11, 12, 14, 10, 13, 12, 15, 11, 14, 13, 12
+    )),
+    "Nævner" = rep(NA_real_, 24),
+    check.names = FALSE
+  )
+
+  result <- compute_spc_results_bfh(
+    data = data,
+    x_var = "Dato",
+    y_var = "Tæller",
+    chart_type = "run",
+    n_var = "Nævner"
+  )
+
+  expect_s3_class(result$plot, "ggplot")
+  expect_equal(nrow(result$qic_data), 24)
+  expect_equal(result$metadata$n_points, 24)
+})

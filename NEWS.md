@@ -1,5 +1,28 @@
 # biSPCharts (development)
 
+## Fejlrettelser
+
+* **Seriediagram kunne ikke tegnes, når Nævner-kolonnen stod tom i
+  tabel-skabelonen (#873).** Når man indtastede data direkte i tabellen og
+  kun udfyldte Dato + Tæller, auto-mappede appen den tomme Nævner-kolonne som
+  nævner, og filtreringen krævede derefter begge kolonner udfyldt. Fejlen
+  blev oven i købet maskeret, så loggen viste en misvisende "kunne ikke
+  konvertere N værdier"-besked for hvert tastetryk. Nu ignoreres en helt tom
+  nævner for ikke-ratio-kort (run, I, C, …), og filtreringsfejl bobler op som
+  typede `spc_prepare_error` i stedet for at sende ufiltreret data videre.
+  P-/U-kort afvises fortsat med klar besked, når nævneren mangler.
+
+## Interne ændringer
+
+* **BFHcharts bumpet til 0.29.0** (fra 0.27.1, inkl. 0.28.0–0.28.2). Flade
+  serier (samme værdi i alle perioder) får nu en meningsfuld y-akse i stedet
+  for en sammenklemt skala, ny y-akse-enhed `clock` viser klokkeslæt
+  (fx "08:15") for tidspunkt-indikatorer, retningspilen tegnes også når kun
+  en ønsket retning er sat uden målværdi, og centerlinje-labelen arver
+  y-aksens decimal-præcision (så "1,6%" ikke rundes til "2%"). 0.29.0
+  tilføjer batch-PDF-eksport med side-cache (`bfh_export_batch_pdf()`),
+  som biSPCharts endnu ikke bruger. Se BFHcharts NEWS 0.28.0–0.29.0.
+
 ## Interne ændringer
 
 * **BFHcharts bumpet til 0.27.1** (PATCH fra 0.27.0). Afdelinger der

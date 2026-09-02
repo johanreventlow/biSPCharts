@@ -133,6 +133,23 @@ validate_spc_request <- function(
     )
   }
 
+  # 9b. n_var der udelukkende er NA (fx tom "Naevner" fra tabel-skabelonen,
+  #     som auto-detect mapper alene paa navnet -- #873). Ratio-kort (p/pp/u/up)
+  #     fanges af check 12 med klar besked; for oevrige typer droppes naevneren
+  #     med warn, saa filter_complete_spc_data() ikke kraever begge kolonner
+  #     udfyldt. Spejler all-NA-guarden i utils_export_helpers.R (ab74dd3).
+  if (!is.null(n_var) && !ct_normalized %in% c("p", "pp", "u", "up") &&
+    all(is.na(data[[n_var]]))) {
+    log_warn(
+      paste0(
+        "n_var '", n_var, "' er all-NA for chart_type=", ct_normalized,
+        " -- dropper n\u00e6vner (#873)"
+      ),
+      .context = "BFH_SERVICE"
+    )
+    n_var <- NULL
+  }
+
   # 10. y_var maa ikke udelukkende bestaa af NA
   y_vals <- data[[y_var]]
   if (all(is.na(y_vals))) {

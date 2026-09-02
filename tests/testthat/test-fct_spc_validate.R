@@ -196,3 +196,38 @@ test_that("spc fejlklasser producerer korrekte UI-brugermeddelelser", {
   expect_match(classify_msg(make_err("rendering", "spc_render_error")), "Grafgenerering fejlede")
   expect_match(classify_msg(simpleError("ukendt")), "Grafgenerering fejlede")
 })
+
+# Issue #873: all-NA nævner fra tom tabel-skabelon
+
+test_that("validate_spc_request dropper all-NA n_var for run-kort (#873)", {
+  df <- data.frame(
+    dato = as.Date("2023-01-01") + 0:9,
+    taeller = as.numeric(1:10),
+    naevner = rep(NA_real_, 10)
+  )
+  req <- validate_spc_request(df, "dato", "taeller", "run", n_var = "naevner")
+  expect_s3_class(req, "spc_request")
+  expect_null(req$n_var)
+})
+
+test_that("validate_spc_request bevarer delvist udfyldt n_var for run-kort (#873)", {
+  df <- data.frame(
+    dato = as.Date("2023-01-01") + 0:9,
+    taeller = as.numeric(1:10),
+    naevner = c(NA_real_, rep(100, 9))
+  )
+  req <- validate_spc_request(df, "dato", "taeller", "run", n_var = "naevner")
+  expect_equal(req$n_var, "naevner")
+})
+
+test_that("validate_spc_request afviser stadig all-NA n_var for p-kort (#873)", {
+  df <- data.frame(
+    dato = as.Date("2023-01-01") + 0:9,
+    taeller = as.numeric(1:10),
+    naevner = rep(NA_real_, 10)
+  )
+  expect_error(
+    validate_spc_request(df, "dato", "taeller", "p", n_var = "naevner"),
+    class = "spc_input_error"
+  )
+})

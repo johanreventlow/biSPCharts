@@ -31,22 +31,36 @@ test_that("prepare_spc_data kaster spc_prepare_error når < 3 rækker efter filt
   expect_error(prepare_spc_data(req), class = "spc_prepare_error")
 })
 
-test_that("prepare_spc_data kaster spc_prepare_error ved 0 rækker efter filtrering", {
+test_that("prepare_spc_data kaster spc_prepare_error når y er all-NA (#873)", {
   df <- data.frame(
     x = 1:10,
     y = rep(NA_real_, 10)
   )
-  # filter_complete_spc_data bruger fallback=data ved intern fejl,
-  # men alle-NA trigger stop() indeni. Vi accepterer enten spc_prepare_error
-  # eller at filter-fallback returnerer 10 rækker (begge er acceptabelt).
-  # Testen bekræfter bare at spc_prepare_error kan kastes ved tom data.
-  df2 <- data.frame(
+  # validate_spc_request afviser all-NA y; lav en direkte spc_request så
+  # filter_complete_spc_data's egen fejl testes (må ikke sluges af fallback).
+  req <- new_spc_request(df, "x", "y", "run")
+  expect_error(prepare_spc_data(req), class = "spc_prepare_error")
+})
+
+test_that("prepare_spc_data kaster spc_prepare_error ved 0 rækker i data", {
+  df <- data.frame(
     x = integer(0),
     y = numeric(0)
   )
-  # validate_spc_request afviser tom df; lav en direkte spc_request
-  req2 <- new_spc_request(df2, "x", "y", "run")
-  expect_error(prepare_spc_data(req2), class = "spc_prepare_error")
+  req <- new_spc_request(df, "x", "y", "run")
+  expect_error(prepare_spc_data(req), class = "spc_prepare_error")
+})
+
+test_that("prepare_spc_data fejler typed når n_var er all-NA — ikke stille succes (#873)", {
+  df <- data.frame(
+    x = 1:10,
+    y = as.numeric(1:10),
+    n = rep(NA_real_, 10)
+  )
+  # Bypass validate (som nu dropper all-NA n_var) for at låse filterets adfærd:
+  # 0 komplette rækker skal give spc_prepare_error, ikke ufiltreret data videre.
+  req <- new_spc_request(df, "x", "y", "run", n_var = "n")
+  expect_error(prepare_spc_data(req), class = "spc_prepare_error")
 })
 
 test_that("prepare_spc_data bevarer Date x-kolonne", {

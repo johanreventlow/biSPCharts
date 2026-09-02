@@ -99,7 +99,11 @@ filter_complete_spc_data <- function(data, y_col, n_col = NULL, x_col = NULL) {
 
       return(data_filtered)
     },
-    fallback = data,
+    # Fejlen maa ikke sluges (#873): fallback = data sendte hele den
+    # ufiltrerede tabel videre til parse_and_validate_spc_data(), som saa
+    # fejlede med en misvisende "kunne ikke konvertere"-besked. Rethrow typed
+    # (logges stadig af safe_operation) saa prepare_spc_data() fejler klart.
+    fallback = function(e) spc_abort(conditionMessage(e), class = "spc_prepare_error"),
     error_type = "data_filtering"
   )
 }

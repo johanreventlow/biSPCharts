@@ -14,6 +14,14 @@
 
 ## Interne ændringer
 
+* **BFHcharts bumpet til 0.29.1** (PATCH fra 0.29.0). Detalje-linjen i
+  PDF-eksporten viser nu tæller/nævner korrekt for P'-, U'- og I'-kort
+  (før stod der en meningsløs brøkværdi som "0" eller "1"), SPC-tabellen
+  viser "?" for serielængde og antal kryds når centerlinjen er auto-skiftet
+  fra median til gennemsnit (tallene er ikke statistisk pålidelige der), og
+  fejlbeskeden ved mislykket PDF-skabelon-kopiering viser den reelle
+  OS-årsag. Se BFHcharts NEWS 0.29.1.
+
 * **BFHcharts bumpet til 0.29.0** (fra 0.27.1, inkl. 0.28.0–0.28.2). Flade
   serier (samme værdi i alle perioder) får nu en meningsfuld y-akse i stedet
   for en sammenklemt skala, ny y-akse-enhed `clock` viser klokkeslæt
@@ -22,8 +30,6 @@
   y-aksens decimal-præcision (så "1,6%" ikke rundes til "2%"). 0.29.0
   tilføjer batch-PDF-eksport med side-cache (`bfh_export_batch_pdf()`),
   som biSPCharts endnu ikke bruger. Se BFHcharts NEWS 0.28.0–0.29.0.
-
-## Interne ændringer
 
 * **BFHcharts bumpet til 0.27.1** (PATCH fra 0.27.0). Afdelinger der
   præsterer over målet får ikke længere en tekst, der lyder som en

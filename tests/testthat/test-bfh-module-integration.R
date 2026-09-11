@@ -52,6 +52,14 @@ wait_for_bfh_plot_ready <- function(app, timeout = 20000) {
 expect_bfh_plot_ready <- function(app) {
   ready <- wait_for_bfh_plot_ready(app)
   if (!ready) {
+    # Diagnose: app-loggen (log_error fra SPC-pipelinen) naar ellers aldrig
+    # CI-output, saa en timeout er umulig at root-cause fra runner-loggen alene.
+    app_logs <- tryCatch(app$get_logs(), error = function(e) NULL)
+    if (!is.null(app_logs)) {
+      cat("\n--- app-log (sidste 80 linjer) ---\n")
+      print(utils::tail(app_logs, 80))
+      cat("--- slut app-log ---\n")
+    }
     fail(paste0(
       bfh_plot_ready_output,
       " blev ikke TRUE inden timeout — BFHchart-modulet renderede ikke chart"

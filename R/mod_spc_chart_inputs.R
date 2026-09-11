@@ -135,7 +135,7 @@ create_spc_inputs_reactive <- function(
     # Run charts kan kun bruge naevner (denominator) naar y_axis_unit = "percent"
     # Dette forhindrer plot generation failure naar bruger skifter fra percent til count
     qic_chart_type <- get_qic_chart_type(config$chart_type %||% "run")
-    if (identical(qic_chart_type, "run") && identical(unit_value, "count")) {
+    if (run_chart_ignores_denominator(qic_chart_type, unit_value)) {
       config$n_col <- NULL
       log_debug_kv(
         message = "Cleared n_col from config for run chart with count mode",

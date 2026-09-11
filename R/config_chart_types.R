@@ -137,3 +137,18 @@ chart_type_requires_denominator <- function(chart_type) {
   # Naevner er relevant for run, p, pp, u, up, ip
   return(ct %in% c("run", "p", "pp", "u", "up", "ip"))
 }
+
+#' Skal naevneren ignoreres for seriediagram med y-enhed "Tal"?
+#'
+#' Run charts kan kun bruge naevner naar y-aksen er en andel ("percent"/"rate").
+#' Ved "Tal" (count) skal raa taeller-vaerdier plottes, saa n_column droppes.
+#' Delt regel for analyse- og eksport-stien, saa begge giver samme resultat.
+#'
+#' @param chart_type Valgt diagramtype (dansk label eller engelsk kode)
+#' @param y_axis_unit Character. UI-valgt y-akse-enhed (fx "count", "percent")
+#' @return TRUE hvis n_column skal ignoreres, ellers FALSE
+#' @keywords internal
+run_chart_ignores_denominator <- function(chart_type, y_axis_unit) {
+  identical(get_qic_chart_type(chart_type %||% "run"), "run") &&
+    identical(y_axis_unit, "count")
+}

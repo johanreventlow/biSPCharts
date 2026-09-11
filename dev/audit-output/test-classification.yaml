@@ -1673,3 +1673,27 @@ files:
   reviewer: johanreventlow
   reviewed_date: '2026-05-21'
   rationale: Regression-test for markdown-asterisks i SPC chart-titel. Sprint 3 XSS-hardening (631e4cd8, 2025-09-30) overrode default allowed_chars i process_chart_title() og droppede `*`, hvilket strippede `**fed**` foer marquee::element_marquee i BFHtheme kunne rendere markdown. Verificerer at asterisks bevares OG at script-tags stadig strippes.
+
+- file: test-autodetect-x-col-not-denominator.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-09-11'
+  rationale: 'Regression-test (PR #880): numerisk x-kolonne (fx Uge = 1..36) blev
+    auto-valgt som naevner, saa run chart plottede antal/Uge og auto-satte y-enhed
+    til procent. Verificerer at detect_columns_full_analysis() ekskluderer x_col fra
+    n-kandidater (numerisk og character Uge) og stadig bevarer en aegte Naevner-kolonne.'
+- file: test-export-run-count-ignores-denominator.R
+  audit_category: post-audit
+  type: unit
+  handling: keep
+  reviewed: yes
+  reviewer: johanreventlow
+  reviewed_date: '2026-09-11'
+  rationale: 'Regression-test (PR #880): eksport-fanen sendte n_column videre ved run
+    + Tal og viste y/n-ratio (~1,00) i stedet for raa taellervaerdier, mens analyse-
+    fanen droppede naevneren. Verificerer at build_export_plot() bruger den delte regel
+    run_chart_ignores_denominator(): dropper naevner ved run + count, bevarer ved
+    run + percent. Kraever mockery + shiny (skip ellers).'

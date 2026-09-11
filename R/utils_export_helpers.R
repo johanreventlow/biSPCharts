@@ -253,11 +253,18 @@ build_export_plot <- function(app_state, title_input, dept_input,
       final_width <- override_width_px %||% context_dims$width_px
       final_height <- override_height_px %||% context_dims$height_px
 
-      # Get chart configuration from app_state
+      # Get chart configuration from app_state.
+      # Spejl analyse-stien (mod_spc_chart_inputs.R): run chart + "Tal"
+      # ignorerer naevner -- ellers viser eksporten y/n mens analysen viser y.
+      export_y_axis_unit <- mappings_y_axis_unit %||% "count"
       config <- list(
         x_col = x_col,
         y_col = y_col,
-        n_col = mappings_n_column
+        n_col = if (run_chart_ignores_denominator(chart_type, export_y_axis_unit)) {
+          NULL
+        } else {
+          mappings_n_column
+        }
       )
 
       # Build generateSPCPlot arguments
@@ -272,7 +279,7 @@ build_export_plot <- function(app_state, title_input, dept_input,
         skift_column = mappings_skift_column,
         frys_column = mappings_frys_column,
         chart_title_reactive = export_title,
-        y_axis_unit = mappings_y_axis_unit %||% "count",
+        y_axis_unit = export_y_axis_unit,
         y_axis_min = mappings_y_axis_min,
         y_axis_max = mappings_y_axis_max,
         kommentar_column = mappings_kommentar_column,

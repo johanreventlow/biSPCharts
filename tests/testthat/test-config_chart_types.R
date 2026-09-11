@@ -142,3 +142,15 @@ test_that("Laney/MR danske labels mapper til koder", {
     expect_equal(get_qic_chart_type(label), code)
   }
 })
+
+# Run chart + "Tal" ignorerer naevner --------------------------------------------
+
+test_that("run_chart_ignores_denominator: kun run + count dropper naevner", {
+  expect_true(run_chart_ignores_denominator("run", "count"))
+  expect_true(run_chart_ignores_denominator("Seriediagram (Run) \u2014 data over tid", "count"))
+  expect_true(run_chart_ignores_denominator(NULL, "count"))
+  expect_false(run_chart_ignores_denominator("run", "percent"))
+  expect_false(run_chart_ignores_denominator("run", "rate"))
+  expect_false(run_chart_ignores_denominator("p", "count"))
+  expect_false(run_chart_ignores_denominator("i", "count"))
+})

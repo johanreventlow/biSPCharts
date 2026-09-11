@@ -69,17 +69,24 @@ expect_bfh_plot_ready <- function(app) {
 }
 
 # Test fixture: byg test-CSV med kolonner appen genkender via auto-detekt
-# (Dato → x_column, Vaerdi → y_column, Naevner → n_column).
+# (Dato → x_column, Antal → y_column, Naevner → n_column).
+# "Antal" matcher y-navnemoenstret i score_by_name_patterns() (ASCII-sikkert);
+# det tidligere "Vaerdi" matchede IKKE "værdi", saa y/n-mapping blev afgjort
+# af data-scoring alene og kunne bytte om paa taeller og naevner.
 create_test_csv <- function(chart_type, n_rows = 50, seed = 20251015) {
   set.seed(seed)
 
   base_data <- data.frame(
     Dato = seq.Date(Sys.Date() - n_rows + 1, Sys.Date(), by = "day"),
-    Vaerdi = rnorm(n_rows, mean = 100, sd = 15)
+    Antal = rnorm(n_rows, mean = 100, sd = 15)
   )
 
   if (chart_type %in% c("p", "c", "u")) {
     base_data$Naevner <- sample(50:200, n_rows, replace = TRUE)
+    # Taeller skal vaere <= naevner: en samlet andel > 1 giver NaN i P-kortets
+    # sigma (sqrt(p*(1-p)/n)) -> BFHcharts-warning -> spc_render_error, og
+    # plot_ready bliver aldrig TRUE (rodaarsag til nightly-fejlen i #835).
+    base_data$Antal <- round(base_data$Naevner * stats::runif(n_rows, 0.05, 0.35))
   }
 
   base_data

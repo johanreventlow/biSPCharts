@@ -391,22 +391,27 @@ detect_columns_full_analysis <- function(data, app_state = NULL) {
   }
 
   # 3. COMBINE RESULTS with preference for data-driven detection
+  final_x_col <- best_date_col %||% name_based_results$x_col
   final_y_col <- if (length(y_candidates) > 0) names(y_candidates)[1] else name_based_results$y_col
 
-  # Ekskluder y_col fra n_candidates -- n_col skal vaere en ANDEN kolonne end y_col
-  if (!is.null(final_y_col) && length(n_candidates) > 0) {
-    n_candidates <- n_candidates[names(n_candidates) != final_y_col]
+  # Ekskluder y_col OG x_col fra n_candidates -- n_col skal vaere en ANDEN
+  # kolonne end taeller og x-akse. Uden x-eksklusion blev en numerisk
+  # x-kolonne (fx "Uge" = 1..36) valgt som naevner, saa run chart fik
+  # y/n-ratio + auto-sat "percent" i stedet for raa taeller-vaerdier.
+  n_exclude <- c(final_y_col, final_x_col)
+  if (length(n_candidates) > 0) {
+    n_candidates <- n_candidates[!names(n_candidates) %in% n_exclude]
   }
 
   results <- list(
-    x_col = best_date_col %||% name_based_results$x_col,
+    x_col = final_x_col,
     y_col = final_y_col,
     n_col = if (length(n_candidates) > 0) {
       names(n_candidates)[1]
     } else {
-      # Fallback til name-based, men aldrig samme som y_col
+      # Fallback til name-based, men aldrig samme som y_col eller x_col
       fallback_n <- name_based_results$n_col
-      if (!is.null(fallback_n) && identical(fallback_n, final_y_col)) NULL else fallback_n
+      if (!is.null(fallback_n) && fallback_n %in% n_exclude) NULL else fallback_n
     },
     skift_col = name_based_results$skift_col,
     frys_col = name_based_results$frys_col,

@@ -35,7 +35,7 @@ Rscript dev/audit_test_skips.R
 
 ## 2. DESCRIPTION og versioning
 
-- [ ] `Version:` bumpet korrekt (semver — se `~/.claude/rules/VERSIONING_POLICY.md`)
+- [ ] `Version:` bumpet korrekt (semver — se `~/.claude/rules-ondemand/VERSIONING_POLICY.md`)
 - [ ] `NEWS.md` har entry for ny version (ikke `(development)`)
 - [ ] Ingen `(development)`-entries i NEWS.md for den nye version
 - [ ] `devtools::document()` kørt → `NAMESPACE` + `man/` opdateret

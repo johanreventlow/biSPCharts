@@ -138,4 +138,4 @@ GOOGLE_API_KEY=AIzaSy-din-noegle-her
 - Secrets (API-nøgler, tokens, PAT) må **aldrig** committes til kodebasen
 - `.Renviron` og `.env` er git-ignored — brug dem lokalt
 - Production-secrets sættes via RStudio Connect Vars-UI eller Docker `env_file`
-- Se `~/.claude/rules/SECURITY_BEST_PRACTICES.md` for fuld policy
+- Se `~/.claude/rules-ondemand/SECURITY_BEST_PRACTICES.md` for fuld policy

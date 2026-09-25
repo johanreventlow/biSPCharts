@@ -1,7 +1,7 @@
 # Contributing til biSPCharts
 
 biSPCharts-specifikke konventioner. Globale R-standarder (tidyverse,
-testthat, defensive programming) findes i `~/.claude/rules/R_STANDARDS.md`.
+testthat, defensive programming) findes i `~/.claude/rules-profiles/r/R_STANDARDS.md`.
 
 ---
 
@@ -96,7 +96,7 @@ teknisk detaljer, vis dansk fallback.
 
 ## Commit-konvention
 
-Conventional Commits (jf. `~/.claude/rules/GIT_WORKFLOW.md`). Ingen
+Conventional Commits (jf. Git-konventioner i `~/.claude/CLAUDE.md`). Ingen
 Claude-attribution-footers (eksplicit forbudt i `CLAUDE.md`).
 
 ```
@@ -109,7 +109,7 @@ Hvorfor, ikke hvordan. Reference: #123
 
 ## Reference
 
-- Global R-stil: `~/.claude/rules/R_STANDARDS.md`
-- Shiny-mønstre: `~/.claude/rules/SHINY_STANDARDS.md`
+- Global R-stil: `~/.claude/rules-profiles/r/R_STANDARDS.md`
+- Shiny-mønstre: `~/.claude/rules-profiles/shiny/SHINY_STANDARDS.md`
 - Arkitektur: `CLAUDE.md` § 2 + `docs/adr/`
 - Cross-repo: `docs/CROSS_REPO_COORDINATION.md`

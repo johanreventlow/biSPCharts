@@ -143,7 +143,7 @@ integration (`R/utils_bfhllm_integration.R`), application-specific queries.
 
 ### Versioning
 
-biSPCharts + sibling-pakker følger `~/.claude/rules/VERSIONING_POLICY.md`:
+biSPCharts + sibling-pakker følger `~/.claude/rules-ondemand/VERSIONING_POLICY.md`:
 strict semver (`vX.Y.Z`-tags), pre-1.0 tillader breaking i MINOR, NEWS.md
 dansk, lower-bound deps, 9-trins pre-release checklist, separat
 `chore(deps):`-PR ved sibling-bump.
@@ -290,9 +290,9 @@ Kontrolgrænser = Control limits.
 
 ## 📚 References
 
-**Globale rules:** Tier 1 auto-loaded fra `~/.claude/rules/`. Tier 2
-Shiny-rules @-imported øverst i denne fil. Tier 3 on-demand via
-auskommenterede @-imports øverst.
+**Globale rules:** `~/.claude/CLAUDE.md` auto-loades altid. R- og
+Shiny-profiler fra `~/.claude/rules-profiles/` @-importeres øverst i denne
+fil. Opslagsværker i `~/.claude/rules-ondemand/` læses ved behov.
 
 **Globale agents:** tidyverse-code-reviewer, performance-optimizer,
 security-reviewer, test-coverage-analyzer, refactoring-advisor,

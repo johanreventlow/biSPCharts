@@ -245,7 +245,7 @@ Use decision tree to answer:
 
 ## Version Coordination
 
-**Autoritativ kilde:** `~/.claude/rules/VERSIONING_POLICY.md` dækker semver-regler,
+**Autoritativ kilde:** `~/.claude/rules-ondemand/VERSIONING_POLICY.md` dækker semver-regler,
 NEWS-format, git-tags, pre-release checklist og cross-repo bump-protokollen for
 hele BFH-økosystemet (biSPCharts, BFHcharts, BFHllm, BFHtheme).
 

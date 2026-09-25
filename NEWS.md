@@ -1,4 +1,4 @@
-# biSPCharts (development)
+# biSPCharts 0.8.6
 
 ## Fejlrettelser
 
@@ -41,6 +41,11 @@
 
 * **BFHllm bumpet til 0.2.1** (fra 0.2.0). Ren version-sync-fix i BFHllm
   selv (BFHllm PR #11) — ingen funktionel ændring for biSPCharts.
+
+* Claude-instruktioner og udviklerdokumentation (`CLAUDE.md`,
+  `docs/CONTRIBUTING.md` m.fl.) peger ikke længere på den arkiverede
+  `~/.claude/rules/`-mappe (#882). DESCRIPTION-versionen er samtidig bragt i
+  trit med release-tags (v0.8.1–v0.8.5 blev auto-oprettet med DESCRIPTION 0.8.0).
 
 # biSPCharts 0.8.0
 
